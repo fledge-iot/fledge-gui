@@ -1,0 +1,20 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <b>FogLAMP Management</b>
+    </a>
+  </div>
+  <div class="navbar-start">
+    <a class="navbar-item"></a>
+  </div>
+  <div class="navbar-end">
+    <a class="navbar-item">
+      <span [ngClass]="ping_info.is_alive?'tag is-success':'tag is-danger'">{{ping_info.service_status}}</span>
+    </a>
+  </div>
+  <div class="navbar-burger" (click)="toggleClick()">
+      <span></span>
+      <span></span>
+      <span></span>
+  </div>
+</nav>

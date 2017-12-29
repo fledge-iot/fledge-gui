@@ -1,0 +1,78 @@
+/* You can add global styles to this file, and also import other style files */
+html, body, #app {
+  height: 100%;
+}
+
+html {
+  background-color: #f5f5f5 !important;
+}
+    
+#app {
+  min-height: 100%;
+}
+
+table.scroll {
+  overflow-x: auto;
+  display: block;
+}
+
+table.scroll tbody {
+  overflow-y: scroll;
+  overflow-x: auto;
+}
+
+.fixed-overflow {
+  overflow-x: hidden;
+}
+
+.ng-sidebar[_ngcontent-c3] {
+  z-index: 10 !important;
+  overflow-y: hidden !important;
+}
+
+.navbar-item {
+  display: flex;
+}
+
+.navbar,
+.navbar-menu,
+.navbar-start,
+.navbar-end {
+  align-items: stretch;
+  display: flex;
+  padding: 0;
+}
+
+@media screen and (max-width: 1023px) {
+  .navbar-menu.is-active {
+    display: flex !important;
+    padding: 0;
+  }
+}
+
+.app-navbar {
+  box-shadow: 0 2px 3px hsla(0,0%,7%,.1), 0 0 0 1px hsla(0,0%,7%,.1);
+}
+
+.navbar-menu{
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+.navbar-start{
+  justify-content: flex-start;
+  margin-right: auto;
+}
+.navbar-end{
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.card {
+        margin-top: 10px;
+}
+.card-header{
+        background-color: whitesmoke;
+}
+.card-content{
+       overflow: auto;
+}

@@ -1,0 +1,3 @@
+<div [innerHTML]="message.text" id = "alert" *ngIf="message" [ngClass]="{ 'notification': message, 'is-success': message.type === 'success', 'is-danger': message.type === 'error','is-warning': message.type === 'warning' }">
+    <button class="delete" (click)=closeMessage()></button>
+</div>

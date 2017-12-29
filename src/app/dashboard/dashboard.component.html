@@ -1,0 +1,39 @@
+<div class="container is-fluid">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
+    [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  </ng-progress>
+  <div class="tile">
+    <div class="tile is-parent">
+      <article class="tile is-child box">
+        <h4> Readings Statistics History </h4>
+        <br/>
+        <chart [type]="readingChart" [data]="readingValues" [options]="chartOptions"></chart>
+        <br/>
+        <h6>Total since startup:<b> {{statisticsData['READINGS']}} </b></h6>
+      </article>
+    </div>
+  </div>
+  <div class="tile">
+    <div class="tile is-parent">
+      <article class="tile is-child box">
+        <h4> Sent Statistics History </h4>
+        <br/>
+        <chart [type]="sentChart" [data]="sentValues" [options]="chartOptions"></chart>
+        <br/>
+        <h6>Total since startup:<b> {{statisticsData['SENT_1']}} </b></h6>
+      </article>
+    </div>
+  </div>
+  <div class="tile">
+    <div class="tile is-parent">
+      <article class="tile is-child box">
+        <h4> Purge Statistics History </h4>
+        <br/>
+        <chart [type]="purgeChart" [data]="purgedValues" [options]="chartOptions"></chart>
+        <br/>
+        <h6>Total since startup:<b> {{statisticsData['PURGED']}} </b></h6>
+      </article>
+    </div>
+  </div>
+</div>

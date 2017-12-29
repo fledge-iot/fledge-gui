@@ -1,0 +1,7 @@
+#alert {
+    position: fixed; 
+    padding: 1.5em; 
+    bottom: 0.1%; 
+    right: 0.1%;
+    z-index: 9999999;     
+}

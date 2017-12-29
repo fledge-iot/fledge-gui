@@ -1,0 +1,40 @@
+<ul class="menu-list">
+  <li>
+    <a [ngClass]="{'is-active': step==='/dashboard'}" (click)="onToggle('/dashboard')">
+           Dashboard
+        </a>
+  </li>
+  <li>
+    <a [ngClass]="{'is-active': step==='/configuration'}" (click)="onToggle('/configuration')">
+          Configuration
+        </a>
+  </li>
+  <li>
+    <a [ngClass]="{'is-active': step==='/scheduled-task'}" (click)="onToggle('/scheduled-task')">
+          Scheduled Tasks
+        </a>
+  </li>
+  <li>
+    <a [ngClass]="{'is-active': step==='/audit'}" (click)="onToggle('/audit')">
+           Audit Logs
+        </a>
+  </li>
+  <!-- TODO: These menu item should be dynamic -->
+  <li>
+    <a [ngClass]="{'is-active': step==='/asset'}" (click)="onToggle('/asset')">
+           Assets &amp; Readings
+        </a>
+  </li>
+
+  <li>
+    <a [ngClass]="{'is-active': step==='/services-health'}" (click)="onToggle('/services-health')">
+           Services Health
+        </a>
+  </li>
+
+  <li>
+    <a [ngClass]="{'is-active': step==='/setting'}" (click)="onToggle('/setting')">
+           Settings
+        </a>
+  </li>
+</ul>

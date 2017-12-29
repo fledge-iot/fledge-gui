@@ -1,0 +1,29 @@
+<nav class="nav has-shadow" >
+    <div class="nav-center">
+      <h1 class="title">FogLAMP Admin Dashboard</h1>
+    </div>
+ </nav>
+ <section class="section">
+    <div class="container">
+    <form name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
+        <div class="field" [ngClass]="{ 'has-error': f.submitted && !username.valid }">
+            <p class="control">
+            <input type="text" class="input" name="username" [(ngModel)]="model.username" #username="ngModel" placeholder="username" required />
+            </p>
+            <div *ngIf="f.submitted && !username.valid" class="help is-danger level-left">Username is required</div>
+        </div>
+        <div class="field" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
+            <p class="control">
+            <input type="password" class="input" name="password" [(ngModel)]="model.password" #password="ngModel" placeholder="password" required />
+            </p>
+            <div *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required</div>
+        </div>
+
+        <div class="field">
+            <p class="control">
+                <button  class="button is-primary">Login</button>
+            </p>
+        </div>
+    </form>
+    </div>
+ </section>

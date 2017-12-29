@@ -1,0 +1,75 @@
+<div class="columns">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
+            [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+            [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  </ng-progress>
+  <div class="column is-offset-1 is-four-fifths">
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          Schedules
+        </p>
+        <div>
+          <a class="button is-light" (click)="openCreateSchedulerModal()">Create &nbsp;<i class="fa fa-plus" aria-hidden="true"></i></a>
+        </div>
+      </header>
+      <div class="card-content">
+        <table class="table is-striped scroll">
+          <thead id="head">
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Day
+                <!-- <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (1-7 Mon-Sun)">
+                    <i class="fa fa-info-circle"></i>
+                  </span> -->
+              </th>
+              <th>Time</th>
+              <th>Interval</th>
+              <th>Exclusive</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tr *ngFor="let schedule of scheduleData">
+            <td>
+              <small> {{schedule.name}} </small>
+            </td>
+            <td>
+              <small> {{schedule.type}}</small>
+            </td>
+            <td>
+              <small> {{getISODay(schedule.day)}} </small>
+            </td>
+            <td>
+              <small> {{schedule.time}}</small>
+            </td>
+            <td>
+              <small> {{schedule.repeat}}</small>
+            </td>
+            <td>
+              <small> {{schedule.exclusive}}</small>
+            </td>
+            <td>
+              <div (click)="editSchedule(schedule.id)">
+                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+              </div>
+            </td>
+            <td>
+              <div (click)="openModal(schedule.id, schedule.name)">
+                <i class="fa fa-minus-circle" aria-hidden="true"></i>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <app-modal (notify)='onNotify()' [childData]='childData'></app-modal>
+        <app-update-modal (notify)='onNotify()' [childData]='updateScheduleData'></app-update-modal>
+        <app-create-schedule (notify)='onNotify()' (process)='setScheduleProcess($event)' (type)='setScheduleType($event)'></app-create-schedule>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="columns">
+  <div class="column is-offset-1 is-four-fifths">
+    <app-list-tasks></app-list-tasks>
+  </div>
+</div>

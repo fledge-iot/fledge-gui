@@ -1,0 +1,40 @@
+<div class="card">
+  <header class="card-header">
+    <div class="card-header-title">
+      Tasks &nbsp;
+      <div class="select" (change)="getTasks($event.target.value)">
+        <select ng-model="selectedTaskType" id="task-state">
+          <option>Latest</option>
+          <option>Running</option>
+        </select>
+      </div>
+    </div>
+  </header>
+  <div class="card-content">
+    <table class="table is-striped  scroll is-responsive">
+      <thead>
+        <tr>
+          <th>Process</th>
+          <th>State</th>
+          <th>Start time</th>
+          <th>End Time&nbsp;
+            <span class="tooltip is-tooltip-right" data-tooltip="DD-MM-YYYY HH:mm:ss">
+              <i class="fa fa-info-circle"></i>
+            </span>
+          </th>
+          <th>Exit Code</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tr *ngFor="let task of tasksData">
+        <td><small>{{task.processName}}</small></td>
+        <td><small>{{task.state}}</small></td>
+        <td><small>{{task.startTime != 'None' ?(task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small></td>
+        <td><small>{{task.endTime != 'None'?(task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small></td>
+        <td><small>{{task.exitCode}}</small></td>
+        <td><small>{{task.reason}}</small></td>
+        <td><button *ngIf="'RUNNING' == task.state" class="button is-small is-danger" (click)="cancelRunninTask(task.id)">Cancel</button></td>
+      </tr>
+    </table>
+  </div>
+</div>
