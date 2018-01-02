@@ -45,29 +45,28 @@ export class DashboardComponent implements OnInit {
     this.ngProgress.start();
     this.statisticsService.getStatistics().
       subscribe(
-        data => {
-          /** request completed */
-          this.ngProgress.done();
-
-          if (data.error) {
-            console.log('error in response', data.error);
-            this.alertService.error(data.error.message);
-            return;
-          }
-          console.log('recived statisticsData ', data);
-          // this.statisticsData = data;
-          const o: object = {};
-          data.forEach(element => {
-            o[element.key] = element.value;
-          });
-          this.statisticsData = o;
-          console.log('This is the statisticsData ', this.statisticsData);
-        },
-        error => { 
-          /** request completed */
-          this.ngProgress.done();
-          console.log('error', error); 
+      data => {
+        /** request completed */
+        this.ngProgress.done();
+        console.log('recived statisticsData ', data);
+        // this.statisticsData = data;
+        const o: object = {};
+        data.forEach(element => {
+          o[element.key] = element.value;
         });
+        this.statisticsData = o;
+        console.log('This is the statisticsData ', this.statisticsData);
+      },
+      error => {
+        /** request completed */
+        this.ngProgress.done();
+        if(error.status === 0){
+          this.alertService.error("Service down");
+        } else {
+          this.alertService.error(error.statusText);
+        }
+        console.log('error', error);
+      });
   }
 
   public getStatisticsHistory(): void {
@@ -82,11 +81,6 @@ export class DashboardComponent implements OnInit {
     const datePipe = new MomentDatePipe();
     this.statisticsService.getStatisticsHistory().
       subscribe(data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.statHistoryData = data.statistics;
         console.log('Statistics History Data', data);
         this.statHistoryData.forEach(element => {
@@ -94,17 +88,17 @@ export class DashboardComponent implements OnInit {
             if (aKey.indexOf('READINGS') !== -1) {
               readingsValues.push(element[aKey]);
               const tempDt = element['history_ts'];
-              readingsLabels.push( datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
+              readingsLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
             }
             if (aKey.indexOf('PURGED') !== -1 && aKey.indexOf('UNSNPURGED') === -1) {
               purgedValues.push(element[aKey]);
               const tempDt = element['history_ts'];
-              purgedLabels.push( datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
+              purgedLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
             }
             if (aKey.indexOf('SENT_1') !== -1 && aKey.indexOf('UNSENT') === -1) {
               sentValues.push(element[aKey]);
               const tempDt = element['history_ts'];
-              sentLabels.push( datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
+              sentLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
             }
           });
         });
@@ -112,7 +106,14 @@ export class DashboardComponent implements OnInit {
         this.statsHistoryPurgedGraph(purgedLabels, purgedValues);
         this.statsHistorySentGraph(sentLabels, sentValues);
       },
-      error => { console.log('error', error); });
+      error => {
+        console.log('error', error);
+        if(error.status === 0){
+          this.alertService.error("Service is down.");
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   statsHistoryReadingsGraph(labels, data): void {

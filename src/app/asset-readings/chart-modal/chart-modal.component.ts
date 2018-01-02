@@ -68,12 +68,8 @@ export class ChartModalComponent implements OnInit {
     this.assetCode = assetCode;
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, +offset).
       subscribe(
-      data => {
-        if (data.error) {
-          this.isValidData = false;
-          console.log('error in response', data.error);
-          return;
-        } else if (data.length === 0) {
+      data => {  
+        if (data.length === 0) {
           this.isReadingsAvailable = false;
           return;
         }
@@ -95,7 +91,9 @@ export class ChartModalComponent implements OnInit {
           console.log('No valid data to show trends.');
         }
       },
-      error => { console.log('error', error); });
+      error => { 
+        this.isValidData = false;
+        console.log('error in response', error); });
   }
 
   getAssetTimeReading(assetChartRecord) {
