@@ -27,7 +27,7 @@
         </tr>
       </thead>
       <tr *ngFor="let task of tasksData">
-        <td><small>{{task.processName}}</small></td>
+        <td><small>{{task.name}}</small></td>
         <td><small>{{task.state}}</small></td>
         <td><small>{{task.startTime != 'None' ?(task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small></td>
         <td><small>{{task.endTime != 'None'?(task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small></td>
