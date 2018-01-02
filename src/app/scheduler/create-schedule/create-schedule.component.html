@@ -14,7 +14,7 @@
                 <div class="form-group">
                   <label class="label">Name</label>
                   <p class="control is-fullwidth">
-                    <input type="text" class="input" formControlName="name" placeholder="name" required/>
+                    <input type="text" class="input" formControlName="name" placeholder="name" required trim="blur"/>
                   </p>
                   <small *ngIf="form.controls.name.invalid && form.controls.name.touched" class="help is-danger level-left">Name is required</small>
                 </div>
