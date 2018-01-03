@@ -28,45 +28,13 @@ table.scroll tbody {
 .ng-sidebar[_ngcontent-c3] {
   z-index: 10 !important;
   overflow-y: hidden !important;
-}
-
-.navbar-item {
-  display: flex;
-}
-
-.navbar,
-.navbar-menu,
-.navbar-start,
-.navbar-end {
-  align-items: stretch;
-  display: flex;
-  padding: 0;
-}
-
-@media screen and (max-width: 1023px) {
-  .navbar-menu.is-active {
-    display: flex !important;
-    padding: 0;
-  }
+  padding-top: 0px;
 }
 
 .app-navbar {
   box-shadow: 0 2px 3px hsla(0,0%,7%,.1), 0 0 0 1px hsla(0,0%,7%,.1);
-}
-
-.navbar-menu{
-  flex-grow: 1;
-  flex-shrink: 0;
-}
-.navbar-start{
-  justify-content: flex-start;
-  margin-right: auto;
-}
-.navbar-end{
-  justify-content: flex-end;
-  margin-left: auto;
-}
-
+  }
+  
 .card {
         margin-top: 10px;
 }
