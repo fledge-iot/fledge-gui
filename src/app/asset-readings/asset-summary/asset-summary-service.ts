@@ -31,7 +31,11 @@ export class AssetSummaryService {
                     }
                 },
                 error => {
-                    console.log('error in response', error);
+                    if (error.status === 0) {
+                        console.log('service down ', error);
+                    } else {
+                        console.log('error in response ', error);
+                    }
                 });
         });
     }

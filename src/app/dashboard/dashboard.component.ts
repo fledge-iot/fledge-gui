@@ -61,8 +61,9 @@ export class DashboardComponent implements OnInit {
         /** request completed */
         this.ngProgress.done();
         if(error.status === 0){
-          this.alertService.error("Service down");
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
         console.log('error', error);
@@ -107,10 +108,10 @@ export class DashboardComponent implements OnInit {
         this.statsHistorySentGraph(sentLabels, sentValues);
       },
       error => {
-        console.log('error', error);
         if(error.status === 0){
-          this.alertService.error("Service is down.");
+          console.log('service down', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });

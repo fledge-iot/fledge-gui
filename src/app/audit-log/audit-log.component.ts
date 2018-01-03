@@ -105,10 +105,10 @@ export class AuditLogComponent implements OnInit {
         console.log('Log code', this.logSourceList);
       },
       error => {
-        console.log('error in response', error);
         if (error.status === 0) {
-          this.alertService.error("Service is down.");
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
@@ -122,10 +122,10 @@ export class AuditLogComponent implements OnInit {
         console.log('Log severity ', this.logSeverityList);
       },
       error => {
-        console.log('error in response', error);
         if (error.status === 0) {
-          this.alertService.error("Service is down.");
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
@@ -212,12 +212,12 @@ export class AuditLogComponent implements OnInit {
         this.totalPages();
       },
       error => {
-        console.log('error in response', error);
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
-          this.alertService.error("Service is down.");
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });

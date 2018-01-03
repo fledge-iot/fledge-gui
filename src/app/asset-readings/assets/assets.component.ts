@@ -177,12 +177,12 @@ export class AssetsComponent implements OnInit {
         console.log('This is the asset data ', this.assets);
       },
       error => {
-        console.log('error in response', error);
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
-          this.alertService.error("Service is down.");
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
@@ -214,10 +214,10 @@ export class AssetsComponent implements OnInit {
       error => {
         /** request completed */
         this.ngProgress.done();
-        console.log('error in response', error);
-        if(error.status === 0){
-          this.alertService.error("Service is down.");
+        if (error.status === 0) {
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });

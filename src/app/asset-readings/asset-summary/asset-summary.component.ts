@@ -57,7 +57,13 @@ export class AssetSummaryComponent implements OnInit {
           console.log('No valid data to show trends.');
         }
       },
-      error => { console.log('error in response', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+        }
+      });
   }
 
   public getTimedBasedSummary(time, key) {

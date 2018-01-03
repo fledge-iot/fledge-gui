@@ -28,12 +28,12 @@ export class ConfigurationManagerComponent implements OnInit {
         });
       },
       error => {
-        console.log('error in response', error);
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
-          this.alertService.error("Service is down.");
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
@@ -49,10 +49,10 @@ export class ConfigurationManagerComponent implements OnInit {
         console.log('This is the categoryData ', this.categoryData);
       },
       error => {
-        console.log('error in response', error);
         if (error.status === 0) {
-          this.alertService.error("Service is down.");
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
@@ -78,10 +78,10 @@ export class ConfigurationManagerComponent implements OnInit {
         inputField.textContent = inputField.value = data.value;
       },
       error => {
-        console.log('error in response', error);
         if (error.status === 0) {
-          this.alertService.error("Service is down.");
+          console.log('service down ', error);
         } else {
+          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
