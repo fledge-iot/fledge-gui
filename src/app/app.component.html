@@ -1,7 +1,7 @@
 <div class="app-navbar">
     <app-navbar (toggle)="toggleSidebar()"></app-navbar>
 </div>
-<section class="columns">
+<section class="columns column-margin">
 <ng-sidebar-container>
     <ng-sidebar #sidebar [(opened)]="_opened" sidebarClass="column is-2">
         <app-side-menu  (toggle)="toggleSidebar()"></app-side-menu>
