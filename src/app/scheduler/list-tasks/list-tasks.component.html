@@ -33,7 +33,7 @@
         <td><small>{{task.endTime != 'None'?(task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small></td>
         <td><small>{{task.exitCode}}</small></td>
         <td><small>{{task.reason}}</small></td>
-        <td><button *ngIf="'RUNNING' == task.state" class="button is-small is-danger" (click)="cancelRunninTask(task.id)">Cancel</button></td>
+        <td><button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small is-danger" (click)="cancelRunninTask(task.id)">Cancel</button></td>
       </tr>
     </table>
   </div>
