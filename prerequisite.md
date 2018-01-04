@@ -53,7 +53,7 @@ To read more about yarn read https://yarnpkg.com/en/
 
 https://github.com/praveen-garg/FogLAMP.git
 
-### Move to `src/frontend` directory and run
+### Move to root directory and run
 ```
     $ yarn install
 ```  
