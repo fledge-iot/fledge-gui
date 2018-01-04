@@ -101,30 +101,34 @@ export class AuditLogComponent implements OnInit {
     this.auditService.getLogSource().
       subscribe(
       data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.logSourceList = data.logCode;
         console.log('Log code', this.logSourceList);
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public getLogSeverity() {
     this.auditService.getLogSeverity().
       subscribe(
       data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.logSeverityList = data.logSeverity;
         console.log('Log severity ', this.logSeverityList);
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public setLimit(limit) {
@@ -197,11 +201,6 @@ export class AuditLogComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.audit = data.audit;
         this.totalCount = data.totalCount;
         console.log('Audit Logs', this.audit, 'Total count', this.totalCount);
@@ -215,7 +214,12 @@ export class AuditLogComponent implements OnInit {
       error => {
         /** request completed */
         this.ngProgress.done();
-        console.log('error', error);
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+        }
       });
   }
 }

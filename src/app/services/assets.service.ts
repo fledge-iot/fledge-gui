@@ -16,7 +16,7 @@ export class AssetsService {
   public getAsset() {
     return this.http.get(this.GET_ASSET)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -38,7 +38,7 @@ export class AssetsService {
     }
     return this.http.get(this.GET_ASSET + '/' + asset_code, _params)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   public getAssetSummary(assetObject: any) {
@@ -49,7 +49,7 @@ export class AssetsService {
     return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.asset_code)
       + '/' + assetObject.reading + '/summary', _params)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   // TODO: Not in use yet
@@ -57,6 +57,6 @@ export class AssetsService {
     // TODO: time based readings average;
     return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.asset_code) + '/' + assetObject.reading + '/series')
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 }

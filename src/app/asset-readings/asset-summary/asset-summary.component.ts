@@ -40,10 +40,6 @@ export class AssetSummaryComponent implements OnInit {
     this.assetService.getAssetReadings(encodeURIComponent(dt.asset_code)).
       subscribe(
       data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          return;
-        }
         const validRecord = ReadingsValidator.validate(data);
         if (validRecord) {
           const record = {
@@ -61,7 +57,13 @@ export class AssetSummaryComponent implements OnInit {
           console.log('No valid data to show trends.');
         }
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+        }
+      });
   }
 
   public getTimedBasedSummary(time, key) {

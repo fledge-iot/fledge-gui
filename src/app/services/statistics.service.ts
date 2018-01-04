@@ -17,7 +17,7 @@ export class StatisticsService {
   public getStatistics() {
     return this.http.get(this.GET_STATISTICS)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -26,6 +26,6 @@ export class StatisticsService {
   public getStatisticsHistory() {
     return this.http.get(this.GET_STATISTICS_HISTORY)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 }

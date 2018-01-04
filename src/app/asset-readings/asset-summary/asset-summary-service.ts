@@ -21,10 +21,6 @@ export class AssetSummaryService {
             this.assetService.getAssetSummary(assetObj)
                 .subscribe(
                 summaryData => {
-                    if (summaryData.error) {
-                        console.log('error in response', summaryData.error);
-                        return;
-                    }
                     count++;
                     assetSummary.push({
                         asset_code: data.asset_code,
@@ -35,7 +31,11 @@ export class AssetSummaryService {
                     }
                 },
                 error => {
-                    console.log('error', error);
+                    if (error.status === 0) {
+                        console.log('service down ', error);
+                    } else {
+                        console.log('error in response ', error);
+                    }
                 });
         });
     }

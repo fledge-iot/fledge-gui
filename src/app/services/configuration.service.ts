@@ -6,18 +6,17 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class ConfigurationService {
     // private instance variable to hold base url
-    private GET_CATEGORIES_URL = environment.BASE_URL + 'categories';
     private GET_CATEGORY_URL = environment.BASE_URL + 'category';
 
     constructor(private http: Http) { }
 
     /**
-     *   GET  | /foglamp/categories
+     *   GET  | /foglamp/category
      */
     getCategories() {
-        return this.http.get(this.GET_CATEGORIES_URL)
+        return this.http.get(this.GET_CATEGORY_URL)
             .map(response => response.json())
-            .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+            .catch((error: Response) => Observable.throw(error));
     }
 
     /**
@@ -26,7 +25,7 @@ export class ConfigurationService {
     getCategory(category_name) {
         return this.http.get(this.GET_CATEGORY_URL + '/' + category_name)
             .map(response => response.json())
-            .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+            .catch((error: Response) => Observable.throw(error));
     }
 
     /**
@@ -36,6 +35,6 @@ export class ConfigurationService {
         let body = JSON.stringify({ 'value': value });
         return this.http.put(this.GET_CATEGORY_URL + '/' + category_name + '/' + config_item, body)
             .map(response => response.json())
-            .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+            .catch((error: Response) => Observable.throw(error));
     }
 }
