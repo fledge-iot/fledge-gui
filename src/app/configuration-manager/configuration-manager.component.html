@@ -28,7 +28,7 @@
                   </div>
                 </div>
                 <div class="control">
-                  <input id="{{v.key}}" class="input" type="text" [value]="v?.value?.value != undefined ? v?.value?.value:''" [textContent]='v?.value?.value' (input)="onTextChange(v.key, true)"
+                  <input id="{{v.key}}" class="input" type="text" trim="blur" [value]="v?.value?.value != undefined ? v?.value?.value:''" [textContent]='v?.value?.value' (input)="onTextChange(v.key, true)"
                   />
                 </div>
               </div>

@@ -41,6 +41,7 @@ import { AssetSummaryComponent } from './asset-readings/asset-summary/asset-summ
 import { ChartModalComponent } from './asset-readings/chart-modal/chart-modal.component';
 import { AssetSummaryService } from './asset-readings/asset-summary/asset-summary-service';
 import { NumberOnlyDirective } from './directives/number-only.directive';
+import { InputTrimDirective } from './directives/input-trim.directive';
 import { NgProgressModule } from 'ngx-progressbar';
 
 
@@ -82,7 +83,8 @@ import { NgProgressModule } from 'ngx-progressbar';
     ListTasksComponent,
     AssetSummaryComponent,
     ChartModalComponent,
-    NumberOnlyDirective
+    NumberOnlyDirective,
+    InputTrimDirective
   ],
   providers: [
     AuthGuard,
