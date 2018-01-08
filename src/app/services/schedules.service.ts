@@ -23,7 +23,7 @@ export class SchedulesService {
   public getScheduleType() {
     return this.http.get(this.GET_SCHEDULE_TYPE)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
 
@@ -33,7 +33,7 @@ export class SchedulesService {
   public getSchedules() {
     return this.http.get(this.GET_SCHEDULE)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -42,7 +42,7 @@ export class SchedulesService {
   public getSchedule(schedule_id) {
     return this.http.get(this.GET_SCHEDULE + '/' + schedule_id)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -55,7 +55,7 @@ export class SchedulesService {
       console.log('Payload', payload);
       return this.http.post(this.GET_SCHEDULE, JSON.stringify(payload))
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
  /**
@@ -69,7 +69,7 @@ export class SchedulesService {
       console.log('payload', payload);
       return this.http.put(this.GET_SCHEDULE + '/' + schedule_id, JSON.stringify(payload))
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
 
@@ -83,7 +83,7 @@ export class SchedulesService {
   public deleteSchedule (schedule_id: any) {
      return this.http.delete(this.GET_SCHEDULE + '/' + schedule_id)
             .map(response => response.json())
-            .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+            .catch((error: Response) => Observable.throw(error));
   }
 
 
@@ -93,7 +93,7 @@ export class SchedulesService {
   public getScheduledProcess() {
     return this.http.get(this.GET_SCHEDULE_PROCESS)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -102,7 +102,7 @@ export class SchedulesService {
   public getLatestTask() {
     return this.http.get(this.GET_LATEST_TASK)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -112,7 +112,7 @@ export class SchedulesService {
      let params: URLSearchParams = new URLSearchParams();
     return this.http.get(this.GET_TASKS, { params: {state: state} })
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -121,6 +121,6 @@ export class SchedulesService {
   public cancelTask(id) {
     return this.http.put(this.CANCEL_TASK + '/' + id, null)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 }
