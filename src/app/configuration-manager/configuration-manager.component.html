@@ -9,7 +9,6 @@
       <div class="card-header-title">
         <div class="media">
           <div class="media-content">
-            <!-- <p class="title is-5">{{category.key}}</p> -->
             <p class="subtitle is-6">{{category.description}}</p>
           </div>
         </div>
@@ -18,27 +17,30 @@
     <div class="card-content">
       <div class="content">
         <div class="columns" *ngFor="let valueObject of category.value">
-          <div class="column" *ngFor="let v of (valueObject | keys)">
+          <div class="column columns-content" *ngFor="let v of (valueObject | keys)">
             <div class="field">
               <div class="control">
                 <div class="media">
                   <div class="media-content">
-                    <!-- <p class="title is-5">{{v?.key}}</p> -->
                     <p class="subtitle is-6">{{v.value.description}}</p>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div class ="columns-fields">
+              <div class="field">
                 <div class="control">
                   <input id="{{v.key}}" class="input" type="text" trim="blur" [value]="v?.value?.value != undefined ? v?.value?.value:''" [textContent]='v?.value?.value' (input)="onTextChange(v.key, true)"
                   />
                 </div>
               </div>
-            </div>
-            <div class="field is-grouped">
-              <div class="control">
-                <button id="btn-save-{{v.key.trim()}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key.trim(), v?.key.trim(), true)">Save</button>
-              </div>
-              <div class="control">
-                <button id="btn-cancel-{{v.key.trim()}}" class="button is-text" disabled (click)="restoreConfigFieldValue(v.key.trim(),false)">Cancel</button>
+              <div class="field is-grouped">
+                <div class="control">
+                  <button id="btn-save-{{v.key.trim()}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key.trim(), v?.key.trim(), true)">Save</button>
+                </div>
+                <div class="control">
+                  <button id="btn-cancel-{{v.key.trim()}}" class="button is-text" disabled (click)="restoreConfigFieldValue(v.key.trim(),false)">Cancel</button>
+                </div>
               </div>
             </div>
           </div>
