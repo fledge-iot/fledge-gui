@@ -60,10 +60,6 @@ export class ScheduledProcessComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        if (data.error) {
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.scheduleData = data.schedules;
         this.scheduleData.forEach(element => {
           const repeatTimeObj = Utils.secondsToDhms(element.repeat);
@@ -82,7 +78,12 @@ export class ScheduledProcessComponent implements OnInit {
       error => {
         /** request completed */
         this.ngProgress.done();
-        console.log('error', error);
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+        };
       });
   }
 

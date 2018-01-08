@@ -89,10 +89,6 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     this.schedulesService.getSchedule(id).
       subscribe(
       data => {
-        if (data.error) {
-          this.alertService.error(data.error.message);
-          return;
-        }
         if (data.type == 'TIMED') {
           this.selected_schedule_type = this.setScheduleTypeKey(data.type);
           schedule_day = this.getSelectedDay(data.day);
@@ -115,7 +111,14 @@ export class UpdateModalComponent implements OnInit, OnChanges {
           time: timeObj.time
         });
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public toggleModal(isOpen: Boolean) {
@@ -157,16 +160,17 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     this.schedulesService.updateSchedule(this.childData.id, updatePayload).
       subscribe(
       data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-        } else {
-          this.alertService.success('Schedule updated successfully.');
-        }
+        this.alertService.success('Schedule updated successfully.');
         this.notify.emit();
         this.toggleModal(false);
-
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 }
