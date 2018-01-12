@@ -156,4 +156,66 @@ export class ScheduledProcessComponent implements OnInit {
   getISODay(index: number) {
     return weekDays[index];
   }
+
+  /**
+   * Disable schedule
+   * @param schedule_id id of the schedule to disable
+   */
+  public disableSchedule(schedule_id) {
+    console.log('Disabling Schedule:', schedule_id);
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.disableSchedule(schedule_id).
+      subscribe(
+      data => {
+        /** request completed */
+        this.ngProgress.done();
+        let schedule = this.scheduleData.find(item => item.id === schedule_id);
+        if(data.status === true) {
+          schedule.enabled = false;
+        }
+        this.alertService.success(data.message);
+      },
+      error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+        };
+      });
+  }
+
+  /**
+   * Enable schedule
+   * @param schedule_id id of the schedule to enable
+   */
+  public enableSchedule(schedule_id) {
+    console.log('Enabling Schedule:', schedule_id);
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.enableSchedule(schedule_id).
+      subscribe(
+      data => {
+        /** request completed */
+        this.ngProgress.done();
+        let schedule = this.scheduleData.find(item => item.id === schedule_id);
+        if(data.status === true){
+          schedule.enabled = true;
+        }
+        this.alertService.success(data.message);
+      },
+      error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+        };
+      });
+  }
 }

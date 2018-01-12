@@ -59,6 +59,10 @@
                 <i class="fa fa-minus-circle" aria-hidden="true"></i>
               </div>
             </td>
+            <td>
+              <button *ngIf='schedule.enabled' class="button is-text" (click)="disableSchedule(schedule.id)">disable</button>
+              <button *ngIf='!schedule.enabled' class="button is-text" (click)="enableSchedule(schedule.id)">enable</button>
+            </td>
           </tr>
         </table>
         <app-modal (notify)='onNotify()' [childData]='childData'></app-modal>
