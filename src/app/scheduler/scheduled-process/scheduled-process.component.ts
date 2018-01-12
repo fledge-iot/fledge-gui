@@ -162,7 +162,7 @@ export class ScheduledProcessComponent implements OnInit {
    * @param schedule_id id of the schedule to disable
    */
   public disableSchedule(schedule_id) {
-    console.log('Schedule ID:', schedule_id);
+    console.log('Disabling Schedule:', schedule_id);
     /** request started */
     this.ngProgress.start();
     this.schedulesService.disableSchedule(schedule_id).
@@ -193,7 +193,7 @@ export class ScheduledProcessComponent implements OnInit {
    * @param schedule_id id of the schedule to enable
    */
   public enableSchedule(schedule_id) {
-    console.log('Schedule ID:', schedule_id);
+    console.log('Enabling Schedule:', schedule_id);
     /** request started */
     this.ngProgress.start();
     this.schedulesService.enableSchedule(schedule_id).
