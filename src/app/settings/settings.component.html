@@ -27,11 +27,11 @@
           </div>
           <div class="column">
             <label class="label is-fullwidth">Port</label>
-            <input id='service_port' class="input" type="number" maxlength="4" placeholder="8081" [ngModel]="service_port">
+            <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081" [ngModel]="service_port">
           </div>
           <div class="column">
             <label class="label is-fullwidth">Management Port</label>
-            <input id="management_port" class="input" type="number" maxlength="5" placeholder="0" [ngModel]="management_port">
+            <input id="management_port" class="input" type="number" appNumberOnly min="0" maxlength="5" placeholder="0" [ngModel]="management_port">
           </div>
         </div>
         <div class="columns">
