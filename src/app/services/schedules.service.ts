@@ -73,7 +73,6 @@ export class SchedulesService {
   }
 
 
-
  /**
    * Delete schedule
    *
@@ -92,6 +91,24 @@ export class SchedulesService {
    */
   public getScheduledProcess() {
     return this.http.get(this.GET_SCHEDULE_PROCESS)
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
+  }
+
+  /**
+   *  PUT | /foglamp/schedule/{schedule_id}/enable
+   */
+  public enableSchedule(id) {
+    return this.http.put(this.GET_SCHEDULE + '/' + id + '/' + 'enable', null)
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
+  }
+
+  /**
+   *  PUT | /foglamp/schedule/{schedule_id}/disable
+   */
+  public disableSchedule(id) {
+    return this.http.put(this.GET_SCHEDULE + '/' + id + '/' + 'disable', null)
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
   }
