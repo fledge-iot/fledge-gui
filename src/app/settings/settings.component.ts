@@ -30,6 +30,9 @@ export class SettingsComponent implements OnInit {
     const servicePortField = <HTMLInputElement>document.getElementById('service_port');
     const managementPortField = <HTMLInputElement>document.getElementById('management_port');
     const service_endpoint = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/';
+
+    localStorage.setItem('CONNECTED_HOST', hostField.value);
+    localStorage.setItem('MANAGEMENT_PORT', managementPortField.value);
     localStorage.setItem('SERVICE_URL', service_endpoint);
 
     if (managementPortField.value !== '') {
@@ -37,6 +40,13 @@ export class SettingsComponent implements OnInit {
       const management_endpoint = protocolField.value + '://' + hostField.value + ':' + managementPortField.value + '/foglamp/';
       localStorage.setItem('MANAGEMENT_URL', management_endpoint);
     }
+    // Clear connected service if any
+    localStorage.removeItem('CONNECTED_SERVICE_STATE');
+    localStorage.removeItem('CONNECTED_SERVICE_ID');
+    this.reloadApp();
+  }
+
+  public reloadApp() {
     location.reload();
     location.href = '';
     this.router.navigate([location.href]);

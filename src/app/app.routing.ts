@@ -9,6 +9,7 @@ import { AssetsComponent } from './asset-readings/assets/index';
 import { AuditLogComponent } from './audit-log/index';
 import { SettingsComponent } from './settings/index';
 import { ServicesHealthComponent } from './services-health/index';
+import { ServiceDiscoveryComponent } from './service-discovery/index';
 
 const appRoutes: Routes = [
     { path: 'home', component: HomeComponent},
@@ -20,6 +21,7 @@ const appRoutes: Routes = [
     { path: 'audit', component: AuditLogComponent },
     { path: 'setting', component: SettingsComponent },
     { path: 'services-health', component: ServicesHealthComponent },
+    { path: 'service-discovery', component: ServiceDiscoveryComponent },
     // otherwise redirect to home
     { path: '**', redirectTo: ''}
 ];

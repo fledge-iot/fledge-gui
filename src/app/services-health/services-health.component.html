@@ -1,7 +1,6 @@
 <div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
-             [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-             [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
   <div class="card">
     <header class="card-header">
@@ -10,7 +9,9 @@
           <div class="media-content">
             <strong class="is-medium">Service Status</strong>
             &nbsp;
-            <button (click)="getServiceData()" class="button is-pulled-right is-small"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+            <button (click)="getServiceData()" class="button is-pulled-right is-small">
+              <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -33,13 +34,19 @@
           <tbody>
             <tr *ngFor="let service of service_data">
               <td>{{service.name}}</td>
-              <td><span class='tag is-info'>{{service.type}} </span></td>
+              <td>
+                <span class='tag is-info'>{{service.type}} </span>
+              </td>
               <td>{{service.protocol}}</td>
               <td>{{service.address}}</td>
               <td>{{service.service_port}}</td>
               <td>{{service.management_port}}</td>
-              <td><span [ngClass]="service.status == 1 ?'tag is-success':'tag is-danger'">{{ service.status==1? "up" : "down"}}</span></td>
-              <td><span class='tag is-light'>{{time|date:'MMM d, y HH:mm:ss'}}</span></td>
+              <td>
+                <span [ngClass]="service.status == 1 ?'tag is-success':'tag is-danger'">{{ service.status==1? "up" : "down"}}</span>
+              </td>
+              <td>
+                <span class='tag is-light'>{{time|date:'MMM d, y HH:mm:ss'}}</span>
+              </td>
             </tr>
           </tbody>
         </table>
