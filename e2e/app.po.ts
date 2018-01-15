@@ -31,7 +31,7 @@ export class FogLAMPPage {
 
   getNavTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#app .navbar-brand .navbar-item b')).getText();
+    return element(by.css('#app .navbar-brand .navbar-item.is-hidden-mobile b')).getText();
   }
 
   getAppStatus() {

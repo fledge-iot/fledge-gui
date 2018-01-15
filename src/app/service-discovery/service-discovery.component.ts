@@ -70,6 +70,8 @@ export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
             this.connectedButtonId = service.key;
             localStorage.setItem('CONNECTED_SERVICE_STATE', JSON.stringify(this.isConnected));
             localStorage.setItem('CONNECTED_SERVICE_ID', this.connectedButtonId);
+            localStorage.setItem('CONNECTED_HOST', address)
+            localStorage.setItem('MANAGEMENT_PORT', port)
           }
         }
       },
