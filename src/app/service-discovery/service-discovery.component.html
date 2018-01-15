@@ -1,0 +1,81 @@
+<div class="container is-fluid">
+  <div class="card">
+    <header class="card-header">
+      <div class="card-header-title">
+        <div class="media">
+          <div class="media-content">
+            <strong class="is-medium">Service Discovery</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <div class="columns">
+          <div class="column is-2">
+            <label class="label">&nbsp;</label>
+            <div class="select is-fullwidth">
+              <select id="protocol">
+                <option>http</option>
+                <option>https</option>
+              </select>
+            </div>
+          </div>
+          <div class="column">
+            <label class="label is-fullwidth">Host</label>
+            <input id="host" class="input" type="text" placeholder="localhost" [ngModel]="host" trim="blur">
+          </div>
+          <div class="column">
+            <label class="label is-fullwidth">Port</label>
+            <input id='port' class="input" type="number" maxlength="4" placeholder="3000" [ngModel]="port">
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <button class="button is-primary is-pulled-left" (click)="setServiceDiscoveryURL()">Connect</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="columns">
+        <div *ngIf="!connectedServiceStatus || !discoveryServiceStatus" class="column" id="warning">
+          <div class="message is-warning">
+            <div class="message-header">
+              <p>Warning</p>
+              <button class="delete" aria-label="delete" (click)="closeMessage()"></button>
+            </div>
+            <div class="message-body" [innerHTML]='message'>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="columns">
+        <div *ngFor="let d of discoveredServices" class="column">
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title">
+                {{d.key}}
+              </p>
+              <a class="card-header-icon">
+                <button [ngClass]="{'is-primary':(isConnected && connectedButtonId == d.key), 'is-info': (!isConnected || connectedButtonId != d.key)}"
+                  class="button" (click)="connectService(d)" [disabled]="(isConnected && connectedButtonId == d.key) ? 'disabled' : null">
+                  {{(!isConnected || connectedButtonId != d.key) ? 'Connect' : 'Connected'}}
+                </button>
+              </a>
+            </header>
+            <div class="card-content">
+              <div class="content">
+                <b>Port:</b> {{d[d.key].port}}
+              </div>
+              <div class="content">
+                <b>IP Address:</b> {{d[d.key].addresses.length > 1 ? d[d.key].addresses[1] : d[d.key].addresses[0]}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

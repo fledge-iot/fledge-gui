@@ -16,7 +16,7 @@ export class ServicesHealthService {
   pingService() {
     return this.http.get(this.GET_PING_URL)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**

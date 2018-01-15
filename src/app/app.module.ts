@@ -10,7 +10,7 @@ import { AuthGuard } from './guards/index';
 import { AlertComponent } from './directives/index';
 import {
   AlertService, AuthService, AssetsService, AuditService, ConfigurationService,
-  StatisticsService, ServicesHealthService, SchedulesService
+  StatisticsService, ServicesHealthService, SchedulesService, ConnectedServiceStatus, DiscoveryService
 } from './services/index';
 import { HomeComponent } from './home/index';
 import { LoginComponent } from './login/index';
@@ -43,6 +43,7 @@ import { AssetSummaryService } from './asset-readings/asset-summary/asset-summar
 import { NumberOnlyDirective } from './directives/number-only.directive';
 import { InputTrimDirective } from './directives/input-trim.directive';
 import { NgProgressModule } from 'ngx-progressbar';
+import { ServiceDiscoveryComponent } from './service-discovery/service-discovery.component';
 
 
 @NgModule({
@@ -84,7 +85,8 @@ import { NgProgressModule } from 'ngx-progressbar';
     AssetSummaryComponent,
     ChartModalComponent,
     NumberOnlyDirective,
-    InputTrimDirective
+    InputTrimDirective,
+    ServiceDiscoveryComponent
   ],
   providers: [
     AuthGuard,
@@ -96,7 +98,9 @@ import { NgProgressModule } from 'ngx-progressbar';
     AuditService,
     SchedulesService,
     ServicesHealthService,
-    AssetSummaryService
+    AssetSummaryService,
+    ConnectedServiceStatus,
+    DiscoveryService
   ],
   bootstrap: [AppComponent]
 })
