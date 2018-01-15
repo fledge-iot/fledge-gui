@@ -14,7 +14,7 @@
         </div>
       </header>
       <div class="card-content">
-        <table class="table is-striped scroll">
+        <table class="table scroll">
           <thead id="head">
             <tr>
               <th>Name</th>
@@ -30,7 +30,7 @@
               <th></th>
             </tr>
           </thead>
-          <tr *ngFor="let schedule of scheduleData">
+          <tr *ngFor="let schedule of scheduleData" class="{{(!schedule.enabled) ? 'fade' : ''}}">
             <td>
               <small> {{schedule.name}} </small>
             </td>
@@ -55,17 +55,17 @@
               </div>
             </td>
             <td>
-              <div (click)="openModal(schedule.id, schedule.name)">
+              <div (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to delete the schedule', 'delete')">
                 <i class="fa fa-minus-circle" aria-hidden="true"></i>
               </div>
             </td>
             <td>
-              <button *ngIf='schedule.enabled' class="button is-text" (click)="disableSchedule(schedule.id)">disable</button>
-              <button *ngIf='!schedule.enabled' class="button is-text" (click)="enableSchedule(schedule.id)">enable</button>
-            </td>
+              <button *ngIf='schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to disable the schedule', 'disable')">disable</button>
+              <button *ngIf='!schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to enable the schedule', 'enable')">enable</button>
+            </td> 
           </tr>
         </table>
-        <app-modal (notify)='onNotify()' [childData]='childData'></app-modal>
+        <app-modal (enable)='enableSchedule($event)' (disable)='disableSchedule($event)' (delete)='deleteSchedule($event)' [childData]='childData'></app-modal>
         <app-update-modal (notify)='onNotify()' [childData]='updateScheduleData'></app-update-modal>
         <app-create-schedule (notify)='onNotify()' (process)='setScheduleProcess($event)' (type)='setScheduleType($event)'></app-create-schedule>
       </div>
