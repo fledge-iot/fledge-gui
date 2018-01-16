@@ -29,7 +29,7 @@ export class ServicesHealthService {
   }
 
   /**
-   *  GET  | /foglamp/service/shutdown
+   *  POST  | /foglamp/service/shutdown
    */
   shutDownService(port) {
     const url = new URL(this.GET_SERVICES_URL);

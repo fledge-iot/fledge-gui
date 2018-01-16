@@ -86,7 +86,7 @@ export class FogLAMPPage {
 
   getServiceStatusTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-services-health div:nth-child(1) strong')).getText();
+    return element(by.css('app-services-health .title.is-4')).getText();
   }
 
   getRefreshButton() {

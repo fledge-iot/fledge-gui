@@ -7,28 +7,31 @@
       <div class="card-header-title">
         <div class="media">
           <div class="media-content">
-            <strong class="is-medium">Service Status</strong>
-            &nbsp;
-            <button (click)="getServiceData()" class="button is-pulled-right is-small">
+            <h4 class="title is-4">Services Status</h4>
+            <h6 class='subtitle is-6'>
+              <small> Last updated: {{time|date:'MMM d, y HH:mm:ss'}} </small>
+            </h6>
+          </div>
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          <button (click)="getServiceData()" class="button is-pulled-right is-small">
               <i class="fa fa-refresh" aria-hidden="true"></i>
             </button>
-          </div>
         </div>
       </div>
     </header>
     <div class="card-content">
       <div class="content">
-        <table class="table is-bordered is-striped is-fullwidth scroll" cellpadding="0" cellspacing="0">
+        <table class="table is-fullwidth scroll" cellpadding="0" cellspacing="0">
           <thead>
             <tr>
               <th>Name</th>
-              <th>Type</th>
+              <th>Type &amp; Status </th>
               <th>Protocol</th>
               <th>Address</th>
               <th>Service Port</th>
               <th>Management Port</th>
-              <th>Status</th>
-              <th>Updated At</th>
+              <!-- <th>Status</th> -->
+              <!-- <th>Updated At</th> -->
               <th></th>
             </tr>
           </thead>
@@ -36,26 +39,33 @@
             <tr *ngFor="let service of service_data">
               <td>{{service.name}}</td>
               <td>
-                <span class='tag is-info'>{{service.type}} </span>
+                <div class="tags has-addons">
+                  <span class="tag" style="white-space: pre">{{padRight(service.type)}}</span>
+                  <span [ngClass]="service.status == 1 ?'tag is-success':'tag is-danger'">
+                    <i [ngClass]="service.status == 1 ?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
+                  </span>
+                </div>
+                <!-- <span class='tag is-info is-rounded'>{{service.type}} </span> -->
               </td>
               <td>{{service.protocol}}</td>
               <td>{{service.address}}</td>
               <td>{{service.service_port}}</td>
               <td>{{service.management_port}}</td>
-              <td>
-                <span [ngClass]="service.status == 1 ?'tag is-success':'tag is-danger'">{{ service.status==1? "up" : "down"}}</span>
-              </td>
-              <td>
+              <!-- <td>
+                <span [ngClass]="service.status == 1 ?'tag is-success is-rounded':'tag is-danger is-rounded'">{{ service.status==1? "up" : "down"}}</span>
+              </td> -->
+              <!-- <td>
                 <span class='tag is-light'>{{time|date:'MMM d, y HH:mm:ss'}}</span>
-              </td>
+              </td> -->
               <td>
-                <button *ngIf="true == checkServiceType(service.type | lowercase)" class="button is-danger is-small" (click)="shutdownService(service.management_port)">ShutDown</button>
+                <button *ngIf="true == checkServiceType(service.type | lowercase)" class="button is-danger is-small" (click)="openModal(service.management_port, service.name)">
+                  <i class="fa fa-power-off" aria-hidden="true"></i> &nbsp; Shut down</button>
               </td>
             </tr>
           </tbody>
         </table>
+        <app-modal (shutdown)='shutdownService($event)' [childData]='childData'></app-modal>
       </div>
     </div>
-    <app-modal (notify)='onNotify()' [childData]='childData'></app-modal>
   </div>
 </div>
