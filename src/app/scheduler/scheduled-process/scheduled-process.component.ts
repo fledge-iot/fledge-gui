@@ -31,7 +31,9 @@ export class ScheduledProcessComponent implements OnInit {
   // Object to hold schedule id and name to delete
   public childData = {
     id: 0,
-    name: ''
+    name: '',
+    message: '',
+    key: ''
   };
   public updateScheduleData: any;
   @ViewChild(ModalComponent) child: ModalComponent;
@@ -132,10 +134,12 @@ export class ScheduledProcessComponent implements OnInit {
    * @param id   schedule id to delete
    * @param name schedule name
    */
-  openModal(id, name) {
+  openModal(id, name, message, key) {
     this.childData = {
       id: id,
-      name: name
+      name: name,
+      message: message,
+      key: key
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
@@ -215,6 +219,33 @@ export class ScheduledProcessComponent implements OnInit {
         } else {
           console.log('error in response ', error);
           this.alertService.error(error.statusText);
+        };
+      });
+  }
+
+  /**
+   * Delete schedule
+   * @param schedule_id id of the schedule to delete
+   */
+  deleteSchedule(schedule_id) {
+    console.log('Deleting Schedule:', schedule_id);
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.deleteSchedule(schedule_id).
+      subscribe(
+      data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data.message);
+          this.getSchedules();
+      },
+      error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
         };
       });
   }

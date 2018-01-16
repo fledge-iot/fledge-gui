@@ -7,8 +7,10 @@ import { SchedulesService, AlertService } from '../services/index';
   templateUrl: './modal.component.html'
 })
 export class ModalComponent implements OnInit {
-  @Input() childData: { id: Number, name: any };
-  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+  @Input() childData: { id: Number, name: any, key: any, message: any };
+  @Output() enable = new EventEmitter<Number>();
+  @Output() disable = new EventEmitter<Number>();
+  @Output() delete = new EventEmitter<Number>();
 
   constructor(private schedulesService: SchedulesService, private alertService: AlertService) { }
 
@@ -23,22 +25,19 @@ export class ModalComponent implements OnInit {
     schedule_name.classList.remove('is-active');
   }
 
-  /**
-   *  Delete schedule
-   */
-  public delete() {
-    this.schedulesService.deleteSchedule(this.childData.id).
-      subscribe(
-      data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-          return;
-        }
-        this.toggleModal(false);
-        this.notify.emit();
-        this.alertService.success('Schedule deleted successfully');
-      },
-      error => { console.log('error', error); });
+
+  triggerAction() {
+    if (this.childData.key === 'enable') {
+      this.enable.emit(this.childData.id);
+      this.toggleModal(false);
+    }
+    if (this.childData.key === 'disable') {
+      this.disable.emit(this.childData.id);
+      this.toggleModal(false);
+    }
+    if (this.childData.key === 'delete') {
+      this.delete.emit(this.childData.id);
+      this.toggleModal(false);
+    }
   }
 }
