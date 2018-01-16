@@ -7,10 +7,11 @@ This is a GUI for FogLAMP
 
 [Prerequisite Ubuntu](prerequisite-ubuntu.md)
 
-## Development Server
+To install dependencies run the following command inside the root directory:
 
-To install dependencies run the following command inside root directory:
-`yarn`  or `yarn install`
+`yarn install`
+
+## Development Server
 
 Run `yarn start` or `yarn start --host [ip_address of host machine]` (to allow access on same network but another machine) for a dev server. Navigate to `http://localhost:4200/` or `http://<ip_address>:4200/`. 
 
