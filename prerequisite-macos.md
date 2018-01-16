@@ -4,15 +4,13 @@
 
 https://nodejs.org/en/download/
 
-#### yarn
+### yarn
+
+`brew install yarn --without-node`
 
 To install yarn (prefered over npm) follow the instruction provided on https://yarnpkg.com/en/docs/install
 
-#### On Mac
-```    
-    brew install yarn --without-node
-```
 
-### Clone the soucre repository
+### Clone the source repository
 
 https://github.com/foglamp/foglamp-gui.git

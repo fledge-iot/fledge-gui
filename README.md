@@ -4,6 +4,7 @@ This is a GUI for FogLAMP
 ## Prerequisites
 
 [Prerequisite macOS](prerequisite-macos.md)
+
 [Prerequisite Ubuntu](prerequisite-ubuntu.md)
 
 ## Development Server
@@ -34,9 +35,9 @@ brew install nginx
   sudo apt-get install nginx-light
 ```
 
-run `yarn build` and start nginx from root directory with given conf file; See next section. 
+Run `yarn build` and start nginx from root directory with given `nginx-conf` file; See next section. 
 
-> To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory and provided `nginx.conf`; Make sure you have nginx-light installed on the deployment machine.
+> To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory and provided `nginx.conf`; Make sure you have nginx(-light) installed on the deployment machine.
 
 ### Starting with nginx
 
@@ -58,11 +59,10 @@ Chrome  |63.0.x (64-bit) | latest 2
 Firefox |57.0.x (64-bit) | latest 2
 
 
-
 ## Other 
 [Changelog](changelog.md)
 
 [Developer's Guide](developers-guide.md)
 
 
-> &copy; 2017 DIANOMIC SYSTEMS. ALL RIGHTS RESERVED.
+> &copy; 2017 DIANOMIC SYSTEMS. All Rights Reserved.

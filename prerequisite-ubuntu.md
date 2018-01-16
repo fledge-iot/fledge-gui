@@ -11,12 +11,9 @@ Install nodejs (version 8)
 
 ### yarn
 
-To install yarn (prefered over npm) follow the instruction provided on https://yarnpkg.com/en/docs/install
+`$ sudo npm install -g yarn`
 
-#### On Ubuntu
-```
-    $ sudo npm install -g yarn
-``` 
+To install yarn (prefered over npm) follow the instruction provided on https://yarnpkg.com/en/docs/install
 
 ### Clone the source repository
 
