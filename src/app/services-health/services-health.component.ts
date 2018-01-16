@@ -29,7 +29,7 @@ export class ServicesHealthComponent implements OnInit {
       (data) => {
         /** request completed */
         this.ngProgress.done();
-        if (data.error) {  
+        if (data.error) {
           console.log('error in response', data.error);
           this.alertService.warning('Could not connect to Core Managment API, ' +
             'Make sure to set correct <a href="/setting"> core management port </a>');
@@ -37,15 +37,37 @@ export class ServicesHealthComponent implements OnInit {
         }
         this.service_data = data.services;
         this.time = Utils.getCurrentDate();
-        
+
       },
       (error) => {
         this.alertService.warning('Could not connect to Core Managment API, ' +
-            'Make sure to set correct <a href="/setting"> core management port </a>');
+          'Make sure to set correct <a href="/setting"> core management port </a>');
         console.log('error: ', error);
         /** request completed */
         this.ngProgress.done();
       });
+  }
 
+  checkServiceType(type) {
+    if (type == 'storage' || type == 'core') {
+      return false;
+    }
+    return true;
+  }
+
+  shutdownService(port) {
+    this.servicesHealthService.shutDownService(port)
+      .subscribe(
+      (data) => {
+        if (data.error) {
+          console.log('error in response', data.error);
+          return;
+        }
+        this.alertService.success(data.message)
+        this.getServiceData();
+      },
+      (error) => {
+        console.log('error: ', error);
+      }); 
   }
 }
