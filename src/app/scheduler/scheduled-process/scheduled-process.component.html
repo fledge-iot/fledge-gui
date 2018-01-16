@@ -30,7 +30,7 @@
               <th></th>
             </tr>
           </thead>
-          <tr *ngFor="let schedule of scheduleData" class="{{(!schedule.enabled) ? 'fade' : ''}}">
+          <tr *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}">
             <td>
               <small> {{schedule.name}} </small>
             </td>

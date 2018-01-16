@@ -26,7 +26,7 @@ export class ModalComponent implements OnInit {
   }
 
 
-  callMethod() {
+  triggerAction() {
     if (this.childData.key === 'enable') {
       this.enable.emit(this.childData.id);
       this.toggleModal(false);
