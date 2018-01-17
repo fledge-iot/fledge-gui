@@ -80,15 +80,16 @@ export class ServicesHealthComponent implements OnInit {
     this.servicesHealthService.shutDownService(port)
       .subscribe(
       (data) => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          return;
-        }
         this.alertService.success(data.message)
         this.getServiceData();
       },
       (error) => {
-        console.log('error: ', error);
+        if (error.status === 0) {
+          console.log('service down ', error);
+      } else {
+          console.log('error in response ', error);
+          this.alertService.error(error.statusText);
+      }
       });
   }
 
