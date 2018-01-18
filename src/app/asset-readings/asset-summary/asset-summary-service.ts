@@ -45,7 +45,7 @@ export class AssetSummaryService {
         assetSummary.forEach(summary => {
             const keys = Object.keys(summary.data);
             keys.forEach(key => {
-                assetReadingSummary.push({ key: key, summary: summary.data[key] });
+                assetReadingSummary.push({ key: key, summary: [summary.data[key]] });
             });
         });
         this.assetReadingSummary.next(assetReadingSummary);
