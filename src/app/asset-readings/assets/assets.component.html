@@ -22,7 +22,7 @@
             <tr *ngFor="let asset of assets">
               <td>{{asset.asset_code}}</td>
               <td>
-                <small> {{asset.count}}</small>
+                <small>{{asset.count}}</small>
               </td>
               <td>
                 <a (click)="showAssetSummary(asset.asset_code)" class="is-pulled-right">
