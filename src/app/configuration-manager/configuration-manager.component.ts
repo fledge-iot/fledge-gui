@@ -66,7 +66,7 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public saveConfigValue(category_name: string, config_item: string, flag: boolean) {
-    let inputField = <HTMLInputElement>document.getElementById(config_item);
+    let inputField = <HTMLInputElement>document.getElementById(category_name + '-'+ config_item);
     let value = inputField.value;
     let id = inputField.id;
     let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
