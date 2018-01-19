@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ConfigurationService, AlertService } from '../services/index';
 import { NgProgress } from 'ngx-progressbar';
 
@@ -59,14 +59,15 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public restoreConfigFieldValue(config_item_key: string, flag: boolean) {
-    let inputField = <HTMLInputElement>document.getElementById(config_item_key);
+    let inputField = <HTMLInputElement>document.getElementById(config_item_key.toLowerCase());
     inputField.value = inputField.textContent;
-    let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key);
+    let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
     cancelButton.disabled = !flag;
   }
 
   public saveConfigValue(category_name: string, config_item: string, flag: boolean) {
-    let inputField = <HTMLInputElement>document.getElementById(category_name + '-'+ config_item);
+    let cat_item_id = (category_name.trim() + '-'+ config_item.trim()).toLowerCase()
+    let inputField = <HTMLInputElement>document.getElementById(cat_item_id);
     let value = inputField.value;
     let id = inputField.id;
     let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
@@ -88,7 +89,7 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public onTextChange(config_item_key: string, flag: boolean) {
-    let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key);
+    let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
     cancelButton.disabled = !flag;
   }
 }
