@@ -20,10 +20,10 @@ export class ConfigurationManagerComponent implements OnInit {
     this.configService.getCategories().
       subscribe(
       data => {
-         /** request completed */
-         this.ngProgress.done();
-         
-         if (data.error) {
+        /** request completed */
+        this.ngProgress.done();
+
+        if (data.error) {
           console.log('error in response', data.error);
           this.alertService.error(data.error.message);
           return;
@@ -31,7 +31,7 @@ export class ConfigurationManagerComponent implements OnInit {
         console.log('This is the congfigurationData ', data.categories);
         data.categories.forEach(element => {
           this.getCategory(element.key, element.description);
-        });    
+        });
       },
       error => {
         /** request completed */
@@ -72,9 +72,14 @@ export class ConfigurationManagerComponent implements OnInit {
     let id = inputField.id;
     let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
     cancelButton.disabled = flag;
+
+    /** request started */
+    this.ngProgress.start();
     this.configService.editConfigItem(category_name, config_item, value).
       subscribe(
       data => {
+        /** request completed */
+        this.ngProgress.done();
         if (data.error) {
           console.log('error in response', data.error);
           this.alertService.error(data.error.message);
@@ -86,6 +91,8 @@ export class ConfigurationManagerComponent implements OnInit {
         }
       },
       error => {
+        /** request completed */
+        this.ngProgress.done();
         console.log('error', error);
         this.alertService.error(error);
       });
