@@ -31,16 +31,16 @@
             <div class="columns-fields">
               <div class="field">
                 <div class="control">
-                  <input id="{{category.key + '-' + v.key}}" class="input" type="text" trim="blur" [value]="v?.value?.value != undefined ? v?.value?.value:''"
-                    [textContent]='v?.value?.value' (input)="onTextChange(category.key + '-' + v.key, true)" />
+                  <input id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input" type="text" trim="blur" [value]="v?.value?.value != undefined ? v?.value?.value:''"
+                    [textContent]='v?.value?.value' (input)="onTextChange(category.key.trim() + '-' + v.key.trim(), true)"/>
                 </div>
               </div>
               <div class="field is-grouped">
                 <div class="control">
-                  <button id="btn-save-{{category.key + '-' + v.key.trim()}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key.trim(), v?.key.trim(), true)">Save</button>
+                  <button id="btn-save-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key, v?.key, true)">Save</button>
                 </div>
                 <div class="control">
-                  <button id="btn-cancel-{{category.key + '-' + v.key.trim()}}" class="button is-text" disabled (click)="restoreConfigFieldValue(category.key + '-' + v.key.trim(),false)">Cancel</button>
+                  <button id="btn-cancel-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-text" disabled (click)="restoreConfigFieldValue(category.key.trim() + '-' + v.key.trim(),false)">Cancel</button>
                 </div>
               </div>
             </div>
