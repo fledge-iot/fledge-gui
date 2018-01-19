@@ -49,9 +49,9 @@ To install dependencies run the following command inside root directory:
 To read more about yarn read https://yarnpkg.com/en/
 
    
-### Clone the soucre repository
+### Clone the source repository
 
-https://github.com/praveen-garg/FogLAMP.git
+https://github.com/foglamp/foglamp-gui
 
 ### Move to root directory and run
 ```
