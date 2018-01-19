@@ -72,15 +72,22 @@ export class ConfigurationManagerComponent implements OnInit {
     let id = inputField.id;
     let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
     cancelButton.disabled = flag;
+
+    /** request started */
+    this.ngProgress.start();
     this.configService.editConfigItem(category_name, config_item, value).
       subscribe(
       data => {
+        /** request completed */
+        this.ngProgress.done();
         if (data.value != undefined) {
           this.alertService.success('Value updated successfully');
           inputField.textContent = inputField.value = data.value
         }
       },
       error => {
+        /** request completed */
+        this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
