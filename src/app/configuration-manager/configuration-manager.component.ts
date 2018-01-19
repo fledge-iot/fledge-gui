@@ -66,7 +66,7 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public saveConfigValue(category_name: string, config_item: string, flag: boolean) {
-    let cat_item_id = (category_name.trim() + '-'+ config_item.trim()).toLowerCase()
+    let cat_item_id = (category_name.trim() + '-' + config_item.trim()).toLowerCase()
     let inputField = <HTMLInputElement>document.getElementById(cat_item_id);
     let value = inputField.value;
     let id = inputField.id;
@@ -75,8 +75,10 @@ export class ConfigurationManagerComponent implements OnInit {
     this.configService.editConfigItem(category_name, config_item, value).
       subscribe(
       data => {
-        this.alertService.success('Value updated successfully');
-        inputField.textContent = inputField.value = data.value;
+        if (data.value != undefined) {
+          this.alertService.success('Value updated successfully');
+          inputField.textContent = inputField.value = data.value
+        }
       },
       error => {
         if (error.status === 0) {
