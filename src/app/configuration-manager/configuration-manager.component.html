@@ -1,7 +1,6 @@
 <div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
-             [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-             [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
   <!-- cards to be rendred as config.categories.count-->
   <div class="card" *ngFor="let category of categoryData">
@@ -27,19 +26,19 @@
                 </div>
               </div>
             </div>
-            <div class ="columns-fields">
+            <div class="columns-fields">
               <div class="field">
                 <div class="control">
-                  <input id="{{v.key}}" class="input" type="text" trim="blur" [value]="v?.value?.value != undefined ? v?.value?.value:''" [textContent]='v?.value?.value' (input)="onTextChange(v.key, true)"
-                  />
+                  <input id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input" type="text" trim="blur" [value]="v?.value?.value != undefined ? v?.value?.value:''"
+                    [textContent]='v?.value?.value' (input)="onTextChange(category.key.trim() + '-' + v.key.trim(), true)"/>
                 </div>
               </div>
               <div class="field is-grouped">
                 <div class="control">
-                  <button id="btn-save-{{v.key.trim()}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key.trim(), v?.key.trim(), true)">Save</button>
+                  <button id="btn-save-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key, v?.key, true)">Save</button>
                 </div>
                 <div class="control">
-                  <button id="btn-cancel-{{v.key.trim()}}" class="button is-text" disabled (click)="restoreConfigFieldValue(v.key.trim(),false)">Cancel</button>
+                  <button id="btn-cancel-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-text" disabled (click)="restoreConfigFieldValue(category.key.trim() + '-' + v.key.trim(),false)">Cancel</button>
                 </div>
               </div>
             </div>
