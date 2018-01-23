@@ -31,7 +31,7 @@ export class ConfigurationService {
     /**
     *  PUT  | /foglamp/category/{category_name}/{config_item}
     */
-    saveConfigItem(category_name: string, config_item: string, value: string, type) {
+    saveConfigItem(category_name: string, config_item: string, value: string, type: string) {
         let body = JSON.stringify({ 'value': value });
         if (type.toUpperCase() === 'JSON') {
             body = JSON.stringify({ 'value': JSON.parse(value) });
