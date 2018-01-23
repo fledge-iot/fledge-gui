@@ -31,8 +31,11 @@ export class ConfigurationService {
     /**
     *  PUT  | /foglamp/category/{category_name}/{config_item}
     */
-    editConfigItem(category_name: string, config_item: string, value: string) {
+    saveConfigItem(category_name: string, config_item: string, value: string, type) {
         let body = JSON.stringify({ 'value': value });
+        if (type.toUpperCase() === 'JSON') {
+            body = JSON.stringify({ 'value': JSON.parse(value) });
+        }
         return this.http.put(this.GET_CATEGORY_URL + '/' + category_name + '/' + config_item, body)
             .map(response => response.json())
             .catch((error: Response) => Observable.throw(error));
