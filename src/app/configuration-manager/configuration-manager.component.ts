@@ -9,7 +9,8 @@ import { NgProgress } from 'ngx-progressbar';
 })
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
-  constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { }
+  public JSON;
+  constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { this.JSON = JSON}
   ngOnInit() {
     this.getCategories();
   }
@@ -106,4 +107,6 @@ export class ConfigurationManagerComponent implements OnInit {
     let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
     cancelButton.disabled = !flag;
   }
+
+  isObject(val) { return typeof val === 'object'; }
 }
