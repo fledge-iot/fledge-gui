@@ -9,7 +9,8 @@ import { NgProgress } from 'ngx-progressbar';
 })
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
-  constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { }
+  public JSON;
+  constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { this.JSON = JSON}
   ngOnInit() {
     this.getCategories();
   }
@@ -22,7 +23,7 @@ export class ConfigurationManagerComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        console.log('This is the congfigurationData ', data.categories);
+        // console.log('This is the congfigurationData ', data.categories);
         data.categories.forEach(element => {
           this.getCategory(element.key, element.description);
         });
@@ -46,7 +47,7 @@ export class ConfigurationManagerComponent implements OnInit {
       data => {
         categoryValues.push(data);
         this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
-        console.log('This is the categoryData ', this.categoryData);
+        // console.log('This is the categoryData ', this.categoryData);
       },
       error => {
         if (error.status === 0) {
@@ -65,7 +66,7 @@ export class ConfigurationManagerComponent implements OnInit {
     cancelButton.disabled = !flag;
   }
 
-  public saveConfigValue(category_name: string, config_item: string, flag: boolean) {
+  public saveConfigValue(category_name: string, config_item: string, type: string, flag: boolean) {
     let cat_item_id = (category_name.trim() + '-' + config_item.trim()).toLowerCase()
     let inputField = <HTMLInputElement>document.getElementById(cat_item_id);
     let value = inputField.value;
@@ -75,14 +76,19 @@ export class ConfigurationManagerComponent implements OnInit {
 
     /** request started */
     this.ngProgress.start();
-    this.configService.editConfigItem(category_name, config_item, value).
+    this.configService.saveConfigItem(category_name, config_item, value, type).
       subscribe(
       data => {
         /** request completed */
         this.ngProgress.done();
         if (data.value != undefined) {
+          if (type.toUpperCase() === 'JSON') {
+            inputField.textContent = inputField.value = JSON.stringify(data.value)
+          }
+          else {
+            inputField.textContent = inputField.value = data.value
+          }
           this.alertService.success('Value updated successfully');
-          inputField.textContent = inputField.value = data.value
         }
       },
       error => {
@@ -101,4 +107,6 @@ export class ConfigurationManagerComponent implements OnInit {
     let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
     cancelButton.disabled = !flag;
   }
+
+  isObject(val) { return typeof val === 'object'; }
 }
