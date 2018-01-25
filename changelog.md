@@ -8,7 +8,9 @@
 #### Bug Fixes
 
 * REST API error handling
-* Running task cancellation, confirmation dialog fix
+* Running task cancellation, confirmation dialog 
+* Configuration row alignment issue
+* JSON (object) display and save issue in configuration
 * and squashed many more :]
 
 ## v1.1
