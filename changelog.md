@@ -8,8 +8,16 @@
 #### Bug Fixes
 
 * REST API error handling
-* Running task cancellation, confirmation dialog fix
+* Running task cancellation, confirmation dialog 
 * and squashed many more :]
+
+## v1.1.1
+
+#### Bug Fixes
+* Configuration Management: 
+    * Category items alignment issue
+    * JSON (object) display and save issue
+* Updated Readme 
 
 ## v1.1
 
