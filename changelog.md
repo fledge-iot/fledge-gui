@@ -3,6 +3,7 @@
 #### Bug Fixes
 
 * Configuration row alignment issue
+* JSON (object) display and save issue in configuration
 * Updated Readme 
 
 ## v1.1
