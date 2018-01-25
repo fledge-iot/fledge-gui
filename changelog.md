@@ -2,8 +2,8 @@
 
 #### Bug Fixes
 
-* Configuration row alignment issue
-* JSON (object) display and save issue in configuration
+* Configuration Management: Category items alignment issue
+* Configuration Management: JSON (object) display and save issue
 * Updated Readme 
 
 ## v1.1
@@ -14,4 +14,3 @@
 * Audit Logs
 * Assets and Readings data browsing with graphs
 * Allow to connect any FogLAMP instance via Settings
-
