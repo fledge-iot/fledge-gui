@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ConfigurationService, AlertService } from '../services/index';
 import { NgProgress } from 'ngx-progressbar';
 
@@ -9,7 +9,8 @@ import { NgProgress } from 'ngx-progressbar';
 })
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
-  constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { }
+  public JSON;
+  constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { this.JSON = JSON}
   ngOnInit() {
     this.getCategories();
   }
@@ -22,7 +23,7 @@ export class ConfigurationManagerComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        console.log('This is the congfigurationData ', data.categories);
+        // console.log('This is the congfigurationData ', data.categories);
         data.categories.forEach(element => {
           this.getCategory(element.key, element.description);
         });
@@ -46,7 +47,7 @@ export class ConfigurationManagerComponent implements OnInit {
       data => {
         categoryValues.push(data);
         this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
-        console.log('This is the categoryData ', this.categoryData);
+        // console.log('This is the categoryData ', this.categoryData);
       },
       error => {
         if (error.status === 0) {
@@ -59,25 +60,40 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public restoreConfigFieldValue(config_item_key: string, flag: boolean) {
-    let inputField = <HTMLInputElement>document.getElementById(config_item_key);
+    let inputField = <HTMLInputElement>document.getElementById(config_item_key.toLowerCase());
     inputField.value = inputField.textContent;
-    let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key);
+    let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
     cancelButton.disabled = !flag;
   }
 
-  public saveConfigValue(category_name: string, config_item: string, flag: boolean) {
-    let inputField = <HTMLInputElement>document.getElementById(config_item);
+  public saveConfigValue(category_name: string, config_item: string, type: string, flag: boolean) {
+    let cat_item_id = (category_name.trim() + '-' + config_item.trim()).toLowerCase()
+    let inputField = <HTMLInputElement>document.getElementById(cat_item_id);
     let value = inputField.value;
     let id = inputField.id;
     let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
     cancelButton.disabled = flag;
-    this.configService.editConfigItem(category_name, config_item, value).
+
+    /** request started */
+    this.ngProgress.start();
+    this.configService.saveConfigItem(category_name, config_item, value, type).
       subscribe(
       data => {
-        this.alertService.success('Value updated successfully');
-        inputField.textContent = inputField.value = data.value;
+        /** request completed */
+        this.ngProgress.done();
+        if (data.value != undefined) {
+          if (type.toUpperCase() === 'JSON') {
+            inputField.textContent = inputField.value = JSON.stringify(data.value)
+          }
+          else {
+            inputField.textContent = inputField.value = data.value
+          }
+          this.alertService.success('Value updated successfully');
+        }
       },
       error => {
+        /** request completed */
+        this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -88,7 +104,9 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public onTextChange(config_item_key: string, flag: boolean) {
-    let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key);
+    let cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
     cancelButton.disabled = !flag;
   }
+
+  isObject(val) { return typeof val === 'object'; }
 }
