@@ -42,11 +42,19 @@ Run `yarn build` and start nginx from root directory with given `nginx-conf` fil
 
 ### Starting with nginx
 
+#### macos and ubuntu
+
 start: `nginx -c nginx.conf -p $(pwd)`
+
+> You should be able to access it on 0.0.0.0:8080
 
 stop: `nginx -s stop`
 
-> You should be able to access it on 0.0.0.0:8080
+#### windows
+
+See details [here](windows-nginx-deployment-guide.md)
+
+Make sure to fix `include` directive and `server root` in `nginx.conf`; unless you want to use default.
 
 
 ## Running using Docker 
