@@ -77,19 +77,27 @@ export class ServicesHealthComponent implements OnInit {
   }
 
   shutdownService(port) {
+    /** request started */
+    this.ngProgress.start();
     this.servicesHealthService.shutDownService(port)
       .subscribe(
       (data) => {
+        /** request completed */
+        this.ngProgress.done();
         this.alertService.success(data.message)
         this.getServiceData();
       },
       (error) => {
         if (error.status === 0) {
           console.log('service down ', error);
-      } else {
-          console.log('error in response ', error);
-          this.alertService.error(error.statusText);
-      }
+          /** request completed */
+          this.ngProgress.done();
+        } else {
+            console.log('error in response ', error);
+            this.alertService.error(error.statusText);
+            /** request completed */
+            this.ngProgress.done();
+        }
       });
   }
 
