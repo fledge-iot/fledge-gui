@@ -70,7 +70,7 @@ export class ServicesHealthComponent implements OnInit {
       id: port,
       name: '',
       key: 'shutdown',
-      message: 'Do you realy want to shut down ' + name + ' service?'
+      message: 'Do you really want to shut down ' + name + ' service?'
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
