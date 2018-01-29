@@ -27,4 +27,15 @@ export class ServicesHealthService {
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
   }
+
+  /**
+   *  POST  | /foglamp/service/shutdown
+   */
+  shutDownService(port) {
+    const url = new URL(this.GET_SERVICES_URL);
+    url.port = port;
+    return this.http.post(String(url) + "/shutdown", null)
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
+  }
 }
