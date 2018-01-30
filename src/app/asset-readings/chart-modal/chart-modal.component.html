@@ -6,8 +6,8 @@
           <div class="column is-narrow is-6">
             <p class="subtitle is-size-4">{{assetCode}}</p>
           </div>
-        <div class="column is-4">
-          <number-input-debounce placeholder="Limit(max 1000)" #limit (value)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)"
+        <div class="column is-3">
+          <number-input-debounce placeholder="limit" #limit (value)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)"
             max="1000"></number-input-debounce>
           <p *ngIf='isInvalidLimit' class='help is-danger'>Limit must be in range 1 - 1000</p>
         </div>
