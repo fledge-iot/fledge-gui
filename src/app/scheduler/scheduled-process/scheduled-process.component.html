@@ -50,14 +50,14 @@
               <small> {{schedule.exclusive}}</small>
             </td>
             <td>
-              <div (click)="editSchedule(schedule.id)">
+              <a (click)="editSchedule(schedule.id)">
                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-              </div>
+              </a>
             </td>
             <td>
-              <div (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to delete the schedule', 'delete')">
+              <a (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to delete the schedule', 'delete')">
                 <i class="fa fa-minus-circle" aria-hidden="true"></i>
-              </div>
+              </a>
             </td>
             <td>
               <button *ngIf='schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to disable the schedule', 'disable')">disable</button>
