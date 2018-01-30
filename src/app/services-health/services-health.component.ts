@@ -70,26 +70,34 @@ export class ServicesHealthComponent implements OnInit {
       id: port,
       name: '',
       key: 'shutdown',
-      message: 'Do you realy want to shut down ' + name + ' service?'
+      message: 'Do you really want to shut down ' + name + ' service?'
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
   }
 
   shutdownService(port) {
+    /** request started */
+    this.ngProgress.start();
     this.servicesHealthService.shutDownService(port)
       .subscribe(
       (data) => {
+        /** request completed */
+        this.ngProgress.done();
         this.alertService.success(data.message)
         this.getServiceData();
       },
       (error) => {
         if (error.status === 0) {
           console.log('service down ', error);
-      } else {
-          console.log('error in response ', error);
-          this.alertService.error(error.statusText);
-      }
+          /** request completed */
+          this.ngProgress.done();
+        } else {
+            console.log('error in response ', error);
+            this.alertService.error(error.statusText);
+            /** request completed */
+            this.ngProgress.done();
+        }
       });
   }
 
