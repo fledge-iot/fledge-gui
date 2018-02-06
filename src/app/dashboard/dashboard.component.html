@@ -5,7 +5,7 @@
     </ng-progress>
 
     <div class="tile" *ngFor="let statistic of statistics">
-      <div class="tile is-parent" *ngIf="statistic.key.indexOf('FOGBENCH') === -1">
+      <div class="tile is-parent">
         <article class="tile is-child box">
           <h3 class="title">{{ statistic.key }} Statistics History</h3>
           <h4 class="subtitle">{{statistic.description}}</h4>

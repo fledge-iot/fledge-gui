@@ -3,6 +3,7 @@ import { StatisticsService, AlertService } from '../services/index';
 import Utils from '../utils';
 import { MomentDatePipe } from './../pipes/moment-date';
 import { NgProgress } from 'ngx-progressbar';
+import { Key } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,10 +12,15 @@ import { NgProgress } from 'ngx-progressbar';
 })
 
 export class DashboardComponent implements OnInit {
-  statisticsData = {};
-  statHistoryData = [];
-  statisticsKeys = [];
+  // Filtered array of recived statistics data (having objects except key @FOGBENCH).
   statistics = []
+  // Object of key and its value from recived statistics data    
+  statisticsData = {};
+
+  // Array of Statistics Keys (["BUFFERED", "DISCARDED", "PURGED", ....])
+  statisticsKeys = [];
+  // Array of recieved Statistics History
+  statHistoryData = [];
 
   bufferedChart: string;
   bufferedValues: any;
@@ -45,7 +51,8 @@ export class DashboardComponent implements OnInit {
 
   unsnpurgedChart: string;
   unsnpurgedValues: any;
-  public chartOptions: any;
+
+  public chartOptions: object;
 
   constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) {
 
@@ -88,21 +95,23 @@ export class DashboardComponent implements OnInit {
   public getStatistics(): void {
     /** request started */
     this.ngProgress.start();
+
     this.statisticsService.getStatistics().
-      subscribe(
-      data => {
+      subscribe(data => {
         /** request completed */
         this.ngProgress.done();
         console.log('recived statisticsData ', data);
-        this.statistics = data;
+        // filter recieved data for FOGBENCH data  
+        this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
+        console.log('statisticsData ', this.statistics);
+
         const o: object = {};
-        data.forEach(element => {
+        this.statistics.forEach(element => {
           o[element.key] = element.value;
         });
         this.statisticsData = o;
         console.log('This is the statisticsData ', this.statisticsData);
-        let keys = Object.keys(this.statisticsData)
-        this.statisticsKeys = keys.filter(value => (!/FOGBENCH/.test(value)))
+        this.statisticsKeys = Object.keys(this.statisticsData)
         console.log('keys array', this.statisticsKeys);
       },
       error => {
@@ -116,6 +125,34 @@ export class DashboardComponent implements OnInit {
         }
         console.log('error', error);
       });
+  }
+
+  protected getChartOptions() {
+    return {
+      legend: {
+        display: false // fixme: not working
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  }
+
+  protected getChartValues(labels, data, color) {
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: '',
+          data: data,
+          backgroundColor: color,
+        }
+      ]
+    }
   }
 
   public getStatisticsHistory(): void {
@@ -169,16 +206,16 @@ export class DashboardComponent implements OnInit {
           });
         });
 
-        this.statsHistoryBufferedGraph(bufferedLabels, bufferedValues);
-        this.statsHistoryDiscardedGraph(discardedLabels, discardedValues);
-        this.statsHistoryReadingsGraph(readingsLabels, readingsValues);
-        this.statsHistoryPurgedGraph(purgedLabels, purgedValues);
-        this.statsHistorySent1Graph(sent_1Labels, sent_1Values);
-        this.statsHistorySent2Graph(sent_2Labels, sent_2Values);
-        this.statsHistorySent3Graph(sent_3Labels, sent_3Values);
-        this.statsHistorySent4Graph(sent_4Labels, sent_4Values);
-        this.statsHistoryUnsentGraph(unsentLabels, unsentValues);
-        this.statsHistoryUnsnpurgedGraph(unsnpurgedLabels, unsnpurgedValues);
+        this.statsHistoryBufferedGraph('line', bufferedLabels, bufferedValues);
+        this.statsHistoryDiscardedGraph('line', discardedLabels, discardedValues);
+        this.statsHistoryReadingsGraph('line', readingsLabels, readingsValues);
+        this.statsHistoryPurgedGraph('line', purgedLabels, purgedValues);
+        this.statsHistorySent1Graph('line', sent_1Labels, sent_1Values);
+        this.statsHistorySent2Graph('line', sent_2Labels, sent_2Values);
+        this.statsHistorySent3Graph('line', sent_3Labels, sent_3Values);
+        this.statsHistorySent4Graph('line', sent_4Labels, sent_4Values);
+        this.statsHistoryUnsentGraph('line', unsentLabels, unsentValues);
+        this.statsHistoryUnsnpurgedGraph('line', unsnpurgedLabels, unsnpurgedValues);
       },
       error => {
         if (error.status === 0) {
@@ -190,30 +227,10 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  statsHistoryBufferedGraph(labels, data): void {
-    this.bufferedChart = 'line';
-    this.bufferedValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(100,149,237)',
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistoryBufferedGraph(chartType, labels, data): void {
+    this.bufferedChart = chartType;
+    this.bufferedValues = this.getChartValues(labels, data, 'rgb(100,149,237)');
+    this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'BUFFERED') {
@@ -223,30 +240,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistoryDiscardedGraph(labels, data): void {
-    this.discardedChart = 'line';
-    this.discardedValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(100,149,237)',
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistoryDiscardedGraph(chartType, labels, data): void {
+    this.discardedChart = chartType;
+    this.discardedValues = this.getChartValues(labels, data, 'rgb(100,149,237)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'DISCARDED') {
         this.statistics[i].chartValue = this.discardedValues;
@@ -255,30 +253,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistoryReadingsGraph(labels, data): void {
-    this.readingChart = 'line';
-    this.readingValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(100,149,237)',
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistoryReadingsGraph(chartType, labels, data): void {
+    this.readingChart = chartType;
+    this.readingValues = this.getChartValues(labels, data, 'rgb(100,149,237)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'READINGS') {
         this.statistics[i].chartValue = this.readingValues;
@@ -287,30 +266,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistoryPurgedGraph(labels, data): void {
-    this.purgeChart = 'line';
-    this.purgedValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(255,165,0)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistoryPurgedGraph(chartType, labels, data): void {
+    this.purgeChart = chartType;
+    this.purgedValues = this.getChartValues(labels, data, 'rgb(255,165,0)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'PURGED') {
         this.statistics[i].chartValue = this.purgedValues;
@@ -319,30 +279,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistorySent1Graph(labels, data): void {
-    this.sent_1Chart = 'line';
-    this.sent_1Values = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(144,238,144)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistorySent1Graph(chartType, labels, data): void {
+    this.sent_1Chart = chartType;
+    this.sent_1Values = this.getChartValues(labels, data, 'rgb(144,238,144)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'SENT_1') {
         this.statistics[i].chartValue = this.sent_1Values;
@@ -351,30 +292,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistorySent2Graph(labels, data): void {
-    this.sent_2Chart = 'line';
-    this.sent_2Values = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(144,238,144)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistorySent2Graph(chartType, labels, data): void {
+    this.sent_2Chart = chartType;
+    this.sent_2Values = this.getChartValues(labels, data, 'rgb(144,238,144)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'SENT_2') {
         this.statistics[i].chartValue = this.sent_2Values;
@@ -383,30 +305,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistorySent3Graph(labels, data): void {
-    this.sent_3Chart = 'line';
-    this.sent_3Values = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(144,238,144)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistorySent3Graph(chartType, labels, data): void {
+    this.sent_3Chart = chartType;
+    this.sent_3Values = this.getChartValues(labels, data, 'rgb(144,238,144)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'SENT_3') {
         this.statistics[i].chartValue = this.sent_3Values;
@@ -415,30 +318,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistorySent4Graph(labels, data): void {
-    this.sent_4Chart = 'line';
-    this.sent_4Values = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(144,238,144)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistorySent4Graph(chartType, labels, data): void {
+    this.sent_4Chart = chartType;
+    this.sent_4Values = this.getChartValues(labels, data, 'rgb(144,238,144)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'SENT_4') {
         this.statistics[i].chartValue = this.sent_4Values;
@@ -447,30 +331,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistoryUnsentGraph(labels, data): void {
-    this.unsentChart = 'line';
-    this.unsentValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(144,238,144)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistoryUnsentGraph(chartType, labels, data): void {
+    this.unsentChart = chartType;
+    this.unsentValues = this.getChartValues(labels, data, 'rgb(144,238,144)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'UNSENT') {
         this.statistics[i].chartValue = this.unsentValues;
@@ -479,30 +344,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  statsHistoryUnsnpurgedGraph(labels, data): void {
-    this.unsnpurgedChart = 'line';
-    this.unsnpurgedValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(144,238,144)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
+  statsHistoryUnsnpurgedGraph(chartType, labels, data): void {
+    this.unsnpurgedChart = chartType;
+    this.unsnpurgedValues = this.getChartValues(labels, data, 'rgb(144,238,144)');
+    this.chartOptions = this.getChartOptions();
+
     for (var i in this.statistics) {
       if (this.statistics[i].key == 'UNSNPURGED') {
         this.statistics[i].chartValue = this.unsnpurgedValues;
