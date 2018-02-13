@@ -7,5 +7,9 @@ table.scroll {
 }
 
 .fade {
-    background-color:#cacaca
+    background-color:#f5f5f5
 }
+
+.fa::before {
+    display: inline-block;
+  }

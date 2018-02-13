@@ -50,12 +50,12 @@
               <small> {{schedule.exclusive}}</small>
             </td>
             <td>
-              <a (click)="editSchedule(schedule.id)">
+              <a (click)="editSchedule(schedule.id)" class="button is-text">
                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
               </a>
             </td>
             <td>
-              <a (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to delete the schedule', 'delete')">
+              <a (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to delete the schedule', 'delete')"  class="button is-text">
                 <i class="fa fa-minus-circle" aria-hidden="true"></i>
               </a>
             </td>
