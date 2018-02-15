@@ -22,6 +22,9 @@ export class DashboardComponent implements OnInit {
   // Array of recieved Statistics History
   statHistoryData = [];
 
+  // Array of the graphs to show
+  graphsToShow = []; 
+
   bufferedChart: string;
   bufferedValues: any;
 
@@ -92,6 +95,11 @@ export class DashboardComponent implements OnInit {
     this.getStatisticsHistory();
   }
 
+  public showGraph(graphs) {
+    this.graphsToShow = graphs;
+    console.log('graphToShow:', this.graphsToShow);
+  }
+
   public getStatistics(): void {
     /** request started */
     this.ngProgress.start();
@@ -113,6 +121,7 @@ export class DashboardComponent implements OnInit {
         console.log('This is the statisticsData ', this.statisticsData);
         this.statisticsKeys = Object.keys(this.statisticsData)
         console.log('keys array', this.statisticsKeys);
+        this.graphsToShow = this.statistics.filter(value => value['key'] == 'READINGS' || value['key'] == 'SENT_1' || value['key'] == 'PURGED')
       },
       error => {
         /** request completed */
