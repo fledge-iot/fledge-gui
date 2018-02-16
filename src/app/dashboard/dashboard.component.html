@@ -3,20 +3,14 @@
       [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
       [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
     </ng-progress>
-    <div class="field">
-      <h5>Select graphs</h5>
-      <div class="control">
-        <div class="select is-multiple">
-          <select multiple size="4" (ngModelChange)="showGraph($event)" [(ngModel)]="selectedGraphs">
-            <option *ngFor="let statistic of statistics" [ngValue]='statistic'>{{ statistic.key }}</option>
-          </select>
-        </div>
-      </div>
-    </div>
+    
+    <angular2-multiselect (ngModelChange)="showGraph($event)" [data]="statistics" [(ngModel)]="selectedGraphs" 
+    [settings]="dropdownSettings"></angular2-multiselect>
+
     <div class="tile" *ngFor="let statistic of graphsToShow">
       <div class="tile is-parent">
         <article class="tile is-child box">
-          <h5 class="title">{{ statistic.key }} Statistics History</h5>
+          <h5 class="title">{{ statistic.itemName }} Statistics History</h5>
           <h6 class="subtitle">{{statistic.description}}</h6>
           <br/>
           <chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></chart>

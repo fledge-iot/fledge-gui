@@ -12,15 +12,18 @@ import { Key } from 'selenium-webdriver';
 })
 
 export class DashboardComponent implements OnInit {
-  // Filtered array of recived statistics data (having objects except key @FOGBENCH).
-  statistics = []
-  // Object of key and its value from recived statistics data    
+  // Filtered array of received statistics data (having objects except key @FOGBENCH).
+  statistics = [];
+  // Object of key and its value from received statistics data    
   statisticsData = {};
 
   // Array of Statistics Keys (["BUFFERED", "DISCARDED", "PURGED", ....])
   statisticsKeys = [];
   // Array of recieved Statistics History
   statHistoryData = [];
+
+  // Object of dropdown setting
+  dropdownSettings = {};
 
   // Array of the graphs to show
   graphsToShow = []; 
@@ -108,8 +111,8 @@ export class DashboardComponent implements OnInit {
       subscribe(data => {
         /** request completed */
         this.ngProgress.done();
-        console.log('recived statisticsData ', data);
-        // filter recieved data for FOGBENCH data  
+        console.log('received statisticsData ', data);
+        // filter received data for FOGBENCH data  
         this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
         console.log('statisticsData ', this.statistics);
 
@@ -122,6 +125,21 @@ export class DashboardComponent implements OnInit {
         this.statisticsKeys = Object.keys(this.statisticsData)
         console.log('keys array', this.statisticsKeys);
         this.graphsToShow = this.statistics.filter(value => value['key'] == 'READINGS' || value['key'] == 'SENT_1' || value['key'] == 'PURGED')
+        
+        // Rename 'key' to 'itemName' and add a nwe key as named 'id'
+        for(var i = 0; i < this.statistics.length; i++){
+          this.statistics[i].id = i;
+          this.statistics[i].itemName = this.statistics[i]['key'];
+          delete this.statistics[i].key;
+        }
+
+        this.dropdownSettings = { 
+          singleSelection: false,
+          text:"Select Graphs",
+          selectAllText:'Select All',
+          unSelectAllText:'UnSelect All',
+          enableSearchFilter: true
+        };
       },
       error => {
         /** request completed */
@@ -242,7 +260,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'BUFFERED') {
+      if (this.statistics[i].itemName == 'BUFFERED') {
         this.statistics[i].chartValue = this.bufferedValues;
         this.statistics[i].chartType = this.bufferedChart;
       }
@@ -255,7 +273,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'DISCARDED') {
+      if (this.statistics[i].itemName == 'DISCARDED') {
         this.statistics[i].chartValue = this.discardedValues;
         this.statistics[i].chartType = this.discardedChart;
       }
@@ -268,7 +286,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'READINGS') {
+      if (this.statistics[i].itemName == 'READINGS') {
         this.statistics[i].chartValue = this.readingValues;
         this.statistics[i].chartType = this.readingChart;
       }
@@ -281,7 +299,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'PURGED') {
+      if (this.statistics[i].itemName == 'PURGED') {
         this.statistics[i].chartValue = this.purgedValues;
         this.statistics[i].chartType = this.purgeChart;
       }
@@ -294,7 +312,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'SENT_1') {
+      if (this.statistics[i].itemName == 'SENT_1') {
         this.statistics[i].chartValue = this.sent_1Values;
         this.statistics[i].chartType = this.sent_1Chart;
       }
@@ -307,7 +325,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'SENT_2') {
+      if (this.statistics[i].itemName == 'SENT_2') {
         this.statistics[i].chartValue = this.sent_2Values;
         this.statistics[i].chartType = this.sent_2Chart;
       }
@@ -320,7 +338,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'SENT_3') {
+      if (this.statistics[i].itemName == 'SENT_3') {
         this.statistics[i].chartValue = this.sent_3Values;
         this.statistics[i].chartType = this.sent_3Chart;
       }
@@ -333,7 +351,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'SENT_4') {
+      if (this.statistics[i].itemName == 'SENT_4') {
         this.statistics[i].chartValue = this.sent_4Values;
         this.statistics[i].chartType = this.sent_4Chart;
       }
@@ -346,7 +364,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'UNSENT') {
+      if (this.statistics[i].itemName == 'UNSENT') {
         this.statistics[i].chartValue = this.unsentValues;
         this.statistics[i].chartType = this.unsentChart;
       }
@@ -359,7 +377,7 @@ export class DashboardComponent implements OnInit {
     this.chartOptions = this.getChartOptions();
 
     for (var i in this.statistics) {
-      if (this.statistics[i].key == 'UNSNPURGED') {
+      if (this.statistics[i].itemName == 'UNSNPURGED') {
         this.statistics[i].chartValue = this.unsnpurgedValues;
         this.statistics[i].chartType = this.unsnpurgedChart;
       }
