@@ -3,7 +3,6 @@ import { StatisticsService, AlertService } from '../services/index';
 import Utils from '../utils';
 import { MomentDatePipe } from './../pipes/moment-date';
 import { NgProgress } from 'ngx-progressbar';
-import { Key } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-dashboard',
