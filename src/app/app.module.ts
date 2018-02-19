@@ -45,6 +45,7 @@ import { InputTrimDirective } from './directives/input-trim.directive';
 import { NgProgressModule } from 'ngx-progressbar';
 import { ServiceDiscoveryComponent } from './service-discovery/service-discovery.component';
 
+import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 
 @NgModule({
   imports: [
@@ -56,7 +57,8 @@ import { ServiceDiscoveryComponent } from './service-discovery/service-discovery
     ChartModule,
     NgxMaskModule,
     SidebarModule.forRoot(),
-    NgProgressModule
+    NgProgressModule,
+    AngularMultiSelectModule
   ],
   declarations: [
     AppComponent,
