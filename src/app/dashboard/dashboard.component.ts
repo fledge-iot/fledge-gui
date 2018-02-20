@@ -6,7 +6,6 @@ import { NgProgress } from 'ngx-progressbar';
 
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Console } from '@angular/core/src/console';
 
 @Component({
   selector: 'app-dashboard',
