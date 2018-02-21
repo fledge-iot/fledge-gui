@@ -23,6 +23,8 @@ export class DashboardComponent implements OnInit {
   // Object of dropdown setting
   dropdownSettings = {};
 
+  selectedItems = [];
+
   // Array of the graphs to show
   graphsToShow = []; 
 
@@ -38,10 +40,9 @@ export class DashboardComponent implements OnInit {
 
   public showGraph(graphs) {
     this.graphsToShow = graphs;
-    if (this.graphsToShow.length === 0) {
+    if (graphs.length === 0) {
       this.graphsToShow = this.showDefaultGraphs;
     }
-    console.log('graphToShow:', this.graphsToShow);
   }
 
   public getStatistics(): void {
@@ -60,13 +61,12 @@ export class DashboardComponent implements OnInit {
         for (let data of this.statistics) {
           this.statisticsKeys.push(data.key);
         }
-        
         console.log('keys array', this.statisticsKeys);
         if (this.graphsToShow.length === 0) {
           this.showDefaultGraphs = this.statistics.filter(value => value['key'] == 'READINGS' || value['key'] == 'SENT_1' || value['key'] == 'PURGED')
         }
         this.graphsToShow = this.showDefaultGraphs;
-
+        
         // Rename 'key' to 'itemName' and add a new key as named 'id'
         for(var i = 0; i < this.statistics.length; i++){
           this.statistics[i].id = i;
@@ -81,6 +81,7 @@ export class DashboardComponent implements OnInit {
           unSelectAllText:'UnSelect All',
           enableSearchFilter: true
         };
+        this.selectedItems = this.graphsToShow;
         this.getStatisticsHistory(this.statisticsKeys);
       },
       error => {

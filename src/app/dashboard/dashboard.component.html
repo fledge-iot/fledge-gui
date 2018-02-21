@@ -4,7 +4,7 @@
       [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
     </ng-progress>
 
-    <angular2-multiselect (ngModelChange)="showGraph($event)" [data]="statistics" [(ngModel)]="selectedGraphs" 
+    <angular2-multiselect (ngModelChange)="showGraph($event)" [data]="statistics" [(ngModel)]="selectedItems" 
     [settings]="dropdownSettings"></angular2-multiselect>
 
     <div class="tile" *ngFor="let statistic of graphsToShow">
