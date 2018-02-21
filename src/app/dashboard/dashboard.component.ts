@@ -40,9 +40,6 @@ export class DashboardComponent implements OnInit {
 
   public showGraph(graphs) {
     this.graphsToShow = graphs;
-    if (graphs.length === 0) {
-      this.graphsToShow = this.showDefaultGraphs;
-    }
   }
 
   public getStatistics(): void {
@@ -62,6 +59,8 @@ export class DashboardComponent implements OnInit {
           this.statisticsKeys.push(data.key);
         }
         console.log('keys array', this.statisticsKeys);
+
+        // show default graphs ('READINGS', 'SENT_1', 'PURGED') on fresh launch of the app
         if (this.graphsToShow.length === 0) {
           this.showDefaultGraphs = this.statistics.filter(value => value['key'] == 'READINGS' || value['key'] == 'SENT_1' || value['key'] == 'PURGED')
         }
