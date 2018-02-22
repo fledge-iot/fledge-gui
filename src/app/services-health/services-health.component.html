@@ -4,23 +4,19 @@
   </ng-progress>
   <div class="card">
     <header class="card-header">
-      <div class="card-header-title">
-        <div class="media">
-          <div class="media-content">
-            <h4 class="title is-4">Services Status</h4>
-            <h6 class='subtitle is-6'>
-              <small> Last updated: {{time|date:'MMM d, y HH:mm:ss'}} </small>
-            </h6>
-          </div>
-          <button (click)="getServiceData()" class="button is-pulled-right is-small">
-              <i class="fa fa-refresh" aria-hidden="true"></i>
-            </button>
+      <p class="card-header-title">
+        Services Status
+        <button (click)="getServiceData()" class="button is-pulled-right is-small">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button>
+        <div>
+          <small> Last updated: {{time|date:'MMM d, y HH:mm:ss'}} </small>
         </div>
-      </div>
+      <!-- </p> -->
     </header>
     <div class="card-content">
       <div class="content">
-        <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
+        <table class="table is-fullwidth scroll" cellpadding="0" cellspacing="0">
           <thead>
             <tr>
               <th>Name</th>
