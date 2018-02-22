@@ -1,18 +1,5 @@
-.scroll tr {
-  display: flex;
-}
-
-.scroll tbody {
-  width: 100%;
-  height: 400px;
-}
-
 .panel{
   margin-top: 10px; 
-}
-
-thead {
-  text-align: center;
 }
 
 select {
