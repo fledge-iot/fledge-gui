@@ -9,14 +9,14 @@
         <button (click)="getServiceData()" class="button is-pulled-right is-small">
           <i class="fa fa-refresh" aria-hidden="true"></i>
         </button>
-        <div>
-          <small> Last updated: {{time|date:'MMM d, y HH:mm:ss'}} </small>
-        </div>
-      <!-- </p> -->
+      </p>
+      <div>
+        <small> Last updated: {{time|date:'MMM d, y HH:mm:ss'}} </small>
+      </div>
     </header>
     <div class="card-content">
       <div class="content">
-        <table class="table is-fullwidth scroll" cellpadding="0" cellspacing="0">
+        <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
           <thead>
             <tr>
               <th>Name</th>
