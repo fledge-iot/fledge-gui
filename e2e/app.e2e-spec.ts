@@ -67,7 +67,7 @@ describe('foglampapp App', () => {
       'Management Port'
     ];
     page.navToServiceHealth();
-    expect(page.getServiceStatusTitle()).toEqual('Services Status');
+    expect(page.getServiceStatusTitle()).toContain('Services Status');
     expect(page.getRefreshButton()).toEqual(true);
 
     for (var ColumnName in ColumnsName) {
