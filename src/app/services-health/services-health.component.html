@@ -1,70 +1,70 @@
 <div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
-  </ng-progress>
-  <div class="card">
-    <header class="card-header">
-      <div class="card-content">
-        <div class="media-content">
-          <p class="title is-size-4">
-            Services Status &nbsp;
-            <button (click)="getServiceData()" class="button is-small">
-              <i class="fa fa-refresh" aria-hidden="true"></i>
-            </button>
-          </p>
-          <p class='subtitle is-size-7'>
-            Last updated: {{time|date:'MMM d, y HH:mm:ss'}}
-          </p>
+    <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+      [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+    </ng-progress>
+    <div class="card">
+      <header class="card-header">
+        <div class="card-content">
+          <div class="media-content">
+            <p class="title is-size-4">
+              Services Status &nbsp;
+              <button (click)="getServiceData()" class="button is-small">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+              </button>
+            </p>
+            <p class='subtitle is-size-7'>
+              Last updated: {{time|date:'MMM d, y HH:mm:ss'}}
+            </p>
+          </div>
         </div>
-      </div>
-    </header>
-    <div class="card-content">
-      <div class="content">
-        <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type &amp; Status </th>
-              <th>Protocol</th>
-              <th>Address</th>
-              <th>Service Port</th>
-              <th>Management Port</th>
-              <!-- <th>Status</th> -->
-              <!-- <th>Updated At</th> -->
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let service of service_data">
-              <td>{{service.name}}</td>
-              <td>
-                <div class="tags has-addons">
-                  <span class="tag" style="white-space: pre">{{padRight(service.type)}}</span>
-                  <span [ngClass]="service.status == 1 ?'tag is-success':'tag is-danger'">
-                    <i [ngClass]="service.status == 1 ?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
-                  </span>
-                </div>
-                <!-- <span class='tag is-info is-rounded'>{{service.type}} </span> -->
-              </td>
-              <td>{{service.protocol}}</td>
-              <td>{{service.address}}</td>
-              <td>{{service.service_port}}</td>
-              <td>{{service.management_port}}</td>
-              <!-- <td>
-                <span [ngClass]="service.status == 1 ?'tag is-success is-rounded':'tag is-danger is-rounded'">{{ service.status==1? "up" : "down"}}</span>
-              </td> -->
-              <!-- <td>
-                <span class='tag is-light'>{{time|date:'MMM d, y HH:mm:ss'}}</span>
-              </td> -->
-              <td>
-                <button *ngIf="true == checkServiceType(service.type | lowercase)" class="button is-danger is-small" (click)="openModal(service.management_port, service.name)">
-                  <i class="fa fa-power-off" aria-hidden="true"></i> &nbsp; Shut down</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <app-modal (shutdown)='shutdownService($event)' [childData]='childData'></app-modal>
+      </header>
+      <div class="card-content">
+        <div class="content">
+          <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type &amp; Status </th>
+                <th>Protocol</th>
+                <th>Address</th>
+                <th>Service Port</th>
+                <th>Management Port</th>
+                <!-- <th>Status</th> -->
+                <!-- <th>Updated At</th> -->
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let service of service_data">
+                <td>{{service.name}}</td>
+                <td>
+                  <div class="tags has-addons">
+                    <span class="tag" style="white-space: pre">{{padRight(service.type)}}</span>
+                    <span [ngClass]="service.status == 'running' ?'tag is-success':'tag is-danger'">
+                      <i [ngClass]="service.status == 'running' ?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
+                    </span>
+                  </div>
+                  <!-- <span class='tag is-info is-rounded'>{{service.type}} </span> -->
+                </td>
+                <td>{{service.protocol}}</td>
+                <td>{{service.address}}</td>
+                <td>{{service.service_port}}</td>
+                <td>{{service.management_port}}</td>
+                <!-- <td>
+                  <span [ngClass]="service.status == 1 ?'tag is-success is-rounded':'tag is-danger is-rounded'">{{ service.status==1? "up" : "down"}}</span>
+                </td> -->
+                <!-- <td>
+                  <span class='tag is-light'>{{time|date:'MMM d, y HH:mm:ss'}}</span>
+                </td> -->
+                <td>
+                  <button *ngIf="true == checkServiceType(service.type | lowercase)" class="button is-danger is-small" (click)="openModal(service.management_port, service.name)">
+                    <i class="fa fa-power-off" aria-hidden="true"></i> &nbsp; Shut down</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <app-modal (shutdown)='shutdownService($event)' [childData]='childData'></app-modal>
+        </div>
       </div>
     </div>
   </div>
-</div>

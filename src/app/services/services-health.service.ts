@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class ServicesHealthService {
   private GET_PING_URL = environment.BASE_URL + 'ping';
-  private GET_SERVICES_URL = environment.MANAGEMENT_URL + 'service';
+  private GET_SERVICES_URL = environment.BASE_URL + 'service';
 
   constructor(private http: Http) { }
 
