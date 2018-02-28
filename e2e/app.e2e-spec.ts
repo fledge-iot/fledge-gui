@@ -67,7 +67,7 @@ describe('foglampapp App', () => {
       'Management Port'
     ];
     page.navToServiceHealth();
-    expect(page.getServiceStatusTitle()).toEqual('Services Status');
+    expect(page.getServiceStatusTitle()).toContain('Services Status');
     expect(page.getRefreshButton()).toEqual(true);
 
     for (var ColumnName in ColumnsName) {
@@ -78,7 +78,7 @@ describe('foglampapp App', () => {
   it('Should Display Settings', () => {
     page.navToSettings();
     expect(page.getServiceHealthSelectTag()).toEqual(1);
-    expect(page.getServiceHealthInputTag()).toEqual(3);
+    expect(page.getServiceHealthInputTag()).toEqual(2);
     expect(page.getServiceHealthButton()).toEqual('Set the URL & Restart')
   });
 });
