@@ -17,12 +17,14 @@ export class SettingsComponent implements OnInit {
   // management_port = 0;
   constructor(private router: Router) { }
 
-  ngOnInit() {
-    if (environment.MANAGEMENT_URL !== '') {
-      const url_items = environment.MANAGEMENT_URL.split(':');
-      // this.management_port = +url_items[2].substring(0, url_items[2].indexOf('/'));
-    }
-  }
+  // ngOnInit() {
+  //   if (environment.MANAGEMENT_URL !== '') {
+  //     const url_items = environment.MANAGEMENT_URL.split(':');
+  //     this.management_port = +url_items[2].substring(0, url_items[2].indexOf('/'));
+  //   }
+  // }
+
+  ngOnInit() { }
 
   public resetEndPoint() {
     const protocolField = <HTMLSelectElement>document.getElementById('protocol');
