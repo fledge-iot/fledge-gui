@@ -246,6 +246,7 @@ export class ScheduledProcessComponent implements OnInit {
           console.log('service down ', error);
         } else {
           console.log('error in response ', error);
+          this.alertService.error(error.statusText);
         };
       });
   }
