@@ -1,7 +1,10 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@angular/core';
 import { ServicesHealthService } from '../services/index';
 import { ConnectedServiceStatus } from "../services/connected-service-status.service";
 import { POLLING_INTERVAL } from '../utils';
+import { ModalComponent } from './../modal/modal.component';
+import { NgProgress } from 'ngx-progressbar';
+import { AlertService } from './../services/alert.service';
 
 @Component({
   selector: 'app-navbar',
@@ -13,8 +16,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public timer: any = '';
   public ping_data = {};
   public ping_info = { is_alive: false, service_status: 'service down' };
+  public childData = {
+    key: '',
+    message: ''
+  };
 
-  constructor(private servicesHealthService: ServicesHealthService, private status: ConnectedServiceStatus) { }
+  @ViewChild(ModalComponent) child: ModalComponent;
+
+  constructor(private servicesHealthService: ServicesHealthService, private status: ConnectedServiceStatus, private alertService: AlertService, public ngProgress: NgProgress) { }
 
   ngOnInit() {
     this.start();
@@ -35,6 +44,40 @@ export class NavbarComponent implements OnInit, OnDestroy {
       },
     );
   }
+
+  openModal() {
+    this.childData = {
+      key: 'shutdown',
+      message: 'Do you really want to shut down the service'
+    };
+    // call child component method to toggle modal
+    this.child.toggleModal(true);
+  }
+
+  shutdown(port) {
+    /** request started */
+    this.ngProgress.start();
+    this.servicesHealthService.shutdown()
+      .subscribe(
+      (data) => {
+        /** request completed */
+        this.ngProgress.done();
+        this.alertService.success(data.message);
+      },
+      (error) => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+          /** request completed */
+          this.ngProgress.done();
+        } else {
+            console.log('error in response ', error);
+            this.alertService.error(error.statusText);
+            /** request completed */
+            this.ngProgress.done();
+        }
+      });
+  }
+
   start() {
     clearInterval(this.timer);
     this.timer = setInterval(function () {
