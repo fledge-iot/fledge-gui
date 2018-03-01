@@ -17,6 +17,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public ping_data = {};
   public ping_info = { is_alive: false, service_status: 'service down' };
   public childData = {
+    id: '',
+    name: '',
     key: '',
     message: ''
   };
@@ -47,6 +49,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   openModal() {
     this.childData = {
+      id: '',
+      name: '',
       key: 'shutdown',
       message: 'Do you really want to shut down the service'
     };
