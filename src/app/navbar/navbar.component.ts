@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@
 import { ServicesHealthService } from '../services/index';
 import { ConnectedServiceStatus } from "../services/connected-service-status.service";
 import { POLLING_INTERVAL } from '../utils';
-import { ModalComponent } from './../modal/modal.component';
+import { ShutdownModalComponent } from './../shut-down/shutDown-modal.component';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertService } from './../services/alert.service';
 
@@ -16,14 +16,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public timer: any = '';
   public ping_data = {};
   public ping_info = { is_alive: false, service_status: 'service down' };
-  public childData = {
-    id: '',
-    name: '',
+  public shutDownData = {
     key: '',
     message: ''
   };
 
-  @ViewChild(ModalComponent) child: ModalComponent;
+  @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
 
   constructor(private servicesHealthService: ServicesHealthService, private status: ConnectedServiceStatus, private alertService: AlertService, public ngProgress: NgProgress) { }
 
@@ -48,9 +46,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   openModal() {
-    this.childData = {
-      id: '',
-      name: '',
+    this.shutDownData = {
       key: 'shutdown',
       message: 'Do you really want to shut down the FogLAMP ?'
     };

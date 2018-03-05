@@ -41,12 +41,6 @@ export class ModalComponent implements OnInit {
       this.delete.emit(this.childData.id);
       this.toggleModal(false);
     }
-
-    if (this.childData.key === 'shutdown') {
-      this.shutdown.emit();
-      this.toggleModal(false);
-    }
-
     if (this.childData.key === 'shutdownService') {
       this.shutdownService.emit(this.childData.id);
       this.toggleModal(false);
