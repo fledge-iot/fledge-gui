@@ -11,7 +11,6 @@ export class ModalComponent implements OnInit {
   @Output() enable = new EventEmitter<Number>();
   @Output() disable = new EventEmitter<Number>();
   @Output() delete = new EventEmitter<Number>();
-  @Output() shutdown = new EventEmitter<Number>();
   @Output() shutdownService = new EventEmitter<Number>();
 
   constructor(private schedulesService: SchedulesService, private alertService: AlertService) { }
