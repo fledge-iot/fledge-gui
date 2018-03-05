@@ -44,7 +44,7 @@ import { NumberOnlyDirective } from './directives/number-only.directive';
 import { InputTrimDirective } from './directives/input-trim.directive';
 import { NgProgressModule } from 'ngx-progressbar';
 import { ServiceDiscoveryComponent } from './service-discovery/service-discovery.component';
-
+import { ShutdownModalComponent } from './shut-down/shutDown-modal.component';
 
 @NgModule({
   imports: [
@@ -86,7 +86,8 @@ import { ServiceDiscoveryComponent } from './service-discovery/service-discovery
     ChartModalComponent,
     NumberOnlyDirective,
     InputTrimDirective,
-    ServiceDiscoveryComponent
+    ServiceDiscoveryComponent,
+    ShutdownModalComponent
   ],
   providers: [
     AuthGuard,
