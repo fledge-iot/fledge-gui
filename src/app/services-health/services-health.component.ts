@@ -67,7 +67,7 @@ export class ServicesHealthComponent implements OnInit {
     this.childData = {
       id: port,
       name: '',
-      key: 'shutdown',
+      key: 'shutdownService',
       message: 'Do you really want to shut down ' + name + ' service?'
     };
     // call child component method to toggle modal

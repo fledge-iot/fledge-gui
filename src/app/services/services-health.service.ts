@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class ServicesHealthService {
   private GET_PING_URL = environment.BASE_URL + 'ping';
-  private GET_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
+  private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
 
   constructor(private http: Http) { }
@@ -24,7 +24,7 @@ export class ServicesHealthService {
    *  PUT  | /foglamp/shutdown
    */
   shutdown() {
-    return this.http.put(this.GET_SHUTDOWN_URL, null)
+    return this.http.put(this.FOGLAMP_SHUTDOWN_URL, null)
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
   }
