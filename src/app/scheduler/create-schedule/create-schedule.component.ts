@@ -99,7 +99,6 @@ export class CreateScheduleComponent implements OnInit {
           if (error.status === 0) {
               console.log('service down ', error);
           } else {
-              console.log('error in response ', error);
               this.alertService.error(error.statusText);
           }
         });
@@ -138,7 +137,6 @@ export class CreateScheduleComponent implements OnInit {
         if (error.status === 0) {
             console.log('service down ', error);
         } else {
-            console.log('error in response ', error);
             this.alertService.error(error.statusText);
         }
       });
@@ -149,14 +147,12 @@ export class CreateScheduleComponent implements OnInit {
       subscribe(
       data => {
         this.scheduleType = data.scheduleType;
-        console.log(this.scheduleType);
         this.type.emit(this.scheduleType);
       },
       error => {
         if (error.status === 0) {
             console.log('service down ', error);
         } else {
-            console.log('error in response ', error);
             this.alertService.error(error.statusText);
         }
       });
