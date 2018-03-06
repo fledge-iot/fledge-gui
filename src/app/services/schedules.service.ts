@@ -52,7 +52,6 @@ export class SchedulesService {
    *
    */
   public createSchedule (payload: any) {
-      console.log('Payload', payload);
       return this.http.post(this.GET_SCHEDULE, JSON.stringify(payload))
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
@@ -65,8 +64,6 @@ export class SchedulesService {
    *
    */
   public updateSchedule (schedule_id, payload: any) {
-      console.log('schedule_id', schedule_id);
-      console.log('payload', payload);
       return this.http.put(this.GET_SCHEDULE + '/' + schedule_id, JSON.stringify(payload))
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));

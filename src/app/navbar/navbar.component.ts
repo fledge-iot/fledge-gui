@@ -70,7 +70,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
         } else {
-            console.log('error in response ', error);
             this.alertService.error(error.statusText);
             /** request completed */
             this.ngProgress.done();
