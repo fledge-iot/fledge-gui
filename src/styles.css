@@ -44,3 +44,7 @@ table.scroll tbody {
 .card-content{
        overflow: auto;
 }
+
+.dropdown-list[_ngcontent-c8] {
+  position: relative !important;
+}

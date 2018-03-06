@@ -4,61 +4,92 @@ import Utils from '../utils';
 import { MomentDatePipe } from './../pipes/moment-date';
 import { NgProgress } from 'ngx-progressbar';
 
+import * as _ from 'lodash';
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashboardComponent implements OnInit {
-  statisticsData = {};
-  statHistoryData = [];
+  // Filtered array of received statistics data (having objects except key @FOGBENCH).
+  statistics = [];
+  
+  // Array of Statistics Keys (["BUFFERED", "DISCARDED", "PURGED", ....])
+  statisticsKeys = [];
 
-  readingChart: string;
-  readingValues: any;
+  // Object of dropdown setting
+  dropdownSettings = {};
 
-  purgeChart: string;
-  purgedValues: any;
+  selectedItems = [];
 
-  sentChart: string;
-  sentValues: any;
-  public chartOptions: any;
+  // Array of the graphs to show
+  graphsToShow = []; 
 
-  constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) {
+  // Array of default graphs to show ('READINGS', 'SENT_1', 'PURGED')
+  showDefaultGraphs = [];
 
-    this.readingChart = 'line';
-    this.readingValues = [];
+  public chartOptions: object;
 
-    this.purgeChart = 'line';
-    this.purgedValues = [];
-
-    this.sentChart = 'line';
-    this.sentValues = [];
-  }
+  constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) {}
 
   ngOnInit() {
     this.getStatistics();
-    this.getStatisticsHistory();
+  }
+
+  public showGraph(graphs) {
+    this.graphsToShow = graphs;
   }
 
   public getStatistics(): void {
     /** request started */
     this.ngProgress.start();
+
     this.statisticsService.getStatistics().
-      subscribe(
-      data => {
+      subscribe(data => {
         /** request completed */
         this.ngProgress.done();
-        const o: object = {};
-        data.forEach(element => {
-          o[element.key] = element.value;
-        });
-        this.statisticsData = o;
-        console.log('This is the statisticsData ', this.statisticsData);
+        console.log('received statisticsData ', data);
+        // filter received data for FOGBENCH data  
+        this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
+        console.log('statisticsData ', this.statistics);
+
+        for (let data of this.statistics) {
+          this.statisticsKeys.push(data.key);
+        }
+        console.log('keys array', this.statisticsKeys);
+
+        // show default graphs ('READINGS', 'SENT_1', 'PURGED') on fresh launch of the app
+        if (this.graphsToShow.length === 0) {
+          this.showDefaultGraphs = this.statistics.filter(value => value['key'] == 'READINGS' || value['key'] == 'SENT_1' || value['key'] == 'PURGED')
+        }
+        this.graphsToShow = this.showDefaultGraphs;
+        
+        // Rename 'key' to 'itemName' and add a new key as named 'id'
+        for(var i = 0; i < this.statistics.length; i++){
+          this.statistics[i].id = i;
+          this.statistics[i].itemName = this.statistics[i]['key'];
+          delete this.statistics[i].key;
+        }
+
+        // Set the options for dropdown setting
+        this.dropdownSettings = { 
+          singleSelection: false,
+          text:"Select Graphs",
+          selectAllText:'Select All',
+          unSelectAllText:'UnSelect All',
+          enableSearchFilter: true
+        };
+        // Selected Items are the items, to show in the dropdown (having keys- 'READINGS', 'SENT_1', 'PURGED')
+        this.selectedItems = this.graphsToShow;
+        this.getStatisticsHistory(this.statisticsKeys);
       },
       error => {
         /** request completed */
         this.ngProgress.done();
-        if(error.status === 0){
+        if (error.status === 0) {
           console.log('service down ', error);
         } else {
           this.alertService.error(error.statusText);
@@ -66,127 +97,63 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  public getStatisticsHistory(): void {
-    const readingsValues = [];
-    const readingsLabels = [];
+  protected getChartOptions() {
+    this.chartOptions = {
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  }
 
-    const purgedValues = [];
-    const purgedLabels = [];
+  protected getChartValues(labels, data, color) {
+    this.getChartOptions();
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: '',
+          data: data,
+          backgroundColor: color,
+        }
+      ]
+    }
+  }
 
-    const sentValues = [];
-    const sentLabels = [];
-    const datePipe = new MomentDatePipe();
+  public getStatisticsHistory(statisticsKeys): void {
     this.statisticsService.getStatisticsHistory().
       subscribe(data => {
-        this.statHistoryData = data.statistics;
-        console.log('Statistics History Data', data);
-        this.statHistoryData.forEach(element => {
-          Object.keys(element).forEach(aKey => {
-            if (aKey.indexOf('READINGS') !== -1) {
-              readingsValues.push(element[aKey]);
-              const tempDt = element['history_ts'];
-              readingsLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
-            }
-            if (aKey.indexOf('PURGED') !== -1 && aKey.indexOf('UNSNPURGED') === -1) {
-              purgedValues.push(element[aKey]);
-              const tempDt = element['history_ts'];
-              purgedLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
-            }
-            if (aKey.indexOf('SENT_1') !== -1 && aKey.indexOf('UNSENT') === -1) {
-              sentValues.push(element[aKey]);
-              const tempDt = element['history_ts'];
-              sentLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
+        console.log('data', data);
+        this.statisticsKeys.forEach(key => {
+          let labels = [];
+          let record = _.map(data.statistics, key)
+          let history_ts = _.map(data.statistics, 'history_ts');
+          history_ts.forEach(element => {
+            element = moment(element.timestamp).format('HH:mm:ss:SSS')
+            labels.push(element)
+          });
+          this.statistics.map(statistics => {
+            if (statistics.itemName == key) {
+              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');;
+              statistics.chartType = 'line';
+              return statistics;
             }
           });
+        })
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            console.log('error in response ', error);
+            this.alertService.error(error.statusText);
+          }
         });
-        this.statsHistoryReadingsGraph(readingsLabels, readingsValues);
-        this.statsHistoryPurgedGraph(purgedLabels, purgedValues);
-        this.statsHistorySentGraph(sentLabels, sentValues);
-      },
-      error => {
-        if(error.status === 0){
-          console.log('service down', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
-  }
-
-  statsHistoryReadingsGraph(labels, data): void {
-    this.readingChart = 'line';
-    this.readingValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(100,149,237)',
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
-  }
-
-  statsHistoryPurgedGraph(labels, data): void {
-    this.purgeChart = 'line';
-    this.purgedValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(255,165,0)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
-  }
-
-  statsHistorySentGraph(labels, data): void {
-    this.sentChart = 'line';
-    this.sentValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(144,238,144)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
   }
 }

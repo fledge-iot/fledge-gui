@@ -44,6 +44,8 @@ import { NumberOnlyDirective } from './directives/number-only.directive';
 import { InputTrimDirective } from './directives/input-trim.directive';
 import { NgProgressModule } from 'ngx-progressbar';
 import { ServiceDiscoveryComponent } from './service-discovery/service-discovery.component';
+
+import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
 
 @NgModule({
@@ -56,7 +58,8 @@ import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
     ChartModule,
     NgxMaskModule,
     SidebarModule.forRoot(),
-    NgProgressModule
+    NgProgressModule,
+    AngularMultiSelectModule
   ],
   declarations: [
     AppComponent,
