@@ -28,14 +28,11 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    console.log('resize');
     if (event.target.innerWidth < 1024) {
-      console.log('mobile');
       this.navMode = 'over';
       this._opened = false;
     }
     if (event.target.innerWidth > 1024) {
-      console.log('desktop');
       this.navMode = 'side';
       this._opened = true;
     }

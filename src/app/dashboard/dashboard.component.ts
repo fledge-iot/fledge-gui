@@ -48,8 +48,6 @@ export class DashboardComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        console.log('recived statisticsData ', data);
-        // this.statisticsData = data;
         const o: object = {};
         data.forEach(element => {
           o[element.key] = element.value;
@@ -63,10 +61,8 @@ export class DashboardComponent implements OnInit {
         if(error.status === 0){
           console.log('service down ', error);
         } else {
-          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
-        console.log('error', error);
       });
   }
 
@@ -111,7 +107,6 @@ export class DashboardComponent implements OnInit {
         if(error.status === 0){
           console.log('service down', error);
         } else {
-          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });

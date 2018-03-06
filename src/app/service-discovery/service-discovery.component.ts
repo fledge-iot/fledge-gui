@@ -52,41 +52,39 @@ export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
     let serviceRecord = [];
     this.discoveryService.discover()
       .subscribe(
-      (data) => {
-        this.discoveryServiceStatus = true;
-        Object.keys(data).forEach(function (key) {
-          serviceRecord.push({
-            key: key,
-            [key]: data[key]
-          })
-        });
-        this.discoveredServices = serviceRecord;
+        (data) => {
+          this.discoveryServiceStatus = true;
+          Object.keys(data).forEach(function (key) {
+            serviceRecord.push({
+              key: key,
+              [key]: data[key]
+            })
+          });
+          this.discoveredServices = serviceRecord;
 
-        for (let service of this.discoveredServices) {
-          const address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
-          const port = service[service.key].port;
-          // if (address === localStorage.getItem('CONNECTED_HOST') && port === +localStorage.getItem('MANAGEMENT_PORT')) {
+          for (let service of this.discoveredServices) {
+            const address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
+            const port = service[service.key].port;
             if (address === localStorage.getItem('CONNECTED_HOST')) {
-            this.isConnected = true;
-            this.connectedButtonId = service.key;
-            localStorage.setItem('CONNECTED_SERVICE_STATE', JSON.stringify(this.isConnected));
-            localStorage.setItem('CONNECTED_SERVICE_ID', this.connectedButtonId);
-            localStorage.setItem('CONNECTED_HOST', address)
-            // localStorage.setItem('MANAGEMENT_PORT', port)
+              this.isConnected = true;
+              this.connectedButtonId = service.key;
+              localStorage.setItem('CONNECTED_SERVICE_STATE', JSON.stringify(this.isConnected));
+              localStorage.setItem('CONNECTED_SERVICE_ID', this.connectedButtonId);
+              localStorage.setItem('CONNECTED_HOST', address)
+            }
           }
-        }
-      },
-      (error) => {
-        this.discoveryServiceStatus = false;
-        this.discoveredServices = [];
-        if (error.status === 0) {
-          this.message = 'Not able to connect. Please check service discovery server is up and running.'
-          console.log('service down ', error);
-        } else {
-          this.message = "Something wrong with the discovery service. Try again!"
-          console.log('error in response ', error);
-        }
-      });
+        },
+        (error) => {
+          this.discoveryServiceStatus = false;
+          this.discoveredServices = [];
+          if (error.status === 0) {
+            this.message = 'Not able to connect. Please check service discovery server is up and running.'
+            console.log('service down ', error);
+          } else {
+            this.message = "Something wrong with the discovery service. Try again!"
+            console.log('error in response ', error);
+          }
+        });
   }
 
   connectService(service) {
@@ -100,10 +98,8 @@ export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
 
     // TODO: Get protocol from service discovery
     const serviceEndpoint = 'http://' + address + ':' + '8081/foglamp/';
-    const managementEndpoint = 'http://' + address + ':' + port + '/foglamp/';
 
     localStorage.setItem('SERVICE_URL', serviceEndpoint);
-    // localStorage.setItem('MANAGEMENT_URL', managementEndpoint);
     location.reload();
     location.href = '';
     this.router.navigate([location.href]);

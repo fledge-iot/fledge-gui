@@ -13,10 +13,8 @@ export class SideMenuComponent implements OnInit {
   ngOnInit() {
     this.router.events.subscribe((res) => {
       if (this.router.url === '/' || this.router.url === '/dashboard') {
-        console.log(this.router.url);
         this.step = '/dashboard';
       } else {
-        console.log(this.router.url);
         this.step = this.router.url;
       }
     });

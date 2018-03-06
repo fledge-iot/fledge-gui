@@ -35,7 +35,6 @@ export class HomeComponent implements OnDestroy {
         this.router.navigate(['/login']);
     }
     startCollecting() {
-        console.log('Collecting ...');
         let theToken = sessionStorage.getItem('access_token');
         this.authService.getData(theToken)
             .subscribe(
@@ -43,7 +42,6 @@ export class HomeComponent implements OnDestroy {
             (error) => { this.errorMessage = <any>error; },
             () => console.log(this.xdata)
             );
-        console.log(this.xdata);
     }
     start() {
         clearInterval(this.timer);

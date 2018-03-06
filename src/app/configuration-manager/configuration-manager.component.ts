@@ -23,7 +23,6 @@ export class ConfigurationManagerComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        // console.log('This is the congfigurationData ', data.categories);
         data.categories.forEach(element => {
           this.getCategory(element.key, element.description);
         });
@@ -34,7 +33,6 @@ export class ConfigurationManagerComponent implements OnInit {
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
-          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
@@ -47,13 +45,11 @@ export class ConfigurationManagerComponent implements OnInit {
       data => {
         categoryValues.push(data);
         this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
-        // console.log('This is the categoryData ', this.categoryData);
       },
       error => {
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
-          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
@@ -97,7 +93,6 @@ export class ConfigurationManagerComponent implements OnInit {
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
-          console.log('error in response ', error);
           this.alertService.error(error.statusText);
         }
       });
