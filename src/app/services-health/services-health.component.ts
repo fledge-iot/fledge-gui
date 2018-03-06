@@ -41,8 +41,7 @@ export class ServicesHealthComponent implements OnInit {
         this.ngProgress.done();
         if (data.error) {
           console.log('error in response', data.error);
-          this.alertService.warning('Could not connect to Core Managment API, ' +
-            'Make sure to set correct <a href="/setting"> core management port </a>');
+          this.alertService.warning('Could not connect to API');
           return;
         }
         this.service_data = data.services;
@@ -50,8 +49,7 @@ export class ServicesHealthComponent implements OnInit {
 
       },
       (error) => {
-        this.alertService.warning('Could not connect to Core Managment API, ' +
-          'Make sure to set correct <a href="/setting"> core management port </a>');
+        this.alertService.warning('Could not connect to API');
         console.log('error: ', error);
         /** request completed */
         this.ngProgress.done();
@@ -69,7 +67,7 @@ export class ServicesHealthComponent implements OnInit {
     this.childData = {
       id: port,
       name: '',
-      key: 'shutdown',
+      key: 'shutdownService',
       message: 'Do you really want to shut down ' + name + ' service?'
     };
     // call child component method to toggle modal

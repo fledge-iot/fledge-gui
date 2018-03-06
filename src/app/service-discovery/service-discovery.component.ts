@@ -65,13 +65,14 @@ export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
         for (let service of this.discoveredServices) {
           const address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
           const port = service[service.key].port;
-          if (address === localStorage.getItem('CONNECTED_HOST') && port === +localStorage.getItem('MANAGEMENT_PORT')) {
+          // if (address === localStorage.getItem('CONNECTED_HOST') && port === +localStorage.getItem('MANAGEMENT_PORT')) {
+            if (address === localStorage.getItem('CONNECTED_HOST')) {
             this.isConnected = true;
             this.connectedButtonId = service.key;
             localStorage.setItem('CONNECTED_SERVICE_STATE', JSON.stringify(this.isConnected));
             localStorage.setItem('CONNECTED_SERVICE_ID', this.connectedButtonId);
             localStorage.setItem('CONNECTED_HOST', address)
-            localStorage.setItem('MANAGEMENT_PORT', port)
+            // localStorage.setItem('MANAGEMENT_PORT', port)
           }
         }
       },
@@ -102,7 +103,7 @@ export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
     const managementEndpoint = 'http://' + address + ':' + port + '/foglamp/';
 
     localStorage.setItem('SERVICE_URL', serviceEndpoint);
-    localStorage.setItem('MANAGEMENT_URL', managementEndpoint);
+    // localStorage.setItem('MANAGEMENT_URL', managementEndpoint);
     location.reload();
     location.href = '';
     this.router.navigate([location.href]);

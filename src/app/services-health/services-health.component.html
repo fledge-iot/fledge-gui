@@ -40,8 +40,8 @@
               <td>
                 <div class="tags has-addons">
                   <span class="tag" style="white-space: pre">{{padRight(service.type)}}</span>
-                  <span [ngClass]="service.status == 1 ?'tag is-success':'tag is-danger'">
-                    <i [ngClass]="service.status == 1 ?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
+                  <span [ngClass]="service.status == 'running' ?'tag is-success':'tag is-danger'">
+                    <i [ngClass]="service.status == 'running' ?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
                   </span>
                 </div>
                 <!-- <span class='tag is-info is-rounded'>{{service.type}} </span> -->
@@ -63,7 +63,7 @@
             </tr>
           </tbody>
         </table>
-        <app-modal (shutdown)='shutdownService($event)' [childData]='childData'></app-modal>
+        <app-modal (shutdownService)='shutdownService($event)' [childData]='childData'></app-modal>
       </div>
     </div>
   </div>

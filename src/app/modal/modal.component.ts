@@ -11,7 +11,7 @@ export class ModalComponent implements OnInit {
   @Output() enable = new EventEmitter<Number>();
   @Output() disable = new EventEmitter<Number>();
   @Output() delete = new EventEmitter<Number>();
-  @Output() shutdown = new EventEmitter<Number>();
+  @Output() shutdownService = new EventEmitter<Number>();
 
   constructor(private schedulesService: SchedulesService, private alertService: AlertService) { }
 
@@ -40,9 +40,8 @@ export class ModalComponent implements OnInit {
       this.delete.emit(this.childData.id);
       this.toggleModal(false);
     }
-
-    if (this.childData.key === 'shutdown') {
-      this.shutdown.emit(this.childData.id);
+    if (this.childData.key === 'shutdownService') {
+      this.shutdownService.emit(this.childData.id);
       this.toggleModal(false);
     }
   }

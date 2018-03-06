@@ -46,6 +46,7 @@ import { NgProgressModule } from 'ngx-progressbar';
 import { ServiceDiscoveryComponent } from './service-discovery/service-discovery.component';
 
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
+import { ShutdownModalComponent } from './shut-down/shutDown-modal.component';
 
 @NgModule({
   imports: [
@@ -88,7 +89,8 @@ import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2
     ChartModalComponent,
     NumberOnlyDirective,
     InputTrimDirective,
-    ServiceDiscoveryComponent
+    ServiceDiscoveryComponent,
+    ShutdownModalComponent
   ],
   providers: [
     AuthGuard,
