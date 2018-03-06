@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
   // Array of the graphs to show
   graphsToShow = []; 
 
+  // Array of default graphs to show ('READINGS', 'SENT_1', 'PURGED')
   showDefaultGraphs = [];
 
   public chartOptions: object;
@@ -73,6 +74,7 @@ export class DashboardComponent implements OnInit {
           delete this.statistics[i].key;
         }
 
+        // Set the options for dropdown setting
         this.dropdownSettings = { 
           singleSelection: false,
           text:"Select Graphs",
@@ -80,6 +82,7 @@ export class DashboardComponent implements OnInit {
           unSelectAllText:'UnSelect All',
           enableSearchFilter: true
         };
+        // Selected Items are the items, to show in the dropdown (having keys- 'READINGS', 'SENT_1', 'PURGED')
         this.selectedItems = this.graphsToShow;
         this.getStatisticsHistory(this.statisticsKeys);
       },
