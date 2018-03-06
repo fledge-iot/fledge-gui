@@ -44,7 +44,7 @@ import { NumberOnlyDirective } from './directives/number-only.directive';
 import { InputTrimDirective } from './directives/input-trim.directive';
 import { NgProgressModule } from 'ngx-progressbar';
 import { ServiceDiscoveryComponent } from './service-discovery/service-discovery.component';
-import { ShutdownModalComponent } from './shut-down/shutDown-modal.component';
+import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
 
 @NgModule({
   imports: [

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@
 import { ServicesHealthService } from '../services/index';
 import { ConnectedServiceStatus } from "../services/connected-service-status.service";
 import { POLLING_INTERVAL } from '../utils';
-import { ShutdownModalComponent } from './../shut-down/shutDown-modal.component';
+import { ShutdownModalComponent } from './../shut-down/shutdown-modal.component';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertService } from './../services/alert.service';
 
