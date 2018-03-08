@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/index';
 import { Observable } from 'rxjs/Rx';
@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Rx';
     templateUrl: 'home.component.html',
 })
 
-export class HomeComponent implements OnDestroy {
+export class HomeComponent {
     currentUser: String;
     private timer: any = '';
     xdata: {} = {};
@@ -23,37 +23,5 @@ export class HomeComponent implements OnDestroy {
             // width: 300,
             // height: 300
         };
-    }
-
-    /**
-     *  Signout the current user
-     */
-    logOut() {
-        // remove access token and logged in user from session storage
-        sessionStorage.removeItem('access_token');
-        sessionStorage.removeItem('currentUser');
-        this.router.navigate(['/login']);
-    }
-    startCollecting() {
-        let theToken = sessionStorage.getItem('access_token');
-        this.authService.getData(theToken)
-            .subscribe(
-            (data) => { this.xdata = data; },
-            (error) => { this.errorMessage = <any>error; },
-            () => console.log(this.xdata)
-            );
-    }
-    start() {
-        clearInterval(this.timer);
-        this.timer = setInterval(function () {
-            this.startCollecting();
-        }.bind(this), 2000);
-    }
-    stop() {
-        clearInterval(this.timer);
-    }
-
-    ngOnDestroy() {
-        clearInterval(this.timer);
     }
 }

@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
   ngAfterViewInit() {
     // get loggedin user from session
     let user = sessionStorage.getItem('currentUser');
-    if (user.trim() != null && user.trim().length > 0) {
+    if (user != null && user.trim().length > 0) {
       this.isUserLoggedIn = true;
     }
     this.cdr.detectChanges();

@@ -35,12 +35,11 @@ export class LoginComponent implements OnInit {
         this.authService.login(this.model.username, this.model.password).
             subscribe(
                 data => {
-                    console.log('user token: ', data);
-                    let token = sessionStorage.getItem('access_token');
+                    sessionStorage.setItem('token', data);
                     // Get SignedIn user details
-                    this.authService.getWhoAmi(token)
+                    this.authService.getWhoAmi(data)
                         .subscribe(
-                            info => {
+                            userData => {
                                 this.sharedService.IsUserLoggedIn.next({
                                     'loggedIn': true,
                                     'userName': this.model.username
@@ -50,7 +49,11 @@ export class LoginComponent implements OnInit {
                             });
                 },
                 error => {
-                    this.alertService.error(error);
+                    if (error.status === 0) {
+                        console.log('service down', error);
+                    } else {
+                        this.alertService.error(error.statusText);
+                    }
                 });
     }
 

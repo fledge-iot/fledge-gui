@@ -4,9 +4,10 @@ import { ConnectedServiceStatus } from "../services/connected-service-status.ser
 import { POLLING_INTERVAL } from '../utils';
 import { ShutdownModalComponent } from './../shut-down/shutdown-modal.component';
 import { NgProgress } from 'ngx-progressbar';
-import { AlertService } from './../services/alert.service';
+import { AlertService, AuthService } from './../services/index';
 import { SharedService } from './../services/shared.service';
 import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-navbar',
@@ -34,6 +35,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     private alertService: AlertService,
     public ngProgress: NgProgress,
     private sharedService: SharedService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private router: Router) {
     // Subscribe to automatically update 
@@ -127,9 +129,21 @@ export class NavbarComponent implements OnInit, AfterViewInit {
      *  Signout the current user
      */
   logout() {
-    // remove access token and logged in user from session storage
-    sessionStorage.removeItem('currentUser');
-    location.reload();
-    this.router.navigate(['/login']);
+    let token = sessionStorage.getItem('token');
+    this.authService.logout(token).
+      subscribe(
+        data => {
+          // remove access token and logged in user from session storage
+          sessionStorage.removeItem('currentUser');
+          location.reload();
+          this.router.navigate(['/login']);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }
