@@ -134,7 +134,7 @@ export class DashboardComponent implements OnInit {
           let record = _.map(data.statistics, key)
           let history_ts = _.map(data.statistics, 'history_ts');
           history_ts.forEach(element => {
-            element = moment(element).format('HH:mm:ss')
+            element = moment(element).format('HH:mm:ss:SSS')
             labels.push(element)
           });
           this.statistics.map(statistics => {
