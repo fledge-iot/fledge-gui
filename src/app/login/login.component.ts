@@ -57,8 +57,8 @@ export class LoginComponent implements OnInit {
                 });
     }
 
-    // TODO: Not implemented yet
     private skip() {
-        // this.router.navigate(['/'], { queryParams: { skip: true } });
+        this.sharedService.IsLoginSkiped.next(true);
+        this.router.navigate(['']);
     }
 }

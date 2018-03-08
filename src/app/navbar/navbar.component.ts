@@ -27,7 +27,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   // Define a variable to use for showing/hiding the Login button
   isUserLoggedIn: boolean;
   loggedInUserName: string;
-
+  isSkip: boolean = false;
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
 
   constructor(private servicesHealthService: ServicesHealthService,
@@ -43,6 +43,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.sharedService.IsUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value.loggedIn;
       this.loggedInUserName = value.userName;
+    });
+    this.sharedService.IsLoginSkiped.subscribe(value => {
+      this.isSkip = value;
     });
   }
 

@@ -15,7 +15,7 @@
       <span [ngClass]="ping_info.is_alive?'tag is-success':'tag is-danger'">{{ping_info.service_status}}</span>
     </a>
     <a class="navbar-item">
-      <button *ngIf="ping_info.is_alive && isUserLoggedIn" class="button is-danger is-small" (click)="openModal()">
+      <button *ngIf="ping_info.is_alive && isUserLoggedIn || isSkip" class="button is-danger is-small" (click)="openModal()">
         <i class="fa fa-power-off" aria-hidden="true"></i>
       </button>
     </a>

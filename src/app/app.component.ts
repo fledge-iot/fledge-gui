@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
 
   returnUrl: string;
   isUserLoggedIn = false;
+  skip: boolean = false;
 
   public toggleSidebar() {
     if (this.navMode == 'over') {
@@ -31,6 +32,10 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.sharedService.IsUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value.loggedIn;
+    });
+
+    this.sharedService.IsLoginSkiped.subscribe(value => {
+      this.skip = value;
     });
 
     if (window.innerWidth < 1024) {
