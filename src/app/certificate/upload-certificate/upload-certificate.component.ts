@@ -11,12 +11,7 @@ import { CustomValidator } from '../../directives/custom-validator';
 })
 export class UploadCertificateComponent implements OnInit {
   form: FormGroup;
-  
-  // @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  // @Output() process: EventEmitter<any> = new EventEmitter<any>();
-  // @Output() type: EventEmitter<any> = new EventEmitter<any>();
-  
-  
+
   constructor(private certificateService: CertificateService, public formBuilder: FormBuilder) { }
 
   ngOnInit() {
@@ -38,8 +33,8 @@ export class UploadCertificateComponent implements OnInit {
     this.form.reset({ overwrite: false});
   }
 
-  public uploadCertificate() {
-    
-  }
+  // TODO
+  // public uploadCertificate() { 
+  // }
 
 }

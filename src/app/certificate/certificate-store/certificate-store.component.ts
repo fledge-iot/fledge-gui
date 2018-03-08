@@ -68,11 +68,13 @@ export class CertificateStoreComponent implements OnInit {
   }
 
   /**
-   * Open delete record modal dialog
-   * @param id   schedule id to delete
-   * @param name schedule name
+   * Open delete certificate modal dialog
+   * @param key   name of the key of certificate
+   * @param cert  name of the cert file of the certificate
+   * @param message   message to show on alert
+   * @param action here action is 'delete'
    */
-  openModal(key, cert, message, action) {
+  openDeleteModal(key, cert, message, action) {
     this.certificate_name = this.getCertificateName(key, cert)
     this.childData = {
       id: '',

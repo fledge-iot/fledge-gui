@@ -29,7 +29,7 @@
             <td *ngIf="certificate.cert"><i class="fa fa-check-circle-o fa-lg" style="color:rgb(101, 184, 101)" aria-hidden="true"></i></td>
             <td *ngIf="!certificate.cert"><i class="fa fa-times-circle-o fa-lg" style="color:rgb(204, 62, 19)" aria-hidden="true"></i></td>
             <td *ngIf="getCertificateName(certificate.key, certificate.cert) != 'foglamp'">
-              <a (click)="openModal(certificate.key, certificate.cert, 'Are you sure, You want to delete the certificate', 'deleteCertificate')"  class="button is-text">
+              <a (click)="openDeleteModal(certificate.key, certificate.cert, 'Are you sure, You want to delete the certificate', 'deleteCertificate')"  class="button is-text">
                 Delete
               </a>
             </td>
