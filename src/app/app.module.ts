@@ -47,6 +47,7 @@ import { ServiceDiscoveryComponent } from './service-discovery/service-discovery
 
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
+import { SharedService } from './services/shared.service';
 
 @NgModule({
   imports: [
@@ -104,7 +105,8 @@ import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
     ServicesHealthService,
     AssetSummaryService,
     ConnectedServiceStatus,
-    DiscoveryService
+    DiscoveryService,
+    SharedService
   ],
   bootstrap: [AppComponent]
 })

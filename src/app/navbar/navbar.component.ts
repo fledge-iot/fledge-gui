@@ -1,17 +1,19 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { ServicesHealthService } from '../services/index';
 import { ConnectedServiceStatus } from "../services/connected-service-status.service";
 import { POLLING_INTERVAL } from '../utils';
 import { ShutdownModalComponent } from './../shut-down/shutdown-modal.component';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertService } from './../services/alert.service';
+import { SharedService } from './../services/shared.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class NavbarComponent implements OnInit, AfterViewInit {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public ping_data = {};
@@ -21,27 +23,53 @@ export class NavbarComponent implements OnInit, OnDestroy {
     message: ''
   };
 
+  // Define a variable to use for showing/hiding the Login button
+  isUserLoggedIn: boolean;
+  loggedInUserName: string;
+
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
 
-  constructor(private servicesHealthService: ServicesHealthService, private status: ConnectedServiceStatus, private alertService: AlertService, public ngProgress: NgProgress) { }
-
-  ngOnInit() {
-    this.start();
+  constructor(private servicesHealthService: ServicesHealthService,
+    private status: ConnectedServiceStatus,
+    private alertService: AlertService,
+    public ngProgress: NgProgress,
+    private sharedService: SharedService,
+    private cdr: ChangeDetectorRef,
+    private router: Router) {
+    // Subscribe to automatically update 
+    // "isUserLoggedIn" whenever a change to the subject is made.
+    this.sharedService.IsUserLoggedIn.subscribe(value => {
+      this.isUserLoggedIn = value.loggedIn;
+      this.loggedInUserName = value.userName;
+    });
   }
+
+  ngOnInit() { }
+
+  ngAfterViewInit() {
+    // get loggedin user from session
+    this.loggedInUserName = sessionStorage.getItem('currentUser');
+    if (this.loggedInUserName != null && this.loggedInUserName.length > 0) {
+      this.isUserLoggedIn = true;
+    }
+    this.start();
+    this.cdr.detectChanges();
+  }
+
 
   pingService() {
     this.servicesHealthService.pingService()
       .subscribe(
-      (data) => {
-        this.status.changeMessage(true);
-        this.ping_data = data;
-        this.ping_info = { is_alive: true, service_status: 'running...' };
-      },
-      (error) => {
-        console.log('error: ', error);
-        this.status.changeMessage(false);
-        this.ping_info = { is_alive: false, service_status: 'service down' };
-      },
+        (data) => {
+          this.status.changeMessage(true);
+          this.ping_data = data;
+          this.ping_info = { is_alive: true, service_status: 'running...' };
+        },
+        (error) => {
+          console.log('error: ', error);
+          this.status.changeMessage(false);
+          this.ping_info = { is_alive: false, service_status: 'service down' };
+        },
     );
   }
 
@@ -59,22 +87,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.ngProgress.start();
     this.servicesHealthService.shutdown()
       .subscribe(
-      (data) => {
-        /** request completed */
-        this.ngProgress.done();
-        this.alertService.success(data.message);
-      },
-      (error) => {
-        if (error.status === 0) {
-          console.log('service down ', error);
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-        } else {
+          this.alertService.success(data.message);
+        },
+        (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+            /** request completed */
+            this.ngProgress.done();
+          } else {
             this.alertService.error(error.statusText);
             /** request completed */
             this.ngProgress.done();
-        }
-      });
+          }
+        });
   }
 
   start() {
@@ -93,5 +121,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   toggleClick() {
     this.toggle.next('toggleSidebar');
+  }
+
+  /**
+     *  Signout the current user
+     */
+  logout() {
+    // remove access token and logged in user from session storage
+    sessionStorage.removeItem('currentUser');
+    location.reload();
+    this.router.navigate(['/login']);
   }
 }

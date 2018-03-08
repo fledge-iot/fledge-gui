@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response, RequestOptions } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable, Subject } from 'rxjs/Rx';
 import { environment } from '../../environments/environment';
 
 @Injectable()
@@ -20,11 +20,12 @@ export class AuthService {
   login(username: string, password: string) {
     let headers = new Headers({ 'content-type': 'application/json' });
     let options = new RequestOptions({ headers: headers });
-    return this.http.post(this.LOGIN_URL, JSON.stringify({ username: username, password: password }), options)
-      .map((response: Response) => {
-        sessionStorage.setItem('access_token', response.json().access_token);
-      })
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+    return Observable.create(observer => observer.next('access_token'));
+    // return this.http.post(this.LOGIN_URL, JSON.stringify({ username: username, password: password }), options)
+    //   .map((response: Response) => {
+    //     sessionStorage.setItem('access_token', response.json().access_token);
+    //   })
+    //   .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
   }
 
   /**
@@ -35,12 +36,13 @@ export class AuthService {
     let headers = new Headers({ 'content-type': 'application/json' });
     headers.append('authorization', token);
     let options = new RequestOptions({ headers: headers });
-    return this.http.get(this.ME_URL, options)
-      .map((response: Response) => {
-        console.log(response.json());
-        sessionStorage.setItem('currentUser', response.json().username);
-      })
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+    return Observable.create(observer => observer.next('success'));
+    // return this.http.get(this.ME_URL, options)
+    //   .map((response: Response) => {
+    //     console.log(response.json());
+    //     sessionStorage.setItem('currentUser', response.json().username);
+    //   })
+    //   .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
   }
 
   /**

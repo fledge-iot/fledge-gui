@@ -2,15 +2,14 @@
     <app-navbar (toggle)="toggleSidebar()"></app-navbar>
 </div>
 <section class="columns column-margin">
-<ng-sidebar-container>
-    <ng-sidebar #sidebar [(opened)]="_opened" sidebarClass="column is-2">
-        <app-side-menu  (toggle)="toggleSidebar()"></app-side-menu>
-    </ng-sidebar>
-    <div ng-sidebar-content class="column is-10 is-offset-2 fixed-overflow">
-        <alert></alert>
-        <router-outlet></router-outlet>
-        <app-footer></app-footer>
-    </div>
-</ng-sidebar-container>
+    <ng-sidebar-container>
+        <ng-sidebar *ngIf="isUserLoggedIn" #sidebar [(opened)]="_opened" sidebarClass="column is-2">
+            <app-side-menu (toggle)="toggleSidebar()"></app-side-menu>
+        </ng-sidebar>
+        <div ng-sidebar-content [ngClass]="{'column is-offset-2 is-10 fixed-overflow':isUserLoggedIn}">
+            <alert></alert>
+            <router-outlet></router-outlet>
+            <app-footer></app-footer>
+        </div>
+    </ng-sidebar-container>
 </section>
-

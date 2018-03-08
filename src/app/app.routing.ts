@@ -10,11 +10,12 @@ import { AuditLogComponent } from './audit-log/index';
 import { SettingsComponent } from './settings/index';
 import { ServicesHealthComponent } from './services-health/index';
 import { ServiceDiscoveryComponent } from './service-discovery/index';
+import { AuthGuard } from './guards/index';
 
 const appRoutes: Routes = [
     { path: 'home', component: HomeComponent},
     { path: 'login', component: LoginComponent },
-    { path: '', component: DashboardComponent },
+    { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
     { path: 'configuration', component: ConfigurationManagerComponent },
     { path: 'scheduled-task', component: ScheduledProcessComponent },
     { path: 'asset', component: AssetsComponent },
