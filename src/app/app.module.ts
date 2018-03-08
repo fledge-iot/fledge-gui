@@ -26,11 +26,12 @@ import { SideMenuComponent } from '../app/side-menu/side-menu.component';
 import { NavbarComponent } from '../app/navbar/navbar.component';
 import { AssetsComponent } from '../app/asset-readings/assets/assets.component';
 import { AuditLogComponent } from '../app/audit-log/audit-log.component';
-import { CertificateStoreComponent } from '../app/certificate-store/certificate-store.component';
+import { CertificateStoreComponent } from '../app/certificate/certificate-store/certificate-store.component';
 import { NumberInputDebounceComponent } from '../app/number-input-debounce/number-input-debounce.component';
 
 import { NgxMaskModule } from 'ngx-mask';
 import { ModalComponent } from './modal/modal.component';
+import { UploadCertificateComponent } from './certificate/upload-certificate/upload-certificate.component';
 import { UpdateModalComponent } from './update-modal/update-modal.component';
 import { SidebarModule } from 'ng-sidebar';
 import { SettingsComponent } from './settings/index';
@@ -78,6 +79,7 @@ import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
     CertificateStoreComponent,
     NumberInputDebounceComponent,
     ModalComponent,
+    UploadCertificateComponent,
     UpdateModalComponent,
     SettingsComponent,
     ServicesHealthComponent,

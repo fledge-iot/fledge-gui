@@ -17,4 +17,18 @@ export class CustomValidator {
       }
     });
   }
+
+  static havingKeyExtension(control: AbstractControl): { [s: string]: boolean } {
+    var extn = control.value.split(".").pop();
+    if (extn == 'key') {
+      return { extnKey: true };
+    }
+  }
+
+  static havingCertExtension(control: AbstractControl): { [s: string]: boolean } {
+    var extn = control.value.split(".").pop();
+    if (extn == 'cert') {
+      return { extnCert: true };
+    }
+  }
 }

@@ -6,11 +6,26 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class CertificateService {
 
-  private GET_LOG_SOURCE = environment.BASE_URL + 'audit/logcode';
-  private GET_LOG_SEVERITY = environment.BASE_URL + 'audit/severity';
-  private GET_AUDIT_LOGS = environment.BASE_URL + 'audit';
+  private GET_CERTIFICATES = environment.BASE_URL + 'certificate';
 
   constructor(private http: Http) { }
 
+  /**
+   *  GET | /foglamp/certificate
+   */
+  public getcertificates() {
+    return this.http.get(this.GET_CERTIFICATES)
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
+  }
+
+  /**
+   *  DELETE | /foglamp/certificate/{name}
+   */
+  public deleteCertificate(cert_name) {
+    return this.http.delete(this.GET_CERTIFICATES + '/' + cert_name)
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
+  }
   
 }

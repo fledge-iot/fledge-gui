@@ -10,7 +10,7 @@ import { AuditLogComponent } from './audit-log/index';
 import { SettingsComponent } from './settings/index';
 import { ServicesHealthComponent } from './services-health/index';
 import { ServiceDiscoveryComponent } from './service-discovery/index';
-import { CertificateStoreComponent } from './certificate-store/index';
+import { CertificateStoreComponent } from './certificate/certificate-store/index';
 
 const appRoutes: Routes = [
     { path: 'home', component: HomeComponent},
