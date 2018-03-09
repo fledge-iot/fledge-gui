@@ -114,4 +114,12 @@ export class CertificateStoreComponent implements OnInit {
       });
   }
 
+  /**
+   * To reload cirtificate list after uploading of certificate
+   * @param notify
+   */
+  onNotify() {
+    this.getcertificates();
+  }
+
 }

@@ -30,14 +30,14 @@
             <td *ngIf="!certificate.cert"><i class="fa fa-times-circle-o fa-lg" style="color:rgb(204, 62, 19)" aria-hidden="true"></i></td>
             <td *ngIf="getCertificateName(certificate.key, certificate.cert) != 'foglamp'">
               <a (click)="openDeleteModal(certificate.key, certificate.cert, 'Are you sure, You want to delete the certificate', 'deleteCertificate')"  class="button is-text">
-                Delete
+                delete
               </a>
             </td>
           </tr>
         </tbody>
       </table>
       <app-modal (deleteCertificate)='deleteCertificate($event)' [childData]='childData'></app-modal>
-      <app-upload-cert></app-upload-cert>
+      <app-upload-cert (notify)='onNotify()'></app-upload-cert>
     </div>
   </div>
 </div>

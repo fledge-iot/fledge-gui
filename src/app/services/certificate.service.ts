@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class CertificateService {
 
-  private GET_CERTIFICATES = environment.BASE_URL + 'certificate';
+  private CERTIFICATE_URL = environment.BASE_URL + 'certificate';
 
   constructor(private http: Http) { }
 
@@ -14,7 +14,7 @@ export class CertificateService {
    *  GET | /foglamp/certificate
    */
   public getcertificates() {
-    return this.http.get(this.GET_CERTIFICATES)
+    return this.http.get(this.CERTIFICATE_URL)
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
   }
@@ -23,7 +23,17 @@ export class CertificateService {
    *  DELETE | /foglamp/certificate/{name}
    */
   public deleteCertificate(cert_name) {
-    return this.http.delete(this.GET_CERTIFICATES + '/' + cert_name)
+    return this.http.delete(this.CERTIFICATE_URL + '/' + cert_name)
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
+  }
+
+  /**
+   *  POST | /foglamp/certificate
+   */
+  public uploadCertificate(payload: any) {
+    console.log('payload', payload);
+    return this.http.post(this.CERTIFICATE_URL, JSON.stringify(payload))
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { CertificateService, AlertService } from '../../services/index';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
@@ -11,14 +11,18 @@ import { CustomValidator } from '../../directives/custom-validator';
 })
 export class UploadCertificateComponent implements OnInit {
   form: FormGroup;
+  loading: boolean = false;
+  cert;
+  key;
+  @ViewChild('fileInput') fileInput: ElementRef;
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private certificateService: CertificateService, public formBuilder: FormBuilder) { }
+  constructor(private certificateService: CertificateService, private alertService: AlertService, public formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      key: [CustomValidator.havingKeyExtension],
-      certificate: [CustomValidator.havingCertExtension],
-      overwrite: [Validators.required]
+      key: null,
+      cert: null
     });
   }
   
@@ -33,8 +37,43 @@ export class UploadCertificateComponent implements OnInit {
     this.form.reset({ overwrite: false});
   }
 
-  // TODO
-  // public uploadCertificate() { 
-  // }
+  onKeyChange(event) {
+    if(event.target.files.length > 0) {
+      let file = event.target.files[0];
+      this.key = file
+      this.form.get('key').setValue(file);
+    }
+  }
+
+  onCertChange(event) {
+    if(event.target.files.length > 0) {
+      let file = event.target.files[0];
+      this.cert = file;
+      this.form.get('cert').setValue(file);
+    }
+  }
+
+  uploadCertificate() {
+    let formModel = new FormData();
+    formModel.append('key', this.form.get('key').value);
+    formModel.append('cert', this.form.get('cert').value);
+    this.loading = true;
+
+    this.certificateService.uploadCertificate(formModel).
+        subscribe(
+        data => {
+          this.notify.emit();
+          this.toggleModal(false);
+          this.loading = false;
+          this.alertService.success('Schedule created successfully.');
+        },
+        error => { 
+          if (error.status === 0) {
+              console.log('service down ', error);
+          } else {
+              this.alertService.error(error.statusText);
+          }
+        });
+  }
 
 }
