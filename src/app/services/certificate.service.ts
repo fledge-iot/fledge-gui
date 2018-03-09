@@ -31,11 +31,9 @@ export class CertificateService {
   /**
    *  POST | /foglamp/certificate
    */
-  public uploadCertificate(payload: any) {
-    console.log('payload', payload);
-    return this.http.post(this.CERTIFICATE_URL, JSON.stringify(payload))
+  public uploadCertificate(payload) {
+    return this.http.post(this.CERTIFICATE_URL,  payload)
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
   }
-  
 }

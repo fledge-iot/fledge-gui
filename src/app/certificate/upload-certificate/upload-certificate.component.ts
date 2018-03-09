@@ -41,7 +41,6 @@ export class UploadCertificateComponent implements OnInit {
     if(event.target.files.length > 0) {
       let file = event.target.files[0];
       this.key = file
-      this.form.get('key').setValue(file);
     }
   }
 
@@ -49,23 +48,21 @@ export class UploadCertificateComponent implements OnInit {
     if(event.target.files.length > 0) {
       let file = event.target.files[0];
       this.cert = file;
-      this.form.get('cert').setValue(file);
     }
   }
 
   uploadCertificate() {
-    let formModel = new FormData();
-    formModel.append('key', this.form.get('key').value);
-    formModel.append('cert', this.form.get('cert').value);
+    let formData = new FormData();
+    formData.append('key', this.cert, this.cert.name);
+    formData.append('cert', this.key, this.key.name);
     this.loading = true;
-
-    this.certificateService.uploadCertificate(formModel).
+    this.certificateService.uploadCertificate(formData).
         subscribe(
         data => {
           this.notify.emit();
           this.toggleModal(false);
           this.loading = false;
-          this.alertService.success('Schedule created successfully.');
+          this.alertService.success(data.result);
         },
         error => { 
           if (error.status === 0) {
