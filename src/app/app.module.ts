@@ -9,9 +9,19 @@ import { routing } from './app.routing';
 import { AuthGuard } from './guards/index';
 import { AlertComponent } from './directives/index';
 import {
-  AlertService, AuthService, AssetsService, AuditService, ConfigurationService,
-  StatisticsService, ServicesHealthService, SchedulesService, ConnectedServiceStatus, DiscoveryService
+  AlertService,
+  AuthService,
+  AssetsService,
+  AuditService,
+  ConfigurationService,
+  StatisticsService,
+  ServicesHealthService,
+  SchedulesService,
+  ConnectedServiceStatus,
+  DiscoveryService,
+  UserService
 } from './services/index';
+
 import { HomeComponent } from './home/index';
 import { LoginComponent } from './login/index';
 import { FooterComponent } from './footer/index';
@@ -48,6 +58,7 @@ import { ServiceDiscoveryComponent } from './service-discovery/service-discovery
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
 import { SharedService } from './services/shared.service';
+import { UserManagementComponent } from './user-management/user-management.component';
 
 @NgModule({
   imports: [
@@ -91,7 +102,8 @@ import { SharedService } from './services/shared.service';
     NumberOnlyDirective,
     InputTrimDirective,
     ServiceDiscoveryComponent,
-    ShutdownModalComponent
+    ShutdownModalComponent,
+    UserManagementComponent
   ],
   providers: [
     AuthGuard,
@@ -106,7 +118,8 @@ import { SharedService } from './services/shared.service';
     AssetSummaryService,
     ConnectedServiceStatus,
     DiscoveryService,
-    SharedService
+    SharedService,
+    UserService
   ],
   bootstrap: [AppComponent]
 })

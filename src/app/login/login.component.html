@@ -1,4 +1,7 @@
 <section class="is-success">
+    <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+        [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+    </ng-progress>
     <div class="has-text-centered">
         <div class="column is-4 is-offset-4">
             <p class="subtitle has-text-grey">Please login into FogLAMP instance.</p>
@@ -27,7 +30,7 @@
                     </div>
                     <div class="field is-grouped">
                         <div class="control">
-                            <button type="button"  class="button is-small is-text" (click)="skip()">skip</button>
+                            <button type="button" class="button is-small is-text" (click)="skip()">skip</button>
                         </div>
                         <div class="control">
                             <button class="button is-small is-info">Login</button>
@@ -36,6 +39,7 @@
                 </form>
             </div>
             <p class="has-text-grey">
+                <a (click)="setupInstance()">Setup Instance</a> &nbsp;.&nbsp;
                 <a href="#">Forgot Password?</a> &nbsp;&nbsp;
             </p>
         </div>

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { SchedulesService, AlertService } from '../services/index';
+import { SchedulesService, UserService, AlertService } from '../services/index';
 
 @Component({
   selector: 'app-modal',
@@ -12,10 +12,14 @@ export class ModalComponent implements OnInit {
   @Output() disable = new EventEmitter<Number>();
   @Output() delete = new EventEmitter<Number>();
   @Output() shutdownService = new EventEmitter<Number>();
+  @Output() deleteUserService = new EventEmitter<Number>();
 
-  constructor(private schedulesService: SchedulesService, private alertService: AlertService) { }
+  constructor(private schedulesService: SchedulesService,
+    private alertService: AlertService,
+    private userService: UserService) { }
 
-  ngOnInit() { }
+  ngOnInit() { 
+  }
 
   public toggleModal(isOpen: Boolean) {
     let schedule_name = <HTMLDivElement>document.getElementById('modal-box');
@@ -42,6 +46,11 @@ export class ModalComponent implements OnInit {
     }
     if (this.childData.key === 'shutdownService') {
       this.shutdownService.emit(this.childData.id);
+      this.toggleModal(false);
+    }
+
+    if (this.childData.key === 'deleteUser') {
+      this.deleteUserService.emit(this.childData.id);
       this.toggleModal(false);
     }
   }

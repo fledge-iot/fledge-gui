@@ -1,16 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { SharedService } from './../services/shared.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     skip:boolean;
-    constructor(private router: Router,  private sharedService: SharedService,) {}
+    constructor(private router: Router) {}
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        this.sharedService.IsLoginSkiped.subscribe(value => {
-           this.skip = value;
-          });
-        if (sessionStorage.getItem('currentUser') || this.skip) {
+        if (sessionStorage.getItem('token') || sessionStorage.getItem('skip')) {
             // logged in so return true
             return true;
         }

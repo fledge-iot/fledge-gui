@@ -10,6 +10,8 @@ import { AuditLogComponent } from './audit-log/index';
 import { SettingsComponent } from './settings/index';
 import { ServicesHealthComponent } from './services-health/index';
 import { ServiceDiscoveryComponent } from './service-discovery/index';
+import { UserManagementComponent } from './user-management/index';
+
 import { AuthGuard } from './guards/index';
 
 const appRoutes: Routes = [
@@ -23,6 +25,7 @@ const appRoutes: Routes = [
     { path: 'setting', component: SettingsComponent },
     { path: 'services-health', component: ServicesHealthComponent },
     { path: 'service-discovery', component: ServiceDiscoveryComponent },
+    { path: 'user-management', component: UserManagementComponent},
     // otherwise redirect to home
     { path: '**', redirectTo: ''}
 ];

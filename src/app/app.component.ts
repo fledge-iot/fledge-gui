@@ -16,7 +16,16 @@ export class AppComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router,
     private sharedService: SharedService,
-    private cdr: ChangeDetectorRef) { }
+    private cdr: ChangeDetectorRef) { 
+      this.sharedService.IsUserLoggedIn.subscribe(value => {
+        this.isUserLoggedIn = value.loggedIn;
+      });
+  
+      this.sharedService.IsLoginSkiped.subscribe(value => {
+        this.skip = value;
+      });
+  
+    }
   public _opened: boolean = true;
 
   returnUrl: string;
@@ -30,14 +39,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.sharedService.IsUserLoggedIn.subscribe(value => {
-      this.isUserLoggedIn = value.loggedIn;
-    });
-
-    this.sharedService.IsLoginSkiped.subscribe(value => {
-      this.skip = value;
-    });
-
     if (window.innerWidth < 1024) {
       this.navMode = 'over';
       this._opened = false;
@@ -45,10 +46,13 @@ export class AppComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    // get loggedin user from session
-    let user = sessionStorage.getItem('currentUser');
-    if (user != null && user.trim().length > 0) {
+    // get loggedin user token from session
+    const token = sessionStorage.getItem('token');
+    const skip = sessionStorage.getItem('skip');
+    if (token != null && token.trim().length > 0) {
       this.isUserLoggedIn = true;
+    } else if( skip != null && skip.trim().length > 0) {
+      this.skip = true;
     }
     this.cdr.detectChanges();
   }

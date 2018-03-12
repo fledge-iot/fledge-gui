@@ -26,7 +26,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   // Define a variable to use for showing/hiding the Login button
   isUserLoggedIn: boolean;
-  loggedInUserName: string;
   isSkip: boolean = false;
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
 
@@ -42,7 +41,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // "isUserLoggedIn" whenever a change to the subject is made.
     this.sharedService.IsUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value.loggedIn;
-      this.loggedInUserName = value.userName;
     });
     this.sharedService.IsLoginSkiped.subscribe(value => {
       this.isSkip = value;
@@ -52,10 +50,13 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   ngOnInit() { }
 
   ngAfterViewInit() {
-    // get loggedin user from session
-    this.loggedInUserName = sessionStorage.getItem('currentUser');
-    if (this.loggedInUserName != null && this.loggedInUserName.length > 0) {
+    // get user token from session
+    const token = sessionStorage.getItem('token');
+    const skip = sessionStorage.getItem('skip');
+    if (token != null && token.length > 0) {
       this.isUserLoggedIn = true;
+    } else if (skip != null && skip.trim().length > 0) {
+      this.isSkip = true;
     }
     this.start();
     this.cdr.detectChanges();
@@ -98,14 +99,12 @@ export class NavbarComponent implements OnInit, AfterViewInit {
           this.alertService.success(data.message);
         },
         (error) => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
-            /** request completed */
-            this.ngProgress.done();
           } else {
             this.alertService.error(error.statusText);
-            /** request completed */
-            this.ngProgress.done();
           }
         });
   }
@@ -132,16 +131,19 @@ export class NavbarComponent implements OnInit, AfterViewInit {
      *  Signout the current user
      */
   logout() {
-    let token = sessionStorage.getItem('token');
+    this.ngProgress.start();
+    const token = sessionStorage.getItem('token');
     this.authService.logout(token).
       subscribe(
         data => {
+          this.ngProgress.done();
           // remove access token and logged in user from session storage
-          sessionStorage.removeItem('currentUser');
+          sessionStorage.removeItem('token');
           location.reload();
           this.router.navigate(['/login']);
         },
         error => {
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down', error);
           } else {
