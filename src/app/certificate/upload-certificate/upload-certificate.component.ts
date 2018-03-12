@@ -13,6 +13,7 @@ export class UploadCertificateComponent implements OnInit {
   form: FormGroup;
   cert;
   key;
+  overwrite = '0';
   @ViewChild('fileInput') fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
@@ -21,8 +22,12 @@ export class UploadCertificateComponent implements OnInit {
   ngOnInit() {
     this.form = this.formBuilder.group({
       key: null,
-      cert: null
+      cert: null,
+      overwrite: '0'
     });
+
+    // Set default value on form
+    this.form.get('overwrite').setValue("0");
   }
   
   public toggleModal(isOpen: Boolean) {
@@ -32,7 +37,7 @@ export class UploadCertificateComponent implements OnInit {
       return;
     }
     certificate_modal.classList.remove('is-active');
-    this.form.reset({ overwrite: false});
+    this.form.reset({ overwrite: 0});
   }
 
   onKeyChange(event) {
@@ -49,10 +54,19 @@ export class UploadCertificateComponent implements OnInit {
     }
   }
 
+  onOverwriteChange(event) {
+    if(event.target.checked) {
+      console.log('true ');
+      this.overwrite = '1';
+    }
+  }
+
   uploadCertificate() {
     let formData = new FormData();
     formData.append('key', this.cert, this.cert.name);
     formData.append('cert', this.key, this.key.name);
+    formData.append('overwrite', this.overwrite);
+    
     /** request started */
     this.ngProgress.start();
     this.certificateService.uploadCertificate(formData).

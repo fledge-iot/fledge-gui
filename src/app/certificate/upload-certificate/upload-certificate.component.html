@@ -59,7 +59,7 @@
               <div class="field">
                 <div class="control">
                   <label class="checkbox">
-                    <input type="checkbox">
+                    <input type="checkbox" ng-model="overwrite" (change)="onOverwriteChange($event)">
                     Overwrite
                   </label>
                 </div>
