@@ -11,7 +11,7 @@ import { UploadCertificateComponent } from '../upload-certificate/upload-certifi
 })
 export class CertificateStoreComponent implements OnInit {
   public certificatesData = [];
-  public certificate_name = '';
+  public certificateName = '';
 
   // Object to hold data of certificate to delete
   public childData = {
@@ -27,7 +27,7 @@ export class CertificateStoreComponent implements OnInit {
   constructor(private certService: CertificateService, public ngProgress: NgProgress, private alertService: AlertService) { }
 
   ngOnInit() {
-    this.getcertificates();
+    this.getCertificates();
   }
 
   /**
@@ -38,10 +38,10 @@ export class CertificateStoreComponent implements OnInit {
     this.uploadModal.toggleModal(true);
   }
 
-  public getcertificates() {
+  public getCertificates() {
     /** request started */
     this.ngProgress.start();
-    this.certService.getcertificates().
+    this.certService.getCertificates().
       subscribe(
       data => {
         /** request completed */
@@ -50,6 +50,8 @@ export class CertificateStoreComponent implements OnInit {
         console.log('certificatesData', this.certificatesData);
       },
       error => {
+        /** request completed */
+        this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -75,10 +77,10 @@ export class CertificateStoreComponent implements OnInit {
    * @param action here action is 'delete'
    */
   openDeleteModal(key, cert, message, action) {
-    this.certificate_name = this.getCertificateName(key, cert)
+    this.certificateName = this.getCertificateName(key, cert)
     this.childData = {
       id: '',
-      name: this.certificate_name,
+      name: this.certificateName,
       message: message,
       key: action
     };
@@ -99,9 +101,8 @@ export class CertificateStoreComponent implements OnInit {
       data => {
           /** request completed */
           this.ngProgress.done();
-          console.log('delete data ', data.result);
           this.alertService.success(data.result);
-          this.getcertificates();
+          this.getCertificates();
       },
       error => {
         /** request completed */
@@ -119,7 +120,7 @@ export class CertificateStoreComponent implements OnInit {
    * @param notify
    */
   onNotify() {
-    this.getcertificates();
+    this.getCertificates();
   }
 
 }

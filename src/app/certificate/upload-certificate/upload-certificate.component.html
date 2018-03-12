@@ -54,9 +54,21 @@
               </div>
             </div>
           </div>
-          <button type="submit" [disabled]="form.invalid || loading" class="button is-small is-success">Import
-            <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i>
-          </button>
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <div class="control">
+                  <label class="checkbox">
+                    <input type="checkbox">
+                    Overwrite
+                  </label>
+                </div>
+                <p class="help">Overwrite allows to replace the certificate with existing name and key</p>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" [disabled]="form.invalid" class="button is-small is-success">Import</button>
         </form>
       </div>
     </section>

@@ -11,13 +11,12 @@ import { CustomValidator } from '../../directives/custom-validator';
 })
 export class UploadCertificateComponent implements OnInit {
   form: FormGroup;
-  loading: boolean = false;
   cert;
   key;
   @ViewChild('fileInput') fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private certificateService: CertificateService, private alertService: AlertService, public formBuilder: FormBuilder) { }
+  constructor(private certificateService: CertificateService, public ngProgress: NgProgress, private alertService: AlertService, public formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -27,7 +26,6 @@ export class UploadCertificateComponent implements OnInit {
   }
   
   public toggleModal(isOpen: Boolean) {
-    console.log('openUploadCertModal');
     let certificate_modal = <HTMLDivElement>document.getElementById('upload_certificate_modal');
     if (isOpen) {
       certificate_modal.classList.add('is-active');
@@ -55,16 +53,20 @@ export class UploadCertificateComponent implements OnInit {
     let formData = new FormData();
     formData.append('key', this.cert, this.cert.name);
     formData.append('cert', this.key, this.key.name);
-    this.loading = true;
+    /** request started */
+    this.ngProgress.start();
     this.certificateService.uploadCertificate(formData).
         subscribe(
         data => {
+          /** request completed */
+          this.ngProgress.done();
           this.notify.emit();
           this.toggleModal(false);
-          this.loading = false;
           this.alertService.success(data.result);
         },
-        error => { 
+        error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
               console.log('service down ', error);
           } else {

@@ -13,7 +13,7 @@ export class CertificateService {
   /**
    *  GET | /foglamp/certificate
    */
-  public getcertificates() {
+  public getCertificates() {
     return this.http.get(this.CERTIFICATE_URL)
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
