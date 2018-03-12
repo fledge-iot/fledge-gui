@@ -48,7 +48,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   openModal() {
     this.shutDownData = {
       key: 'shutdown',
-      message: 'Do you really want to shut down the FogLAMP ?'
+      message: 'Do you really want to shut down the FogLAMP?'
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);

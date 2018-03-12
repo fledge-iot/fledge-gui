@@ -56,7 +56,6 @@ export class UploadCertificateComponent implements OnInit {
 
   onOverwriteChange(event) {
     if(event.target.checked) {
-      console.log('true ');
       this.overwrite = '1';
     }
   }
