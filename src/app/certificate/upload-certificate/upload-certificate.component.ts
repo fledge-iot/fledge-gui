@@ -13,6 +13,8 @@ export class UploadCertificateComponent implements OnInit {
   form: FormGroup;
   cert;
   key;
+  keyExtension: boolean = true;
+  certExtension: boolean = true;
   overwrite = '0';
   @ViewChild('fileInput') fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -27,7 +29,7 @@ export class UploadCertificateComponent implements OnInit {
     });
 
     // Set default value on form
-    this.form.get('overwrite').setValue("0");
+    this.form.get('overwrite').setValue('0');
   }
   
   public toggleModal(isOpen: Boolean) {
@@ -37,10 +39,21 @@ export class UploadCertificateComponent implements OnInit {
       return;
     }
     certificate_modal.classList.remove('is-active');
-    this.form.reset({ overwrite: 0});
+    this.fileInput.nativeElement.value = "";
+    this.keyExtension = true;
+    this.certExtension = true;
+    this.overwrite = '0';
   }
 
   onKeyChange(event) {
+    var fileName = event.target.files[0].name;
+    var ext = fileName.substr(fileName.lastIndexOf('.') + 1);
+    console.log('type', ext);
+    if(ext!=="key"){ 
+      this.keyExtension = false;
+    } else {
+      this.keyExtension = true;
+    }
     if(event.target.files.length > 0) {
       let file = event.target.files[0];
       this.key = file
@@ -48,6 +61,14 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   onCertChange(event) {
+    var fileName = event.target.files[0].name;
+    var ext = fileName.substr(fileName.lastIndexOf('.') + 1);
+    console.log('type', ext);
+    if(ext!=="cert"){ 
+      this.certExtension = false;
+    } else {
+      this.certExtension = true;
+    }
     if(event.target.files.length > 0) {
       let file = event.target.files[0];
       this.cert = file;
@@ -61,31 +82,35 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   uploadCertificate() {
-    let formData = new FormData();
-    formData.append('key', this.cert, this.cert.name);
-    formData.append('cert', this.key, this.key.name);
-    formData.append('overwrite', this.overwrite);
-    
-    /** request started */
-    this.ngProgress.start();
-    this.certificateService.uploadCertificate(formData).
-        subscribe(
-        data => {
-          /** request completed */
-          this.ngProgress.done();
-          this.notify.emit();
-          this.toggleModal(false);
-          this.alertService.success(data.result);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-              console.log('service down ', error);
-          } else {
-              this.alertService.error(error.statusText);
-          }
-        });
+    if (this.cert && this.key) {
+      let formData = new FormData();
+      formData.append('key', this.cert, this.cert.name);
+      formData.append('cert', this.key, this.key.name);
+      formData.append('overwrite', this.overwrite);
+      
+      /** request started */
+      this.ngProgress.start();
+      this.certificateService.uploadCertificate(formData).
+          subscribe(
+          data => {
+            /** request completed */
+            this.ngProgress.done();
+            this.notify.emit();
+            this.toggleModal(false);
+            this.alertService.success(data.result);
+          },
+          error => {
+            /** request completed */
+            this.ngProgress.done();
+            if (error.status === 0) {
+                console.log('service down ', error);
+            } else {
+                this.alertService.error(error.statusText);
+            }
+          });
+    } else {
+      this.alertService.error('Key or Certificate is missing');
+    }
   }
 
 }
