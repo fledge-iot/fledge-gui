@@ -5,6 +5,7 @@ import { SharedService } from '../services/shared.service';
 import { NgProgress } from 'ngx-progressbar';
 import { ModalComponent } from '../modal/modal.component';
 import { CreateUserComponent } from "./create-user/create-user.component";
+import { UpdateUserComponent } from './update-user/update-user.component';
 
 
 @Component({
@@ -17,7 +18,9 @@ export class UserManagementComponent implements OnInit {
   public userRecord;
   @ViewChild(ModalComponent) child: ModalComponent;
   @ViewChild(CreateUserComponent) createUserModal: CreateUserComponent;
-  
+  @ViewChild(UpdateUserComponent) updateUserModal: UpdateUserComponent;
+
+
   // Object to hold schedule id and name to delete
   public childData = {};
   constructor(private route: ActivatedRoute,
@@ -95,23 +98,28 @@ export class UserManagementComponent implements OnInit {
     this.child.toggleModal(true);
   }
 
-   /**
-   * To reload schedule list after deletion of a schedule
-   * @param notify
-   */
+  /**
+  * To reload schedule list after deletion of a schedule
+  * @param notify
+  */
   onNotify() {
     this.getLoggedInUser();
   }
 
- 
+
   /**
   * Open create user modal dialog
   */
   openCreateUserModal() {
     // call child component method to toggle modal
-    this.createUserModal.toggleModal(true, null);
+    this.createUserModal.toggleModal(true);
   }
 
+  openUpdateUserModal(user) {
+    this.updateUserModal.setUser(user);
+    // call child component method to toggle modal
+    this.updateUserModal.toggleModal(true);
+  }
 
   deleteUser(userId) {
     console.log('Deleting User:', userId);

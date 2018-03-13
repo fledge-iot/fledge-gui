@@ -59,4 +59,18 @@ export class UserService {
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
   }
+
+  /**
+  * PUT  /foglamp/user/{id}
+  * @param String token
+  * @param Object payload 
+  */
+ updateUser(payload, token) {
+  let headers = new Headers({ 'content-type': 'application/json' });
+  headers.append('authorization', token);
+  let options = new RequestOptions({ headers: headers });
+  return this.http.put(this.USER_URL + "/" + payload.user_id, payload)
+    .map(response => response.json())
+    .catch((error: Response) => Observable.throw(error));
+}
 }

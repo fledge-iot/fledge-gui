@@ -62,6 +62,7 @@ import { UserManagementComponent } from './user-management/user-management.compo
 import { CreateUserComponent } from './user-management/create-user/create-user.component';
 
 import { EqualValidator } from './directives/index';
+import { UpdateUserComponent } from './user-management/update-user/update-user.component';
 
 @NgModule({
   imports: [
@@ -108,7 +109,8 @@ import { EqualValidator } from './directives/index';
     ShutdownModalComponent,
     UserManagementComponent,
     CreateUserComponent,
-    EqualValidator
+    EqualValidator,
+    UpdateUserComponent
   ],
   providers: [
     AuthGuard,

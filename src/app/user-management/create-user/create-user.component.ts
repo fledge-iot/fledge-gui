@@ -11,7 +11,7 @@ import { NgForm } from '@angular/forms';
 })
 export class CreateUserComponent implements OnInit {
   model: User;
-
+  isUpdateForm = false;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private userService: UserService,
@@ -19,14 +19,15 @@ export class CreateUserComponent implements OnInit {
 
   ngOnInit() {
     this.model = {
+      user_id: 0,
       username: '',
       password: '',
       confirmPassword: '',
-      role: 1   // to set default value in role option
+      role_id: 1   // to set default value in role option
     }
   }
 
-  public toggleModal(isOpen: Boolean, form: NgForm) {
+  public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
       form.resetForm({ role: 1 })
     }
@@ -35,10 +36,11 @@ export class CreateUserComponent implements OnInit {
       createUserModal.classList.add('is-active');
       return;
     }
+    this.isUpdateForm = false;
     createUserModal.classList.remove('is-active');
   }
 
-  public createUser(form:NgForm) {
+  public createUser(form: NgForm) {
     let token = sessionStorage.getItem('token');
     this.userService.createUser(this.model, token).
       subscribe(
@@ -58,5 +60,4 @@ export class CreateUserComponent implements OnInit {
           }
         });
   }
-
 }

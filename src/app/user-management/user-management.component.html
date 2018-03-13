@@ -32,7 +32,7 @@
               {{user.roleName}}
             </td>
             <td>
-              <a (click)="editUser(user.useId)" class="button is-text">
+              <a (click)="openUpdateUserModal(user)" class="button is-text">
                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
               </a>
             </td>
@@ -44,7 +44,8 @@
           </tr>
         </table>
         <app-modal (deleteUserService)='deleteUser($event)' [childData]='childData'></app-modal>
-        <app-create-user (notify)='onNotify()' ></app-create-user>
+        <app-create-user (notify)='onNotify()'></app-create-user>
+        <app-update-user (notify)='onNotify()'></app-update-user>
       </div>
     </div>
   </div>
