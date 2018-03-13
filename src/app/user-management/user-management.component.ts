@@ -4,7 +4,7 @@ import { AlertService, AuthService, UserService } from '../services/index';
 import { SharedService } from '../services/shared.service';
 import { NgProgress } from 'ngx-progressbar';
 import { ModalComponent } from '../modal/modal.component';
-import { CreateUserComponent } from "../create-user/create-user.component";
+import { CreateUserComponent } from "./create-user/create-user.component";
 
 
 @Component({
@@ -109,7 +109,7 @@ export class UserManagementComponent implements OnInit {
   */
   openCreateUserModal() {
     // call child component method to toggle modal
-    this.createUserModal.toggleModal(true);
+    this.createUserModal.toggleModal(true, null);
   }
 
 

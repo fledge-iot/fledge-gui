@@ -59,7 +59,7 @@ import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2
 import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
 import { SharedService } from './services/shared.service';
 import { UserManagementComponent } from './user-management/user-management.component';
-import { CreateUserComponent } from './create-user/create-user.component';
+import { CreateUserComponent } from './user-management/create-user/create-user.component';
 
 import { EqualValidator } from './directives/index';
 
