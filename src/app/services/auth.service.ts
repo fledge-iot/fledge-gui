@@ -19,7 +19,7 @@ export class AuthService {
   login(username: string, password: string) {
     return this.http.post(this.LOGIN_URL, JSON.stringify({ username: username, password: password }))
       .map(response =>response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -31,6 +31,6 @@ export class AuthService {
     headers.append('authorization', token);
     return this.http.put(this.LOGOUT_URL, null)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 }

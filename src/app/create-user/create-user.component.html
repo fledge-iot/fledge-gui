@@ -1,0 +1,54 @@
+<div id="user_modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Create User</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="card-content">
+        <form name="form" (ngSubmit)="f.form.valid && createUser()" #f="ngForm" novalidate>
+          <div class="columns">
+            <div class="column" [ngClass]="{ 'has-error': f.submitted && !username.valid }">
+              <label class="label">User Name</label>
+              <p class="control is-fullwidth">
+                <input type="text" class="input" placeholder="username" name='username' [(ngModel)]="model.username" #username="ngModel"
+                  minlength="4" maxlength="8" required />
+              </p>
+              <small *ngIf="f.submitted && !username.valid" class="help is-danger level-left"> Username is required (minimum 4 characters)</small>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
+              <label class="label">Password</label>
+              <p class="control is-fullwidth">
+                <input type="password" class="input" placeholder="password" name='password' [(ngModel)]="model.password" #password="ngModel"
+                  validateEqual="confirmPassword" reverse="true" required />
+              </p>
+              <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minium 6 character)</small>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column" [ngClass]="{ 'has-error': f.submitted && !confirmPassword.valid }">
+              <label class="label">Confirm Password</label>
+              <p class="control is-fullwidth">
+                <input type="password" class="input" placeholder="confirm password" name='confirmPassword' [(ngModel)]="model.confirmPassword"
+                  #confirmPassword="ngModel" validateEqual="password" required />
+              </p>
+              <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <div class="control">
+                  <button id="save" type="submit" class="button is-success">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>

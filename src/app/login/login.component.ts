@@ -55,13 +55,13 @@ export class LoginComponent implements OnInit {
                 });
     }
 
-    private skip() {
+    public skip() {
         sessionStorage.setItem('skip', JSON.stringify(true));
         this.sharedService.IsLoginSkiped.next(true);
         this.router.navigate(['']);
     }
 
-    private setupInstance() {
+    public setupInstance() {
         this.router.navigate(['/setting']);
     }
 }

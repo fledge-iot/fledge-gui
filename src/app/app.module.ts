@@ -59,6 +59,9 @@ import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2
 import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
 import { SharedService } from './services/shared.service';
 import { UserManagementComponent } from './user-management/user-management.component';
+import { CreateUserComponent } from './create-user/create-user.component';
+
+import { EqualValidator } from './directives/index';
 
 @NgModule({
   imports: [
@@ -103,7 +106,9 @@ import { UserManagementComponent } from './user-management/user-management.compo
     InputTrimDirective,
     ServiceDiscoveryComponent,
     ShutdownModalComponent,
-    UserManagementComponent
+    UserManagementComponent,
+    CreateUserComponent,
+    EqualValidator
   ],
   providers: [
     AuthGuard,

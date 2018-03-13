@@ -22,7 +22,7 @@ export class UserService {
     let options = new RequestOptions({ headers: headers });
     return this.http.get(this.USER_URL, options)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -32,7 +32,7 @@ export class UserService {
   getRole() {
     return this.http.get(this.ROLE_URL)
       .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
@@ -42,7 +42,21 @@ export class UserService {
    */
   deleteUser(id) {
     return this.http.delete(this.USER_URL + "/" + id)
-    .map(response => response.json())
-    .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
+  }
+
+  /**
+  * POST  /foglamp/user/{id}
+  * @param String token
+  * @param Number id
+  */
+  createUser(user, token) {
+    let headers = new Headers({ 'content-type': 'application/json' });
+    headers.append('authorization', token);
+    let options = new RequestOptions({ headers: headers });
+    return this.http.post(this.USER_URL, user)
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
   }
 }
