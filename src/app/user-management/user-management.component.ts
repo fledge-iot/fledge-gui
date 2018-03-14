@@ -41,7 +41,7 @@ export class UserManagementComponent implements OnInit {
     // get loggedin user token from session
     const token = sessionStorage.getItem('token');
     // Get SignedIn user details
-    this.userService.getWhoAmi(token)
+    this.userService.getUser(token)
       .subscribe(
         userData => {
           this.getRole(userData.users);

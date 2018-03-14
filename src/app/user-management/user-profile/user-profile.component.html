@@ -1,0 +1,39 @@
+<div class="columns">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  </ng-progress>
+  <div class="column is-offset-1 is-four-fifths">
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+         Profile
+        </p>
+      </header>
+      <div class="card-content">
+        <table class="table scroll is-responsive">
+          <thead id="head">
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tr *ngFor="let user of userRecord">
+            <td>{{user.userId}}</td>
+            <td>
+              {{user.userName}}
+            </td>
+            <td>
+              {{user.roleName}}
+            </td>
+            <td>
+              <a (click)="openUpdateUserModal(user)" class="button is-text">
+                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+              </a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

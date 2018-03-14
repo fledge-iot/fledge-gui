@@ -6,7 +6,7 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 
-import { AuthGuard } from './guards/index';
+import { AuthGuard, UserGuard } from './guards/index';
 import { AlertComponent } from './directives/index';
 import {
   AlertService,
@@ -63,6 +63,7 @@ import { CreateUserComponent } from './user-management/create-user/create-user.c
 
 import { EqualValidator } from './directives/index';
 import { UpdateUserComponent } from './user-management/update-user/update-user.component';
+import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
 
 @NgModule({
   imports: [
@@ -110,10 +111,12 @@ import { UpdateUserComponent } from './user-management/update-user/update-user.c
     UserManagementComponent,
     CreateUserComponent,
     EqualValidator,
-    UpdateUserComponent
+    UpdateUserComponent,
+    UserProfileComponent
   ],
   providers: [
     AuthGuard,
+    UserGuard,
     AlertService,
     AuthService,
     ConfigurationService,

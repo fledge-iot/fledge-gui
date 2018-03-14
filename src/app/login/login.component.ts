@@ -40,6 +40,8 @@ export class LoginComponent implements OnInit {
                 data => {
                     this.ngProgress.done();
                     sessionStorage.setItem('token', data.token);
+                    sessionStorage.setItem('uid', data.uid);
+                    sessionStorage.setItem('isAdmin', JSON.stringify(data.admin));
                     this.router.navigate([this.returnUrl]);
                     this.sharedService.IsUserLoggedIn.next({
                         'loggedIn': true

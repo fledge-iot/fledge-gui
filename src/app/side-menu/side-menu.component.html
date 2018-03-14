@@ -37,12 +37,16 @@
       Service Discovery
     </a>
   </li> -->
-
   <li>
-    <a [ngClass]="{'is-active': step==='/user-management'}" (click)="onToggle('/user-management')">
+    <a *ngIf= "isAdmin" [ngClass]="{'is-active': step==='/user-management'}" (click)="onToggle('/user-management')">
       User Management
     </a>
   </li>
+  <li>
+      <a [ngClass]="{'is-active': step==='/user-profile'}" (click)="onToggle('/user-profile')">
+        User Profile
+      </a>
+    </li>
   <li>
     <a [ngClass]="{'is-active': step==='/setting'}" (click)="onToggle('/setting')">
       Settings

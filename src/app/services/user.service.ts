@@ -16,11 +16,18 @@ export class UserService {
    * GET /foglamp/user
    * @param token
    */
-  getWhoAmi(token: string) {
+  getUser(token: string, uid = '0') {
+    let url;
+    if (+uid > 0) {
+      url = this.USER_URL + "?id=" + uid
+      console.log(url);
+    } else {
+      url = this.USER_URL;
+    }
     let headers = new Headers({ 'content-type': 'application/json' });
     headers.append('authorization', token);
     let options = new RequestOptions({ headers: headers });
-    return this.http.get(this.USER_URL, options)
+    return this.http.get(url, options)
       .map(response => response.json())
       .catch((error: Response) => Observable.throw(error));
   }
@@ -65,12 +72,12 @@ export class UserService {
   * @param String token
   * @param Object payload 
   */
- updateUser(payload, token) {
-  let headers = new Headers({ 'content-type': 'application/json' });
-  headers.append('authorization', token);
-  let options = new RequestOptions({ headers: headers });
-  return this.http.put(this.USER_URL + "/" + payload.user_id, payload)
-    .map(response => response.json())
-    .catch((error: Response) => Observable.throw(error));
-}
+  updateUser(payload, token) {
+    let headers = new Headers({ 'content-type': 'application/json' });
+    headers.append('authorization', token);
+    let options = new RequestOptions({ headers: headers });
+    return this.http.put(this.USER_URL + "/" + payload.user_id, payload)
+      .map(response => response.json())
+      .catch((error: Response) => Observable.throw(error));
+  }
 }
