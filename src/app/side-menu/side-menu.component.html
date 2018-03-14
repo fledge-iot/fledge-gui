@@ -43,7 +43,7 @@
     </a>
   </li>
   <li>
-      <a [ngClass]="{'is-active': step==='/user-profile'}" (click)="onToggle('/user-profile')">
+      <a  *ngIf= "!isSkip" [ngClass]="{'is-active': step==='/user-profile'}" (click)="onToggle('/user-profile')">
         User Profile
       </a>
     </li>

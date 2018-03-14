@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
-// import  Utils, {BASE_URL} from './utils'
 import { environment } from '../../environments/environment';
 
 @Injectable()
@@ -15,14 +14,16 @@ export class SchedulesService {
   private GET_LATEST_TASK = environment.BASE_URL + 'task/latest';
   private CANCEL_TASK = environment.BASE_URL + 'task/cancel';
 
-  constructor(private http: Http) { }
+
+
+  constructor(private http: HttpClient) { }
 
   /**
    *  GET | foglamp/schedule/type
    */
   public getScheduleType() {
     return this.http.get(this.GET_SCHEDULE_TYPE)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -32,7 +33,7 @@ export class SchedulesService {
    */
   public getSchedules() {
     return this.http.get(this.GET_SCHEDULE)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -41,7 +42,7 @@ export class SchedulesService {
    */
   public getSchedule(schedule_id) {
     return this.http.get(this.GET_SCHEDULE + '/' + schedule_id)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -51,35 +52,35 @@ export class SchedulesService {
    * POST | /foglamp/schedule
    *
    */
-  public createSchedule (payload: any) {
-      return this.http.post(this.GET_SCHEDULE, JSON.stringify(payload))
-      .map(response => response.json())
+  public createSchedule(payload: any) {
+    return this.http.post(this.GET_SCHEDULE, JSON.stringify(payload))
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
- /**
-   * Update schedule
-   *
-   * PUT | /foglamp/schedule/{schedule_id}
-   *
-   */
-  public updateSchedule (schedule_id, payload: any) {
-      return this.http.put(this.GET_SCHEDULE + '/' + schedule_id, JSON.stringify(payload))
-      .map(response => response.json())
+  /**
+    * Update schedule
+    *
+    * PUT | /foglamp/schedule/{schedule_id}
+    *
+    */
+  public updateSchedule(schedule_id, payload: any) {
+    return this.http.put(this.GET_SCHEDULE + '/' + schedule_id, JSON.stringify(payload))
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
 
- /**
-   * Delete schedule
-   *
-   * DELETE | /foglamp/{schedule_id}
-   *
-   */
-  public deleteSchedule (schedule_id: any) {
-     return this.http.delete(this.GET_SCHEDULE + '/' + schedule_id)
-            .map(response => response.json())
-            .catch((error: Response) => Observable.throw(error));
+  /**
+    * Delete schedule
+    *
+    * DELETE | /foglamp/{schedule_id}
+    *
+    */
+  public deleteSchedule(schedule_id: any) {
+    return this.http.delete(this.GET_SCHEDULE + '/' + schedule_id)
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
   }
 
 
@@ -88,7 +89,7 @@ export class SchedulesService {
    */
   public getScheduledProcess() {
     return this.http.get(this.GET_SCHEDULE_PROCESS)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -97,7 +98,7 @@ export class SchedulesService {
    */
   public enableSchedule(id) {
     return this.http.put(this.GET_SCHEDULE + '/' + id + '/' + 'enable', null)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -106,7 +107,7 @@ export class SchedulesService {
    */
   public disableSchedule(id) {
     return this.http.put(this.GET_SCHEDULE + '/' + id + '/' + 'disable', null)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -115,7 +116,7 @@ export class SchedulesService {
    */
   public getLatestTask() {
     return this.http.get(this.GET_LATEST_TASK)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -123,9 +124,10 @@ export class SchedulesService {
    *  GET | /foglamp/task
    */
   public getTasks(state: string) {
-     let params: URLSearchParams = new URLSearchParams();
-    return this.http.get(this.GET_TASKS, { params: {state: state} })
-      .map(response => response.json())
+    let params = new HttpParams();
+    params = params.append('state', state);
+    return this.http.get(this.GET_TASKS, { params: params })
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -134,7 +136,7 @@ export class SchedulesService {
    */
   public cancelTask(id) {
     return this.http.put(this.CANCEL_TASK + '/' + id, null)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 }

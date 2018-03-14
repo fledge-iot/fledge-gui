@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, Response, RequestOptions } from '@angular/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs/Rx';
 import { environment } from '../../environments/environment';
 
@@ -9,7 +9,7 @@ export class AuthService {
   private LOGIN_URL = environment.BASE_URL + 'login';
   private LOGOUT_URL = environment.BASE_URL + 'logout';
 
-  constructor(private http: Http) {}
+  constructor(private http: HttpClient) {}
 
   /**
    *  Login into system
@@ -18,7 +18,7 @@ export class AuthService {
    */
   login(username: string, password: string) {
     return this.http.post(this.LOGIN_URL, JSON.stringify({ username: username, password: password }))
-      .map(response =>response.json())
+      .map(response =>response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -26,11 +26,9 @@ export class AuthService {
     * Get assets data
     * @param token
     */
-  logout(token: string) {
-    let headers = new Headers({ 'content-type': 'application/json' });
-    headers.append('authorization', token);
+  logout() {
     return this.http.put(this.LOGOUT_URL, null)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 }

@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpsRequestInterceptor } from './services/HttpsRequestInterceptor';
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
@@ -71,6 +73,7 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
+    HttpClientModule,
     routing,
     ChartModule,
     NgxMaskModule,
@@ -129,7 +132,12 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
     ConnectedServiceStatus,
     DiscoveryService,
     SharedService,
-    UserService
+    UserService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpsRequestInterceptor,
+      multi: true,
+    }
   ],
   bootstrap: [AppComponent]
 })

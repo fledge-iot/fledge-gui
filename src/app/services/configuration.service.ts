@@ -1,21 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 @Injectable()
 export class ConfigurationService {
     // private instance variable to hold base url
     private GET_CATEGORY_URL = environment.BASE_URL + 'category';
-
-    constructor(private http: Http) { }
+    constructor(private http: HttpClient) { }
 
     /**
      *   GET  | /foglamp/category
      */
     getCategories() {
         return this.http.get(this.GET_CATEGORY_URL)
-            .map(response => response.json())
+            .map(response => response)
             .catch((error: Response) => Observable.throw(error));
     }
 
@@ -24,7 +23,7 @@ export class ConfigurationService {
      */
     getCategory(category_name) {
         return this.http.get(this.GET_CATEGORY_URL + '/' + category_name)
-            .map(response => response.json())
+            .map(response => response)
             .catch((error: Response) => Observable.throw(error));
     }
 
@@ -37,7 +36,7 @@ export class ConfigurationService {
             body = JSON.stringify({ 'value': JSON.parse(value) });
         }
         return this.http.put(this.GET_CATEGORY_URL + '/' + category_name + '/' + config_item, body)
-            .map(response => response.json())
+            .map(response => response)
             .catch((error: Response) => Observable.throw(error));
     }
 }

@@ -1,34 +1,24 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, Response, RequestOptions } from '@angular/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs/Rx';
 import { environment } from '../../environments/environment';
-
 
 @Injectable()
 export class UserService {
 
   private USER_URL = environment.BASE_URL + 'user';
   private ROLE_URL = environment.BASE_URL + 'user/role'
-
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
 
   /**
    * GET /foglamp/user
    * @param token
    */
   getUser(token: string, uid = '0') {
-    let url;
-    if (+uid > 0) {
-      url = this.USER_URL + "?id=" + uid
-      console.log(url);
-    } else {
-      url = this.USER_URL;
-    }
-    let headers = new Headers({ 'content-type': 'application/json' });
-    headers.append('authorization', token);
-    let options = new RequestOptions({ headers: headers });
-    return this.http.get(url, options)
-      .map(response => response.json())
+    let params = new HttpParams();
+    params = params.set('id', uid)
+    return this.http.get(this.USER_URL, { params: params })
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -38,7 +28,7 @@ export class UserService {
   */
   getRole() {
     return this.http.get(this.ROLE_URL)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -49,7 +39,7 @@ export class UserService {
    */
   deleteUser(id) {
     return this.http.delete(this.USER_URL + "/" + id)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -59,11 +49,8 @@ export class UserService {
   * @param Number id
   */
   createUser(user, token) {
-    let headers = new Headers({ 'content-type': 'application/json' });
-    headers.append('authorization', token);
-    let options = new RequestOptions({ headers: headers });
     return this.http.post(this.USER_URL, user)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -73,11 +60,8 @@ export class UserService {
   * @param Object payload 
   */
   updateUser(payload, token) {
-    let headers = new Headers({ 'content-type': 'application/json' });
-    headers.append('authorization', token);
-    let options = new RequestOptions({ headers: headers });
     return this.http.put(this.USER_URL + "/" + payload.user_id, payload)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 }
