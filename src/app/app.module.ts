@@ -10,7 +10,7 @@ import { AuthGuard } from './guards/index';
 import { AlertComponent } from './directives/index';
 import {
   AlertService, AuthService, AssetsService, AuditService, ConfigurationService,
-  StatisticsService, ServicesHealthService, SchedulesService, ConnectedServiceStatus, DiscoveryService
+  StatisticsService, ServicesHealthService, SchedulesService, ConnectedServiceStatus, DiscoveryService, CertificateService
 } from './services/index';
 import { HomeComponent } from './home/index';
 import { LoginComponent } from './login/index';
@@ -26,10 +26,12 @@ import { SideMenuComponent } from '../app/side-menu/side-menu.component';
 import { NavbarComponent } from '../app/navbar/navbar.component';
 import { AssetsComponent } from '../app/asset-readings/assets/assets.component';
 import { AuditLogComponent } from '../app/audit-log/audit-log.component';
+import { CertificateStoreComponent } from '../app/certificate/certificate-store/certificate-store.component';
 import { NumberInputDebounceComponent } from '../app/number-input-debounce/number-input-debounce.component';
 
 import { NgxMaskModule } from 'ngx-mask';
 import { ModalComponent } from './modal/modal.component';
+import { UploadCertificateComponent } from './certificate/upload-certificate/upload-certificate.component';
 import { UpdateModalComponent } from './update-modal/update-modal.component';
 import { SidebarModule } from 'ng-sidebar';
 import { SettingsComponent } from './settings/index';
@@ -77,8 +79,10 @@ import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
     NavbarComponent,
     AssetsComponent,
     AuditLogComponent,
+    CertificateStoreComponent,
     NumberInputDebounceComponent,
     ModalComponent,
+    UploadCertificateComponent,
     UpdateModalComponent,
     SettingsComponent,
     ServicesHealthComponent,
@@ -104,6 +108,7 @@ import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
     ServicesHealthService,
     AssetSummaryService,
     ConnectedServiceStatus,
+    CertificateService,
     DiscoveryService
   ],
   bootstrap: [AppComponent]

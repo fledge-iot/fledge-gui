@@ -37,6 +37,11 @@
       Service Discovery
     </a>
   </li> -->
+  <li>
+    <a [ngClass]="{'is-active': step==='/certificate'}" (click)="onToggle('/certificate')">
+      Certificate Store
+    </a>
+  </li>
 
   <li>
     <a [ngClass]="{'is-active': step==='/setting'}" (click)="onToggle('/setting')">
