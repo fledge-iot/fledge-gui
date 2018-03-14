@@ -36,7 +36,7 @@
             <div class="column">
               <div class="field is-horizontal">
                 <div class="field-label">
-                  <label class="label">Certficate</label>
+                  <label class="label">Certificate</label>
                 </div>
                 <div class="field-body">
                   <div class="field is-narrow">
@@ -61,7 +61,7 @@
               <div class="field">
                 <div class="control">
                   <label class="checkbox">
-                    <input type="checkbox" ng-model="overwrite" (change)="onOverwriteChange($event)">
+                    <input type="checkbox" ng-checked="checkedStatus" ng-model="overwrite" (change)="onOverwriteChange($event)">
                     Overwrite
                   </label>
                 </div>
