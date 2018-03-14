@@ -49,8 +49,7 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   onKeyChange(event) {
-    if (event.files) {
-      console.log('event', event);
+    if (event.target.files) {
       var fileName = event.target.files[0].name;
       var ext = fileName.substr(fileName.lastIndexOf('.') + 1);
       if(ext!=="key"){ 
@@ -67,7 +66,7 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   onCertChange(event) {
-    if (event.files) {
+    if (event.target.files) {
       var fileName = event.target.files[0].name;
       var ext = fileName.substr(fileName.lastIndexOf('.') + 1);
       if(ext!=="cert"){ 
