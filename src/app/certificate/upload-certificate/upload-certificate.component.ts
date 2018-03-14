@@ -11,12 +11,13 @@ import { CustomValidator } from '../../directives/custom-validator';
 })
 export class UploadCertificateComponent implements OnInit {
   form: FormGroup;
-  cert;
   key;
+  cert;
+  overwrite = '0';
   keyExtension: boolean = true;
   certExtension: boolean = true;
-  overwrite = '0';
   checkedStatus: boolean = false
+
   @ViewChild('fileInput') fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
@@ -33,48 +34,54 @@ export class UploadCertificateComponent implements OnInit {
     this.form.get('overwrite').setValue('0');
     this.checkedStatus = false;
   }
-  
+
+  protected resetForm() {
+    this.form.get('key').setValue('');
+    this.form.get('cert').setValue('')
+    this.keyExtension = true;
+    this.certExtension = true;
+    this.overwrite = '0';
+    this.form.get('overwrite').setValue('0');
+    this.checkedStatus = false
+  }
+
   public toggleModal(isOpen: Boolean) {
+    this.resetForm()
     let certificate_modal = <HTMLDivElement>document.getElementById('upload_certificate_modal');
     if (isOpen) {
       certificate_modal.classList.add('is-active');
       return;
     }
     certificate_modal.classList.remove('is-active');
-    this.fileInput.nativeElement.value = "";
-    this.keyExtension = true;
-    this.certExtension = true;
-    this.overwrite = '0';
-    this.checkedStatus = false;
   }
 
   onKeyChange(event) {
-    if (event.target.files) {
+    if (event.target.files.length != 0) {
       var fileName = event.target.files[0].name;
       var ext = fileName.substr(fileName.lastIndexOf('.') + 1);
-      if(ext!=="key"){ 
-        this.keyExtension = false;
-      } else {
+      if (ext == "key") {
         this.keyExtension = true;
+      } else {
+        this.keyExtension = false;
       }
-      if(event.target.files.length > 0) {
+      if (event.target.files.length > 0) {
         let file = event.target.files[0];
         this.key = file
       }
     }
-    
+
   }
 
   onCertChange(event) {
-    if (event.target.files) {
+    if (event.target.files.length != 0) {
       var fileName = event.target.files[0].name;
       var ext = fileName.substr(fileName.lastIndexOf('.') + 1);
-      if(ext!=="cert"){ 
-        this.certExtension = false;
-      } else {
+      if (ext == "cert") {
         this.certExtension = true;
+      } else {
+        this.certExtension = false;
       }
-      if(event.target.files.length > 0) {
+      if (event.target.files.length > 0) {
         let file = event.target.files[0];
         this.cert = file;
       }
@@ -82,11 +89,13 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   onOverwriteChange(event) {
-    if(event.target.checked) {
+    if (event.target.checked) {
       this.overwrite = '1';
-    }
-    if (this.checkedStatus == false) {
       this.checkedStatus = true;
+    }
+    else {
+      this.overwrite = '0';
+      this.checkedStatus = false;
     }
   }
 
@@ -97,11 +106,11 @@ export class UploadCertificateComponent implements OnInit {
         formData.append('key', this.cert, this.cert.name);
         formData.append('cert', this.key, this.key.name);
         formData.append('overwrite', this.overwrite);
-        
+
         /** request started */
         this.ngProgress.start();
         this.certificateService.uploadCertificate(formData).
-            subscribe(
+          subscribe(
             data => {
               /** request completed */
               this.ngProgress.done();
@@ -113,16 +122,16 @@ export class UploadCertificateComponent implements OnInit {
               /** request completed */
               this.ngProgress.done();
               if (error.status === 0) {
-                  console.log('service down ', error);
+                console.log('service down ', error);
               } else {
-                  this.alertService.error(error.statusText);
+                this.alertService.error(error.statusText);
               }
             });
       } else {
-        this.alertService.error("Please upload files correctly");
-      }   
+        this.alertService.error("Please upload files with correct format and extension");
+      }
     } else {
-      this.alertService.error('Key or Certificate is missing');
+      this.alertService.error('Key or Certificate file is missing');
     }
   }
 

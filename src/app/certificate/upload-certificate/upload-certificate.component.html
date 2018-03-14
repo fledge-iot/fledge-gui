@@ -61,8 +61,8 @@
               <div class="field">
                 <div class="control">
                   <label class="checkbox">
-                    <input type="checkbox" ng-checked="checkedStatus" ng-model="overwrite" (change)="onOverwriteChange($event)">
-                    Overwrite
+                    <input *ngIf="checkedStatus" checked type="checkbox" ng-model="overwrite" (change)="onOverwriteChange($event)">
+                    <input *ngIf="!checkedStatus" type="checkbox" ng-model="overwrite" (change)="onOverwriteChange($event)"> Overwrite
                   </label>
                 </div>
                 <p class="help">Overwrite allows to replace the certificate with existing name and key</p>
