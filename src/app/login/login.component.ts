@@ -59,6 +59,9 @@ export class LoginComponent implements OnInit {
 
     public skip() {
         sessionStorage.setItem('skip', JSON.stringify(true));
+        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('isAdmin')
+        sessionStorage.removeItem('uid')
         this.sharedService.IsLoginSkiped.next(true);
         this.router.navigate(['']);
     }
