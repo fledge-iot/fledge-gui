@@ -11,10 +11,25 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   /**
-   * GET /foglamp/user
-   * @param token
+   * Get all users 
+   * 
+   * GET | /foglamp/user
+   * 
    */
-  getUser(token: string, uid = '0') {
+  getAllUsers() {
+    return this.http.get(this.USER_URL)
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
+  }
+
+  /**
+   * Get user profile 
+   * 
+   * GET |  /foglamp/user/id={id}
+   * @param string UID : id of logged in user
+   * 
+   */
+  getUser(uid) {
     let params = new HttpParams();
     params = params.set('id', uid)
     return this.http.get(this.USER_URL, { params: params })
@@ -23,8 +38,10 @@ export class UserService {
   }
 
   /**
-  * GET /foglamp/user/role
-  * @param token
+  * get user role
+  * 
+  *  GET |  /foglamp/user/role
+  *
   */
   getRole() {
     return this.http.get(this.ROLE_URL)
@@ -34,7 +51,7 @@ export class UserService {
 
   /**
    * DELETE  /foglamp/user/{id}
-   * @param String token
+   *
    * @param Number id
    */
   deleteUser(id) {
@@ -44,22 +61,24 @@ export class UserService {
   }
 
   /**
-  * POST  /foglamp/user/{id}
-  * @param String token
+  * Create user
+  * POST  | /foglamp/user/{id}
+  *
   * @param Number id
   */
-  createUser(user, token) {
+  createUser(user) {
     return this.http.post(this.USER_URL, user)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
   /**
-  * PUT  /foglamp/user/{id}
-  * @param String token
+  * Update user 
+  * 
+  * PUT  | /foglamp/user/{id}
   * @param Object payload 
   */
-  updateUser(payload, token) {
+  updateUser(payload) {
     return this.http.put(this.USER_URL + "/" + payload.user_id, payload)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));

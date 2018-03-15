@@ -41,8 +41,7 @@ export class CreateUserComponent implements OnInit {
   }
 
   public createUser(form: NgForm) {
-    let token = sessionStorage.getItem('token');
-    this.userService.createUser(this.model, token).
+    this.userService.createUser(this.model).
       subscribe(
         data => {
           this.notify.emit();

@@ -38,10 +38,7 @@ export class UserManagementComponent implements OnInit {
 
   getLoggedInUser() {
     this.ngProgress.start();
-    // get loggedin user token from session
-    const token = sessionStorage.getItem('token');
-    // Get SignedIn user details
-    this.userService.getUser(token)
+    this.userService.getAllUsers()
       .subscribe(
         userData => {
           this.getRole(userData.users);
@@ -55,6 +52,10 @@ export class UserManagementComponent implements OnInit {
             this.alertService.error(error.statusText);
           };
         });
+  }
+
+  getAllUsers() {
+
   }
 
   getRole(users) {

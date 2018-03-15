@@ -21,11 +21,9 @@ export class UserProfileComponent implements OnInit {
   getUser() {
     this.userRecord = [];
     this.ngProgress.start();
-    // get loggedin user token from session
-    const token = sessionStorage.getItem('token');
     let id = sessionStorage.getItem('uid');
     // Get SignedIn user details
-    this.userService.getUser(token, id)
+    this.userService.getUser(id)
       .subscribe(
         userData => {
           this.userService.getRole()

@@ -69,8 +69,7 @@ export class UpdateUserComponent implements OnInit {
   }
 
   updateUser(form: NgForm) {
-    let token = sessionStorage.getItem('token');
-    this.userService.updateUser(this.userRecord, token).
+    this.userService.updateUser(this.userRecord).
       subscribe(
         data => {
           this.notify.emit();
