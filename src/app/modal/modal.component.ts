@@ -14,13 +14,13 @@ export class ModalComponent implements OnInit {
   @Output() shutdownService = new EventEmitter<Number>();
   @Output() deleteUserService = new EventEmitter<Number>();
   @Output() deleteCertificate = new EventEmitter<Number>();
+  @Output() logoutUserService = new EventEmitter<Number>();
 
   constructor(private schedulesService: SchedulesService,
     private alertService: AlertService,
     private userService: UserService) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   public toggleModal(isOpen: Boolean) {
     let schedule_name = <HTMLDivElement>document.getElementById('modal-box');
@@ -55,6 +55,10 @@ export class ModalComponent implements OnInit {
     }
     if (this.childData.key === 'deleteCertificate') {
       this.deleteCertificate.emit(this.childData.name);
+      this.toggleModal(false);
+    }
+    if (this.childData.key === 'logout') {
+      this.logoutUserService.emit(this.childData.id);
       this.toggleModal(false);
     }
   }

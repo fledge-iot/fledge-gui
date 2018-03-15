@@ -15,14 +15,15 @@ import { UpdateUserComponent } from './update-user/update-user.component';
 })
 export class UserManagementComponent implements OnInit {
 
-  public userRecord;
   @ViewChild(ModalComponent) child: ModalComponent;
   @ViewChild(CreateUserComponent) createUserModal: CreateUserComponent;
   @ViewChild(UpdateUserComponent) updateUserModal: UpdateUserComponent;
 
-
   // Object to hold schedule id and name to delete
   public childData = {};
+  public userRecord;
+  public uid: string;
+
   constructor(private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
@@ -31,12 +32,12 @@ export class UserManagementComponent implements OnInit {
     private userService: UserService,
     public ngProgress: NgProgress) { }
 
-
   ngOnInit() {
-    this.getLoggedInUser();
+    this.uid = sessionStorage.getItem('uid');
+    this.getUsers();
   }
 
-  getLoggedInUser() {
+  getUsers() {
     this.ngProgress.start();
     this.userService.getAllUsers()
       .subscribe(
@@ -52,10 +53,6 @@ export class UserManagementComponent implements OnInit {
             this.alertService.error(error.statusText);
           };
         });
-  }
-
-  getAllUsers() {
-
   }
 
   getRole(users) {
@@ -88,13 +85,14 @@ export class UserManagementComponent implements OnInit {
   * @param id   schedule id to delete
   * @param name schedule name
   */
-  openModal(id, name, message) {
+  openModal(id, name, key, message) {
     this.childData = {
       id: id,
       name: name,
+      key: key,
       message: message,
-      key: 'deleteUser'
     };
+
     // call child component method to toggle modal
     this.child.toggleModal(true);
   }
@@ -104,9 +102,8 @@ export class UserManagementComponent implements OnInit {
   * @param notify
   */
   onNotify() {
-    this.getLoggedInUser();
+    this.getUsers();
   }
-
 
   /**
   * Open create user modal dialog
@@ -132,7 +129,7 @@ export class UserManagementComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(data.message);
-          this.getLoggedInUser();
+          this.getUsers();
         },
         error => {
           /** request completed */
@@ -142,6 +139,27 @@ export class UserManagementComponent implements OnInit {
           } else {
             this.alertService.error(error.statusText);
           };
+        });
+  }
+
+  /**
+     *  Signout the current user
+     */
+  logout(id) {
+    this.ngProgress.start();
+    this.authService.logout(id).
+      subscribe(
+        data => {
+          this.ngProgress.done();
+          this.alertService.success('All active session cleared');
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error('No active session found');
+          }
         });
   }
 }

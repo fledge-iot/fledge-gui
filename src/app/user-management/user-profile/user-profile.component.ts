@@ -36,7 +36,6 @@ export class UserProfileComponent implements OnInit {
                   }
                 })
                 this.userRecord.push(userData);
-                console.log("logged in user data", this.userRecord);
               },
               error => {
                 this.ngProgress.done();
@@ -57,31 +56,4 @@ export class UserProfileComponent implements OnInit {
           };
         });
   }
-
-
-  //   getRole(id) {
-  //     this.userService.getRole()
-  //       .subscribe(
-  //         roleRecord => {
-  //           this.ngProgress.done();
-  //           roleRecord.roles.filter(role => {
-  //           //   users.forEach(user => {
-  //           //     if (role.id == user.roleId) {
-  //           //       user['roleName'] = role.name
-  //           //     }
-  //           //   })
-  //           // })
-  //           // this.userRecord = users;
-  //         },
-  //         error => {
-  //           /** request completed */
-  //           this.ngProgress.done();
-  //           if (error.status === 0) {
-  //             console.log('service down ', error);
-  //           } else {
-  //             this.alertService.error(error.statusText);
-  //           };
-  //         });
-  //   }
-  // }
 }

@@ -7,9 +7,9 @@ import { environment } from '../../environments/environment';
 export class AuthService {
   // private instance variable to hold base url
   private LOGIN_URL = environment.BASE_URL + 'login';
-  private LOGOUT_URL = environment.BASE_URL + 'logout';
+  private LOGOUT_URL = environment.BASE_URL;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    *  Login into system
@@ -18,16 +18,16 @@ export class AuthService {
    */
   login(username: string, password: string) {
     return this.http.post(this.LOGIN_URL, JSON.stringify({ username: username, password: password }))
-      .map(response =>response)
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
   /**
     * Get assets data
-    * @param token
+    * @param string user id
     */
-  logout() {
-    return this.http.put(this.LOGOUT_URL, null)
+  logout(id) {
+    return this.http.put(this.LOGOUT_URL + id + "/logout", null)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }

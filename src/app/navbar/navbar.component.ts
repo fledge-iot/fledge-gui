@@ -26,7 +26,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   // Define a variable to use for showing/hiding the Login button
   isUserLoggedIn: boolean;
+  userName: string
   isSkip: boolean = false;
+
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
 
   constructor(private servicesHealthService: ServicesHealthService,
@@ -41,6 +43,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // "isUserLoggedIn" whenever a change to the subject is made.
     this.sharedService.IsUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value.loggedIn;
+      this.userName = value.userName;
     });
     this.sharedService.IsLoginSkiped.subscribe(value => {
       this.isSkip = value;
@@ -58,6 +61,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     } else if (skip != null && skip.trim().length > 0) {
       this.isSkip = true;
     }
+    if(sessionStorage.getItem('userName') != null){
+      this.userName = sessionStorage.getItem('userName');
+    }
     this.start();
     this.cdr.detectChanges();
   }
@@ -69,7 +75,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         (data) => {
           this.status.changeMessage(true);
           this.ping_data = data;
-          this.ping_info = { is_alive: true, service_status: 'running...' };
+          this.ping_info = { is_alive: true, service_status: 'running' };
         },
         (error) => {
           console.log('error: ', error);
@@ -132,12 +138,13 @@ export class NavbarComponent implements OnInit, AfterViewInit {
      */
   logout() {
     this.ngProgress.start();
-    this.authService.logout().
+    const uid = sessionStorage.getItem('uid')
+    this.authService.logout(uid).
       subscribe(
         data => {
           this.ngProgress.done();
           // remove access token and logged in user from session storage
-          sessionStorage.removeItem('token');
+          sessionStorage.clear();
           location.reload();
           this.router.navigate(['/login']);
         },

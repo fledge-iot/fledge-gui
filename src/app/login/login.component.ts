@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AlertService, AuthService } from '../services/index';
+import { AlertService, AuthService, UserService } from '../services/index';
 import { SharedService } from './../services/shared.service';
 import { NgProgress } from 'ngx-progressbar';
 
@@ -19,6 +19,7 @@ export class LoginComponent implements OnInit {
         private authService: AuthService,
         private alertService: AlertService,
         private sharedService: SharedService,
+        private userService: UserService,
         public ngProgress: NgProgress) {
         this.sharedService.IsUserLoggedIn.next({
             'loggedIn': false
@@ -26,6 +27,8 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
+        // clear skip
+        sessionStorage.removeItem('skip');
         // get return url from route parameters or default to '/'
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
@@ -42,10 +45,7 @@ export class LoginComponent implements OnInit {
                     sessionStorage.setItem('token', data.token);
                     sessionStorage.setItem('uid', data.uid);
                     sessionStorage.setItem('isAdmin', JSON.stringify(data.admin));
-                    this.router.navigate([this.returnUrl]);
-                    this.sharedService.IsUserLoggedIn.next({
-                        'loggedIn': true
-                    });
+                    this.getUser(data.uid);
                 },
                 error => {
                     this.ngProgress.done();
@@ -68,5 +68,26 @@ export class LoginComponent implements OnInit {
 
     public setupInstance() {
         this.router.navigate(['/setting']);
+    }
+
+    getUser(id) {
+        // Get SignedIn user details
+        this.userService.getUser(id)
+            .subscribe(
+                userData => {
+                    this.router.navigate([this.returnUrl]);
+                    this.sharedService.IsUserLoggedIn.next({
+                        'loggedIn': true,
+                        'userName': userData.userName
+                    });
+                    sessionStorage.setItem("userName", userData.userName);
+                },
+                error => {
+                    if (error.status === 0) {
+                        console.log('service down ', error);
+                    } else {
+                        this.alertService.error(error.statusText);
+                    };
+                });
     }
 }
