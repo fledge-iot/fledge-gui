@@ -21,7 +21,8 @@ import {
   SchedulesService,
   ConnectedServiceStatus,
   DiscoveryService,
-  UserService
+  UserService,
+  CertificateService
 } from './services/index';
 
 import { HomeComponent } from './home/index';
@@ -38,10 +39,12 @@ import { SideMenuComponent } from '../app/side-menu/side-menu.component';
 import { NavbarComponent } from '../app/navbar/navbar.component';
 import { AssetsComponent } from '../app/asset-readings/assets/assets.component';
 import { AuditLogComponent } from '../app/audit-log/audit-log.component';
+import { CertificateStoreComponent } from '../app/certificate/certificate-store/certificate-store.component';
 import { NumberInputDebounceComponent } from '../app/number-input-debounce/number-input-debounce.component';
 
 import { NgxMaskModule } from 'ngx-mask';
 import { ModalComponent } from './modal/modal.component';
+import { UploadCertificateComponent } from './certificate/upload-certificate/upload-certificate.component';
 import { UpdateModalComponent } from './update-modal/update-modal.component';
 import { SidebarModule } from 'ng-sidebar';
 import { SettingsComponent } from './settings/index';
@@ -97,8 +100,10 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
     NavbarComponent,
     AssetsComponent,
     AuditLogComponent,
+    CertificateStoreComponent,
     NumberInputDebounceComponent,
     ModalComponent,
+    UploadCertificateComponent,
     UpdateModalComponent,
     SettingsComponent,
     ServicesHealthComponent,
@@ -132,6 +137,7 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
     ConnectedServiceStatus,
     DiscoveryService,
     SharedService,
+    CertificateService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

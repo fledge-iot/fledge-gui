@@ -1,0 +1,43 @@
+<div class="container is-fluid">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
+              [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+              [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  </ng-progress>
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title">
+        Certificate Store
+      </p>
+      <div>
+        <a class="button is-light" (click)="openUploadCertModal()">Import &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
+      </div>
+    </header>
+    <div class="card-content">
+      <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Key</th>
+            <th>Certificate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let certificate of certificatesData">
+            <td>{{ getCertificateName(certificate.key, certificate.cert) }}</td>
+            <td class="showInCenter" *ngIf="certificate.key"><i class="fa fa-check-circle-o fa-lg" style="color:rgb(101, 184, 101)" aria-hidden="true"></i></td>
+            <td class="showInCenter" *ngIf="!certificate.key"><i class="fa fa-times-circle-o fa-lg" style="color: rgb(204, 62, 19)" aria-hidden="true"></i></td>
+            <td class="showInCenter" *ngIf="certificate.cert"><i class="fa fa-check-circle-o fa-lg" style="color:rgb(101, 184, 101)" aria-hidden="true"></i></td>
+            <td class="showInCenter" *ngIf="!certificate.cert"><i class="fa fa-times-circle-o fa-lg" style="color:rgb(204, 62, 19)" aria-hidden="true"></i></td>
+            <td *ngIf="getCertificateName(certificate.key, certificate.cert) != 'foglamp'">
+              <a (click)="openDeleteModal(certificate.key, certificate.cert, 'Are you sure, You want to delete the certificate', 'deleteCertificate')"  class="button is-text">
+                delete
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <app-modal (deleteCertificate)='deleteCertificate($event)' [childData]='childData'></app-modal>
+      <app-upload-cert (notify)='onNotify()'></app-upload-cert>
+    </div>
+  </div>
+</div>

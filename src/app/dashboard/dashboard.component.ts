@@ -129,13 +129,12 @@ export class DashboardComponent implements OnInit {
   public getStatisticsHistory(statisticsKeys): void {
     this.statisticsService.getStatisticsHistory().
       subscribe(data => {
-        console.log('data', data);
         this.statisticsKeys.forEach(key => {
           let labels = [];
           let record = _.map(data.statistics, key)
           let history_ts = _.map(data.statistics, 'history_ts');
           history_ts.forEach(element => {
-            element = moment(element.timestamp).format('HH:mm:ss:SSS')
+            element = moment(element).format('HH:mm:ss:SSS')
             labels.push(element)
           });
           this.statistics.map(statistics => {

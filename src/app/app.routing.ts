@@ -11,9 +11,9 @@ import { SettingsComponent } from './settings/index';
 import { ServicesHealthComponent } from './services-health/index';
 import { ServiceDiscoveryComponent } from './service-discovery/index';
 import { UserManagementComponent } from './user-management/index';
-
 import { AuthGuard, UserGuard } from './guards/index';
 import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
+import { CertificateStoreComponent } from './certificate/certificate-store/index';
 
 const appRoutes: Routes = [
     { path: 'home', component: HomeComponent},
@@ -28,6 +28,7 @@ const appRoutes: Routes = [
     { path: 'service-discovery', component: ServiceDiscoveryComponent, canActivate: [AuthGuard] },
     { path: 'user-management', component: UserManagementComponent, canActivate: [UserGuard]},
     { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+    { path: 'certificate', component: CertificateStoreComponent },
     // otherwise redirect to home
     { path: '**', redirectTo: ''}
 ];
