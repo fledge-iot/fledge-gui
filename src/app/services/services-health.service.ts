@@ -8,7 +8,6 @@ export class ServicesHealthService {
   private GET_PING_URL = environment.BASE_URL + 'ping';
   private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
-  // public options : RequestOptions ; 
   constructor(private http: HttpClient) { }
 
   /**

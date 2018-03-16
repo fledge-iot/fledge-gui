@@ -19,17 +19,17 @@ export class CreateUserComponent implements OnInit {
 
   ngOnInit() {
     this.model = {
-      user_id: 0,
+      userId: 0,
       username: '',
       password: '',
       confirmPassword: '',
-      role_id: 1   // to set default value in role option
+      role_id: 2   // set "user" as a default role 
     }
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
-      form.resetForm({ role: 1 })
+      this.resetCreateUserForm(form);
     }
     let createUserModal = <HTMLDivElement>document.getElementById('user_modal');
     if (isOpen) {
@@ -48,7 +48,7 @@ export class CreateUserComponent implements OnInit {
           this.toggleModal(false, null);
           this.alertService.success(data.message);
           if (form != null) {
-            form.resetForm({ role: 1 })
+            this.resetCreateUserForm(form);
           }
         },
         error => {
@@ -58,5 +58,9 @@ export class CreateUserComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public resetCreateUserForm(form: NgForm) {
+    form.resetForm({ role: 2 })   // set "user" as a default role  
   }
 }

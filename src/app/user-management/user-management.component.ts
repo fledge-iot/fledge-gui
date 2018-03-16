@@ -56,6 +56,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   getRole(users) {
+    this.ngProgress.start();
     this.userService.getRole()
       .subscribe(
         roleRecord => {
@@ -143,7 +144,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   /**
-     *  Signout the current user
+     *  Sign Out 
      */
   logout(id) {
     this.ngProgress.start();
@@ -151,7 +152,7 @@ export class UserManagementComponent implements OnInit {
       subscribe(
         data => {
           this.ngProgress.done();
-          this.alertService.success('All active session cleared');
+          this.alertService.success('All active sessions cleared');
         },
         error => {
           this.ngProgress.done();

@@ -1,6 +1,5 @@
 import { Routes, RouterModule } from '@angular/router';
 
-import { HomeComponent } from './home/index';
 import { LoginComponent } from './login/index';
 import { DashboardComponent } from './dashboard/index';
 import { ConfigurationManagerComponent } from './configuration-manager/index';
@@ -16,7 +15,6 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
 import { CertificateStoreComponent } from './certificate/certificate-store/index';
 
 const appRoutes: Routes = [
-    { path: 'home', component: HomeComponent},
     { path: 'login', component: LoginComponent },
     { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
     { path: 'configuration', component: ConfigurationManagerComponent, canActivate: [AuthGuard]},
@@ -28,7 +26,7 @@ const appRoutes: Routes = [
     { path: 'service-discovery', component: ServiceDiscoveryComponent, canActivate: [AuthGuard] },
     { path: 'user-management', component: UserManagementComponent, canActivate: [UserGuard]},
     { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
-    { path: 'certificate', component: CertificateStoreComponent },
+    { path: 'certificate', component: CertificateStoreComponent, canActivate: [AuthGuard] },
     // otherwise redirect to home
     { path: '**', redirectTo: ''}
 ];

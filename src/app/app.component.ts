@@ -17,11 +17,11 @@ export class AppComponent implements OnInit {
   constructor(private route: ActivatedRoute, private router: Router,
     private sharedService: SharedService,
     private cdr: ChangeDetectorRef) { 
-      this.sharedService.IsUserLoggedIn.subscribe(value => {
+      this.sharedService.isUserLoggedIn.subscribe(value => {
         this.isUserLoggedIn = value.loggedIn;
       });
   
-      this.sharedService.IsLoginSkiped.subscribe(value => {
+      this.sharedService.isLoginSkiped.subscribe(value => {
         this.skip = value;
       });
   

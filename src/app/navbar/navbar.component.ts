@@ -37,15 +37,15 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     public ngProgress: NgProgress,
     private sharedService: SharedService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef,
+    private changeDetectorRef: ChangeDetectorRef,
     private router: Router) {
     // Subscribe to automatically update 
     // "isUserLoggedIn" whenever a change to the subject is made.
-    this.sharedService.IsUserLoggedIn.subscribe(value => {
+    this.sharedService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value.loggedIn;
       this.userName = value.userName;
     });
-    this.sharedService.IsLoginSkiped.subscribe(value => {
+    this.sharedService.isLoginSkiped.subscribe(value => {
       this.isSkip = value;
     });
   }
@@ -65,7 +65,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.userName = sessionStorage.getItem('userName');
     }
     this.start();
-    this.cdr.detectChanges();
+    this.changeDetectorRef.detectChanges();
   }
 
 

@@ -21,17 +21,17 @@ export class UpdateUserComponent implements OnInit {
   ngOnInit() {
     this.getRole();
     this.userRecord = {
-      user_id: 0,
+      userId: 0,
       username: '',
       password: '',
       confirmPassword: '',
-      role_id: 1   // to set default value in role option
+      role_id: 2   // set "user" as a default role
     }
   }
 
   public setUser(userRecord) {
     this.userRecord = {
-      user_id: userRecord.userId,
+      userId: userRecord.userId,
       username: userRecord.userName,
       password: '',
       confirmPassword: '',
@@ -42,7 +42,7 @@ export class UpdateUserComponent implements OnInit {
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
-      form.resetForm({ role: 1 })
+      this.resetCreateUserForm(form)
     }
     let updateUserModal = <HTMLDivElement>document.getElementById('update_user_modal');
     if (isOpen) {
@@ -76,7 +76,7 @@ export class UpdateUserComponent implements OnInit {
           this.toggleModal(false, null);
           this.alertService.success(data.message);
           if (form != null) {
-            form.resetForm({ role: 1 })
+            this.resetCreateUserForm(form)
           }
         },
         error => {
@@ -86,5 +86,9 @@ export class UpdateUserComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public resetCreateUserForm(form: NgForm) {
+    form.resetForm({ role: 2 })   // set "user" as a default role  
   }
 }

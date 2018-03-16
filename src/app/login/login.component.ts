@@ -21,14 +21,14 @@ export class LoginComponent implements OnInit {
         private sharedService: SharedService,
         private userService: UserService,
         public ngProgress: NgProgress) {
-        this.sharedService.IsUserLoggedIn.next({
+        this.sharedService.isUserLoggedIn.next({
             'loggedIn': false
         });
     }
 
     ngOnInit() {
-        // clear skip
-        sessionStorage.removeItem('skip');
+        // clear session
+        this.resetSession();
         // get return url from route parameters or default to '/'
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
@@ -62,7 +62,7 @@ export class LoginComponent implements OnInit {
         sessionStorage.removeItem('token')
         sessionStorage.removeItem('isAdmin')
         sessionStorage.removeItem('uid')
-        this.sharedService.IsLoginSkiped.next(true);
+        this.sharedService.isLoginSkiped.next(true);
         this.router.navigate(['']);
     }
 
@@ -76,7 +76,7 @@ export class LoginComponent implements OnInit {
             .subscribe(
                 userData => {
                     this.router.navigate([this.returnUrl]);
-                    this.sharedService.IsUserLoggedIn.next({
+                    this.sharedService.isUserLoggedIn.next({
                         'loggedIn': true,
                         'userName': userData.userName
                     });
@@ -89,5 +89,9 @@ export class LoginComponent implements OnInit {
                         this.alertService.error(error.statusText);
                     };
                 });
+    }
+
+    public resetSession(){
+        sessionStorage.clear();
     }
 }

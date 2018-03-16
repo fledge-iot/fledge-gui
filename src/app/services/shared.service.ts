@@ -3,6 +3,6 @@ import { Subject } from 'rxjs';
 
 @Injectable()
 export class SharedService {
-    public IsUserLoggedIn: Subject<any> = new Subject<any>();
-    public IsLoginSkiped: Subject<boolean> = new Subject<boolean>();
+    public isUserLoggedIn: Subject<any> = new Subject<any>();
+    public isLoginSkiped: Subject<boolean> = new Subject<boolean>();
 }

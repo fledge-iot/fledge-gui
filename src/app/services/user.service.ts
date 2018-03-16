@@ -25,7 +25,7 @@ export class UserService {
   /**
    * Get user profile 
    * 
-   * GET |  /foglamp/user/id={id}
+   * GET |  /foglamp/user?id={id}
    * @param string UID : id of logged in user
    * 
    */

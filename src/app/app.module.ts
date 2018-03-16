@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpsRequestInterceptor } from './services/HttpsRequestInterceptor';
 
@@ -25,7 +24,6 @@ import {
   CertificateService
 } from './services/index';
 
-import { HomeComponent } from './home/index';
 import { LoginComponent } from './login/index';
 import { FooterComponent } from './footer/index';
 
@@ -75,7 +73,6 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpModule,
     HttpClientModule,
     routing,
     ChartModule,
@@ -87,7 +84,6 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
   declarations: [
     AppComponent,
     LoginComponent,
-    HomeComponent,
     AlertComponent,
     FooterComponent,
     KeysPipe,
