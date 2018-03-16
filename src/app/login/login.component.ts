@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { AlertService, AuthService, UserService } from '../services/index';
 import { SharedService } from './../services/shared.service';
 import { NgProgress } from 'ngx-progressbar';
@@ -14,7 +14,6 @@ export class LoginComponent implements OnInit {
     model: any = {};
     returnUrl: string;
     constructor(
-        private route: ActivatedRoute,
         private router: Router,
         private authService: AuthService,
         private alertService: AlertService,

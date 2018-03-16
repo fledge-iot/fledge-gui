@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { HttpsRequestInterceptor } from './services/HttpsRequestInterceptor';
+import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
