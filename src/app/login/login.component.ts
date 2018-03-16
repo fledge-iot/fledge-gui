@@ -29,8 +29,6 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
         // clear session
         this.resetSession();
-        // get return url from route parameters or default to '/'
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
 
     /**
@@ -46,6 +44,7 @@ export class LoginComponent implements OnInit {
                     sessionStorage.setItem('uid', data.uid);
                     sessionStorage.setItem('isAdmin', JSON.stringify(data.admin));
                     this.getUser(data.uid);
+                    this.router.navigate(['']);
                 },
                 error => {
                     this.ngProgress.done();
@@ -58,16 +57,17 @@ export class LoginComponent implements OnInit {
     }
 
     public skip() {
-        sessionStorage.setItem('skip', JSON.stringify(true));
         sessionStorage.removeItem('token')
         sessionStorage.removeItem('isAdmin')
         sessionStorage.removeItem('uid')
         this.sharedService.isLoginSkiped.next(true);
+        sessionStorage.setItem('skip', JSON.stringify(true));
         this.router.navigate(['']);
+
     }
 
     public setupInstance() {
-        this.router.navigate(['/setting']);
+        this.router.navigate(['/setting'],{ queryParams: { id:'1'}} );
     }
 
     getUser(id) {
@@ -75,7 +75,6 @@ export class LoginComponent implements OnInit {
         this.userService.getUser(id)
             .subscribe(
                 userData => {
-                    this.router.navigate([this.returnUrl]);
                     this.sharedService.isUserLoggedIn.next({
                         'loggedIn': true,
                         'userName': userData.userName

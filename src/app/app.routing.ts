@@ -15,20 +15,20 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
 import { CertificateStoreComponent } from './certificate/certificate-store/index';
 
 const appRoutes: Routes = [
-    { path: 'login', component: LoginComponent },
     { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
-    { path: 'configuration', component: ConfigurationManagerComponent, canActivate: [AuthGuard]},
-    { path: 'scheduled-task', component: ScheduledProcessComponent , canActivate: [AuthGuard]},
+    { path: 'login', component: LoginComponent },
+    { path: 'configuration', component: ConfigurationManagerComponent, canActivate: [AuthGuard] },
+    { path: 'scheduled-task', component: ScheduledProcessComponent, canActivate: [AuthGuard] },
     { path: 'asset', component: AssetsComponent, canActivate: [AuthGuard] },
-    { path: 'audit', component: AuditLogComponent , canActivate: [AuthGuard]},
+    { path: 'audit', component: AuditLogComponent, canActivate: [AuthGuard] },
     { path: 'setting', component: SettingsComponent },
-    { path: 'services-health', component: ServicesHealthComponent , canActivate: [AuthGuard] },
+    { path: 'services-health', component: ServicesHealthComponent, canActivate: [AuthGuard] },
     { path: 'service-discovery', component: ServiceDiscoveryComponent, canActivate: [AuthGuard] },
-    { path: 'user-management', component: UserManagementComponent, canActivate: [UserGuard]},
+    { path: 'user-management', component: UserManagementComponent, canActivate: [UserGuard] },
     { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
     { path: 'certificate', component: CertificateStoreComponent, canActivate: [AuthGuard] },
-    // otherwise redirect to home
-    { path: '**', redirectTo: ''}
+    // otherwise redirect to dashboard
+    { path: '**', redirectTo: '' }
 ];
 
 export const routing = RouterModule.forRoot(appRoutes);

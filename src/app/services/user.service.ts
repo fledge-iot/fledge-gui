@@ -62,9 +62,9 @@ export class UserService {
 
   /**
   * Create user
-  * POST  | /foglamp/user/{id}
+  * 
+  * POST  | foglamp/user
   *
-  * @param Number id
   */
   createUser(user) {
     return this.http.post(this.USER_URL, user)

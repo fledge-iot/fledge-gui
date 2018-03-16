@@ -14,10 +14,12 @@ export class SettingsComponent implements OnInit {
   protocol = this.endpoint[0];
   host = this.endpoint[1].substr(2);
   service_port = this.endpoint[2].substring(0, this.endpoint[2].indexOf('/'));
-
+  isSkipped = false;
   constructor(private router: Router) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.isSkipped = JSON.parse(sessionStorage.getItem('skip'))
+  }
 
   public resetEndPoint() {
     const protocolField = <HTMLSelectElement>document.getElementById('protocol');

@@ -83,8 +83,8 @@ export class UserManagementComponent implements OnInit {
 
   /**
   * Open delete record modal dialog
-  * @param id   schedule id to delete
-  * @param name schedule name
+  * @param id   user id to delete
+  * @param name user name
   */
   openModal(id, name, key, message) {
     this.childData = {

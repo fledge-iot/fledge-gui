@@ -40,8 +40,7 @@
               <div class="select is-fullwidth">
                 <!-- TODO: Dynamic binding based on role -->
                 <select  name='role_id' [(ngModel)]="model.role_id" #role_id="ngModel">
-                  <option [value]='1' selected>admin</option>
-                  <option [value]='2'>user</option>
+                  <option *ngFor="let role of userRole" [ngValue]='role.id' [selected]="role.id == 2">{{role.name}}</option>
                 </select>
               </div>
             </div>

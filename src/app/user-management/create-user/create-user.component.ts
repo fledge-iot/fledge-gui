@@ -12,12 +12,14 @@ import { NgForm } from '@angular/forms';
 export class CreateUserComponent implements OnInit {
   model: User;
   isUpdateForm = false;
+  userRole = [];
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private userService: UserService,
     private alertService: AlertService) { }
 
   ngOnInit() {
+    this.getRole();
     this.model = {
       userId: 0,
       username: '',
@@ -60,7 +62,24 @@ export class CreateUserComponent implements OnInit {
         });
   }
 
+  getRole() {
+    this.userService.getRole()
+      .subscribe(
+        roleRecord => {
+          console.log('Role', roleRecord.roles);
+          this.userRole = roleRecord.roles
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          };
+        });
+  }
+
   public resetCreateUserForm(form: NgForm) {
-    form.resetForm({ role: 2 })   // set "user" as a default role  
+    form.resetForm()
+    this.getRole();
   }
 }
