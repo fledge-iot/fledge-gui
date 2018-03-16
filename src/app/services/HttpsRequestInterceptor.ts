@@ -2,16 +2,23 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
+export const InterceptorSkipHeader = 'X-Skip-Interceptor';
+
 @Injectable()
 export class HttpsRequestInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (sessionStorage.getItem('token') != null) {
-            req = req.clone({
-                setHeaders: {
-                    authorization: sessionStorage.getItem('token')
-                }
-            });
+        if (req.headers.has(InterceptorSkipHeader)) {
+            const headers = req.headers.delete(InterceptorSkipHeader);
+            return next.handle(req.clone({ headers }));
+        } else {
+            if (sessionStorage.getItem('token') != null) {
+                req = req.clone({
+                    setHeaders: {
+                        authorization: sessionStorage.getItem('token')
+                    }
+                });
+            }
+            return next.handle(req);
         }
-        return next.handle(req);
     }
 }

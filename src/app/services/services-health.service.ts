@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 import { environment } from '../../environments/environment';
+import { InterceptorSkipHeader } from '../services/HttpsRequestInterceptor';
 
 @Injectable()
 export class ServicesHealthService {
@@ -41,6 +42,7 @@ export class ServicesHealthService {
    *  POST  | /foglamp/service/shutdown
    */
   shutDownService(port) {
+    const headers = new HttpHeaders().set(InterceptorSkipHeader, '');
     const url = new URL(this.GET_SERVICES_URL);
     url.port = port;
     return this.http.post(String(url) + "/shutdown", null)

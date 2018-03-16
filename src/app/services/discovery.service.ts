@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 import { environment } from '../../environments/environment';
+import { InterceptorSkipHeader } from '../services/HttpsRequestInterceptor';
 
 @Injectable()
 export class DiscoveryService {
@@ -12,6 +13,7 @@ export class DiscoveryService {
    *  GET  | /foglamp/discover
    */
   discover() {
+    const headers = new HttpHeaders().set(InterceptorSkipHeader, '');
     const serviceDiscoveryUrl = localStorage.getItem('DISCOVERY_SERVICE_URL');
     return this.http.get(serviceDiscoveryUrl)
       .map(response => response)

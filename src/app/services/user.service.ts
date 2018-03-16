@@ -79,7 +79,7 @@ export class UserService {
   * @param Object payload 
   */
   updateUser(payload) {
-    return this.http.put(this.USER_URL + "/" + payload.user_id, payload)
+    return this.http.put(this.USER_URL + "/" + payload.userId, payload)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
