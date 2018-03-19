@@ -19,7 +19,7 @@ export class UserManagementComponent implements OnInit {
   @ViewChild(CreateUserComponent) createUserModal: CreateUserComponent;
   @ViewChild(UpdateUserComponent) updateUserModal: UpdateUserComponent;
 
-  // Object to hold schedule id and name to delete
+  // Object to hold user record
   public childData = {};
   public userRecord;
   public uid: string;
@@ -99,7 +99,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   /**
-  * To reload schedule list after deletion of a schedule
+  * To reload list of all users after deletion of a user
   * @param notify
   */
   onNotify() {
