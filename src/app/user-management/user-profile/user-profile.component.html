@@ -6,7 +6,7 @@
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
-         Profile
+          Profile
         </p>
       </header>
       <div class="card-content">
@@ -24,13 +24,12 @@
             <td>
               {{user.roleName}}
             </td>
-            <!-- <td>
-              <a (click)="openUpdateUserModal(user)" class="button is-text">
-                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-              </a>
-            </td> -->
+            <td>
+              <span (click)="openModal(user.userId, '', 'clearSessions', 'Are you sure, You want to clear your all active sessions?')" class="button is-text">logout active sessions</span>
+            </td>
           </tr>
         </table>
+        <app-modal (logoutAllUserSessionsService)='clearAllSessions($event)' [childData]='childData'></app-modal>
       </div>
     </div>
   </div>

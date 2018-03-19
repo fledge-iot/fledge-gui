@@ -146,9 +146,9 @@ export class UserManagementComponent implements OnInit {
   /**
      *  Sign Out 
      */
-  logout(id) {
+  clearAllSessions(id) {
     this.ngProgress.start();
-    this.authService.logout(id).
+    this.authService.clearAllSessions(id).
       subscribe(
         data => {
           this.ngProgress.done();

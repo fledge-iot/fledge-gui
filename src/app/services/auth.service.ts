@@ -23,11 +23,20 @@ export class AuthService {
   }
 
   /**
-    * Get assets data
+   *  clear all active users sessions
     * @param string user id
     */
-  logout(id) {
+  clearAllSessions(id) {
     return this.http.put(this.LOGOUT_URL + id + "/logout", null)
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
+  }
+
+  /**
+   *  logout user
+   */
+  logout() {
+    return this.http.put(this.LOGOUT_URL + "logout", null)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }

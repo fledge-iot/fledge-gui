@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertService, AuthService, UserService } from '../../services/index';
+import { ModalComponent } from '../../modal/modal.component';
 
 @Component({
   selector: 'app-user-profile',
@@ -9,6 +10,9 @@ import { AlertService, AuthService, UserService } from '../../services/index';
 })
 export class UserProfileComponent implements OnInit {
   public userRecord = [];
+  public childData = {};
+  @ViewChild(ModalComponent) child: ModalComponent;
+
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
@@ -54,6 +58,45 @@ export class UserProfileComponent implements OnInit {
           } else {
             this.alertService.error(error.statusText);
           };
+        });
+  }
+
+  /**
+  * Open delete record modal dialog
+  * @param id   user id to delete
+  * @param name user name
+  */
+  openModal(id, name, key, message) {
+    this.childData = {
+      id: id,
+      name: name,
+      key: key,
+      message: message,
+    };
+
+    // call child component method to toggle modal
+    this.child.toggleModal(true);
+  }
+
+  /**
+    *  Sign Out 
+    *  @param id  user id
+    */
+   clearAllSessions(id) {
+    this.ngProgress.start();
+    this.authService.clearAllSessions(id).
+      subscribe(
+        data => {
+          this.ngProgress.done();
+          this.alertService.success('All active sessions cleared');
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error('No active session found');
+          }
         });
   }
 }

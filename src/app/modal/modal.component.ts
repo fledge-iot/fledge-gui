@@ -15,6 +15,7 @@ export class ModalComponent implements OnInit {
   @Output() deleteUserService = new EventEmitter<Number>();
   @Output() deleteCertificate = new EventEmitter<Number>();
   @Output() logoutUserService = new EventEmitter<Number>();
+  @Output() logoutAllUserSessionsService = new EventEmitter<Number>();
 
   constructor(private schedulesService: SchedulesService,
     private alertService: AlertService,
@@ -57,8 +58,12 @@ export class ModalComponent implements OnInit {
       this.deleteCertificate.emit(this.childData.name);
       this.toggleModal(false);
     }
+    if (this.childData.key === 'clearSessions') {
+      this.logoutAllUserSessionsService.emit(this.childData.id);
+      this.toggleModal(false);
+    }
     if (this.childData.key === 'logout') {
-      this.logoutUserService.emit(this.childData.id);
+      this.logoutUserService.emit();
       this.toggleModal(false);
     }
   }

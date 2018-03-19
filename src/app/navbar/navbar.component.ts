@@ -138,15 +138,12 @@ export class NavbarComponent implements OnInit, AfterViewInit {
      */
   logout() {
     this.ngProgress.start();
-    const uid = sessionStorage.getItem('uid')
-    this.authService.logout(uid).
+    this.authService.logout().
       subscribe(
         data => {
           this.ngProgress.done();
-          // remove access token and logged in user from session storage
-          sessionStorage.clear();
-          location.reload();
           this.router.navigate(['/login']);
+          this.alertService.success('You have been successfully logged out!')
         },
         error => {
           this.ngProgress.done();
