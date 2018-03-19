@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
         this.sharedService.isUserLoggedIn.next({
             'loggedIn': false
         });
+        this.sharedService.isLoginSkiped.next(false);
     }
 
     ngOnInit() {
@@ -66,7 +67,7 @@ export class LoginComponent implements OnInit {
     }
 
     public setupInstance() {
-        this.router.navigate(['/setting'],{ queryParams: { id:'1'}} );
+        this.router.navigate(['/setting'], { queryParams: { id: '1' } });
     }
 
     getUser(id) {
@@ -89,7 +90,7 @@ export class LoginComponent implements OnInit {
                 });
     }
 
-    public resetSession(){
+    public resetSession() {
         sessionStorage.clear();
     }
 }

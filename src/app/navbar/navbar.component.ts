@@ -157,4 +157,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
           }
         });
   }
+
+  public login(){
+    this.router.navigate(['/login']);
+    this.isSkip = false;
+    sessionStorage.clear();
+  }
 }

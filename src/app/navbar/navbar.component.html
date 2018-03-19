@@ -18,13 +18,16 @@
       <span class="tag" style="white-space: pre">{{ping_info.service_status}}</span>
     </a>
     <div class="navbar-item has-dropdown is-hoverable is-hidden-mobile">
-      <a *ngIf='isUserLoggedIn' class="navbar-link">
-        <b class="has-text-grey"> &nbsp;{{userName}}&nbsp; </b>
+      <a *ngIf='isUserLoggedIn || isSkip ' class="navbar-link">
+        <b class="has-text-grey"> &nbsp;{{(isSkip == true)? 'Guest' : userName}}&nbsp; </b>
       </a>
       <div class="navbar-dropdown">
         <a class="navbar-item">
           <span *ngIf='isUserLoggedIn' (click)="logout()">
             <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp; Log Out
+          </span>
+          <span *ngIf='isSkip' (click)="login()">
+            <i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp; Login
           </span>
         </a>
         <a class="navbar-item">
