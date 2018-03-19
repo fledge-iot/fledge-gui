@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertService, AuthService, UserService } from '../services/index';
 import { SharedService } from '../services/shared.service';
@@ -23,6 +23,8 @@ export class UserManagementComponent implements OnInit {
   public childData = {};
   public userRecord;
   public uid: string;
+  public roles = []
+  seletedTab: Number = 1;  // 1: user-management , 2 : roles
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -60,6 +62,7 @@ export class UserManagementComponent implements OnInit {
     this.userService.getRole()
       .subscribe(
         roleRecord => {
+          this.roles = roleRecord.roles;
           this.ngProgress.done();
           roleRecord.roles.filter(role => {
             users.forEach(user => {
@@ -162,5 +165,12 @@ export class UserManagementComponent implements OnInit {
             this.alertService.error('No active session found');
           }
         });
+  }
+
+  showDiv(id) {
+    this.seletedTab = 1;
+    if (id == 2) {
+      this.seletedTab = id;
+    }
   }
 }
