@@ -1,15 +1,13 @@
 <div class="app-navbar">
     <app-navbar (toggle)="toggleSidebar()"></app-navbar>
 </div>
-<section class="columns column-margin">
-    <ng-sidebar-container>
-        <ng-sidebar *ngIf="!isLogin" #sidebar [(opened)]="_opened" sidebarClass="column is-2">
-            <app-side-menu (toggle)="toggleSidebar()"></app-side-menu>
-        </ng-sidebar>
-        <div ng-sidebar-content [ngClass]="{'column is-offset-2 is-10 fixed-overflow':!isLogin}">
-            <alert></alert>
-            <router-outlet></router-outlet>
-            <app-footer></app-footer>
-        </div>
-    </ng-sidebar-container>
-</section>
+<ng-sidebar-container>
+    <ng-sidebar *ngIf="!isLogin" #sidebar [(opened)]="_opened" sidebarClass="is-2">
+        <app-side-menu (toggle)="toggleSidebar()"></app-side-menu>
+    </ng-sidebar>
+    <div ng-sidebar-content [ngClass]="{'column is-offset-2 is-10 fixed-overflow':!isLogin}">
+        <alert></alert>
+        <router-outlet></router-outlet>
+        <app-footer></app-footer>
+    </div>
+</ng-sidebar-container>
