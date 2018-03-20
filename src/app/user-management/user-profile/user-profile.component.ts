@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertService, AuthService, UserService } from '../../services/index';
 import { ModalComponent } from '../../modal/modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
@@ -16,7 +17,8 @@ export class UserProfileComponent implements OnInit {
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
-    public ngProgress: NgProgress, ) { }
+    public ngProgress: NgProgress,
+    private router: Router ) { }
 
   ngOnInit() {
     this.getUser()
@@ -89,6 +91,7 @@ export class UserProfileComponent implements OnInit {
         data => {
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
+          this.router.navigate(['/login']);
         },
         error => {
           this.ngProgress.done();
