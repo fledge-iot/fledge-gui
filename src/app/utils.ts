@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-export const POLLING_INTERVAL = 2000;   // milliseconds
+export const POLLING_INTERVAL = 5000;   // milliseconds
 
 export default class Utils {
 

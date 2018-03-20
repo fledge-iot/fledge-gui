@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { SchedulesService, AlertService } from '../services/index';
+import { SchedulesService, UserService, AlertService } from '../services/index';
 
 @Component({
   selector: 'app-modal',
@@ -12,11 +12,16 @@ export class ModalComponent implements OnInit {
   @Output() disable = new EventEmitter<Number>();
   @Output() delete = new EventEmitter<Number>();
   @Output() shutdownService = new EventEmitter<Number>();
+  @Output() deleteUserService = new EventEmitter<Number>();
   @Output() deleteCertificate = new EventEmitter<Number>();
+  @Output() logoutUserService = new EventEmitter<Number>();
+  @Output() logoutAllUserSessionsService = new EventEmitter<Number>();
 
-  constructor(private schedulesService: SchedulesService, private alertService: AlertService) { }
+  constructor(private schedulesService: SchedulesService,
+    private alertService: AlertService,
+    private userService: UserService) { }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   public toggleModal(isOpen: Boolean) {
     let schedule_name = <HTMLDivElement>document.getElementById('modal-box');
@@ -45,8 +50,20 @@ export class ModalComponent implements OnInit {
       this.shutdownService.emit(this.childData.id);
       this.toggleModal(false);
     }
+    if (this.childData.key === 'deleteUser') {
+      this.deleteUserService.emit(this.childData.id);
+      this.toggleModal(false);
+    }
     if (this.childData.key === 'deleteCertificate') {
       this.deleteCertificate.emit(this.childData.name);
+      this.toggleModal(false);
+    }
+    if (this.childData.key === 'clearSessions') {
+      this.logoutAllUserSessionsService.emit(this.childData.id);
+      this.toggleModal(false);
+    }
+    if (this.childData.key === 'logout') {
+      this.logoutUserService.emit();
       this.toggleModal(false);
     }
   }

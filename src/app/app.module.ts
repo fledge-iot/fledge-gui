@@ -1,18 +1,29 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 
-import { AuthGuard } from './guards/index';
+import { AuthGuard, UserGuard } from './guards/index';
 import { AlertComponent } from './directives/index';
 import {
-  AlertService, AuthService, AssetsService, AuditService, ConfigurationService,
-  StatisticsService, ServicesHealthService, SchedulesService, ConnectedServiceStatus, DiscoveryService, CertificateService
+  AlertService,
+  AuthService,
+  AssetsService,
+  AuditService,
+  ConfigurationService,
+  StatisticsService,
+  ServicesHealthService,
+  SchedulesService,
+  ConnectedServiceStatus,
+  DiscoveryService,
+  UserService,
+  CertificateService
 } from './services/index';
-import { HomeComponent } from './home/index';
+
 import { LoginComponent } from './login/index';
 import { FooterComponent } from './footer/index';
 
@@ -49,13 +60,20 @@ import { ServiceDiscoveryComponent } from './service-discovery/service-discovery
 
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
+import { SharedService } from './services/shared.service';
+import { UserManagementComponent } from './user-management/user-management.component';
+import { CreateUserComponent } from './user-management/create-user/create-user.component';
+
+import { EqualValidator } from './directives/index';
+import { UpdateUserComponent } from './user-management/update-user/update-user.component';
+import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
 
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpModule,
+    HttpClientModule,
     routing,
     ChartModule,
     NgxMaskModule,
@@ -66,7 +84,6 @@ import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
   declarations: [
     AppComponent,
     LoginComponent,
-    HomeComponent,
     AlertComponent,
     FooterComponent,
     KeysPipe,
@@ -94,10 +111,16 @@ import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
     NumberOnlyDirective,
     InputTrimDirective,
     ServiceDiscoveryComponent,
-    ShutdownModalComponent
+    ShutdownModalComponent,
+    UserManagementComponent,
+    CreateUserComponent,
+    EqualValidator,
+    UpdateUserComponent,
+    UserProfileComponent
   ],
   providers: [
     AuthGuard,
+    UserGuard,
     AlertService,
     AuthService,
     ConfigurationService,
@@ -108,8 +131,15 @@ import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
     ServicesHealthService,
     AssetSummaryService,
     ConnectedServiceStatus,
+    DiscoveryService,
+    SharedService,
     CertificateService,
-    DiscoveryService
+    UserService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpsRequestInterceptor,
+      multi: true,
+    }
   ],
   bootstrap: [AppComponent]
 })

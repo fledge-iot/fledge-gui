@@ -8,4 +8,5 @@ export * from './schedules.service';
 export * from './services-health.service';
 export * from './connected-service-status.service';
 export * from './discovery.service';
+export * from './user.service';
 export * from './certificate.service';

@@ -32,14 +32,25 @@
     </a>
   </li>
 
+  <li>
+    <a [ngClass]="{'is-active': step==='/certificate'}" (click)="onToggle('/certificate')">
+      Certificate Store
+    </a>
+  </li>
   <!-- <li>
     <a [ngClass]="{'is-active': step==='/service-discovery'}" (click)="onToggle('/service-discovery')">
       Service Discovery
     </a>
   </li> -->
   <li>
-    <a [ngClass]="{'is-active': step==='/certificate'}" (click)="onToggle('/certificate')">
-      Certificate Store
+    <a *ngIf="isAdmin" [ngClass]="{'is-active': step==='/user-management'}" (click)="onToggle('/user-management')">
+      User Management
+    </a>
+  </li>
+
+  <li>
+    <a *ngIf="!isSkip" [ngClass]="{'is-active': step==='/user-profile'}" (click)="onToggle('/user-profile')">
+      User Profile
     </a>
   </li>
 

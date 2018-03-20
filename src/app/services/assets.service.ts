@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 import { environment } from '../../environments/environment';
 
@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 export class AssetsService {
   private GET_ASSET = environment.BASE_URL + 'asset';
 
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
 
   /**
   * GET  | foglamp/asset
@@ -15,7 +15,7 @@ export class AssetsService {
   */
   public getAsset() {
     return this.http.get(this.GET_ASSET)
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -27,28 +27,30 @@ export class AssetsService {
   *  Return a set of asset readings for the given asset code
   */
   public getAssetReadings(asset_code, limit: Number = 0, offset: Number = 0) {
-    let _params = {};
+    let params = new HttpParams();
     if (limit && offset) {
-      _params = { params: { limit: limit, skip: offset } };
-
+      params = params.set("limit", limit.toString())
+      params = params.set("skip", offset.toString());
     } else if (limit) {
-      _params = { params: { limit: limit } };
+      params = params.set("limit", limit.toString())
     } else if (offset) {  // offset works withOUT limit in postgres!
-      _params = { params: { skip: offset } };
+      params = params.set("skip", offset.toString())
     }
-    return this.http.get(this.GET_ASSET + '/' + asset_code, _params)
-      .map(response => response.json())
+
+    return this.http.get(this.GET_ASSET + '/' + asset_code, { params: params })
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
   public getAssetSummary(assetObject: any) {
-    let _params = {};
-    if (assetObject.time !== undefined ) {
-      _params = { params: assetObject.time };
+    let params = new HttpParams();
+    if (assetObject.time !== undefined) {
+      let keys = Object.keys(assetObject.time)
+      params = params.set(keys[0], assetObject.time[keys[0]]);
     }
     return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.asset_code)
-      + '/' + assetObject.reading + '/summary', _params)
-      .map(response => response.json())
+      + '/' + assetObject.reading + '/summary', { params: params })
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
@@ -56,7 +58,7 @@ export class AssetsService {
   public getAssetAverage(assetObject: any) {
     // TODO: time based readings average;
     return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.asset_code) + '/' + assetObject.reading + '/series')
-      .map(response => response.json())
+      .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 }
