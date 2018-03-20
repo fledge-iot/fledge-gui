@@ -23,16 +23,15 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             }
             return next.handle(req).map((event: HttpEvent<any>) => {
                 return event;
-            })
-                .catch((err: any, caught) => {
-                    if (err instanceof HttpErrorResponse) {
-                        if (err.status === 401) {
-                            sessionStorage.clear();
-                            this.router.navigate(['/login']);
-                        }
-                        return Observable.throw(err);
+            }).catch((err: any, caught) => {
+                if (err instanceof HttpErrorResponse) {
+                    if (err.status === 401) {
+                        sessionStorage.clear();
+                        this.router.navigate(['/login']);
                     }
-                });
+                    return Observable.throw(err);
+                }
+            });
         }
     }
 }

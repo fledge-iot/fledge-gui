@@ -12,10 +12,12 @@
   </div>
   <div class="navbar-end">
     <a class="navbar-item is-hidden-mobile">
-      <span [ngClass]="ping_info.is_alive?'tag is-success':'tag is-danger'">
-        <i [ngClass]="ping_info.is_alive?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
-      </span>
-      <span class="tag" style="white-space: pre">{{ping_info.service_status}}</span>
+      <div class="tags has-addons">
+        <span [ngClass]="ping_info.is_alive?'tag is-success':'tag is-danger'">
+          <i [ngClass]="ping_info.is_alive?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
+        </span>
+        <span class="tag">{{ping_info.service_status}}</span>
+      </div>
     </a>
     <div class="navbar-item has-dropdown is-hoverable is-hidden-mobile">
       <a *ngIf='isUserLoggedIn || isSkip ' class="navbar-link">

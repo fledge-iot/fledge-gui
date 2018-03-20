@@ -12,7 +12,7 @@
             <div class="column">
               <p class="control is-fullwidth">
                 <input type="text" class="input" placeholder="username" name='username' [(ngModel)]="model.username" #username="ngModel"
-                  minlength="4" maxlength="8" required />
+                minlength="4" maxlength="8" required/>
               </p>
               <small *ngIf="f.submitted && !username.valid" class="help is-danger level-left"> Username is required (minimum 4 characters)</small>
             </div>

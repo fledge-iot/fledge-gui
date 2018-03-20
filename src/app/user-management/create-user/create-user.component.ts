@@ -66,7 +66,6 @@ export class CreateUserComponent implements OnInit {
     this.userService.getRole()
       .subscribe(
         roleRecord => {
-          console.log('Role', roleRecord.roles);
           this.userRole = roleRecord.roles
         },
         error => {

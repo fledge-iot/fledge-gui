@@ -82,7 +82,7 @@ export class UserProfileComponent implements OnInit {
     *  Sign Out 
     *  @param id  user id
     */
-   clearAllSessions(id) {
+  clearAllSessions(id) {
     this.ngProgress.start();
     this.authService.clearAllSessions(id).
       subscribe(
@@ -94,8 +94,10 @@ export class UserProfileComponent implements OnInit {
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down', error);
-          } else {
+          } else if (error.status === 404) {
             this.alertService.error('No active session found');
+          } else {
+            this.alertService.error(error.statusText);
           }
         });
   }
