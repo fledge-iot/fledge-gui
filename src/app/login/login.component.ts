@@ -93,4 +93,8 @@ export class LoginComponent implements OnInit {
     public resetSession() {
         sessionStorage.clear();
     }
+
+    public forgotPassword() {
+        this.alertService.warning("Please ask the administrator to reset your password.");
+    }
 }

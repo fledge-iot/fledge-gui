@@ -15,6 +15,8 @@ export class ServicesHealthComponent implements OnInit {
   timer: any = '';
   time: number;
   public service_data;
+
+  public isAdmin = false;
   // Object to hold schedule id and name to delete
   public childData = {
     id: '',
@@ -28,6 +30,7 @@ export class ServicesHealthComponent implements OnInit {
   constructor(private servicesHealthService: ServicesHealthService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
   ngOnInit() {
+    this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin'));
     this.getServiceData();
   }
 
@@ -36,24 +39,24 @@ export class ServicesHealthComponent implements OnInit {
     this.ngProgress.start();
     this.servicesHealthService.getAllServices()
       .subscribe(
-      (data) => {
-        /** request completed */
-        this.ngProgress.done();
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.warning('Could not connect to API');
-          return;
-        }
-        this.service_data = data.services;
-        this.time = Utils.getCurrentDate();
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          if (data.error) {
+            console.log('error in response', data.error);
+            this.alertService.warning('Could not connect to API');
+            return;
+          }
+          this.service_data = data.services;
+          this.time = Utils.getCurrentDate();
 
-      },
-      (error) => {
-        this.alertService.warning('Could not connect to API');
-        console.log('error: ', error);
-        /** request completed */
-        this.ngProgress.done();
-      });
+        },
+        (error) => {
+          this.alertService.warning('Could not connect to API');
+          console.log('error: ', error);
+          /** request completed */
+          this.ngProgress.done();
+        });
   }
 
   checkServiceType(type) {
@@ -79,23 +82,23 @@ export class ServicesHealthComponent implements OnInit {
     this.ngProgress.start();
     this.servicesHealthService.shutDownService(port)
       .subscribe(
-      (data) => {
-        /** request completed */
-        this.ngProgress.done();
-        this.alertService.success(data.message)
-        this.getServiceData();
-      },
-      (error) => {
-        if (error.status === 0) {
-          console.log('service down ', error);
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-        } else {
+          this.alertService.success(data.message)
+          this.getServiceData();
+        },
+        (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+            /** request completed */
+            this.ngProgress.done();
+          } else {
             this.alertService.error(error.statusText);
             /** request completed */
             this.ngProgress.done();
-        }
-      });
+          }
+        });
   }
 
   padRight(s: string) {
