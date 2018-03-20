@@ -53,6 +53,11 @@
       User Profile
     </a>
   </li>
+  <li>
+    <a [ngClass]="{'is-active': step==='/support'}" (click)="onToggle('/support')">
+      Support
+    </a>
+  </li>
 
   <li>
     <a [ngClass]="{'is-active': step==='/setting'}" (click)="onToggle('/setting')">

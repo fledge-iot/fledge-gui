@@ -21,7 +21,8 @@ import {
   ConnectedServiceStatus,
   DiscoveryService,
   UserService,
-  CertificateService
+  CertificateService,
+  SupportService
 } from './services/index';
 
 import { LoginComponent } from './login/index';
@@ -67,6 +68,7 @@ import { CreateUserComponent } from './user-management/create-user/create-user.c
 import { EqualValidator } from './directives/index';
 import { UpdateUserComponent } from './user-management/update-user/update-user.component';
 import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
+import { SupportComponent } from './support/support.component';
 
 @NgModule({
   imports: [
@@ -116,7 +118,8 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
     CreateUserComponent,
     EqualValidator,
     UpdateUserComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    SupportComponent
   ],
   providers: [
     AuthGuard,
@@ -134,6 +137,7 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
     DiscoveryService,
     SharedService,
     CertificateService,
+    SupportService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

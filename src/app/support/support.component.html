@@ -1,0 +1,38 @@
+<div class="container is-fluid">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  </ng-progress>
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title">
+        Support Bundles
+      </p>
+      <div>
+        <a class="button is-light" (click)="requestNewBundle()">Request New &nbsp;
+          <i class="fa fa-file-archive-o" aria-hidden="true"></i>
+        </a>
+      </div>
+    </header>
+    <div class="card-content">
+      <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let bundles of bundlesData">
+            <td>{{ bundles }}</td>
+            <td>
+              fixme
+              <!-- <a href={{}} target="_blank" class="button is-text">
+                download
+              </a> -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
