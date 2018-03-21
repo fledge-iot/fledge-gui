@@ -22,13 +22,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let bundles of bundlesData">
-            <td>{{ bundles }}</td>
+          <tr *ngFor="let bundle of bundlesData">
+            <td>{{ bundle }}</td>
             <td>
-              fixme
-              <!-- <a href={{}} target="_blank" class="button is-text">
+              <a href="{{ downloadUrl }}support/{{bundle}}" target="_blank" class="button is-text">
                 download
-              </a> -->
+              </a>
             </td>
           </tr>
         </tbody>

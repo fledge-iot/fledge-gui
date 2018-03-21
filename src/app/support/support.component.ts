@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SupportService, AlertService } from '../services/index';
 import { NgProgress } from 'ngx-progressbar';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-support',
@@ -9,6 +10,7 @@ import { NgProgress } from 'ngx-progressbar';
 })
 export class SupportComponent implements OnInit {
   public bundlesData = [];
+  public downloadUrl = environment.BASE_URL;
 
   constructor(private supportBundleService: SupportService, public ngProgress: NgProgress, private alertService: AlertService) { }
 
