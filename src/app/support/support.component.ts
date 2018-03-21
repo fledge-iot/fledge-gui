@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class SupportComponent implements OnInit {
   public bundlesData = [];
-  public baseUrl = environment.BASE_URL;
+  public supportUrl = this.supportBundleService.SUPPORT_BUNDLE_URL;
 
   constructor(private supportBundleService: SupportService, public ngProgress: NgProgress, private alertService: AlertService) { }
 

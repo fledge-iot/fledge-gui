@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class SupportService {
-  private SUPPORT_BUNDLE_URL = environment.BASE_URL + 'support';
+  public SUPPORT_BUNDLE_URL = environment.BASE_URL + 'support';
 
   constructor(private http: HttpClient) { }
 
