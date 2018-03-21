@@ -10,3 +10,4 @@ export * from './connected-service-status.service';
 export * from './discovery.service';
 export * from './user.service';
 export * from './certificate.service';
+export * from './support.service';
