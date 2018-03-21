@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class SupportComponent implements OnInit {
   public bundlesData = [];
-  public downloadUrl = environment.BASE_URL;
+  public baseUrl = environment.BASE_URL;
 
   constructor(private supportBundleService: SupportService, public ngProgress: NgProgress, private alertService: AlertService) { }
 
@@ -25,7 +25,7 @@ export class SupportComponent implements OnInit {
       subscribe(
         data => {
           this.ngProgress.done();
-          this.bundlesData = data.bundles;
+          this.bundlesData = data.bundles.sort().reverse();
         },
         error => {
           this.ngProgress.done();
