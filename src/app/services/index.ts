@@ -11,3 +11,4 @@ export * from './discovery.service';
 export * from './user.service';
 export * from './certificate.service';
 export * from './support.service';
+export * from './backup-restore.service';

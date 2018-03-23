@@ -3,7 +3,8 @@
   <div class="modal-card">
     <section class="modal-card-body">
       {{childData.message}}
-      <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">&nbsp;{{childData.name}}?</span>
+      <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">&nbsp;{{childData.name}}</span>
+      <span>?</span>
     </section>
     <footer class="modal-card-foot">
       <button class="button is-success" (click)="triggerAction()">Yes</button>
