@@ -107,7 +107,7 @@ export class BackupRestoreComponent implements OnInit {
     subscribe(
       data => {
         this.ngProgress.done();
-        this.alertService.success("Backup deleted successfully");
+        this.alertService.success(data.message);
         this.getBackup();
       },
       error => {
