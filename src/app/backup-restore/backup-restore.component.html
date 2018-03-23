@@ -8,7 +8,8 @@
         Backup
       </p>
       <div>
-        <a class="button is-light" (click)="openModal('', '', 'Are you sure, You want to create a backup', 'createBackup')">Request Backup &nbsp;<i class="fa fa-file" aria-hidden="true"></i>
+        <a class="button is-light" (click)="openModal('', '', 'Are you sure, You want to create a backup', 'createBackup')">Request Backup &nbsp;
+          <i class="fa fa-file" aria-hidden="true"></i>
         </a>
       </div>
     </header>
@@ -35,7 +36,8 @@
           </tr>
         </tbody>
       </table>
-      <app-modal (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)' (deleteBackup)='deleteBackup($event)' [childData]='childData'></app-modal>
+      <app-modal (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)' (deleteBackup)='deleteBackup($event)'
+        [childData]='childData'></app-modal>
     </div>
   </div>
 </div>

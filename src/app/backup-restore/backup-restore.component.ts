@@ -67,8 +67,7 @@ export class BackupRestoreComponent implements OnInit {
     subscribe(
       data => {
         this.ngProgress.done();
-        this.alertService.success(data.message);
-        this.getBackup();
+        this.alertService.success(data.status);
       },
       error => {
         this.ngProgress.done();
@@ -87,7 +86,7 @@ export class BackupRestoreComponent implements OnInit {
     subscribe(
       data => {
         this.ngProgress.done();
-        this.alertService.success(data.message);
+        this.alertService.success(data.status);
         this.getBackup();
       },
       error => {
