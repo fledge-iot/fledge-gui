@@ -8,6 +8,7 @@ import { AssetsComponent } from './asset-readings/assets/index';
 import { AuditLogComponent } from './audit-log/index';
 import { CertificateStoreComponent } from './certificate/certificate-store/index';
 import { SupportComponent } from './support/index';
+import { BackupRestoreComponent } from './backup-restore/index';
 import { SettingsComponent } from './settings/index';
 import { ServicesHealthComponent } from './services-health/index';
 import { ServiceDiscoveryComponent } from './service-discovery/index';
@@ -24,6 +25,7 @@ const appRoutes: Routes = [
     { path: 'audit', component: AuditLogComponent, canActivate: [AuthGuard] },
     { path: 'certificate', component: CertificateStoreComponent, canActivate: [AuthGuard] },
     { path: 'support', component: SupportComponent, canActivate: [AuthGuard] },
+    { path: 'backup-restore', component: BackupRestoreComponent, canActivate: [AuthGuard] },
     { path: 'setting', component: SettingsComponent },
     { path: 'services-health', component: ServicesHealthComponent, canActivate: [AuthGuard] },
     { path: 'service-discovery', component: ServiceDiscoveryComponent, canActivate: [AuthGuard] },

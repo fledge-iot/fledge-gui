@@ -58,7 +58,11 @@
       Support
     </a>
   </li>
-
+  <li>
+    <a [ngClass]="{'is-active': step==='/backup-restore'}" (click)="onToggle('/backup-restore')">
+      Backup &amp; Restore
+    </a>
+  </li>
   <li>
     <a [ngClass]="{'is-active': step==='/setting'}" (click)="onToggle('/setting')">
       Settings
