@@ -5,9 +5,14 @@
   </ng-progress>
   <div class="card">
     <header class="card-header">
-      <p class="card-header-title">
-        SysLog
-      </p>
+      <div class="card-content">
+        <div class="media-content">
+          <h5 class="title is-5">SysLog</h5>
+          <h6 class='subtitle is-6'>
+            <small>Count: {{ totalCount }}</small>
+          </h6>
+        </div>
+      </div>
     </header>
     <div class="card-content">
       <div class="content">
@@ -28,7 +33,7 @@
           </div>
         </div>
       </div>
-      <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+      <table class="table is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
         <tbody>
           <tr *ngFor="let log of logs">
             <td><pre>{{log}}</pre></td>
