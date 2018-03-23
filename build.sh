@@ -28,10 +28,10 @@ show_files_with_size () {
 echo $0 
 
 echo cleaning the depdencies ...
-#yarn clean
+yarn clean
 
 echo add dependencies
-#yarn install
+yarn install
 
 echo production build
 yarn build
