@@ -23,6 +23,7 @@ import {
   UserService,
   CertificateService,
   SupportService,
+  SystemLogService,
   BackupRestoreService
 } from './services/index';
 
@@ -70,6 +71,7 @@ import { EqualValidator } from './directives/index';
 import { UpdateUserComponent } from './user-management/update-user/update-user.component';
 import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
 import { SupportComponent } from './support/support.component';
+import { SystemLogComponent } from './system-log/system-log.component';
 import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
 
 @NgModule({
@@ -122,6 +124,7 @@ import { BackupRestoreComponent } from './backup-restore/backup-restore.componen
     UpdateUserComponent,
     UserProfileComponent,
     SupportComponent,
+    SystemLogComponent,
     BackupRestoreComponent
   ],
   providers: [
@@ -133,6 +136,7 @@ import { BackupRestoreComponent } from './backup-restore/backup-restore.componen
     StatisticsService,
     AssetsService,
     AuditService,
+    SystemLogService,
     SchedulesService,
     ServicesHealthService,
     AssetSummaryService,

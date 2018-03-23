@@ -5,3 +5,7 @@
 select {
   width: 200px;
 }
+
+.media-content{
+  overflow: hidden;
+}
