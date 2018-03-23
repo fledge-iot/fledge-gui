@@ -23,7 +23,8 @@ import {
   UserService,
   CertificateService,
   SupportService,
-  SystemLogService
+  SystemLogService,
+  BackupRestoreService
 } from './services/index';
 
 import { LoginComponent } from './login/index';
@@ -71,6 +72,7 @@ import { UpdateUserComponent } from './user-management/update-user/update-user.c
 import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
 import { SupportComponent } from './support/support.component';
 import { SystemLogComponent } from './system-log/system-log.component';
+import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
 
 @NgModule({
   imports: [
@@ -122,7 +124,8 @@ import { SystemLogComponent } from './system-log/system-log.component';
     UpdateUserComponent,
     UserProfileComponent,
     SupportComponent,
-    SystemLogComponent
+    SystemLogComponent,
+    BackupRestoreComponent
   ],
   providers: [
     AuthGuard,
@@ -142,6 +145,7 @@ import { SystemLogComponent } from './system-log/system-log.component';
     SharedService,
     CertificateService,
     SupportService,
+    BackupRestoreService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,
