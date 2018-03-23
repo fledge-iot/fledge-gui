@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 export const POLLING_INTERVAL = 5000;   // milliseconds
 
 export default class Utils {
@@ -76,13 +74,5 @@ export default class Utils {
   public static getCurrentDate() {
     return Date.now();
   }
-
-  public static sortByKeys(object) {
-    const keys = Object.keys(object);
-    const sortedKeys = _.sortBy(keys);
-
-    return _.fromPairs(
-      _.map(sortedKeys, key => [key, object[key]])
-    );
-  }
+  
 }

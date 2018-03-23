@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as _ from 'lodash';
+
 import { AssetsService } from '../../services/assets.service';
 import ReadingsValidator from '../assets/readings-validator';
 import { AssetSummaryService } from './../asset-summary/asset-summary-service';
