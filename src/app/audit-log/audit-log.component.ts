@@ -59,8 +59,8 @@ export class AuditLogComponent implements OnInit {
   }
 
   /**
-    *  Calculate number of pages for pagination based on total records;
-    */
+  *  Calculate number of pages for pagination based on total records;
+  */
   public totalPages() {
     this.totalPagesCount = Math.ceil(this.recordCount / this.limit) || 0;
   }
