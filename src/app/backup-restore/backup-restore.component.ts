@@ -11,7 +11,7 @@ import { NgProgress } from 'ngx-progressbar';
 export class BackupRestoreComponent implements OnInit {
   public backupData = [];
 
-  // Object to hold data of certificate to delete
+  // Object to hold child data
   public childData = {
     id: '',
     name: '',
