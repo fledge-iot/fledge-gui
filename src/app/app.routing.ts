@@ -4,6 +4,7 @@ import { LoginComponent } from './login/index';
 import { DashboardComponent } from './dashboard/index';
 import { ConfigurationManagerComponent } from './configuration-manager/index';
 import { ScheduledProcessComponent } from './scheduler/scheduled-process/index';
+import { SystemLogComponent } from './system-log/index';
 import { AssetsComponent } from './asset-readings/assets/index';
 import { AuditLogComponent } from './audit-log/index';
 import { CertificateStoreComponent } from './certificate/certificate-store/index';
@@ -20,6 +21,7 @@ const appRoutes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'configuration', component: ConfigurationManagerComponent, canActivate: [AuthGuard] },
     { path: 'scheduled-task', component: ScheduledProcessComponent, canActivate: [AuthGuard] },
+    { path: 'syslog', component: SystemLogComponent, canActivate: [AuthGuard] },
     { path: 'asset', component: AssetsComponent, canActivate: [AuthGuard] },
     { path: 'audit', component: AuditLogComponent, canActivate: [AuthGuard] },
     { path: 'certificate', component: CertificateStoreComponent, canActivate: [AuthGuard] },

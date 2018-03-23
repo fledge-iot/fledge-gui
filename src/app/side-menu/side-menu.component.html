@@ -15,10 +15,19 @@
     </a>
   </li>
   <li>
+    <p class="menu-label">
+      Logs
+    </p>
+    <ul>
+      <li><a [ngClass]="{'is-active': step==='/audit'}" (click)="onToggle('/audit')">Audit</a></li>
+      <li><a [ngClass]="{'is-active': step==='/syslog'}" (click)="onToggle('/syslog')">System</a></li>
+    </ul>
+  </li>
+  <!-- <li>
     <a [ngClass]="{'is-active': step==='/audit'}" (click)="onToggle('/audit')">
       Audit Logs
     </a>
-  </li>
+  </li> -->
   <!-- TODO: These menu item should be dynamic -->
   <li>
     <a [ngClass]="{'is-active': step==='/asset'}" (click)="onToggle('/asset')">

@@ -1,0 +1,45 @@
+<div class="container is-fluid">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
+              [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+              [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  </ng-progress>
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title">
+        SysLog
+      </p>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <div class="columns">
+          <div class="column">
+            <div class="select is-fullwidth">
+              <select (change)="filterSource($event)">
+                <option selected="selected" value="all">All</option>
+                <option value="storage">Storage</option>
+              </select>
+            </div>
+          </div>
+          <div class="column is-fullwidth">
+            <number-input-debounce placeholder="limit" (value)="setLimit($event)"></number-input-debounce>    
+          </div>
+          <div class="column is-fullwidth">
+            <number-input-debounce placeholder="offset" (value)="setOffset($event)"></number-input-debounce>
+          </div>
+        </div>
+      </div>
+      <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr *ngFor="let log of logs">
+            <td><pre>{{log}}</pre></td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- <div *ngIf='totalPagesCount > 1'>
+        <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount' (goPrev)="onPrev()" (goNext)="onNext()"
+          (goFirst)="onFirst()" (goLast)="onLast()" (goPage)="goToPage($event)">
+        </app-pagination>
+      </div> -->
+    </div>
+  </div>
+</div>
