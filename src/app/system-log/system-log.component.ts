@@ -15,6 +15,7 @@ export class SystemLogComponent implements OnInit {
   limit = 20;
   offset = 0;
 
+  page = 1;
   recordCount = 0;
   tempOffset = 0;
   totalPagesCount = 0;
@@ -25,16 +26,94 @@ export class SystemLogComponent implements OnInit {
     this.getSysLogs();
   }
 
+  /**
+   *  Go to the page on which user clicked in pagination
+   */
+  goToPage(n: number): void {
+    this.page = n;
+    this.setLimitOffset();
+  }
+
+  /**
+   *  Go to the next page
+   */
+  onNext(): void {
+    this.page++;
+    this.setLimitOffset();
+  }
+
+  /**
+   *  Go to the first page
+   */
+  onFirst(): void {
+    this.page = 1;
+    this.setLimitOffset();
+  }
+
+  /**
+  *  Calculate number of pages for pagination based on total records;
+  */
+  public totalPages() {
+    this.totalPagesCount = Math.ceil(this.recordCount / this.limit) || 0;
+  }
+
   public setLimit(limit) {
+    if (this.page !== 1) {
+      this.page = 1;
+      this.tempOffset = this.offset;
+    }
+    if (limit === '' || limit == 0 || limit === null || limit === undefined) {
+      limit = 20;
+    }
     this.limit = limit;
     console.log('Limit: ', this.limit);
+    this.totalPages();
     this.getSysLogs();
   }
 
   public setOffset(offset: number) {
+    if (this.page !== 1) {
+      this.page = 1;
+    }
+    if (offset === null || offset === undefined) {
+      offset = 0;
+    }
     this.offset = offset;
     console.log('Offset: ', this.offset);
     this.tempOffset = offset;
+    this.totalPages();
+    this.getSysLogs();
+  }
+
+  /**
+   *  Go to the last page
+   */
+  onLast(n: number): void {
+    const p = Math.ceil(this.recordCount / this.limit) || 0;
+    this.page = p;
+    this.setLimitOffset();
+  }
+
+  /**
+   *  Go to the previous page
+   */
+  onPrev(): void {
+    this.page--;
+    this.setLimitOffset();
+  }
+
+  /**
+   *  Set limit and offset (it is internally called by goToPage(), onNext(), onPrev(), onFirst(), onLast() methods)
+   */
+  setLimitOffset() {
+    if (this.limit === 0) {
+      this.limit = 20;
+    }
+    if (this.offset > 0) {
+      this.tempOffset = (((this.page) - 1) * this.limit) + this.offset;
+    } else {
+      this.tempOffset = ((this.page) - 1) * this.limit;
+    }
     this.getSysLogs();
   }
 
@@ -55,13 +134,14 @@ export class SystemLogComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           this.logs = data.logs;
-          this.totalCount = data.totalCount;
+          this.totalCount = data.count;
           console.log('System Logs', this.logs, 'Total count', this.totalCount);
           if (this.offset !== 0) {
             this.recordCount = this.totalCount - this.offset;
           } else {
             this.recordCount = this.totalCount;
           }
+          this.totalPages();
         },
         error => {
           /** request completed */
