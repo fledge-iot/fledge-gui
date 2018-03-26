@@ -4,7 +4,7 @@ import Utils from '../utils';
 import { MomentDatePipe } from './../pipes/moment-date';
 import { NgProgress } from 'ngx-progressbar';
 
-import * as _ from 'lodash';
+import map from 'lodash-es/map';
 import * as moment from 'moment';
 
 @Component({
@@ -131,8 +131,8 @@ export class DashboardComponent implements OnInit {
       subscribe(data => {
         this.statisticsKeys.forEach(key => {
           let labels = [];
-          let record = _.map(data.statistics, key)
-          let history_ts = _.map(data.statistics, 'history_ts');
+          let record = map(data.statistics, key)
+          let history_ts = map(data.statistics, 'history_ts');
           history_ts.forEach(element => {
             element = moment(element).format('HH:mm:ss:SSS')
             labels.push(element)

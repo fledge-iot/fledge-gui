@@ -1,9 +1,16 @@
 ## v1.2 (under development)
-
+ 
 #### Features Addition
 
 * Enable / Disable Schedule
-* Shutdown microservice from Services Health page
+* Improved Services Health Page
+* Auth Support
+* User Management
+* Support Bundles
+* Backup and Restore
+* Syslog (Logs) 
+* Certificate Store
+* Allows Statistics History Graph (selection for display)
 
 #### Bug Fixes
 
@@ -27,5 +34,6 @@
 * Audit Logs
 * Assets and Readings data browsing with graphs
 * Allow to connect any FogLAMP instance via Settings
+
 
 
