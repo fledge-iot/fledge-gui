@@ -19,7 +19,7 @@ Run `yarn start` or `yarn start --host [ip_address of host machine]` (to allow a
 
 
 ## Production Build & Deployment
-Run `yarn build` to build the project. The build artifacts will be stored in the `dist/` directory. 
+Run `./build.sh` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 > It uses the `-prod` flag with `ng` for a production build.
 

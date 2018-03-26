@@ -3,14 +3,14 @@
 #### Features Addition
 
 * Enable / Disable Schedule
-* Shutdown microservice from Services Health page
+* Improved Services Health Page
 * Auth Support
 * User Management
 * Support Bundles
 * Backup and Restore
-* Syslog (under logs) 
+* Syslog (Logs) 
 * Certificate Store
-* Graph display handling based on key selection
+* Allows Statistics History Graph (selection for display)
 
 #### Bug Fixes
 
