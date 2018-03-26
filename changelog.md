@@ -28,4 +28,15 @@
 * Assets and Readings data browsing with graphs
 * Allow to connect any FogLAMP instance via Settings
 
+## v1.2.0
+
+* Login support
+* User Management 
+* Support Bundles
+* Backup and Restore
+* Syslog 
+* Certificate store
+* Graph display handling based on key selection
+* bug fixes
+
 
