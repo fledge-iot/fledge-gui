@@ -85,6 +85,18 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     );
   }
 
+  public toggleDropdown() {
+    let userDropdown = <HTMLDivElement>document.getElementById('dropdown-box');
+    let classes = userDropdown.className.split(" ")
+    for(let cls of classes) {
+      if (cls === 'is-active') {
+        userDropdown.classList.remove('is-active');
+        return;
+      }
+    }
+    userDropdown.classList.add('is-active');
+  }
+
   openModal() {
     this.shutDownData = {
       key: 'shutdown',
