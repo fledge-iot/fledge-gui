@@ -34,11 +34,9 @@ brew install nginx
 ```
   sudo apt-get update
   sudo apt-get install nginx-light
-```
+``` 
 
-Run `yarn build` and start nginx from root directory with given `nginx-conf` file; See next section. 
-
-> To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory and provided `nginx.conf`; Make sure you have nginx(-light) installed on the deployment machine.
+> To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory and (may be you want to use) provided `nginx.conf`; Make sure you have nginx(-light) installed on the deployment machine.
 
 ### Starting with nginx
 
@@ -64,8 +62,8 @@ Make sure to fix `include` directive and `server root` in `nginx.conf`; unless y
 Browser | Tested Version | Supported
 --------|-------- |-------
 Safari (mac)  | 11.0.x   | latest 1
-Chrome  |63.0.x (64-bit) | latest 2 
-Firefox |57.0.x (64-bit) | latest 2
+Chrome  |65.0.x (64-bit) | latest 2 
+Firefox |59.0.x (64-bit) | latest 2
 
 
 ## Other 
