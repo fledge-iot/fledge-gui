@@ -27,7 +27,6 @@ OPTIONS
 
   -h, --help     Display this help text
   -v, --version  Display this script's version information
-  -s, --start    Install and start
 
 EXIT STATUS
   This script exits with status code 1 when errors occur.
@@ -124,10 +123,6 @@ then
         OPTION="VERSION"
       ;;
 
-      -s|--start)
-        OPTION="START"
-      ;;
-
       *)
         echo "Unrecognized option: $i"
     esac
@@ -135,5 +130,6 @@ then
     execute_command
   done
 else
-  echo "${USAGE}"
+  OPTION="START"
+  execute_command
 fi
