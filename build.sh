@@ -78,10 +78,10 @@ build () {
     T_SIZE=$(du -hs dist)
     echo -e INFO: "${CINFO} Deployable dist size ${CWARN}  ${T_SIZE} ${CRESET}" 
 
-    RELEASBLE_BUILD="foglamp-gui-${__version__}.tar.gz"
+    RELEASABLE_BUILD="foglamp-gui-${__version__}.tar.gz"
     echo -e  INFO: "${CINFO} Creating compressed build artifacts for release ... ${CRESET}"
-    tar -zcvf ${RELEASBLE_BUILD} dist &>/dev/null
-    echo "Created ${RELEASBLE_BUILD}"
+    tar -zcvf ${RELEASABLE_BUILD} dist &>/dev/null
+    echo "Created ${RELEASABLE_BUILD}"
     echo -e INFO: "${CINFO} Done. ${CRESET}"
 
 }
