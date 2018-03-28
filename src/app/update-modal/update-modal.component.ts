@@ -64,13 +64,13 @@ export class UpdateModalComponent implements OnInit, OnChanges {
    * getSelectedDay
    */
   public getSelectedDay(index) {
-    let selected_day;
+    let selectedDay;
     if (index == null) {
-      selected_day = 'Select';
+      selectedDay = this.days[0];
     } else {
-      selected_day = this.days[index];
+      selectedDay = this.days[index];
     }
-    return selected_day;
+    return selectedDay;
   }
 
   /**
@@ -145,7 +145,7 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     if (this.form.get('type').value == '2') {   // If Type is TIMED == 2
       time = Utils.convertTimeToSec(this.form.get('time').value);
       let index = this.form.get('day').value != undefined ? this.days.indexOf(this.form.get('day').value) : 0;
-      if (index == 0) {
+      if (index === 0) {
         this.form.controls['day'].setValue('');
       } else {
         this.form.controls['day'].setValue(index);
