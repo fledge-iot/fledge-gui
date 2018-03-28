@@ -121,6 +121,8 @@ export class DashboardComponent implements OnInit {
           label: '',
           data: data,
           backgroundColor: color,
+          fill: false,
+          lineTension: 0
         }
       ]
     }

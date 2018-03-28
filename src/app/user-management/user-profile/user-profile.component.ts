@@ -11,7 +11,7 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./user-profile.component.css']
 })
 export class UserProfileComponent implements OnInit {
-  public userRecord = {};
+  public userRecord: any = {};
   public childData = {};
   isShow: boolean = false;
   @ViewChild(ModalComponent) child: ModalComponent;
@@ -20,7 +20,7 @@ export class UserProfileComponent implements OnInit {
     private alertService: AlertService,
     private userService: UserService,
     public ngProgress: NgProgress,
-    private router: Router ) { }
+    private router: Router) { }
 
   ngOnInit() {
     this.getUser()
@@ -71,15 +71,18 @@ export class UserProfileComponent implements OnInit {
   }
 
   updateUser(form: NgForm) {
+    this.ngProgress.start();
     this.userService.updateUser(this.userRecord).
       subscribe(
         data => {
+          this.ngProgress.done();
           this.alertService.success(data.message);
           if (form != null) {
             this.resetUserForm(form)
           }
         },
         error => {
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
