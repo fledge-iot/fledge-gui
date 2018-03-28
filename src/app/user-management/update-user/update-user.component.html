@@ -21,7 +21,6 @@
             <div class="column is-6">
               <label class="label">Role</label>
               <div class="select is-fullwidth">
-                <!-- TODO: Dynamic binding based on role -->
                 <select name='role_id' [(ngModel)]="userRecord.role_id" #role_id="ngModel">
                   <option *ngFor="let role of userRole" [ngValue]='role.id'>{{role.name}}</option>
                 </select>
