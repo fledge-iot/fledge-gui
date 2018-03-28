@@ -47,7 +47,7 @@ export class CreateScheduleComponent implements OnInit {
     // Set default values on form
     this.form.get('type').setValue(1);
     this.form.get('exclusive').setValue(true);
-    this.form.get('day').setValue(1);
+    this.form.get('day').setValue("");
   }
 
   public toggleModal(isOpen: Boolean) {
