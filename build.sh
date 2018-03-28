@@ -107,9 +107,6 @@ execute_command() {
   then
     echo $__version__
 
-  else
-    build
-
   fi
 
 }
@@ -137,5 +134,5 @@ then
     execute_command
   done
 else
-  execute_command
+  build
 fi
