@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 __author__="Mohd. Shariq"
 __copyright__="Copyright (c) 2017 OSIsoft, LLC"
@@ -48,8 +49,12 @@ remove_unwanted_files () {
     rm -rf .DS_Store
 }
 
+compress_bundle_js_files () {
+    gzip --keep dist/*.bundle.js
+}
+
 show_files_with_size () {
-    for f in dist/*.bundle*; do
+    for f in dist/*.*; do
         FILE_SIZE=$(du -h "$f")
         echo "${FILE_SIZE}"
     done
@@ -57,10 +62,10 @@ show_files_with_size () {
 
 build () {
     
-    echo -e  INFO: "${CINFO} Cleaning the dependencies ... ${CRESET}"
+    echo -e  INFO: "${CINFO} Cleaning the build and dependencies ... ${CRESET}"
     yarn clean
 
-    echo -e  INFO: "${CINFO} Adding dependencies ... ${CRESET}"
+    echo -e  INFO: "${CINFO} Installing dependencies ... ${CRESET}"
     yarn install
 
     echo -e  INFO: "${CINFO} Creating production build ... ${CRESET}"
@@ -74,6 +79,9 @@ build () {
 
     echo -e INFO: "${CINFO} Removing unwanted contents ... ${CRESET}"
     remove_unwanted_files
+
+    # echo "Compressing ..."
+    # compress_bundle_js_files
 
     T_SIZE=$(du -hs dist)
     echo -e INFO: "${CINFO} Deployable dist size ${CWARN}  ${T_SIZE} ${CRESET}" 
@@ -99,8 +107,7 @@ execute_command() {
   then
     echo $__version__
 
-  elif [ "$OPTION" == "START" ]
-  then
+  else
     build
 
   fi
@@ -130,6 +137,5 @@ then
     execute_command
   done
 else
-  OPTION="START"
   execute_command
 fi
