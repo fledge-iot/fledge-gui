@@ -98,19 +98,19 @@ build () {
 # Execute the command specified in $OPTION
 ############################################################
 execute_command() {
-  if [ "$OPTION" == "HELP" ]
+  if [[ "$OPTION" == "HELP" ]]
   then
     echo "${USAGE}"
 
-  elif [ "$OPTION" == "VERSION" ]
+  elif [[ "$OPTION" == "VERSION" ]]
   then
     echo $__version__
   
-  elif [ "$OPTION" == "CLEAN" ]
+  elif [[ "$OPTION" == "CLEAN" ]]
   then
     clean
   
-  elif [ "$OPTION" == "CLEAN_START" ]
+  elif [[ "$OPTION" == "CLEAN_START" ]]
   then
     clean
     build  

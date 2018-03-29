@@ -16,43 +16,39 @@ CWARN="${CPFX}0;33m"
 
 # Variables
 FOGLAMP_GUI_VER=1.2.0
-NGINX_STABLE_VER=1.12.2
-
-
-tecreset=$(tput sgr0)
+TECRESET=$(tput sgr0)
 
 machine_details() {
-  # Check OS Type
+  # OS Type
   os=$(uname -o)
-  echo -e "${CINFO}Operating System Type : ${CRESET}" $tecreset $os
+  echo -e "${CINFO}Operating System Type :  ${TECRESET} ${os} ${CRESET}"
 
-  # Check hostname
-  echo -e "${CINFO}Hostname :${CRESET}" $tecreset $HOSTNAME
+  # Hostname
+  echo -e "${CINFO}Hostname :${TECRESET} ${HOSTNAME} ${CRESET}" 
 
-  # Check Internal IP
-  internalip=$(hostname -I)
-  echo -e "${CINFO}Internal IP :${CRESET}" $tecreset $internalip
+  # Internal IP
+  internal_ip=$(hostname -I)
+  echo -e "${CINFO}Internal IP : ${TECRESET} ${internal_ip} ${CRESET}"
 
-  # Check External IP
-  externalip=$(curl -s ipecho.net/plain;echo)
-
-  echo -e "${CINFO}External IP : $tecreset ${CRESET}"$externalip
+  # External IP
+  external_ip=$(curl -s ipecho.net/plain;echo)
+  echo -e "${CINFO}External IP : ${TECRESET} ${external_ip} ${CRESET}"
   echo     # new line
 }
 
 memory_footprints(){
   # Check RAM and SWAP Usages
+  rm -f /tmp/ramcache
   free -h | grep -v + > /tmp/ramcache
-  echo -e "${CINFO}Ram Usages :${CRESET}" $tecreset
-
-  cat /tmp/ramcache | grep -v "Swap"
-  echo -e "${CINFO}Swap Usages :${CRESET}" $tecreset
-  cat /tmp/ramcache | grep -v "Mem"
+  
+  echo -e "${CINFO}Memory Usages : ${TECRESET} ${CRESET}"
+  cat /tmp/ramcache
   echo     # new line
 
   # Check Disk Usages
-  df -h| grep 'Filesystem\|/dev/mmcblk0*' > /tmp/diskusage
-  echo -e "${CINFO}Disk Usages :${CRESET}" $tecreset 
+  rm -f /tmp/diskusage
+  sudo fdisk -l| grep 'Device\|/dev/mmcblk0*' > /tmp/diskusage
+  echo -e "${CINFO}Disk Usages :" ${TECRESET} ${CRESET}
   cat /tmp/diskusage
   echo     # new line
 }
@@ -60,24 +56,26 @@ memory_footprints(){
 install () {
   if ! which nginx > /dev/null 2>&1; then
       echo -e WARNING: "${CWARN} nginx not installed ${CRESET}"
-      sudo apt-get install nginx-light
+      yes Y | sudo apt-get install nginx-light
   else
       nginx_version=$(nginx -v 2>&1)
       echo -e INFO: "${CINFO} Found ${nginx_version} ${CRESET}"
   fi
   
   # download foglamp-gui build artifacts i.e. dist directory contents
-  #wget http://192.168.1.120/foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
+  # url e.g. http://192.168.1.120/foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
+  # wget ${BUILD_URL}
+  # FIXME: scp foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz pi@<IP>:/home/pi
   tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   # put them into /var/www/html and start nginx
   sudo mv dist/* /var/www/html/.
 
   echo -e INFO: "${CINFO} nginx status ${CRESET}"
-  sudo service nginx status
-  
   sudo service nginx stop
   sudo service nginx start
+
+  sudo service nginx status
 }
 
 ############################################################
@@ -94,13 +92,9 @@ OPTIONS
 
   -h, --help     Display this help text
   -v, --version  Display this script's version information
-  -s, --start    Install and start
-
-EXIT STATUS
-  This script exits with status code 1 when errors occur.
 
 EXAMPLES
-  sh $0 --version"
+  ./$0 --version"
 
 ############################################################
 # Execute the command specified in $OPTION
@@ -111,18 +105,18 @@ execute_command() {
   then
     echo "${USAGE}"
 
-  elif [ "$OPTION" == "VERSION" ]
+  elif [[ "$OPTION" == "VERSION" ]]
   then
     echo $__version__
 
-  elif [ "$OPTION" == "START" ]
-  then
-    machine_details
-    memory_footprints
-    install
-    memory_footprints
-
   fi
+}
+
+start () {
+  machine_details
+  memory_footprints
+  install
+  memory_footprints
 }
 
 ############################################################
@@ -141,16 +135,11 @@ then
         OPTION="VERSION"
       ;;
 
-      -s|--start)
-        OPTION="START"
-      ;;
       *)
         echo "Unrecognized option: $i"
     esac
     execute_command
   done
 else
-  echo "${USAGE}"
-
+  start
 fi
-
