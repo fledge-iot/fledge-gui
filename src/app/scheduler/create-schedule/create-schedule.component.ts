@@ -115,6 +115,7 @@ export class CreateScheduleComponent implements OnInit {
     // enable, disable time and date field on schedule type change 
     if (this.form.get('type').value == 2) {
       this.form.get('day').enable();
+      this.form.get('day').setValue("");
       this.form.get('time').enable();
     } else {
       this.form.get('day').disable();
