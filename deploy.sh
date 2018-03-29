@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# This script is partially done, please track 
-# https://github.com/foglamp/foglamp-gui/issues/73
-
 __author__="Mohd. Shariq"
 __copyright__="Copyright (c) 2017 OSIsoft, LLC"
 __license__="Apache 2.0"
@@ -16,6 +13,8 @@ CRESET="${CPFX}0m"          # Text Reset
 CERR="${CPFX}1;31m"
 CINFO="${CPFX}1;32m"
 CWARN="${CPFX}0;33m"
+
+echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
 # Variables
 FOGLAMP_GUI_VER=1.2.0
@@ -56,14 +55,14 @@ memory_footprints(){
   # Check Disk Usages
   rm -f /tmp/diskusage
   sudo fdisk -l| grep 'Device\|/dev/mmcblk0*' > /tmp/diskusage
-  echo -e "${CINFO}Disk Usages :" ${CRESET}
+  echo -e "${CINFO}Disk Usages : ${CRESET}"
   cat /tmp/diskusage
   echo     # new line
 }
 
 install () {
   if ! which nginx > /dev/null 2>&1; then
-      echo -e WARNING: "${CWARN} nginx not installed ${CRESET}"
+      echo -e WARNING: "${CWARN} Nginx not installed ${CRESET}"
       yes Y | sudo apt-get install nginx-light
   else
       nginx_version=$(nginx -v 2>&1)
@@ -83,7 +82,7 @@ install () {
   sudo service nginx stop
   sudo service nginx start
 
-  sudo service nginx status
+  sudo service nginx status | grep "Active:"
 }
 
 ############################################################
