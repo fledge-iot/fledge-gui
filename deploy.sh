@@ -19,23 +19,22 @@ CWARN="${CPFX}0;33m"
 
 # Variables
 FOGLAMP_GUI_VER=1.2.0
-TECRESET=$(tput sgr0)
 
 machine_details() {
   # OS Type
-  os=$(uname -o)
-  echo -e "${CINFO}Operating System Type :  ${TECRESET} ${os} ${CRESET}"
+  os=$(uname)
+  echo -e "${CINFO}Operating System Type :${CRESET}   ${os} "
 
   # Hostname
-  echo -e "${CINFO}Hostname :${TECRESET} ${HOSTNAME} ${CRESET}" 
+  echo -e "${CINFO}Hostname : ${CRESET} ${HOSTNAME} " 
 
   # Internal IP
   internal_ip=$(hostname -I)
-  echo -e "${CINFO}Internal IP : ${TECRESET} ${internal_ip} ${CRESET}"
+  echo -e "${CINFO}Internal IP : ${CRESET} ${internal_ip}"
 
   # External IP
   external_ip=$(curl -s ipecho.net/plain;echo)
-  echo -e "${CINFO}External IP : ${TECRESET} ${external_ip} ${CRESET}"
+  echo -e "${CINFO}External IP : ${CRESET} ${external_ip}"
   echo     # new line
 }
 
@@ -44,14 +43,14 @@ memory_footprints(){
   rm -f /tmp/ramcache
   free -h | grep -v + > /tmp/ramcache
   
-  echo -e "${CINFO}Memory Usages : ${TECRESET} ${CRESET}"
+  echo -e "${CINFO}Memory Usages : ${CRESET}"
   cat /tmp/ramcache
   echo     # new line
 
   # Check Disk Usages
   rm -f /tmp/diskusage
   sudo fdisk -l| grep 'Device\|/dev/mmcblk0*' > /tmp/diskusage
-  echo -e "${CINFO}Disk Usages :" ${TECRESET} ${CRESET}
+  echo -e "${CINFO}Disk Usages :" ${CRESET}
   cat /tmp/diskusage
   echo     # new line
 }
