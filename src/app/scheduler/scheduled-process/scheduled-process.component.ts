@@ -7,7 +7,6 @@ import { CreateScheduleComponent } from '../create-schedule/create-schedule.comp
 import { NgProgress } from 'ngx-progressbar';
 
 enum weekDays {
-  Select = 0,
   Mon = 1,
   Tue = 2,
   Wed = 3,
