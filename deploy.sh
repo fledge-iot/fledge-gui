@@ -23,7 +23,13 @@ FOGLAMP_GUI_VER=1.2.0
 machine_details() {
   # OS Type
   os=$(uname)
-  echo -e "${CINFO}Operating System Type :${CRESET}   ${os} "
+  echo -e "${CINFO}Operating System Type :${CRESET} ${os} "
+
+  if [[ ${os} == "Darwin" ]] 
+  then
+      echo -e Error:"${CERR} Script is not compatible with macOS ${CRESET}" 
+      exit 1
+  fi
 
   # Hostname
   echo -e "${CINFO}Hostname : ${CRESET} ${HOSTNAME} " 
