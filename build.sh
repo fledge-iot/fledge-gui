@@ -28,12 +28,12 @@ OPTIONS
 
   -h, --help     Display this help text
   -v, --version  Display this script's version information
+  -c, --clean    Clean and build dependencies
+  --clean-start  Clean the build dependencies and start
 
-EXIT STATUS
-  This script exits with status code 1 when errors occur.
 
 EXAMPLES
-  sh $0 --version"
+  ./$0 --version"
 
 #########################
 # functions def
@@ -60,55 +60,62 @@ show_files_with_size () {
     done
 }
 
+clean(){
+  echo -e  INFO: "${CINFO} Cleaning the build and dependencies ... ${CRESET}"
+  yarn clean
+}
+
 build () {
-    
-    echo -e  INFO: "${CINFO} Cleaning the build and dependencies ... ${CRESET}"
-    yarn clean
+  echo -e  INFO: "${CINFO} Installing dependencies ... ${CRESET}"
+  yarn install
+  
+  echo -e  INFO: "${CINFO} Creating production build ... ${CRESET}"
+  yarn build
 
-    echo -e  INFO: "${CINFO} Installing dependencies ... ${CRESET}"
-    yarn install
+  echo -e INFO: "${CINFO} Build distribution contents  ... ${CRESET}"
+  show_files_with_size
 
-    echo -e  INFO: "${CINFO} Creating production build ... ${CRESET}"
-    yarn build
+  T_SIZE=$(du -hs dist)
+  echo -e INFO " ${CWARN} Size: ${T_SIZE} ${CRESET}" 
 
-    echo -e INFO: "${CINFO} Build distribution contents  ... ${CRESET}"
-    show_files_with_size
+  echo -e INFO: "${CINFO} Removing unwanted contents ... ${CRESET}"
+  remove_unwanted_files
 
-    T_SIZE=$(du -hs dist)
-    echo -e INFO " ${CWARN} Size: ${T_SIZE} ${CRESET}" 
+  # echo "Compressing ..."
+  # compress_bundle_js_files
 
-    echo -e INFO: "${CINFO} Removing unwanted contents ... ${CRESET}"
-    remove_unwanted_files
+  T_SIZE=$(du -hs dist)
+  echo -e INFO: "${CINFO} Deployable dist size ${CWARN}  ${T_SIZE} ${CRESET}" 
 
-    # echo "Compressing ..."
-    # compress_bundle_js_files
-
-    T_SIZE=$(du -hs dist)
-    echo -e INFO: "${CINFO} Deployable dist size ${CWARN}  ${T_SIZE} ${CRESET}" 
-
-    RELEASABLE_BUILD="foglamp-gui-${__version__}.tar.gz"
-    echo -e  INFO: "${CINFO} Creating compressed build artifacts for release ... ${CRESET}"
-    tar -zcvf ${RELEASABLE_BUILD} dist &>/dev/null
-    echo "Created ${RELEASABLE_BUILD}"
-    echo -e INFO: "${CINFO} Done. ${CRESET}"
-
+  RELEASABLE_BUILD="foglamp-gui-${__version__}.tar.gz"
+  echo -e  INFO: "${CINFO} Creating compressed build artifacts for release ... ${CRESET}"
+  tar -zcvf ${RELEASABLE_BUILD} dist &>/dev/null
+  echo "Created ${RELEASABLE_BUILD}"
+  echo -e INFO: "${CINFO} Done. ${CRESET}"
 }
 
 ############################################################
 # Execute the command specified in $OPTION
 ############################################################
 execute_command() {
-
-  if [ "$OPTION" == "HELP" ]
+  if [[ "$OPTION" == "HELP" ]]
   then
     echo "${USAGE}"
 
-  elif [ "$OPTION" == "VERSION" ]
+  elif [[ "$OPTION" == "VERSION" ]]
   then
     echo $__version__
+  
+  elif [[ "$OPTION" == "CLEAN" ]]
+  then
+    clean
+  
+  elif [[ "$OPTION" == "CLEAN_START" ]]
+  then
+    clean
+    build  
 
   fi
-
 }
 
 ############################################################
@@ -127,10 +134,17 @@ then
         OPTION="VERSION"
       ;;
 
+      -c|--clean)
+        OPTION="CLEAN"
+      ;;
+
+      --clean-start)
+        OPTION="CLEAN_START"
+      ;;
+
       *)
         echo "Unrecognized option: $i"
     esac
-
     execute_command
   done
 else
