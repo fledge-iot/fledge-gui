@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+# This script is partially done, please track 
+# https://github.com/foglamp/foglamp-gui/issues/73
+
 __author__="Mohd. Shariq"
 __copyright__="Copyright (c) 2017 OSIsoft, LLC"
 __license__="Apache 2.0"

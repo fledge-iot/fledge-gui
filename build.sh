@@ -29,11 +29,11 @@ OPTIONS
   -h, --help     Display this help text
   -v, --version  Display this script's version information
   -c, --clean    Clean and build dependencies
-  --clean-start
+  --clean-start  Clean the build dependencies and start
 
 
 EXAMPLES
-  sh $0 --version"
+  ./$0 --version"
 
 #########################
 # functions def
