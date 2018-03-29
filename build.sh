@@ -2,7 +2,7 @@
 set -e
 
 __author__="Mohd. Shariq"
-__copyright__="Copyright (c) 2017 DIANOMIC SYSTEMS"
+__copyright__="Copyright (c) 2017-18 DIANOMIC SYSTEMS"
 __license__="Apache 2.0"
 __version__="1.2.0"
 
