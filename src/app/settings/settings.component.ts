@@ -13,22 +13,35 @@ export class SettingsComponent implements OnInit {
   endpoint = environment.BASE_URL.split(':');
   protocol = this.endpoint[0];
   host = this.endpoint[1].substr(2);
-  service_port = this.endpoint[2].substring(0, this.endpoint[2].indexOf('/'));
+  servicePort = this.endpoint[2].substring(0, this.endpoint[2].indexOf('/'));
   isSkipped = false;
+  serviceUrl = ""
   constructor(private router: Router) { }
 
   ngOnInit() {
     this.isSkipped = JSON.parse(sessionStorage.getItem('skip'))
+    this.serviceUrl = sessionStorage.getItem('SERVICE_URL')
   }
 
-  public resetEndPoint() {
+  public testServiceConnection() : void {
+    this.getServiceUrl();
+    console.log(this.serviceUrl)
+    window.open(this.serviceUrl + 'ping', "_blank")
+  }
+
+  protected getServiceUrl() {
     const protocolField = <HTMLSelectElement>document.getElementById('protocol');
     const hostField = <HTMLInputElement>document.getElementById('host');
     const servicePortField = <HTMLInputElement>document.getElementById('service_port');
-    const service_endpoint = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/';
-
     localStorage.setItem('CONNECTED_HOST', hostField.value);
-    localStorage.setItem('SERVICE_URL', service_endpoint);
+    localStorage.setItem('CONNECTED_PORT', servicePortField.value);
+    this.serviceUrl = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/';
+  }
+
+  public resetEndPoint() {
+    this.getServiceUrl();
+
+    localStorage.setItem('SERVICE_URL', this.serviceUrl);
 
     // Clear connected service if any
     localStorage.removeItem('CONNECTED_SERVICE_STATE');
