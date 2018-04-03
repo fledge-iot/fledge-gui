@@ -76,7 +76,10 @@ install () {
   tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   # put them into /var/www/html and start nginx
+  sudo rm -rf /var/www/html/*
   sudo mv dist/* /var/www/html/.
+  sudo rm -rf dist
+  sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   echo -e INFO: "${CINFO} nginx status ${CRESET}"
   sudo service nginx stop
