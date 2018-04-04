@@ -1,6 +1,5 @@
 import { Component, OnInit, HostListener, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute, RoutesRecognized, ActivatedRouteSnapshot } from '@angular/router';
-import {LocationStrategy} from '@angular/common';
 import { SidebarModule } from 'ng-sidebar';
 import { SharedService } from './services/shared.service';
 
@@ -15,7 +14,7 @@ export class AppComponent implements OnInit {
   navMode = 'side';
 
   constructor(private route: ActivatedRoute, private router: Router,
-    private sharedService: SharedService, private url:LocationStrategy,
+    private sharedService: SharedService,
     private cdr: ChangeDetectorRef) {
     this.sharedService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value.loggedIn;

@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 export class UserService {
 
   private USER_URL = environment.BASE_URL + 'user';
+  private ADMIN_BASE_URL = environment.BASE_URL + 'admin';
   private ROLE_URL = environment.BASE_URL + 'user/role'
   constructor(private http: HttpClient) { }
 
@@ -50,12 +51,14 @@ export class UserService {
   }
 
   /**
-   * DELETE  /foglamp/user/{id}
+   * delete user
+   * 
+   * DELETE  | /foglamp/admin/{id}/delete
    *
    * @param Number id
    */
   deleteUser(id) {
-    return this.http.delete(this.USER_URL + "/" + id)
+    return this.http.delete(this.ADMIN_BASE_URL + "/" + id + "/delete")
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
@@ -63,23 +66,27 @@ export class UserService {
   /**
   * Create user
   * 
-  * POST  | foglamp/user
+  * POST  | foglamp/admin/user
   *
+  *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "role_id": 1}
   */
   createUser(user) {
-    return this.http.post(this.USER_URL, user)
+    return this.http.post(this.ADMIN_BASE_URL + "/user", user)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
+
   /**
-  * Update user 
-  * 
-  * PUT  | /foglamp/user/{id}
-  * @param Object payload 
-  */
-  updateUser(payload) {
-    return this.http.put(this.USER_URL + "/" + payload.userId, payload)
+   * Update user role 
+   * 
+   * @param Object payload = > {"role_id": "1"}
+   */
+  updateRole(data) {
+    let payload: any = {
+      role_id: data.role_id
+    }
+    return this.http.put(this.ADMIN_BASE_URL + "/" + data.userId + "/reset", payload)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
@@ -88,11 +95,27 @@ export class UserService {
   * change user password 
   * 
   * PUT  | /foglamp/user/{username}/password
-  * @param Object payload 
+  * @param Object payload  => {"current_password": "F0gl@mp!", "new_password": "F0gl@mp1"}
   */
- changePassword(payload, userName) {
-  return this.http.put(this.USER_URL + "/" + userName + "/password", payload)
-    .map(response => response)
-    .catch((error: Response) => Observable.throw(error));
-}
+  changePassword(payload, userName) {
+    return this.http.put(this.USER_URL + "/" + userName + "/password", payload)
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
+  }
+
+  /**
+    * change user password by admin
+    * 
+    * PUT  | /foglamp/admin/{userId}/reset
+    * @param Object payload => {"password": "F0gl@mp!"}
+    */
+  resetPassword(data) {
+    let payload: any = {
+      password: data.password
+    }
+    return this.http.put(this.ADMIN_BASE_URL + "/" + data.userId + "/reset", payload)
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
+  }
+
 }

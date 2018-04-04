@@ -13,6 +13,7 @@ export class CreateUserComponent implements OnInit {
   model: User;
   isUpdateForm = false;
   userRole = [];
+  role_id = 2;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private userService: UserService,

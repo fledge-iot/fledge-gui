@@ -70,27 +70,6 @@ export class UserProfileComponent implements OnInit {
         });
   }
 
-  updateUser(form: NgForm) {
-    this.ngProgress.start();
-    this.userService.updateUser(this.userRecord).
-      subscribe(
-        data => {
-          this.ngProgress.done();
-          this.alertService.success(data.message);
-          if (form != null) {
-            this.resetUserForm(form)
-          }
-        },
-        error => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
   public resetUserForm(form: NgForm) {
     form.controls["oldPassword"].reset();
     form.controls["password"].reset();
