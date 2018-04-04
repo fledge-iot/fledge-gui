@@ -38,8 +38,8 @@
           <div class="columns">
             <div class="column">
               <div class="select is-fullwidth">
-                <select name='role_id' [(ngModel)]="model.role_id == 'null' ? 2 : model.role_id ">
-                  <option *ngFor="let role of userRole" [ngValue]='role.id' [selected]="role.id == 2">{{role.name}}</option>
+                <select name='role_id' (change)="setRole($event.target.value)" [(ngModel)]="model.role_id">
+                  <option *ngFor="let role of userRole" [value]='role.id' >{{role.name}}</option>
                 </select>
               </div>
             </div>

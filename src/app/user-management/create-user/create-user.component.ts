@@ -13,7 +13,6 @@ export class CreateUserComponent implements OnInit {
   model: User;
   isUpdateForm = false;
   userRole = [];
-  role_id = 2;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private userService: UserService,
@@ -81,5 +80,10 @@ export class CreateUserComponent implements OnInit {
   public resetCreateUserForm(form: NgForm) {
     form.resetForm()
     this.getRole();
+  }
+
+  setRole(value) {
+    var role = this.userRole.find(r => r.id = value);
+    if (role) { this.model.role_id = role.id; }
   }
 }
