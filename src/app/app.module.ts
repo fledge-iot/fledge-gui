@@ -73,6 +73,7 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
 import { SupportComponent } from './support/support.component';
 import { SystemLogComponent } from './system-log/system-log.component';
 import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
+import { ResetPasswordComponent } from './user-management/reset-password/reset-password.component';
 
 @NgModule({
   imports: [
@@ -125,7 +126,8 @@ import { BackupRestoreComponent } from './backup-restore/backup-restore.componen
     UserProfileComponent,
     SupportComponent,
     SystemLogComponent,
-    BackupRestoreComponent
+    BackupRestoreComponent,
+    ResetPasswordComponent
   ],
   providers: [
     AuthGuard,

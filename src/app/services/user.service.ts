@@ -83,4 +83,16 @@ export class UserService {
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
+
+  /**
+  * change user password 
+  * 
+  * PUT  | /foglamp/user/{username}/password
+  * @param Object payload 
+  */
+ changePassword(payload, userName) {
+  return this.http.put(this.USER_URL + "/" + userName + "/password", payload)
+    .map(response => response)
+    .catch((error: Response) => Observable.throw(error));
+}
 }

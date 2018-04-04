@@ -92,9 +92,45 @@ export class UserProfileComponent implements OnInit {
   }
 
   public resetUserForm(form: NgForm) {
+    form.controls["oldPassword"].reset();
     form.controls["password"].reset();
     form.controls["confirmPassword"].reset();
     this.isShow = false;
+  }
+
+  public toggleModal(isOpen: Boolean) {
+    let userProfileModal = <HTMLDivElement>document.getElementById('user_profile_modal');
+    if (isOpen) {
+      userProfileModal.classList.add('is-active');
+      return;
+    }
+    userProfileModal.classList.remove('is-active');
+  }
+
+  changePassword(form: NgForm, userName) {
+    let passwordPayload: any = {
+      current_password: form.controls["oldPassword"].value,
+      new_password: form.controls["password"].value
+    }
+    this.ngProgress.start();
+    this.userService.changePassword(passwordPayload, userName).
+      subscribe(
+        data => {
+          this.ngProgress.done();
+          this.alertService.success(data.message);
+          if (form != null) {
+            this.toggleModal(false);
+            this.resetUserForm(form)
+          }
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**

@@ -16,6 +16,7 @@ import { ServiceDiscoveryComponent } from './service-discovery/index';
 import { UserManagementComponent } from './user-management/index';
 import { AuthGuard, UserGuard } from './guards/index';
 import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
+import { ResetPasswordComponent } from './user-management/reset-password/reset-password.component';
 
 const appRoutes: Routes = [
     { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
@@ -33,6 +34,7 @@ const appRoutes: Routes = [
     { path: 'service-discovery', component: ServiceDiscoveryComponent, canActivate: [AuthGuard] },
     { path: 'user-management', component: UserManagementComponent, canActivate: [UserGuard] },
     { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+    { path: 'reset-password', component: ResetPasswordComponent},
     // otherwise redirect to dashboard
     { path: '**', redirectTo: '' }
 ];
