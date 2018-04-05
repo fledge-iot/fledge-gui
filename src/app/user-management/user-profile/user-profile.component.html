@@ -58,7 +58,7 @@
       <form name="form" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userName)" #f="ngForm" novalidate>
         <div class="columns">
           <div class="column is-6">
-            <input type="password" class="input" placeholder="old password" name='currentPassword' [(ngModel)]="userRecord.currentPassword" #currentPassword="ngModel" required/>
+            <input type="password" class="input" placeholder="current password" name='currentPassword' [(ngModel)]="userRecord.currentPassword" #currentPassword="ngModel" required/>
           </div>
           <small *ngIf="f.submitted && !currentPassword.valid" class="help is-danger level-left">Wrong password</small>
         </div>
