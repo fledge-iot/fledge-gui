@@ -1,0 +1,66 @@
+<div id="add-config-item" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Add Config Item</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="card-content">
+        <form [formGroup]="form" (ngSubmit)="f.form.valid && addConfigItem()" #f="ngForm" novalidate>
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <div class="form-group">
+                  <label class="label">Name</label>
+                  <p class="control is-fullwidth">
+                    <input type="text" disabled class="input" [(ngModel)]="childData.cat_name" #cat_name="ngModel" placeholder="category name" required trim="blur" />
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column is-fullwidth">
+              <div class="field">
+                <label class="label">Type</label>
+                <p class="control is-fullwidth">
+                  <input type="text" class="input" formControlName="type" placeholder="type" required trim="blur" />
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <label class="label">Default value</label>
+                <p class="control is-fullwidth">
+                  <input type="text" class="input" formControlName="default_value" placeholder="default value" required trim="blur" />
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <label class="label">Description</label>
+                <p class="control is-fullwidth">
+                  <textarea class="input" formControlName="desc" placeholder="description" required trim="blur"></textarea>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <div class="control">
+                    <button id="save" class="button is-success">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
