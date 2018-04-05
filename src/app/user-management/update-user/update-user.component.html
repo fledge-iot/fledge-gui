@@ -2,12 +2,13 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Update User</p>
+      <p *ngIf="showRoleSection" class="modal-card-title">Update user role</p>
+      <p *ngIf="!showRoleSection" class="modal-card-title">Update user password</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false, f)"></button>
     </header>
     <section class="modal-card-body">
       <div class="card-content">
-        <form name="form" (ngSubmit)="f.form.valid && updateUser(f)" #f="ngForm" novalidate>
+        <form name="form" (ngSubmit)="f.form.valid && updateUser()" #f="ngForm" novalidate>
           <div class="columns">
             <div class="column is-6">
               <label class="label">Username</label>
@@ -17,7 +18,7 @@
               </p>
             </div>
           </div>
-          <div class="columns">
+          <div *ngIf="showRoleSection" class="columns">
             <div class="column is-6">
               <label class="label">Role</label>
               <div class="select is-fullwidth">
@@ -27,23 +28,19 @@
               </div>
             </div>
           </div>
-          <div class="columns">
-            <div *ngIf="isShow" class="column is-6">
+          <div *ngIf="!showRoleSection" class="columns">
+            <div class="column is-6">
               <p class="control is-fullwidth">
-                <input [disabled]='!isShow' type="password" class="input" placeholder="password" name='password' [(ngModel)]="userRecord.password" #password="ngModel"
+                <input type="password" class="input" placeholder="password" name='password' [(ngModel)]="userRecord.password" #password="ngModel"
                   validateEqual="confirmPassword" reverse="true" required />
               </p>
               <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minium 6 character)</small>
             </div>
-            <div class="column">
-              <a *ngIf= "!isShow" (click)="isShow = true">change password</a>
-              <a *ngIf= "isShow" (click)="isShow = false">don't change password</a>
-            </div>
           </div>
-          <div *ngIf= "isShow" class="columns">
+          <div *ngIf="!showRoleSection" class="columns">
             <div class="column is-6">
               <p class="control is-fullwidth">
-                <input [disabled]='!isShow' type="password" class="input" placeholder="confirm password" name='confirmPassword' [(ngModel)]="userRecord.confirmPassword"
+                <input type="password" class="input" placeholder="confirm password" name='confirmPassword' [(ngModel)]="userRecord.confirmPassword"
                   #confirmPassword="ngModel" validateEqual="password" required />
               </p>
               <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>

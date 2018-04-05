@@ -50,7 +50,13 @@ export class LoginComponent implements OnInit {
                     this.ngProgress.done();
                     if (error.status === 0) {
                         console.log('service down', error);
-                    } else {
+                    } else if (error.status === 401) {
+                        if (error.statusText.toUpperCase().indexOf('PASSWORD') >= 0 && error.statusText.toUpperCase().indexOf('EXPIRED') >= 0) {
+                            this.router.navigate(['/reset-password'], { queryParams: { username: this.model.username } });
+                        }
+                        this.alertService.error(error.statusText);
+                    }
+                    else {
                         this.alertService.error(error.statusText);
                     }
                 });
@@ -63,7 +69,6 @@ export class LoginComponent implements OnInit {
         this.sharedService.isLoginSkiped.next(true);
         sessionStorage.setItem('skip', JSON.stringify(true));
         this.router.navigate(['']);
-
     }
 
     public setupInstance() {
