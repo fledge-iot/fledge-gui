@@ -52,10 +52,9 @@ export class LoginComponent implements OnInit {
                         console.log('service down', error);
                     } else if (error.status === 401) {
                         if (error.statusText.toUpperCase().indexOf('PASSWORD') >= 0 && error.statusText.toUpperCase().indexOf('EXPIRED') >= 0) {
-                            console.log("text", error.statusText);
                             this.router.navigate(['/reset-password'], { queryParams: { username: this.model.username } });
-                            this.alertService.error(error.statusText);
                         }
+                        this.alertService.error(error.statusText);
                     }
                     else {
                         this.alertService.error(error.statusText);

@@ -71,7 +71,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   public resetUserForm(form: NgForm) {
-    form.controls["oldPassword"].reset();
+    form.controls["currentPassword"].reset();
     form.controls["password"].reset();
     form.controls["confirmPassword"].reset();
     this.isShow = false;
@@ -86,9 +86,9 @@ export class UserProfileComponent implements OnInit {
     userProfileModal.classList.remove('is-active');
   }
 
-  changePassword(form: NgForm, userName) {
+  public changePassword(form: NgForm, userName) {
     let passwordPayload: any = {
-      current_password: form.controls["oldPassword"].value,
+      current_password: form.controls["currentPassword"].value,
       new_password: form.controls["password"].value
     }
     this.ngProgress.start();

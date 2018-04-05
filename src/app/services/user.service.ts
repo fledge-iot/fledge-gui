@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 export class UserService {
 
   private USER_URL = environment.BASE_URL + 'user';
-  private ADMIN_BASE_URL = environment.BASE_URL + 'admin';
+  private ADMIN_URL = environment.BASE_URL + 'admin';
   private ROLE_URL = environment.BASE_URL + 'user/role'
   constructor(private http: HttpClient) { }
 
@@ -58,7 +58,7 @@ export class UserService {
    * @param Number id
    */
   deleteUser(id) {
-    return this.http.delete(this.ADMIN_BASE_URL + "/" + id + "/delete")
+    return this.http.delete(this.ADMIN_URL + "/" + id + "/delete")
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
@@ -71,7 +71,7 @@ export class UserService {
   *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "role_id": 1}
   */
   createUser(user) {
-    return this.http.post(this.ADMIN_BASE_URL + "/user", user)
+    return this.http.post(this.ADMIN_URL + "/user", user)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
@@ -86,7 +86,7 @@ export class UserService {
     let payload: any = {
       role_id: data.role_id
     }
-    return this.http.put(this.ADMIN_BASE_URL + "/" + data.userId + "/reset", payload)
+    return this.http.put(this.ADMIN_URL + "/" + data.userId + "/reset", payload)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
@@ -113,9 +113,9 @@ export class UserService {
     let payload: any = {
       password: data.password
     }
-    return this.http.put(this.ADMIN_BASE_URL + "/" + data.userId + "/reset", payload)
+    return this.http.put(this.ADMIN_URL + "/" + data.userId + "/reset", payload)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
-
 }
+

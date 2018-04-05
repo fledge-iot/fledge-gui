@@ -71,8 +71,7 @@ export class UserManagementComponent implements OnInit {
               }
             })
           })
-          this.userRecord = users;
-          this.userRecord.sort();
+          this.userRecord = users.sort();
         },
         error => {
           /** request completed */

@@ -16,7 +16,7 @@ export class ResetPasswordComponent implements OnInit {
   constructor(private alertService: AlertService,
     private userService: UserService,
     public ngProgress: NgProgress,
-    private activatedRoute: ActivatedRoute, private router : Router) {
+    private activatedRoute: ActivatedRoute, private router: Router) {
     // get username from url
     this.userName = this.activatedRoute.snapshot.queryParams["username"];
     console.log(this.userName);
@@ -31,7 +31,7 @@ export class ResetPasswordComponent implements OnInit {
     form.controls["confirmPassword"].reset();
   }
 
-  resetPassword(form: NgForm) {
+  public resetPassword(form: NgForm) {
     let passwordPayload: any = {
       current_password: form.controls["oldPassword"].value,
       new_password: form.controls["password"].value
@@ -56,5 +56,5 @@ export class ResetPasswordComponent implements OnInit {
           }
         });
   }
-
 }
+

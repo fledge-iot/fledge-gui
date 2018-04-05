@@ -21,7 +21,7 @@
           </ul>
           <div>
             <a class="is-light" (click)="openCreateUserModal()">
-              <i class="fa fa-user" aria-hidden="true"></i>&nbsp; Add user&nbsp;
+              <i class="fa fa-user" aria-hidden="true"></i>&nbsp; Add User&nbsp;
             </a>
           </div>
         </div>
@@ -51,7 +51,7 @@
               </td>
               <td *ngIf='user.userId != uid'>
                 <a (click)="openUpdateUserModal(user, 'password')" class="button is-text">
-                  change password
+                  reset password
                 </a>
               </td>
               <td *ngIf='user.userId != uid'>
