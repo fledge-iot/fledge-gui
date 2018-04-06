@@ -1,7 +1,10 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { PingService } from './../services/index';
+import { POLLING_INTERVAL } from '../utils';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-settings',
@@ -15,18 +18,22 @@ export class SettingsComponent implements OnInit {
   host = this.endpoint[1].substr(2);
   servicePort = this.endpoint[2].substring(0, this.endpoint[2].indexOf('/'));
   isSkipped = false;
-  serviceUrl = ""
-  constructor(private router: Router) { }
+  serviceUrl = '';
+  @Input() navbarComponent: NavbarComponent;
+  pingInterval;
+  constructor(private router: Router, private pingService: PingService) { }
 
   ngOnInit() {
-    this.isSkipped = JSON.parse(sessionStorage.getItem('skip'))
-    this.serviceUrl = sessionStorage.getItem('SERVICE_URL')
+    this.isSkipped = JSON.parse(sessionStorage.getItem('skip'));
+    this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
+    // get last selected time interval
+    this.pingInterval = localStorage.getItem('pingInterval');
   }
 
-  public testServiceConnection() : void {
+  public testServiceConnection(): void {
     this.getServiceUrl();
-    console.log(this.serviceUrl)
-    window.open(this.serviceUrl + 'ping', "_blank")
+    console.log(this.serviceUrl);
+    window.open(this.serviceUrl + 'ping', '_blank');
   }
 
   protected getServiceUrl() {
@@ -53,5 +60,14 @@ export class SettingsComponent implements OnInit {
     location.reload();
     location.href = '';
     this.router.navigate([location.href]);
+  }
+
+  /**
+   * Set service ping interval
+   */
+  public ping(event) {
+    const time = event.target.value;
+    localStorage.setItem('pingInterval', time);
+    this.pingService.isPingIntervalChanged.next(true);
   }
 }

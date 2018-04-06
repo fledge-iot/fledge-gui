@@ -1,20 +1,20 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ServicesHealthService } from '../services/index';
-import { ConnectedServiceStatus } from "../services/connected-service-status.service";
+import { Component, OnInit, Output, EventEmitter, ViewChild, AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { POLLING_INTERVAL } from '../utils';
 import { ShutdownModalComponent } from './../shut-down/shutdown-modal.component';
 import { NgProgress } from 'ngx-progressbar';
-import { AlertService, AuthService } from './../services/index';
+import {
+  AlertService, AuthService, ConnectedServiceStatus,
+  PingService, ServicesHealthService
+} from './../services/index';
 import { SharedService } from './../services/shared.service';
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit, AfterViewInit {
+export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public ping_data = {};
@@ -26,9 +26,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   // Define a variable to use for showing/hiding the Login button
   isUserLoggedIn: boolean;
-  userName: string
-  isSkip: boolean = false;
-
+  userName: string;
+  isSkip = false;
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
 
   constructor(private servicesHealthService: ServicesHealthService,
@@ -38,8 +37,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     private sharedService: SharedService,
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
+    private ping: PingService,
     private router: Router) {
-    // Subscribe to automatically update 
+    // Subscribe to automatically update
     // "isUserLoggedIn" whenever a change to the subject is made.
     this.sharedService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value.loggedIn;
@@ -50,7 +50,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.ping.isPingIntervalChanged.subscribe((isPing: boolean) => {
+      this.start();
+    });
+  }
 
   ngAfterViewInit() {
     // get user token from session
@@ -61,15 +65,14 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     } else if (skip != null && skip.trim().length > 0) {
       this.isSkip = true;
     }
-    if(sessionStorage.getItem('userName') != null){
+    if (sessionStorage.getItem('userName') != null) {
       this.userName = sessionStorage.getItem('userName');
     }
-    this.start();
     this.changeDetectorRef.detectChanges();
   }
 
 
-  pingService() {
+  public pingService() {
     this.servicesHealthService.pingService()
       .subscribe(
         (data) => {
@@ -85,14 +88,14 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     );
   }
 
-  showProfile(){
+  showProfile() {
     this.router.navigate(['/user-profile']);
   }
 
   public toggleDropdown() {
-    let userDropdown = <HTMLDivElement>document.getElementById('dropdown-box');
-    let classes = userDropdown.className.split(" ")
-    for(let cls of classes) {
+    const userDropdown = <HTMLDivElement>document.getElementById('dropdown-box');
+    const classes = userDropdown.className.split(' ');
+    for (const cls of classes) {
       if (cls === 'is-active') {
         userDropdown.classList.remove('is-active');
         return;
@@ -131,13 +134,18 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         });
   }
 
-  start() {
-    clearInterval(this.timer);
-    this.timer = setInterval(function () {
-      this.pingService();
-    }.bind(this), POLLING_INTERVAL);
+  public start() {
+    const value = localStorage.getItem('pingInterval');
+    const pingInterval = JSON.parse(value) != null ? JSON.parse(value) : POLLING_INTERVAL;
+    this.stop();
+    if (pingInterval !== 0) {
+      this.timer = setInterval(function () {
+        this.pingService();
+      }.bind(this), pingInterval);
+    }
   }
-  stop() {
+
+  public stop() {
     clearInterval(this.timer);
   }
 
@@ -171,9 +179,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         });
   }
 
-  public login(){
+  public login() {
     this.router.navigate(['/login']);
     this.isSkip = false;
     sessionStorage.clear();
   }
 }
+

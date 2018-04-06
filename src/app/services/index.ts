@@ -13,3 +13,6 @@ export * from './user.service';
 export * from './certificate.service';
 export * from './support.service';
 export * from './backup-restore.service';
+export * from './connected-service-status.service';
+export * from './ping.service';
+

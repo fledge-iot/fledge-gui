@@ -74,5 +74,5 @@ export default class Utils {
   public static getCurrentDate() {
     return Date.now();
   }
-  
+
 }

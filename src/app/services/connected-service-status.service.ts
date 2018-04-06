@@ -5,10 +5,10 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 export class ConnectedServiceStatus {
   private messageSource = new BehaviorSubject<boolean>(true);
   currentMessage = this.messageSource.asObservable();
-  
+
   constructor() { }
 
   changeMessage(connectedServiceStatus: boolean) {
-    this.messageSource.next(connectedServiceStatus)
+    this.messageSource.next(connectedServiceStatus);
   }
 }
