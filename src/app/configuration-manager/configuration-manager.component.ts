@@ -13,7 +13,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public JSON;
   public addConfigItem: any;
 
-  @ViewChild(AddConfigItemComponent) addModal: AddConfigItemComponent;
+  @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
 
   constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { this.JSON = JSON }
   ngOnInit() {
@@ -111,12 +111,13 @@ export class ConfigurationManagerComponent implements OnInit {
   * Open add Config Item modal dialog
   */
  openAddConfigItemModal(description, key) {
-    this.addConfigItem = {
-      cat_name: description,
-      key: key
-    };
+    // this.addConfigItem = {
+    //   cat_name: description,
+    //   key: key
+    // };
+    this.addConfigItemModal.setConfigName(description, key);
     // call child component method to toggle modal
-    this.addModal.toggleModal(true);
+    this.addConfigItemModal.toggleModal(true);
   }
 
   public onTextChange(config_item_key: string, flag: boolean) {

@@ -7,14 +7,14 @@
     </header>
     <section class="modal-card-body">
       <div class="card-content">
-        <form [formGroup]="form" (ngSubmit)="f.form.valid && addConfigItem()" #f="ngForm" novalidate>
+        <form name="form" (ngSubmit)="f.form.valid && addConfigItem(f)" #f="ngForm" novalidate>
           <div class="columns">
             <div class="column">
               <div class="field">
                 <div class="form-group">
                   <label class="label">Name</label>
                   <p class="control is-fullwidth">
-                    <input type="text" disabled class="input" [(ngModel)]="childData.cat_name" #cat_name="ngModel" placeholder="category name" required trim="blur" />
+                    <input type="text" name="categoryName" disabled class="input" [(ngModel)]="categoryData.categoryName" #categoryName="ngModel" placeholder="category name" required trim="blur" />
                   </p>
                 </div>
               </div>
@@ -24,9 +24,14 @@
             <div class="column is-fullwidth">
               <div class="field">
                 <label class="label">Type</label>
-                <p class="control is-fullwidth">
-                  <input type="text" class="input" formControlName="type" placeholder="type" required trim="blur" />
-                </p>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                      <select name="type" placeholder="type" [(ngModel)]="categoryData.type" #type="ngModel" required trim="blur" >
+                        <option disabled [value]='none' selected>Select</option>
+                        <option [value]="type" *ngFor="let type of configItemType">{{type}}</option>
+                      </select>
+                    </div>
+                  </div>
               </div>
             </div>
           </div>
@@ -35,7 +40,7 @@
               <div class="field">
                 <label class="label">Default value</label>
                 <p class="control is-fullwidth">
-                  <input type="text" class="input" formControlName="default_value" placeholder="default value" required trim="blur" />
+                  <input type="text" class="input" name="defaultValue" placeholder="default value" [(ngModel)]="categoryData.defaultValue" #defaultValue="ngModel" required trim="blur" />
                 </p>
               </div>
             </div>
@@ -45,7 +50,7 @@
               <div class="field">
                 <label class="label">Description</label>
                 <p class="control is-fullwidth">
-                  <textarea class="input" formControlName="desc" placeholder="description" required trim="blur"></textarea>
+                  <textarea type="text" class="input" name="defaultValue" placeholder="default value" [(ngModel)]="categoryData.defaultValue" #defaultValue="ngModel" required trim="blur"></textarea>
                 </p>
               </div>
             </div>
