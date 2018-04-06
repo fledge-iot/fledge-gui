@@ -12,7 +12,7 @@ export class UpdateUserComponent implements OnInit {
   public userRecord: User;
   userRole = [];
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  isShow = false;
+  showRoleSection = false;
 
   constructor(private authService: AuthService,
     private alertService: AlertService,
@@ -29,7 +29,13 @@ export class UpdateUserComponent implements OnInit {
     }
   }
 
-  public setUser(userRecord) {
+  /**
+   * TO get data from parent component 
+   * @param userRecord  User model
+   * @param key  key to show/hide particular section on UI
+   */
+  public setUser(userRecord, key) {
+    this.showRoleSection = false;
     this.userRecord = {
       userId: userRecord.userId,
       username: userRecord.userName,
@@ -37,13 +43,14 @@ export class UpdateUserComponent implements OnInit {
       confirmPassword: '',
       role_id: userRecord.roleId  // to set default value in role option
     }
-    console.log('user', userRecord);
+
+    // To handle section on UI
+    if (key == 'role') {
+      this.showRoleSection = true;
+    }
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
-    if (form != null) {
-      this.resetCreateUserForm(form)
-    }
     let updateUserModal = <HTMLDivElement>document.getElementById('update_user_modal');
     if (isOpen) {
       updateUserModal.classList.add('is-active');
@@ -52,6 +59,9 @@ export class UpdateUserComponent implements OnInit {
     updateUserModal.classList.remove('is-active');
   }
 
+  /**
+   *  Get all roles
+   */
   getRole() {
     this.userService.getRole()
       .subscribe(
@@ -68,16 +78,27 @@ export class UpdateUserComponent implements OnInit {
         });
   }
 
-  updateUser(form: NgForm) {
-    this.userService.updateUser(this.userRecord).
+  /**
+   *  To handle role and password change method call
+   */
+  updateUser() {
+    if (this.showRoleSection) {
+      this.updateRole()
+    } else {
+      this.resetPassword();
+    }
+  }
+
+  /**
+   *  To update user role by admin
+   */
+  updateRole() {
+    this.userService.updateRole(this.userRecord).
       subscribe(
         data => {
           this.notify.emit();
           this.toggleModal(false, null);
           this.alertService.success(data.message);
-          if (form != null) {
-            this.resetCreateUserForm(form)
-          }
         },
         error => {
           if (error.status === 0) {
@@ -88,7 +109,24 @@ export class UpdateUserComponent implements OnInit {
         });
   }
 
-  public resetCreateUserForm(form: NgForm) {
-    form.resetForm({ role: 2 })   // set "user" as a default role  
+
+  /**
+    *  To reset user password by admin
+    */
+  resetPassword() {
+    this.userService.resetPassword(this.userRecord).
+      subscribe(
+        data => {
+          this.notify.emit();
+          this.toggleModal(false, null);
+          this.alertService.success(data.message);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }

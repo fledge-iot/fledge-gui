@@ -70,14 +70,35 @@ export class UserProfileComponent implements OnInit {
         });
   }
 
-  updateUser(form: NgForm) {
+  public resetUserForm(form: NgForm) {
+    form.controls["currentPassword"].reset();
+    form.controls["password"].reset();
+    form.controls["confirmPassword"].reset();
+    this.isShow = false;
+  }
+
+  public toggleModal(isOpen: Boolean) {
+    let userProfileModal = <HTMLDivElement>document.getElementById('user_profile_modal');
+    if (isOpen) {
+      userProfileModal.classList.add('is-active');
+      return;
+    }
+    userProfileModal.classList.remove('is-active');
+  }
+
+  public changePassword(form: NgForm, userName) {
+    let passwordPayload: any = {
+      current_password: form.controls["currentPassword"].value,
+      new_password: form.controls["password"].value
+    }
     this.ngProgress.start();
-    this.userService.updateUser(this.userRecord).
+    this.userService.changePassword(passwordPayload, userName).
       subscribe(
         data => {
           this.ngProgress.done();
           this.alertService.success(data.message);
           if (form != null) {
+            this.toggleModal(false);
             this.resetUserForm(form)
           }
         },
@@ -89,12 +110,6 @@ export class UserProfileComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  public resetUserForm(form: NgForm) {
-    form.controls["password"].reset();
-    form.controls["confirmPassword"].reset();
-    this.isShow = false;
   }
 
   /**

@@ -35,6 +35,9 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
+            <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item">
+              <i class="fa fa-user" aria-hidden="true"></i>&nbsp; Profile
+            </a>
             <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item">
               <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp; Log Out
             </a>

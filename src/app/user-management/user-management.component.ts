@@ -71,7 +71,7 @@ export class UserManagementComponent implements OnInit {
               }
             })
           })
-          this.userRecord = users;
+          this.userRecord = users.sort();
         },
         error => {
           /** request completed */
@@ -117,8 +117,8 @@ export class UserManagementComponent implements OnInit {
     this.createUserModal.toggleModal(true);
   }
 
-  openUpdateUserModal(user) {
-    this.updateUserModal.setUser(user);
+  openUpdateUserModal(user, key) {
+    this.updateUserModal.setUser(user, key);
     // call child component method to toggle modal
     this.updateUserModal.toggleModal(true);
   }

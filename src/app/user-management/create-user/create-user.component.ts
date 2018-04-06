@@ -81,4 +81,9 @@ export class CreateUserComponent implements OnInit {
     form.resetForm()
     this.getRole();
   }
+
+  setRole(value) {
+    var role = this.userRole.find(r => r.id = value);
+    if (role) { this.model.role_id = role.id; }
+  }
 }

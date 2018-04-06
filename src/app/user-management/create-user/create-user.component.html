@@ -12,7 +12,7 @@
             <div class="column">
               <p class="control is-fullwidth">
                 <input type="text" class="input" placeholder="username" name='username' [(ngModel)]="model.username" #username="ngModel"
-                minlength="4" maxlength="8" required/>
+                  minlength="4" maxlength="8" required/>
               </p>
               <small *ngIf="f.submitted && !username.valid" class="help is-danger level-left"> Username is required (minimum 4 characters)</small>
             </div>
@@ -38,8 +38,8 @@
           <div class="columns">
             <div class="column">
               <div class="select is-fullwidth">
-                <select  name='role_id' [(ngModel)]="model.role_id" #role_id="ngModel">
-                  <option *ngFor="let role of userRole" [ngValue]='role.id' [selected]="role.id == 2">{{role.name}}</option>
+                <select name='role_id' (change)="setRole($event.target.value)" [(ngModel)]="model.role_id">
+                  <option *ngFor="let role of userRole" [value]='role.id' >{{role.name}}</option>
                 </select>
               </div>
             </div>

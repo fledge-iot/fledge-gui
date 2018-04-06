@@ -85,6 +85,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     );
   }
 
+  showProfile(){
+    this.router.navigate(['/user-profile']);
+  }
+
   public toggleDropdown() {
     let userDropdown = <HTMLDivElement>document.getElementById('dropdown-box');
     let classes = userDropdown.className.split(" ")
