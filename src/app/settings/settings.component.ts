@@ -67,6 +67,6 @@ export class SettingsComponent implements OnInit {
   public ping(event) {
     const time = event.target.value;
     localStorage.setItem('pingInterval', time);
-    this.pingService.isPingIntervalChanged.next(true);
+    this.pingService.isPingIntervalChanged.next(+time);
   }
 }

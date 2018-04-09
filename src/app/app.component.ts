@@ -34,7 +34,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   isLogin = false;
 
   public toggleSidebar() {
-    if (this.navMode == 'over') {
+    if (this.navMode === 'over') {
       this._opened = !this._opened;
     }
   }
@@ -51,6 +51,8 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
     });
     this.ping.setDefaultPingTime();
+    const pingInterval = JSON.parse(localStorage.getItem('pingInterval'));
+    this.ping.isPingIntervalChanged.next(pingInterval);
   }
 
   ngAfterViewInit() {

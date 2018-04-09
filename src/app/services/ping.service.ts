@@ -4,7 +4,7 @@ import { POLLING_INTERVAL } from '../utils';
 
 @Injectable()
 export class PingService {
-  isPingIntervalChanged: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  isPingIntervalChanged: BehaviorSubject<number> = new BehaviorSubject(0);
   constructor() { }
 
   public setDefaultPingTime() {
