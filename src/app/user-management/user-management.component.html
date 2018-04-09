@@ -83,10 +83,10 @@
             </tbody>
           </table>
         </div>
-        <app-modal (deleteUserService)='deleteUser($event)' (logoutAllUserSessionsService)='clearAllSessions($event)' [childData]='childData'></app-modal>
-        <app-create-user (notify)='onNotify()'></app-create-user>
-        <app-update-user (notify)='onNotify()'></app-update-user>
       </div>
     </div>
   </div>
+  <app-modal (deleteUserService)='deleteUser($event)' (logoutAllUserSessionsService)='clearAllSessions($event)' [childData]='childData'></app-modal>
+  <app-create-user (notify)='onNotify()'></app-create-user>
+  <app-update-user (notify)='onNotify()'></app-update-user>
 </div>
