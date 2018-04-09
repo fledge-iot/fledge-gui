@@ -44,24 +44,25 @@
               <td>
                 {{user.roleName}}
               </td>
-              <td *ngIf='user.userId != uid'>
+              <td *ngIf='user.userId != uid && user.userId != "1"'>
                 <a (click)="openUpdateUserModal(user, 'role')" class="button is-text">
                   change role
                 </a>
               </td>
-              <td *ngIf='user.userId != uid'>
+              <td *ngIf='user.userId != uid && user.userId != "1"'>
                 <a (click)="openUpdateUserModal(user, 'password')" class="button is-text">
                   reset password
                 </a>
               </td>
-              <td *ngIf='user.userId != uid'>
+              <td *ngIf='user.userId != uid && user.userId != "1"'>
                 <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, You want to delete the user')" class="button is-text">
                   <i class="fa fa-minus-circle" aria-hidden="true"></i>
                 </a>
               </td>
               <td>
+                <span *ngIf='user.userId === "1"' class="tag is-rounded">super user</span>
                 <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
-                <span *ngIf='user.userId != uid' (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, You want to clear all active sessions for')"
+                <span *ngIf='user.userId != uid && user.userId != "1"' (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, You want to clear all active sessions for')"
                   class="button is-text">logout active sessions</span>
               </td>
             </tr>
