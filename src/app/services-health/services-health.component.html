@@ -63,10 +63,8 @@
             </tr>
           </tbody>
         </table>
-        
       </div>
     </div>
   </div>
-  
+  <app-modal (shutdownService)='shutdownService($event)' [childData]='childData'></app-modal>
 </div>
-<app-modal (shutdownService)='shutdownService($event)' [childData]='childData'></app-modal>
