@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { PingService } from './../services/index';
-import { POLLING_INTERVAL } from '../utils';
 import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
@@ -68,6 +67,6 @@ export class SettingsComponent implements OnInit {
   public ping(event) {
     const time = event.target.value;
     localStorage.setItem('pingInterval', time);
-    this.pingService.isPingIntervalChanged.next(true);
+    this.pingService.pingIntervalChanged.next(+time);
   }
 }

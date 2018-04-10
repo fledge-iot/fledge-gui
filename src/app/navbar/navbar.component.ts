@@ -51,8 +51,13 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.ping.isPingIntervalChanged.subscribe((isPing: boolean) => {
-      this.start();
+    this.ping.pingIntervalChanged.subscribe((pingTime: number) => {
+      if (pingTime === 0) {
+        this.stop();
+        this.pingService();
+      } else {
+        this.start(pingTime);
+      }
     });
   }
 
@@ -134,15 +139,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         });
   }
 
-  public start() {
-    const value = localStorage.getItem('pingInterval');
-    const pingInterval = JSON.parse(value) != null ? JSON.parse(value) : POLLING_INTERVAL;
+  public start(pingInterval) {
     this.stop();
-    if (pingInterval !== 0) {
-      this.timer = setInterval(function () {
-        this.pingService();
-      }.bind(this), pingInterval);
-    }
+    this.timer = setInterval(function () {
+      this.pingService();
+    }.bind(this), pingInterval);
   }
 
   public stop() {
