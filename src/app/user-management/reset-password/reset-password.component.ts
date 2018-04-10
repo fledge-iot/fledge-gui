@@ -18,24 +18,23 @@ export class ResetPasswordComponent implements OnInit {
     public ngProgress: NgProgress,
     private activatedRoute: ActivatedRoute, private router: Router) {
     // get username from url
-    this.userName = this.activatedRoute.snapshot.queryParams["username"];
-    console.log(this.userName);
+    this.userName = this.activatedRoute.snapshot.queryParams['username'];
   }
 
   ngOnInit() {
   }
 
   public resetUserForm(form: NgForm) {
-    form.controls["oldPassword"].reset();
-    form.controls["password"].reset();
-    form.controls["confirmPassword"].reset();
+    form.controls['currentPassword'].reset();
+    form.controls['password'].reset();
+    form.controls['confirmPassword'].reset();
   }
 
   public resetPassword(form: NgForm) {
-    let passwordPayload: any = {
-      current_password: form.controls["oldPassword"].value,
-      new_password: form.controls["password"].value
-    }
+    const passwordPayload: any = {
+      current_password: form.controls['currentPassword'].value,
+      new_password: form.controls['password'].value
+    };
     this.ngProgress.start();
     this.userService.changePassword(passwordPayload, this.userName).
       subscribe(
@@ -43,7 +42,7 @@ export class ResetPasswordComponent implements OnInit {
           this.ngProgress.done();
           this.alertService.success(data.message, true);
           if (form != null) {
-            this.resetUserForm(form)
+            this.resetUserForm(form);
           }
           this.router.navigate(['/login']);
         },
