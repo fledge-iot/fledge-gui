@@ -46,13 +46,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
     this.router.events.subscribe(event => {
       if (event instanceof RoutesRecognized) {
-        const href = event.state.url;
-        this.isActive(href);
+        this.isActive(event.state.url);
       }
     });
     this.ping.setDefaultPingTime();
     const pingInterval = JSON.parse(localStorage.getItem('pingInterval'));
-    this.ping.isPingIntervalChanged.next(pingInterval);
+    this.ping.pingIntervalChanged.next(pingInterval);
   }
 
   ngAfterViewInit() {
