@@ -63,7 +63,7 @@ memory_footprints(){
 nginx_health(){
   if ! which nginx > /dev/null 2>&1; then
     echo -e "${CERR} FogLAMP GUI can not run, As Nginx(-light) is not installed.${CRESET}"
-    echo -e "${CINFO} Run ./build.sh without any argument to install the foglamp gui with nginx-light.${CRESET}"
+    echo -e "${CINFO} Run ./deploy.sh without any argument to install the foglamp gui with nginx-light.${CRESET}"
   else
     machine_details
 
