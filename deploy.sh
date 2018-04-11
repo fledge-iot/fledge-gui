@@ -124,6 +124,8 @@ OPTIONS
   -h, --help                Display this help text
   -v, --version             Display this script's version information
   -H, --health, --dry-run   Run health check for nginx
+  -L, --local               Deploy on local with an internal call to ./build.sh
+
 
 EXAMPLES
   ./$0 --version"
@@ -144,6 +146,11 @@ execute_command() {
   elif [[ "$OPTION" == "HEALTH" ]]
   then
     nginx_health
+
+  elif [[ "$OPTION" == "LOCAL" ]]
+  then
+    ./build.sh
+    install
 
   fi
 }
@@ -173,6 +180,10 @@ then
 
       -H|--health|--dry-run)
         OPTION="HEALTH"
+      ;;
+
+      -L|--local)
+        OPTION="LOCAL"
       ;;
 
       *)
