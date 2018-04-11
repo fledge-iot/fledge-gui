@@ -8,7 +8,7 @@ import { SchedulesService, UserService, AlertService } from '../services/index';
 })
 export class ModalComponent implements OnInit {
   @Input() childData: { id: Number, name: any, key: any, message: any };
-  @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string };
+  @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string, address: string };
   @Output() enable = new EventEmitter<Number>();
   @Output() disable = new EventEmitter<Number>();
   @Output() delete = new EventEmitter<Number>();
@@ -83,7 +83,8 @@ export class ModalComponent implements OnInit {
       if (this.shutDownServiceData.key === 'shutdownService') {
         const serviceInfo = {
           port: this.shutDownServiceData.port,
-          protocol: this.shutDownServiceData.protocol
+          protocol: this.shutDownServiceData.protocol,
+          address: this.shutDownServiceData.address
         };
         this.shutdownService.emit(serviceInfo);
         this.toggleModal(false);
