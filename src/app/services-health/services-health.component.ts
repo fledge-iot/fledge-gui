@@ -22,7 +22,8 @@ export class ServicesHealthComponent implements OnInit {
     id: '',
     name: '',
     key: '',
-    message: ''
+    message: '',
+    protocol: ''
   };
 
   @ViewChild(ModalComponent) child: ModalComponent;
@@ -66,21 +67,22 @@ export class ServicesHealthComponent implements OnInit {
     return true;
   }
 
-  openModal(port, name) {
+  openModal(port, name, protocol) {
     this.childData = {
       id: port,
       name: '',
       key: 'shutdownService',
-      message: 'Do you really want to shut down ' + name + ' service?'
+      message: 'Do you really want to shut down ' + name + ' service',
+      protocol: protocol
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
   }
 
-  shutdownService(port) {
+  shutdownService(obj) {
     /** request started */
     this.ngProgress.start();
-    this.servicesHealthService.shutDownService(port)
+    this.servicesHealthService.shutDownService(obj)
       .subscribe(
         (data) => {
           /** request completed */

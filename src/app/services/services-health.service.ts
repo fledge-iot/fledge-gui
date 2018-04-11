@@ -41,9 +41,13 @@ export class ServicesHealthService {
   /**
    *  POST  | /foglamp/service/shutdown
    */
-  shutDownService(port) {
+  shutDownService(obj) {
+    const port = obj.id;
+    const protocol = obj.protocol;
     const headers = new HttpHeaders().set(InterceptorSkipHeader, '');
-    const url = new URL(this.GET_SERVICES_URL);
+    const baseUrl = this.GET_SERVICES_URL;
+    const urlWithServiceProtocol = baseUrl.replace(/^https?/i, protocol);
+    const url = new URL(urlWithServiceProtocol);
     url.port = port;
     return this.http.post(String(url) + "/shutdown", null)
       .map(response => response)

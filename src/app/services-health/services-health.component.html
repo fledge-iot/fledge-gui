@@ -57,7 +57,7 @@
                 <span class='tag is-light'>{{time|date:'MMM d, y HH:mm:ss'}}</span>
               </td> -->
               <td>
-                <button *ngIf="true == checkServiceType(service.type | lowercase)" class="button is-danger is-small" (click)="openModal(service.management_port, service.name)">
+                <button *ngIf="true == checkServiceType(service.type | lowercase)" class="button is-danger is-small" (click)="openModal(service.management_port, service.name, service.protocol)">
                   <i class="fa fa-power-off" aria-hidden="true"></i> &nbsp; Shut down</button>
               </td>
             </tr>

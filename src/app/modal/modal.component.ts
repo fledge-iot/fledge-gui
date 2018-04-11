@@ -7,11 +7,11 @@ import { SchedulesService, UserService, AlertService } from '../services/index';
   templateUrl: './modal.component.html'
 })
 export class ModalComponent implements OnInit {
-  @Input() childData: { id: Number, name: any, key: any, message: any };
+  @Input() childData: { id: Number, name: any, key: any, message: any, protocol: any };
   @Output() enable = new EventEmitter<Number>();
   @Output() disable = new EventEmitter<Number>();
   @Output() delete = new EventEmitter<Number>();
-  @Output() shutdownService = new EventEmitter<Number>();
+  @Output() shutdownService = new EventEmitter<Object>();
   @Output() deleteUserService = new EventEmitter<Number>();
   @Output() deleteCertificate = new EventEmitter<Number>();
   @Output() logoutUserService = new EventEmitter<Number>();
@@ -50,7 +50,11 @@ export class ModalComponent implements OnInit {
       this.toggleModal(false);
     }
     if (this.childData.key === 'shutdownService') {
-      this.shutdownService.emit(this.childData.id);
+      const obj = {
+        id: this.childData.id,
+        protocol: this.childData.protocol
+      };
+      this.shutdownService.emit(obj);
       this.toggleModal(false);
     }
     if (this.childData.key === 'deleteUser') {
