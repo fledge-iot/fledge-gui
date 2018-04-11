@@ -18,9 +18,8 @@ export class ServicesHealthComponent implements OnInit {
 
   public isAdmin = false;
   // Object to hold schedule id and name to delete
-  public childData = {
-    id: '',
-    name: '',
+  public shutDownServiceData = {
+    port: '',
     key: '',
     message: '',
     protocol: ''
@@ -68,9 +67,8 @@ export class ServicesHealthComponent implements OnInit {
   }
 
   openModal(port, name, protocol) {
-    this.childData = {
-      id: port,
-      name: '',
+    this.shutDownServiceData = {
+      port: port,
       key: 'shutdownService',
       message: 'Do you really want to shut down ' + name + ' service',
       protocol: protocol
@@ -79,10 +77,10 @@ export class ServicesHealthComponent implements OnInit {
     this.child.toggleModal(true);
   }
 
-  shutdownService(obj) {
+  shutdownService(svcInfo) {
     /** request started */
     this.ngProgress.start();
-    this.servicesHealthService.shutDownService(obj)
+    this.servicesHealthService.shutDownService(svcInfo)
       .subscribe(
         (data) => {
           /** request completed */

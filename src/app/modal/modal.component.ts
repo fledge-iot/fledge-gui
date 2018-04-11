@@ -7,7 +7,8 @@ import { SchedulesService, UserService, AlertService } from '../services/index';
   templateUrl: './modal.component.html'
 })
 export class ModalComponent implements OnInit {
-  @Input() childData: { id: Number, name: any, key: any, message: any, protocol: any };
+  @Input() childData: { id: Number, name: any, key: any, message: any };
+  @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string };
   @Output() enable = new EventEmitter<Number>();
   @Output() disable = new EventEmitter<Number>();
   @Output() delete = new EventEmitter<Number>();
@@ -35,55 +36,58 @@ export class ModalComponent implements OnInit {
     schedule_name.classList.remove('is-active');
   }
 
-
   triggerAction() {
-    if (this.childData.key === 'enable') {
-      this.enable.emit(this.childData.id);
-      this.toggleModal(false);
+    if (this.childData) {
+      if (this.childData.key === 'enable') {
+        this.enable.emit(this.childData.id);
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'disable') {
+        this.disable.emit(this.childData.id);
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'delete') {
+        this.delete.emit(this.childData.id);
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'deleteUser') {
+        this.deleteUserService.emit(this.childData.id);
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'deleteCertificate') {
+        this.deleteCertificate.emit(this.childData.name);
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'clearSessions') {
+        this.logoutAllUserSessionsService.emit(this.childData.id);
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'logout') {
+        this.logoutUserService.emit();
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'createBackup') {
+        this.createBackup.emit();
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'restoreBackup') {
+        this.restoreBackup.emit(this.childData.id);
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'deleteBackup') {
+        this.deleteBackup.emit(this.childData.id);
+        this.toggleModal(false);
+      }
     }
-    if (this.childData.key === 'disable') {
-      this.disable.emit(this.childData.id);
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'delete') {
-      this.delete.emit(this.childData.id);
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'shutdownService') {
-      const obj = {
-        id: this.childData.id,
-        protocol: this.childData.protocol
-      };
-      this.shutdownService.emit(obj);
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'deleteUser') {
-      this.deleteUserService.emit(this.childData.id);
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'deleteCertificate') {
-      this.deleteCertificate.emit(this.childData.name);
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'clearSessions') {
-      this.logoutAllUserSessionsService.emit(this.childData.id);
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'logout') {
-      this.logoutUserService.emit();
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'createBackup') {
-      this.createBackup.emit();
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'restoreBackup') {
-      this.restoreBackup.emit(this.childData.id);
-      this.toggleModal(false);
-    }
-    if (this.childData.key === 'deleteBackup') {
-      this.deleteBackup.emit(this.childData.id);
-      this.toggleModal(false);
+    if (this.shutDownServiceData) {
+      if (this.shutDownServiceData.key === 'shutdownService') {
+        const serviceInfo = {
+          port: this.shutDownServiceData.port,
+          protocol: this.shutDownServiceData.protocol
+        };
+        this.shutdownService.emit(serviceInfo);
+        this.toggleModal(false);
+      }
     }
   }
 }
