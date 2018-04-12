@@ -18,10 +18,6 @@ export class ConfigurationManagerComponent implements OnInit {
   constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { this.JSON = JSON }
   ngOnInit() {
     this.getCategories();
-
-    // this.addConfigItem = {
-    //   category_name: this.scheduleProcess
-    // };
   }
 
   public getCategories(): void {
@@ -108,13 +104,16 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   /**
+  * @param notify
+  */
+  onNotify() {
+    this.getCategories();
+  }
+
+  /**
   * Open add Config Item modal dialog
   */
- openAddConfigItemModal(description, key) {
-    // this.addConfigItem = {
-    //   cat_name: description,
-    //   key: key
-    // };
+  openAddConfigItemModal(description, key) {
     this.addConfigItemModal.setConfigName(description, key);
     // call child component method to toggle modal
     this.addConfigItemModal.toggleModal(true);

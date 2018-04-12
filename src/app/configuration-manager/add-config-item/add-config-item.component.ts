@@ -1,17 +1,6 @@
 import { Component, OnInit, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AlertService } from '../../services/index';
-
-enum type {
-boolean,
-integer,
-string,
-IPv4,
-IPv6,
-X509certificate,
-password,
-JSON
-}
+import { ConfigurationService, AlertService } from '../../services/index';
 
 @Component({
   selector: 'app-add-config-item',
@@ -25,12 +14,13 @@ export class AddConfigItemComponent implements OnInit {
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private alertService: AlertService) { }
+  constructor(private configService: ConfigurationService, private alertService: AlertService) { }
 
   ngOnInit() {
     this.configItemType = ['boolean','integer','string','IPv4','IPv6','X509 certificate','password','JSON'];
     this.categoryData = {
       categoryName: '',
+      configName: '',
       key: '',
       description: '',
       defaultValue: '',
@@ -43,12 +33,11 @@ export class AddConfigItemComponent implements OnInit {
       categoryName: desc,
       key: key
     }
-    console.log('setConfigName', this.categoryData);
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
-      this.resetCreateUserForm(form)
+      this.resetAddConfigItemForm(form)
     }
     let modal = <HTMLDivElement>document.getElementById('add-config-item');
     if (isOpen) {
@@ -58,8 +47,33 @@ export class AddConfigItemComponent implements OnInit {
     modal.classList.remove('is-active');
   }
 
-  public resetCreateUserForm(form: NgForm) {
+  public resetAddConfigItemForm(form: NgForm) {
     form.resetForm(); 
   }
 
+  public addConfigItem(form: NgForm){
+    let config_item = form.controls["configName"].value;
+    let configItemData = {
+      'type': form.controls["type"].value,
+      'default': form.controls["defaultValue"].value,
+      'description': form.controls["description"].value
+    };
+    this.configService.addNewConfigItem(configItemData, this.categoryData.key, config_item).
+      subscribe(
+        data => {
+          this.notify.emit();
+          this.toggleModal(false, null);
+          this.alertService.success(data.message);
+          if (form != null) {
+            this.resetAddConfigItemForm(form);
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
 }

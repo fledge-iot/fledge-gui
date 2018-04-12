@@ -12,7 +12,7 @@
             <div class="column">
               <div class="field">
                 <div class="form-group">
-                  <label class="label">Name</label>
+                  <label class="label">Category Name</label>
                   <p class="control is-fullwidth">
                     <input type="text" name="categoryName" disabled class="input" [(ngModel)]="categoryData.categoryName" #categoryName="ngModel" placeholder="category name" required trim="blur" />
                   </p>
@@ -21,17 +21,31 @@
             </div>
           </div>
           <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <div class="form-group">
+                    <label class="label">Config Item Name</label>
+                    <p class="control is-fullwidth">
+                      <input type="text" name="configName" class="input" [(ngModel)]="categoryData.configName" #configName="ngModel" placeholder="config name" required trim="blur" />
+                    </p>
+                    <small *ngIf="f.submitted && !configName.valid" class="help is-danger level-left">Config Item Name is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <div class="columns">
             <div class="column is-fullwidth">
               <div class="field">
                 <label class="label">Type</label>
                 <div class="control">
-                    <div class="select is-fullwidth">
-                      <select name="type" placeholder="type" [(ngModel)]="categoryData.type" #type="ngModel" required trim="blur" >
-                        <option disabled [value]='none' selected>Select</option>
-                        <option [value]="type" *ngFor="let type of configItemType">{{type}}</option>
-                      </select>
-                    </div>
+                  <div class="select is-fullwidth">
+                    <select name="type" placeholder="type" [(ngModel)]="categoryData.type" #type="ngModel" required trim="blur" >
+                      <option disabled [value]='none' selected>Select</option>
+                      <option [value]="type" *ngFor="let type of configItemType">{{type}}</option>
+                    </select>
                   </div>
+                </div>
+                <small *ngIf="f.submitted && !type.valid" class="help is-danger level-left">Please select a valid config item type.</small>
               </div>
             </div>
           </div>
@@ -42,6 +56,7 @@
                 <p class="control is-fullwidth">
                   <input type="text" class="input" name="defaultValue" placeholder="default value" [(ngModel)]="categoryData.defaultValue" #defaultValue="ngModel" required trim="blur" />
                 </p>
+                <small *ngIf="f.submitted && !defaultValue.valid" class="help is-danger level-left">Default value is required</small>
               </div>
             </div>
           </div>
@@ -50,8 +65,9 @@
               <div class="field">
                 <label class="label">Description</label>
                 <p class="control is-fullwidth">
-                  <textarea type="text" class="input" name="defaultValue" placeholder="default value" [(ngModel)]="categoryData.defaultValue" #defaultValue="ngModel" required trim="blur"></textarea>
+                  <textarea type="text" class="input" name="description" placeholder="description" [(ngModel)]="categoryData.description" #description="ngModel" required trim="blur"></textarea>
                 </p>
+                <small *ngIf="f.submitted && !description.valid" class="help is-danger level-left">Description is required</small>
               </div>
             </div>
           </div>
