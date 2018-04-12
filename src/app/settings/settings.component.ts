@@ -35,6 +35,10 @@ export class SettingsComponent implements OnInit {
     window.open(this.serviceUrl + 'ping', '_blank');
   }
 
+  public serviceDiscovery() {
+    this.router.navigate(['/service-discovery']);
+  }
+
   protected getServiceUrl() {
     const protocolField = <HTMLSelectElement>document.getElementById('protocol');
     const hostField = <HTMLInputElement>document.getElementById('host');
