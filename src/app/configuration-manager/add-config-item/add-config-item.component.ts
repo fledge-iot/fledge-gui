@@ -1,5 +1,5 @@
 import { Component, OnInit, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormGroup } from '@angular/forms';
 import { ConfigurationService, AlertService } from '../../services/index';
 
 @Component({
@@ -19,19 +19,20 @@ export class AddConfigItemComponent implements OnInit {
   ngOnInit() {
     this.configItemType = ['boolean','integer','string','IPv4','IPv6','X509 certificate','password','JSON'];
     this.categoryData = {
-      categoryName: '',
+      categoryDescription: '',
+      categoryKey: '',
       configName: '',
       key: '',
       description: '',
       defaultValue: '',
-      type: 'none'
+      type: ''
     }
   }
 
   public setConfigName(desc, key) {
     this.categoryData = {
-      categoryName: desc,
-      key: key
+      categoryDescription: desc,
+      categoryKey: key
     }
   }
 
@@ -58,7 +59,7 @@ export class AddConfigItemComponent implements OnInit {
       'default': form.controls["defaultValue"].value,
       'description': form.controls["description"].value
     };
-    this.configService.addNewConfigItem(configItemData, this.categoryData.key, config_item).
+    this.configService.addNewConfigItem(configItemData, this.categoryData.categoryKey, config_item).
       subscribe(
         data => {
           this.notify.emit();
