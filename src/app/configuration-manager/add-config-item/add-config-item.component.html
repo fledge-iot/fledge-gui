@@ -12,22 +12,10 @@
             <div class="column">
               <div class="field">
                 <div class="form-group">
-                  <label class="label">Category Description</label>
-                  <p class="control is-fullwidth">
-                    <input type="text" name="categoryDescription" disabled class="input" [(ngModel)]="categoryData.categoryDescription" #categoryDescription="ngModel" placeholder="category name" required trim="blur" />
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="columns">
-            <div class="column">
-              <div class="field">
-                <div class="form-group">
-                  <label class="label">Category key</label>
                   <p class="control is-fullwidth">
                     <input type="text" name="categoryKey" disabled class="input" [(ngModel)]="categoryData.categoryKey" #categoryKey="ngModel" placeholder="category key" required trim="blur" />
                   </p>
+                  <small class="help"> {{ categoryData.categoryDescription }} </small>
                 </div>
               </div>
             </div>
@@ -36,7 +24,6 @@
               <div class="column">
                 <div class="field">
                   <div class="form-group">
-                    <label class="label">Config Item</label>
                     <p class="control is-fullwidth">
                       <input type="text" name="configName" class="input" [(ngModel)]="categoryData.configName" #configName="ngModel" placeholder="config item" required trim="blur" />
                     </p>
@@ -48,7 +35,6 @@
           <div class="columns">
             <div class="column is-fullwidth">
               <div class="field">
-                <label class="label">Type</label>
                 <div class="control">
                   <div class="select is-fullwidth">
                     <select name="type" [(ngModel)]="categoryData.type" #type="ngModel" required trim="blur" >
@@ -63,7 +49,6 @@
           <div class="columns">
             <div class="column">
               <div class="field">
-                <label class="label">Default value</label>
                 <p class="control is-fullwidth">
                   <input type="text" class="input" name="defaultValue" placeholder="default value" [(ngModel)]="categoryData.defaultValue" #defaultValue="ngModel" required trim="blur" />
                 </p>
@@ -74,7 +59,6 @@
           <div class="columns">
             <div class="column">
               <div class="field">
-                <label class="label">Description</label>
                 <p class="control is-fullwidth">
                   <textarea type="text" class="input" name="description" placeholder="description" [(ngModel)]="categoryData.description" #description="ngModel" required trim="blur"></textarea>
                 </p>
