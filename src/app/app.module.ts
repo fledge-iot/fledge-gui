@@ -74,6 +74,7 @@ import { UserProfileComponent } from './user-management/user-profile/user-profil
 import { SupportComponent } from './support/support.component';
 import { SystemLogComponent } from './system-log/system-log.component';
 import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
+import { AddConfigItemComponent } from './configuration-manager/add-config-item/add-config-item.component';
 import { ResetPasswordComponent } from './user-management/reset-password/reset-password.component';
 
 @NgModule({
@@ -128,6 +129,7 @@ import { ResetPasswordComponent } from './user-management/reset-password/reset-p
     SupportComponent,
     SystemLogComponent,
     BackupRestoreComponent,
+    AddConfigItemComponent,
     ResetPasswordComponent
   ],
   providers: [
