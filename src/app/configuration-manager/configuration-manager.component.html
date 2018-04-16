@@ -12,6 +12,11 @@
           </div>
         </div>
       </div>
+      <div>
+        <a class="button is-light" (click)="openAddConfigItemModal(category?.description, category?.key)">Add &nbsp;
+          <i class="fa fa-plus" aria-hidden="true"></i>
+        </a>
+      </div>
     </header>
     <div class="card-content">
       <div class="content">
@@ -53,4 +58,5 @@
       </div>
     </div>
   </div>
+  <app-add-config-item (notify)='onNotify()'></app-add-config-item>
 </div>

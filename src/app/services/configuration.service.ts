@@ -6,14 +6,14 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class ConfigurationService {
     // private instance variable to hold base url
-    private GET_CATEGORY_URL = environment.BASE_URL + 'category';
+    private CATEGORY_URL = environment.BASE_URL + 'category';
     constructor(private http: HttpClient) { }
 
     /**
      *   GET  | /foglamp/category
      */
     getCategories() {
-        return this.http.get(this.GET_CATEGORY_URL)
+        return this.http.get(this.CATEGORY_URL)
             .map(response => response)
             .catch((error: Response) => Observable.throw(error));
     }
@@ -22,7 +22,7 @@ export class ConfigurationService {
      *   GET  | /foglamp/category/{category_name}
      */
     getCategory(category_name) {
-        return this.http.get(this.GET_CATEGORY_URL + '/' + category_name)
+        return this.http.get(this.CATEGORY_URL + '/' + category_name)
             .map(response => response)
             .catch((error: Response) => Observable.throw(error));
     }
@@ -35,7 +35,16 @@ export class ConfigurationService {
         if (type.toUpperCase() === 'JSON') {
             body = JSON.stringify({ 'value': JSON.parse(value) });
         }
-        return this.http.put(this.GET_CATEGORY_URL + '/' + category_name + '/' + config_item, body)
+        return this.http.put(this.CATEGORY_URL + '/' + category_name + '/' + config_item, body)
+            .map(response => response)
+            .catch((error: Response) => Observable.throw(error));
+    }
+
+    /**
+    *  POST  | /foglamp/category/{category_name}/{config_item}
+    */
+    addNewConfigItem(configItemData, category_name: string, config_item: string) {
+        return this.http.post(this.CATEGORY_URL + '/' + category_name + '/' + config_item, configItemData)
             .map(response => response)
             .catch((error: Response) => Observable.throw(error));
     }
