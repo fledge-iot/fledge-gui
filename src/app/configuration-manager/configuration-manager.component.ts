@@ -12,15 +12,20 @@ export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
   public JSON;
   public addConfigItem: any;
+  public isCategoryData = false;
 
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
 
   constructor(private configService: ConfigurationService, private alertService: AlertService, public ngProgress: NgProgress) { this.JSON = JSON }
   ngOnInit() {
     this.getCategories();
+    this.isCategoryData = true;
   }
 
   public getCategories(): void {
+    if (this.isCategoryData == true) {
+      this.categoryData = [];
+    }
     /** request started */
     this.ngProgress.start();
     this.configService.getCategories().
@@ -105,6 +110,7 @@ export class ConfigurationManagerComponent implements OnInit {
 
   /**
   * @param notify
+  * To reload categories after adding a new config item for a category
   */
   onNotify() {
     this.getCategories();
