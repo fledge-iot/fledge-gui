@@ -27,7 +27,6 @@ table.scroll tbody {
 
 .ng-sidebar[_ngcontent-c3] {
   z-index: 10 !important;
-  overflow-y: hidden !important;
   padding-top: 0px;
 }
 
