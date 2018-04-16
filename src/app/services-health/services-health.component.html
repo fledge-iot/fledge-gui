@@ -24,7 +24,7 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th>Type &amp; Status </th>
+              <th>Status &amp; Type </th>
               <th>Protocol</th>
               <th>Address</th>
               <th>Service Port</th>
@@ -39,10 +39,10 @@
               <td>{{service.name}}</td>
               <td>
                 <div class="tags has-addons">
-                  <span class="tag" style="white-space: pre">{{padRight(service.type)}}</span>
                   <span [ngClass]="service.status == 'running' ?'tag is-success':'tag is-danger'">
                     <i [ngClass]="service.status == 'running' ?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
                   </span>
+                  <span class="tag" style="white-space: pre">{{padRight(service.type)}}</span>
                 </div>
                 <!-- <span class='tag is-info is-rounded'>{{service.type}} </span> -->
               </td>
@@ -57,14 +57,14 @@
                 <span class='tag is-light'>{{time|date:'MMM d, y HH:mm:ss'}}</span>
               </td> -->
               <td>
-                <button *ngIf="true == checkServiceType(service.type | lowercase)" class="button is-danger is-small" (click)="openModal(service.management_port, service.name)">
+                <button *ngIf="true == checkServiceType(service.type | lowercase)" class="button is-danger is-small" (click)="openModal(service.management_port, service.name, service.protocol, service.address)">
                   <i class="fa fa-power-off" aria-hidden="true"></i> &nbsp; Shut down</button>
               </td>
             </tr>
           </tbody>
         </table>
-        <app-modal (shutdownService)='shutdownService($event)' [childData]='childData'></app-modal>
       </div>
     </div>
   </div>
+  <app-modal (shutdownService)='shutdownService($event)' [shutDownServiceData]='shutDownServiceData'></app-modal>
 </div>

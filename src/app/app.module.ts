@@ -24,7 +24,8 @@ import {
   CertificateService,
   SupportService,
   SystemLogService,
-  BackupRestoreService
+  BackupRestoreService,
+  PingService
 } from './services/index';
 
 import { LoginComponent } from './login/index';
@@ -150,6 +151,7 @@ import { ResetPasswordComponent } from './user-management/reset-password/reset-p
     CertificateService,
     SupportService,
     BackupRestoreService,
+    PingService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,
