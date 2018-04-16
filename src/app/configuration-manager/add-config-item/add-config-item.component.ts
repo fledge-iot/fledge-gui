@@ -53,13 +53,13 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public addConfigItem(form: NgForm){
-    let config_item = form.controls["configName"].value;
+    let configItem = form.controls["configName"].value;
     let configItemData = {
       'type': form.controls["type"].value,
       'default': form.controls["defaultValue"].value,
       'description': form.controls["description"].value
     };
-    this.configService.addNewConfigItem(configItemData, this.categoryData.categoryKey, config_item).
+    this.configService.addNewConfigItem(configItemData, this.categoryData.categoryKey, configItem).
       subscribe(
         data => {
           this.notify.emit();
