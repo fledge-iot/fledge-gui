@@ -1,42 +1,41 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AlertService, DiscoveryService } from '../services/index';
 import { Router } from '@angular/router';
-import { ConnectedServiceStatus } from "../services/connected-service-status.service";
+import { ConnectedServiceStatus } from '../services/connected-service-status.service';
 
 @Component({
   selector: 'app-service-discovery',
-  inputs: ['serviceStatus'],
   templateUrl: './service-discovery.component.html',
   styleUrls: ['./service-discovery.component.css']
 })
-export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
+export class ServiceDiscoveryComponent implements OnInit {
   discoveredServices = [];
-  isConnected = false;
-  connectedButtonId: string;
   connectedServiceStatus: boolean;
-  discoveryServiceStatus: boolean = true;
-  message: string = '';
-  host = "localhost";  // default 
-  port = "3000"; // default 
+  discoveryServiceStatus = true;
+  message = '';
+  host = 'localhost';  // default
+  port = '3000'; // default
+  connectedService: any;
+  public JSON;
 
-  constructor(private discoveryService: DiscoveryService, private router: Router, private status: ConnectedServiceStatus,
-    private alertService: AlertService) { }
-
-  ngOnInit() {
-    this.status.currentMessage.subscribe(status => {
-      this.connectedServiceStatus = status;
-      if (!status && this.discoveredServices.length == 0) {
-        this.message = 'Connected service is down. You can connect a service manually from <a href="/setting">settings</a>.'
-      } else if (!status && this.discoveredServices.length != 0) {
-        this.message = 'Connected service is down. Connect to other service listed below or you can connect a service manually from <a href="/setting">settings</a>.'
-      }
-      this.discoverService();
-    })
+  constructor(private discoveryService: DiscoveryService, private router: Router,
+    private status: ConnectedServiceStatus,
+    private alertService: AlertService) {
+    this.JSON = JSON;
   }
 
-  ngAfterViewInit() {
-    this.isConnected = JSON.parse(localStorage.getItem('CONNECTED_SERVICE_STATE'));
-    this.connectedButtonId = localStorage.getItem('CONNECTED_SERVICE_ID');
+  ngOnInit() {
+    this.connectedService = JSON.parse(localStorage.getItem('CONNECTED_SERVICE'));
+    this.status.currentMessage.subscribe(status => {
+      this.connectedServiceStatus = status;
+      if (!status && this.discoveredServices.length === 0) {
+        this.message = 'Connected service is down. You can connect a service manually from <a href="/setting">settings</a>.';
+      } else if (!status && this.discoveredServices.length !== 0) {
+        this.message = 'Connected service is down. Connect to other service listed below or' +
+          + 'you can connect a service manually from <a href="/setting">settings</a>.';
+      }
+      this.discoverService();
+    });
   }
 
   setServiceDiscoveryURL() {
@@ -49,7 +48,7 @@ export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
   }
 
   discoverService() {
-    let serviceRecord = [];
+    const serviceRecord = [];
     this.discoveryService.discover()
       .subscribe(
         (data) => {
@@ -58,47 +57,30 @@ export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
             serviceRecord.push({
               key: key,
               [key]: data[key]
-            })
+            });
           });
           this.discoveredServices = serviceRecord;
-
-          for (let service of this.discoveredServices) {
-            const address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
-            const port = service[service.key].port;
-            if (address === localStorage.getItem('CONNECTED_HOST')) {
-              this.isConnected = true;
-              this.connectedButtonId = service.key;
-              localStorage.setItem('CONNECTED_SERVICE_STATE', JSON.stringify(this.isConnected));
-              localStorage.setItem('CONNECTED_SERVICE_ID', this.connectedButtonId);
-              localStorage.setItem('CONNECTED_HOST', address)
-            }
-          }
         },
         (error) => {
           this.discoveryServiceStatus = false;
           this.discoveredServices = [];
           if (error.status === 0) {
-            this.message = 'Not able to connect. Please check service discovery server is up and running.'
+            this.message = 'Not able to connect. Please check service discovery server is up and running.';
             console.log('service down ', error);
           } else {
-            this.message = "Something wrong with the discovery service. Try again!"
+            this.message = 'Something wrong with the discovery service. Try again!';
             console.log('error in response ', error);
           }
         });
   }
 
   connectService(service) {
-    this.connectedButtonId = service.key;
-    this.isConnected = true;
-    localStorage.setItem('CONNECTED_SERVICE_STATE', JSON.stringify(this.isConnected));
-    localStorage.setItem('CONNECTED_SERVICE_ID', this.connectedButtonId);
-
-    let port = service[service.key].port
-    let address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
+    this.connectedService = service;
+    localStorage.setItem('CONNECTED_SERVICE', JSON.stringify(service));
+    const address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
 
     // TODO: Get protocol from service discovery
     const serviceEndpoint = 'http://' + address + ':' + '8081/foglamp/';
-
     localStorage.setItem('SERVICE_URL', serviceEndpoint);
     location.reload();
     location.href = '';
@@ -106,7 +88,7 @@ export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
   }
 
   public closeMessage() {
-    let message_window = <HTMLDivElement>document.getElementById('warning');
+    const message_window = <HTMLDivElement>document.getElementById('warning');
     message_window.classList.add('hidden');
   }
 }

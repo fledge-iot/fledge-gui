@@ -79,7 +79,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   isActive(href) {
-    if (href === '/login' || href == '/setting?id=1' || href.indexOf('reset-password') >= 0) {
+    if (href === '/login' ||
+      href === '/setting?id=1' ||
+      href.indexOf('reset-password') >= 0) {
       return this.isLogin = true;
     } else {
       return this.isLogin = false;

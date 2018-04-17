@@ -59,9 +59,9 @@
                 {{d.key}}
               </p>
               <a class="card-header-icon">
-                <button [ngClass]="{'is-primary':(isConnected && connectedButtonId == d.key), 'is-info': (!isConnected || connectedButtonId != d.key)}"
-                  class="button" (click)="connectService(d)" [disabled]="(isConnected && connectedButtonId == d.key) ? 'disabled' : null">
-                  {{(!isConnected || connectedButtonId != d.key) ? 'Connect' : 'Connected'}}
+                <button [ngClass]="{'is-primary':JSON.stringify(connectedService) == JSON.stringify(d), 'is-info': (JSON.stringify(connectedService) != JSON.stringify(d))}" class="button"
+                  (click)="connectService(d)" [disabled]="JSON.stringify(connectedService) == JSON.stringify(d) ? 'disabled' : null">
+                  {{ JSON.stringify(connectedService) != JSON.stringify(d) ? 'Connect' : 'Connected'}}
                 </button>
               </a>
             </header>

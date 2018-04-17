@@ -30,8 +30,8 @@
             <label class="label">&nbsp;</label>
             <div class="select is-fullwidth">
               <select id="protocol" [ngModel]="protocol">
-                <option>https</option>
-                <option>http</option>
+                <option>https:</option>
+                <option>http:</option>
               </select>
             </div>
           </div>
@@ -53,7 +53,7 @@
               &nbsp;
               <button class="button is-text" (click)="testServiceConnection()">Test Connection</button>
               &nbsp;
-              <button class="button is-primary is-pulled-right" (click)="serviceDiscovery()">Discover FogLAMP Instances</button>
+              <button class="button is-text is-pulled-right" (click)="serviceDiscovery()">Discover FogLAMP Instances</button>
             </div>
           </div>
         </div>
