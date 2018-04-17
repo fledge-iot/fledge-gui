@@ -72,7 +72,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.navMode = 'over';
       this._opened = false;
     }
-    if (event.target.innerWidth > 1024) {
+    if (event.target.innerWidth >= 1024) {
       this.navMode = 'side';
       this._opened = true;
     }
