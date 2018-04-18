@@ -60,11 +60,16 @@ export class ServicesHealthComponent implements OnInit {
         });
   }
 
-  checkServiceType(type) {
+  checkServiceType(type, serviceStatus) {
     if (type == 'storage' || type == 'core') {
       return false;
     }
-    return true;
+    else if (serviceStatus == 'running' || serviceStatus == 'unresponsive') {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
   openModal(port, name, protocol, address) {
