@@ -67,9 +67,7 @@ export class ServicesHealthComponent implements OnInit {
     else if (serviceStatus == 'running' || serviceStatus == 'unresponsive') {
       return true;
     }
-    else {
-      return false;
-    }
+    return false;
   }
 
   openModal(port, name, protocol, address) {

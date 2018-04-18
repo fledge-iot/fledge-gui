@@ -42,11 +42,11 @@
                   <span *ngIf="service.status == 'running'" class="tag is-success">
                     <i *ngIf="service.status == 'running'" class="fa fa-check-circle-o" aria-hidden="true"></i>
                   </span>
-                  <span *ngIf="service.status == 'stopped'" class="tag is-info">
-                    <i *ngIf="service.status == 'stopped'" class="fa fa-times-circle" aria-hidden="true"></i>
-                  </span>
-                  <span *ngIf="service.status == 'down'"  class="tag is-danger">
+                  <span *ngIf="service.status == 'down'" class="tag is-dark">
                     <i *ngIf="service.status == 'down'" class="fa fa-times-circle" aria-hidden="true"></i>
+                  </span>
+                  <span *ngIf="service.status == 'failed'"  class="tag is-danger">
+                    <i *ngIf="service.status == 'failed'" class="fa fa-times-circle" aria-hidden="true"></i>
                   </span>
                   <span *ngIf="service.status == 'unresponsive'"  class="tag is-warning">
                     <i *ngIf="service.status == 'unresponsive'" class="fa fa-times-circle" aria-hidden="true"></i>
