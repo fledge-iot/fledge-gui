@@ -1,9 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter, NgModule } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, NgModule, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { PingService } from './../services/index';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { PlatformLocation } from '@angular/common';
+import { ServiceDiscoveryComponent } from '../service-discovery';
 
 @Component({
   selector: 'app-settings',
@@ -12,13 +13,15 @@ import { PlatformLocation } from '@angular/common';
 })
 export class SettingsComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
+  @Input() navbarComponent: NavbarComponent;
+  @ViewChild(ServiceDiscoveryComponent) serviceDiscoveryModal: ServiceDiscoveryComponent;
+
   protocol;
   host;
   servicePort;
+  pingInterval;
   isSkipped = false;
   serviceUrl = '';
-  @Input() navbarComponent: NavbarComponent;
-  pingInterval;
   constructor(private router: Router, private pingService: PingService,
     private platformLocation: PlatformLocation) {
     this.protocol = localStorage.getItem('PROTOCOL') != null ? localStorage.getItem('PROTOCOL') : location.protocol;
@@ -39,8 +42,9 @@ export class SettingsComponent implements OnInit {
     window.open(this.serviceUrl + 'ping', '_blank');
   }
 
-  public serviceDiscovery() {
-    this.router.navigate(['/service-discovery']);
+  public openServiceDiscoveryModal() {
+    // call child component method to toggle modal
+    this.serviceDiscoveryModal.toggleModal(true);
   }
 
   protected setServiceUrl() {

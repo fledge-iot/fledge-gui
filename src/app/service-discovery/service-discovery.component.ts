@@ -28,20 +28,30 @@ export class ServiceDiscoveryComponent implements OnInit {
     this.connectedService = JSON.parse(localStorage.getItem('CONNECTED_SERVICE'));
     this.status.currentMessage.subscribe(status => {
       this.connectedServiceStatus = status;
+      console.log('status', status);
       if (!status && this.discoveredServices.length === 0) {
         this.message = 'Connected service is down. You can connect a service manually from <a href="/setting">settings</a>.';
       } else if (!status && this.discoveredServices.length !== 0) {
-        this.message = 'Connected service is down. Connect to other service listed below or' +
-          + 'you can connect a service manually from <a href="/setting">settings</a>.';
+        this.message = 'Connected service is down. Connect to other service listed below or ' +
+          'you can connect a service manually from <a href="/setting">settings</a>.';
       }
       this.discoverService();
     });
   }
 
+  public toggleModal(isOpen: Boolean) {
+    const serviceDiscoveryModal = <HTMLDivElement>document.getElementById('service_discovery_modal');
+    if (isOpen) {
+      serviceDiscoveryModal.classList.add('is-active');
+      return;
+    }
+    serviceDiscoveryModal.classList.remove('is-active');
+  }
+
   setServiceDiscoveryURL() {
-    const protocolField = <HTMLSelectElement>document.getElementById('protocol');
-    const hostField = <HTMLInputElement>document.getElementById('host');
-    const servicePortField = <HTMLInputElement>document.getElementById('port');
+    const protocolField = <HTMLSelectElement>document.getElementById('discovery_protocol');
+    const hostField = <HTMLInputElement>document.getElementById('discovery_host');
+    const servicePortField = <HTMLInputElement>document.getElementById('discovery_port');
     const discoveryServiceEndpoint = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/discover';
     localStorage.setItem('DISCOVERY_SERVICE_URL', discoveryServiceEndpoint);
     this.alertService.success('Discovery service url configured successfully.');
@@ -62,13 +72,13 @@ export class ServiceDiscoveryComponent implements OnInit {
           this.discoveredServices = serviceRecord;
         },
         (error) => {
+          console.log('error');
           this.discoveryServiceStatus = false;
           this.discoveredServices = [];
           if (error.status === 0) {
             this.message = 'Not able to connect. Please check service discovery server is up and running.';
             console.log('service down ', error);
           } else {
-            this.message = 'Something wrong with the discovery service. Try again!';
             console.log('error in response ', error);
           }
         });
