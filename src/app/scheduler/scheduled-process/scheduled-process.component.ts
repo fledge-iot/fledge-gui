@@ -153,7 +153,7 @@ export class ScheduledProcessComponent implements OnInit {
   }
 
   /**
-   * 
+   *
    * @param index value of the day
    */
   getISODay(index: number) {

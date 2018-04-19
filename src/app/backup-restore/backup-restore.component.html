@@ -5,7 +5,10 @@
   <div class="card">
     <header class="card-header">
       <p class="card-header-title">
-        Backup
+        Backup &nbsp;
+        <button (click)="getBackup()" class="button is-small">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button>
       </p>
       <div>
         <a class="button is-light" (click)="openModal('', '', 'Are you sure, You want to create a backup', 'createBackup')">Request Backup &nbsp;

@@ -16,7 +16,7 @@ export class SupportComponent implements OnInit {
 
 
   ngOnInit() {
-    this.getBundles()
+    this.getBundles();
   }
 
   public getBundles() {
