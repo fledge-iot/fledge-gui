@@ -16,7 +16,7 @@ export class SettingsComponent implements OnInit {
   @Input() navbarComponent: NavbarComponent;
   @ViewChild(ServiceDiscoveryComponent) serviceDiscoveryModal: ServiceDiscoveryComponent;
 
-  protocol;
+  protocol = 'http'; // default protocol
   host;
   servicePort;
   pingInterval;
@@ -24,7 +24,7 @@ export class SettingsComponent implements OnInit {
   serviceUrl = '';
   constructor(private router: Router, private pingService: PingService,
     private platformLocation: PlatformLocation) {
-    this.protocol = localStorage.getItem('PROTOCOL') != null ? localStorage.getItem('PROTOCOL') : location.protocol;
+    this.protocol = localStorage.getItem('PROTOCOL') != null ? localStorage.getItem('PROTOCOL') : location.protocol.replace(':', '').trim();
     this.host = localStorage.getItem('HOST') != null ? localStorage.getItem('HOST') : location.hostname;
     this.servicePort = localStorage.getItem('PORT') != null ? localStorage.getItem('PORT') : 8081;
   }
@@ -54,7 +54,13 @@ export class SettingsComponent implements OnInit {
     localStorage.setItem('PROTOCOL', protocolField.value);
     localStorage.setItem('HOST', hostField.value);
     localStorage.setItem('PORT', servicePortField.value);
-    this.serviceUrl = protocolField.value + '//' + hostField.value + ':'
+    const service = JSON.parse(localStorage.getItem('CONNECTED_SERVICE'));
+    console.log('service', service);
+    if (service != null) {
+        service.port = servicePortField.value;
+        localStorage.setItem('CONNECTED_SERVICE', JSON.stringify(service));
+    }
+    this.serviceUrl = protocolField.value + '://' + hostField.value + ':'
       + servicePortField.value + '/foglamp/';
   }
 

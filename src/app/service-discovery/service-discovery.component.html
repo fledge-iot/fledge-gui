@@ -28,13 +28,12 @@
       <div class="columns">
         <div class="column">
           <div class="field">
-            <button class="button is-primary is-pulled-left is-small" (click)="setServiceDiscoveryURL()">Discover</button>
+            <button [ngClass]="{'is-loading': isLoading}" class="button is-primary is-pulled-left is-small" (click)="setServiceDiscoveryURL()">Discover</button>
           </div>
         </div>
       </div>
-  <hr>
   <div class="columns">
-    <div *ngIf="!connectedServiceStatus || !discoveryServiceStatus" class="column" id="warning">
+    <div *ngIf="(!connectedServiceStatus || !discoveryServiceStatus) && message.length != 0" class="column" id="warning">
       <div class="message is-warning">
         <div class="message-header">
           <p>Warning</p>
@@ -61,7 +60,7 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <b>Port:</b> {{d[d.key].port}}
+            <b>Service Port:</b> {{d.port}}
           </div>
           <div class="content">
             <b>IP Address:</b> {{d[d.key].addresses.length > 1 ? d[d.key].addresses[1] : d[d.key].addresses[0]}}

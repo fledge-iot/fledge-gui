@@ -30,8 +30,8 @@
             <label class="label">&nbsp;</label>
             <div class="select is-fullwidth">
               <select id="protocol" [ngModel]="protocol">
-                <option>https:</option>
-                <option>http:</option>
+                <option>http</option>
+                <option>https</option>
               </select>
             </div>
           </div>
@@ -41,7 +41,7 @@
           </div>
           <div class="column">
             <label class="label is-fullwidth">Port</label>
-            <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="1995" [ngModel]="servicePort">
+            <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081" [ngModel]="servicePort">
           </div>
         </div>
         <div class="columns">
