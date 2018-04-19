@@ -41,16 +41,16 @@
               <td>
                 <div class="tags has-addons">
                   <span *ngIf="service.status == 'running'" class="tag is-success">
-                    <i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; running
+                    <i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
                   <span *ngIf="service.status == 'down'" class="tag is-danger">
-                    <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; dowm
+                    <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
                   <span *ngIf="service.status == 'failed'"  class="tag is-danger">
-                    <i class="fa fa-times-circle" aria-hidden="true"></i>&nbsp; failed
+                    <i class="fa fa-times-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
                   <span *ngIf="service.status == 'unresponsive'"  class="tag is-warning">
-                    <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; unresponsive
+                    <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
                 </div>
               </td>
