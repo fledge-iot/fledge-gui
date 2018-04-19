@@ -24,7 +24,8 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th>Status &amp; Type </th>
+              <th>Status</th>
+              <th>Type</th>
               <th>Protocol</th>
               <th>Address</th>
               <th>Service Port</th>
@@ -40,21 +41,20 @@
               <td>
                 <div class="tags has-addons">
                   <span *ngIf="service.status == 'running'" class="tag is-success">
-                    <i *ngIf="service.status == 'running'" class="fa fa-check-circle-o" aria-hidden="true"></i>
+                    <i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
-                  <span *ngIf="service.status == 'down'" class="tag is-dark">
-                    <i *ngIf="service.status == 'down'" class="fa fa-times-circle" aria-hidden="true"></i>
+                  <span *ngIf="service.status == 'down'" class="tag is-danger">
+                    <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
                   <span *ngIf="service.status == 'failed'"  class="tag is-danger">
-                    <i *ngIf="service.status == 'failed'" class="fa fa-times-circle" aria-hidden="true"></i>
+                    <i class="fa fa-times-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
                   <span *ngIf="service.status == 'unresponsive'"  class="tag is-warning">
-                    <i *ngIf="service.status == 'unresponsive'" class="fa fa-times-circle" aria-hidden="true"></i>
+                    <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
-                  <span class="tag" style="white-space: pre">{{padRight(service.type)}}</span>
                 </div>
-                <!-- <span class='tag is-info is-rounded'>{{service.type}} </span> -->
               </td>
+              <td><span class="tag is-rounded">{{service.type}}</span></td>
               <td>{{service.protocol}}</td>
               <td>{{service.address}}</td>
               <td>{{service.service_port}}</td>
