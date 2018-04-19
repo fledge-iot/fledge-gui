@@ -33,7 +33,7 @@ export class ServiceDiscoveryComponent implements OnInit, OnDestroy {
       this.connectedServiceStatus = status;
       if (this.discoveryURL != null && !this.connectedServiceStatus) {
         this.message = 'Connected service is down. Connect to other service listed below or ' +
-          'you can connect a service manually from settings.';
+          'you can connect to a service manually from settings.';
       }
     });
   }
