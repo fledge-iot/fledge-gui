@@ -1,19 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AlertService, DiscoveryService, PingService } from '../services/index';
 import { Router } from '@angular/router';
 import { ConnectedServiceStatus } from '../services/connected-service-status.service';
-import { POLLING_INTERVAL } from '../utils';
+
 @Component({
   selector: 'app-service-discovery',
   templateUrl: './service-discovery.component.html',
   styleUrls: ['./service-discovery.component.css']
 })
-export class ServiceDiscoveryComponent implements OnInit, OnDestroy {
+export class ServiceDiscoveryComponent implements OnInit {
   discoveredServices = [];
   connectedServiceStatus = false;
   discoveryServiceStatus = false;
   isLoading = false;
-  discoveryURL;
   message = '';
   host = 'localhost';  // default
   port = '3000'; // default
@@ -31,10 +30,6 @@ export class ServiceDiscoveryComponent implements OnInit, OnDestroy {
     this.connectedService = JSON.parse(localStorage.getItem('CONNECTED_SERVICE'));
     this.status.currentMessage.subscribe(status => {
       this.connectedServiceStatus = status;
-      if (this.discoveryURL != null && !this.connectedServiceStatus) {
-        this.message = 'Connected service is down. Connect to other service listed below or ' +
-          'you can connect to a service manually from settings.';
-      }
     });
   }
 
@@ -52,15 +47,13 @@ export class ServiceDiscoveryComponent implements OnInit, OnDestroy {
     const protocolField = <HTMLSelectElement>document.getElementById('discovery_protocol');
     const hostField = <HTMLInputElement>document.getElementById('discovery_host');
     const servicePortField = <HTMLInputElement>document.getElementById('discovery_port');
-    this.discoveryURL = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/discover';
-    localStorage.setItem('DISCOVERY_SERVICE_URL', this.discoveryURL);
-    this.start(POLLING_INTERVAL);
+    const discoveryURL = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/discover';
+    this.discoverService(discoveryURL);
   }
 
-  discoverService() {
-    const serviceDiscoveryUrl = localStorage.getItem('DISCOVERY_SERVICE_URL');
+  discoverService(discoveryURL) {
     const serviceRecord = [];
-    this.discoveryService.discover(serviceDiscoveryUrl)
+    this.discoveryService.discover(discoveryURL)
       .subscribe(
         (data) => {
           this.isLoading = false;
@@ -73,13 +66,22 @@ export class ServiceDiscoveryComponent implements OnInit, OnDestroy {
             });
           });
           this.discoveredServices = serviceRecord;
+          if (this.discoveredServices.length <= 0) {
+            this.message = 'No running FogLAMP instance found over the network.';
+            this.toggleMessage(false);
+          } else if (!this.connectedServiceStatus && this.discoveredServices.length > 0) {
+            this.message = 'Connected service is down. Connect to other service listed below, or ' +
+              'You can connect to a service manually from settings.';
+            this.toggleMessage(false);
+          }
         },
         (error) => {
-          console.log('error');
           this.discoveryServiceStatus = false;
           this.discoveredServices = [];
           if (error.status === 0) {
+            this.isLoading = false;
             this.message = 'Not able to connect. Please check service discovery server is up and running.';
+            this.toggleMessage(false);
             console.log('service down ', error);
           } else {
             console.log('error in response ', error);
@@ -102,23 +104,14 @@ export class ServiceDiscoveryComponent implements OnInit, OnDestroy {
     this.router.navigate([location.href]);
   }
 
-  public closeMessage() {
+  public toggleMessage(isOpen) {
     const message_window = <HTMLDivElement>document.getElementById('warning');
-    message_window.classList.add('hidden');
-  }
-
-  public start(pingInterval) {
-    this.stop();
-    this.timer = setInterval(function () {
-      this.discoverService();
-    }.bind(this), pingInterval);
-  }
-
-  public stop() {
-    clearInterval(this.timer);
-  }
-
-  ngOnDestroy() {
-    clearInterval(this.timer);
+    if (message_window != null) {
+      if (isOpen) {
+        message_window.classList.add('hidden');
+        return;
+      }
+      message_window.classList.remove('hidden');
+    }
   }
 }

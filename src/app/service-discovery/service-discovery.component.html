@@ -32,43 +32,43 @@
           </div>
         </div>
       </div>
-  <div class="columns">
-    <div *ngIf="(!connectedServiceStatus || !discoveryServiceStatus) && message.length != 0" class="column" id="warning">
-      <div class="message is-warning">
-        <div class="message-header">
-          <p>Warning</p>
-          <button class="delete" aria-label="delete" (click)="closeMessage()"></button>
-        </div>
-        <div class="message-body" [innerHTML]='message'>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="columns">
-    <div *ngFor="let d of discoveredServices" class="column">
-      <div class="card">
-        <header class="card-header">
-          <p class="card-header-title">
-            {{d.key}}
-          </p>
-          <a class="card-header-icon">
-            <button [ngClass]="{'is-primary':JSON.stringify(connectedService) == JSON.stringify(d), 'is-info': (JSON.stringify(connectedService) != JSON.stringify(d))}"
-              class="button is-small" (click)="connectService(d)" [disabled]="JSON.stringify(connectedService) == JSON.stringify(d) ? 'disabled' : null">
-              {{ JSON.stringify(connectedService) != JSON.stringify(d) ? 'Connect' : 'Connected'}}
-            </button>
-          </a>
-        </header>
-        <div class="card-content">
-          <div class="content">
-            <b>Service Port:</b> {{d.port}}
-          </div>
-          <div class="content">
-            <b>IP Address:</b> {{d[d.key].addresses.length > 1 ? d[d.key].addresses[1] : d[d.key].addresses[0]}}
+      <div class="columns">
+        <div *ngIf="(!connectedServiceStatus || !discoveryServiceStatus)" class="column hidden" id="warning">
+          <div class="message is-warning ">
+            <div class="message-header">
+              <p>Warning</p>
+              <button class="delete" aria-label="delete" (click)="toggleMessage(true)"></button>
+            </div>
+            <div class="message-body" [innerHTML]='message'>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <div class="columns">
+        <div *ngFor="let d of discoveredServices" class="column">
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title">
+                {{d.key}}
+              </p>
+              <a class="card-header-icon">
+                <button [ngClass]="{'is-primary':JSON.stringify(connectedService) == JSON.stringify(d), 'is-info': (JSON.stringify(connectedService) != JSON.stringify(d))}"
+                  class="button is-small" (click)="connectService(d)" [disabled]="JSON.stringify(connectedService) == JSON.stringify(d) ? 'disabled' : null">
+                  {{ JSON.stringify(connectedService) != JSON.stringify(d) ? 'Connect' : 'Connected'}}
+                </button>
+              </a>
+            </header>
+            <div class="card-content">
+              <div class="content">
+                <b>Service Port:</b> {{d.port}}
+              </div>
+              <div class="content">
+                <b>IP Address:</b> {{d[d.key].addresses.length > 1 ? d[d.key].addresses[1] : d[d.key].addresses[0]}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
-  </section>
-</div>
 </div>
