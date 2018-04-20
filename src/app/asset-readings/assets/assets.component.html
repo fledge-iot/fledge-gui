@@ -1,13 +1,15 @@
 <div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
-            [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-            [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
   <div class="tile">
     <div class="tile is-parent">
       <article class="tile is-child box">
         <h5 class="title is-5">
           Assets
+          <button (click)="getAsset()" class="button is-small">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+          </button>
         </h5>
         <table class="table is-striped is-narrow scroll is-responsive">
           <thead>
@@ -45,7 +47,7 @@
     <div class="tile is-parent">
       <article class="tile is-child box">
         <h5 class="title is-5">
-           Asset Readings
+          Asset Readings
         </h5>
         <div class="columns">
           <div class="column">

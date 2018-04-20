@@ -5,7 +5,10 @@
   <div class="card">
     <header class="card-header">
       <p class="card-header-title">
-        Support Bundles
+        Support Bundles &nbsp;
+        <button (click)="getBundles()" class="button is-small">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button>
       </p>
       <div>
         <a class="button is-light" (click)="requestNewBundle()">Request New &nbsp;
