@@ -2,17 +2,17 @@
   <header class="card-header">
     <div class="card-header-title">
       Tasks &nbsp;
+      <button (click)="getLatestTasks()" class="button is-small">
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+      </button>
+    </div>
+    <a class="card-header-icon">
       <div class="select" (change)="getTasks($event.target.value)">
         <select ng-model="selectedTaskType" id="task-state">
           <option>Latest</option>
           <option>Running</option>
         </select>
       </div>
-    </div>
-    <a class="card-header-icon">
-      <button (click)="getLatestTasks()" class="button is-small">
-        <i class="fa fa-refresh" aria-hidden="true"></i>
-      </button>
     </a>
   </header>
   <div class="card-content">
