@@ -14,8 +14,8 @@ export class ServiceDiscoveryComponent implements OnInit {
   discoveryServiceStatus = false;
   isLoading = false;
   message = '';
-  host = 'localhost';  // default
-  port = '3000'; // default
+  host;
+  port;
   connectedService: any;
   public JSON;
   public timer: any = '';
@@ -24,6 +24,8 @@ export class ServiceDiscoveryComponent implements OnInit {
     private status: ConnectedServiceStatus,
     private alertService: AlertService) {
     this.JSON = JSON;
+    this.host = localStorage.getItem('DISCOVERY_ADDRESS') != null ? localStorage.getItem('DISCOVERY_ADDRESS') : 'localhost';
+    this.port = localStorage.getItem('DISCOVERY_PORT') != null ? localStorage.getItem('DISCOVERY_PORT') : '3000';
   }
 
   ngOnInit() {
@@ -48,6 +50,8 @@ export class ServiceDiscoveryComponent implements OnInit {
     const hostField = <HTMLInputElement>document.getElementById('discovery_host');
     const servicePortField = <HTMLInputElement>document.getElementById('discovery_port');
     const discoveryURL = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/discover';
+    localStorage.setItem('DISCOVERY_ADDRESS', hostField.value);
+    localStorage.setItem('DISCOVERY_PORT', servicePortField.value);
     this.discoverService(discoveryURL);
   }
 
@@ -61,7 +65,7 @@ export class ServiceDiscoveryComponent implements OnInit {
           Object.keys(data).forEach(function (key) {
             serviceRecord.push({
               key: key,
-              [key]: data[key],
+              'address': data[key].addresses.length > 1 ? data[key].addresses[1] : data[key].addresses[0],
               'port': 8081
             });
           });
@@ -92,11 +96,10 @@ export class ServiceDiscoveryComponent implements OnInit {
   connectService(service) {
     this.connectedService = service;
     localStorage.setItem('CONNECTED_SERVICE', JSON.stringify(service));
-    const address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
     // TODO: Get protocol from service discovery
-    const serviceEndpoint = 'http://' + address + ':' + '8081/foglamp/';
+    const serviceEndpoint = 'http://' + service.address + ':' + '8081/foglamp/';
     localStorage.setItem('PROTOCOL', 'http');
-    localStorage.setItem('HOST', address);
+    localStorage.setItem('HOST', service.address);
     localStorage.setItem('PORT', '8081');
     localStorage.setItem('SERVICE_URL', serviceEndpoint);
     location.reload();
@@ -108,6 +111,7 @@ export class ServiceDiscoveryComponent implements OnInit {
     const message_window = <HTMLDivElement>document.getElementById('warning');
     if (message_window != null) {
       if (isOpen) {
+        this.isLoading = false;
         message_window.classList.add('hidden');
         return;
       }
