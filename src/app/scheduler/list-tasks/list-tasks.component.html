@@ -2,13 +2,18 @@
   <header class="card-header">
     <div class="card-header-title">
       Tasks &nbsp;
+      <button (click)="getLatestTasks()" class="button is-small">
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+      </button>
+    </div>
+    <a class="card-header-icon">
       <div class="select" (change)="getTasks($event.target.value)">
         <select ng-model="selectedTaskType" id="task-state">
           <option>Latest</option>
           <option>Running</option>
         </select>
       </div>
-    </div>
+    </a>
   </header>
   <div class="card-content">
     <table class="table is-striped  scroll is-responsive">
@@ -27,13 +32,27 @@
         </tr>
       </thead>
       <tr *ngFor="let task of tasksData">
-        <td><small>{{task.name}}</small></td>
-        <td><small>{{task.state}}</small></td>
-        <td><small>{{task.startTime != 'None' ?(task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small></td>
-        <td><small>{{task.endTime != 'None'?(task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small></td>
-        <td><small>{{task.exitCode}}</small></td>
-        <td><small>{{task.reason}}</small></td>
-        <td><button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small is-danger" (click)="cancelRunninTask(task.id)">Cancel</button></td>
+        <td>
+          <small>{{task.name}}</small>
+        </td>
+        <td>
+          <small>{{task.state}}</small>
+        </td>
+        <td>
+          <small>{{task.startTime != 'None' ?(task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
+        </td>
+        <td>
+          <small>{{task.endTime != 'None'?(task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
+        </td>
+        <td>
+          <small>{{task.exitCode}}</small>
+        </td>
+        <td>
+          <small>{{task.reason}}</small>
+        </td>
+        <td>
+          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small is-danger" (click)="cancelRunninTask(task.id)">Cancel</button>
+        </td>
       </tr>
     </table>
   </div>
