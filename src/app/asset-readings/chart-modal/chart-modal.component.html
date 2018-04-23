@@ -2,45 +2,41 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <div [hidden]='!isValidData' class="columns is-variable is-2">
-          <div class="column is-narrow is-6">
-            <p class="subtitle is-size-4">{{assetCode}}</p>
-          </div>
-        <div class="column is-3">
-          <number-input-debounce placeholder="limit" #limit (value)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)"
-            max="1000"></number-input-debounce>
-          <p *ngIf='isInvalidLimit' class='help is-danger'>Limit must be in range 1 - 1000</p>
-        </div>
-        <div class="column is-3">
-          <number-input-debounce placeholder="offset" #offset (value)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)"></number-input-debounce>
-          <p *ngIf='isInvalidOffset' class='help is-danger'>Offset must be in range 1 - 2147483647</p>
-        </div>
-      </div>
+      <p [hidden]='!isValidData' class="modal-card-title is-size-5">{{assetCode}}</p>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false); clearField(limit, offset)"></button>
       </div>
     </header>
     <section class="modal-card-body">
-      <div *ngIf='isValidData'>
-        <div class="field is-grouped is-grouped-multiline" *ngFor="let readings of assetReadingSummary">
-          <div class="control">
-            <div class="tags has-addons" *ngFor="let reading of readings.summary">
-              <span>
-                <b>{{readings.key}} &nbsp;</b>
-              </span>
-              <span class="tag is-light"> Avg </span>
-              <span class="tag is-info">{{reading.average}}</span> &nbsp;
-              <span class="tag is-light"> Min </span>
-              <span class="tag is-info">{{reading.min}}</span> &nbsp;
-              <span class="tag is-light"> Max </span>
-              <span class="tag is-info">{{reading.max}}</span> &nbsp;
-            </div>
+      <div [hidden]='!isValidData' class="columns">
+        <div class="column is-half">
+          <number-input-debounce placeholder="limit" #limit (value)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)"
+            max="1000"></number-input-debounce>
+          <p *ngIf='isInvalidLimit' class='help is-danger'>Limit must be in range 1 - 1000</p>
+        </div>
+        <div class="column is-half">
+          <number-input-debounce placeholder="offset" #offset (value)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)"></number-input-debounce>
+          <p *ngIf='isInvalidOffset' class='help is-danger'>Offset must be in range 1 - 2147483647</p>
+        </div>
+      </div>
+      <div [hidden]='!isValidData' class="field is-grouped is-grouped-multiline" *ngFor="let readings of assetReadingSummary">
+        <div class="control">
+          <div class="tags has-addons" *ngFor="let reading of readings.summary">
+            <span>
+              <b>{{readings.key}} &nbsp;</b>
+            </span>
+            <span class="tag is-light"> Avg </span>
+            <span class="tag is-info">{{reading.average}}</span> &nbsp;
+            <span class="tag is-light"> Min </span>
+            <span class="tag is-info">{{reading.min}}</span> &nbsp;
+            <span class="tag is-light"> Max </span>
+            <span class="tag is-info">{{reading.max}}</span> &nbsp;
           </div>
         </div>
       </div>
-      <br>
       <p *ngIf='(isInvalidOffset || isInvalidLimit || !isValidData || !isReadingsAvailable)'> Not Available </p>
-      <chart *ngIf='(!isInvalidOffset && !isInvalidLimit && isValidData  && isReadingsAvailable)' [type]="assetChart" [data]="assetReadingValues" [options]=""></chart>
+      <chart *ngIf='(!isInvalidOffset && !isInvalidLimit && isValidData  && isReadingsAvailable)' [type]="assetChart" [data]="assetReadingValues"
+        [options]=""></chart>
     </section>
   </div>
 </div>
