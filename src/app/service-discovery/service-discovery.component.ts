@@ -80,10 +80,10 @@ export class ServiceDiscoveryComponent implements OnInit {
           }
         },
         (error) => {
+          this.isLoading = false;
           this.discoveryServiceStatus = false;
           this.discoveredServices = [];
           if (error.status === 0) {
-            this.isLoading = false;
             this.message = 'Not able to connect. Please check service discovery server is up and running.';
             this.toggleMessage(false);
             console.log('service down ', error);
@@ -108,10 +108,10 @@ export class ServiceDiscoveryComponent implements OnInit {
   }
 
   public toggleMessage(isOpen) {
+    this.isLoading = false;
     const message_window = <HTMLDivElement>document.getElementById('warning');
     if (message_window != null) {
       if (isOpen) {
-        this.isLoading = false;
         message_window.classList.add('hidden');
         return;
       }
