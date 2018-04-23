@@ -22,7 +22,7 @@ export class ListTasksComponent implements OnInit {
    * @param state Task state
    */
   public getTasks(state) {
-    if (state.toUpperCase() == 'RUNNING') {
+    if (state.toUpperCase() === 'RUNNING') {
       this.selectedTaskType = 'Running';
       this.getRunningTasks();
       return;

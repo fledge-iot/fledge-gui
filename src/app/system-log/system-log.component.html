@@ -1,16 +1,22 @@
 <div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
-              [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-              [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
   <div class="card">
     <header class="card-header">
       <div class="card-content">
-        <div class="media-content">
-          <h5 class="title is-5">SysLog</h5>
-          <h6 class='subtitle is-6'>
-            <small>Count: {{ totalCount }}</small>
-          </h6>
+        <div class="columns">
+          <div class="column is-9">
+            <h5 class="title is-5">SysLog</h5>
+            <h6 class='subtitle is-6'>
+              <small>Count: {{ totalCount }}</small>
+            </h6>
+          </div>
+          <div class="column">
+            <button (click)="getSysLogs()" class="button is-small">
+              <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -26,7 +32,7 @@
             </div>
           </div>
           <div class="column is-fullwidth">
-            <number-input-debounce placeholder="limit" (value)="setLimit($event)"></number-input-debounce>    
+            <number-input-debounce placeholder="limit" (value)="setLimit($event)"></number-input-debounce>
           </div>
           <div class="column is-fullwidth">
             <number-input-debounce placeholder="offset" (value)="setOffset($event)"></number-input-debounce>
@@ -36,7 +42,9 @@
       <table class="table is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
         <tbody>
           <tr *ngFor="let log of logs">
-            <td><pre>{{log}}</pre></td>
+            <td>
+              <pre>{{log}}</pre>
+            </td>
           </tr>
         </tbody>
       </table>
