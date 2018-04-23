@@ -7,8 +7,8 @@
         <button class="delete" aria-label="close" (click)="toggleModal(false); clearField(limit, offset)"></button>
       </div>
     </header>
-    <section class="modal-card-body" *ngIf='isValidData'>
-      <div class="columns">
+    <section class="modal-card-body">
+      <div [hidden]='!isValidData' class="columns">
         <div class="column is-half">
           <number-input-debounce placeholder="limit" #limit (value)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)"
             max="1000"></number-input-debounce>
@@ -19,7 +19,7 @@
           <p *ngIf='isInvalidOffset' class='help is-danger'>Offset must be in range 1 - 2147483647</p>
         </div>
       </div>
-      <div class="field is-grouped is-grouped-multiline" *ngFor="let readings of assetReadingSummary">
+      <div [hidden]='!isValidData' class="field is-grouped is-grouped-multiline" *ngFor="let readings of assetReadingSummary">
         <div class="control">
           <div class="tags has-addons" *ngFor="let reading of readings.summary">
             <span>
@@ -34,7 +34,6 @@
           </div>
         </div>
       </div>
-      <br>
       <p *ngIf='(isInvalidOffset || isInvalidLimit || !isValidData || !isReadingsAvailable)'> Not Available </p>
       <chart *ngIf='(!isInvalidOffset && !isInvalidLimit && isValidData  && isReadingsAvailable)' [type]="assetChart" [data]="assetReadingValues"
         [options]=""></chart>
