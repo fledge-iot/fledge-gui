@@ -2,15 +2,15 @@
   <header class="card-header">
     <div class="card-header-title">
       Tasks &nbsp;
-      <button (click)="getLatestTasks()" class="button is-small">
+      <button (click)="getTasks(selectedTaskType)" class="button is-small">
         <i class="fa fa-refresh" aria-hidden="true"></i>
       </button>
     </div>
     <a class="card-header-icon">
-      <div class="select" (change)="getTasks($event.target.value)">
-        <select ng-model="selectedTaskType" id="task-state">
-          <option>Latest</option>
-          <option>Running</option>
+      <div class="select">
+        <select [ngModel]="selectedTaskType" (ngModelChange)="getTasks($event)" id="task-state">
+          <option value='Latest'>Latest</option>
+          <option value='Running'>Running</option>
         </select>
       </div>
     </a>
