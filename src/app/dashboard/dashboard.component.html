@@ -1,28 +1,22 @@
 <div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
-  </ng-progress>
+    <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
+      [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+      [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+    </ng-progress>
 
-  <angular2-multiselect (ngModelChange)="showGraph($event)" [data]="statistics" [(ngModel)]="selectedItems" [settings]="dropdownSettings"></angular2-multiselect>
+    <angular2-multiselect (ngModelChange)="showGraph($event)" [data]="statistics" [(ngModel)]="selectedItems" 
+    [settings]="dropdownSettings"></angular2-multiselect>
 
-  <div class="tile" *ngFor="let statistic of graphsToShow">
-    <div class="tile is-parent">
-      <article class="tile is-child box">
-        <h5 class="title is-5">{{ statistic.itemName }} Statistics History
-          <button (click)="refreshGraph()" class="button is-small is-pulled-right">
-            <i class="fa fa-refresh" aria-hidden="true"></i>
-          </button>
-        </h5>
-        <h6 class="subtitle is-6">{{ statistic.description }}</h6>
-        <br/>
-        <chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></chart>
-        <br/>
-        <h6>Total since startup:
-          <b> {{ statistic.value }} </b>
-        </h6>
-        <small>
-          <i class="has-text-weight-light has-text-grey">* latest 20 records</i>
-        </small>
-      </article>
+    <div class="tile" *ngFor="let statistic of graphsToShow">
+      <div class="tile is-parent">
+        <article class="tile is-child box">
+          <h5 class="title is-5">{{ statistic.itemName }} Statistics History</h5>
+          <h6 class="subtitle is-6">{{ statistic.description }}</h6>
+          <br/>
+          <chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></chart>
+          <br/>
+          <h6>Total since startup:<b> {{ statistic.value }} </b></h6>
+          <small><i class="has-text-weight-light has-text-grey">* latest 20 records</i></small>
+        </article>
+      </div>
     </div>
-  </div>
