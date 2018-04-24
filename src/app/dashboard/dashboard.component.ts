@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit {
       selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
       this.graphsToShow.push(selectedKeyData[0][0])
     }
-    this.getStatisticsHistory();
+    this.getStatistics();
   }
 
   public getStatistics(): void {
