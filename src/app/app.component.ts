@@ -68,18 +68,17 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    if (event.target.innerWidth < 1024) {
+    if (event.target.innerWidth < 769) {
       this.navMode = 'over';
       this._opened = false;
-    }
-    if (event.target.innerWidth >= 1024) {
+    } else {
       this.navMode = 'side';
       this._opened = true;
     }
   }
 
   isActive(href) {
-    if (href === '/login' || href == '/setting?id=1' || href.indexOf('reset-password') >= 0) {
+    if (href === '/login' || href === '/setting?id=1' || href.indexOf('reset-password') >= 0) {
       return this.isLogin = true;
     } else {
       return this.isLogin = false;
