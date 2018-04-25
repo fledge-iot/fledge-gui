@@ -67,10 +67,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    if (event.target.innerWidth < 769) {
+    if (event.target.innerWidth < 1024) {
       this.navMode = 'over';
       this._opened = false;
-    } else {
+    }
+    if (event.target.innerWidth >= 1024) {
       this.navMode = 'side';
       this._opened = true;
     }
