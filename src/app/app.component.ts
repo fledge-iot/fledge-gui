@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
-import { Router, ActivatedRoute, RoutesRecognized, ActivatedRouteSnapshot } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
 import { SharedService } from './services/shared.service';
 import { PingService } from './services/index';
@@ -14,7 +14,13 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('sidebar') sidebar: SidebarModule;
   navMode = 'side';
 
-  constructor(private route: ActivatedRoute, private router: Router,
+  public _opened = true;
+  returnUrl: string;
+  isUserLoggedIn = false;
+  skip = false;
+  isLoginView = false;
+
+  constructor(private router: Router,
     private sharedService: SharedService,
     private cdr: ChangeDetectorRef, private ping: PingService) {
     this.sharedService.isUserLoggedIn.subscribe(value => {
@@ -25,13 +31,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.skip = value;
     });
   }
-  public _opened = true;
-
-  returnUrl: string;
-  isUserLoggedIn = false;
-  skip = false;
-
-  isLogin = false;
 
   public toggleSidebar() {
     if (this.navMode === 'over') {
@@ -45,8 +44,8 @@ export class AppComponent implements OnInit, AfterViewInit {
       this._opened = false;
     }
     this.router.events.subscribe(event => {
-      if (event instanceof RoutesRecognized) {
-        this.isActive(event.state.url);
+      if (event instanceof NavigationEnd) {
+        this.isActive(event.url);
       }
     });
     this.ping.setDefaultPingTime();
@@ -79,12 +78,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   isActive(href) {
-    if (href === '/login' ||
-      href === '/setting?id=1' ||
-      href.indexOf('reset-password') >= 0) {
-      return this.isLogin = true;
+    if (href === '/login' || href === '/setting?id=1' || href.indexOf('reset-password') >= 0) {
+      return this.isLoginView = true;
     } else {
-      return this.isLogin = false;
+      return this.isLoginView = false;
     }
   }
 }
