@@ -10,11 +10,8 @@ export class SchedulesService {
   private GET_SCHEDULE_PROCESS = environment.BASE_URL + 'schedule/process';
   private GET_SCHEDULE = environment.BASE_URL + 'schedule';
 
-  private GET_TASKS = environment.BASE_URL + 'task';
-  private GET_LATEST_TASK = environment.BASE_URL + 'task/latest';
-  private CANCEL_TASK = environment.BASE_URL + 'task/cancel';
-
-
+  private TASKS_URL = environment.BASE_URL + 'task';
+  private LATEST_TASK_URL = environment.BASE_URL + 'task/latest';
 
   constructor(private http: HttpClient) { }
 
@@ -115,7 +112,7 @@ export class SchedulesService {
    *  GET | /foglamp/task/latest
    */
   public getLatestTask() {
-    return this.http.get(this.GET_LATEST_TASK)
+    return this.http.get(this.LATEST_TASK_URL)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
@@ -126,16 +123,16 @@ export class SchedulesService {
   public getTasks(state: string) {
     let params = new HttpParams();
     params = params.append('state', state);
-    return this.http.get(this.GET_TASKS, { params: params })
+    return this.http.get(this.TASKS_URL, { params: params })
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
 
   /**
-   *  PUT | /foglamp/task/cancel/{task_id}
+   *  PUT | /foglamp/task/{task_id}/cancel
    */
   public cancelTask(id) {
-    return this.http.put(this.CANCEL_TASK + '/' + id, null)
+    return this.http.put(this.TASKS_URL + '/' + id + '/cancel', null)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
