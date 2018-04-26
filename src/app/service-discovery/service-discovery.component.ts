@@ -14,22 +14,24 @@ export class ServiceDiscoveryComponent implements OnInit {
   discoveryServiceStatus = false;
   isLoading = false;
   message = '';
-  host;
-  port;
-  connectedService: any;
+  discoveryHost;
+  discoveryPort;
   public JSON;
   public timer: any = '';
+  connectedHost;
+  connectedPort;
 
   constructor(private discoveryService: DiscoveryService, private router: Router,
     private status: ConnectedServiceStatus,
     private alertService: AlertService) {
     this.JSON = JSON;
-    this.host = localStorage.getItem('DISCOVERY_ADDRESS') != null ? localStorage.getItem('DISCOVERY_ADDRESS') : 'localhost';
-    this.port = localStorage.getItem('DISCOVERY_PORT') != null ? localStorage.getItem('DISCOVERY_PORT') : '3000';
+    this.discoveryHost = localStorage.getItem('DISCOVERY_ADDRESS') != null ? localStorage.getItem('DISCOVERY_ADDRESS') : 'localhost';
+    this.discoveryPort = localStorage.getItem('DISCOVERY_PORT') != null ? localStorage.getItem('DISCOVERY_PORT') : '3000';
   }
 
   ngOnInit() {
-    this.connectedService = JSON.parse(localStorage.getItem('CONNECTED_SERVICE'));
+    this.connectedHost = localStorage.getItem('CONNECTED_HOST');
+    this.connectedPort = localStorage.getItem('CONNECTED_PORT');
     this.status.currentMessage.subscribe(status => {
       this.connectedServiceStatus = status;
     });
@@ -71,9 +73,10 @@ export class ServiceDiscoveryComponent implements OnInit {
           });
           this.discoveredServices = serviceRecord;
           if (this.discoveredServices.length <= 0) {
+            this.discoveryServiceStatus = false;
             this.message = 'No running FogLAMP instance found over the network.';
             this.toggleMessage(false);
-          } else if (!this.connectedServiceStatus && this.discoveredServices.length > 0) {
+          } else if (!this.connectedServiceStatus) {
             this.message = 'Connected service is down. Connect to other service listed below, or ' +
               'You can connect to a service manually from settings.';
             this.toggleMessage(false);
@@ -94,13 +97,11 @@ export class ServiceDiscoveryComponent implements OnInit {
   }
 
   connectService(service) {
-    this.connectedService = service;
-    localStorage.setItem('CONNECTED_SERVICE', JSON.stringify(service));
     // TODO: Get protocol from service discovery
     const serviceEndpoint = 'http://' + service.address + ':' + '8081/foglamp/';
-    localStorage.setItem('PROTOCOL', 'http');
-    localStorage.setItem('HOST', service.address);
-    localStorage.setItem('PORT', '8081');
+    localStorage.setItem('CONNECTED_PROTOCOL', 'http');
+    localStorage.setItem('CONNECTED_HOST', service.address);
+    localStorage.setItem('CONNECTED_PORT', '8081');
     localStorage.setItem('SERVICE_URL', serviceEndpoint);
     location.reload();
     location.href = '';

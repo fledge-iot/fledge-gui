@@ -24,16 +24,17 @@ export class SettingsComponent implements OnInit {
   serviceUrl = '';
   constructor(private router: Router, private pingService: PingService,
     private platformLocation: PlatformLocation) {
-    this.protocol = localStorage.getItem('PROTOCOL') != null ? localStorage.getItem('PROTOCOL') : location.protocol.replace(':', '').trim();
-    this.host = localStorage.getItem('HOST') != null ? localStorage.getItem('HOST') : location.hostname;
-    this.servicePort = localStorage.getItem('PORT') != null ? localStorage.getItem('PORT') : 8081;
+    this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
+    localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
+    this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
+    this.servicePort = localStorage.getItem('CONNECTED_PORT') != null ? localStorage.getItem('CONNECTED_PORT') : 8081;
   }
 
   ngOnInit() {
     this.isSkipped = JSON.parse(sessionStorage.getItem('skip'));
     this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
     // get last selected time interval
-    this.pingInterval = localStorage.getItem('pingInterval');
+    this.pingInterval = localStorage.getItem('PING_INTERVAL');
   }
 
   public testServiceConnection(): void {
@@ -51,15 +52,9 @@ export class SettingsComponent implements OnInit {
     const protocolField = <HTMLSelectElement>document.getElementById('protocol');
     const hostField = <HTMLInputElement>document.getElementById('host');
     const servicePortField = <HTMLInputElement>document.getElementById('service_port');
-    localStorage.setItem('PROTOCOL', protocolField.value);
-    localStorage.setItem('HOST', hostField.value);
-    localStorage.setItem('PORT', servicePortField.value);
-    const service = JSON.parse(localStorage.getItem('CONNECTED_SERVICE'));
-    console.log('service', service);
-    if (service != null) {
-        service.port = servicePortField.value;
-        localStorage.setItem('CONNECTED_SERVICE', JSON.stringify(service));
-    }
+    localStorage.setItem('CONNECTED_PROTOCOL', protocolField.value);
+    localStorage.setItem('CONNECTED_HOST', hostField.value);
+    localStorage.setItem('CONNECTED_PORT', servicePortField.value);
     this.serviceUrl = protocolField.value + '://' + hostField.value + ':'
       + servicePortField.value + '/foglamp/';
   }
@@ -67,9 +62,6 @@ export class SettingsComponent implements OnInit {
   public resetEndPoint() {
     this.setServiceUrl();
     localStorage.setItem('SERVICE_URL', this.serviceUrl);
-    // Clear connected service if any
-    localStorage.removeItem('CONNECTED_SERVICE_STATE');
-    localStorage.removeItem('CONNECTED_SERVICE_ID');
     this.reloadApp();
   }
 
@@ -84,7 +76,7 @@ export class SettingsComponent implements OnInit {
    */
   public ping(event) {
     const time = event.target.value;
-    localStorage.setItem('pingInterval', time);
+    localStorage.setItem('PING_INTERVAL', time);
     this.pingService.pingIntervalChanged.next(+time);
   }
 }

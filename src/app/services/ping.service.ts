@@ -8,9 +8,9 @@ export class PingService {
   constructor() { }
 
   public setDefaultPingTime() {
-    const pingTime = localStorage.getItem('pingInterval');
+    const pingTime = localStorage.getItem('PING_INTERVAL');
     if (pingTime == null) {
-      localStorage.setItem('pingInterval', JSON.stringify(POLLING_INTERVAL));
+      localStorage.setItem('PING_INTERVAL', JSON.stringify(POLLING_INTERVAL));
     }
   }
 }

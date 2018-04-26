@@ -18,11 +18,11 @@
         </div>
         <div class="column">
           <label class="label is-fullwidth">Host</label>
-          <input id="discovery_host" class="input" type="text" placeholder="localhost" [ngModel]="host" trim="blur">
+          <input id="discovery_host" class="input" type="text" placeholder="localhost" [ngModel]="discoveryHost" trim="blur">
         </div>
         <div class="column">
           <label class="label is-fullwidth">Port</label>
-          <input id='discovery_port' class="input" type="number" maxlength="4" placeholder="3000" [ngModel]="port">
+          <input id='discovery_port' class="input" type="number" maxlength="4" placeholder="3000" [ngModel]="discoveryPort">
         </div>
       </div>
       <div class="columns">
@@ -52,9 +52,9 @@
                 {{d.key}}
               </p>
               <a class="card-header-icon">
-                <button [ngClass]="{'is-primary':JSON.stringify(connectedService) == JSON.stringify(d), 'is-info': (JSON.stringify(connectedService) != JSON.stringify(d))}"
-                  class="button is-small" (click)="connectService(d)" [disabled]="JSON.stringify(connectedService) == JSON.stringify(d) ? 'disabled' : null">
-                  {{ JSON.stringify(connectedService) != JSON.stringify(d) ? 'Connect' : 'Connected'}}
+                <button [ngClass]="{'is-primary':(connectedHost === d.address && connectedPort === JSON.stringify(d.port)), 'is-info': (connectedHost !== d.address || connectedPort !== JSON.stringify(d.port))}"
+                  class="button is-small" (click)="connectService(d)" [disabled]="(connectedHost === d.address && connectedPort === JSON.stringify(d.port)) ? 'disabled' : null">
+                  {{connectedHost !== d.address || connectedPort !== JSON.stringify(d.port) ? 'Connect' : 'Connected'}}
                 </button>
               </a>
             </header>
