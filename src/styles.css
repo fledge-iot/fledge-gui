@@ -3,10 +3,10 @@ html, body, #app {
   height: 100%;
 }
 
-html {
+html, .footer {
   background-color: #f5f5f5 !important;
 }
-    
+
 #app {
   min-height: 100%;
 }
@@ -33,7 +33,7 @@ table.scroll tbody {
 .app-navbar {
   box-shadow: 0 2px 3px hsla(0,0%,7%,.1), 0 0 0 1px hsla(0,0%,7%,.1);
   }
-  
+
 .card {
         margin-top: 10px;
 }
@@ -47,3 +47,8 @@ table.scroll tbody {
 .dropdown-list[_ngcontent-c8] {
   position: relative !important;
 }
+
+#card-title {
+  overflow: hidden;
+}
+
