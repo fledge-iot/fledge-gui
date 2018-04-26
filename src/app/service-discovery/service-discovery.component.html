@@ -10,7 +10,7 @@
         <div class="column is-4">
           <label class="label">&nbsp;</label>
           <div class="select is-fullwidth">
-            <select id="discovery_protocol">
+            <select id="discovery_protocol" [ngModel]="discoveryProtocol">
               <option>http</option>
               <option>https</option>
             </select>
@@ -52,9 +52,9 @@
                 {{d.key}}
               </p>
               <a class="card-header-icon">
-                <button [ngClass]="{'is-primary':(connectedHost === d.address && connectedPort === JSON.stringify(d.port)), 'is-info': (connectedHost !== d.address || connectedPort !== JSON.stringify(d.port))}"
-                  class="button is-small" (click)="connectService(d)" [disabled]="(connectedHost === d.address && connectedPort === JSON.stringify(d.port)) ? 'disabled' : null">
-                  {{connectedHost !== d.address || connectedPort !== JSON.stringify(d.port) ? 'Connect' : 'Connected'}}
+                <button [ngClass]="{'is-primary':isServiceConnected(d), 'is-info': !isServiceConnected(d)}" class="button is-small" (click)="connectService(d)"
+                  [disabled]="isServiceConnected(d) ? 'disabled' : null">
+                  {{!isServiceConnected(d) ? 'Connect' : 'Connected'}}
                 </button>
               </a>
             </header>

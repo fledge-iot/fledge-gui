@@ -14,10 +14,12 @@ export class ServiceDiscoveryComponent implements OnInit {
   discoveryServiceStatus = false;
   isLoading = false;
   message = '';
+  discoveryProtocol;
   discoveryHost;
   discoveryPort;
   public JSON;
   public timer: any = '';
+  connectedProtocol;
   connectedHost;
   connectedPort;
 
@@ -25,11 +27,13 @@ export class ServiceDiscoveryComponent implements OnInit {
     private status: ConnectedServiceStatus,
     private alertService: AlertService) {
     this.JSON = JSON;
-    this.discoveryHost = localStorage.getItem('DISCOVERY_ADDRESS') != null ? localStorage.getItem('DISCOVERY_ADDRESS') : 'localhost';
+    this.discoveryProtocol = localStorage.getItem('DISCOVERY_PROTOCOL') != null ? localStorage.getItem('DISCOVERY_PROTOCOL') : 'http';
+    this.discoveryHost = localStorage.getItem('DISCOVERY_HOST') != null ? localStorage.getItem('DISCOVERY_HOST') : 'localhost';
     this.discoveryPort = localStorage.getItem('DISCOVERY_PORT') != null ? localStorage.getItem('DISCOVERY_PORT') : '3000';
   }
 
   ngOnInit() {
+    this.connectedProtocol = localStorage.getItem('CONNECTED_PROTOCOL');
     this.connectedHost = localStorage.getItem('CONNECTED_HOST');
     this.connectedPort = localStorage.getItem('CONNECTED_PORT');
     this.status.currentMessage.subscribe(status => {
@@ -52,7 +56,8 @@ export class ServiceDiscoveryComponent implements OnInit {
     const hostField = <HTMLInputElement>document.getElementById('discovery_host');
     const servicePortField = <HTMLInputElement>document.getElementById('discovery_port');
     const discoveryURL = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/discover';
-    localStorage.setItem('DISCOVERY_ADDRESS', hostField.value);
+    localStorage.setItem('DISCOVERY_PROTOCOL', protocolField.value);
+    localStorage.setItem('DISCOVERY_HOST', hostField.value);
     localStorage.setItem('DISCOVERY_PORT', servicePortField.value);
     this.discoverService(discoveryURL);
   }
@@ -67,6 +72,7 @@ export class ServiceDiscoveryComponent implements OnInit {
           Object.keys(data).forEach(function (key) {
             serviceRecord.push({
               key: key,
+              'protocol': 'http',
               'address': data[key].addresses.length > 1 ? data[key].addresses[1] : data[key].addresses[0],
               'port': 8081
             });
@@ -117,6 +123,18 @@ export class ServiceDiscoveryComponent implements OnInit {
         return;
       }
       message_window.classList.remove('hidden');
+    }
+  }
+
+  isServiceConnected(service) {
+    if (this.connectedHost === service.address &&
+      this.connectedPort === JSON.stringify(service.port)
+      && this.connectedProtocol === service.protocol) {
+      return true;
+    } else if (this.connectedHost !== service.address ||
+      this.connectedPort !== JSON.stringify(service.port) ||
+      this.connectedProtocol !== service.protocol) {
+      return false;
     }
   }
 }
