@@ -104,10 +104,10 @@ export class ServiceDiscoveryComponent implements OnInit {
 
   connectService(service) {
     // TODO: Get protocol from service discovery
-    const serviceEndpoint = 'http://' + service.address + ':' + '8081/foglamp/';
-    localStorage.setItem('CONNECTED_PROTOCOL', 'http');
+    const serviceEndpoint = service.protocol + '://' + service.address + ':' + service.port + '/foglamp/';
+    localStorage.setItem('CONNECTED_PROTOCOL', service.protocol);
     localStorage.setItem('CONNECTED_HOST', service.address);
-    localStorage.setItem('CONNECTED_PORT', '8081');
+    localStorage.setItem('CONNECTED_PORT', service.port);
     localStorage.setItem('SERVICE_URL', serviceEndpoint);
     location.reload();
     location.href = '';
