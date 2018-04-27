@@ -14,12 +14,12 @@
     "lib": [
       "es2016",
       "dom"
-    ],
-    "exclude": [
-      "*.eot",
-      "*.woff2",
-      "*.svg",
-      "*.woff"
     ]
-  }
+  },
+  "exclude": [
+    "*.eot",
+    "*.woff2",
+    "*.svg",
+    "*.woff"
+  ]
 }
