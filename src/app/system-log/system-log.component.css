@@ -1,3 +1,15 @@
 .media-content {
     overflow: hidden;
 }
+
+#s-log {
+  font: normal normal normal normal 14px monospace;
+  box-sizing: border-box;
+  visibility: visible;
+  position: relative;
+  bottom: 0px;
+  margin: 0px;
+  padding: 4px;
+  background: whitesmoke;
+  /* border-top: 1px solid rgb(170, 170, 170); */
+}
