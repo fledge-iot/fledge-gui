@@ -1,112 +1,146 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { AlertService, DiscoveryService } from '../services/index';
+import { Component, OnInit } from '@angular/core';
+import { AlertService, DiscoveryService, PingService } from '../services/index';
 import { Router } from '@angular/router';
-import { ConnectedServiceStatus } from "../services/connected-service-status.service";
+import { ConnectedServiceStatus } from '../services/connected-service-status.service';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-service-discovery',
-  inputs: ['serviceStatus'],
   templateUrl: './service-discovery.component.html',
   styleUrls: ['./service-discovery.component.css']
 })
-export class ServiceDiscoveryComponent implements OnInit, AfterViewInit {
+export class ServiceDiscoveryComponent implements OnInit {
   discoveredServices = [];
-  isConnected = false;
-  connectedButtonId: string;
-  connectedServiceStatus: boolean;
-  discoveryServiceStatus: boolean = true;
-  message: string = '';
-  host = "localhost";  // default 
-  port = "3000"; // default 
-
-  constructor(private discoveryService: DiscoveryService, private router: Router, private status: ConnectedServiceStatus,
-    private alertService: AlertService) { }
-
-  ngOnInit() {
-    this.status.currentMessage.subscribe(status => {
-      this.connectedServiceStatus = status;
-      if (!status && this.discoveredServices.length == 0) {
-        this.message = 'Connected service is down. You can connect a service manually from <a href="/setting">settings</a>.'
-      } else if (!status && this.discoveredServices.length != 0) {
-        this.message = 'Connected service is down. Connect to other service listed below or you can connect a service manually from <a href="/setting">settings</a>.'
-      }
-      this.discoverService();
-    })
+  connectedServiceStatus = false;
+  discoveryServiceStatus = false;
+  isLoading = false;
+  message = '';
+  discoveryProtocol;
+  discoveryHost;
+  discoveryPort;
+  public JSON;
+  public timer: any = '';
+  connectedProtocol;
+  connectedHost;
+  connectedPort;
+  discoveryHostControl;
+  discoveryPortControl;
+  constructor(private discoveryService: DiscoveryService, private router: Router,
+    private status: ConnectedServiceStatus,
+    private alertService: AlertService) {
+    this.JSON = JSON;
+    this.discoveryProtocol = localStorage.getItem('DISCOVERY_PROTOCOL') != null ? localStorage.getItem('DISCOVERY_PROTOCOL') : 'http';
+    this.discoveryHost = localStorage.getItem('DISCOVERY_HOST') != null ? localStorage.getItem('DISCOVERY_HOST') : 'localhost';
+    this.discoveryPort = localStorage.getItem('DISCOVERY_PORT') != null ? localStorage.getItem('DISCOVERY_PORT') : '3000';
+    this.discoveryHostControl = new FormControl('', [Validators.required]);
+    this.discoveryPortControl = new FormControl('', [Validators.required]);
   }
 
-  ngAfterViewInit() {
-    this.isConnected = JSON.parse(localStorage.getItem('CONNECTED_SERVICE_STATE'));
-    this.connectedButtonId = localStorage.getItem('CONNECTED_SERVICE_ID');
+  ngOnInit() {
+    this.connectedProtocol = localStorage.getItem('CONNECTED_PROTOCOL');
+    this.connectedHost = localStorage.getItem('CONNECTED_HOST');
+    this.connectedPort = localStorage.getItem('CONNECTED_PORT');
+    this.status.currentMessage.subscribe(status => {
+      this.connectedServiceStatus = status;
+    });
+  }
+
+  public toggleModal(isOpen: Boolean) {
+    this.isLoading = false;
+    const serviceDiscoveryModal = <HTMLDivElement>document.getElementById('service_discovery_modal');
+    if (isOpen) {
+      serviceDiscoveryModal.classList.add('is-active');
+      return;
+    }
+    serviceDiscoveryModal.classList.remove('is-active');
   }
 
   setServiceDiscoveryURL() {
-    const protocolField = <HTMLSelectElement>document.getElementById('protocol');
-    const hostField = <HTMLInputElement>document.getElementById('host');
-    const servicePortField = <HTMLInputElement>document.getElementById('port');
-    const discoveryServiceEndpoint = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/discover';
-    localStorage.setItem('DISCOVERY_SERVICE_URL', discoveryServiceEndpoint);
-    this.alertService.success('Discovery service url configured successfully.');
+    this.isLoading = true;
+    const protocolField = <HTMLSelectElement>document.getElementById('discovery_protocol');
+    const hostField = <HTMLInputElement>document.getElementById('discovery_host');
+    const servicePortField = <HTMLInputElement>document.getElementById('discovery_port');
+    const discoveryURL = protocolField.value.trim() + '://' + hostField.value.trim()
+      + ':' + servicePortField.value.trim() + '/foglamp/discover';
+    localStorage.setItem('DISCOVERY_PROTOCOL', protocolField.value);
+    localStorage.setItem('DISCOVERY_HOST', hostField.value);
+    localStorage.setItem('DISCOVERY_PORT', servicePortField.value);
+    this.discoverService(discoveryURL);
   }
 
-  discoverService() {
-    let serviceRecord = [];
-    this.discoveryService.discover()
+  discoverService(discoveryURL) {
+    const serviceRecord = [];
+    this.discoveryService.discover(discoveryURL)
       .subscribe(
         (data) => {
+          this.isLoading = false;
           this.discoveryServiceStatus = true;
           Object.keys(data).forEach(function (key) {
             serviceRecord.push({
               key: key,
-              [key]: data[key]
-            })
+              'protocol': 'http',
+              'address': data[key].addresses.length > 1 ? data[key].addresses[1] : data[key].addresses[0],
+              'port': 8081
+            });
           });
           this.discoveredServices = serviceRecord;
-
-          for (let service of this.discoveredServices) {
-            const address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
-            const port = service[service.key].port;
-            if (address === localStorage.getItem('CONNECTED_HOST')) {
-              this.isConnected = true;
-              this.connectedButtonId = service.key;
-              localStorage.setItem('CONNECTED_SERVICE_STATE', JSON.stringify(this.isConnected));
-              localStorage.setItem('CONNECTED_SERVICE_ID', this.connectedButtonId);
-              localStorage.setItem('CONNECTED_HOST', address)
-            }
+          if (this.discoveredServices.length <= 0) {
+            this.discoveryServiceStatus = false;
+            this.message = 'No running FogLAMP instance found over the network.';
+            this.toggleMessage(false);
+          } else if (!this.connectedServiceStatus) {
+            this.message = 'Connected service is down. Connect to other service listed below, or ' +
+              'You can connect to a service manually from settings.';
+            this.toggleMessage(false);
           }
         },
         (error) => {
+          this.isLoading = false;
           this.discoveryServiceStatus = false;
           this.discoveredServices = [];
           if (error.status === 0) {
-            this.message = 'Not able to connect. Please check service discovery server is up and running.'
+            this.message = 'Not able to connect. Please check service discovery server is up and running.';
+            this.toggleMessage(false);
             console.log('service down ', error);
           } else {
-            this.message = "Something wrong with the discovery service. Try again!"
             console.log('error in response ', error);
           }
         });
   }
 
   connectService(service) {
-    this.connectedButtonId = service.key;
-    this.isConnected = true;
-    localStorage.setItem('CONNECTED_SERVICE_STATE', JSON.stringify(this.isConnected));
-    localStorage.setItem('CONNECTED_SERVICE_ID', this.connectedButtonId);
-
-    let port = service[service.key].port
-    let address = service[service.key].addresses.length > 1 ? service[service.key].addresses[1] : service[service.key].addresses[0];
-
     // TODO: Get protocol from service discovery
-    const serviceEndpoint = 'http://' + address + ':' + '8081/foglamp/';
-
+    const serviceEndpoint = service.protocol + '://' + service.address + ':' + service.port + '/foglamp/';
+    localStorage.setItem('CONNECTED_PROTOCOL', service.protocol);
+    localStorage.setItem('CONNECTED_HOST', service.address);
+    localStorage.setItem('CONNECTED_PORT', service.port);
     localStorage.setItem('SERVICE_URL', serviceEndpoint);
     location.reload();
     location.href = '';
     this.router.navigate([location.href]);
   }
 
-  public closeMessage() {
-    let message_window = <HTMLDivElement>document.getElementById('warning');
-    message_window.classList.add('hidden');
+  public toggleMessage(isOpen) {
+    this.isLoading = false;
+    const message_window = <HTMLDivElement>document.getElementById('warning');
+    if (message_window != null) {
+      if (isOpen) {
+        message_window.classList.add('hidden');
+        return;
+      }
+      message_window.classList.remove('hidden');
+    }
+  }
+
+  isServiceConnected(service) {
+    if (this.connectedHost === service.address &&
+      this.connectedPort === JSON.stringify(service.port)
+      && this.connectedProtocol === service.protocol) {
+      return true;
+    } else if (this.connectedHost !== service.address ||
+      this.connectedPort !== JSON.stringify(service.port) ||
+      this.connectedProtocol !== service.protocol) {
+      return false;
+    }
   }
 }

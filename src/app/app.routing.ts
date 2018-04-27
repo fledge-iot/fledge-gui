@@ -31,7 +31,7 @@ const appRoutes: Routes = [
     { path: 'backup-restore', component: BackupRestoreComponent, canActivate: [AuthGuard] },
     { path: 'setting', component: SettingsComponent },
     { path: 'services-health', component: ServicesHealthComponent, canActivate: [AuthGuard] },
-    { path: 'service-discovery', component: ServiceDiscoveryComponent, canActivate: [AuthGuard] },
+    { path: 'service-discovery', component: ServiceDiscoveryComponent },
     { path: 'user-management', component: UserManagementComponent, canActivate: [UserGuard] },
     { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
     { path: 'reset-password', component: ResetPasswordComponent},

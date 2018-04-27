@@ -12,10 +12,9 @@ export class DiscoveryService {
   /**
    *  GET  | /foglamp/discover
    */
-  discover() {
+  discover(discoveryUrl) {
     const headers = new HttpHeaders().set(InterceptorSkipHeader, '');
-    const serviceDiscoveryUrl = localStorage.getItem('DISCOVERY_SERVICE_URL');
-    return this.http.get(serviceDiscoveryUrl)
+    return this.http.get(discoveryUrl)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }

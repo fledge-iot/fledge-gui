@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class ConnectedServiceStatus {
-  private messageSource = new BehaviorSubject<boolean>(true);
+  private messageSource = new BehaviorSubject<boolean>(false);
   currentMessage = this.messageSource.asObservable();
 
   constructor() { }
