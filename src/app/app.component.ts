@@ -49,7 +49,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
     });
     this.ping.setDefaultPingTime();
-    const pingInterval = JSON.parse(localStorage.getItem('pingInterval'));
+    const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
     this.ping.pingIntervalChanged.next(pingInterval);
   }
 
