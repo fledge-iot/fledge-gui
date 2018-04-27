@@ -18,17 +18,22 @@
         </div>
         <div class="column">
           <label class="label is-fullwidth">Host</label>
-          <input id="discovery_host" class="input" type="text" placeholder="localhost" [ngModel]="discoveryHost" trim="blur">
+          <input id="discovery_host" class="input" [formControl]="discoveryHostControl" type="text" placeholder="localhost" [ngModel]="discoveryHost"
+            required>
+          <span class="help is-danger" *ngIf="discoveryHostControl.invalid">Host can't left blank</span>
         </div>
         <div class="column">
           <label class="label is-fullwidth">Port</label>
-          <input id='discovery_port' class="input" type="number" maxlength="4" placeholder="3000" [ngModel]="discoveryPort">
+          <input id='discovery_port' class="input" type="number" maxlength="4" placeholder="3000" [formControl]="discoveryPortControl"
+            [ngModel]="discoveryPort" required>
+          <span class="help is-danger" *ngIf="discoveryPortControl.invalid">Port can't left blank</span>
         </div>
       </div>
       <div class="columns">
         <div class="column">
           <div class="field">
-            <button [ngClass]="{'is-loading': isLoading}" class="button is-primary is-pulled-left is-small" (click)="setServiceDiscoveryURL()">Discover</button>
+            <button [ngClass]="{'is-loading': isLoading}" [disabled]="discoveryHostControl.invalid || discoveryPortControl.invalid" class="button is-primary is-pulled-left is-small"
+              (click)="setServiceDiscoveryURL()">Discover</button>
           </div>
         </div>
       </div>

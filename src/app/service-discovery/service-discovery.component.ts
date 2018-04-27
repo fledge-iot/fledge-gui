@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AlertService, DiscoveryService, PingService } from '../services/index';
 import { Router } from '@angular/router';
 import { ConnectedServiceStatus } from '../services/connected-service-status.service';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-service-discovery',
@@ -22,7 +23,8 @@ export class ServiceDiscoveryComponent implements OnInit {
   connectedProtocol;
   connectedHost;
   connectedPort;
-
+  discoveryHostControl;
+  discoveryPortControl;
   constructor(private discoveryService: DiscoveryService, private router: Router,
     private status: ConnectedServiceStatus,
     private alertService: AlertService) {
@@ -30,6 +32,8 @@ export class ServiceDiscoveryComponent implements OnInit {
     this.discoveryProtocol = localStorage.getItem('DISCOVERY_PROTOCOL') != null ? localStorage.getItem('DISCOVERY_PROTOCOL') : 'http';
     this.discoveryHost = localStorage.getItem('DISCOVERY_HOST') != null ? localStorage.getItem('DISCOVERY_HOST') : 'localhost';
     this.discoveryPort = localStorage.getItem('DISCOVERY_PORT') != null ? localStorage.getItem('DISCOVERY_PORT') : '3000';
+    this.discoveryHostControl = new FormControl('', [Validators.required]);
+    this.discoveryPortControl = new FormControl('', [Validators.required]);
   }
 
   ngOnInit() {
@@ -42,6 +46,7 @@ export class ServiceDiscoveryComponent implements OnInit {
   }
 
   public toggleModal(isOpen: Boolean) {
+    this.isLoading = false;
     const serviceDiscoveryModal = <HTMLDivElement>document.getElementById('service_discovery_modal');
     if (isOpen) {
       serviceDiscoveryModal.classList.add('is-active');
@@ -55,7 +60,8 @@ export class ServiceDiscoveryComponent implements OnInit {
     const protocolField = <HTMLSelectElement>document.getElementById('discovery_protocol');
     const hostField = <HTMLInputElement>document.getElementById('discovery_host');
     const servicePortField = <HTMLInputElement>document.getElementById('discovery_port');
-    const discoveryURL = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/discover';
+    const discoveryURL = protocolField.value.trim() + '://' + hostField.value.trim()
+      + ':' + servicePortField.value.trim() + '/foglamp/discover';
     localStorage.setItem('DISCOVERY_PROTOCOL', protocolField.value);
     localStorage.setItem('DISCOVERY_HOST', hostField.value);
     localStorage.setItem('DISCOVERY_PORT', servicePortField.value);
