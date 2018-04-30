@@ -18,7 +18,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public ping_data = {};
-  public ping_info = { values: '', is_alive: false, service_status: 'service down' };
+  public ping_info = { stats: '', is_alive: false, service_status: 'service down' };
   public shutDownData = {
     key: '',
     message: ''
@@ -83,13 +83,13 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         (data) => {
           this.status.changeMessage(true);
           this.ping_data = data;
-          const p = 'Read:' + data['dataRead'] + '\n' + 'Sent:' + data['dataSent'] + '\n' + 'Purged:' + data['dataPurged'];
-          this.ping_info = { values: p, is_alive: true, service_status: 'running' };
+          const statsTxt = 'Read:' + data['dataRead'] + '\n' + 'Sent:' + data['dataSent'] + '\n' + 'Purged:' + data['dataPurged'];
+          this.ping_info = { stats: statsTxt, is_alive: true, service_status: 'running' };
         },
         (error) => {
           console.log('error: ', error);
           this.status.changeMessage(false);
-          this.ping_info = { values: '', is_alive: false, service_status: 'service down' };
+          this.ping_info = { stats: '', is_alive: false, service_status: 'service down' };
         },
     );
   }
