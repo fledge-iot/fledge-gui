@@ -36,14 +36,14 @@ export class AssetSummaryComponent implements OnInit {
 
   public getReadingSummary(dt) {
     this.isValidData = true;
-    this.assetCode = dt.asset_code;
-    this.assetService.getAssetReadings(encodeURIComponent(dt.asset_code)).
+    this.assetCode = dt.assetCode;
+    this.assetService.getAssetReadings(encodeURIComponent(dt.assetCode)).
       subscribe(
       data => {
         const validRecord = ReadingsValidator.validate(data);
         if (validRecord) {
           const record = {
-            asset_code: dt.asset_code,
+            assetCode: dt.assetCode,
             readings: data[0],
             time: dt.time_param
           };
@@ -79,7 +79,7 @@ export class AssetSummaryComponent implements OnInit {
     }
 
     const asset = {
-      asset_code: this.assetCode,
+      assetCode: this.assetCode,
       time_param: (+time === (null || 0) ? undefined : { [key]: +time })
     };
     this.getReadingSummary(asset);

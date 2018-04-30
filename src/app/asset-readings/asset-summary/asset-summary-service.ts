@@ -14,7 +14,7 @@ export class AssetSummaryService {
         let count = 0;
         keys.forEach(key => {
             const assetObj: object = {
-                asset_code: data.asset_code,
+                assetCode: data.assetCode,
                 reading: key,
                 time: data.time
             };
@@ -23,7 +23,7 @@ export class AssetSummaryService {
                 summaryData => {
                     count++;
                     assetSummary.push({
-                        asset_code: data.asset_code,
+                        assetCode: data.assetCode,
                         data: summaryData
                     });
                     if (count === keys.length) {

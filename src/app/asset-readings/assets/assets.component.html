@@ -25,17 +25,17 @@
           </thead>
           <tbody>
             <tr *ngFor="let asset of assets">
-              <td>{{asset.asset_code}}</td>
+              <td>{{asset.assetCode}}</td>
               <td>
                 <small>{{asset.count}}</small>
               </td>
               <td>
-                <a (click)="showAssetSummary(asset.asset_code)" class="is-pulled-right">
+                <a (click)="showAssetSummary(asset.assetCode)" class="is-pulled-right">
                   <i class="fa fa-list-alt" aria-hidden="true"></i>
                 </a>
               </td>
               <td>
-                <a (click)="showAssetChart(asset.asset_code)" class="is-pulled-right">
+                <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
                   <i class="fa fa-line-chart" aria-hidden="true"></i>
                 </a>
               </td>
@@ -58,7 +58,7 @@
             <div class="select is-fullwidth">
               <select (ngModelChange)="setAssetCode($event)" [(ngModel)]="selectedAsset">
                 <option disabled>Select</option>
-                <option *ngFor="let asset of assets" [ngValue]='asset'>{{asset.asset_code}} ({{asset.count}})</option>
+                <option *ngFor="let asset of assets" [ngValue]='asset'>{{asset.assetCode}} ({{asset.count}})</option>
               </select>
             </div>
           </div>
@@ -81,12 +81,12 @@
                 </span>
               </th>
               <th *ngIf="isSummary">
-                <button (click)="showAssetSummary(asset.asset_code)" class="button is-pulled-right">
+                <button (click)="showAssetSummary(asset.assetCode)" class="button is-pulled-right">
                   <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp; Summary
                 </button>
               </th>
               <th *ngIf="isChart">
-                <button (click)="showAssetChart(asset.asset_code)" class="button is-pulled-right">
+                <button (click)="showAssetChart(asset.assetCode)" class="button is-pulled-right">
                   <i class="fa fa-line-chart" aria-hidden="true"></i> &nbsp; Trends
                 </button>
               </th>
@@ -95,7 +95,7 @@
           <tbody>
             <tr *ngFor="let asset of assetsReadingsData">
               <td>
-                <small>{{asset.asset_code}}</small>
+                <small>{{asset.assetCode}}</small>
               </td>
               <td>
                 <tr *ngFor="let d of asset.data">

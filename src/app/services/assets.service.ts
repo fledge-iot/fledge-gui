@@ -20,24 +20,24 @@ export class AssetsService {
   }
 
   /**
-  *  /foglamp/asset/{asset_code}
-  * @param asset_code
+  *  /foglamp/asset/{assetCode}
+  * @param assetCode
   * @param limit
   * @param offset
   *  Return a set of asset readings for the given asset code
   */
-  public getAssetReadings(asset_code, limit: Number = 0, offset: Number = 0) {
+  public getAssetReadings(assetCode, limit: Number = 0, offset: Number = 0) {
     let params = new HttpParams();
     if (limit && offset) {
-      params = params.set("limit", limit.toString())
-      params = params.set("skip", offset.toString());
+      params = params.set('limit', limit.toString());
+      params = params.set('skip', offset.toString());
     } else if (limit) {
-      params = params.set("limit", limit.toString())
+      params = params.set('limit', limit.toString());
     } else if (offset) {  // offset works withOUT limit in postgres!
-      params = params.set("skip", offset.toString())
+      params = params.set('skip', offset.toString());
     }
 
-    return this.http.get(this.GET_ASSET + '/' + asset_code, { params: params })
+    return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params })
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
@@ -45,10 +45,10 @@ export class AssetsService {
   public getAssetSummary(assetObject: any) {
     let params = new HttpParams();
     if (assetObject.time !== undefined) {
-      let keys = Object.keys(assetObject.time)
+      const keys = Object.keys(assetObject.time);
       params = params.set(keys[0], assetObject.time[keys[0]]);
     }
-    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.asset_code)
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode)
       + '/' + assetObject.reading + '/summary', { params: params })
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
@@ -57,7 +57,7 @@ export class AssetsService {
   // TODO: Not in use yet
   public getAssetAverage(assetObject: any) {
     // TODO: time based readings average;
-    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.asset_code) + '/' + assetObject.reading + '/series')
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode) + '/' + assetObject.reading + '/series')
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
