@@ -18,7 +18,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public ping_data = {};
-  public ping_info = { stats: '', is_alive: false, service_status: 'service down' };
+  public ping_info = { stats: 'No data', is_alive: false, service_status: 'service down' };
   public shutDownData = {
     key: '',
     message: ''
@@ -89,7 +89,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         (error) => {
           console.log('error: ', error);
           this.status.changeMessage(false);
-          this.ping_info = { stats: '', is_alive: false, service_status: 'service down' };
+          this.ping_info = { stats: 'No data', is_alive: false, service_status: 'service down' };
         },
     );
   }
@@ -169,7 +169,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         data => {
           this.ngProgress.done();
           this.router.navigate(['/login']);
-          this.alertService.success('You have been successfully logged out!')
+          this.alertService.success('You have been successfully logged out!');
         },
         error => {
           this.ngProgress.done();
