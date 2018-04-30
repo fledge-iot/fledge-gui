@@ -9,6 +9,8 @@ export class ServicesHealthService {
   private GET_PING_URL = environment.BASE_URL + 'ping';
   private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
+  private REQUEST_TIME_OUT_INTERVAL = 5000;
+
   constructor(private http: HttpClient) { }
 
   /**
@@ -16,6 +18,7 @@ export class ServicesHealthService {
      */
   pingService() {
     return this.http.get(this.GET_PING_URL)
+      .timeout(this.REQUEST_TIME_OUT_INTERVAL)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
