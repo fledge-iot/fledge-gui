@@ -118,10 +118,10 @@ export class SystemLogComponent implements OnInit {
   }
 
   public filterSource(event) {
+    this.limit = this.DEFAULT_LIMIT;
+    this.offset = 0;
+    this.tempOffset = 0;
     this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
-    if (this.offset !== 0) {
-      this.recordCount = this.totalCount - this.offset;
-    }
     this.getSysLogs();
   }
 

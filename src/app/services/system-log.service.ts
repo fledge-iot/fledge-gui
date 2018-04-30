@@ -15,10 +15,10 @@ export class SystemLogService {
    */
   public getSysLogs(limit: Number = 0, offset: Number = 0, source: String) {
     let params = new HttpParams();
-    params = params.set('limit', limit.toString())
-    params = params.set('offset', offset.toString())
-    if(source) {
-      params = params.set('source', source.toUpperCase())
+    params = params.set('limit', limit.toString());
+    params = params.set('offset', offset.toString());
+    if (source) {
+      params = params.set('source', source.toUpperCase());
     }
     return this.http.get(this.SYSLOG_URL, { params: params }).map(response => response)
       .catch((error: Response) => Observable.throw(error));
