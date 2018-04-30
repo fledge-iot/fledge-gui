@@ -10,7 +10,7 @@ export class SkipLogin {
     element(by.css('app-login .has-text-grey a:nth-child(2)')).click();
     element(by.id('protocol')).sendKeys('http');
     element(by.id('host')).clear();
-    element(by.id('host')).sendKeys('192.168.1.20');
+    element(by.id('host')).sendKeys('192.168.1.13');
     element(by.id('service_port')).clear();
     element(by.id('service_port')).sendKeys('8081');
     element(by.css('app-settings button.button.is-primary')).click();
@@ -25,9 +25,6 @@ export class SkipLogin {
   clickSkip() {
     browser.ignoreSynchronization = true;
     element(by.css('app-login .is-grouped div:nth-child(1) button')).click();
-    // wait
-    // const EC = browser.ExpectedConditions;
-    // browser.wait(EC.visibilityOf(element(by.id('.c-list'))), 1000);
   }
 
   getFirstGraph() {
@@ -62,6 +59,11 @@ export class SkipLogin {
     return element(by.css('app-assets > div > div:nth-child(3) #card-title h5')).getText();
   }
 
+  getAssetsRefreshButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#card-title > h5 > button > i')).isDisplayed();
+  }
+
   navToAuditLogs() {
     return browser.get('/#/audit');
   }
@@ -73,7 +75,7 @@ export class SkipLogin {
 
   isAuditLogRefreshIcon() {
     browser.ignoreSynchronization = true;
-    return element(by.binding('#card-title .fa.fa-refresh')).isPresent();
+    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
   }
 
   auditLogCount() {
@@ -84,6 +86,11 @@ export class SkipLogin {
   getAuditLogsSelectTag() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('app-audit-log div:nth-child(1) select')).count();
+  }
+
+  getAuditLogRefreshButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
   }
 
   getAuditLogsInputTag() {
@@ -100,9 +107,9 @@ export class SkipLogin {
     return element(by.css('#card-title > div > div.column.is-9 > h5')).getText();
   }
 
-  isSystemLogRefreshIcon() {
+  getSysLogRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.binding('#card-title .fa.fa-refresh')).isPresent();
+    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
   }
 
   systemLogCount() {
@@ -120,4 +127,166 @@ export class SkipLogin {
     return element.all(by.css('app-system-log input')).count();
   }
 
+  navigateToConfig() {
+    return browser.get('/#/configuration');
+  }
+
+  getConfigTitles() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#app app-configuration-manager')).getText();
+  }
+
+  navToScheduledTasks() {
+    return browser.get('/#/scheduled-task');
+  }
+
+  getSchedulesTitle() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-scheduled-process .card-header p.card-header-title')).getText();
+  }
+
+  getSchedulesRefreshButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-scheduled-process > div:nth-child(1) .fa.fa-refresh')).isDisplayed();
+  }
+
+  getCreateScheduleButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-scheduled-process .card-header .button.is-light')).getText();
+  }
+
+  getTasksTitle() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-scheduled-process app-list-tasks header > div')).getText();
+  }
+
+  getTasksRefreshButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-refresh')).isDisplayed();
+  }
+
+  getTasksSelectTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.id('task-state')).count();
+  }
+
+  navToServiceHealth() {
+    return browser.get('/#/services-health');
+  }
+
+  getServiceStatusTitle() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-services-health .title.is-5')).getText();
+  }
+
+  getServiceStatusRefreshButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-services-health header button .fa.fa-refresh')).isDisplayed();
+  }
+
+  getServiceHealthColNames() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-services-health table thead tr')).getText();
+  }
+
+  navToCertificateStore() {
+    return browser.get('/#/certificate');
+  }
+
+  getCertificateStoreTitle() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('cert-store > div > div > header > p')).getText();
+  }
+
+  getCertificateStoreRefreshButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('cert-store button i')).isDisplayed();
+  }
+
+  getCertificateStoreColNames() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('cert-store table thead tr')).getText();
+  }
+
+  getCertificateStoreImport() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('cert-store header a')).getText();
+  }
+
+  navToBackupRestore() {
+    return browser.get('/#/backup-restore');
+  }
+
+  getBackupRestoreTitle() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-backup-restore header p')).getText();
+  }
+
+  getBackupRestoreRefreshButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-backup-restore button i')).isDisplayed();
+  }
+
+  getBackupRestoreColNames() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-backup-restore table thead tr')).getText();
+  }
+
+  getRequestBackup() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-backup-restore header a')).getText();
+  }
+
+  navToSupportBundles() {
+    return browser.get('/#/support');
+  }
+
+  getSupportBundlesTitle() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-support header p')).getText();
+  }
+
+  getSupportBundlesRefreshButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-support button i')).isDisplayed();
+  }
+
+  getRequestNewBundle() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-support header a')).getText();
+  }
+
+  navToSettings() {
+    return browser.get('/#/setting');
+  }
+
+  getSettingsTitle() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-settings header p')).getText();
+  }
+
+  getSettingsSelectTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-settings .column .select')).count();
+  }
+
+  getSettingsInputTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-settings div input')).count();
+  }
+
+  getSettingsButton() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-settings button')).count();
+  }
+
+  getLoginLink() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-settings a.button')).getText();
+  }
+
+  getPingDropdown() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-settings header div.select.is-small')).count();
+  }
 }
