@@ -20,6 +20,8 @@ The easier method to install on the SD card is using Etcher. Go [here](https://e
 
 **Enable WiFi**
 
+> IGNORE! if you are connecting via Ethernet.
+
 With the SD card connected. In the root of the SD card create a new file named: `wpa_supplicant.conf`
 
 In the file, Add:
@@ -52,6 +54,8 @@ Put the SD card into Raspberry Pi and plug in the Power cable and wait a little 
 ### Connect via SSH:
 
 Find the IP Address of your Raspberry Pi.
+
+> Either Ethernet Or WiFi, You need a way to find IP of the raspberry machine.
 
 `ssh pi@<IP>`
 
@@ -110,19 +114,21 @@ run `./build.sh`
 
 `scp foglamp-gui-1.2.0.tar.gz pi@1<IP>:/home/pi/`
 
+> $ scp foglamp-gui-1.2.0.tar.gz pi@192.168.0.11:/home/pi/
+
+> pi@192.168.0.11's password:
+
+> foglamp-gui-1.2.0.tar.gz    100%  460KB   1.7MB/s   00:00
+
+
+`scp deploy.sh pi@<IP>:/home/pi/`
+
 > scp deploy.sh pi@192.168.0.11:/home/pi/
 
 > pi@192.168.0.11's password:
 
 > deploy.sh                   100% 4633   133.5KB/s   00:00
 
-`scp deploy.sh pi@<IP>:/home/pi/`
-
-> $ scp foglamp-gui-1.2.0.tar.gz pi@192.168.0.11:/home/pi/
-
-> pi@192.168.0.11's password:
-
-> foglamp-gui-1.2.0.tar.gz    100%  460KB   1.7MB/s   00:00
 
 **SSH to Raspbian machine and do:**
 
