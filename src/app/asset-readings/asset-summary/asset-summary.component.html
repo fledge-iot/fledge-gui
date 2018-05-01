@@ -2,31 +2,29 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <div [hidden]='!isValidData' class="columns">
-        <div class="column is-half">
-          <p class="modal-card-title">{{assetCode}}</p>
-        </div>
-        <div class="column is-one-forth is-three-quarters-mobile">
-          <div class="select is-fullwidth">
-            <select #selectedType (change)='getTimedBasedSummary(timeValue.inputValue, selectedType.value); isShow = false'>
-               <option value="select" disabled>Select</option>
-                <option value="hours">Hours</option>
-                <option value="minutes">Minutes</option>
-                <option value="seconds">Seconds</option>
-            </select>
-          </div>
-        </div>
-        <div class="column is-three-quarters-mobile is-fullwidth">
-          <number-input-debounce placeholder="time" #timeValue (value)="getTimedBasedSummary(timeValue.inputValue, selectedType.value); isShow = false"></number-input-debounce>
-          <p *ngIf='invalidInputMessage?.length > 0' class='help is-danger'>{{invalidInputMessage}}</p>
-        </div>
-      </div>
+      <p [hidden]='!isValidData' class="modal-card-title is-size-5">{{assetCode}}</p>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false); clear(timeValue, selectedType)"></button>
       </div>
     </header>
     <section class="modal-card-body">
       <p *ngIf='!isValidData'> Not Available </p>
+      <div [hidden]='!isValidData' class="columns">
+        <div class="column is-half">
+          <div class="select is-fullwidth">
+            <select #selectedType (change)='getTimedBasedSummary(timeValue.inputValue, selectedType.value); isShow = false'>
+              <option value="select" disabled>Select</option>
+              <option value="hours">Hours</option>
+              <option value="minutes">Minutes</option>
+              <option value="seconds">Seconds</option>
+            </select>
+          </div>
+        </div>
+        <div class="column is-half">
+          <number-input-debounce placeholder="time" #timeValue (value)="getTimedBasedSummary(timeValue.inputValue, selectedType.value); isShow = false"></number-input-debounce>
+          <p *ngIf='invalidInputMessage?.length > 0' class='help is-danger'>{{invalidInputMessage}}</p>
+        </div>
+      </div>
       <table *ngIf='isValidData' class="table is-striped is-narrow scroll is-responsive">
         <thead>
           <tr>
@@ -44,9 +42,15 @@
         <tbody *ngFor="let readings of assetReadingSummary">
           <tr *ngFor="let reading of readings.summary">
             <td>{{readings.key}}</td>
-            <td><span class="tag is-light">{{reading.average == ""? 'Not Available' : reading.average}}</span></td>
-            <td><span class="tag is-light">{{reading.min == ""? 'Not Available' : reading.min}}</span></td>
-            <td><span class="tag is-light">{{reading.max== ""? 'Not Available' : reading.max}}</span></td>
+            <td>
+              <span class="tag is-light">{{reading.average == ""? 'Not Available' : reading.average}}</span>
+            </td>
+            <td>
+              <span class="tag is-light">{{reading.min == ""? 'Not Available' : reading.min}}</span>
+            </td>
+            <td>
+              <span class="tag is-light">{{reading.max== ""? 'Not Available' : reading.max}}</span>
+            </td>
           </tr>
         </tbody>
         <chart *ngIf='isShow' [type]="assetChart" [data]="summaryValues" [options]="chartOptions"></chart>

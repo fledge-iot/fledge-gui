@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Add Config Item</p>
+      <p class="modal-card-title is-size-5">Add Configuration Item</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -25,9 +25,9 @@
                 <div class="field">
                   <div class="form-group">
                     <p class="control is-fullwidth">
-                      <input type="text" name="configName" class="input" [(ngModel)]="categoryData.configName" #configName="ngModel" placeholder="config item" required trim="blur" />
+                      <input type="text" name="configName" class="input" [(ngModel)]="categoryData.configName" #configName="ngModel" placeholder="configuration item" required trim="blur" />
                     </p>
-                    <small *ngIf="f.submitted && !configName.valid" class="help is-danger level-left">Config Item Name is required</small>
+                    <small *ngIf="f.submitted && !configName.valid" class="help is-danger level-left">Configuration Item Name is required</small>
                   </div>
                 </div>
               </div>
@@ -42,7 +42,7 @@
                     </select>
                   </div>
                 </div>
-                <small *ngIf="f.submitted && !type.valid" class="help is-danger level-left">Please select a valid config item type.</small>
+                <small *ngIf="f.submitted && !type.valid" class="help is-danger level-left">Please select a valid configuration item type.</small>
               </div>
             </div>
           </div>

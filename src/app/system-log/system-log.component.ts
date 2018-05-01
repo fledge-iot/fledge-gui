@@ -11,8 +11,8 @@ export class SystemLogComponent implements OnInit {
   public logs: any;
   public source: String = '';
   public totalCount: any;
-
-  limit = 20;
+  DEFAULT_LIMIT = 50;
+  limit = this.DEFAULT_LIMIT;
   offset = 0;
 
   page = 1;
@@ -63,7 +63,7 @@ export class SystemLogComponent implements OnInit {
       this.tempOffset = this.offset;
     }
     if (limit === '' || limit == 0 || limit === null || limit === undefined) {
-      limit = 20;
+      limit = this.DEFAULT_LIMIT;
     }
     this.limit = limit;
     console.log('Limit: ', this.limit);
@@ -107,7 +107,7 @@ export class SystemLogComponent implements OnInit {
    */
   setLimitOffset() {
     if (this.limit === 0) {
-      this.limit = 20;
+      this.limit = this.DEFAULT_LIMIT;
     }
     if (this.offset > 0) {
       this.tempOffset = (((this.page) - 1) * this.limit) + this.offset;

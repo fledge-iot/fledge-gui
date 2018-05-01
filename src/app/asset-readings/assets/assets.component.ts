@@ -11,7 +11,7 @@ import { NgProgress } from 'ngx-progressbar';
 })
 export class AssetsComponent implements OnInit {
 
-  selectedAsset: any = 'Select'; // Selected asset object (asset_coded, asset_count)
+  selectedAsset: any = 'Select'; // Selected asset object (assetCode, count)
   asset: any;
   limit: number = 20;
   offset: number = 0;
@@ -124,7 +124,7 @@ export class AssetsComponent implements OnInit {
     }
     this.isInvalidLimit = false;
     if (+limit > 1000) {
-      this.isInvalidLimit = true; // limit range validation 
+      this.isInvalidLimit = true; // limit range validation
       return;
     }
     if (this.page !== 1) {
@@ -197,13 +197,13 @@ export class AssetsComponent implements OnInit {
     this.assetsReadingsData = [];
     /** request started */
     this.ngProgress.start();
-    this.assetService.getAssetReadings(encodeURIComponent(this.asset['asset_code']), this.limit, this.tempOffset).
+    this.assetService.getAssetReadings(encodeURIComponent(this.asset['assetCode']), this.limit, this.tempOffset).
       subscribe(
       data => {
         /** request completed */
         this.ngProgress.done();
         this.assetsReadingsData = [{
-          asset_code: this.asset['asset_code'],
+          assetCode: this.asset['assetCode'],
           count: this.recordCount,
           data: data
         }];
@@ -226,7 +226,7 @@ export class AssetsComponent implements OnInit {
  */
   public showAssetSummary(assetCode) {
     const dataObj = {
-      asset_code: assetCode,
+      assetCode: assetCode,
     };
     this.assetSummaryComponent.getReadingSummary(dataObj);
     this.assetSummaryComponent.toggleModal(true);
@@ -235,8 +235,8 @@ export class AssetsComponent implements OnInit {
   /**
   * Open asset chart modal dialog
   */
-  public showAssetChart(asset_code) {
-    this.chartModalComponent.plotReadingsGraph(asset_code, 0, 0);
+  public showAssetChart(assetCode) {
+    this.chartModalComponent.plotReadingsGraph(assetCode, 0, 0);
     this.chartModalComponent.toggleModal(true);
   }
 }

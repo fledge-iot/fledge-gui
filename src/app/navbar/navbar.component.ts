@@ -18,7 +18,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public ping_data = {};
-  public ping_info = { is_alive: false, service_status: 'service down' };
+  public ping_info = { stats: 'No data', is_alive: false, service_status: 'service down' };
   public shutDownData = {
     key: '',
     message: ''
@@ -51,6 +51,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.pingService();
     this.ping.pingIntervalChanged.subscribe((pingTime: number) => {
       if (pingTime === 0) {
         this.stop();
@@ -76,19 +77,19 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.changeDetectorRef.detectChanges();
   }
 
-
   public pingService() {
     this.servicesHealthService.pingService()
       .subscribe(
         (data) => {
           this.status.changeMessage(true);
           this.ping_data = data;
-          this.ping_info = { is_alive: true, service_status: 'running' };
+          const statsTxt = 'Read:' + data['dataRead'] + '\n' + 'Sent:' + data['dataSent'] + '\n' + 'Purged:' + data['dataPurged'];
+          this.ping_info = { stats: statsTxt, is_alive: true, service_status: 'running' };
         },
         (error) => {
           console.log('error: ', error);
           this.status.changeMessage(false);
-          this.ping_info = { is_alive: false, service_status: 'service down' };
+          this.ping_info = { stats: 'No data', is_alive: false, service_status: 'service down' };
         },
     );
   }
@@ -168,7 +169,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         data => {
           this.ngProgress.done();
           this.router.navigate(['/login']);
-          this.alertService.success('You have been successfully logged out!')
+          this.alertService.success('You have been successfully logged out!');
         },
         error => {
           this.ngProgress.done();

@@ -25,7 +25,7 @@ Run `./build.sh` to build the project. The build artifacts will be stored in the
 
 ### Deploy with nginx
 
-#### Install nginx on mac 
+#### Install nginx on macOS
 ```
 brew install nginx 
 ```
@@ -40,7 +40,7 @@ brew install nginx
 
 ### Starting with nginx
 
-#### macos and ubuntu
+#### macOS and ubuntu
 
 start: `nginx -c nginx.conf -p $(pwd)`
 
@@ -52,7 +52,7 @@ stop: `nginx -s stop`
 
 See details [here](windows-nginx-deployment-guide.md)
 
-Make sure to fix `include` directive and `server root` in `nginx.conf`; unless you want to use default.
+> Make sure to fix `include` directive and `server root` in `nginx.conf`; unless you want to use default.
 
 
 ## Running using Docker 

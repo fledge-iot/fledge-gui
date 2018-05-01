@@ -16,9 +16,11 @@ import * as moment from 'moment';
 export class DashboardComponent implements OnInit {
   // Filtered array of received statistics data (having objects except key @FOGBENCH).
   statistics = [];
-  
+
   // Array of Statistics Keys (["BUFFERED", "DISCARDED", "PURGED", ....])
   statisticsKeys = [];
+
+  selectedKeys = [];
 
   // Object of dropdown setting
   dropdownSettings = {};
@@ -26,21 +28,35 @@ export class DashboardComponent implements OnInit {
   selectedItems = [];
 
   // Array of the graphs to show
-  graphsToShow = []; 
+  graphsToShow = [];
 
   // Array of default graphs to show ('READINGS', 'SENT_1', 'PURGED')
   showDefaultGraphs = [];
 
   public chartOptions: object;
 
-  constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) {}
+  constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
   ngOnInit() {
     this.getStatistics();
   }
 
   public showGraph(graphs) {
-    this.graphsToShow = graphs;
+    this.selectedKeys = [];
+    // get keys selected from dropdown
+    for (const k of graphs) {
+      this.selectedKeys.push(k.itemName);
+    }
+    // save keys in local storage
+    localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
+
+    this.graphsToShow = [];
+    for (const k of this.selectedKeys) {
+      let selectedKeyData = [];
+      selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
+      this.graphsToShow.push(selectedKeyData[0][0])
+    }
+    this.getStatistics();
   }
 
   public getStatistics(): void {
@@ -52,49 +68,63 @@ export class DashboardComponent implements OnInit {
         /** request completed */
         this.ngProgress.done();
         console.log('received statisticsData ', data);
-        // filter received data for FOGBENCH data  
+        // filter received data for FOGBENCH data
         this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
         console.log('statisticsData ', this.statistics);
 
-        for (let data of this.statistics) {
-          this.statisticsKeys.push(data.key);
+        this.statisticsKeys = [];
+        for (const d of this.statistics) {
+          this.statisticsKeys.push(d.key);
         }
         console.log('keys array', this.statisticsKeys);
 
-        // show default graphs ('READINGS', 'SENT_1', 'PURGED') on fresh launch of the app
-        if (this.graphsToShow.length === 0) {
-          this.showDefaultGraphs = this.statistics.filter(value => value['key'] == 'READINGS' || value['key'] == 'SENT_1' || value['key'] == 'PURGED')
+        // If graphs are not selected yet, then show graphs of 'READINGS', 'SENT_1' and 'PURGED' and save in local storage
+        if (!localStorage.getItem('OPTED_GRAPHS')) {
+          this.selectedKeys = ['READINGS', 'SENT_1', 'PURGED'];
+          localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
         }
-        this.graphsToShow = this.showDefaultGraphs;
-        
+
         // Rename 'key' to 'itemName' and add a new key as named 'id'
-        for(var i = 0; i < this.statistics.length; i++){
+        for (let i = 0; i < this.statistics.length; i++) {
           this.statistics[i].id = i;
           this.statistics[i].itemName = this.statistics[i]['key'];
           delete this.statistics[i].key;
         }
 
-        // Set the options for dropdown setting
-        this.dropdownSettings = { 
+        // Set the options for drop down setting
+        this.dropdownSettings = {
           singleSelection: false,
-          text:"Select Graphs",
-          selectAllText:'Select All',
-          unSelectAllText:'UnSelect All',
+          text: 'Select Graphs',
+          selectAllText: 'Select All',
+          unSelectAllText: 'UnSelect All',
           enableSearchFilter: true
         };
-        // Selected Items are the items, to show in the dropdown (having keys- 'READINGS', 'SENT_1', 'PURGED')
-        this.selectedItems = this.graphsToShow;
-        this.getStatisticsHistory(this.statisticsKeys);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
+
+        if (localStorage.getItem('OPTED_GRAPHS')) {
+          this.selectedKeys = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
+          this.graphsToShow = [];
+          for (const k of this.selectedKeys) {
+            let selectedKeyData = [];
+            selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
+            this.graphsToShow.push(selectedKeyData[0][0])
+          }
+          console.log('graphsToShow', this.graphsToShow);
         }
-      });
+
+        // Selected Items are the items, to show in the drop down (having keys- 'READINGS', 'SENT_1', 'PURGED')
+        this.selectedItems = this.graphsToShow;
+
+        this.getStatisticsHistory();
+      },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   protected getChartOptions() {
@@ -128,7 +158,14 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  public getStatisticsHistory(statisticsKeys): void {
+  /**
+   *  Refresh graphs
+   */
+  public refreshGraph() {
+    this.getStatistics();
+  }
+
+  public getStatisticsHistory(): void {
     this.statisticsService.getStatisticsHistory().
       subscribe(data => {
         this.statisticsKeys.forEach(key => {
@@ -139,9 +176,9 @@ export class DashboardComponent implements OnInit {
             element = moment(element).format('HH:mm:ss:SSS')
             labels.push(element)
           });
-          this.statistics.map(statistics => {
+          this.graphsToShow.map(statistics => {
             if (statistics.itemName == key) {
-              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');;
+              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
               statistics.chartType = 'line';
               return statistics;
             }
