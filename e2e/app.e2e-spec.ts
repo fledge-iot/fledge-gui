@@ -21,10 +21,12 @@ describe('foglampapp App', () => {
     expect(skipLogin.getAppStatus()).toEqual('service down');
   });
 
-  it('Should Display Selected Graphs', () => {
+  it('Should Display Default Graphs', () => {
     skipLogin.clickSkip();
-    expect(skipLogin.getFirstGraph()).toEqual('READINGS Statistics History');
-    expect(skipLogin.getLastGraph()).toEqual('PURGED Statistics History');
+    expect(skipLogin.getCountOfSelectedGraph()).toEqual(3);
+    expect(skipLogin.getReadingsGraph()).toEqual('READINGS Statistics History');
+    expect(skipLogin.getSent1Graph()).toEqual('SENT_1 Statistics History');
+    expect(skipLogin.getPurgedGraph()).toEqual('PURGED Statistics History');
   });
 
   it('Should Display Assets & Readings', () => {
@@ -52,25 +54,28 @@ describe('foglampapp App', () => {
     expect(skipLogin.getSystemLogInputTag()).toEqual(2);
   });
 
-  // it('Should Display Config Titles', () => {
-  //   const ConfigTitles = [
-  //     'OMF North Plugin Configuration',
-  //     'OMF North Statistics Plugin Configuration',
-  //     'HTTP North Plugin Configuration',
-  //     'HTTP_SOUTH Device',
-  //     'OCS North Plugin Configuration',
-  //     'South Plugin polling template',
-  //     'COAP Device',
-  //     'TI SensorTag CC2650 polling South Plugin',
-  //     'TI SensorTag CC2650 async South Plugin',
-  //     'Scheduler configuration',
-  //     'Service Monitor configuration'
-  //   ];
-  //   skipLogin.navigateToConfig();
-  //   for (const ConfigTitle in ConfigTitles) {
-  //     expect(skipLogin.getConfigTitles()).toContain(ConfigTitles[ConfigTitle]);
-  //   }
-  // });
+  it('Should Display Config Titles', () => {
+    const ConfigTitles = [
+      'OMF North Plugin Configuration',
+      'OMF North Statistics Plugin Configuration',
+      'HTTP North Plugin Configuration',
+      'HTTP_SOUTH Device',
+      'OCS North Plugin Configuration',
+      'South Plugin polling template',
+      'COAP Device',
+      'TI SensorTag CC2650 polling South Plugin',
+      'TI SensorTag CC2650 async South Plugin',
+      'Scheduler configuration',
+      'Service Monitor configuration'
+    ];
+    skipLogin.navigateToConfig();
+    for (const ConfigTitle in ConfigTitles) {
+      expect(skipLogin.getConfigTitles()).toContain(ConfigTitles[ConfigTitle]);
+    }
+    expect(skipLogin.isAddButtonPresent()).toEqual(true);
+    expect(skipLogin.isSaveButtonPresent()).toEqual(true);
+    expect(skipLogin.isCancelButtonPresent()).toEqual(true);
+  });
 
   it('Should Display Scheduled Tasks', () => {
     skipLogin.navToScheduledTasks();

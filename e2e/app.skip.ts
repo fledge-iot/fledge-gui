@@ -1,6 +1,9 @@
 import { browser, by, element } from 'protractor';
+import { environment } from './environment';
 
 export class SkipLogin {
+  EC = browser.ExpectedConditions;
+
   navigateToHome() {
     return browser.get('/');
   }
@@ -8,11 +11,11 @@ export class SkipLogin {
   setUpInstance() {
     browser.waitForAngularEnabled(false);
     element(by.css('app-login .has-text-grey a:nth-child(2)')).click();
-    element(by.id('protocol')).sendKeys('http');
+    element(by.id('protocol')).sendKeys(environment.PROTOCOL);
     element(by.id('host')).clear();
-    element(by.id('host')).sendKeys('192.168.1.13');
+    element(by.id('host')).sendKeys(environment.HOST);
     element(by.id('service_port')).clear();
-    element(by.id('service_port')).sendKeys('8081');
+    element(by.id('service_port')).sendKeys(environment.SERVICE_PORT);
     element(by.css('app-settings button.button.is-primary')).click();
     browser.waitForAngularEnabled(true);
   }
@@ -27,15 +30,26 @@ export class SkipLogin {
     element(by.css('app-login .is-grouped div:nth-child(1) button')).click();
   }
 
-  getFirstGraph() {
+  getCountOfSelectedGraph() {
     browser.ignoreSynchronization = true;
     // wait
-    const EC = browser.ExpectedConditions;
-    browser.wait(EC.visibilityOf(element(by.css('app-dashboard div:nth-child(3) div article h5'))), 1000);
+    browser.wait(this.EC.visibilityOf(element(by.css('angular2-multiselect .selected-list .c-list'))), 2000);
+    return element.all(by.css('angular2-multiselect .selected-list .c-list div')).count();
+  }
+
+  getReadingsGraph() {
+    browser.ignoreSynchronization = true;
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('app-dashboard div:nth-child(3) div article h5'))), 2000);
     return element(by.css('app-dashboard div:nth-child(3) div article h5')).getText();
   }
 
-  getLastGraph() {
+  getSent1Graph() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-dashboard div:nth-child(4) div article h5')).getText();
+  }
+
+  getPurgedGraph() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-dashboard div:nth-child(5) div article h5')).getText();
   }
@@ -133,7 +147,24 @@ export class SkipLogin {
 
   getConfigTitles() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#app app-configuration-manager')).getText();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('app-root app-configuration-manager > div > div:nth-child(2)'))), 4000);
+    return element(by.css('#app > app-root > ng-sidebar-container > div > div > app-configuration-manager > div')).getText();
+  }
+
+  isAddButtonPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-configuration-manager > div > div:nth-child(2) > header > div:nth-child(2) > a')).isDisplayed();
+  }
+
+  isSaveButtonPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.id('btn-save-send_pr_1-plugin')).isDisplayed();
+  }
+
+  isCancelButtonPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.id('btn-cancel-send_pr_1-plugin')).isDisplayed();
   }
 
   navToScheduledTasks() {
