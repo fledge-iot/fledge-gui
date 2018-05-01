@@ -18,8 +18,7 @@ export class NumberInputDebounceComponent {
   constructor(private elementRef: ElementRef) {
     const eventStream = Observable.fromEvent(elementRef.nativeElement, 'keyup')
       .map(() => this.inputValue)
-      .debounceTime(this.delay)
-      .distinctUntilChanged();
+      .debounceTime(this.delay);
 
     eventStream.subscribe(input => this.value.emit(input));
   }
