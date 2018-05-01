@@ -17,6 +17,8 @@ https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
 ```
 ### Run app
 
+> Make sure to run `./build.sh` to make sure docker container can load build artificats from `dist` directory 
+
 ```
     $ sudo docker-compose build
 ```
@@ -24,7 +26,6 @@ https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
 ```
     $ sudo docker-compose up 
 ```
-
 
 > To run in deamon mode: `sudo docker-compose up -d`
 

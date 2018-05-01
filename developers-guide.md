@@ -15,7 +15,7 @@ Run `yarn test` to execute the unit tests via [Karma](https://karma-runner.githu
 ## Running end-to-end tests
 Run `yarn e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-> Before running the tests make sure app is able to communicate with the FogLAMP REST Server API.
+> Before running the tests make sure app is able to communicate with the FogLAMP REST Server API. Put the REST API info in `e2e/environment.ts`.
 
 ## REST API URL Configuration:
 

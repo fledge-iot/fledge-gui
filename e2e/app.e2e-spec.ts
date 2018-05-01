@@ -1,8 +1,7 @@
 import { FogLAMPPage } from './app.po';
 import { SkipLogin } from './app.skip';
 
-describe('foglampapp App', () => {
-  // const page: FogLAMPPage;
+describe('FogLAMP gui', () => {
   let skipLogin: SkipLogin;
   let isSetupInstance = false;
 

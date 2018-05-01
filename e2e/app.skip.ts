@@ -148,7 +148,7 @@ export class SkipLogin {
   getConfigTitles() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-root app-configuration-manager > div > div:nth-child(2)'))), 4000);
+    browser.wait(this.EC.visibilityOf(element(by.css('app-root app-configuration-manager > div > div:nth-child(2)'))), 5*1000);
     return element(by.css('#app > app-root > ng-sidebar-container > div > div > app-configuration-manager > div')).getText();
   }
 
