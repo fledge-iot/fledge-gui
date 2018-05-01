@@ -32,10 +32,10 @@
             </div>
           </div>
           <div class="column is-fullwidth">
-            <number-input-debounce placeholder="limit" (value)="setLimit($event)"></number-input-debounce>
+            <number-input-debounce placeholder="limit" (value)="setLimit($event)" [val]="limit"></number-input-debounce>
           </div>
           <div class="column is-fullwidth">
-            <number-input-debounce placeholder="offset" (value)="setOffset($event)"></number-input-debounce>
+            <number-input-debounce placeholder="offset" (value)="setOffset($event)" [val]="offset"></number-input-debounce>
           </div>
         </div>
       </div>
