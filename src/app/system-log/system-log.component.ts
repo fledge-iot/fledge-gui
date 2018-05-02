@@ -58,6 +58,7 @@ export class SystemLogComponent implements OnInit {
   }
 
   public setLimit(limit) {
+    this.limit = 0;
     if (this.page !== 1) {
       this.page = 1;
       this.tempOffset = this.offset;
@@ -118,16 +119,19 @@ export class SystemLogComponent implements OnInit {
   }
 
   public filterSource(event) {
+    this.limit = 0;
+    this.offset = 0;
+    this.tempOffset = 0;
     this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
-    if (this.offset !== 0) {
-      this.recordCount = this.totalCount - this.offset;
-    }
     this.getSysLogs();
   }
 
   public getSysLogs() {
     /** request started */
     this.ngProgress.start();
+    if (this.limit === 0) {
+      this.limit = this.DEFAULT_LIMIT;
+    }
     this.systemLogService.getSysLogs(this.limit, this.tempOffset, this.source).
       subscribe(
         data => {
@@ -135,7 +139,7 @@ export class SystemLogComponent implements OnInit {
           this.ngProgress.done();
           this.logs = data.logs;
           this.totalCount = data.count;
-          console.log('System Logs', this.logs, 'Total count', this.totalCount);
+          // console.log('System Logs', this.logs, 'Total count', this.totalCount);
           if (this.offset !== 0) {
             this.recordCount = this.totalCount - this.offset;
           } else {

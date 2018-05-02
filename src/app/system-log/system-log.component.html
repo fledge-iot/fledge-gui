@@ -32,10 +32,10 @@
             </div>
           </div>
           <div class="column is-fullwidth">
-            <number-input-debounce placeholder="limit" (value)="setLimit($event)"></number-input-debounce>
+            <number-input-debounce placeholder="limit" (value)="setLimit($event)" [val]="limit"></number-input-debounce>
           </div>
           <div class="column is-fullwidth">
-            <number-input-debounce placeholder="offset" (value)="setOffset($event)"></number-input-debounce>
+            <number-input-debounce placeholder="offset" (value)="setOffset($event)" [val]="offset"></number-input-debounce>
           </div>
         </div>
       </div>
@@ -51,7 +51,7 @@
       <span *ngFor="let log of logs">
         <p id="s-log"> {{log}}
         </p>
-        </span>
+      </span>
       <div *ngIf='totalPagesCount > 1'>
         <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount' (goPrev)="onPrev()" (goNext)="onNext()"
           (goFirst)="onFirst()" (goLast)="onLast()" (goPage)="goToPage($event)">
