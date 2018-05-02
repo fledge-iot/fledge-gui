@@ -27,7 +27,7 @@
             <div class="select is-fullwidth">
               <select (change)="filterSource('source', $event)">
                 <option selected="selected">Source</option>
-                <option *ngFor="let source of logSourceList" [value]='source.code'>{{source.code}}</option>
+                <option *ngFor="let source of logSourceList" [value]='source.code'>{{source.code}}{{source.description != '' ? ' - ' + source.description : ''}}</option>
               </select>
             </div>
           </div>
