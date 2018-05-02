@@ -122,6 +122,10 @@ export class SystemLogComponent implements OnInit {
     this.limit = 0;
     this.offset = 0;
     this.tempOffset = 0;
+    this.recordCount = 0;
+    if (this.page !== 1) {
+      this.page = 1;
+    }
     this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
     this.getSysLogs();
   }
