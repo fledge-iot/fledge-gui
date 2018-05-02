@@ -46,14 +46,14 @@ Create an empty file in the root of the SD card named `ssh` (withOUT dot or any 
 
 `touch ssh`
 
-This will enable ssh on your Raspberry Pi. [see help](https://www.raspberrypi.org/documentation/remote-access/ip-address.md)
+This will enable ssh on your Raspberry Pi.
 
 Put the SD card into Raspberry Pi and plug in the Power cable and wait a little bit so the raspberry boot and connect automatically to Wi-Fi.
 
 
 ### Connect via SSH:
 
-Find the IP Address of your Raspberry Pi. 
+Find the IP Address of your Raspberry Pi. [see help](https://www.raspberrypi.org/documentation/remote-access/ip-address.md)
 
 > Either Ethernet Or WiFi, You need a way to find IP of the raspberry machine.
 
