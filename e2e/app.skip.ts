@@ -298,22 +298,32 @@ export class SkipLogin {
 
   getSettingsSelectTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings .column .select')).count();
+    return element.all(by.css('app-settings .column .select #protocol')).count();
   }
 
-  getSettingsInputTag() {
+  getSettingsHostInputTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings div input')).count();
+    return element.all(by.css('app-settings div input#host')).count();
   }
 
-  getSettingsButton() {
+  getSettingsPortInputTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings button')).count();
+    return element.all(by.css('app-settings div input#service_port')).count();
   }
 
-  getLoginLink() {
+  getSettingsSetUrlAndRestartButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-settings a.button')).getText();
+    return element.all(by.css('app-settings #set-url-restart-btn'));
+  }
+
+  getLoginTextButton() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-settings #login-btn'));
+  }
+
+  getTestConnectionTextButton() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-settings #test-connection-btn'));
   }
 
   getPingDropdown() {
