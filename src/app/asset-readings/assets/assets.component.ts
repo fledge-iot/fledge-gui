@@ -13,12 +13,13 @@ export class AssetsComponent implements OnInit {
 
   selectedAsset: any = 'Select'; // Selected asset object (assetCode, count)
   asset: any;
-  limit: number = 20;
-  offset: number = 0;
+  DEFAULT_LIMIT = 20;
+  limit = this.DEFAULT_LIMIT;
+  offset = 0;
 
   page = 1;           // Default page is 1 in pagination
   recordCount = 0;    // Total no. of records during pagination
-  tempOffset: number = 0;     // Temporary offset during pagination
+  tempOffset = 0;     // Temporary offset during pagination
   totalPagesCount = 0;
   assets = [];
   assetsReadingsData = [];
@@ -92,7 +93,7 @@ export class AssetsComponent implements OnInit {
    */
   setLimitOffset() {
     if (this.limit === 0) {
-      this.limit = 20;
+      this.limit = this.DEFAULT_LIMIT;
     }
     if (this.offset > 0) {
       this.tempOffset = ((this.page - 1) * this.limit) + this.offset;
@@ -106,12 +107,16 @@ export class AssetsComponent implements OnInit {
   }
 
   public setAssetCode(assetData) {
+    this.limit = this.DEFAULT_LIMIT;
+    this.offset = 0;
+    this.tempOffset = 0;
+    this.recordCount = 0;
+    if (this.page !== 1) {
+      this.page = 1;
+    }
     this.isChart = true;
     this.isSummary = true;
     this.asset = assetData;
-    if (this.offset !== 0) {
-      this.recordCount = this.asset['count'] - this.offset;
-    }
     this.getAssetReading();
   }
 
@@ -132,7 +137,7 @@ export class AssetsComponent implements OnInit {
       this.tempOffset = this.offset;
     }
     if (limit === '' || limit == 0 || limit === null || limit === undefined) {
-      limit = 20;
+      limit = this.DEFAULT_LIMIT;
     }
     this.limit = limit;
     console.log('Limit: ', this.limit);
@@ -170,21 +175,21 @@ export class AssetsComponent implements OnInit {
     this.ngProgress.start();
     this.assetService.getAsset().
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        this.assets = data;
-        console.log('This is the asset data ', this.assets);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.assets = data;
+          console.log('This is the asset data ', this.assets);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
@@ -199,26 +204,26 @@ export class AssetsComponent implements OnInit {
     this.ngProgress.start();
     this.assetService.getAssetReadings(encodeURIComponent(this.asset['assetCode']), this.limit, this.tempOffset).
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        this.assetsReadingsData = [{
-          assetCode: this.asset['assetCode'],
-          count: this.recordCount,
-          data: data
-        }];
-        this.totalPages();
-        console.log('This is the asset reading data ', this.assetsReadingsData);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.assetsReadingsData = [{
+            assetCode: this.asset['assetCode'],
+            count: this.recordCount,
+            data: data
+          }];
+          this.totalPages();
+          console.log('This is the asset reading data ', this.assetsReadingsData);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**

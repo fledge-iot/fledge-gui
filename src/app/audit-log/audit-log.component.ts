@@ -12,8 +12,8 @@ export class AuditLogComponent implements OnInit {
   public logSeverityList = [];
   public audit: any;
   public totalCount: any;
-
-  limit = 20;
+  DEFAULT_LIMIT = 20;
+  limit = this.DEFAULT_LIMIT;
   offset = 0;
   public source: String = '';
   public severity: String = '';
@@ -87,7 +87,7 @@ export class AuditLogComponent implements OnInit {
    */
   setLimitOffset() {
     if (this.limit === 0) {
-      this.limit = 20;
+      this.limit = this.DEFAULT_LIMIT;
     }
     if (this.offset > 0) {
       this.tempOffset = (((this.page) - 1) * this.limit) + this.offset;
@@ -100,39 +100,39 @@ export class AuditLogComponent implements OnInit {
   public getLogSource() {
     this.auditService.getLogSource().
       subscribe(
-      data => {
-        this.logSourceList = data.logCode;
-        console.log('Log code', this.logSourceList);
-      },
-      error => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+        data => {
+          this.logSourceList = data.logCode;
+          console.log('Log code', this.logSourceList);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   public getLogSeverity() {
     this.auditService.getLogSeverity().
       subscribe(
-      data => {
-        this.logSeverityList = data.logSeverity;
-        console.log('Log severity ', this.logSeverityList);
-      },
-      error => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+        data => {
+          this.logSeverityList = data.logSeverity;
+          console.log('Log severity ', this.logSeverityList);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   public setLimit(limit) {
     this.isInvalidLimit = false;
     if (+limit > 1000) {
-      this.isInvalidLimit = true; // limit range validation 
+      this.isInvalidLimit = true; // limit range validation
       return;
     }
     if (this.page !== 1) {
@@ -140,7 +140,7 @@ export class AuditLogComponent implements OnInit {
       this.tempOffset = this.offset;
     }
     if (limit === '' || limit == 0 || limit === null || limit === undefined) {
-      limit = 20;
+      limit = this.DEFAULT_LIMIT;
     }
     this.limit = limit;
     console.log('Limit: ', this.limit);
@@ -179,14 +179,19 @@ export class AuditLogComponent implements OnInit {
   }
 
   public filterSource(type, event) {
+    this.limit = this.DEFAULT_LIMIT;
+    this.offset = 0;
+    this.tempOffset = 0;
+    this.recordCount = 0;
+    if (this.page !== 1) {
+      this.page = 1;
+    }
+
     if (type === 'source') {
       this.source = event.target.value.trim().toLowerCase() === 'source' ? '' : event.target.value.trim().toLowerCase();
     }
     if (type === 'severity') {
       this.severity = event.target.value.trim().toLowerCase() === 'severity' ? '' : event.target.value.trim().toLowerCase();
-    }
-    if (this.offset !== 0) {
-      this.recordCount = this.totalCount - this.offset;
     }
     this.auditLogSubscriber();
   }
@@ -196,27 +201,27 @@ export class AuditLogComponent implements OnInit {
     this.ngProgress.start();
     this.auditService.getAuditLogs(this.limit, this.tempOffset, this.source, this.severity).
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        this.audit = data.audit;
-        this.totalCount = data.totalCount;
-        console.log('Audit Logs', this.audit, 'Total count', this.totalCount);
-        if (this.offset !== 0) {
-          this.recordCount = this.totalCount - this.offset;
-        } else {
-          this.recordCount = this.totalCount;
-        }
-        this.totalPages();
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.audit = data.audit;
+          this.totalCount = data.totalCount;
+          console.log('Audit Logs', this.audit, 'Total count', this.totalCount);
+          if (this.offset !== 0) {
+            this.recordCount = this.totalCount - this.offset;
+          } else {
+            this.recordCount = this.totalCount;
+          }
+          this.totalPages();
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }
