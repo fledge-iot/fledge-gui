@@ -145,9 +145,18 @@ describe('FogLAMP gui', () => {
     skipLogin.navToSettings();
     expect(skipLogin.getSettingsTitle()).toContain('Settings');
     expect(skipLogin.getSettingsSelectTag()).toEqual(1);
-    expect(skipLogin.getSettingsInputTag()).toEqual(2);
-    expect(skipLogin.getSettingsButton()).toEqual(2);
-    expect(skipLogin.getLoginLink()).toEqual('Login');
+    expect(skipLogin.getSettingsHostInputTag()).toEqual(1);
+    expect(skipLogin.getSettingsPortInputTag()).toEqual(1);
+
+    expect(skipLogin.getSettingsSetUrlAndRestartButton().count()).toEqual(1);
+    expect(skipLogin.getSettingsSetUrlAndRestartButton().get(0).getText()).toEqual('Set the URL & Restart');
+
+    expect(skipLogin.getLoginTextButton().count()).toEqual(1);
+    expect(skipLogin.getLoginTextButton().get(0).getText()).toEqual('Login');
+
+    expect(skipLogin.getTestConnectionTextButton().count()).toEqual(1);
+    expect(skipLogin.getTestConnectionTextButton().get(0).getText()).toEqual('Test Connection');
+
     expect(skipLogin.getPingDropdown()).toEqual(1);
   });
 });
