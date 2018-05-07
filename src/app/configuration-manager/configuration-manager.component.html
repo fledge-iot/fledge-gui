@@ -2,13 +2,17 @@
   <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
     [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
-  <!-- cards to be rendred as config.categories.count-->
+  <!-- cards to be rendered as config.categories.count-->
   <div class="card" *ngFor="let category of categoryData">
     <header class="card-header">
       <div class="card-header-title">
         <div class="media">
           <div class="media-content">
-            <p class="subtitle is-6">{{category.description}}</p>
+            <p class="subtitle is-6">{{category.description}} &nbsp;
+              <a (click)="this.getCategories()">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+              </a>
+            </p>
           </div>
         </div>
       </div>
