@@ -52,7 +52,7 @@ export class ServicesHealthService {
     const serviceUrl = baseUrl.replace(/^https?/i, protocol);
     const url = new URL(serviceUrl);
     url.port = port;
-    return this.http.post(String(url) + "/shutdown", null)
+    return this.http.post(String(url) + '/shutdown', null)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }

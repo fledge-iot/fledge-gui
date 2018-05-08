@@ -17,7 +17,7 @@ export class BackupRestoreService {
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
-  
+
   /**
    *  POST | /foglamp/backup
    */
@@ -35,7 +35,7 @@ export class BackupRestoreService {
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
-  
+
   /**
    *  DELETE | /foglamp/backup/{backup-id}
    */

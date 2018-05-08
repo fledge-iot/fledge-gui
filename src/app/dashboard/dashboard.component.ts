@@ -52,9 +52,9 @@ export class DashboardComponent implements OnInit {
 
     this.graphsToShow = [];
     for (const k of this.selectedKeys) {
-      let selectedKeyData = [];
+      const selectedKeyData = [];
       selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
-      this.graphsToShow.push(selectedKeyData[0][0])
+      this.graphsToShow.push(selectedKeyData[0][0]);
     }
     this.getStatistics();
   }
@@ -104,9 +104,9 @@ export class DashboardComponent implements OnInit {
           this.selectedKeys = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
           this.graphsToShow = [];
           for (const k of this.selectedKeys) {
-            let selectedKeyData = [];
+            const selectedKeyData = [];
             selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
-            this.graphsToShow.push(selectedKeyData[0][0])
+            this.graphsToShow.push(selectedKeyData[0][0]);
           }
           console.log('graphsToShow', this.graphsToShow);
         }
@@ -139,7 +139,7 @@ export class DashboardComponent implements OnInit {
           }
         }]
       }
-    }
+    };
   }
 
   protected getChartValues(labels, data, color) {
@@ -155,7 +155,7 @@ export class DashboardComponent implements OnInit {
           lineTension: 0
         }
       ]
-    }
+    };
   }
 
   /**
@@ -169,12 +169,12 @@ export class DashboardComponent implements OnInit {
     this.statisticsService.getStatisticsHistory().
       subscribe(data => {
         this.statisticsKeys.forEach(key => {
-          let labels = [];
-          let record = map(data.statistics, key)
-          let history_ts = map(data.statistics, 'history_ts');
+          const labels = [];
+          const record = map(data.statistics, key);
+          const history_ts = map(data.statistics, 'history_ts');
           history_ts.forEach(element => {
-            element = moment(element).format('HH:mm:ss:SSS')
-            labels.push(element)
+            element = moment(element).format('HH:mm:ss:SSS');
+            labels.push(element);
           });
           this.graphsToShow.map(statistics => {
             if (statistics.itemName == key) {
@@ -183,7 +183,7 @@ export class DashboardComponent implements OnInit {
               return statistics;
             }
           });
-        })
+        });
       },
         error => {
           if (error.status === 0) {

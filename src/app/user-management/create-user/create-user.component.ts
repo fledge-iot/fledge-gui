@@ -25,15 +25,15 @@ export class CreateUserComponent implements OnInit {
       username: '',
       password: '',
       confirmPassword: '',
-      role_id: 2   // set "user" as a default role 
-    }
+      role_id: 2   // set "user" as a default role
+    };
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
       this.resetCreateUserForm(form);
     }
-    let createUserModal = <HTMLDivElement>document.getElementById('user_modal');
+    const createUserModal = <HTMLDivElement>document.getElementById('user_modal');
     if (isOpen) {
       createUserModal.classList.add('is-active');
       return;
@@ -66,24 +66,24 @@ export class CreateUserComponent implements OnInit {
     this.userService.getRole()
       .subscribe(
         roleRecord => {
-          this.userRole = roleRecord.roles
+          this.userRole = roleRecord.roles;
         },
         error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
-          };
+          }
         });
   }
 
   public resetCreateUserForm(form: NgForm) {
-    form.resetForm()
+    form.resetForm();
     this.getRole();
   }
 
   setRole(value) {
-    var role = this.userRole.find(r => r.id = value);
+    const role = this.userRole.find(r => r.id = value);
     if (role) { this.model.role_id = role.id; }
   }
 }

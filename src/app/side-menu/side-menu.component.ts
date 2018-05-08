@@ -6,7 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./side-menu.component.css']
 })
 export class SideMenuComponent implements OnInit {
-  public step: string = '';
+  public step = '';
   @Output() toggle: EventEmitter<any> = new EventEmitter();
 
   isAdmin = false;

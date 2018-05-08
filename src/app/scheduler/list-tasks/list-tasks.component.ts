@@ -79,7 +79,7 @@ export class ListTasksComponent implements OnInit {
           console.log('service down ', error);
         } else {
           this.alertService.error(error.statusText);
-        };
+        }
       });
   }
 
@@ -116,7 +116,7 @@ export class ListTasksComponent implements OnInit {
           console.log('service down ', error);
         } else {
           this.alertService.error(error.statusText);
-        };
+        }
       });
   }
 }

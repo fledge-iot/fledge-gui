@@ -17,7 +17,7 @@ export class AddConfigItemComponent implements OnInit {
   constructor(private configService: ConfigurationService, private alertService: AlertService) { }
 
   ngOnInit() {
-    this.configItemType = ['boolean','integer','string','IPv4','IPv6','X509 certificate','password','JSON'];
+    this.configItemType = ['boolean', 'integer', 'string', 'IPv4', 'IPv6', 'X509 certificate', 'password', 'JSON'];
     this.categoryData = {
       categoryDescription: '',
       categoryKey: '',
@@ -26,21 +26,21 @@ export class AddConfigItemComponent implements OnInit {
       description: '',
       defaultValue: '',
       type: ''
-    }
+    };
   }
 
   public setConfigName(desc, key) {
     this.categoryData = {
       categoryDescription: desc,
       categoryKey: key
-    }
+    };
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
-      this.resetAddConfigItemForm(form)
+      this.resetAddConfigItemForm(form);
     }
-    let modal = <HTMLDivElement>document.getElementById('add-config-item');
+    const modal = <HTMLDivElement>document.getElementById('add-config-item');
     if (isOpen) {
       modal.classList.add('is-active');
       return;
@@ -49,15 +49,15 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public resetAddConfigItemForm(form: NgForm) {
-    form.resetForm(); 
+    form.resetForm();
   }
 
-  public addConfigItem(form: NgForm){
-    let configItem = form.controls["configName"].value;
-    let configItemData = {
-      'type': form.controls["type"].value,
-      'default': form.controls["defaultValue"].value,
-      'description': form.controls["description"].value
+  public addConfigItem(form: NgForm) {
+    const configItem = form.controls['configName'].value;
+    const configItemData = {
+      'type': form.controls['type'].value,
+      'default': form.controls['defaultValue'].value,
+      'description': form.controls['description'].value
     };
     this.configService.addNewConfigItem(configItemData, this.categoryData.categoryKey, configItem).
       subscribe(

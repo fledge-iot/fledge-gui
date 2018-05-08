@@ -26,11 +26,11 @@ export class UpdateUserComponent implements OnInit {
       password: '',
       confirmPassword: '',
       role_id: 2   // set "user" as a default role
-    }
+    };
   }
 
   /**
-   * TO get data from parent component 
+   * TO get data from parent component
    * @param userRecord  User model
    * @param key  key to show/hide particular section on UI
    */
@@ -42,7 +42,7 @@ export class UpdateUserComponent implements OnInit {
       password: '',
       confirmPassword: '',
       role_id: userRecord.roleId  // to set default value in role option
-    }
+    };
 
     // To handle section on UI
     if (key == 'role') {
@@ -51,7 +51,7 @@ export class UpdateUserComponent implements OnInit {
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
-    let updateUserModal = <HTMLDivElement>document.getElementById('update_user_modal');
+    const updateUserModal = <HTMLDivElement>document.getElementById('update_user_modal');
     if (isOpen) {
       updateUserModal.classList.add('is-active');
       return;
@@ -67,14 +67,14 @@ export class UpdateUserComponent implements OnInit {
       .subscribe(
         roleRecord => {
           console.log('Role', roleRecord.roles);
-          this.userRole = roleRecord.roles
+          this.userRole = roleRecord.roles;
         },
         error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
-          };
+          }
         });
   }
 
@@ -83,7 +83,7 @@ export class UpdateUserComponent implements OnInit {
    */
   updateUser() {
     if (this.showRoleSection) {
-      this.updateRole()
+      this.updateRole();
     } else {
       this.resetPassword();
     }
