@@ -11,7 +11,7 @@ import { NgProgress } from 'ngx-progressbar';
 })
 export class AssetsComponent implements OnInit {
 
-  selectedAsset: any = 'Select'; // Selected asset object (assetCode, count)
+  selectedAsset: any; // Selected asset object (assetCode, count)
   asset: any;
   DEFAULT_LIMIT = 20;
   limit = this.DEFAULT_LIMIT;
@@ -107,6 +107,10 @@ export class AssetsComponent implements OnInit {
   }
 
   public setAssetCode(assetData) {
+    if (assetData === undefined) {
+      return;
+    }
+    this.selectedAsset = assetData;
     this.limit = this.DEFAULT_LIMIT;
     this.offset = 0;
     this.tempOffset = 0;
@@ -180,6 +184,9 @@ export class AssetsComponent implements OnInit {
           this.ngProgress.done();
           this.assets = data;
           console.log('This is the asset data ', this.assets);
+          if (this.selectedAsset) {
+            this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
+          }
         },
         error => {
           /** request completed */
