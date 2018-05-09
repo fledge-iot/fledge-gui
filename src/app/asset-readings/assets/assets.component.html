@@ -58,7 +58,7 @@
     <div class="card-content">
       <div class="columns">
         <div class="column">
-          <div class="select is-fullwidth">
+          <div class="select is-fullwidth is-small">
             <select (ngModelChange)="setAssetCode($event)" [ngModel]="selectedAsset || 'Select'">
               <option disabled [ngValue]="">Select</option>
               <option *ngFor="let asset of assets" [ngValue]='asset'>{{asset.assetCode}} ({{asset.count}})</option>
