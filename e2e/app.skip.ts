@@ -11,7 +11,6 @@ export class SkipLogin {
   setUpInstance() {
     browser.waitForAngularEnabled(false);
     element(by.css('app-login .has-text-grey a:nth-child(2)')).click();
-    // element(by.id('protocol')).sendKeys(environment.PROTOCOL);
     element(by.css('select option[value="http"]')).click();
     element(by.id('host')).clear();
     element(by.id('host')).sendKeys(environment.HOST);
@@ -34,7 +33,7 @@ export class SkipLogin {
   getCountOfSelectedGraph() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('angular2-multiselect .selected-list .c-list'))), 10000);
+    browser.wait(this.EC.visibilityOf(element(by.css('angular2-multiselect .selected-list .c-list'))), 4000);
     return element.all(by.css('angular2-multiselect .selected-list .c-list div')).count();
   }
 
