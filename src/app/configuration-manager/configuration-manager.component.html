@@ -8,9 +8,11 @@
       <div class="card-header-title">
         <div class="media">
           <div class="media-content">
-            <p class="subtitle is-6">{{category.description}} &nbsp;
-              <a (click)="this.getCategories()">
-                <i class="fa fa-refresh" aria-hidden="true"></i>
+            <p class="subtitle is-6">{{category.description}}
+              <a class="button is-small" (click)="this.getCategories()">
+                <span class="icon is-small">
+                  <i class="fa fa-refresh"></i>
+                </span>
               </a>
             </p>
           </div>
