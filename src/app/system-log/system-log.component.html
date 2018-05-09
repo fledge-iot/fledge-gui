@@ -52,6 +52,7 @@
         <p id="s-log"> {{log}}
         </p>
       </span>
+      &nbsp;
       <div *ngIf='totalPagesCount > 1'>
         <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount' (goPrev)="onPrev()" (goNext)="onNext()"
           (goFirst)="onFirst()" (goLast)="onLast()" (goPage)="goToPage($event)">
