@@ -1,5 +1,6 @@
 import { FogLAMPPage } from './app.po';
 import { SkipLogin } from './app.skip';
+import { skip } from 'rxjs/operator/skip';
 
 describe('FogLAMP gui', () => {
   let skipLogin: SkipLogin;
@@ -17,7 +18,7 @@ describe('FogLAMP gui', () => {
   it('Should Display Nav Title and App Status', () => {
     skipLogin.navigateToHome();
     expect(skipLogin.getNavTitle()).toEqual('FogLAMP Management');
-    expect(skipLogin.getAppStatus()).toEqual('service down');
+    expect(skipLogin.getAppStatus()).toEqual('running');
   });
 
   it('Should Display Default Graphs', () => {
@@ -33,13 +34,35 @@ describe('FogLAMP gui', () => {
     expect(skipLogin.getAssetsTitle()).toEqual('Assets');
     expect(skipLogin.getAssetsRefreshButton()).toEqual(true);
     expect(skipLogin.getAssetReadingsTitle()).toEqual('Asset Readings');
+
+    skipLogin.clickAssetSummary();
+    expect(skipLogin.getAssetSummarySelectTag()).toEqual(1);
+    expect(skipLogin.getAssetSummaryInputTag()).toEqual(1);
+    const ColumnsName = [
+      'Reading',
+      'Average',
+      'Min',
+      'Max'
+    ];
+    for (const ColumnName in ColumnsName) {
+      expect(skipLogin.getAssetSummaryColNames()).toContain(ColumnsName[ColumnName]);
+    }
+    expect(skipLogin.isAssetSummaryChartIcon()).toEqual(true);
+
+    skipLogin.clickChartIcon();
+    expect(skipLogin.isChartDisplayed()).toEqual(true);
+    skipLogin.closeSummaryModal();
+
+    skipLogin.clickAssetChart();
+    expect(skipLogin.getAssetChartInputTag()).toEqual(2);
+    skipLogin.closeChartModal();
   });
 
   it('Should Display Audits Logs', () => {
     skipLogin.navToAuditLogs();
     expect(skipLogin.getAuditLogsTitle()).toEqual('Audit Logs');
     expect(skipLogin.auditLogCount()).toContain('Count');
-    expect(skipLogin.getAuditLogRefreshButton()).toEqual(true);
+    expect(skipLogin.isAuditLogRefreshIcon()).toEqual(true);
     expect(skipLogin.getAuditLogsSelectTag()).toEqual(2);
     expect(skipLogin.getAuditLogsInputTag()).toEqual(2);
   });
@@ -74,6 +97,14 @@ describe('FogLAMP gui', () => {
     expect(skipLogin.isAddButtonPresent()).toEqual(true);
     expect(skipLogin.isSaveButtonPresent()).toEqual(true);
     expect(skipLogin.isCancelButtonPresent()).toEqual(true);
+
+    expect(skipLogin.editAndVerifyConfigValue()).toEqual('Value updated successfully');
+
+    skipLogin.clickAddButton();
+    expect(skipLogin.addConfigInputTagCount()).toEqual(3);
+    expect(skipLogin.addConfigSelectTagCount()).toEqual(1);
+    expect(skipLogin.addConfigTextareaCount()).toEqual(1);
+    expect(skipLogin.isAddConfigSaveButton()).toEqual(true);
   });
 
   it('Should Display Scheduled Tasks', () => {
@@ -84,6 +115,11 @@ describe('FogLAMP gui', () => {
     expect(skipLogin.getTasksTitle()).toContain('Tasks');
     expect(skipLogin.getTasksRefreshButton()).toEqual(true);
     expect(skipLogin.getTasksSelectTag()).toEqual(1);
+
+    expect(skipLogin.createAndVerifySchedule()).toEqual('Schedule created successfully.');
+
+    expect(skipLogin.updateAndVerifySchedule()).toEqual('Schedule updated successfully.');
+    expect(skipLogin.isUpdatedSchedulePresent()).toContain('updateSchedule');
   });
 
   it('Should Display Service Health', () => {
