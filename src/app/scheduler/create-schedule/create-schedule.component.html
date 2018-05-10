@@ -5,7 +5,7 @@
       <p class="modal-card-title is-size-5">Create Schedule</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
-    <div class="modal-card-body">
+    <section class="modal-card-body">
       <form [formGroup]="form" novalidate>
         <div class="columns is-mobile">
           <div class="column">
@@ -99,10 +99,10 @@
             </div>
           </div>
         </div>
-        <div class="field">
-          <button id="save" type="submit" class="button is-success" (click)="createSchedule()">Save</button>
-        </div>
       </form>
-    </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button id="save" type="submit" class="button is-success" (click)="createSchedule()">Save</button>
+    </footer>
   </div>
 </div>
