@@ -6,7 +6,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form [formGroup]="form" (ngSubmit)="f.form.valid && updateSchedule()" #f="ngForm" novalidate>
+      <form [formGroup]="form" #f="ngForm" novalidate>
         <div class="columns is-mobile">
           <div class="column">
             <div class="field">
@@ -101,7 +101,7 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" class="button is-success">Save</button>
+      <button id="save" type="submit" class="button is-success" (click)="f.form.valid && updateSchedule()">Save</button>
       <button type="button" id="cancel" class="button is-danger" (click)="toggleModal(false)">Cancel</button>
     </footer>
   </div>
