@@ -149,6 +149,7 @@ execute_command() {
 
   elif [[ "$OPTION" == "LOCAL" ]]
   then
+    machine_details
     ./build.sh
     install
 
