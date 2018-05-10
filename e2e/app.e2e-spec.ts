@@ -120,6 +120,10 @@ describe('FogLAMP gui', () => {
 
     expect(skipLogin.updateAndVerifySchedule()).toEqual('Schedule updated successfully.');
     expect(skipLogin.isUpdatedSchedulePresent()).toContain('updateSchedule');
+
+    expect(skipLogin.disableAndVerifySchedule()).toEqual('Schedule successfully disabled');
+
+    expect(skipLogin.deleteAndVerifySchedule()).toEqual('Schedule deleted successfully.');
   });
 
   it('Should Display Service Health', () => {

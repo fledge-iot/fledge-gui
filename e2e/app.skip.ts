@@ -276,9 +276,10 @@ export class SkipLogin {
   createAndVerifySchedule() {
     browser.ignoreSynchronization = true;
     element(by.css('app-scheduled-process .card-header .button.is-light')).click();
-    element(by.css('#create_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).sendKeys('test1');
+    element(by.css('#create_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).sendKeys('test');
     element(by.css('#create_schedule_modal .modal-card #repeat_day')).sendKeys('1');
     element(by.css('#create_schedule_modal .modal-card #repeat_time')).sendKeys('11:11:11');
+    browser.sleep(2000);
     element(by.css('#create_schedule_modal form #save')).click();
     // wait
     browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
@@ -287,9 +288,14 @@ export class SkipLogin {
 
   updateAndVerifySchedule() {
     browser.ignoreSynchronization = true;
-    element(by.css('app-scheduled-process > div:nth-child(1) table tr:nth-child(1) td:nth-child(7) a')).click();
+    // Scroll the element (created schedule) to view
+    const lastElement = element(by.xpath('//*[@id="test"]'));
+    browser.executeScript('arguments[0].scrollIntoView()', lastElement.getWebElement());
+
+    element(by.css('#test > td:nth-child(7) > a[name=test]')).click();
     element(by.css('#update_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).clear();
     element(by.css('#update_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).sendKeys('updateSchedule');
+    browser.sleep(1000);
     element(by.css('#update_schedule_modal form #save')).click();
     // wait
     browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
@@ -299,6 +305,25 @@ export class SkipLogin {
   isUpdatedSchedulePresent() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-scheduled-process > div:nth-child(1) .card-content')).getText();
+  }
+
+  disableAndVerifySchedule() {
+    browser.ignoreSynchronization = true;
+    element(by.css('#updateSchedule > td:nth-child(9) > button[name=updateSchedule]')).click();
+    element(by.css('#modal-box > div.modal-card > footer > button.button.is-success')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
+  }
+
+  deleteAndVerifySchedule() {
+    browser.ignoreSynchronization = true;
+    element(by.css
+      ('#updateSchedule > td:nth-child(8) > a[name=updateSchedule]')).click();
+    element(by.css('#modal-box > div.modal-card > footer > button.button.is-success')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
   }
 
   getTasksTitle() {
