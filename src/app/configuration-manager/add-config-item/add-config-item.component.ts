@@ -1,4 +1,11 @@
-import { Component, OnInit, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  SimpleChanges,
+  Input,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { NgForm, FormGroup } from '@angular/forms';
 import { ConfigurationService, AlertService } from '../../services/index';
 
@@ -14,7 +21,10 @@ export class AddConfigItemComponent implements OnInit {
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private configService: ConfigurationService, private alertService: AlertService) { }
+  constructor(
+    private configService: ConfigurationService,
+    private alertService: AlertService
+  ) {}
 
   ngOnInit() {
     this.configItemType = ['boolean', 'integer', 'string', 'IPv4', 'IPv6', 'X509 certificate', 'password', 'JSON'];
@@ -59,8 +69,13 @@ export class AddConfigItemComponent implements OnInit {
       'default': form.controls['defaultValue'].value,
       'description': form.controls['description'].value
     };
-    this.configService.addNewConfigItem(configItemData, this.categoryData.categoryKey, configItem).
-      subscribe(
+    this.configService
+      .addNewConfigItem(
+        configItemData,
+        this.categoryData.categoryKey,
+        configItem
+      )
+      .subscribe(
         data => {
           this.notify.emit();
           this.toggleModal(false, null);
@@ -75,6 +90,7 @@ export class AddConfigItemComponent implements OnInit {
           } else {
             this.alertService.error(error.statusText);
           }
-        });
+        }
+      );
   }
 }
