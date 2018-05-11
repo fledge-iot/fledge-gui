@@ -9,9 +9,9 @@
     </header>
     <section class="modal-card-body">
       <p *ngIf='!isValidData'> Not Available </p>
-      <div [hidden]='!isValidData' class="columns">
-        <div class="column is-half">
-          <div class="select is-fullwidth">
+      <div [hidden]='!isValidData' class="columns is-mobile">
+        <div class="column">
+          <div class="select is-fullwidth is-small">
             <select #selectedType (change)='getTimedBasedSummary(timeValue.inputValue, selectedType.value); isShow = false'>
               <option value="select" disabled>Select</option>
               <option value="hours">Hours</option>
@@ -20,7 +20,7 @@
             </select>
           </div>
         </div>
-        <div class="column is-half">
+        <div class="column">
           <number-input-debounce placeholder="time" #timeValue (value)="getTimedBasedSummary(timeValue.inputValue, selectedType.value); isShow = false"></number-input-debounce>
           <p *ngIf='invalidInputMessage?.length > 0' class='help is-danger'>{{invalidInputMessage}}</p>
         </div>

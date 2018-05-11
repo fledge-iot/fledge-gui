@@ -132,7 +132,7 @@ export class AssetsComponent implements OnInit {
       return;
     }
     this.isInvalidLimit = false;
-    if (+limit > 1000) {
+    if (+limit > 2147483647) {
       this.isInvalidLimit = true; // limit range validation
       return;
     }
