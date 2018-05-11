@@ -4,8 +4,7 @@ import { SystemLogComponent } from '../system-log/index';
 
 @Component({
     selector: 'app-pagination',
-    templateUrl: 'pagination.component.html',
-    styleUrls: ['./pagination.component.css']
+    templateUrl: 'pagination.component.html'
 })
 
 export class PaginationComponent implements OnInit, OnChanges {
