@@ -92,7 +92,7 @@
             <div *ngIf="selected_schedule_type == 2" class="field">
               <label class="label">Time</label>
               <p class="control is-fullwidth">
-                <input class="input" type='text' placeholder="hh:mm:ss" mask='00:00:00' formControlName="time">
+                <input class="input" type='text' placeholder="hh:mm:ss" mask="00:00:00" formControlName="time">
               </p>
               <small *ngIf="!form.controls.time.valid" class="help is-danger level-left">&nbsp; Time must be in range 00:00:00 - 23:59:59</small>
             </div>

@@ -38,7 +38,7 @@ export class UpdateModalComponent implements OnInit, OnChanges {
       process_name: [Validators.required],
       type: [Validators.required],
       day: [Validators.required],
-      time: ['', [Validators.required, Validators.pattern(regExp)]],
+      time: [Validators.required, Validators.pattern(regExp)],
     });
 
     if (changes['childData']) {
@@ -135,21 +135,17 @@ export class UpdateModalComponent implements OnInit, OnChanges {
   }
 
   public updateSchedule() {
-    let RepeatTime = this.form.get('repeat').value != ('None' || undefined) ? Utils.convertTimeToSec(
+    let RepeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
       this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
 
     this.selected_schedule_type = this.setScheduleTypeKey(this.form.get('type').value);
-    this.form.controls['type'].setValue(this.selected_schedule_type);
 
-    let time; 
-    if (this.form.get('type').value == '2') {   // If Type is TIMED == 2
+    let time;
+    let dayIndex;
+    if (this.selected_schedule_type === 2) {   // If Type is TIMED == 2
       time = Utils.convertTimeToSec(this.form.get('time').value);
-      let index = this.form.get('day').value != undefined ? (this.days.indexOf(this.form.get('day').value)+1) : 0;
-      if (index === 0) {
-        this.form.controls['day'].setValue('');
-      } else {
-        this.form.controls['day'].setValue(index);
-      } 
+      const dayValue = this.form.get('day').value;
+      dayIndex = dayValue !== undefined && dayValue !== 'None' ? (this.days.indexOf(this.form.get('day').value)+1) : '';
     } else {
       this.form.get('day').setValue(0);
       this.form.get('time').setValue(0);
@@ -158,9 +154,9 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     let updatePayload = {
       'name': this.form.get('name').value,
       'process_name': this.form.get('process_name').value,
-      'type': this.form.get('type').value,
+      'type': this.selected_schedule_type,
       'repeat': RepeatTime,
-      'day': this.form.get('day').value,
+      'day': dayIndex,
       'time': time,
       'exclusive': this.form.get('exclusive').value,
     };
