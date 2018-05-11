@@ -220,6 +220,21 @@ export class SkipLogin {
     return element(by.css('app-services-health table thead tr')).getText();
   }
 
+  httpSouthServiceStatus() {
+    browser.ignoreSynchronization = true;
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('#HTTP_SOUTH td:nth-child(2) div span'))), 4000);
+    return element(by.css('#HTTP_SOUTH td:nth-child(2) div span')).getText();
+  }
+
+  shutdownHttpSouth() {
+    browser.ignoreSynchronization = true;
+    element(by.css('#HTTP_SOUTH > td:nth-child(8) > button')).click();
+    element(by.css('#modal-box footer .button.is-success')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 8000);
+  }
+
   navToCertificateStore() {
     return browser.get('/#/certificate');
   }
@@ -242,6 +257,18 @@ export class SkipLogin {
   getCertificateStoreImport() {
     browser.ignoreSynchronization = true;
     return element(by.css('cert-store header a')).getText();
+  }
+
+  isKeyPresent() {
+    browser.ignoreSynchronization = true;
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
+    return element(by.css('cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
+  }
+
+  isCertificatePresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
   }
 
   navToBackupRestore() {
@@ -285,6 +312,14 @@ export class SkipLogin {
   getRequestNewBundle() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-support header a')).getText();
+  }
+
+  requestNewBundle() {
+    browser.ignoreSynchronization = true;
+    element(by.css('app-support header a')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('alert'))), 2000);
+    return element(by.css('alert')).getText();
   }
 
   navToSettings() {
