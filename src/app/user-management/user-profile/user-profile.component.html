@@ -54,7 +54,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userName)" #f="ngForm" novalidate>
+      <form name="form" id="ngForm" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userName)" #f="ngForm" novalidate>
         <div class="columns">
           <div class="column is-6">
             <input type="password" class="input" placeholder="current password" name='currentPassword' [(ngModel)]="userRecord.currentPassword" #currentPassword="ngModel" required/>
@@ -75,14 +75,10 @@
           </div>
           <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
         </div>
-        <div class="columns">
-          <div class="column is-3">
-            <div class="control">
-              <button id="update" type="submit" class="button is-success">Save</button>
-            </div>
-          </div>
-        </div>
       </form>
     </section>
+    <footer class="modal-card-foot">
+      <button id="update" type="submit" form="ngForm" class="button is-success">Save</button>
+    </footer>
   </div>
 </div>
