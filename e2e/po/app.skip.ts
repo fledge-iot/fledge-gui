@@ -1,5 +1,5 @@
 import { browser, by, element } from 'protractor';
-import { environment } from './environment';
+import { environment } from '../environment';
 
 export class SkipLogin {
   EC = browser.ExpectedConditions;
@@ -11,7 +11,7 @@ export class SkipLogin {
   setUpInstance() {
     browser.waitForAngularEnabled(false);
     element(by.css('app-login .has-text-grey a:nth-child(2)')).click();
-    element(by.id('protocol')).sendKeys(environment.PROTOCOL);
+    element(by.css('select option[value="http"]')).click();
     element(by.id('host')).clear();
     element(by.id('host')).sendKeys(environment.HOST);
     element(by.id('service_port')).clear();
@@ -23,6 +23,16 @@ export class SkipLogin {
   getNavTitle() {
     browser.ignoreSynchronization = true;
     return element(by.css('#app .navbar-brand .navbar-item.is-hidden-mobile b')).getText();
+  }
+
+  loginPageInputTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-login form input')).count();
+  }
+
+  getLoginButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-login form button.is-info')).getText();
   }
 
   clickSkip() {
@@ -329,5 +339,11 @@ export class SkipLogin {
   getPingDropdown() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('app-settings header div.select.is-small')).count();
+  }
+
+  goToLoginPage() {
+    browser.ignoreSynchronization = true;
+    element.all(by.css('#dropdown-box > div.dropdown-trigger > a')).click();
+    element.all(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
   }
 }

@@ -1,12 +1,17 @@
-import { FogLAMPPage } from './app.po';
-import { SkipLogin } from './app.skip';
+import { AdminLogin } from '../po/app.admin';
+import { SkipLogin } from '../po/app.skip';
+import { NonAdminLogin } from '../po/app.non-admin';
 
 describe('FogLAMP gui', () => {
   let skipLogin: SkipLogin;
+  let adminLogin: AdminLogin;
+  let nonAdminLogin: NonAdminLogin;
   let isSetupInstance = false;
+  skipLogin = new SkipLogin();
+  adminLogin = new AdminLogin();
+  nonAdminLogin = new NonAdminLogin();
 
   beforeEach(() => {
-    skipLogin = new SkipLogin();
     skipLogin.navigateToHome();
     if (!isSetupInstance) {
       skipLogin.setUpInstance();
@@ -17,7 +22,9 @@ describe('FogLAMP gui', () => {
   it('Should Display Nav Title and App Status', () => {
     skipLogin.navigateToHome();
     expect(skipLogin.getNavTitle()).toEqual('FogLAMP Management');
-    expect(skipLogin.getAppStatus()).toEqual('service down');
+    expect(skipLogin.getAppStatus()).toEqual('running');
+    expect(skipLogin.loginPageInputTag()).toEqual(2);
+    expect(skipLogin.getLoginButton()).toEqual('Log In');
   });
 
   it('Should Display Default Graphs', () => {
@@ -158,5 +165,72 @@ describe('FogLAMP gui', () => {
     expect(skipLogin.getTestConnectionTextButton().get(0).getText()).toEqual('Test Connection');
 
     expect(skipLogin.getPingDropdown()).toEqual(1);
+  });
+
+  it('Should Display User Management for Admin', () => {
+    skipLogin.goToLoginPage();
+    adminLogin.login();
+    expect(adminLogin.isUserManagementPresent()).toContain('User Management');
+
+    adminLogin.navToUserManagement();
+    expect(adminLogin.getAllTabs()).toContain('User Management');
+    expect(adminLogin.getAllTabs()).toContain('Roles');
+    expect(adminLogin.isAddUserPresent()).toContain('Add User');
+    const ColumnsName = [
+      'ID',
+      'Username',
+      'Role'
+    ];
+    for (const ColumnName in ColumnsName) {
+      expect(adminLogin.getUserManagementColNames()).toContain(ColumnsName[ColumnName]);
+    }
+    adminLogin.gotoRoles();
+    const RolesColumnsName = [
+      'ID',
+      'Role'
+    ];
+    for (const ColumnName in RolesColumnsName) {
+      expect(adminLogin.getRolesColNames()).toContain(ColumnsName[ColumnName]);
+    }
+  });
+
+  it('Should Display Profile for Admin', () => {
+    adminLogin.navToProfile();
+    expect(adminLogin.profileTitle()).toEqual('Profile');
+    expect(adminLogin.labelUsername()).toEqual('Username');
+    expect(adminLogin.labelRole()).toEqual('Role');
+    expect(adminLogin.isChangePassword()).toEqual('change password');
+    expect(adminLogin.isLogoutActiveSessionButton()).toEqual('Logout Active Sessions');
+
+    adminLogin.changePassword();
+    expect(adminLogin.getInputTagCount()).toEqual(3);
+    expect(adminLogin.isSaveButton()).toEqual(true);
+    adminLogin.closeModal();
+  });
+
+  it('Should Logout Admin and Login non-admin User', () => {
+    adminLogin.logout();
+    expect(adminLogin.loginPageInputTag()).toEqual(2);
+    expect(adminLogin.getLoginButton()).toEqual('Log In');
+    nonAdminLogin.login();
+    expect(nonAdminLogin.getLoggedInUsername()).toContain('user');
+  });
+
+  it('Should Not Display User Management for Non-Admin', () => {
+    expect(nonAdminLogin.isUserManagementPresent()).toBe(false);
+  });
+
+  it('Should Display Profile for Non-Admin', () => {
+    adminLogin.navToProfile();
+    expect(nonAdminLogin.profileTitle()).toEqual('Profile');
+    expect(nonAdminLogin.labelUsername()).toEqual('Username');
+    expect(nonAdminLogin.labelRole()).toEqual('Role');
+    expect(nonAdminLogin.isChangePassword()).toEqual('change password');
+    expect(nonAdminLogin.isLogoutActiveSessionButton()).toEqual('Logout Active Sessions');
+
+    nonAdminLogin.changePassword();
+    expect(nonAdminLogin.getInputTagCount()).toEqual(3);
+    expect(nonAdminLogin.isSaveButton()).toEqual(true);
+    nonAdminLogin.closeModal();
   });
 });
