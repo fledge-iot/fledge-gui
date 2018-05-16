@@ -170,7 +170,7 @@ describe('FogLAMP gui', () => {
   it('Should Display User Management for Admin', () => {
     skipLogin.goToLoginPage();
     adminLogin.login();
-    expect(adminLogin.isUserManagementPresent()).toContain('User Management');
+    expect(nonAdminLogin.isUserManagementPresent()).toBe(true);
 
     adminLogin.navToUserManagement();
     expect(adminLogin.getAllTabs()).toContain('User Management');

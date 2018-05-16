@@ -14,7 +14,7 @@ export class AdminLogin {
   isUserManagementPresent() {
     browser.ignoreSynchronization = true;
     browser.wait(this.EC.visibilityOf(element(by.css('aside .menu-list'))), 2000);
-    return element(by.css('aside .menu-list')).getText();
+    return element(by.id('user-management')).isPresent();
   }
 
   navToUserManagement() {
