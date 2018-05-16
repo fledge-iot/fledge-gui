@@ -24,7 +24,7 @@
     "@angular/router": "4.4.6",
     "@types/lodash-es": "^4.17.0",
     "angular2-multiselect-dropdown": "^2.5.0",
-    "chart.js": "^2.7.0",
+    "chart.js": "^2.7.2",
     "core-js": "^2.5.1",
     "lodash-es": "^4.17.7",
     "moment": "^2.21.0",
