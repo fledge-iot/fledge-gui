@@ -12,7 +12,6 @@ import { NgProgress } from 'ngx-progressbar';
 export class AssetsComponent implements OnInit {
 
   selectedAsset: any; // Selected asset object (assetCode, count)
-  asset: any;
   DEFAULT_LIMIT = 20;
   limit = this.DEFAULT_LIMIT;
   offset = 0;
@@ -103,7 +102,7 @@ export class AssetsComponent implements OnInit {
     console.log('limit: ', this.limit);
     console.log('offset: ', this.offset);
     console.log('temp offset: ', this.tempOffset);
-    this.getAssetReading();
+    this.getAsset();
   }
 
   public setAssetCode(assetData) {
@@ -120,19 +119,18 @@ export class AssetsComponent implements OnInit {
     }
     this.isChart = true;
     this.isSummary = true;
-    this.asset = assetData;
-    this.getAssetReading();
+    this.getAsset();
   }
 
   /**
    *  Set limit
    */
   public setLimit(limit) {
-    if (this.asset === undefined) {
+    if (this.selectedAsset === undefined) {
       return;
     }
     this.isInvalidLimit = false;
-    if (+limit > 1000) {
+    if (+limit > 2147483647) {
       this.isInvalidLimit = true; // limit range validation
       return;
     }
@@ -145,14 +143,14 @@ export class AssetsComponent implements OnInit {
     }
     this.limit = limit;
     console.log('Limit: ', this.limit);
-    this.getAssetReading();
+    this.getAsset();
   }
 
   /**
    *  Set offset
    */
   public setOffset(offset: number) {
-    if (this.asset === undefined) {
+    if (this.selectedAsset === undefined) {
       return;
     }
     this.isInvalidOffset = false;
@@ -168,9 +166,8 @@ export class AssetsComponent implements OnInit {
     }
     this.offset = offset;
     this.tempOffset = offset;
-    this.recordCount = this.asset['count'] - this.offset;
     console.log('Offset: ', this.offset);
-    this.getAssetReading();
+    this.getAsset();
   }
 
   public getAsset(): void {
@@ -183,9 +180,10 @@ export class AssetsComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           this.assets = data;
-          console.log('This is the asset data ', this.assets);
           if (this.selectedAsset) {
             this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
+            this.recordCount = this.selectedAsset['count'] - this.offset;
+            this.getAssetReading();
           }
         },
         error => {
@@ -204,18 +202,18 @@ export class AssetsComponent implements OnInit {
    */
   public getAssetReading(): void {
     if (this.offset === 0) {
-      this.recordCount = this.asset['count'];
+      this.recordCount = this.selectedAsset['count'];
     }
     this.assetsReadingsData = [];
     /** request started */
     this.ngProgress.start();
-    this.assetService.getAssetReadings(encodeURIComponent(this.asset['assetCode']), this.limit, this.tempOffset).
+    this.assetService.getAssetReadings(encodeURIComponent(this.selectedAsset['assetCode']), this.limit, this.tempOffset).
       subscribe(
         data => {
           /** request completed */
           this.ngProgress.done();
           this.assetsReadingsData = [{
-            assetCode: this.asset['assetCode'],
+            assetCode: this.selectedAsset['assetCode'],
             count: this.recordCount,
             data: data
           }];

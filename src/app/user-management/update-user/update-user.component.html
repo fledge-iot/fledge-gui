@@ -7,8 +7,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false, f)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="card-content">
-        <form name="form" (ngSubmit)="f.form.valid && updateUser()" #f="ngForm" novalidate>
+        <form name="form" id="updateForm" (ngSubmit)="f.form.valid && updateUser()" #f="ngForm" novalidate>
           <div class="columns">
             <div class="column is-6">
               <label class="label">Username</label>
@@ -45,16 +44,11 @@
               </p>
               <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
             </div>
-          </div>   
-          <div class="columns">
-            <div class="column">
-              <div class="control">
-                <button id="update" type="submit" class="button is-success">Update</button>
-              </div>
-            </div>
           </div>
         </form>
-      </div>
     </section>
+    <footer class="modal-card-foot">
+      <button id="update" form="updateForm" type="submit" class="button is-success">Update</button>
+    </footer>
   </div>
 </div>

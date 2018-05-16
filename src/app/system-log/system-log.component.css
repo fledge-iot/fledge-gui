@@ -13,3 +13,8 @@
   background: whitesmoke;
   /* border-top: 1px solid rgb(170, 170, 170); */
 }
+
+.pagination-section {
+  padding-top: 1rem;
+}
+
