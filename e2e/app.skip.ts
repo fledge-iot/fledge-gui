@@ -11,7 +11,7 @@ export class SkipLogin {
   setUpInstance() {
     browser.waitForAngularEnabled(false);
     element(by.css('app-login .has-text-grey a:nth-child(2)')).click();
-    element(by.id('protocol')).sendKeys(environment.PROTOCOL);
+    element(by.css('select option[value="http"]')).click();
     element(by.id('host')).clear();
     element(by.id('host')).sendKeys(environment.HOST);
     element(by.id('service_port')).clear();
