@@ -7,7 +7,7 @@
     </header>
     <section class="modal-card-body">
       <div class="card-content">
-        <form name="form" (ngSubmit)="f.form.valid && createUser(f)" #f="ngForm" novalidate>
+        <form name="form" id="ngForm" (ngSubmit)="f.form.valid && createUser(f)" #f="ngForm" novalidate>
           <div class="columns">
             <div class="column">
               <label class="label">Role</label>
@@ -45,16 +45,11 @@
               <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
             </div>
           </div>
-
-          <div class="columns">
-            <div class="column">
-              <div class="control">
-                <button id="save" type="submit" class="button is-success">Save</button>
-              </div>
-            </div>
-          </div>
         </form>
       </div>
     </section>
+    <footer class="modal-card-foot">
+      <button id="save" type="submit" form="ngForm" class="button is-success">Save</button>
+    </footer>
   </div>
 </div>

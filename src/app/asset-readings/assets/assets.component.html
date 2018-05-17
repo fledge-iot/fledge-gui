@@ -56,70 +56,72 @@
       </div>
     </header>
     <div class="card-content">
-      <div class="content">
-        <div class="columns">
-          <div class="column">
-            <div class="select is-fullwidth">
-              <select (ngModelChange)="setAssetCode($event)" [ngModel]="selectedAsset || 'Select'">
-                <option disabled  [ngValue]="">Select</option>
-                <option *ngFor="let asset of assets" [ngValue]='asset'>{{asset.assetCode}} ({{asset.count}})</option>
-              </select>
-            </div>
-          </div>
-          <div class="column is-fullwidth">
-            <number-input-debounce placeholder="limit" (value)="setLimit($event)" [val]="limit"></number-input-debounce>
-            <p *ngIf='isInvalidLimit' class='help is-danger'>Limit must be in range 1 - 1000</p>
-          </div>
-          <div class="column is-fullwidth">
-            <number-input-debounce placeholder="offset" (value)="setOffset($event)" [val]="offset"></number-input-debounce>
-            <p *ngIf='isInvalidOffset' class='help is-danger'>Offset must be in range 1 - 2147483647</p>
+      <div class="columns">
+        <div class="column is-4">
+          <div class="select is-fullwidth is-small">
+            <select (ngModelChange)="setAssetCode($event)" [ngModel]="selectedAsset || 'Select'">
+              <option disabled [ngValue]="">Select</option>
+              <option *ngFor="let asset of assets" [ngValue]='asset'>{{asset.assetCode}} ({{asset.count}})</option>
+            </select>
           </div>
         </div>
-        <table class="table is-striped is-narrow scroll is-responsive">
-          <thead>
-            <tr>
-              <th>Asset</th>
-              <th>Readings&nbsp;&nbsp;
-                <span class="tooltip is-tooltip-right" data-tooltip="DD-MM-YYYY HH:mm:ss">
-                  <i class="fa fa-info-circle"></i>
-                </span>
-              </th>
-              <th *ngIf="isSummary">
-                <button (click)="showAssetSummary(asset.assetCode)" class="button is-pulled-right">
-                  <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp; Summary
-                </button>
-              </th>
-              <th *ngIf="isChart">
-                <button (click)="showAssetChart(asset.assetCode)" class="button is-pulled-right">
-                  <i class="fa fa-line-chart" aria-hidden="true"></i> &nbsp; Trends
-                </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let asset of assetsReadingsData">
-              <td>
-                <small>{{asset.assetCode}}</small>
-              </td>
-              <td>
-                <tr *ngFor="let d of asset.data">
-                  <td>
-                    {{d.reading | json}}
-                  </td>
-                  <td>
-                    <span class="tag is-rounded">{{d.timestamp | dateparser: 'DD-MM-YYYY HH:mm:ss'}}</span>
-                  </td>
-                  <hr class="dropdown-divider">
-                </tr>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="column">
+          <div class="columns is-mobile">
+            <div class="column">
+              <number-input-debounce placeholder="limit" (value)="setLimit($event)" [val]="limit"></number-input-debounce>
+              <p *ngIf='isInvalidLimit' class='help is-danger'>Limit must be in range 1 - 2147483647</p>
+            </div>
+            <div class="column">
+              <number-input-debounce placeholder="offset" (value)="setOffset($event)" [val]="offset"></number-input-debounce>
+              <p *ngIf='isInvalidOffset' class='help is-danger'>Offset must be in range 1 - 2147483647</p>
+            </div>
+          </div>
+        </div>
       </div>
+      <table class="table is-striped is-narrow scroll is-responsive">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Readings&nbsp;&nbsp;
+              <span class="tooltip is-tooltip-right" data-tooltip="DD-MM-YYYY HH:mm:ss">
+                <i class="fa fa-info-circle"></i>
+              </span>
+            </th>
+            <th *ngIf="isSummary">
+              <button (click)="showAssetSummary(selectedAsset.assetCode)" class="button is-pulled-right is-small">
+                <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp; Summary
+              </button>
+            </th>
+            <th *ngIf="isChart">
+              <button (click)="showAssetChart(selectedAsset.assetCode)" class="button is-pulled-right is-small">
+                <i class="fa fa-line-chart" aria-hidden="true"></i> &nbsp; Trends
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let asset of assetsReadingsData">
+            <td>
+              <small>{{asset.assetCode}}</small>
+            </td>
+            <td>
+              <tr *ngFor="let d of asset.data">
+                <td>
+                  {{d.reading | json}}
+                </td>
+                <td>
+                  <span class="tag is-rounded">{{d.timestamp | dateparser: 'DD-MM-YYYY HH:mm:ss'}}</span>
+                </td>
+                <hr class="dropdown-divider">
+              </tr>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <app-asset-summary></app-asset-summary>
     <app-chart-modal></app-chart-modal>
-    <div *ngIf='totalPagesCount > 1'>
+    <div *ngIf='totalPagesCount > 1' class="pagination-section">
       <app-pagination [count]='recordCount' [page]="page" [perPage]='limit' [totalPage]='totalPagesCount' (goPrev)="onPrev()" (goNext)="onNext()"
         (goFirst)="onFirst()" (goLast)="onLast()" (goPage)="goToPage($event)">
       </app-pagination>
