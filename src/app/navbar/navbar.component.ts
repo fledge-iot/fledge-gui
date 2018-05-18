@@ -77,16 +77,25 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.changeDetectorRef.detectChanges();
   }
 
-  public pingService() {
+  public pingService(pingManually= false) {
+    if (pingManually === true) {
+      this.ngProgress.start();
+    }
     this.servicesHealthService.pingService()
       .subscribe(
         (data) => {
+          if (pingManually === true) {
+            this.ngProgress.done();
+          }
           this.status.changeMessage(true);
           this.ping_data = data;
           const statsTxt = 'Read:' + data['dataRead'] + '\n' + 'Sent:' + data['dataSent'] + '\n' + 'Purged:' + data['dataPurged'];
           this.ping_info = { stats: statsTxt, is_alive: true, service_status: 'running' };
         },
         (error) => {
+          if (pingManually === true) {
+            this.ngProgress.done();
+          }
           console.log('error: ', error);
           this.status.changeMessage(false);
           this.ping_info = { stats: 'No data', is_alive: false, service_status: 'service down' };
