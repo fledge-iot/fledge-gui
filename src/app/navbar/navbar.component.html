@@ -20,7 +20,7 @@
             <i [ngClass]="ping_info.is_alive?'fa fa-check-circle-o':'fa fa-times-circle'" aria-hidden="true"></i>
           </span>
           <span class="tag is-hidden-mobile">{{ping_info.service_status}}</span>
-          <button  (click)="pingService()" class="tag button is-small"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+          <button  (click)="pingService(true)" class="tag button is-small"><i class="fa fa-refresh" aria-hidden="true"></i></button>
         </div>
 
       </a>
