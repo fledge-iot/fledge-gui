@@ -1,5 +1,5 @@
 import { browser, by, element } from 'protractor';
-import { environment } from './environment';
+import { environment } from '../environment';
 
 export class SkipLogin {
   EC = browser.ExpectedConditions;
@@ -16,13 +16,23 @@ export class SkipLogin {
     element(by.id('host')).sendKeys(environment.HOST);
     element(by.id('service_port')).clear();
     element(by.id('service_port')).sendKeys(environment.SERVICE_PORT);
-    element(by.css('app-settings button.button.is-primary')).click();
+    element(by.id('set-url-restart-btn')).click();
     browser.waitForAngularEnabled(true);
   }
 
   getNavTitle() {
     browser.ignoreSynchronization = true;
     return element(by.css('#app .navbar-brand .navbar-item.is-hidden-mobile b')).getText();
+  }
+
+  loginPageInputTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-login form input')).count();
+  }
+
+  getLoginButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-login form button.is-info')).getText();
   }
 
   clickSkip() {
@@ -75,7 +85,7 @@ export class SkipLogin {
 
   getAssetsRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title > h5 > button > i')).isDisplayed();
+    return element(by.css('app-assets > div > div:nth-child(2) #card-title > h5 > button > i')).isDisplayed();
   }
 
   clickAssetSummary() {
@@ -280,10 +290,15 @@ export class SkipLogin {
     element(by.css('#create_schedule_modal .modal-card #repeat_day')).sendKeys('1');
     element(by.css('#create_schedule_modal .modal-card #repeat_time')).sendKeys('11:11:11');
     browser.sleep(2000);
-    element(by.css('#create_schedule_modal form #save')).click();
+    element(by.css('#create_schedule_modal #save')).click();
     // wait
     browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
     return element(by.id('alert')).getText();
+  }
+
+  closeAlert() {
+    browser.ignoreSynchronization = true;
+    element(by.css('#alert > button.delete')).click();
   }
 
   updateAndVerifySchedule() {
@@ -296,7 +311,7 @@ export class SkipLogin {
     element(by.css('#update_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).clear();
     element(by.css('#update_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).sendKeys('updateSchedule');
     browser.sleep(1000);
-    element(by.css('#update_schedule_modal form #save')).click();
+    element(by.css('#update_schedule_modal #save')).click();
     // wait
     browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
     return element(by.id('alert')).getText();
@@ -458,8 +473,8 @@ export class SkipLogin {
     browser.ignoreSynchronization = true;
     element(by.css('app-support header a')).click();
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('alert'))), 2000);
-    return element(by.css('alert')).getText();
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
   }
 
   navToSettings() {
@@ -468,7 +483,7 @@ export class SkipLogin {
 
   getSettingsTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-settings header p')).getText();
+    return element(by.css('app-settings header p.card-header-title')).getText();
   }
 
   getSettingsSelectTag() {
@@ -504,5 +519,11 @@ export class SkipLogin {
   getPingDropdown() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('app-settings header div.select.is-small')).count();
+  }
+
+  goToLoginPage() {
+    browser.ignoreSynchronization = true;
+    element.all(by.css('#dropdown-box > div.dropdown-trigger > a')).click();
+    element.all(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
   }
 }
