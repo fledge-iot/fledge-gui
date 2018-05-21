@@ -36,7 +36,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let service of service_data">
+            <tr *ngFor="let service of service_data" id="{{service.name.replace(' ', '_')}}">
               <td>{{service.name}}</td>
               <td>
                 <div class="tags has-addons">

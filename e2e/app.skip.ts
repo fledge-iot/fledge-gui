@@ -11,7 +11,7 @@ export class SkipLogin {
   setUpInstance() {
     browser.waitForAngularEnabled(false);
     element(by.css('app-login .has-text-grey a:nth-child(2)')).click();
-    element(by.id('protocol')).sendKeys(environment.PROTOCOL);
+    element(by.css('select option[value="http"]')).click();
     element(by.id('host')).clear();
     element(by.id('host')).sendKeys(environment.HOST);
     element(by.id('service_port')).clear();
@@ -33,7 +33,7 @@ export class SkipLogin {
   getCountOfSelectedGraph() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('angular2-multiselect .selected-list .c-list'))), 2000);
+    browser.wait(this.EC.visibilityOf(element(by.css('angular2-multiselect .selected-list .c-list'))), 4000);
     return element.all(by.css('angular2-multiselect .selected-list .c-list div')).count();
   }
 
@@ -78,6 +78,63 @@ export class SkipLogin {
     return element(by.css('#card-title > h5 > button > i')).isDisplayed();
   }
 
+  clickAssetSummary() {
+    browser.ignoreSynchronization = true;
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('app-assets table tbody:nth-child(2) tr:nth-child(1) td:nth-child(3) a'))), 3000);
+    return element(by.css('app-assets table tbody:nth-child(2) tr:nth-child(1) td:nth-child(3) a')).click();
+  }
+
+  getAssetSummarySelectTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('#summary_modal select')).count();
+  }
+
+  getAssetSummaryInputTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('#summary_modal number-input-debounce > input')).count();
+  }
+
+  getAssetSummaryColNames() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#summary_modal table thead tr')).getText();
+  }
+
+  isAssetSummaryChartIcon() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#summary_modal table th:nth-child(5) a')).isDisplayed();
+  }
+
+  clickChartIcon() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#summary_modal table th:nth-child(5) a')).click();
+  }
+
+  isChartDisplayed() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('.chartjs-render-monitor')).isDisplayed();
+  }
+
+  closeSummaryModal() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#summary_modal .modal-card header button')).click();
+  }
+
+  clickAssetChart() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-assets table tbody:nth-child(2) tr:nth-child(1) td:nth-child(4) a')).click();
+  }
+
+  getAssetChartInputTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('#chart_modal .modal-card number-input-debounce input')).count();
+  }
+
+  closeChartModal() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#chart_modal .modal-card header button')).click();
+  }
+
   navToAuditLogs() {
     return browser.get('/#/audit');
   }
@@ -100,11 +157,6 @@ export class SkipLogin {
   getAuditLogsSelectTag() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('app-audit-log div:nth-child(1) select')).count();
-  }
-
-  getAuditLogRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
   }
 
   getAuditLogsInputTag() {
@@ -148,7 +200,7 @@ export class SkipLogin {
   getConfigTitles() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-root app-configuration-manager > div > div:nth-child(2)'))), 5*1000);
+    browser.wait(this.EC.visibilityOf(element(by.css('app-root app-configuration-manager > div > div:nth-child(2)'))), 5 * 1000);
     return element(by.css('#app > app-root > ng-sidebar-container > div > div > app-configuration-manager > div')).getText();
   }
 
@@ -165,6 +217,41 @@ export class SkipLogin {
   isCancelButtonPresent() {
     browser.ignoreSynchronization = true;
     return element(by.id('btn-cancel-send_pr_1-plugin')).isDisplayed();
+  }
+
+  clickAddButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-configuration-manager > div > div:nth-child(2) > header > div:nth-child(2) > a')).click();
+  }
+
+  addConfigInputTagCount() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('#add-config-item .modal-card .modal-card-body form input')).count();
+  }
+
+  addConfigSelectTagCount() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('#add-config-item .modal-card form select')).count();
+  }
+
+  addConfigTextareaCount() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('#add-config-item .modal-card form textarea')).count();
+  }
+
+  isAddConfigSaveButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.id('save')).isDisplayed();
+  }
+
+  editAndVerifyConfigValue() {
+    browser.waitForAngularEnabled(false);
+    element(by.id('send_pr_1-plugin')).clear();
+    element(by.id('send_pr_1-plugin')).sendKeys('test');
+    element(by.id('btn-save-send_pr_1-plugin')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
   }
 
   navToScheduledTasks() {
@@ -184,6 +271,59 @@ export class SkipLogin {
   getCreateScheduleButton() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-scheduled-process .card-header .button.is-light')).getText();
+  }
+
+  createAndVerifySchedule() {
+    browser.ignoreSynchronization = true;
+    element(by.css('app-scheduled-process .card-header .button.is-light')).click();
+    element(by.css('#create_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).sendKeys('test');
+    element(by.css('#create_schedule_modal .modal-card #repeat_day')).sendKeys('1');
+    element(by.css('#create_schedule_modal .modal-card #repeat_time')).sendKeys('11:11:11');
+    browser.sleep(2000);
+    element(by.css('#create_schedule_modal form #save')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
+  }
+
+  updateAndVerifySchedule() {
+    browser.ignoreSynchronization = true;
+    // Scroll the element (created schedule) to view
+    const lastElement = element(by.xpath('//*[@id="test"]'));
+    browser.executeScript('arguments[0].scrollIntoView()', lastElement.getWebElement());
+
+    element(by.css('#test > td:nth-child(7) > a[name=test]')).click();
+    element(by.css('#update_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).clear();
+    element(by.css('#update_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).sendKeys('updateSchedule');
+    browser.sleep(1000);
+    element(by.css('#update_schedule_modal form #save')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
+  }
+
+  isUpdatedSchedulePresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-scheduled-process > div:nth-child(1) .card-content')).getText();
+  }
+
+  disableAndVerifySchedule() {
+    browser.ignoreSynchronization = true;
+    element(by.css('#updateSchedule > td:nth-child(9) > button[name=updateSchedule]')).click();
+    element(by.css('#modal-box > div.modal-card > footer > button.button.is-success')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
+  }
+
+  deleteAndVerifySchedule() {
+    browser.ignoreSynchronization = true;
+    element(by.css
+      ('#updateSchedule > td:nth-child(8) > a[name=updateSchedule]')).click();
+    element(by.css('#modal-box > div.modal-card > footer > button.button.is-success')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
   }
 
   getTasksTitle() {
@@ -220,6 +360,21 @@ export class SkipLogin {
     return element(by.css('app-services-health table thead tr')).getText();
   }
 
+  httpSouthServiceStatus() {
+    browser.ignoreSynchronization = true;
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('#HTTP_SOUTH td:nth-child(2) div span'))), 4000);
+    return element(by.css('#HTTP_SOUTH td:nth-child(2) div span')).getText();
+  }
+
+  shutdownHttpSouth() {
+    browser.ignoreSynchronization = true;
+    element(by.css('#HTTP_SOUTH > td:nth-child(8) > button')).click();
+    element(by.css('#modal-box footer .button.is-success')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 8000);
+  }
+
   navToCertificateStore() {
     return browser.get('/#/certificate');
   }
@@ -242,6 +397,18 @@ export class SkipLogin {
   getCertificateStoreImport() {
     browser.ignoreSynchronization = true;
     return element(by.css('cert-store header a')).getText();
+  }
+
+  isKeyPresent() {
+    browser.ignoreSynchronization = true;
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
+    return element(by.css('cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
+  }
+
+  isCertificatePresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
   }
 
   navToBackupRestore() {
@@ -285,6 +452,14 @@ export class SkipLogin {
   getRequestNewBundle() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-support header a')).getText();
+  }
+
+  requestNewBundle() {
+    browser.ignoreSynchronization = true;
+    element(by.css('app-support header a')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('alert'))), 2000);
+    return element(by.css('alert')).getText();
   }
 
   navToSettings() {
