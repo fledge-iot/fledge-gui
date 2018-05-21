@@ -473,8 +473,8 @@ export class SkipLogin {
     browser.ignoreSynchronization = true;
     element(by.css('app-support header a')).click();
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('alert'))), 2000);
-    return element(by.css('alert')).getText();
+    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
+    return element(by.id('alert')).getText();
   }
 
   navToSettings() {
