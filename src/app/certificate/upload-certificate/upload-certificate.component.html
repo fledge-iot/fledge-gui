@@ -22,12 +22,12 @@
                             <i class="fa fa-upload"></i>
                           </span>
                           <input type="file" required id="key" (change)="onKeyChange($event)" formControlName="key" #fileInput>
-                          <small *ngIf="!keyExtension" class="help is-danger level-left">Not a 'key' file.</small>
                         </span>
                       </label>
                     </div>
                   </div>
                 </div>
+                <small *ngIf="!keyExtension" class="help is-danger level-left">Not a 'key' file.</small>
               </div>
             </div>
           </div>
@@ -46,12 +46,12 @@
                             <i class="fa fa-upload"></i>
                           </span>
                           <input type="file" required id="cert" (change)="onCertChange($event)" formControlName="cert" #fileInput>
-                          <small *ngIf="!certExtension" class="help is-danger level-left">Not a 'cert' file.</small>
                         </span>
                       </label>
                     </div>
                   </div>
                 </div>
+                <small *ngIf="!certExtension" class="help is-danger level-left">Not a 'cert' file.</small>
               </div>
             </div>
           </div>
