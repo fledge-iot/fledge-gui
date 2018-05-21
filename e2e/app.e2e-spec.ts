@@ -143,6 +143,10 @@ describe('FogLAMP gui', () => {
     for (const ColumnName in ColumnsName) {
       expect(skipLogin.getServiceHealthColNames()).toContain(ColumnsName[ColumnName]);
     }
+
+    expect(skipLogin.httpSouthServiceStatus()).toContain('running');
+    skipLogin.shutdownHttpSouth();
+    expect(skipLogin.httpSouthServiceStatus()).toContain('down');
   });
 
   it('Should Display Certificate Store', () => {
@@ -158,6 +162,9 @@ describe('FogLAMP gui', () => {
       expect(skipLogin.getCertificateStoreColNames()).toContain(ColumnsName[ColumnName]);
     }
     expect(skipLogin.getCertificateStoreImport()).toContain('Import');
+
+    expect(skipLogin.isKeyPresent()).toEqual(true);
+    expect(skipLogin.isCertificatePresent()).toEqual(true);
   });
 
   it('Should Display Backup & Restore', () => {
@@ -179,6 +186,7 @@ describe('FogLAMP gui', () => {
     expect(skipLogin.getSupportBundlesTitle()).toContain('Support Bundles');
     expect(skipLogin.getSupportBundlesRefreshButton()).toEqual(true);
     expect(skipLogin.getRequestNewBundle()).toContain('Request New');
+    expect(skipLogin.requestNewBundle()).toContain('Support bundle created successfully');
   });
 
   it('Should Display Settings', () => {
