@@ -35,6 +35,8 @@ export class DashboardComponent implements OnInit {
 
   public chartOptions: object;
 
+  public DEFAULT_LIMIT = 20;
+
   constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
   ngOnInit() {
@@ -57,6 +59,13 @@ export class DashboardComponent implements OnInit {
       this.graphsToShow.push(selectedKeyData[0][0])
     }
     this.getStatistics();
+  }
+
+  getLimitBasedGraph(limit) {
+    if (limit === null || limit === undefined) {
+      limit = this.DEFAULT_LIMIT;
+    }
+    this.getStatisticsHistory(limit);
   }
 
   public getStatistics(): void {
@@ -165,8 +174,8 @@ export class DashboardComponent implements OnInit {
     this.getStatistics();
   }
 
-  public getStatisticsHistory(): void {
-    this.statisticsService.getStatisticsHistory().
+  public getStatisticsHistory(limit = this.DEFAULT_LIMIT): void {
+    this.statisticsService.getStatisticsHistory(limit).
       subscribe(data => {
         this.statisticsKeys.forEach(key => {
           let labels = [];
