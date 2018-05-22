@@ -33,7 +33,7 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
  Angular      | 4.4.6         |        6.0.0          | MIT 
  Angular CLI  | 1.6.8         |        6.0.1          | MIT 
  TypeScript   | 2.3.4         |        2.8.3          | Apache 2.0
- rxjs         | 5.4.3         |        6.1.0          | Apache 2.0
+ rxjs         | 5.5.10         |        6.1.0          | Apache 2.0
  Bulma css    | 0.7.1         |        0.7.1          | MIT
 
 #### Dev:
@@ -44,8 +44,9 @@ core-js          |  2.5.6        |        2.5.6          | MIT
 lodash-es        |  4.17.10      |        4.17.10        | MIT
 ngx-mask         |  1.0.3        |        1.0.3          | MIT 
 ng-sidebar       |  6.0.4        |        7.1.0          | MIT 
-moment           |  2.21.0       |        2.22.1         | MIT
+moment           |  2.22.1       |        2.22.1         | MIT
 ngx-progressbar  |  2.1.1        |        2.1.1          | MIT
+angular2-multiselect-dropdown | 2.7.0 |   2.9.0          | MIT
 
 
 #### Why Yarn?
