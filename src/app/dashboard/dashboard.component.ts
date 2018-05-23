@@ -37,6 +37,8 @@ export class DashboardComponent implements OnInit {
 
   public DEFAULT_LIMIT = 20;
 
+  public invalidLimitSize = false;
+
   constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
   ngOnInit() {
@@ -62,13 +64,20 @@ export class DashboardComponent implements OnInit {
   }
 
   getLimitBasedGraph(limit) {
+    this.invalidLimitSize = false;
     if (limit === null || limit === undefined) {
       limit = this.DEFAULT_LIMIT;
     }
-    this.getStatisticsHistory(limit);
+
+    if (limit > 2147483647) {
+      this.invalidLimitSize = true; // limit range validation
+      return;
+    }
+
+    this.getStatistics(limit);
   }
 
-  public getStatistics(): void {
+  public getStatistics(limit = this.DEFAULT_LIMIT): void {
     /** request started */
     this.ngProgress.start();
 
@@ -123,7 +132,7 @@ export class DashboardComponent implements OnInit {
         // Selected Items are the items, to show in the drop down (having keys- 'READINGS', 'SENT_1', 'PURGED')
         this.selectedItems = this.graphsToShow;
 
-        this.getStatisticsHistory();
+        this.getStatisticsHistory(limit);
       },
         error => {
           /** request completed */

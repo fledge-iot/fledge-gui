@@ -14,7 +14,8 @@
               {{ statistic.itemName }} Statistics History
             </div>
             <div class="column is-2">
-              <number-input-debounce placeholder="Limit" #limit (value)="getLimitBasedGraph(limit.inputValue)"></number-input-debounce>
+              <number-input-debounce placeholder="limit" #limit (value)="getLimitBasedGraph(limit.inputValue)"></number-input-debounce>
+              <p *ngIf='invalidLimitSize' class='help is-danger'>Limit must be in range 1 - 2147483647</p>
             </div>
             <div class="column">
               <button (click)="refreshGraph()" class="button is-small is-pulled-right">
@@ -32,7 +33,7 @@
           <b> {{ statistic.value }} </b>
         </h6>
         <small>
-          <i class="has-text-weight-light has-text-grey">* latest 20 records</i>
+          <i class="has-text-weight-light has-text-grey">* latest default | limit records</i>
         </small>
       </article>
     </div>
