@@ -61,9 +61,9 @@ See details [here](windows-nginx-deployment-guide.md)
 ## Supported/Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
-Safari (mac)  | 11.0.x   | latest 1
-Chrome  |65.0.x (64-bit) | latest 2 
-Firefox |59.0.x (64-bit) | latest 2
+Safari (mac)  | 11.x   | latest 1
+Chrome  |66.0.x (64-bit) | latest 2 
+Firefox |60.x (64-bit) | latest 2
 
 
 ## Other 
@@ -72,4 +72,4 @@ Firefox |59.0.x (64-bit) | latest 2
 [Developer's Guide](developers-guide.md)
 
 
-> &copy; 2017 DIANOMIC SYSTEMS. All Rights Reserved.
+> &copy; 2017-18 DIANOMIC SYSTEMS. All Rights Reserved.
