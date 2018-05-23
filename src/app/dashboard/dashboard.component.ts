@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
   public chartOptions: object;
 
   public DEFAULT_LIMIT = 20;
-
+  public limit = this.DEFAULT_LIMIT;
   public invalidLimitSize = false;
 
   constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) { }
@@ -186,6 +186,7 @@ export class DashboardComponent implements OnInit {
   public getStatisticsHistory(limit = this.DEFAULT_LIMIT): void {
     this.statisticsService.getStatisticsHistory(limit).
       subscribe(data => {
+        this.limit = limit;
         this.statisticsKeys.forEach(key => {
           let labels = [];
           let record = map(data.statistics, key)
