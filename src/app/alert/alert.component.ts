@@ -3,7 +3,7 @@ import { AlertService } from '../services/index';
 
 @Component({
     moduleId: module.id.toString(),
-    selector: 'alert',
+    selector: 'app-alert',
     templateUrl: 'alert.component.html',
     styleUrls: ['./alert.component.css']
 })

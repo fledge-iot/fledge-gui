@@ -8,7 +8,6 @@ import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 
 import { AuthGuard, UserGuard } from './guards/index';
-import { AlertComponent } from './directives/index';
 import {
   AlertService,
   AuthService,
@@ -47,12 +46,8 @@ import { ServiceDiscoveryComponent } from './service-discovery/service-discovery
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
 import { SharedService } from './services/shared.service';
-// import { UserManagementComponent } from './user-management/user-management.component';
-// import { CreateUserComponent } from './user-management/create-user/create-user.component';
 
 import { EqualValidator } from './directives/index';
-// import { UpdateUserComponent } from './user-management/update-user/update-user.component';
-// import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
 import { SupportComponent } from './support/support.component';
 import { SystemLogComponent } from './system-log/system-log.component';
 import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
@@ -64,6 +59,7 @@ import { PipesModule } from './pipes/pipes.module';
 import { ConfigurationModule } from './configuration-manager/configuaration.module';
 import { UserManagementModule } from './user-management/user.management.module';
 import { ModalModule } from './modal/modal.module';
+import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
   imports: [
