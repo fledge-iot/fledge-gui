@@ -59,33 +59,33 @@ export class ScheduledProcessComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.getSchedules().
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        this.scheduleData = data.schedules;
-        this.scheduleData.forEach(element => {
-          const repeatTimeObj = Utils.secondsToDhms(element.repeat);
-          if (repeatTimeObj.days == 1) {
-            element.repeat = repeatTimeObj.days + ' day, ' + repeatTimeObj.time;
-          } else if (repeatTimeObj.days > 1) {
-            element.repeat = repeatTimeObj.days + ' days, ' + repeatTimeObj.time;
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.scheduleData = data.schedules;
+          this.scheduleData.forEach(element => {
+            const repeatTimeObj = Utils.secondsToDhms(element.repeat);
+            if (repeatTimeObj.days == 1) {
+              element.repeat = repeatTimeObj.days + ' day, ' + repeatTimeObj.time;
+            } else if (repeatTimeObj.days > 1) {
+              element.repeat = repeatTimeObj.days + ' days, ' + repeatTimeObj.time;
+            } else {
+              element.repeat = repeatTimeObj.time;
+            }
+            // Time
+            element.time = Utils.secondsToDhms(element.time).time;
+          });
+          console.log('This is the getSchedule ', data.schedules);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
           } else {
-            element.repeat = repeatTimeObj.time;
+            this.alertService.error(error.statusText);
           }
-          // Time
-          element.time = Utils.secondsToDhms(element.time).time;
         });
-        console.log('This is the getSchedule ', data.schedules);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        };
-      });
   }
 
   /**
@@ -170,24 +170,24 @@ export class ScheduledProcessComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.disableSchedule(schedule_id).
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        let schedule = this.scheduleData.find(item => item.id === schedule_id);
-        if(data.status === true) {
-          schedule.enabled = false;
-        }
-        this.alertService.success(data.message);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        };
-      });
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          const schedule = this.scheduleData.find(item => item.id === schedule_id);
+          if (data.status === true) {
+            schedule.enabled = false;
+          }
+          this.alertService.success(data.message);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
@@ -200,24 +200,24 @@ export class ScheduledProcessComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.enableSchedule(schedule_id).
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        let schedule = this.scheduleData.find(item => item.id === schedule_id);
-        if(data.status === true){
-          schedule.enabled = true;
-        }
-        this.alertService.success(data.message);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        };
-      });
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          const schedule = this.scheduleData.find(item => item.id === schedule_id);
+          if (data.status === true) {
+            schedule.enabled = true;
+          }
+          this.alertService.success(data.message);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
@@ -230,20 +230,20 @@ export class ScheduledProcessComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.deleteSchedule(schedule_id).
       subscribe(
-      data => {
+        data => {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(data.message);
           this.getSchedules();
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        };
-      });
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }

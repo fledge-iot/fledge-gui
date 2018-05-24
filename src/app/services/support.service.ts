@@ -17,7 +17,7 @@ export class SupportService {
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
-  
+
   /**
    *  POST | /foglamp/support
    */
@@ -26,5 +26,4 @@ export class SupportService {
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
-
 }

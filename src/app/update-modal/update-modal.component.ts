@@ -29,7 +29,7 @@ export class UpdateModalComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges(changes: SimpleChanges) {
-    let regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'  // Regex to varify time format 00:00:00
+    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to varify time format 00:00:00
     this.form = this.fb.group({
       name: ['', [CustomValidator.nospaceValidator]],
       repeatDay: ['', [Validators.min(0), Validators.max(365)]],
@@ -68,7 +68,7 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     if (index == null) {
       selectedDay = 'None';
     } else {
-      selectedDay = this.days[index-1];
+      selectedDay = this.days[index - 1];
     }
     return selectedDay;
   }
@@ -77,7 +77,7 @@ export class UpdateModalComponent implements OnInit, OnChanges {
    * getSelectedDay
    */
   public getSelectedDayIndex(day) {
-    let day_index = this.days.indexOf(day) + 1;
+    const day_index = this.days.indexOf(day) + 1;
     return day_index;
   }
 
@@ -93,40 +93,40 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     let schedule_day;
     this.schedulesService.getSchedule(id).
       subscribe(
-      data => {
-        if (data.type == 'TIMED') {
-          this.selected_schedule_type = this.setScheduleTypeKey(data.type);
-          schedule_day = this.getSelectedDay(data.day);
-        } else {
-          this.selected_schedule_type = this.setScheduleTypeKey(data.type);
-        }
+        data => {
+          if (data.type == 'TIMED') {
+            this.selected_schedule_type = this.setScheduleTypeKey(data.type);
+            schedule_day = this.getSelectedDay(data.day);
+          } else {
+            this.selected_schedule_type = this.setScheduleTypeKey(data.type);
+          }
 
-        let repeatTimeObj = Utils.secondsToDhms(data.repeat);
-        let timeObj = Utils.secondsToDhms(data.time);
+          const repeatTimeObj = Utils.secondsToDhms(data.repeat);
+          const timeObj = Utils.secondsToDhms(data.time);
 
-        // Fill form field values
-        this.form.patchValue({
-          name: data.name,
-          repeatDay: repeatTimeObj.days,
-          repeat: repeatTimeObj.time,
-          exclusive: data.exclusive,
-          process_name: data.processName,
-          type: data.type,
-          day: schedule_day,
-          time: timeObj.time
+          // Fill form field values
+          this.form.patchValue({
+            name: data.name,
+            repeatDay: repeatTimeObj.days,
+            repeat: repeatTimeObj.time,
+            exclusive: data.exclusive,
+            process_name: data.processName,
+            type: data.type,
+            day: schedule_day,
+            time: timeObj.time
+          });
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
         });
-      },
-      error => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
   }
 
   public toggleModal(isOpen: Boolean) {
-    let update_schedule_modal = <HTMLDivElement>document.getElementById('update_schedule_modal');
+    const update_schedule_modal = <HTMLDivElement>document.getElementById('update_schedule_modal');
     if (isOpen) {
       update_schedule_modal.classList.add('is-active');
       return;
@@ -135,7 +135,7 @@ export class UpdateModalComponent implements OnInit, OnChanges {
   }
 
   public updateSchedule() {
-    let RepeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
+    const RepeatTime = this.form.get('repeat').value != ('None' || undefined) ? Utils.convertTimeToSec(
       this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
 
     this.selected_schedule_type = this.setScheduleTypeKey(this.form.get('type').value);
@@ -151,7 +151,7 @@ export class UpdateModalComponent implements OnInit, OnChanges {
       this.form.get('time').setValue(0);
     }
 
-    let updatePayload = {
+    const updatePayload = {
       'name': this.form.get('name').value,
       'process_name': this.form.get('process_name').value,
       'type': this.selected_schedule_type,
@@ -163,17 +163,17 @@ export class UpdateModalComponent implements OnInit, OnChanges {
 
     this.schedulesService.updateSchedule(this.childData.id, updatePayload).
       subscribe(
-      data => {
-        this.alertService.success('Schedule updated successfully.');
-        this.notify.emit();
-        this.toggleModal(false);
-      },
-      error => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+        data => {
+          this.alertService.success('Schedule updated successfully.');
+          this.notify.emit();
+          this.toggleModal(false);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }

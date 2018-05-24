@@ -15,7 +15,7 @@ export class ShutdownModalComponent implements OnInit {
   ngOnInit() { }
 
   public toggleModal(isOpen: Boolean) {
-    let modal_name = <HTMLDivElement>document.getElementById('shutdownModal-box');
+    const modal_name = <HTMLDivElement>document.getElementById('shutdownModal-box');
     if (isOpen) {
       modal_name.classList.add('is-active');
       return;

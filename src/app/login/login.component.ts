@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
-          };
+          }
         });
   }
 

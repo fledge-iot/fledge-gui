@@ -28,7 +28,7 @@ export class ModalComponent implements OnInit {
   ngOnInit() {}
 
   public toggleModal(isOpen: Boolean) {
-    let schedule_name = <HTMLDivElement>document.getElementById('modal-box');
+    const schedule_name = <HTMLDivElement>document.getElementById('modal-box');
     if (isOpen) {
       schedule_name.classList.add('is-active');
       return;

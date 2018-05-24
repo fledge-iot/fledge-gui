@@ -13,7 +13,7 @@ import { NgForm } from '@angular/forms';
 export class UserProfileComponent implements OnInit {
   public userRecord: any = {};
   public childData = {};
-  isShow: boolean = false;
+  isShow = false;
   @ViewChild(ModalComponent) child: ModalComponent;
 
   constructor(private authService: AuthService,
@@ -23,13 +23,13 @@ export class UserProfileComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-    this.getUser()
+    this.getUser();
   }
 
   getUser() {
     this.userRecord = {};
     this.ngProgress.start();
-    let id = sessionStorage.getItem('uid');
+    const id = sessionStorage.getItem('uid');
     // Get SignedIn user details
     this.userService.getUser(id)
       .subscribe(
@@ -40,9 +40,9 @@ export class UserProfileComponent implements OnInit {
                 this.ngProgress.done();
                 roleRecord.roles.filter(role => {
                   if (role.id == userData.roleId) {
-                    userData['roleName'] = role.name
+                    userData['roleName'] = role.name;
                   }
-                })
+                });
                 this.userRecord = {
                   userId: userData['userId'],
                   userName: userData['userName'],
@@ -56,7 +56,7 @@ export class UserProfileComponent implements OnInit {
                   console.log('service down ', error);
                 } else {
                   this.alertService.error(error.statusText);
-                };
+                }
               });
         },
         error => {
@@ -66,19 +66,19 @@ export class UserProfileComponent implements OnInit {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
-          };
+          }
         });
   }
 
   public resetUserForm(form: NgForm) {
-    form.controls["currentPassword"].reset();
-    form.controls["password"].reset();
-    form.controls["confirmPassword"].reset();
+    form.controls['currentPassword'].reset();
+    form.controls['password'].reset();
+    form.controls['confirmPassword'].reset();
     this.isShow = false;
   }
 
   public toggleModal(isOpen: Boolean) {
-    let userProfileModal = <HTMLDivElement>document.getElementById('user_profile_modal');
+    const userProfileModal = <HTMLDivElement>document.getElementById('user_profile_modal');
     if (isOpen) {
       userProfileModal.classList.add('is-active');
       return;
@@ -87,10 +87,10 @@ export class UserProfileComponent implements OnInit {
   }
 
   public changePassword(form: NgForm, userName) {
-    let passwordPayload: any = {
-      current_password: form.controls["currentPassword"].value,
-      new_password: form.controls["password"].value
-    }
+    const passwordPayload: any = {
+      current_password: form.controls['currentPassword'].value,
+      new_password: form.controls['password'].value
+    };
     this.ngProgress.start();
     this.userService.changePassword(passwordPayload, userName).
       subscribe(
@@ -99,7 +99,7 @@ export class UserProfileComponent implements OnInit {
           this.alertService.success(data.message);
           if (form != null) {
             this.toggleModal(false);
-            this.resetUserForm(form)
+            this.resetUserForm(form);
           }
         },
         error => {
@@ -130,7 +130,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   /**
-    *  Sign Out 
+    *  Sign Out
     *  @param id  user id
     */
   clearAllSessions(id) {

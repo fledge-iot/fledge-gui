@@ -27,7 +27,7 @@ export class AuthService {
     * @param string user id
     */
   clearAllSessions(id) {
-    return this.http.put(this.LOGOUT_URL + id + "/logout", null)
+    return this.http.put(this.LOGOUT_URL + id + '/logout', null)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }
@@ -36,7 +36,7 @@ export class AuthService {
    *  logout user
    */
   logout() {
-    return this.http.put(this.LOGOUT_URL + "logout", null)
+    return this.http.put(this.LOGOUT_URL + 'logout', null)
       .map(response => response)
       .catch((error: Response) => Observable.throw(error));
   }

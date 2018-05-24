@@ -43,7 +43,7 @@ export class SupportComponent implements OnInit {
       subscribe(
         data => {
           this.ngProgress.done();
-          this.alertService.success("Support bundle created successfully");
+          this.alertService.success('Support bundle created successfully');
           this.getBundles();
         },
         error => {
