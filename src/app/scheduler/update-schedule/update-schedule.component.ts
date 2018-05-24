@@ -1,15 +1,15 @@
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { SchedulesService, AlertService } from '../services/index';
-import Utils from '../utils';
-import { CustomValidator } from '../directives/custom-validator';
+import { SchedulesService, AlertService } from '../../services/index';
+import Utils from '../../utils';
+import { CustomValidator } from '../../directives/custom-validator';
 
 @Component({
-  selector: 'app-update-modal',
-  templateUrl: './update-modal.component.html',
-  styleUrls: ['./update-modal.component.css']
+  selector: 'app-update-schedule',
+  templateUrl: './update-schedule.component.html',
+  styleUrls: ['./update-schedule.component.css']
 })
-export class UpdateModalComponent implements OnInit, OnChanges {
+export class UpdateScheduleComponent implements OnInit, OnChanges {
   // Default selected schedule type is STARTUP = 1
   public selected_schedule_type: Number = 1;
 

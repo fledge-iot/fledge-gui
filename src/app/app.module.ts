@@ -17,7 +17,6 @@ import {
   ConfigurationService,
   StatisticsService,
   ServicesHealthService,
-  SchedulesService,
   ConnectedServiceStatus,
   DiscoveryService,
   UserService,
@@ -31,32 +30,25 @@ import {
 import { LoginComponent } from './login/index';
 import { FooterComponent } from './footer/index';
 
-import { KeysPipe, FilterPipe, MomentDatePipe } from './pipes/index';
+import { KeysPipe, FilterPipe } from './pipes/index';
 import { DashboardComponent } from './dashboard/index';
 import { ConfigurationManagerComponent } from '../app/configuration-manager/index';
 
 import { ChartModule } from './chart/index';
-import { ScheduledProcessComponent } from '../app/scheduler/scheduled-process/index';
 import { SideMenuComponent } from '../app/side-menu/side-menu.component';
 import { NavbarComponent } from '../app/navbar/navbar.component';
-import { AssetsComponent } from '../app/asset-readings/assets/assets.component';
+// import { AssetsComponent } from '../app/asset-readings/assets/assets.component';
 import { AuditLogComponent } from '../app/audit-log/audit-log.component';
 import { CertificateStoreComponent } from '../app/certificate/certificate-store/certificate-store.component';
-import { NumberInputDebounceComponent } from '../app/number-input-debounce/number-input-debounce.component';
-
-import { NgxMaskModule } from 'ngx-mask';
-import { ModalComponent } from './modal/modal.component';
+// import { NumberInputDebounceComponent } from '../app/number-input-debounce/number-input-debounce.component';
 import { UploadCertificateComponent } from './certificate/upload-certificate/upload-certificate.component';
-import { UpdateModalComponent } from './update-modal/update-modal.component';
 import { SidebarModule } from 'ng-sidebar';
 import { SettingsComponent } from './settings/index';
-import { PaginationComponent } from './pagination/index';
+// import { PaginationComponent } from './pagination/index';
 import { ServicesHealthComponent } from './services-health/index';
-import { CreateScheduleComponent } from './scheduler/create-schedule/create-schedule.component';
-import { ListTasksComponent } from './scheduler/list-tasks/list-tasks.component';
-import { AssetSummaryComponent } from './asset-readings/asset-summary/asset-summary.component';
-import { ChartModalComponent } from './asset-readings/chart-modal/chart-modal.component';
-import { AssetSummaryService } from './asset-readings/asset-summary/asset-summary-service';
+// import { AssetSummaryComponent } from './asset-readings/asset-summary/asset-summary.component';
+// import { ChartModalComponent } from './asset-readings/chart-modal/chart-modal.component';
+// import { AssetSummaryService } from './asset-readings/asset-summary/asset-summary-service';
 import { NumberOnlyDirective } from './directives/number-only.directive';
 import { InputTrimDirective } from './directives/input-trim.directive';
 import { NgProgressModule } from 'ngx-progressbar';
@@ -77,6 +69,10 @@ import { BackupRestoreComponent } from './backup-restore/backup-restore.componen
 import { AddConfigItemComponent } from './configuration-manager/add-config-item/add-config-item.component';
 import { ResetPasswordComponent } from './user-management/reset-password/reset-password.component';
 
+import { SchedulerModule } from './scheduler/scheduler.module';
+import { AssetsModule } from './asset-readings/assets.module';
+import { PipesModule } from './pipes/pipes.module';
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -85,10 +81,12 @@ import { ResetPasswordComponent } from './user-management/reset-password/reset-p
     HttpClientModule,
     routing,
     ChartModule,
-    NgxMaskModule,
     SidebarModule.forRoot(),
     NgProgressModule,
-    AngularMultiSelectModule
+    AngularMultiSelectModule,
+    SchedulerModule,
+    AssetsModule,
+    PipesModule
   ],
   declarations: [
     AppComponent,
@@ -97,26 +95,20 @@ import { ResetPasswordComponent } from './user-management/reset-password/reset-p
     FooterComponent,
     KeysPipe,
     FilterPipe,
-    MomentDatePipe,
     DashboardComponent,
     ConfigurationManagerComponent,
-    ScheduledProcessComponent,
     SideMenuComponent,
     NavbarComponent,
-    AssetsComponent,
+    // AssetsComponent,
     AuditLogComponent,
     CertificateStoreComponent,
-    NumberInputDebounceComponent,
-    ModalComponent,
+    // NumberInputDebounceComponent,
     UploadCertificateComponent,
-    UpdateModalComponent,
     SettingsComponent,
     ServicesHealthComponent,
-    PaginationComponent,
-    CreateScheduleComponent,
-    ListTasksComponent,
-    AssetSummaryComponent,
-    ChartModalComponent,
+    // PaginationComponent,
+    // AssetSummaryComponent,
+    // ChartModalComponent,
     NumberOnlyDirective,
     InputTrimDirective,
     ServiceDiscoveryComponent,
@@ -142,9 +134,8 @@ import { ResetPasswordComponent } from './user-management/reset-password/reset-p
     AssetsService,
     AuditService,
     SystemLogService,
-    SchedulesService,
     ServicesHealthService,
-    AssetSummaryService,
+    // AssetSummaryService,
     ConnectedServiceStatus,
     DiscoveryService,
     SharedService,

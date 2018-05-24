@@ -33,7 +33,7 @@ export class CertificateStoreComponent implements OnInit {
   /**
   * Open upload certificate modal dialog
   */
- openUploadCertModal() {
+  openUploadCertModal() {
     // call child component method to toggle modal
     this.uploadModal.toggleModal(true);
   }
@@ -43,21 +43,21 @@ export class CertificateStoreComponent implements OnInit {
     this.ngProgress.start();
     this.certService.getCertificates().
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        this.certificatesData = data.certificates;
-        console.log('certificatesData', this.certificatesData);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.certificatesData = data.certificates;
+          console.log('certificatesData', this.certificatesData);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   private getCertificateName(key, cert) {
@@ -77,7 +77,7 @@ export class CertificateStoreComponent implements OnInit {
    * @param action here action is 'delete'
    */
   openDeleteModal(key, cert, message, action) {
-    this.certificateName = this.getCertificateName(key, cert)
+    this.certificateName = this.getCertificateName(key, cert);
     this.childData = {
       id: '',
       name: this.certificateName,
@@ -98,25 +98,25 @@ export class CertificateStoreComponent implements OnInit {
     this.ngProgress.start();
     this.certService.deleteCertificate(cert_name).
       subscribe(
-      data => {
+        data => {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(data.result);
           this.getCertificates();
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        };
-      });
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
-   * To reload cirtificate list after uploading of certificate
+   * To reload certificate list after uploading of certificate
    * @param notify
    */
   onNotify() {

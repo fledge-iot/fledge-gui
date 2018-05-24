@@ -4,7 +4,7 @@ import { AlertService, AuthService, UserService } from '../services/index';
 import { SharedService } from '../services/shared.service';
 import { NgProgress } from 'ngx-progressbar';
 import { ModalComponent } from '../modal/modal.component';
-import { CreateUserComponent } from "./create-user/create-user.component";
+import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
 
 
@@ -23,7 +23,7 @@ export class UserManagementComponent implements OnInit {
   public childData = {};
   public userRecord;
   public uid: string;
-  public roles = []
+  public roles = [];
   seletedTab: Number = 1;  // 1: user-management , 2 : roles
 
   constructor(private route: ActivatedRoute,
@@ -53,7 +53,7 @@ export class UserManagementComponent implements OnInit {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
-          };
+          }
         });
   }
 
@@ -67,10 +67,10 @@ export class UserManagementComponent implements OnInit {
           roleRecord.roles.filter(role => {
             users.forEach(user => {
               if (role.id == user.roleId) {
-                user['roleName'] = role.name
+                user['roleName'] = role.name;
               }
-            })
-          })
+            });
+          });
           this.userRecord = users.sort();
         },
         error => {
@@ -80,7 +80,7 @@ export class UserManagementComponent implements OnInit {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
-          };
+          }
         });
   }
 
@@ -142,12 +142,12 @@ export class UserManagementComponent implements OnInit {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
-          };
+          }
         });
   }
 
   /**
-     *  Sign Out 
+     *  Sign Out
      */
   clearAllSessions(id) {
     this.ngProgress.start();

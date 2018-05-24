@@ -63,8 +63,7 @@ export class ServicesHealthComponent implements OnInit {
   checkServiceType(type, serviceStatus) {
     if (type == 'storage' || type == 'core') {
       return false;
-    }
-    else if (serviceStatus == 'running' || serviceStatus == 'unresponsive') {
+    } else if (serviceStatus == 'running' || serviceStatus == 'unresponsive') {
       return true;
     }
     return false;
@@ -90,7 +89,7 @@ export class ServicesHealthComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success(data.message)
+          this.alertService.success(data.message);
           this.getServiceData();
         },
         (error) => {
@@ -110,7 +109,7 @@ export class ServicesHealthComponent implements OnInit {
     const diff = 10 - s.length;
     if (diff) {
       for (let i = 1; i <= diff; i++) {
-        s += "  ";
+        s += '  ';
       }
     }
     return s;
