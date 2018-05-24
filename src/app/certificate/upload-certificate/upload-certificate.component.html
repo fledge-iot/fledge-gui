@@ -6,8 +6,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="card-content">
-        <form [formGroup]="form" (ngSubmit)="uploadCertificate()" novalidate>
+        <form [formGroup]="form" id="ngForm" (ngSubmit)="uploadCertificate()" novalidate>
           <div class="columns">
             <div class="column">
               <div class="field is-horizontal">
@@ -23,12 +22,12 @@
                             <i class="fa fa-upload"></i>
                           </span>
                           <input type="file" required id="key" (change)="onKeyChange($event)" formControlName="key" #fileInput>
-                          <small *ngIf="!keyExtension" class="help is-danger level-left">Not a 'key' file.</small>
                         </span>
                       </label>
                     </div>
                   </div>
                 </div>
+                <small *ngIf="!keyExtension" class="help is-danger level-left">Not a 'key' file.</small>
               </div>
             </div>
           </div>
@@ -47,12 +46,12 @@
                             <i class="fa fa-upload"></i>
                           </span>
                           <input type="file" required id="cert" (change)="onCertChange($event)" formControlName="cert" #fileInput>
-                          <small *ngIf="!certExtension" class="help is-danger level-left">Not a 'cert' file.</small>
                         </span>
                       </label>
                     </div>
                   </div>
                 </div>
+                <small *ngIf="!certExtension" class="help is-danger level-left">Not a 'cert' file.</small>
               </div>
             </div>
           </div>
@@ -69,9 +68,10 @@
               </div>
             </div>
           </div>
-          <button type="submit" class="button is-small is-success">Import</button>
         </form>
-      </div>
     </section>
+    <footer class="modal-card-foot">
+        <button id="save" type="submit" form="ngForm" class="button is-success">Import</button>
+      </footer>
   </div>
 </div>

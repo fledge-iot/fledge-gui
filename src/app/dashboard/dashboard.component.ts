@@ -35,6 +35,10 @@ export class DashboardComponent implements OnInit {
 
   public chartOptions: object;
 
+  public DEFAULT_LIMIT = 20;
+  public limit = this.DEFAULT_LIMIT;
+  public invalidLimitSize = false;
+
   constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
   ngOnInit() {
@@ -59,7 +63,21 @@ export class DashboardComponent implements OnInit {
     this.getStatistics();
   }
 
-  public getStatistics(): void {
+  getLimitBasedGraph(limit) {
+    this.invalidLimitSize = false;
+    if (limit === null || limit === undefined) {
+      limit = this.DEFAULT_LIMIT;
+    }
+
+    if (limit > 2147483647) {
+      this.invalidLimitSize = true; // limit range validation
+      return;
+    }
+
+    this.getStatistics(limit);
+  }
+
+  public getStatistics(limit = this.DEFAULT_LIMIT): void {
     /** request started */
     this.ngProgress.start();
 
@@ -114,7 +132,7 @@ export class DashboardComponent implements OnInit {
         // Selected Items are the items, to show in the drop down (having keys- 'READINGS', 'SENT_1', 'PURGED')
         this.selectedItems = this.graphsToShow;
 
-        this.getStatisticsHistory();
+        this.getStatisticsHistory(limit);
       },
         error => {
           /** request completed */
@@ -165,9 +183,10 @@ export class DashboardComponent implements OnInit {
     this.getStatistics();
   }
 
-  public getStatisticsHistory(): void {
-    this.statisticsService.getStatisticsHistory().
+  public getStatisticsHistory(limit = this.DEFAULT_LIMIT): void {
+    this.statisticsService.getStatisticsHistory(limit).
       subscribe(data => {
+        this.limit = limit;
         this.statisticsKeys.forEach(key => {
           const labels = [];
           const record = map(data.statistics, key);
