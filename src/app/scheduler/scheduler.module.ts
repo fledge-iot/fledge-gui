@@ -6,10 +6,10 @@ import { ListTasksComponent } from './list-tasks/list-tasks.component';
 import { CreateScheduleComponent } from './create-schedule/create-schedule.component';
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
 import { NgProgressModule } from 'ngx-progressbar';
-import { ModalComponent } from '../modal/modal.component';
 import { SchedulesService } from '../services';
 import { NgxMaskModule } from 'ngx-mask';
 import { PipesModule } from '../pipes/pipes.module';
+import { ModalModule } from '../modal/modal.module';
 
 @NgModule({
   declarations: [
@@ -17,7 +17,6 @@ import { PipesModule } from '../pipes/pipes.module';
     ListTasksComponent,
     CreateScheduleComponent,
     UpdateScheduleComponent,
-    ModalComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -25,11 +24,10 @@ import { PipesModule } from '../pipes/pipes.module';
     CommonModule,
     NgProgressModule,
     NgxMaskModule,
-    PipesModule
+    PipesModule,
+    ModalModule
   ],
   providers: [SchedulesService],
-  exports: [ModalComponent]
+  exports: []
 })
-export class SchedulerModule {
-
-}
+export class SchedulerModule {}
