@@ -4,192 +4,212 @@ import Utils from '../utils';
 import { MomentDatePipe } from './../pipes/moment-date';
 import { NgProgress } from 'ngx-progressbar';
 
+import map from 'lodash-es/map';
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashboardComponent implements OnInit {
-  statisticsData = {};
-  statHistoryData = [];
+  // Filtered array of received statistics data (having objects except key @FOGBENCH).
+  statistics = [];
 
-  readingChart: string;
-  readingValues: any;
+  // Array of Statistics Keys (["BUFFERED", "DISCARDED", "PURGED", ....])
+  statisticsKeys = [];
 
-  purgeChart: string;
-  purgedValues: any;
+  selectedKeys = [];
 
-  sentChart: string;
-  sentValues: any;
-  public chartOptions: any;
+  // Object of dropdown setting
+  dropdownSettings = {};
 
-  constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) {
+  selectedItems = [];
 
-    this.readingChart = 'line';
-    this.readingValues = [];
+  // Array of the graphs to show
+  graphsToShow = [];
 
-    this.purgeChart = 'line';
-    this.purgedValues = [];
+  // Array of default graphs to show ('READINGS', 'SENT_1', 'PURGED')
+  showDefaultGraphs = [];
 
-    this.sentChart = 'line';
-    this.sentValues = [];
-  }
+  public chartOptions: object;
+
+  public DEFAULT_LIMIT = 20;
+  public limit = this.DEFAULT_LIMIT;
+  public invalidLimitSize = false;
+
+  constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
   ngOnInit() {
     this.getStatistics();
-    this.getStatisticsHistory();
   }
 
-  public getStatistics(): void {
+  public showGraph(graphs) {
+    this.selectedKeys = [];
+    // get keys selected from dropdown
+    for (const k of graphs) {
+      this.selectedKeys.push(k.itemName);
+    }
+    // save keys in local storage
+    localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
+
+    this.graphsToShow = [];
+    for (const k of this.selectedKeys) {
+      let selectedKeyData = [];
+      selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
+      this.graphsToShow.push(selectedKeyData[0][0])
+    }
+    this.getStatistics();
+  }
+
+  getLimitBasedGraph(limit) {
+    this.invalidLimitSize = false;
+    if (limit === null || limit === undefined) {
+      limit = this.DEFAULT_LIMIT;
+    }
+
+    if (limit > 2147483647) {
+      this.invalidLimitSize = true; // limit range validation
+      return;
+    }
+
+    this.getStatistics(limit);
+  }
+
+  public getStatistics(limit = this.DEFAULT_LIMIT): void {
     /** request started */
     this.ngProgress.start();
+
     this.statisticsService.getStatistics().
-      subscribe(
-        data => {
-          /** request completed */
-          this.ngProgress.done();
-
-          if (data.error) {
-            console.log('error in response', data.error);
-            this.alertService.error(data.error.message);
-            return;
-          }
-          console.log('recived statisticsData ', data);
-          // this.statisticsData = data;
-          const o: object = {};
-          data.forEach(element => {
-            o[element.key] = element.value;
-          });
-          this.statisticsData = o;
-          console.log('This is the statisticsData ', this.statisticsData);
-        },
-        error => { 
-          /** request completed */
-          this.ngProgress.done();
-          console.log('error', error); 
-        });
-  }
-
-  public getStatisticsHistory(): void {
-    const readingsValues = [];
-    const readingsLabels = [];
-
-    const purgedValues = [];
-    const purgedLabels = [];
-
-    const sentValues = [];
-    const sentLabels = [];
-    const datePipe = new MomentDatePipe();
-    this.statisticsService.getStatisticsHistory().
       subscribe(data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-          return;
+        /** request completed */
+        this.ngProgress.done();
+        console.log('received statisticsData ', data);
+        // filter received data for FOGBENCH data
+        this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
+        console.log('statisticsData ', this.statistics);
+
+        this.statisticsKeys = [];
+        for (const d of this.statistics) {
+          this.statisticsKeys.push(d.key);
         }
-        this.statHistoryData = data.statistics;
-        console.log('Statistics History Data', data);
-        this.statHistoryData.forEach(element => {
-          Object.keys(element).forEach(aKey => {
-            if (aKey.indexOf('READINGS') !== -1) {
-              readingsValues.push(element[aKey]);
-              const tempDt = element['history_ts'];
-              readingsLabels.push( datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
-            }
-            if (aKey.indexOf('PURGED') !== -1 && aKey.indexOf('UNSNPURGED') === -1) {
-              purgedValues.push(element[aKey]);
-              const tempDt = element['history_ts'];
-              purgedLabels.push( datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
-            }
-            if (aKey.indexOf('SENT_1') !== -1 && aKey.indexOf('UNSENT') === -1) {
-              sentValues.push(element[aKey]);
-              const tempDt = element['history_ts'];
-              sentLabels.push( datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
+        console.log('keys array', this.statisticsKeys);
+
+        // If graphs are not selected yet, then show graphs of 'READINGS', 'SENT_1' and 'PURGED' and save in local storage
+        if (!localStorage.getItem('OPTED_GRAPHS')) {
+          this.selectedKeys = ['READINGS', 'SENT_1', 'PURGED'];
+          localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
+        }
+
+        // Rename 'key' to 'itemName' and add a new key as named 'id'
+        for (let i = 0; i < this.statistics.length; i++) {
+          this.statistics[i].id = i;
+          this.statistics[i].itemName = this.statistics[i]['key'];
+          delete this.statistics[i].key;
+        }
+
+        // Set the options for drop down setting
+        this.dropdownSettings = {
+          singleSelection: false,
+          text: 'Select Graphs',
+          selectAllText: 'Select All',
+          unSelectAllText: 'UnSelect All',
+          enableSearchFilter: true
+        };
+
+        if (localStorage.getItem('OPTED_GRAPHS')) {
+          this.selectedKeys = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
+          this.graphsToShow = [];
+          for (const k of this.selectedKeys) {
+            let selectedKeyData = [];
+            selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
+            this.graphsToShow.push(selectedKeyData[0][0])
+          }
+          console.log('graphsToShow', this.graphsToShow);
+        }
+
+        // Selected Items are the items, to show in the drop down (having keys- 'READINGS', 'SENT_1', 'PURGED')
+        this.selectedItems = this.graphsToShow;
+
+        this.getStatisticsHistory(limit);
+      },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  protected getChartOptions() {
+    this.chartOptions = {
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  }
+
+  protected getChartValues(labels, data, color) {
+    this.getChartOptions();
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: '',
+          data: data,
+          backgroundColor: color,
+          fill: false,
+          lineTension: 0
+        }
+      ]
+    }
+  }
+
+  /**
+   *  Refresh graphs
+   */
+  public refreshGraph() {
+    this.getStatistics();
+  }
+
+  public getStatisticsHistory(limit = this.DEFAULT_LIMIT): void {
+    this.statisticsService.getStatisticsHistory(limit).
+      subscribe(data => {
+        this.limit = limit;
+        this.statisticsKeys.forEach(key => {
+          let labels = [];
+          let record = map(data.statistics, key)
+          let history_ts = map(data.statistics, 'history_ts');
+          history_ts.forEach(element => {
+            element = moment(element).format('HH:mm:ss:SSS')
+            labels.push(element)
+          });
+          this.graphsToShow.map(statistics => {
+            if (statistics.itemName == key) {
+              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
+              statistics.chartType = 'line';
+              return statistics;
             }
           });
+        })
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
         });
-        this.statsHistoryReadingsGraph(readingsLabels, readingsValues);
-        this.statsHistoryPurgedGraph(purgedLabels, purgedValues);
-        this.statsHistorySentGraph(sentLabels, sentValues);
-      },
-      error => { console.log('error', error); });
-  }
-
-  statsHistoryReadingsGraph(labels, data): void {
-    this.readingChart = 'line';
-    this.readingValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(100,149,237)',
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
-  }
-
-  statsHistoryPurgedGraph(labels, data): void {
-    this.purgeChart = 'line';
-    this.purgedValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(255,165,0)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
-  }
-
-  statsHistorySentGraph(labels, data): void {
-    this.sentChart = 'line';
-    this.sentValues = {
-      labels: labels,
-      datasets: [
-        {
-          label: '',
-          data: data,
-          backgroundColor: 'rgb(144,238,144)'
-        }
-      ]
-    };
-    this.chartOptions = {
-      legend: {
-        display: false // fixme: not working
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
-      }
-    };
   }
 }

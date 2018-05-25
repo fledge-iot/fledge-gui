@@ -22,7 +22,7 @@ export class ListTasksComponent implements OnInit {
    * @param state Task state
    */
   public getTasks(state) {
-    if (state.toUpperCase() == 'RUNNING') {
+    if (state.toUpperCase() === 'RUNNING') {
       this.selectedTaskType = 'Running';
       this.getRunningTasks();
       return;
@@ -43,17 +43,17 @@ export class ListTasksComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        if (data.error) {
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.tasksData = data.tasks;
         console.log('Latest tasks ', data.tasks);
       },
       error => {
         /** request completed */
         this.ngProgress.done();
-        console.log('error', error);
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
       });
   }
 
@@ -69,16 +69,17 @@ export class ListTasksComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        if (data.error) {
-          this.alertService.error(data.error.message);
-        }
         this.tasksData = data.tasks;
         console.log('Running tasks ', this.tasksData);
       },
       error => {
         /** request completed */
         this.ngProgress.done();
-        console.log('error', error);
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        };
       });
   }
 
@@ -95,9 +96,6 @@ export class ListTasksComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        if (data.error) {
-          this.alertService.error(data.error.message);
-        }
         if (data.message) {
           this.alertService.success(data.message + ' Wait for 5 seconds!');
           // TODO: remove cancelled task object from local list
@@ -114,7 +112,11 @@ export class ListTasksComponent implements OnInit {
       error => {
         /** request completed */
         this.ngProgress.done();
-        console.log('error', error);
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        };
       });
   }
 }

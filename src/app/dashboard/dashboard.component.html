@@ -1,39 +1,40 @@
 <div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
-    [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
     [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
-  <div class="tile">
+
+  <angular2-multiselect (ngModelChange)="showGraph($event)" [data]="statistics" [(ngModel)]="selectedItems" [settings]="dropdownSettings"></angular2-multiselect>
+
+  <div class="tile" *ngFor="let statistic of graphsToShow">
     <div class="tile is-parent">
       <article class="tile is-child box">
-        <h4> Readings Statistics History </h4>
+        <h5 class="title is-5">
+          <div class="columns">
+            <div class="column is-9">
+              {{ statistic.itemName }} Statistics History
+            </div>
+            <div class="column is-2">
+              <number-input-debounce placeholder="limit" (value)="getLimitBasedGraph($event)" [val]='limit'></number-input-debounce>
+              <p *ngIf='invalidLimitSize' class='help is-danger'>Limit must be in range 1 - 2147483647</p>
+            </div>
+            <div class="column">
+              <button (click)="refreshGraph()" class="button is-small is-pulled-right">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </h5>
+
+        <h6 class="subtitle is-6">{{ statistic.description }}</h6>
         <br/>
-        <chart [type]="readingChart" [data]="readingValues" [options]="chartOptions"></chart>
+        <chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></chart>
         <br/>
-        <h6>Total since startup:<b> {{statisticsData['READINGS']}} </b></h6>
+        <h6>Total since startup:
+          <b> {{ statistic.value }} </b>
+        </h6>
+        <small>
+          <i class="has-text-weight-light has-text-grey">* latest {{limit}} records</i>
+        </small>
       </article>
     </div>
   </div>
-  <div class="tile">
-    <div class="tile is-parent">
-      <article class="tile is-child box">
-        <h4> Sent Statistics History </h4>
-        <br/>
-        <chart [type]="sentChart" [data]="sentValues" [options]="chartOptions"></chart>
-        <br/>
-        <h6>Total since startup:<b> {{statisticsData['SENT_1']}} </b></h6>
-      </article>
-    </div>
-  </div>
-  <div class="tile">
-    <div class="tile is-parent">
-      <article class="tile is-child box">
-        <h4> Purge Statistics History </h4>
-        <br/>
-        <chart [type]="purgeChart" [data]="purgedValues" [options]="chartOptions"></chart>
-        <br/>
-        <h6>Total since startup:<b> {{statisticsData['PURGED']}} </b></h6>
-      </article>
-    </div>
-  </div>
-</div>

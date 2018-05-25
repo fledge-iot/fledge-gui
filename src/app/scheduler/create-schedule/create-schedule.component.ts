@@ -47,7 +47,7 @@ export class CreateScheduleComponent implements OnInit {
     // Set default values on form
     this.form.get('type').setValue(1);
     this.form.get('exclusive').setValue(true);
-    this.form.get('day').setValue(1);
+    this.form.get('day').setValue("");
   }
 
   public toggleModal(isOpen: Boolean) {
@@ -91,16 +91,17 @@ export class CreateScheduleComponent implements OnInit {
       this.schedulesService.createSchedule(payload).
         subscribe(
         data => {
-          if (data.error) {
-            console.log('error in response', data.error);
-            this.alertService.error(data.error.message);
-            return;
-          }
           this.notify.emit();
           this.toggleModal(false);
           this.alertService.success('Schedule created successfully.');
         },
-        error => { console.log('error', error); });
+        error => { 
+          if (error.status === 0) {
+              console.log('service down ', error);
+          } else {
+              this.alertService.error(error.statusText);
+          }
+        });
     } else {
       CustomValidator.validateAllFormFields(this.form);
     }
@@ -114,6 +115,7 @@ export class CreateScheduleComponent implements OnInit {
     // enable, disable time and date field on schedule type change 
     if (this.form.get('type').value == 2) {
       this.form.get('day').enable();
+      this.form.get('day').setValue("");
       this.form.get('time').enable();
     } else {
       this.form.get('day').disable();
@@ -127,30 +129,33 @@ export class CreateScheduleComponent implements OnInit {
     this.schedulesService.getScheduledProcess().
       subscribe(
       data => {
-        if (data.error) {
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.scheduleProcess = data.processes;
         this.form.get('processName').setValue(this.scheduleProcess[0])
         console.log('This is the getScheduleProcess ', this.scheduleProcess);
         this.process.emit(this.scheduleProcess);
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+            console.log('service down ', error);
+        } else {
+            this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public getScheduleType(): void {
     this.schedulesService.getScheduleType().
       subscribe(
       data => {
-        if (data.error) {
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.scheduleType = data.scheduleType;
-        console.log(this.scheduleType);
         this.type.emit(this.scheduleType);
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+            console.log('service down ', error);
+        } else {
+            this.alertService.error(error.statusText);
+        }
+      });
   }
 }

@@ -11,14 +11,14 @@ import { NgProgress } from 'ngx-progressbar';
 })
 export class AssetsComponent implements OnInit {
 
-  selectedAsset: any = 'Select'; // Selected asset object (asset_coded, asset_count)
-  asset: any;
-  limit: number = 20;
-  offset: number = 0;
+  selectedAsset: any; // Selected asset object (assetCode, count)
+  DEFAULT_LIMIT = 20;
+  limit = this.DEFAULT_LIMIT;
+  offset = 0;
 
   page = 1;           // Default page is 1 in pagination
   recordCount = 0;    // Total no. of records during pagination
-  tempOffset: number = 0;     // Temporary offset during pagination
+  tempOffset = 0;     // Temporary offset during pagination
   totalPagesCount = 0;
   assets = [];
   assetsReadingsData = [];
@@ -92,7 +92,7 @@ export class AssetsComponent implements OnInit {
    */
   setLimitOffset() {
     if (this.limit === 0) {
-      this.limit = 20;
+      this.limit = this.DEFAULT_LIMIT;
     }
     if (this.offset > 0) {
       this.tempOffset = ((this.page - 1) * this.limit) + this.offset;
@@ -102,29 +102,36 @@ export class AssetsComponent implements OnInit {
     console.log('limit: ', this.limit);
     console.log('offset: ', this.offset);
     console.log('temp offset: ', this.tempOffset);
-    this.getAssetReading();
+    this.getAsset();
   }
 
   public setAssetCode(assetData) {
+    if (assetData === undefined) {
+      return;
+    }
+    this.selectedAsset = assetData;
+    this.limit = this.DEFAULT_LIMIT;
+    this.offset = 0;
+    this.tempOffset = 0;
+    this.recordCount = 0;
+    if (this.page !== 1) {
+      this.page = 1;
+    }
     this.isChart = true;
     this.isSummary = true;
-    this.asset = assetData;
-    if (this.offset !== 0) {
-      this.recordCount = this.asset['count'] - this.offset;
-    }
-    this.getAssetReading();
+    this.getAsset();
   }
 
   /**
    *  Set limit
    */
   public setLimit(limit) {
-    if (this.asset === undefined) {
+    if (this.selectedAsset === undefined) {
       return;
     }
     this.isInvalidLimit = false;
-    if (+limit > 1000) {
-      this.isInvalidLimit = true; // limit range validation 
+    if (+limit > 2147483647) {
+      this.isInvalidLimit = true; // limit range validation
       return;
     }
     if (this.page !== 1) {
@@ -132,18 +139,18 @@ export class AssetsComponent implements OnInit {
       this.tempOffset = this.offset;
     }
     if (limit === '' || limit == 0 || limit === null || limit === undefined) {
-      limit = 20;
+      limit = this.DEFAULT_LIMIT;
     }
     this.limit = limit;
     console.log('Limit: ', this.limit);
-    this.getAssetReading();
+    this.getAsset();
   }
 
   /**
    *  Set offset
    */
   public setOffset(offset: number) {
-    if (this.asset === undefined) {
+    if (this.selectedAsset === undefined) {
       return;
     }
     this.isInvalidOffset = false;
@@ -159,9 +166,8 @@ export class AssetsComponent implements OnInit {
     }
     this.offset = offset;
     this.tempOffset = offset;
-    this.recordCount = this.asset['count'] - this.offset;
     console.log('Offset: ', this.offset);
-    this.getAssetReading();
+    this.getAsset();
   }
 
   public getAsset(): void {
@@ -170,22 +176,25 @@ export class AssetsComponent implements OnInit {
     this.ngProgress.start();
     this.assetService.getAsset().
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-          return;
-        }
-        this.assets = data;
-        console.log('This is the asset data ', this.assets);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        console.log('error', error);
-      });
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.assets = data;
+          if (this.selectedAsset) {
+            this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
+            this.recordCount = this.selectedAsset['count'] - this.offset;
+            this.getAssetReading();
+          }
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
@@ -193,34 +202,33 @@ export class AssetsComponent implements OnInit {
    */
   public getAssetReading(): void {
     if (this.offset === 0) {
-      this.recordCount = this.asset['count'];
+      this.recordCount = this.selectedAsset['count'];
     }
     this.assetsReadingsData = [];
     /** request started */
     this.ngProgress.start();
-    this.assetService.getAssetReadings(encodeURIComponent(this.asset['asset_code']), this.limit, this.tempOffset).
+    this.assetService.getAssetReadings(encodeURIComponent(this.selectedAsset['assetCode']), this.limit, this.tempOffset).
       subscribe(
-      data => {
-        /** request completed */
-        this.ngProgress.done();
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-          return;
-        }
-        this.assetsReadingsData = [{
-          asset_code: this.asset['asset_code'],
-          count: this.recordCount,
-          data: data
-        }];
-        this.totalPages();
-        console.log('This is the asset reading data ', this.assetsReadingsData);
-      },
-      error => {
-        /** request completed */
-        this.ngProgress.done();
-        console.log('error', error);
-      });
+        data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.assetsReadingsData = [{
+            assetCode: this.selectedAsset['assetCode'],
+            count: this.recordCount,
+            data: data
+          }];
+          this.totalPages();
+          console.log('This is the asset reading data ', this.assetsReadingsData);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
@@ -228,7 +236,7 @@ export class AssetsComponent implements OnInit {
  */
   public showAssetSummary(assetCode) {
     const dataObj = {
-      asset_code: assetCode,
+      assetCode: assetCode,
     };
     this.assetSummaryComponent.getReadingSummary(dataObj);
     this.assetSummaryComponent.toggleModal(true);
@@ -237,8 +245,8 @@ export class AssetsComponent implements OnInit {
   /**
   * Open asset chart modal dialog
   */
-  public showAssetChart(asset_code) {
-    this.chartModalComponent.plotReadingsGraph(asset_code, 0, 0);
+  public showAssetChart(assetCode) {
+    this.chartModalComponent.plotReadingsGraph(assetCode, 0, 0);
     this.chartModalComponent.toggleModal(true);
   }
 }

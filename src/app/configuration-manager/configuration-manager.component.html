@@ -2,16 +2,26 @@
   <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
     [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
-  <!-- cards to be rendred as config.categories.count-->
+  <!-- cards to be rendered as config.categories.count-->
   <div class="card" *ngFor="let category of categoryData">
     <header class="card-header">
       <div class="card-header-title">
         <div class="media">
           <div class="media-content">
-            <!-- <p class="title is-5">{{category.key}}</p> -->
-            <p class="subtitle is-6">{{category.description}}</p>
+            <p class="subtitle is-6">{{category.description}}
+              <a class="button is-small" (click)="this.getCategories()">
+                <span class="icon is-small">
+                  <i class="fa fa-refresh"></i>
+                </span>
+              </a>
+            </p>
           </div>
         </div>
+      </div>
+      <div>
+        <a class="button is-light" (click)="openAddConfigItemModal(category?.description, category?.key)">Add &nbsp;
+          <i class="fa fa-plus" aria-hidden="true"></i>
+        </a>
       </div>
     </header>
     <div class="card-content">
@@ -22,7 +32,6 @@
               <div class="control">
                 <div class="media">
                   <div class="media-content">
-                    <!-- <p class="title is-5">{{v?.key}}</p> -->
                     <p class="subtitle is-6">{{v.value.description}}</p>
                   </div>
                 </div>
@@ -33,11 +42,11 @@
                 <div class="control">
                   <p hidden="true"> {{v.value.type}} </p>
                   <input *ngIf='isObject(v?.value?.value)' id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input" type="text"
-                    trim="blur" [value]="v?.value?.value != undefined ? (JSON.stringify(v?.value?.value)) : '' " [textContent]="v?.value?.value != undefined ? (JSON.stringify(v?.value?.value)) : '' "
+                    [value]="v?.value?.value != undefined ? (JSON.stringify(v?.value?.value)) : '' " [textContent]="v?.value?.value != undefined ? (JSON.stringify(v?.value?.value)) : '' "
                     (input)="onTextChange(category.key.trim() + '-' + v.key.trim(), true)" />
 
                   <input *ngIf='!isObject(v?.value?.value)' id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input" type="text"
-                    trim="blur" [value]='v?.value?.value != undefined ? v?.value?.value : "" ' [textContent]='v?.value?.value != undefined ? v?.value?.value : "" '
+                    [value]='v?.value?.value != undefined ? v?.value?.value : "" ' [textContent]='v?.value?.value != undefined ? v?.value?.value : "" '
                     (input)="onTextChange(category.key.trim() + '-' + v.key.trim(), true)" />
                 </div>
               </div>
@@ -55,4 +64,5 @@
       </div>
     </div>
   </div>
+  <app-add-config-item (notify)='onNotify()'></app-add-config-item>
 </div>

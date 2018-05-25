@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as _ from 'lodash';
+
 import { AssetsService } from '../../services/assets.service';
 import ReadingsValidator from '../assets/readings-validator';
 import { AssetSummaryService } from './../asset-summary/asset-summary-service';
@@ -36,18 +36,14 @@ export class AssetSummaryComponent implements OnInit {
 
   public getReadingSummary(dt) {
     this.isValidData = true;
-    this.assetCode = dt.asset_code;
-    this.assetService.getAssetReadings(encodeURIComponent(dt.asset_code)).
+    this.assetCode = dt.assetCode;
+    this.assetService.getAssetReadings(encodeURIComponent(dt.assetCode)).
       subscribe(
       data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          return;
-        }
         const validRecord = ReadingsValidator.validate(data);
         if (validRecord) {
           const record = {
-            asset_code: dt.asset_code,
+            assetCode: dt.assetCode,
             readings: data[0],
             time: dt.time_param
           };
@@ -61,7 +57,13 @@ export class AssetSummaryComponent implements OnInit {
           console.log('No valid data to show trends.');
         }
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          console.log('error in response ', error);
+        }
+      });
   }
 
   public getTimedBasedSummary(time, key) {
@@ -77,7 +79,7 @@ export class AssetSummaryComponent implements OnInit {
     }
 
     const asset = {
-      asset_code: this.assetCode,
+      assetCode: this.assetCode,
       time_param: (+time === (null || 0) ? undefined : { [key]: +time })
     };
     this.getReadingSummary(asset);

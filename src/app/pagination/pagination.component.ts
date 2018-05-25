@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, OnInit, SimpleChanges, OnChanges } from '@angular/core';
 import { AssetsComponent } from '../asset-readings/assets/index';
+import { SystemLogComponent } from '../system-log/index';
 
 @Component({
     selector: 'app-pagination',

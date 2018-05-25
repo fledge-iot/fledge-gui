@@ -31,7 +31,9 @@ export class ScheduledProcessComponent implements OnInit {
   // Object to hold schedule id and name to delete
   public childData = {
     id: 0,
-    name: ''
+    name: '',
+    message: '',
+    key: ''
   };
   public updateScheduleData: any;
   @ViewChild(ModalComponent) child: ModalComponent;
@@ -60,10 +62,6 @@ export class ScheduledProcessComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        if (data.error) {
-          this.alertService.error(data.error.message);
-          return;
-        }
         this.scheduleData = data.schedules;
         this.scheduleData.forEach(element => {
           const repeatTimeObj = Utils.secondsToDhms(element.repeat);
@@ -82,7 +80,11 @@ export class ScheduledProcessComponent implements OnInit {
       error => {
         /** request completed */
         this.ngProgress.done();
-        console.log('error', error);
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        };
       });
   }
 
@@ -131,10 +133,12 @@ export class ScheduledProcessComponent implements OnInit {
    * @param id   schedule id to delete
    * @param name schedule name
    */
-  openModal(id, name) {
+  openModal(id, name, message, key) {
     this.childData = {
       id: id,
-      name: name
+      name: name,
+      message: message,
+      key: key
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
@@ -149,10 +153,97 @@ export class ScheduledProcessComponent implements OnInit {
   }
 
   /**
-   * 
+   *
    * @param index value of the day
    */
   getISODay(index: number) {
     return weekDays[index];
+  }
+
+  /**
+   * Disable schedule
+   * @param schedule_id id of the schedule to disable
+   */
+  public disableSchedule(schedule_id) {
+    console.log('Disabling Schedule:', schedule_id);
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.disableSchedule(schedule_id).
+      subscribe(
+      data => {
+        /** request completed */
+        this.ngProgress.done();
+        let schedule = this.scheduleData.find(item => item.id === schedule_id);
+        if(data.status === true) {
+          schedule.enabled = false;
+        }
+        this.alertService.success(data.message);
+      },
+      error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        };
+      });
+  }
+
+  /**
+   * Enable schedule
+   * @param schedule_id id of the schedule to enable
+   */
+  public enableSchedule(schedule_id) {
+    console.log('Enabling Schedule:', schedule_id);
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.enableSchedule(schedule_id).
+      subscribe(
+      data => {
+        /** request completed */
+        this.ngProgress.done();
+        let schedule = this.scheduleData.find(item => item.id === schedule_id);
+        if(data.status === true){
+          schedule.enabled = true;
+        }
+        this.alertService.success(data.message);
+      },
+      error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        };
+      });
+  }
+
+  /**
+   * Delete schedule
+   * @param schedule_id id of the schedule to delete
+   */
+  deleteSchedule(schedule_id) {
+    console.log('Deleting Schedule:', schedule_id);
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.deleteSchedule(schedule_id).
+      subscribe(
+      data => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data.message);
+          this.getSchedules();
+      },
+      error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        };
+      });
   }
 }

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
 import { environment } from '../../environments/environment';
 
 @Injectable()
 export class AssetsService {
   private GET_ASSET = environment.BASE_URL + 'asset';
 
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
 
   /**
   * GET  | foglamp/asset
@@ -15,48 +15,50 @@ export class AssetsService {
   */
   public getAsset() {
     return this.http.get(this.GET_ASSET)
-      .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
   }
 
   /**
-  *  /foglamp/asset/{asset_code}
-  * @param asset_code
+  *  /foglamp/asset/{assetCode}
+  * @param assetCode
   * @param limit
   * @param offset
   *  Return a set of asset readings for the given asset code
   */
-  public getAssetReadings(asset_code, limit: Number = 0, offset: Number = 0) {
-    let _params = {};
+  public getAssetReadings(assetCode, limit: Number = 0, offset: Number = 0) {
+    let params = new HttpParams();
     if (limit && offset) {
-      _params = { params: { limit: limit, skip: offset } };
-
+      params = params.set('limit', limit.toString());
+      params = params.set('skip', offset.toString());
     } else if (limit) {
-      _params = { params: { limit: limit } };
+      params = params.set('limit', limit.toString());
     } else if (offset) {  // offset works withOUT limit in postgres!
-      _params = { params: { skip: offset } };
+      params = params.set('skip', offset.toString());
     }
-    return this.http.get(this.GET_ASSET + '/' + asset_code, _params)
-      .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+
+    return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params })
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
   }
 
   public getAssetSummary(assetObject: any) {
-    let _params = {};
-    if (assetObject.time !== undefined ) {
-      _params = { params: assetObject.time };
+    let params = new HttpParams();
+    if (assetObject.time !== undefined) {
+      const keys = Object.keys(assetObject.time);
+      params = params.set(keys[0], assetObject.time[keys[0]]);
     }
-    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.asset_code)
-      + '/' + assetObject.reading + '/summary', _params)
-      .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode)
+      + '/' + assetObject.reading + '/summary', { params: params })
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
   }
 
   // TODO: Not in use yet
   public getAssetAverage(assetObject: any) {
     // TODO: time based readings average;
-    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.asset_code) + '/' + assetObject.reading + '/series')
-      .map(response => response.json())
-      .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode) + '/' + assetObject.reading + '/series')
+      .map(response => response)
+      .catch((error: Response) => Observable.throw(error));
   }
 }

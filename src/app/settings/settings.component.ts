@@ -1,7 +1,10 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { NgModule } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, NgModule, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { PingService } from './../services/index';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { PlatformLocation } from '@angular/common';
+import { ServiceDiscoveryComponent } from '../service-discovery';
 
 @Component({
   selector: 'app-settings',
@@ -10,35 +13,70 @@ import { environment } from '../../environments/environment';
 })
 export class SettingsComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
-  endpoint = environment.BASE_URL.split(':');
-  protocol = this.endpoint[0];
-  host = this.endpoint[1].substr(2);
-  service_port = this.endpoint[2].substring(0, this.endpoint[2].indexOf('/'));
-  management_port = 0;
-  constructor(private router: Router) { }
+  @Input() navbarComponent: NavbarComponent;
+  @ViewChild(ServiceDiscoveryComponent) serviceDiscoveryModal: ServiceDiscoveryComponent;
 
-  ngOnInit() {
-    if (environment.MANAGEMENT_URL !== '') {
-      const url_items = environment.MANAGEMENT_URL.split(':');
-      this.management_port = +url_items[2].substring(0, url_items[2].indexOf('/'));
-    }
+  protocol = 'http'; // default protocol
+  host;
+  servicePort;
+  pingInterval;
+  isSkipped = false;
+  serviceUrl = '';
+  constructor(private router: Router, private pingService: PingService,
+    private platformLocation: PlatformLocation) {
+    this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
+    localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
+    this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
+    this.servicePort = localStorage.getItem('CONNECTED_PORT') != null ? localStorage.getItem('CONNECTED_PORT') : 8081;
   }
 
-  public resetEndPoint() {
+  ngOnInit() {
+    this.isSkipped = JSON.parse(sessionStorage.getItem('skip'));
+    this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
+    // get last selected time interval
+    this.pingInterval = localStorage.getItem('PING_INTERVAL');
+  }
+
+  public testServiceConnection(): void {
+    this.setServiceUrl();
+    console.log(this.serviceUrl);
+    window.open(this.serviceUrl + 'ping', '_blank');
+  }
+
+  public openServiceDiscoveryModal() {
+    // call child component method to toggle modal
+    this.serviceDiscoveryModal.toggleModal(true);
+  }
+
+  protected setServiceUrl() {
     const protocolField = <HTMLSelectElement>document.getElementById('protocol');
     const hostField = <HTMLInputElement>document.getElementById('host');
     const servicePortField = <HTMLInputElement>document.getElementById('service_port');
-    const managementPortField = <HTMLInputElement>document.getElementById('management_port');
-    const service_endpoint = protocolField.value + '://' + hostField.value + ':' + servicePortField.value + '/foglamp/';
-    localStorage.setItem('SERVICE_URL', service_endpoint);
+    localStorage.setItem('CONNECTED_PROTOCOL', protocolField.value);
+    localStorage.setItem('CONNECTED_HOST', hostField.value);
+    localStorage.setItem('CONNECTED_PORT', servicePortField.value);
+    this.serviceUrl = protocolField.value + '://' + hostField.value + ':'
+      + servicePortField.value + '/foglamp/';
+  }
 
-    if (managementPortField.value !== '') {
-      // TODO make sure its a positive integer too
-      const management_endpoint = protocolField.value + '://' + hostField.value + ':' + managementPortField.value + '/foglamp/';
-      localStorage.setItem('MANAGEMENT_URL', management_endpoint);
-    }
+  public resetEndPoint() {
+    this.setServiceUrl();
+    localStorage.setItem('SERVICE_URL', this.serviceUrl);
+    this.reloadApp();
+  }
+
+  public reloadApp() {
     location.reload();
     location.href = '';
     this.router.navigate([location.href]);
+  }
+
+  /**
+   * Set service ping interval
+   */
+  public ping(event) {
+    const time = event.target.value;
+    localStorage.setItem('PING_INTERVAL', time);
+    this.pingService.pingIntervalChanged.next(+time);
   }
 }

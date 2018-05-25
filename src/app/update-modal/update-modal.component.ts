@@ -38,7 +38,7 @@ export class UpdateModalComponent implements OnInit, OnChanges {
       process_name: [Validators.required],
       type: [Validators.required],
       day: [Validators.required],
-      time: ['', [Validators.required, Validators.pattern(regExp)]],
+      time: [Validators.required, Validators.pattern(regExp)],
     });
 
     if (changes['childData']) {
@@ -64,8 +64,13 @@ export class UpdateModalComponent implements OnInit, OnChanges {
    * getSelectedDay
    */
   public getSelectedDay(index) {
-    let selected_day = this.days[index - 1];
-    return selected_day;
+    let selectedDay;
+    if (index == null) {
+      selectedDay = 'None';
+    } else {
+      selectedDay = this.days[index-1];
+    }
+    return selectedDay;
   }
 
   /**
@@ -89,10 +94,6 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     this.schedulesService.getSchedule(id).
       subscribe(
       data => {
-        if (data.error) {
-          this.alertService.error(data.error.message);
-          return;
-        }
         if (data.type == 'TIMED') {
           this.selected_schedule_type = this.setScheduleTypeKey(data.type);
           schedule_day = this.getSelectedDay(data.day);
@@ -115,7 +116,13 @@ export class UpdateModalComponent implements OnInit, OnChanges {
           time: timeObj.time
         });
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public toggleModal(isOpen: Boolean) {
@@ -128,17 +135,17 @@ export class UpdateModalComponent implements OnInit, OnChanges {
   }
 
   public updateSchedule() {
-    let RepeatTime = this.form.get('repeat').value != ('None' || undefined) ? Utils.convertTimeToSec(
+    let RepeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
       this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
 
     this.selected_schedule_type = this.setScheduleTypeKey(this.form.get('type').value);
-    this.form.controls['type'].setValue(this.selected_schedule_type);
 
-    let time; 
-    if (this.form.get('type').value == '2') {   // If Type is TIMED == 2
+    let time;
+    let dayIndex;
+    if (this.selected_schedule_type === 2) {   // If Type is TIMED == 2
       time = Utils.convertTimeToSec(this.form.get('time').value);
-      let index = this.form.get('day').value != undefined ? this.days.indexOf(this.form.get('day').value) : 0;
-      this.form.controls['day'].setValue(index + 1);
+      const dayValue = this.form.get('day').value;
+      dayIndex = dayValue !== undefined && dayValue !== 'None' ? (this.days.indexOf(this.form.get('day').value)+1) : '';
     } else {
       this.form.get('day').setValue(0);
       this.form.get('time').setValue(0);
@@ -147,9 +154,9 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     let updatePayload = {
       'name': this.form.get('name').value,
       'process_name': this.form.get('process_name').value,
-      'type': this.form.get('type').value,
+      'type': this.selected_schedule_type,
       'repeat': RepeatTime,
-      'day': this.form.get('day').value,
+      'day': dayIndex,
       'time': time,
       'exclusive': this.form.get('exclusive').value,
     };
@@ -157,16 +164,16 @@ export class UpdateModalComponent implements OnInit, OnChanges {
     this.schedulesService.updateSchedule(this.childData.id, updatePayload).
       subscribe(
       data => {
-        if (data.error) {
-          console.log('error in response', data.error);
-          this.alertService.error(data.error.message);
-        } else {
-          this.alertService.success('Schedule updated successfully.');
-        }
+        this.alertService.success('Schedule updated successfully.');
         this.notify.emit();
         this.toggleModal(false);
-
       },
-      error => { console.log('error', error); });
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 }

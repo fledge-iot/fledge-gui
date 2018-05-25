@@ -14,20 +14,16 @@ export class AssetSummaryService {
         let count = 0;
         keys.forEach(key => {
             const assetObj: object = {
-                asset_code: data.asset_code,
+                assetCode: data.assetCode,
                 reading: key,
                 time: data.time
             };
             this.assetService.getAssetSummary(assetObj)
                 .subscribe(
                 summaryData => {
-                    if (summaryData.error) {
-                        console.log('error in response', summaryData.error);
-                        return;
-                    }
                     count++;
                     assetSummary.push({
-                        asset_code: data.asset_code,
+                        assetCode: data.assetCode,
                         data: summaryData
                     });
                     if (count === keys.length) {
@@ -35,7 +31,11 @@ export class AssetSummaryService {
                     }
                 },
                 error => {
-                    console.log('error', error);
+                    if (error.status === 0) {
+                        console.log('service down ', error);
+                    } else {
+                        console.log('error in response ', error);
+                    }
                 });
         });
     }
@@ -45,7 +45,7 @@ export class AssetSummaryService {
         assetSummary.forEach(summary => {
             const keys = Object.keys(summary.data);
             keys.forEach(key => {
-                assetReadingSummary.push({ key: key, summary: summary.data[key] });
+                assetReadingSummary.push({ key: key, summary: [summary.data[key]] });
             });
         });
         this.assetReadingSummary.next(assetReadingSummary);

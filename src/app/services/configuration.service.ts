@@ -1,32 +1,30 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { environment } from '../../environments/environment';
 
 @Injectable()
 export class ConfigurationService {
     // private instance variable to hold base url
-    private GET_CATEGORIES_URL = environment.BASE_URL + 'categories';
-    private GET_CATEGORY_URL = environment.BASE_URL + 'category';
-
-    constructor(private http: Http) { }
+    private CATEGORY_URL = environment.BASE_URL + 'category';
+    constructor(private http: HttpClient) { }
 
     /**
-     *   GET  | /foglamp/categories
+     *   GET  | /foglamp/category
      */
     getCategories() {
-        return this.http.get(this.GET_CATEGORIES_URL)
-            .map(response => response.json())
-            .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+        return this.http.get(this.CATEGORY_URL)
+            .map(response => response)
+            .catch((error: Response) => Observable.throw(error));
     }
 
     /**
      *   GET  | /foglamp/category/{category_name}
      */
     getCategory(category_name) {
-        return this.http.get(this.GET_CATEGORY_URL + '/' + category_name)
-            .map(response => response.json())
-            .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+        return this.http.get(this.CATEGORY_URL + '/' + category_name)
+            .map(response => response)
+            .catch((error: Response) => Observable.throw(error));
     }
 
     /**
@@ -37,8 +35,17 @@ export class ConfigurationService {
         if (type.toUpperCase() === 'JSON') {
             body = JSON.stringify({ 'value': JSON.parse(value) });
         }
-        return this.http.put(this.GET_CATEGORY_URL + '/' + category_name + '/' + config_item, body)
-            .map(response => response.json())
-            .catch((error: Response) => Observable.throw(error.json().message || 'Server error'));
+        return this.http.put(this.CATEGORY_URL + '/' + category_name + '/' + config_item, body)
+            .map(response => response)
+            .catch((error: Response) => Observable.throw(error));
+    }
+
+    /**
+    *  POST  | /foglamp/category/{category_name}/{config_item}
+    */
+    addNewConfigItem(configItemData, category_name: string, config_item: string) {
+        return this.http.post(this.CATEGORY_URL + '/' + category_name + '/' + config_item, configItemData)
+            .map(response => response)
+            .catch((error: Response) => Observable.throw(error));
     }
 }

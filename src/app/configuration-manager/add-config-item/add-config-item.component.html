@@ -1,0 +1,79 @@
+<div id="add-config-item" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-5">Add Configuration Item</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <form name="form" (ngSubmit)="f.form.valid && addConfigItem(f)" #f="ngForm" id="ngForm" novalidate>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <div class="form-group">
+                <p class="control is-fullwidth">
+                  <input type="text" name="categoryKey" disabled class="input" [(ngModel)]="categoryData.categoryKey" #categoryKey="ngModel"
+                    placeholder="category key" required trim="blur" />
+                </p>
+                <small class="help"> {{ categoryData.categoryDescription }} </small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <div class="form-group">
+                <p class="control is-fullwidth">
+                  <input type="text" name="configName" class="input" [(ngModel)]="categoryData.configName" #configName="ngModel" placeholder="configuration item"
+                    required trim="blur" />
+                </p>
+                <small *ngIf="f.submitted && !configName.valid" class="help is-danger level-left">Configuration Item Name is required</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-fullwidth">
+            <div class="field">
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select name="type" [(ngModel)]="categoryData.type" #type="ngModel" required>
+                    <option [ngValue]="undefined" disabled>Select</option>
+                    <option [ngValue]="type" *ngFor="let type of configItemType">{{type}}</option>
+                  </select>
+                </div>
+              </div>
+              <small *ngIf="f.submitted && !type.valid" class="help is-danger level-left">Please select a valid configuration item type.</small>
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <p class="control is-fullwidth">
+                <input type="text" class="input" name="defaultValue" placeholder="default value" [(ngModel)]="categoryData.defaultValue"
+                  #defaultValue="ngModel" required trim="blur" />
+              </p>
+              <small *ngIf="f.submitted && !defaultValue.valid" class="help is-danger level-left">Default value is required</small>
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <p class="control is-fullwidth">
+                <textarea type="text" class="input" name="description" placeholder="description" [(ngModel)]="categoryData.description" #description="ngModel"
+                  required trim="blur"></textarea>
+              </p>
+              <small *ngIf="f.submitted && !description.valid" class="help is-danger level-left">Description is required</small>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+    <footer class="modal-card-foot">
+      <button id="save" type="submit" form="ngForm" class="button is-success">Save</button>
+    </footer>
+  </div>
+</div>

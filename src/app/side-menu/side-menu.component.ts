@@ -8,15 +8,18 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class SideMenuComponent implements OnInit {
   public step: string = '';
   @Output() toggle: EventEmitter<any> = new EventEmitter();
+
+  isAdmin = false;
+  isSkip = false;
   constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
+    this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin'));
+    this.isSkip = JSON.parse(sessionStorage.getItem('skip'));
     this.router.events.subscribe((res) => {
       if (this.router.url === '/' || this.router.url === '/dashboard') {
-        console.log(this.router.url);
         this.step = '/dashboard';
       } else {
-        console.log(this.router.url);
         this.step = this.router.url;
       }
     });

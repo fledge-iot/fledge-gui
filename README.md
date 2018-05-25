@@ -19,13 +19,13 @@ Run `yarn start` or `yarn start --host [ip_address of host machine]` (to allow a
 
 
 ## Production Build & Deployment
-Run `yarn build` to build the project. The build artifacts will be stored in the `dist/` directory. 
+Run `./build.sh` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 > It uses the `-prod` flag with `ng` for a production build.
 
 ### Deploy with nginx
 
-#### Install nginx on mac 
+#### Install nginx on macOS
 ```
 brew install nginx 
 ```
@@ -34,19 +34,25 @@ brew install nginx
 ```
   sudo apt-get update
   sudo apt-get install nginx-light
-```
+``` 
 
-Run `yarn build` and start nginx from root directory with given `nginx-conf` file; See next section. 
-
-> To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory and provided `nginx.conf`; Make sure you have nginx(-light) installed on the deployment machine.
+> To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory and (may be you want to use) provided `nginx.conf`; Make sure you have nginx(-light) installed on the deployment machine.
 
 ### Starting with nginx
 
+#### macOS and ubuntu
+
 start: `nginx -c nginx.conf -p $(pwd)`
+
+> You should be able to access it on 0.0.0.0:8080
 
 stop: `nginx -s stop`
 
-> You should be able to access it on 0.0.0.0:8080
+#### windows
+
+See details [here](windows-nginx-deployment-guide.md)
+
+> Make sure to fix `include` directive and `server root` in `nginx.conf`; unless you want to use default.
 
 
 ## Running using Docker 
@@ -55,9 +61,9 @@ stop: `nginx -s stop`
 ## Supported/Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
-Safari (mac)  | 11.0.x   | latest 1
-Chrome  |63.0.x (64-bit) | latest 2 
-Firefox |57.0.x (64-bit) | latest 2
+Safari (mac)  | 11.x   | latest 1
+Chrome  |66.0.x (64-bit) | latest 2 
+Firefox |60.x (64-bit) | latest 2
 
 
 ## Other 
@@ -66,4 +72,4 @@ Firefox |57.0.x (64-bit) | latest 2
 [Developer's Guide](developers-guide.md)
 
 
-> &copy; 2017 DIANOMIC SYSTEMS. All Rights Reserved.
+> &copy; 2017-18 DIANOMIC SYSTEMS. All Rights Reserved.

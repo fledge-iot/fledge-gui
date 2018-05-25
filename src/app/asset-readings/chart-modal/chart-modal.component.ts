@@ -61,41 +61,40 @@ export class ChartModalComponent implements OnInit {
       this.isInvalidOffset = true;
     }
 
-    if( this.isInvalidLimit || this.isInvalidOffset) {
-      return; 
+    if (this.isInvalidLimit || this.isInvalidOffset) {
+      return;
     }
 
     this.assetCode = assetCode;
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, +offset).
       subscribe(
-      data => {
-        if (data.error) {
+        data => {
+          if (data.length === 0) {
+            this.isReadingsAvailable = false;
+            return;
+          }
+          const validRecord = ReadingsValidator.validate(data);
+          if (validRecord) {
+            this.getAssetTimeReading(data);
+            this.assetSummaryService.getReadingSummary(
+              {
+                assetCode: assetCode,
+                readings: data[0],
+              });
+            this.assetSummaryService.assetReadingSummary.subscribe(
+              value => {
+                this.assetReadingSummary = value;
+                console.log('readings data to show trends.', this.assetReadingSummary);
+              });
+          } else {
+            this.isValidData = false;
+            console.log('No valid data to show trends.');
+          }
+        },
+        error => {
           this.isValidData = false;
-          console.log('error in response', data.error);
-          return;
-        } else if (data.length === 0) {
-          this.isReadingsAvailable = false;
-          return;
-        }
-        const validRecord = ReadingsValidator.validate(data);
-        if (validRecord) {
-          this.getAssetTimeReading(data);
-          this.assetSummaryService.getReadingSummary(
-            {
-              asset_code: assetCode,
-              readings: data[0],
-            });
-          this.assetSummaryService.assetReadingSummary.subscribe(
-            value => {
-              this.assetReadingSummary = value;
-              console.log('readings data to show trends.', this.assetReadingSummary);
-            });
-        } else {
-          this.isValidData = false;
-          console.log('No valid data to show trends.');
-        }
-      },
-      error => { console.log('error', error); });
+          console.log('error in response', error);
+        });
   }
 
   getAssetTimeReading(assetChartRecord) {
