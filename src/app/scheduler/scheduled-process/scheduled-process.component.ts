@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { SchedulesService, AlertService } from '../../services/index';
 import { ModalComponent } from '../../modal/modal.component';
-import { UpdateModalComponent } from '../../update-modal/update-modal.component';
+import { UpdateScheduleComponent } from '../../scheduler/update-schedule/update-schedule.component';
 import Utils from '../../utils';
 import { CreateScheduleComponent } from '../create-schedule/create-schedule.component';
 import { NgProgress } from 'ngx-progressbar';
@@ -37,7 +37,7 @@ export class ScheduledProcessComponent implements OnInit {
   };
   public updateScheduleData: any;
   @ViewChild(ModalComponent) child: ModalComponent;
-  @ViewChild(UpdateModalComponent) updateModal: UpdateModalComponent;
+  @ViewChild(UpdateScheduleComponent) updateScheduleModal: UpdateScheduleComponent;
   @ViewChild(CreateScheduleComponent) createModal: CreateScheduleComponent;
 
   constructor(private schedulesService: SchedulesService, private alertService: AlertService, public ngProgress: NgProgress) { }
@@ -117,7 +117,7 @@ export class ScheduledProcessComponent implements OnInit {
       schedule_type: this.scheduleType,
       day: this.days
     };
-    this.updateModal.toggleModal(true);
+    this.updateScheduleModal.toggleModal(true);
   }
 
   /**

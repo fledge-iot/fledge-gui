@@ -78,6 +78,6 @@
     <app-list-tasks></app-list-tasks>
   </div>
   <app-modal (enable)='enableSchedule($event)' (disable)='disableSchedule($event)' (delete)='deleteSchedule($event)' [childData]='childData'></app-modal>
-  <app-update-modal (notify)='onNotify()' [childData]='updateScheduleData'></app-update-modal>
+  <app-update-schedule (notify)='onNotify()' [childData]='updateScheduleData'></app-update-schedule>
   <app-create-schedule (notify)='onNotify()' (process)='setScheduleProcess($event)' (type)='setScheduleType($event)'></app-create-schedule>
 </div>
