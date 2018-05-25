@@ -6,13 +6,13 @@ import { NG_VALIDATORS, Validator, Validators, AbstractControl, ValidatorFn } fr
   providers: [
     {
       provide: NG_VALIDATORS,
-      useExisting: forwardRef(() => EqualValidator),
+      useExisting: forwardRef(() => EqualValidatorDirective),
       multi: true
     }
   ]
 })
 
-export class EqualValidator implements Validator {
+export class EqualValidatorDirective implements Validator {
   constructor(@Attribute('validateEqual') public validateEqual: string,
     @Attribute('reverse') public reverse: string) {
 

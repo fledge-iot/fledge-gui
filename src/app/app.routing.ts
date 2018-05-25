@@ -1,22 +1,23 @@
 import { Routes, RouterModule } from '@angular/router';
 
-import { LoginComponent } from './login/index';
-import { DashboardComponent } from './dashboard/index';
-import { ConfigurationManagerComponent } from './configuration-manager/index';
-import { ScheduledProcessComponent } from './scheduler/scheduled-process/index';
-import { SystemLogComponent } from './system-log/index';
-import { AssetsComponent } from './asset-readings/assets/index';
-import { AuditLogComponent } from './audit-log/index';
-import { CertificateStoreComponent } from './certificate/certificate-store/index';
-import { SupportComponent } from './support/index';
-import { BackupRestoreComponent } from './backup-restore/index';
-import { SettingsComponent } from './settings/index';
-import { ServicesHealthComponent } from './services-health/index';
-import { ServiceDiscoveryComponent } from './service-discovery/index';
-import { UserManagementComponent } from './user-management/index';
-import { AuthGuard, UserGuard } from './guards/index';
-import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
-import { ResetPasswordComponent } from './user-management/reset-password/reset-password.component';
+import { LoginComponent } from './components/layout/login/index';
+import { DashboardComponent } from './components/core/dashboard/index';
+import { ConfigurationManagerComponent } from './components/core/configuration-manager/index';
+import { ScheduledProcessComponent } from './components/core/scheduler/scheduled-process/index';
+import { SystemLogComponent } from './components/core/system-log/index';
+import { AssetsComponent } from './components/core/asset-readings/assets/index';
+import { AuditLogComponent } from './components/core/audit-log/index';
+import { CertificateStoreComponent } from './components/core/certificate/certificate-store/index';
+import { SupportComponent } from './components/core/support/index';
+import { BackupRestoreComponent } from './components/core/backup-restore/index';
+import { SettingsComponent } from './components/core/settings/index';
+import { ServicesHealthComponent } from './components/core/services-health/index';
+import { ServiceDiscoveryComponent } from './components/core/service-discovery/index';
+import { UserManagementComponent } from './components/core/user-management/index';
+import { AuthGuard } from './guards/index';
+import { UserProfileComponent } from './components/core/user-management/user-profile/user-profile.component';
+import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
+import { UserGuard } from './guards/user.guard';
 
 const appRoutes: Routes = [
     { path: '', component: DashboardComponent, canActivate: [AuthGuard] },

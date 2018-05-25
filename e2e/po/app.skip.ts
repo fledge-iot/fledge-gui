@@ -102,7 +102,7 @@ export class SkipLogin {
 
   getAssetSummaryInputTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('#summary_modal number-input-debounce > input')).count();
+    return element.all(by.css('#summary_modal app-number-input-debounce > input')).count();
   }
 
   getAssetSummaryColNames() {
@@ -137,7 +137,7 @@ export class SkipLogin {
 
   getAssetChartInputTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('#chart_modal .modal-card number-input-debounce input')).count();
+    return element.all(by.css('#chart_modal .modal-card app-number-input-debounce input')).count();
   }
 
   closeChartModal() {
