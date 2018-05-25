@@ -2,11 +2,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgProgressModule } from 'ngx-progressbar';
-import { ModalComponent } from './modal.component';
+import { AlertDialogComponent } from './alert-dialog.component';
+
 
 @NgModule({
   declarations: [
-    ModalComponent
+    AlertDialogComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -15,6 +16,6 @@ import { ModalComponent } from './modal.component';
     NgProgressModule,
   ],
   providers: [],
-  exports: [ModalComponent]
+  exports: [AlertDialogComponent]
 })
-export class ModalModule {}
+export class AlertDialogModule {}

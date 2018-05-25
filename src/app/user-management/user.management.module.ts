@@ -6,7 +6,7 @@ import { UserManagementComponent } from '.';
 import { UpdateUserComponent } from './update-user/update-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
-import { ModalModule } from '../modal/modal.module';
+import { AlertDialogModule } from '../alert-dialog/alert-dialog.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +20,7 @@ import { ModalModule } from '../modal/modal.module';
     FormsModule,
     CommonModule,
     NgProgressModule,
-    ModalModule
+    AlertDialogModule
   ],
   providers: [],
   exports: []

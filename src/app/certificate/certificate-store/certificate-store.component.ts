@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CertificateService, AlertService } from '../../services/index';
-import { ModalComponent } from '../../modal/modal.component';
 import { NgProgress } from 'ngx-progressbar';
 import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
+import { AlertDialogComponent } from '../../alert-dialog/alert-dialog.component';
 
 @Component({
-  selector: 'cert-store',
+  selector: 'app-cert-store',
   templateUrl: './certificate-store.component.html',
   styleUrls: ['./certificate-store.component.css']
 })
@@ -21,7 +21,7 @@ export class CertificateStoreComponent implements OnInit {
     key: ''
   };
 
-  @ViewChild(ModalComponent) child: ModalComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(UploadCertificateComponent) uploadModal: UploadCertificateComponent;
 
   constructor(private certService: CertificateService, public ngProgress: NgProgress, private alertService: AlertService) { }

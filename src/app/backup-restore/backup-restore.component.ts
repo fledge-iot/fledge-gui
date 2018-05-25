@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { BackupRestoreService, AlertService } from '../services/index';
-import { ModalComponent } from '../modal/modal.component';
 import { NgProgress } from 'ngx-progressbar';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-backup-restore',
@@ -19,7 +19,7 @@ export class BackupRestoreComponent implements OnInit {
     key: ''
   };
 
-  @ViewChild(ModalComponent) child: ModalComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
   constructor( private backupRestoreService: BackupRestoreService, public ngProgress: NgProgress, private alertService: AlertService ) { }
 

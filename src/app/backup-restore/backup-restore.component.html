@@ -41,6 +41,6 @@
       </table>
     </div>
   </div>
-  <app-modal (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)' (deleteBackup)='deleteBackup($event)'
-    [childData]='childData'></app-modal>
+  <app-alert-dialog (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)' (deleteBackup)='deleteBackup($event)'
+    [childData]='childData'></app-alert-dialog>
 </div>

@@ -3,10 +3,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { SchedulesService, UserService, AlertService } from '../services/index';
 
 @Component({
-  selector: 'app-modal',
-  templateUrl: './modal.component.html'
+  selector: 'app-alert-dialog',
+  templateUrl: './alert-dialog.component.html'
 })
-export class ModalComponent implements OnInit {
+export class AlertDialogComponent implements OnInit {
   @Input() childData: { id: Number, name: any, key: any, message: any };
   @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string, address: string };
   @Output() enable = new EventEmitter<Number>();

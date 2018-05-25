@@ -5,7 +5,8 @@ import { environment } from '../../environments/environment';
 import { AlertService } from './../services/alert.service';
 import Utils from '../utils';
 import { NgProgress } from 'ngx-progressbar';
-import { ModalComponent } from './../modal/modal.component';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+
 @Component({
   selector: 'app-services-health',
   templateUrl: './services-health.component.html',
@@ -26,7 +27,7 @@ export class ServicesHealthComponent implements OnInit {
     address: ''
   };
 
-  @ViewChild(ModalComponent) child: ModalComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
   constructor(private servicesHealthService: ServicesHealthService, private alertService: AlertService, public ngProgress: NgProgress) { }
 

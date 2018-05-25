@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { SchedulesService, AlertService } from '../../services/index';
-import { ModalComponent } from '../../modal/modal.component';
 import { UpdateScheduleComponent } from '../../scheduler/update-schedule/update-schedule.component';
 import Utils from '../../utils';
 import { CreateScheduleComponent } from '../create-schedule/create-schedule.component';
 import { NgProgress } from 'ngx-progressbar';
+import { AlertDialogComponent } from '../../alert-dialog/alert-dialog.component';
 
 enum weekDays {
   Mon = 1,
@@ -36,7 +36,7 @@ export class ScheduledProcessComponent implements OnInit {
     key: ''
   };
   public updateScheduleData: any;
-  @ViewChild(ModalComponent) child: ModalComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(UpdateScheduleComponent) updateScheduleModal: UpdateScheduleComponent;
   @ViewChild(CreateScheduleComponent) createModal: CreateScheduleComponent;
 

@@ -396,34 +396,34 @@ export class SkipLogin {
 
   getCertificateStoreTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store > div > div > header > p')).getText();
+    return element(by.css('app-cert-store > div > div > header > p')).getText();
   }
 
   getCertificateStoreRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store button i')).isDisplayed();
+    return element(by.css('app-cert-store button i')).isDisplayed();
   }
 
   getCertificateStoreColNames() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store table thead tr')).getText();
+    return element(by.css('app-cert-store table thead tr')).getText();
   }
 
   getCertificateStoreImport() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store header a')).getText();
+    return element(by.css('app-cert-store header a')).getText();
   }
 
   isKeyPresent() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
-    return element(by.css('cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
+    browser.wait(this.EC.visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
   }
 
   isCertificatePresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
   }
 
   navToBackupRestore() {

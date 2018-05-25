@@ -58,8 +58,8 @@ import { AssetsModule } from './asset-readings/assets.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ConfigurationModule } from './configuration-manager/configuaration.module';
 import { UserManagementModule } from './user-management/user.management.module';
-import { ModalModule } from './modal/modal.module';
 import { AlertComponent } from './alert/alert.component';
+import { AlertDialogModule } from './alert-dialog/alert-dialog.module';
 
 @NgModule({
   imports: [
@@ -77,7 +77,7 @@ import { AlertComponent } from './alert/alert.component';
     PipesModule,
     ConfigurationModule,
     UserManagementModule,
-    ModalModule
+    AlertDialogModule
   ],
   declarations: [
     AppComponent,

@@ -9,7 +9,7 @@ import { NgProgressModule } from 'ngx-progressbar';
 import { SchedulesService } from '../services';
 import { NgxMaskModule } from 'ngx-mask';
 import { PipesModule } from '../pipes/pipes.module';
-import { ModalModule } from '../modal/modal.module';
+import { AlertDialogModule } from '../alert-dialog/alert-dialog.module';
 
 @NgModule({
   declarations: [
@@ -25,7 +25,7 @@ import { ModalModule } from '../modal/modal.module';
     NgProgressModule,
     NgxMaskModule,
     PipesModule,
-    ModalModule
+    AlertDialogModule
   ],
   providers: [SchedulesService],
   exports: []

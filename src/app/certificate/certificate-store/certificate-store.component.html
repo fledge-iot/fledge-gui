@@ -51,6 +51,6 @@
       </table>
     </div>
   </div>
-  <app-modal (deleteCertificate)='deleteCertificate($event)' [childData]='childData'></app-modal>
+  <app-alert-dialog (deleteCertificate)='deleteCertificate($event)' [childData]='childData'></app-alert-dialog>
   <app-upload-cert (notify)='onNotify()'></app-upload-cert>
 </div>

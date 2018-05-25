@@ -3,9 +3,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AlertService, AuthService, UserService } from '../services/index';
 import { SharedService } from '../services/shared.service';
 import { NgProgress } from 'ngx-progressbar';
-import { ModalComponent } from '../modal/modal.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 
 @Component({
@@ -15,7 +15,7 @@ import { UpdateUserComponent } from './update-user/update-user.component';
 })
 export class UserManagementComponent implements OnInit {
 
-  @ViewChild(ModalComponent) child: ModalComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(CreateUserComponent) createUserModal: CreateUserComponent;
   @ViewChild(UpdateUserComponent) updateUserModal: UpdateUserComponent;
 

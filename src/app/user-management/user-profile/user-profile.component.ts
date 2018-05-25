@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertService, AuthService, UserService } from '../../services/index';
-import { ModalComponent } from '../../modal/modal.component';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
+import { AlertDialogComponent } from '../../alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-user-profile',
@@ -14,7 +14,7 @@ export class UserProfileComponent implements OnInit {
   public userRecord: any = {};
   public childData = {};
   isShow = false;
-  @ViewChild(ModalComponent) child: ModalComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
   constructor(private authService: AuthService,
     private alertService: AlertService,
