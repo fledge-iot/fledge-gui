@@ -6,7 +6,7 @@ import { NumberInputDebounceComponent } from '../../common/number-input-debounce
 import { PaginationComponent } from '../../common/pagination/index';
 import { AssetsComponent } from './assets/assets.component';
 import { AssetSummaryComponent } from '../asset-readings/asset-summary/asset-summary.component';
-import { ChartModalComponent } from '../asset-readings/chart-modal/chart-modal.component';
+import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
 import { AssetSummaryService } from '../asset-readings/asset-summary/asset-summary-service';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { ChartModule } from '../../common/chart/index';
@@ -16,7 +16,7 @@ import { AssetsService } from '../../../services';
   declarations: [
     AssetsComponent,
     AssetSummaryComponent,
-    ChartModalComponent,
+    ReadingsGraphComponent,
     NumberInputDebounceComponent,
     PaginationComponent
   ],

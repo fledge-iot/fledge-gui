@@ -10,6 +10,7 @@ import { SchedulesService } from '../../../services';
 import { NgxMaskModule } from 'ngx-mask';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
+import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module
     ListTasksComponent,
     CreateScheduleComponent,
     UpdateScheduleComponent,
+    ListSchedulesComponent,
   ],
   imports: [
     ReactiveFormsModule,

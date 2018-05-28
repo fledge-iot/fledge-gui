@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild, AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { POLLING_INTERVAL } from '../../../utils';
-import { ShutdownModalComponent } from '../../core/shut-down/shutdown-modal.component';
+import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
 import { NgProgress } from 'ngx-progressbar';
 import {
   AlertService, AuthService, ConnectedServiceStatus,

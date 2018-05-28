@@ -42,7 +42,7 @@ import { NgProgressModule } from 'ngx-progressbar';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
-import { ShutdownModalComponent } from './components/core/shut-down/shutdown-modal.component';
+import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
 import { SharedService } from './services/shared.service';
 
 import {  } from './directives/index';

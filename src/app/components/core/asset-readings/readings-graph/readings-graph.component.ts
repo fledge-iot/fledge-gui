@@ -8,11 +8,11 @@ import { MomentDatePipe } from '../../../../pipes/moment-date';
 
 
 @Component({
-  selector: 'app-chart-modal',
-  templateUrl: './chart-modal.component.html',
-  styleUrls: ['./chart-modal.component.css']
+  selector: 'app-readings-graph',
+  templateUrl: './readings-graph.component.html',
+  styleUrls: ['./readings-graph.component.css']
 })
-export class ChartModalComponent implements OnInit {
+export class ReadingsGraphComponent implements OnInit {
   public assetChart: string;
   public assetReadingValues: any;
   public assetCode;

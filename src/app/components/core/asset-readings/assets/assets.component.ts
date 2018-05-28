@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AssetsService, AlertService } from '../../../../services/index';
 import { AssetSummaryComponent } from './../asset-summary/asset-summary.component';
-import { ChartModalComponent } from './../chart-modal/chart-modal.component';
+import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
 import { NgProgress } from 'ngx-progressbar';
 
 @Component({
@@ -31,7 +31,7 @@ export class AssetsComponent implements OnInit {
   public isInvalidOffset = false;
 
   @ViewChild(AssetSummaryComponent) assetSummaryComponent: AssetSummaryComponent;
-  @ViewChild(ChartModalComponent) chartModalComponent: ChartModalComponent;
+  @ViewChild(ReadingsGraphComponent) readingsGraphComponent: ReadingsGraphComponent;
 
   constructor(private assetService: AssetsService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
@@ -246,7 +246,7 @@ export class AssetsComponent implements OnInit {
   * Open asset chart modal dialog
   */
   public showAssetChart(assetCode) {
-    this.chartModalComponent.plotReadingsGraph(assetCode, 0, 0);
-    this.chartModalComponent.toggleModal(true);
+    this.readingsGraphComponent.plotReadingsGraph(assetCode, 0, 0);
+    this.readingsGraphComponent.toggleModal(true);
   }
 }
