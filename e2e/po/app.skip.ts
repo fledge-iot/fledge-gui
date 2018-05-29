@@ -275,7 +275,7 @@ export class SkipLogin {
 
   getSchedulesRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(1) .fa.fa-refresh')).isDisplayed();
+    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-refresh')).isDisplayed();
   }
 
   getCreateScheduleButton() {
@@ -319,7 +319,7 @@ export class SkipLogin {
 
   isUpdatedSchedulePresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(1) .card-content')).getText();
+    return element(by.css('app-scheduled-process > div:nth-child(2) .card-content')).getText();
   }
 
   disableAndVerifySchedule() {
