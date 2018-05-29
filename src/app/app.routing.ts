@@ -1,11 +1,9 @@
 import { Routes, RouterModule } from '@angular/router';
 
 import { LoginComponent } from './components/layout/login/index';
-// import { DashboardComponent } from './components/core/dashboard/index';
 import { ConfigurationManagerComponent } from './components/core/configuration-manager/index';
 import { ScheduledProcessComponent } from './components/core/scheduler/scheduled-process/index';
 import { SystemLogComponent } from './components/core/system-log/index';
-// import { AssetsComponent } from './components/core/asset-readings/assets/index';
 import { AuditLogComponent } from './components/core/audit-log/index';
 import { CertificateStoreComponent } from './components/core/certificate/certificate-store/index';
 import { SupportComponent } from './components/core/support/index';
