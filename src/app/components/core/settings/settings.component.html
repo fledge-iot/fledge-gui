@@ -49,7 +49,7 @@
               <button id="set-url-restart-btn" class="button is-primary is-pulled-left is-small" (click)="resetEndPoint()">Set the URL &amp; Restart</button>
               <a id="login-btn" href="/#/login" *ngIf='isSkipped' class="button is-text is-small">Login</a>
               <button id="test-connection-btn" class="button is-text is-small" (click)="testServiceConnection()">Test Connection</button>
-              <!-- <button class="button is-text" (click)="openServiceDiscoveryModal()">Discover FogLAMP Instances</button> -->
+              <button class="button is-text is-small" (click)="openServiceDiscoveryModal()" style="display: none;">Discover FogLAMP Instances</button>
             </div>
           </div>
         </div>

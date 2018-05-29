@@ -22,17 +22,16 @@ import {
   SupportService,
   SystemLogService,
   BackupRestoreService,
-  PingService
+  PingService,
+  SchedulesService
 } from './services/index';
 
 import { LoginComponent } from './components/layout/login/index';
 import { FooterComponent } from './components/layout/footer/index';
-import { DashboardComponent } from './components/core/dashboard/index';
 
 import { ChartModule } from './components/common/chart/index';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
 import { NavbarComponent } from './components/layout/navbar/navbar.component';
-import { AuditLogComponent } from './components/core/audit-log/audit-log.component';
 import { SidebarModule } from 'ng-sidebar';
 import { SettingsComponent } from './components/core/settings/index';
 import { ServicesHealthComponent } from './components/core/services-health/index';
@@ -41,26 +40,26 @@ import { InputTrimDirective } from './directives/input-trim.directive';
 import { NgProgressModule } from 'ngx-progressbar';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 
-import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
 import { SharedService } from './services/shared.service';
 
-import {  } from './directives/index';
+import { } from './directives/index';
 import { SupportComponent } from './components/core/support/support.component';
-import { SystemLogComponent } from './components/core/system-log/system-log.component';
 import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
-import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
 
 import { SchedulerModule } from './components/core/scheduler/scheduler.module';
 import { AssetsModule } from './components/core/asset-readings/assets.module';
 import { PipesModule } from './pipes/pipes.module';
-import { ConfigurationModule } from './components/core/configuration-manager/configuration.module';
-import { UserManagementModule } from './components/core/user-management/user.management.module';
 import { AlertComponent } from './components/common/alert/alert.component';
 import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog.module';
 import { EqualValidatorDirective } from './directives/equal-validator.directive';
-import { UserGuard } from './guards/user.guard';
 import { CertificateModule } from './components/core/certificate/certificate.module';
+import { AuditLogModule } from './components/core/audit-log/audit-log.module';
+import { DashboardModule } from './components/core/dashboard/dashboard.module';
+import { NumberInputDebounceModule } from './components/common/number-input-debounce/number-input-debounce.module';
+import { SystemLogModule } from './components/core/system-log/system-log.module';
+import { UserProfileComponent } from './components/core/user-management/user-profile/user-profile.component';
+import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
 
 @NgModule({
   imports: [
@@ -72,24 +71,18 @@ import { CertificateModule } from './components/core/certificate/certificate.mod
     ChartModule,
     SidebarModule.forRoot(),
     NgProgressModule,
-    AngularMultiSelectModule,
-    SchedulerModule,
-    AssetsModule,
     PipesModule,
-    ConfigurationModule,
-    UserManagementModule,
     AlertDialogModule,
-    CertificateModule
+    CertificateModule,
+    DashboardModule
   ],
   declarations: [
     AppComponent,
     LoginComponent,
     AlertComponent,
     FooterComponent,
-    DashboardComponent,
     SideMenuComponent,
     NavbarComponent,
-    AuditLogComponent,
     SettingsComponent,
     ServicesHealthComponent,
     NumberOnlyDirective,
@@ -98,13 +91,12 @@ import { CertificateModule } from './components/core/certificate/certificate.mod
     ShutdownModalComponent,
     EqualValidatorDirective,
     SupportComponent,
-    SystemLogComponent,
     BackupRestoreComponent,
+    UserProfileComponent,
     ResetPasswordComponent
   ],
   providers: [
     AuthGuard,
-    UserGuard,
     AlertService,
     AuthService,
     ConfigurationService,
@@ -119,6 +111,7 @@ import { CertificateModule } from './components/core/certificate/certificate.mod
     SupportService,
     BackupRestoreService,
     PingService,
+    SchedulesService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

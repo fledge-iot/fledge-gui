@@ -12,6 +12,17 @@ import { PipesModule } from '../../../pipes/pipes.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
 
+import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from '../../../guards';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: ScheduledProcessComponent,
+    canActivate: [AuthGuard]
+  }
+];
+
 @NgModule({
   declarations: [
     ScheduledProcessComponent,
@@ -24,12 +35,13 @@ import { ListSchedulesComponent } from './list-schedules/list-schedules.componen
     ReactiveFormsModule,
     FormsModule,
     CommonModule,
+    RouterModule.forChild(routes),
     NgProgressModule,
     NgxMaskModule,
     PipesModule,
     AlertDialogModule
   ],
-  providers: [SchedulesService],
+  providers: [],
   exports: []
 })
-export class SchedulerModule {}
+export class SchedulerModule { }
