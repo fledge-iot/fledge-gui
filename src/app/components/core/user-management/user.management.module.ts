@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { NgProgressModule } from 'ngx-progressbar';
 import { UserManagementComponent } from '.';
 import { UpdateUserComponent } from './update-user/update-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
-import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { Routes, RouterModule } from '@angular/router';
 import { UserGuard } from '../../../guards';
@@ -25,7 +24,6 @@ const routes: Routes = [
     CreateUserComponent
   ],
   imports: [
-    ReactiveFormsModule,
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../guards';
 import { SystemLogComponent } from '.';
@@ -21,8 +20,6 @@ const routes: Routes = [
     SystemLogComponent
   ],
   imports: [
-    ReactiveFormsModule,
-    FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
     NumberInputDebounceModule,

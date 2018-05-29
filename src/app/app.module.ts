@@ -13,7 +13,6 @@ import {
   AuthService,
   AuditService,
   ConfigurationService,
-  StatisticsService,
   ServicesHealthService,
   ConnectedServiceStatus,
   DiscoveryService,
@@ -48,7 +47,6 @@ import { SupportComponent } from './components/core/support/support.component';
 import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
 
 import { SchedulerModule } from './components/core/scheduler/scheduler.module';
-import { AssetsModule } from './components/core/asset-readings/assets.module';
 import { PipesModule } from './pipes/pipes.module';
 import { AlertComponent } from './components/common/alert/alert.component';
 import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog.module';
@@ -100,7 +98,6 @@ import { ResetPasswordComponent } from './components/core/user-management/reset-
     AlertService,
     AuthService,
     ConfigurationService,
-    StatisticsService,
     AuditService,
     SystemLogService,
     ServicesHealthService,
