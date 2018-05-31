@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgProgressModule } from 'ngx-progressbar';
-import { NumberInputDebounceComponent } from '../../common/number-input-debounce/number-input-debounce.component';
-import { PaginationComponent } from '../../common/pagination/index';
 import { AssetsComponent } from './assets/assets.component';
 import { AssetSummaryComponent } from '../asset-readings/asset-summary/asset-summary.component';
 import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
@@ -12,22 +10,36 @@ import { PipesModule } from '../../../pipes/pipes.module';
 import { ChartModule } from '../../common/chart/index';
 import { AssetsService } from '../../../services';
 
+import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from '../../../guards';
+import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
+import { PaginationModule } from '../../common/pagination/pagination.module';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: AssetsComponent,
+    canActivate: [AuthGuard]
+  }
+];
+
 @NgModule({
   declarations: [
     AssetsComponent,
     AssetSummaryComponent,
-    ReadingsGraphComponent,
-    NumberInputDebounceComponent,
-    PaginationComponent
+    ReadingsGraphComponent
   ],
   imports: [
     FormsModule,
     CommonModule,
+    RouterModule.forChild(routes),
     NgProgressModule,
     PipesModule,
-    ChartModule
+    ChartModule,
+    NumberInputDebounceModule,
+    PaginationModule
   ],
   providers: [AssetSummaryService, AssetsService],
-  exports: [NumberInputDebounceComponent, PaginationComponent]
+  exports: []
 })
 export class AssetsModule { }

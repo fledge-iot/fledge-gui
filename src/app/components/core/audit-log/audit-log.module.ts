@@ -3,32 +3,35 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgProgressModule } from 'ngx-progressbar';
 import { PipesModule } from '../../../pipes/pipes.module';
-import { ConfigurationService } from '../../../services';
-import { ConfigurationManagerComponent } from '.';
-import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
-import { AuthGuard } from '../../../guards';
+import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
+import { PaginationModule } from '../../common/pagination/pagination.module';
+import { AssetsService } from '../../../services';
 import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from '../../../guards';
+import { AuditLogComponent } from '.';
 
 const routes: Routes = [
   {
     path: '',
-    component: ConfigurationManagerComponent,
+    component: AuditLogComponent,
     canActivate: [AuthGuard]
   }
 ];
 
 @NgModule({
   declarations: [
-    ConfigurationManagerComponent,
-    AddConfigItemComponent
+    AuditLogComponent
   ],
   imports: [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
     NgProgressModule,
-    PipesModule
+    PipesModule,
+    NumberInputDebounceModule,
+    PaginationModule
   ],
-  providers: [ConfigurationService]
+  providers: [],
+  exports: []
 })
-export class ConfigurationModule { }
+export class AuditLogModule { }

@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { environment } from '../../environments/environment';
 import { InterceptorSkipHeader } from '../services/http.request.interceptor';
+import 'rxjs/add/operator/timeout';
 
 @Injectable()
 export class ServicesHealthService {
