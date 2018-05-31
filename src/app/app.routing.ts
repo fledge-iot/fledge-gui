@@ -19,24 +19,24 @@ import { UserGuard } from './guards/user.guard';
 import { DashboardComponent } from './components/core/dashboard';
 
 const appRoutes: Routes = [
-    { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
-    { path: 'login', component: LoginComponent },
-    { path: 'configuration', loadChildren: './components/core/configuration-manager/configuration.module#ConfigurationModule' },
-    { path: 'scheduled-task', loadChildren: './components/core/scheduler/scheduler.module#SchedulerModule' },
-    { path: 'syslog',  loadChildren: './components/core/system-log/system-log.module#SystemLogModule' },
-    { path: 'asset',  loadChildren: './components/core/asset-readings/assets.module#AssetsModule' },
-    { path: 'audit', loadChildren: './components/core/audit-log/audit-log.module#AuditLogModule'},
-    { path: 'certificate', component: CertificateStoreComponent, canActivate: [AuthGuard] },
-    { path: 'support', component: SupportComponent, canActivate: [AuthGuard] },
-    { path: 'backup-restore', component: BackupRestoreComponent, canActivate: [AuthGuard] },
-    { path: 'setting', component: SettingsComponent },
-    { path: 'services-health', component: ServicesHealthComponent, canActivate: [AuthGuard] },
-    { path: 'service-discovery', component: ServiceDiscoveryComponent },
-    { path: 'user-management', loadChildren: './components/core/user-management/user.management.module#UserManagementModule'},
-    { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
-    { path: 'reset-password', component: ResetPasswordComponent},
-    // otherwise redirect to dashboard
-    { path: '**', redirectTo: '' }
+  { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'login', component: LoginComponent },
+  { path: 'configuration', loadChildren: './components/core/configuration-manager/configuration.module#ConfigurationModule' },
+  { path: 'scheduled-task', loadChildren: './components/core/scheduler/scheduler.module#SchedulerModule' },
+  { path: 'syslog', loadChildren: './components/core/system-log/system-log.module#SystemLogModule' },
+  { path: 'asset', loadChildren: './components/core/asset-readings/assets.module#AssetsModule' },
+  { path: 'audit', loadChildren: './components/core/audit-log/audit-log.module#AuditLogModule' },
+  { path: 'certificate', component: CertificateStoreComponent, canActivate: [AuthGuard] },
+  { path: 'support', component: SupportComponent, canActivate: [AuthGuard] },
+  { path: 'backup-restore', component: BackupRestoreComponent, canActivate: [AuthGuard] },
+  { path: 'setting', component: SettingsComponent },
+  { path: 'services-health', component: ServicesHealthComponent, canActivate: [AuthGuard] },
+  { path: 'service-discovery', component: ServiceDiscoveryComponent },
+  { path: 'user-management', loadChildren: './components/core/user-management/user.management.module#UserManagementModule' },
+  { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent },
+  // otherwise redirect to dashboard
+  { path: '**', redirectTo: '' }
 ];
 
-export const routing = RouterModule.forRoot(appRoutes, { preloadingStrategy: PreloadAllModules});
+export const routing = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules });
