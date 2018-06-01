@@ -7,13 +7,13 @@ import { CreateScheduleComponent } from './create-schedule/create-schedule.compo
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
 import { NgProgressModule } from 'ngx-progressbar';
 import { SchedulesService } from '../../../services';
-import { NgxMaskModule } from 'ngx-mask';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
 
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../guards';
+import { InputMaskDirective } from '../../../directives/input-mask.directive';
 
 const routes: Routes = [
   {
@@ -30,6 +30,7 @@ const routes: Routes = [
     CreateScheduleComponent,
     UpdateScheduleComponent,
     ListSchedulesComponent,
+    InputMaskDirective
   ],
   imports: [
     ReactiveFormsModule,
@@ -37,11 +38,10 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     NgProgressModule,
-    NgxMaskModule,
     PipesModule,
     AlertDialogModule
   ],
   providers: [],
-  exports: []
+  exports: [InputMaskDirective]
 })
 export class SchedulerModule { }
