@@ -32,8 +32,10 @@ const appRoutes: Routes = [
   { path: 'setting', component: SettingsComponent },
   { path: 'services-health', component: ServicesHealthComponent, canActivate: [AuthGuard] },
   { path: 'service-discovery', component: ServiceDiscoveryComponent },
+  // /user-management
   { path: 'user-management', loadChildren: './components/core/user-management/user.management.module#UserManagementModule' },
-  { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+  // user/profile
+  { path: 'user', loadChildren: './components/core/user-management/user.management.module#UserManagementModule' },
   { path: 'reset-password', component: ResetPasswordComponent },
   // otherwise redirect to dashboard
   { path: '**', redirectTo: '' }
