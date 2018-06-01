@@ -7,13 +7,20 @@ import { UpdateUserComponent } from './update-user/update-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { Routes, RouterModule } from '@angular/router';
-import { UserGuard } from '../../../guards';
+import { UserGuard, AuthGuard } from '../../../guards';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { EqualValidatorDirective } from '../../../directives/equal-validator.directive';
 
 const routes: Routes = [
   {
     path: '',
     component: UserManagementComponent,
     canActivate: [UserGuard]
+  },
+  {
+    path: 'profile',
+    component: UserProfileComponent,
+    canActivate: [AuthGuard]
   }
 ];
 
@@ -21,7 +28,9 @@ const routes: Routes = [
   declarations: [
     UserManagementComponent,
     UpdateUserComponent,
-    CreateUserComponent
+    CreateUserComponent,
+    UserProfileComponent,
+    EqualValidatorDirective
   ],
   imports: [
     FormsModule,
