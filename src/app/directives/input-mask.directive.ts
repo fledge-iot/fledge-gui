@@ -31,7 +31,6 @@ export class InputMaskDirective implements OnInit {
   /**
    *
    * @param element
-   * @param model
    */
   constructor(private element: ElementRef) {
     this.state = {
