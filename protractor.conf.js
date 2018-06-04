@@ -17,9 +17,19 @@ exports.config = {
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 30000,
-    print: function() {}
+    print: function () { }
   },
   onPrepare() {
+    var HtmlReporter = require('protractor-beautiful-reporter');
+    // Add a screenshot reporter and store screenshots to `/tmp`:
+      jasmine.getEnv().addReporter(new HtmlReporter({
+         baseDirectory: 'tmp',
+         jsonsSubfolder: 'json',
+         screenshotsSubfolder: 'screenshots',
+         takeScreenShotsOnlyForFailedSpecs: true,
+         preserveDirectory: false
+      }).getJasmine2Reporter());
+
     require('ts-node').register({
       project: 'e2e/tsconfig.e2e.json'
     });
