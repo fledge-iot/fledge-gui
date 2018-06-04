@@ -50,13 +50,11 @@ import { SchedulerModule } from './components/core/scheduler/scheduler.module';
 import { PipesModule } from './pipes/pipes.module';
 import { AlertComponent } from './components/common/alert/alert.component';
 import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog.module';
-import { EqualValidatorDirective } from './directives/equal-validator.directive';
 import { CertificateModule } from './components/core/certificate/certificate.module';
 import { AuditLogModule } from './components/core/audit-log/audit-log.module';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
 import { NumberInputDebounceModule } from './components/common/number-input-debounce/number-input-debounce.module';
 import { SystemLogModule } from './components/core/system-log/system-log.module';
-import { UserProfileComponent } from './components/core/user-management/user-profile/user-profile.component';
 import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
 
 @NgModule({
@@ -87,10 +85,8 @@ import { ResetPasswordComponent } from './components/core/user-management/reset-
     InputTrimDirective,
     ServiceDiscoveryComponent,
     ShutdownModalComponent,
-    EqualValidatorDirective,
     SupportComponent,
     BackupRestoreComponent,
-    UserProfileComponent,
     ResetPasswordComponent
   ],
   providers: [
