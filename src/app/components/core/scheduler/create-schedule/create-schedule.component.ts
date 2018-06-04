@@ -90,7 +90,7 @@ export class CreateScheduleComponent implements OnInit {
 
       this.schedulesService.createSchedule(payload).
         subscribe(
-          data => {
+          (data) => {
             this.notify.emit();
             this.toggleModal(false);
             this.alertService.success('Schedule created successfully.');
@@ -128,8 +128,8 @@ export class CreateScheduleComponent implements OnInit {
     this.scheduleProcess = [];
     this.schedulesService.getScheduledProcess().
       subscribe(
-        data => {
-          this.scheduleProcess = data.processes;
+        (data) => {
+          this.scheduleProcess = data['processes'];
           this.form.get('processName').setValue(this.scheduleProcess[0]);
           console.log('This is the getScheduleProcess ', this.scheduleProcess);
           this.process.emit(this.scheduleProcess);
@@ -146,8 +146,8 @@ export class CreateScheduleComponent implements OnInit {
   public getScheduleType(): void {
     this.schedulesService.getScheduleType().
       subscribe(
-        data => {
-          this.scheduleType = data.scheduleType;
+        (data) => {
+          this.scheduleType = data['scheduleType'];
           this.type.emit(this.scheduleType);
         },
         error => {

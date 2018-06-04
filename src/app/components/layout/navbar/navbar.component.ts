@@ -136,7 +136,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
         },
         (error) => {
           /** request completed */
@@ -175,7 +175,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngProgress.start();
     this.authService.logout().
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
           this.router.navigate(['/login']);
           this.alertService.success('You have been successfully logged out!');

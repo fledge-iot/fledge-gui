@@ -43,12 +43,12 @@ export class ServicesHealthComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          if (data.error) {
-            console.log('error in response', data.error);
+          if (data['error']) {
+            console.log('error in response', data['error']);
             this.alertService.warning('Could not connect to API');
             return;
           }
-          this.service_data = data.services;
+          this.service_data = data['services'];
           this.time = Utils.getCurrentDate();
 
         },
@@ -89,7 +89,7 @@ export class ServicesHealthComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           this.getServiceData();
         },
         (error) => {

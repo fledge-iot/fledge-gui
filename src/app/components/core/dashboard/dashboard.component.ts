@@ -82,7 +82,7 @@ export class DashboardComponent implements OnInit {
     this.ngProgress.start();
 
     this.statisticsService.getStatistics().
-      subscribe(data => {
+      subscribe((data: any[]) => {
         /** request completed */
         this.ngProgress.done();
         console.log('received statisticsData ', data);
@@ -185,12 +185,12 @@ export class DashboardComponent implements OnInit {
 
   public getStatisticsHistory(limit = this.DEFAULT_LIMIT): void {
     this.statisticsService.getStatisticsHistory(limit).
-      subscribe(data => {
+      subscribe((data: any[]) => {
         this.limit = limit;
         this.statisticsKeys.forEach(key => {
           const labels = [];
-          const record = map(data.statistics, key);
-          const history_ts = map(data.statistics, 'history_ts');
+          const record = map(data['statistics'], key);
+          const history_ts = map(data['statistics'], 'history_ts');
           history_ts.forEach(element => {
             element = moment(element).format('HH:mm:ss:SSS');
             labels.push(element);

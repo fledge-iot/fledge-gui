@@ -76,10 +76,10 @@ export class AddConfigItemComponent implements OnInit {
         configItem
       )
       .subscribe(
-        data => {
+        (data) => {
           this.notify.emit();
           this.toggleModal(false, null);
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           if (form != null) {
             this.resetAddConfigItemForm(form);
           }

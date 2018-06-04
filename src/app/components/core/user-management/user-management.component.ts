@@ -42,8 +42,8 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.userService.getAllUsers()
       .subscribe(
-        userData => {
-          this.getRole(userData.users);
+        (userData) => {
+          this.getRole(userData['users']);
         },
         error => {
           /** request completed */
@@ -60,10 +60,10 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.userService.getRole()
       .subscribe(
-        roleRecord => {
-          this.roles = roleRecord.roles;
+        (roleRecord) => {
+          this.roles = roleRecord['roles'];
           this.ngProgress.done();
-          roleRecord.roles.filter(role => {
+          roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id == user.roleId) {
                 user['roleName'] = role.name;
@@ -128,10 +128,10 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.userService.deleteUser(userId).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           this.getUsers();
         },
         error => {
@@ -152,7 +152,7 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.authService.clearAllSessions(id).
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
         },

@@ -68,7 +68,7 @@ export class ReadingsGraphComponent implements OnInit {
     this.assetCode = assetCode;
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, +offset).
       subscribe(
-        data => {
+        (data: any[]) => {
           if (data.length === 0) {
             this.isReadingsAvailable = false;
             return;
