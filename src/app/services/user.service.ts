@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { throwError as observableThrowError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
 import { environment } from '../../environments/environment';
 
 @Injectable()
@@ -18,9 +20,9 @@ export class UserService {
    *
    */
   getAllUsers() {
-    return this.http.get(this.USER_URL)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.USER_URL).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -33,9 +35,9 @@ export class UserService {
   getUser(uid) {
     let params = new HttpParams();
     params = params.set('id', uid);
-    return this.http.get(this.USER_URL, { params: params })
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.USER_URL, { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -45,9 +47,9 @@ export class UserService {
   *
   */
   getRole() {
-    return this.http.get(this.ROLE_URL)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.ROLE_URL).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -58,9 +60,9 @@ export class UserService {
    * @param Number id
    */
   deleteUser(id) {
-    return this.http.delete(this.ADMIN_URL + '/' + id + '/delete')
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.delete(this.ADMIN_URL + '/' + id + '/delete').pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -71,9 +73,9 @@ export class UserService {
   *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "role_id": 1}
   */
   createUser(user) {
-    return this.http.post(this.ADMIN_URL + '/user', user)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.post(this.ADMIN_URL + '/user', user).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
 
@@ -86,9 +88,9 @@ export class UserService {
     const payload: any = {
       role_id: data.role_id
     };
-    return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -98,9 +100,9 @@ export class UserService {
   * @param Object payload  => {"current_password": "F0gl@mp!", "new_password": "F0gl@mp1"}
   */
   changePassword(payload, userName) {
-    return this.http.put(this.USER_URL + '/' + userName + '/password', payload)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.put(this.USER_URL + '/' + userName + '/password', payload).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -113,9 +115,9 @@ export class UserService {
     const payload: any = {
       password: data.password
     };
-    return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 }
 
