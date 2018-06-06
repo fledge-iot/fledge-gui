@@ -176,7 +176,7 @@ export class AssetsComponent implements OnInit {
     this.ngProgress.start();
     this.assetService.getAsset().
       subscribe(
-        data => {
+        (data: any[]) => {
           /** request completed */
           this.ngProgress.done();
           this.assets = data;

@@ -111,12 +111,12 @@ export class UploadCertificateComponent implements OnInit {
         this.ngProgress.start();
         this.certificateService.uploadCertificate(formData).
           subscribe(
-            data => {
+            (data) => {
               /** request completed */
               this.ngProgress.done();
               this.notify.emit();
               this.toggleModal(false);
-              this.alertService.success(data.result);
+              this.alertService.success(data['result']);
             },
             error => {
               /** request completed */

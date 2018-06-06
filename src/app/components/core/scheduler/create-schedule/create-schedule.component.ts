@@ -57,7 +57,7 @@ export class CreateScheduleComponent implements OnInit {
       return;
     }
     schedule_name.classList.remove('is-active');
-    this.form.reset({ exclusive: true, processName: this.scheduleProcess[0], type: 1, repeatTime: 'hh:mm:ss', day: 1, time: 'hh:mm:ss' });
+    this.form.reset({ exclusive: true, processName: this.scheduleProcess[0], type: 1, repeatTime: '', day: 1, time: '' });
     this.selected_schedule_type = 1; // reset to default
     this.form.get('day').disable();
     this.form.get('time').disable();
@@ -90,7 +90,7 @@ export class CreateScheduleComponent implements OnInit {
 
       this.schedulesService.createSchedule(payload).
         subscribe(
-          data => {
+          (data) => {
             this.notify.emit();
             this.toggleModal(false);
             this.alertService.success('Schedule created successfully.');
@@ -128,8 +128,8 @@ export class CreateScheduleComponent implements OnInit {
     this.scheduleProcess = [];
     this.schedulesService.getScheduledProcess().
       subscribe(
-        data => {
-          this.scheduleProcess = data.processes;
+        (data) => {
+          this.scheduleProcess = data['processes'];
           this.form.get('processName').setValue(this.scheduleProcess[0]);
           console.log('This is the getScheduleProcess ', this.scheduleProcess);
           this.process.emit(this.scheduleProcess);
@@ -146,8 +146,8 @@ export class CreateScheduleComponent implements OnInit {
   public getScheduleType(): void {
     this.schedulesService.getScheduleType().
       subscribe(
-        data => {
-          this.scheduleType = data.scheduleType;
+        (data) => {
+          this.scheduleType = data['scheduleType'];
           this.type.emit(this.scheduleType);
         },
         error => {

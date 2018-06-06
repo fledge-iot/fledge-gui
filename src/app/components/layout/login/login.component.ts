@@ -38,12 +38,12 @@ export class LoginComponent implements OnInit {
     this.ngProgress.start();
     this.authService.login(this.model.username, this.model.password).
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          sessionStorage.setItem('token', data.token);
-          sessionStorage.setItem('uid', data.uid);
-          sessionStorage.setItem('isAdmin', JSON.stringify(data.admin));
-          this.getUser(data.uid);
+          sessionStorage.setItem('token', data['token']);
+          sessionStorage.setItem('uid', data['uid']);
+          sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
+          this.getUser(data['uid']);
           this.router.navigate(['']);
         },
         error => {
@@ -79,12 +79,12 @@ export class LoginComponent implements OnInit {
     // Get SignedIn user details
     this.userService.getUser(id)
       .subscribe(
-        userData => {
+        (userData) => {
           this.sharedService.isUserLoggedIn.next({
             'loggedIn': true,
-            'userName': userData.userName
+            'userName': userData['userName']
           });
-          sessionStorage.setItem('userName', userData.userName);
+          sessionStorage.setItem('userName', userData['userName']);
         },
         error => {
           if (error.status === 0) {

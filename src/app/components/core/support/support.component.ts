@@ -23,9 +23,9 @@ export class SupportComponent implements OnInit {
     this.ngProgress.start();
     this.supportBundleService.get().
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          this.bundlesData = data.bundles.sort().reverse();
+          this.bundlesData = data['bundles'].sort().reverse();
         },
         error => {
           this.ngProgress.done();
@@ -41,7 +41,7 @@ export class SupportComponent implements OnInit {
     this.ngProgress.start();
     this.supportBundleService.post().
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
           this.alertService.success('Support bundle created successfully');
           this.getBundles();

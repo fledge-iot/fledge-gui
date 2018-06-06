@@ -65,9 +65,9 @@ export class UpdateUserComponent implements OnInit {
   getRole() {
     this.userService.getRole()
       .subscribe(
-        roleRecord => {
-          console.log('Role', roleRecord.roles);
-          this.userRole = roleRecord.roles;
+        (roleRecord) => {
+          console.log('Role', roleRecord['roles']);
+          this.userRole = roleRecord['roles'];
         },
         error => {
           if (error.status === 0) {
@@ -95,10 +95,10 @@ export class UpdateUserComponent implements OnInit {
   updateRole() {
     this.userService.updateRole(this.userRecord).
       subscribe(
-        data => {
+        (data) => {
           this.notify.emit();
           this.toggleModal(false, null);
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
         },
         error => {
           if (error.status === 0) {
@@ -116,10 +116,10 @@ export class UpdateUserComponent implements OnInit {
   resetPassword() {
     this.userService.resetPassword(this.userRecord).
       subscribe(
-        data => {
+        (data) => {
           this.notify.emit();
           this.toggleModal(false, null);
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
         },
         error => {
           if (error.status === 0) {

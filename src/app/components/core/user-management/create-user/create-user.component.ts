@@ -45,10 +45,10 @@ export class CreateUserComponent implements OnInit {
   public createUser(form: NgForm) {
     this.userService.createUser(this.model).
       subscribe(
-        data => {
+        (data) => {
           this.notify.emit();
           this.toggleModal(false, null);
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           if (form != null) {
             this.resetCreateUserForm(form);
           }
@@ -65,8 +65,8 @@ export class CreateUserComponent implements OnInit {
   getRole() {
     this.userService.getRole()
       .subscribe(
-        roleRecord => {
-          this.userRole = roleRecord.roles;
+        (roleRecord) => {
+          this.userRole = roleRecord['roles'];
         },
         error => {
           if (error.status === 0) {

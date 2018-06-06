@@ -38,9 +38,9 @@ export class ResetPasswordComponent implements OnInit {
     this.ngProgress.start();
     this.userService.changePassword(passwordPayload, this.userName).
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          this.alertService.success(data.message, true);
+          this.alertService.success(data['message'], true);
           if (form != null) {
             this.resetUserForm(form);
           }

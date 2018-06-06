@@ -40,11 +40,11 @@ export class ListTasksComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.getLatestTask().
       subscribe(
-      data => {
+        (data) => {
         /** request completed */
         this.ngProgress.done();
-        this.tasksData = data.tasks;
-        console.log('Latest tasks ', data.tasks);
+        this.tasksData = data['tasks'];
+        console.log('Latest tasks ', data['tasks']);
       },
       error => {
         /** request completed */
@@ -66,10 +66,10 @@ export class ListTasksComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.getTasks('RUNNING').
       subscribe(
-      data => {
+        (data) => {
         /** request completed */
         this.ngProgress.done();
-        this.tasksData = data.tasks;
+        this.tasksData = data['tasks'];
         console.log('Running tasks ', this.tasksData);
       },
       error => {
@@ -93,11 +93,11 @@ export class ListTasksComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.cancelTask(id).
       subscribe(
-      data => {
+        (data) => {
         /** request completed */
         this.ngProgress.done();
-        if (data.message) {
-          this.alertService.success(data.message + ' Wait for 5 seconds!');
+        if (data['message']) {
+          this.alertService.success(data['message'] + ' Wait for 5 seconds!');
           // TODO: remove cancelled task object from local list
           setTimeout(() => {
             console.log('waiting...', this.selectedTaskType);

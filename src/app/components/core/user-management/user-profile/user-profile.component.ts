@@ -33,13 +33,13 @@ export class UserProfileComponent implements OnInit {
     // Get SignedIn user details
     this.userService.getUser(id)
       .subscribe(
-        userData => {
+        (userData) => {
           this.userService.getRole()
             .subscribe(
-              roleRecord => {
+              (roleRecord) => {
                 this.ngProgress.done();
-                roleRecord.roles.filter(role => {
-                  if (role.id == userData.roleId) {
+                roleRecord['roles'].filter(role => {
+                  if (role.id == userData['roleId']) {
                     userData['roleName'] = role.name;
                   }
                 });
@@ -94,9 +94,9 @@ export class UserProfileComponent implements OnInit {
     this.ngProgress.start();
     this.userService.changePassword(passwordPayload, userName).
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           if (form != null) {
             this.toggleModal(false);
             this.resetUserForm(form);
@@ -137,7 +137,7 @@ export class UserProfileComponent implements OnInit {
     this.ngProgress.start();
     this.authService.clearAllSessions(id).
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
           this.router.navigate(['/login']);
