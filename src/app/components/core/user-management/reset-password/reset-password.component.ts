@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
-import { AlertService, AuthService, UserService } from '../../../../services/index';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+
+import { AlertService, UserService } from '../../../../services';
 
 @Component({
   selector: 'app-reset-password',

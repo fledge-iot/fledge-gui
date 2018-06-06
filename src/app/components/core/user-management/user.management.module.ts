@@ -1,15 +1,16 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
 import { NgProgressModule } from 'ngx-progressbar';
+
 import { UserManagementComponent } from '.';
-import { UpdateUserComponent } from './update-user/update-user.component';
-import { CreateUserComponent } from './create-user/create-user.component';
-import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
-import { Routes, RouterModule } from '@angular/router';
-import { UserGuard, AuthGuard } from '../../../guards';
-import { UserProfileComponent } from './user-profile/user-profile.component';
 import { EqualValidatorDirective } from '../../../directives/equal-validator.directive';
+import { AuthGuard, UserGuard } from '../../../guards';
+import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
+import { CreateUserComponent } from './create-user/create-user.component';
+import { UpdateUserComponent } from './update-user/update-user.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 const routes: Routes = [
   {

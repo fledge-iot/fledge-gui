@@ -97,7 +97,6 @@ export class AssetSummaryComponent implements OnInit {
     const second_dataset = [];
     const third_dataset = [];
     const labels = []; // chart labels array
-    const assetSummaryData = [];
     let d1;
     let d2;
     let d3;

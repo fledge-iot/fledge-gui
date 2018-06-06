@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, OnInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, ElementRef, OnInit, OnChanges, OnDestroy } from '@angular/core';
 import { Chart } from 'chart.js';
 
 @Component({
@@ -17,7 +17,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() { }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     if (this.chart) {
       this.chart.destroy();
     }

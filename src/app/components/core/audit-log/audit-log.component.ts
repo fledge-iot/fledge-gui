@@ -68,7 +68,7 @@ export class AuditLogComponent implements OnInit {
   /**
    *  Go to the last page
    */
-  onLast(n: number): void {
+  onLast(): void {
     const p = Math.ceil(this.recordCount / this.limit) || 0;
     this.page = p;
     this.setLimitOffset();
