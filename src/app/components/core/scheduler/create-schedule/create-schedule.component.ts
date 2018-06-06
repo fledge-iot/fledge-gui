@@ -58,7 +58,7 @@ export class CreateScheduleComponent implements OnInit {
       return;
     }
     schedule_name.classList.remove('is-active');
-    this.form.reset({ exclusive: true, processName: this.scheduleProcess[0], type: 1, repeatTime: 'hh:mm:ss', day: 1, time: 'hh:mm:ss' });
+    this.form.reset({ exclusive: true, processName: this.scheduleProcess[0], type: 1, repeatTime: '', day: 1, time: '' });
     this.selected_schedule_type = 1; // reset to default
     this.form.get('day').disable();
     this.form.get('time').disable();
