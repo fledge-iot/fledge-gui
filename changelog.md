@@ -1,4 +1,4 @@
-## [Unreleased]
+## v1.3.0 [Unreleased]
  
 #### Added
 
@@ -6,11 +6,11 @@
 
 #### Changed
 
-* Upgraded to Angular v5 (including compatible TypeScript / CLI versions)
+* Upgraded to Angular v6 (including compatible TypeScript / CLI versions)
 
 #### Removed
 
-* input mask external lib
+* Input mask external lib
 
 #### Bug Fixes
 
