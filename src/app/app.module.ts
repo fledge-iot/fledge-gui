@@ -1,61 +1,50 @@
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { HttpsRequestInterceptor } from './services/http.request.interceptor';
+import { BrowserModule } from '@angular/platform-browser';
+import { SidebarModule } from 'ng-sidebar';
+import { NgProgressModule } from 'ngx-progressbar';
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
-
-import { AuthGuard } from './guards/index';
+import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog.module';
+import { AlertComponent } from './components/common/alert/alert.component';
+import { ChartModule } from './components/common/chart';
+import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
+import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
+import { CertificateModule } from './components/core/certificate/certificate.module';
+import { DashboardModule } from './components/core/dashboard/dashboard.module';
+import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
+import { ServicesHealthComponent } from './components/core/services-health';
+import { SettingsComponent } from './components/core/settings';
+import { SupportComponent } from './components/core/support/support.component';
+import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
+import { FooterComponent } from './components/layout/footer';
+import { LoginComponent } from './components/layout/login';
+import { NavbarComponent } from './components/layout/navbar/navbar.component';
+import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
+import { InputTrimDirective } from './directives/input-trim.directive';
+import { NumberOnlyDirective } from './directives/number-only.directive';
+import { AuthGuard } from './guards';
+import { PipesModule } from './pipes/pipes.module';
 import {
   AlertService,
-  AuthService,
   AuditService,
+  AuthService,
+  BackupRestoreService,
+  CertificateService,
   ConfigurationService,
-  ServicesHealthService,
   ConnectedServiceStatus,
   DiscoveryService,
-  UserService,
-  CertificateService,
+  PingService,
+  SchedulesService,
+  ServicesHealthService,
   SupportService,
   SystemLogService,
-  BackupRestoreService,
-  PingService,
-  SchedulesService
-} from './services/index';
-
-import { LoginComponent } from './components/layout/login/index';
-import { FooterComponent } from './components/layout/footer/index';
-
-import { ChartModule } from './components/common/chart/index';
-import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
-import { NavbarComponent } from './components/layout/navbar/navbar.component';
-import { SidebarModule } from 'ng-sidebar';
-import { SettingsComponent } from './components/core/settings/index';
-import { ServicesHealthComponent } from './components/core/services-health/index';
-import { NumberOnlyDirective } from './directives/number-only.directive';
-import { InputTrimDirective } from './directives/input-trim.directive';
-import { NgProgressModule } from 'ngx-progressbar';
-import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
-
-import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
+  UserService,
+} from './services';
+import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
-
-import { } from './directives/index';
-import { SupportComponent } from './components/core/support/support.component';
-import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
-
-import { SchedulerModule } from './components/core/scheduler/scheduler.module';
-import { PipesModule } from './pipes/pipes.module';
-import { AlertComponent } from './components/common/alert/alert.component';
-import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog.module';
-import { CertificateModule } from './components/core/certificate/certificate.module';
-import { AuditLogModule } from './components/core/audit-log/audit-log.module';
-import { DashboardModule } from './components/core/dashboard/dashboard.module';
-import { NumberInputDebounceModule } from './components/common/number-input-debounce/number-input-debounce.module';
-import { SystemLogModule } from './components/core/system-log/system-log.module';
-import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
 
 @NgModule({
   imports: [

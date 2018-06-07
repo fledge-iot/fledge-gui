@@ -50,9 +50,9 @@ export class BackupRestoreComponent implements OnInit {
     this.ngProgress.start();
     this.backupRestoreService.get().
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          this.backupData = data.backups;
+          this.backupData = data['backups'];
         },
         error => {
           this.ngProgress.done();
@@ -69,9 +69,9 @@ export class BackupRestoreComponent implements OnInit {
     this.ngProgress.start();
     this.backupRestoreService.requestBackup().
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          this.alertService.success(data.status);
+          this.alertService.success(data['status']);
         },
         error => {
           this.ngProgress.done();
@@ -88,9 +88,9 @@ export class BackupRestoreComponent implements OnInit {
     this.ngProgress.start();
     this.backupRestoreService.restoreBackup(id).
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          this.alertService.success(data.status);
+          this.alertService.success(data['status']);
           this.getBackup();
         },
         error => {
@@ -108,9 +108,9 @@ export class BackupRestoreComponent implements OnInit {
     this.ngProgress.start();
     this.backupRestoreService.deleteBackup(id).
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           this.getBackup();
         },
         error => {

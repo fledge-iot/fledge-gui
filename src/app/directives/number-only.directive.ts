@@ -1,11 +1,11 @@
-import { Directive, ElementRef, HostListener } from '@angular/core';
+import { Directive, HostListener } from '@angular/core';
 
 @Directive({
   selector: '[appNumberOnly]'
 })
 export class NumberOnlyDirective {
 
-  constructor(private el: ElementRef) { }
+  constructor() { }
 
   @HostListener('keypress') onkeypress(e) {
     const event = e || window.event;

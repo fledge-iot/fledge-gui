@@ -58,10 +58,10 @@ export class ListSchedulesComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.getSchedules().
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.scheduleData = data.schedules;
+          this.scheduleData = data['schedules'];
           this.scheduleData.forEach(element => {
             const repeatTimeObj = Utils.secondsToDhms(element.repeat);
             if (repeatTimeObj.days == 1) {
@@ -74,7 +74,7 @@ export class ListSchedulesComponent implements OnInit {
             // Time
             element.time = Utils.secondsToDhms(element.time).time;
           });
-          console.log('This is the getSchedule ', data.schedules);
+          console.log('This is the getSchedule ', data['schedules']);
         },
         error => {
           /** request completed */
@@ -169,14 +169,14 @@ export class ListSchedulesComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.disableSchedule(schedule_id).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
           const schedule = this.scheduleData.find(item => item.id === schedule_id);
-          if (data.status === true) {
+          if (data['status'] === true) {
             schedule.enabled = false;
           }
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
         },
         error => {
           /** request completed */
@@ -199,14 +199,14 @@ export class ListSchedulesComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.enableSchedule(schedule_id).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
           const schedule = this.scheduleData.find(item => item.id === schedule_id);
-          if (data.status === true) {
+          if (data['status'] === true) {
             schedule.enabled = true;
           }
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
         },
         error => {
           /** request completed */
@@ -229,10 +229,10 @@ export class ListSchedulesComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.deleteSchedule(schedule_id).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           this.getSchedules();
         },
         error => {

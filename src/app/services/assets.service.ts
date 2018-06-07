@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { throwError as observableThrowError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
 import { environment } from '../../environments/environment';
 
 @Injectable()
@@ -14,9 +16,9 @@ export class AssetsService {
   * Return a summary count of all asset readings
   */
   public getAsset() {
-    return this.http.get(this.GET_ASSET)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.GET_ASSET).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -37,9 +39,9 @@ export class AssetsService {
       params = params.set('skip', offset.toString());
     }
 
-    return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params })
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   public getAssetSummary(assetObject: any) {
@@ -49,16 +51,16 @@ export class AssetsService {
       params = params.set(keys[0], assetObject.time[keys[0]]);
     }
     return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode)
-      + '/' + assetObject.reading + '/summary', { params: params })
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+      + '/' + assetObject.reading + '/summary', { params: params }).pipe(
+        map(response => response),
+        catchError((error: Response) => observableThrowError(error)));
   }
 
   // TODO: Not in use yet
   public getAssetAverage(assetObject: any) {
     // TODO: time based readings average;
-    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode) + '/' + assetObject.reading + '/series')
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode) + '/' + assetObject.reading + '/series').pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 }

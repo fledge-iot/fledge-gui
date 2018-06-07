@@ -68,7 +68,7 @@ export class AuditLogComponent implements OnInit {
   /**
    *  Go to the last page
    */
-  onLast(n: number): void {
+  onLast(): void {
     const p = Math.ceil(this.recordCount / this.limit) || 0;
     this.page = p;
     this.setLimitOffset();
@@ -100,8 +100,8 @@ export class AuditLogComponent implements OnInit {
   public getLogSource() {
     this.auditService.getLogSource().
       subscribe(
-        data => {
-          this.logSourceList = data.logCode;
+        (data) => {
+          this.logSourceList = data['logCode'];
           console.log('Log code', this.logSourceList);
         },
         error => {
@@ -116,8 +116,8 @@ export class AuditLogComponent implements OnInit {
   public getLogSeverity() {
     this.auditService.getLogSeverity().
       subscribe(
-        data => {
-          this.logSeverityList = data.logSeverity;
+        (data) => {
+          this.logSeverityList = data['logSeverity'];
           console.log('Log severity ', this.logSeverityList);
         },
         error => {
@@ -201,11 +201,11 @@ export class AuditLogComponent implements OnInit {
     this.ngProgress.start();
     this.auditService.getAuditLogs(this.limit, this.tempOffset, this.source, this.severity).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.audit = data.audit;
-          this.totalCount = data.totalCount;
+          this.audit = data['audit'];
+          this.totalCount = data['totalCount'];
           console.log('Audit Logs', this.audit, 'Total count', this.totalCount);
           if (this.offset !== 0) {
             this.recordCount = this.totalCount - this.offset;

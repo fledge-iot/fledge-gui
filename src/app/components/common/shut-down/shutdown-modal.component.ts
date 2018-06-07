@@ -1,7 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { SchedulesService, AlertService } from '../../../services/index';
-
 @Component({
   selector: 'app-shutdown-modal',
   templateUrl: './shutdown-modal.component.html'
@@ -10,7 +8,7 @@ export class ShutdownModalComponent implements OnInit {
   @Input() shutDownData: { key: any, message: any };
   @Output() shutdown = new EventEmitter<Number>();
 
-  constructor(private schedulesService: SchedulesService, private alertService: AlertService) { }
+  constructor() { }
 
   ngOnInit() { }
 

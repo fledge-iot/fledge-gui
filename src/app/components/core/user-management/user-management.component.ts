@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AlertService, AuthService, UserService } from '../../../services/index';
-import { SharedService } from '../../../services/shared.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, AuthService, UserService } from '../../../services';
+import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
-import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-user-management',
@@ -25,11 +24,8 @@ export class UserManagementComponent implements OnInit {
   public roles = [];
   seletedTab: Number = 1;  // 1: user-management , 2 : roles
 
-  constructor(private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService,
+  constructor(private authService: AuthService,
     private alertService: AlertService,
-    private sharedService: SharedService,
     private userService: UserService,
     public ngProgress: NgProgress) { }
 
@@ -42,8 +38,8 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.userService.getAllUsers()
       .subscribe(
-        userData => {
-          this.getRole(userData.users);
+        (userData) => {
+          this.getRole(userData['users']);
         },
         error => {
           /** request completed */
@@ -60,10 +56,10 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.userService.getRole()
       .subscribe(
-        roleRecord => {
-          this.roles = roleRecord.roles;
+        (roleRecord) => {
+          this.roles = roleRecord['roles'];
           this.ngProgress.done();
-          roleRecord.roles.filter(role => {
+          roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id == user.roleId) {
                 user['roleName'] = role.name;
@@ -128,10 +124,10 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.userService.deleteUser(userId).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           this.getUsers();
         },
         error => {
@@ -152,7 +148,7 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.authService.clearAllSessions(id).
       subscribe(
-        data => {
+        () => {
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
         },

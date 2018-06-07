@@ -2,7 +2,7 @@
 
 # compiled output
 /dist
-/tmp
+/e2e-test-report
 /out-tsc
 *.tar.gz
 

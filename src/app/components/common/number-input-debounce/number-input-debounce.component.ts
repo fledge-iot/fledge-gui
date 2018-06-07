@@ -1,8 +1,6 @@
-import { Component, Input, Output, ElementRef, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/debounceTime';
+import { Component, ElementRef, EventEmitter, Input, Output } from '@angular/core';
+import { fromEvent as observableFromEvent } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-number-input-debounce',
@@ -18,10 +16,10 @@ export class NumberInputDebounceComponent {
 
   public inputValue: string;
 
-  constructor(private elementRef: ElementRef) {
-    const eventStream = Observable.fromEvent(elementRef.nativeElement, 'keyup')
-      .map(() => this.inputValue)
-      .debounceTime(this.delay);
+  constructor(elementRef: ElementRef) {
+    const eventStream = observableFromEvent(elementRef.nativeElement, 'keyup').pipe(
+      map(() => this.inputValue),
+      debounceTime(this.delay));
 
     eventStream.subscribe(input => this.value.emit(input));
   }

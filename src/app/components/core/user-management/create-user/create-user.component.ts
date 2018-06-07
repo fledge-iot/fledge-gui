@@ -1,8 +1,8 @@
-import { Component, OnInit, EventEmitter, Input, Output, Directive } from '@angular/core';
-import { UserService, AlertService } from '../../../../services/index';
-import Utils from '../../../../utils';
-import { User } from '../../../../models';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
+
+import { User } from '../../../../models';
+import { AlertService, UserService } from '../../../../services';
 
 @Component({
   selector: 'app-create-user',
@@ -45,10 +45,10 @@ export class CreateUserComponent implements OnInit {
   public createUser(form: NgForm) {
     this.userService.createUser(this.model).
       subscribe(
-        data => {
+        (data) => {
           this.notify.emit();
           this.toggleModal(false, null);
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           if (form != null) {
             this.resetCreateUserForm(form);
           }
@@ -65,8 +65,8 @@ export class CreateUserComponent implements OnInit {
   getRole() {
     this.userService.getRole()
       .subscribe(
-        roleRecord => {
-          this.userRole = roleRecord.roles;
+        (roleRecord) => {
+          this.userRole = roleRecord['roles'];
         },
         error => {
           if (error.status === 0) {

@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { throwError as observableThrowError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
 import { environment } from '../../environments/environment';
-import 'rxjs/add/operator/catch';
 
 @Injectable()
 export class StatisticsService {
@@ -16,9 +17,9 @@ export class StatisticsService {
    *    GET  | /foglamp/statistics
    */
   public getStatistics() {
-    return this.http.get(this.GET_STATISTICS)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.GET_STATISTICS).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -27,8 +28,8 @@ export class StatisticsService {
   public getStatisticsHistory(limit) {
     let params = new HttpParams();
     params = params.append('limit', limit);
-    return this.http.get(this.GET_STATISTICS_HISTORY, { params: params })
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.GET_STATISTICS_HISTORY, { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 }

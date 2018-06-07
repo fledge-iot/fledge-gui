@@ -43,10 +43,10 @@ export class CertificateStoreComponent implements OnInit {
     this.ngProgress.start();
     this.certService.getCertificates().
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.certificatesData = data.certificates;
+          this.certificatesData = data['certificates'];
           console.log('certificatesData', this.certificatesData);
         },
         error => {
@@ -98,10 +98,10 @@ export class CertificateStoreComponent implements OnInit {
     this.ngProgress.start();
     this.certService.deleteCertificate(cert_name).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success(data.result);
+          this.alertService.success(data['result']);
           this.getCertificates();
         },
         error => {
