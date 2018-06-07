@@ -35,10 +35,10 @@ export class ConfigurationManagerComponent implements OnInit {
     this.ngProgress.start();
     this.configService.getCategories().
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          data.categories.forEach(element => {
+          data['categories'].forEach(element => {
             this.getCategory(element.key, element.description);
           });
         },
@@ -57,7 +57,7 @@ export class ConfigurationManagerComponent implements OnInit {
     const categoryValues = [];
     this.configService.getCategory(category_name).
       subscribe(
-        data => {
+        (data) => {
           categoryValues.push(data);
           this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
         },
@@ -89,14 +89,14 @@ export class ConfigurationManagerComponent implements OnInit {
     this.ngProgress.start();
     this.configService.saveConfigItem(category_name, config_item, value, type).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          if (data.value !== undefined) {
+          if (data['value'] !== undefined) {
             if (type.toUpperCase() === 'JSON') {
-              inputField.textContent = inputField.value = JSON.stringify(data.value);
+              inputField.textContent = inputField.value = JSON.stringify(data['value']);
             } else {
-              inputField.textContent = inputField.value = data.value;
+              inputField.textContent = inputField.value = data['value'];
             }
             this.alertService.success('Value updated successfully');
           }

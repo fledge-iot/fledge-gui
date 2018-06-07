@@ -1,8 +1,9 @@
-import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { SchedulesService, AlertService } from '../../../../services/index';
-import Utils from '../../../../utils';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { CustomValidator } from '../../../../directives/custom-validator';
+import { AlertService, SchedulesService } from '../../../../services';
+import Utils from '../../../../utils';
 
 @Component({
   selector: 'app-update-schedule',
@@ -93,25 +94,25 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     let schedule_day;
     this.schedulesService.getSchedule(id).
       subscribe(
-        data => {
-          if (data.type == 'TIMED') {
-            this.selected_schedule_type = this.setScheduleTypeKey(data.type);
-            schedule_day = this.getSelectedDay(data.day);
+        (data) => {
+          if (data['type'] == 'TIMED') {
+            this.selected_schedule_type = this.setScheduleTypeKey(data['type']);
+            schedule_day = this.getSelectedDay(data['day']);
           } else {
-            this.selected_schedule_type = this.setScheduleTypeKey(data.type);
+            this.selected_schedule_type = this.setScheduleTypeKey(data['type']);
           }
 
-          const repeatTimeObj = Utils.secondsToDhms(data.repeat);
-          const timeObj = Utils.secondsToDhms(data.time);
+          const repeatTimeObj = Utils.secondsToDhms(data['repeat']);
+          const timeObj = Utils.secondsToDhms(data['time']);
 
           // Fill form field values
           this.form.patchValue({
-            name: data.name,
+            name: data['name'],
             repeatDay: repeatTimeObj.days,
             repeat: repeatTimeObj.time,
-            exclusive: data.exclusive,
-            process_name: data.processName,
-            type: data.type,
+            exclusive: data['exclusive'],
+            process_name: data['processName'],
+            type: data['type'],
             day: schedule_day,
             time: timeObj.time
           });
@@ -163,7 +164,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
     this.schedulesService.updateSchedule(this.childData.id, updatePayload).
       subscribe(
-        data => {
+        () => {
           this.alertService.success('Schedule updated successfully.');
           this.notify.emit();
           this.toggleModal(false);

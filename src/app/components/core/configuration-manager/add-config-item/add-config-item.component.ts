@@ -1,13 +1,7 @@
-import {
-  Component,
-  OnInit,
-  SimpleChanges,
-  Input,
-  Output,
-  EventEmitter
-} from '@angular/core';
-import { NgForm, FormGroup } from '@angular/forms';
-import { ConfigurationService, AlertService } from '../../../../services/index';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { NgForm } from '@angular/forms';
+
+import { AlertService, ConfigurationService } from '../../../../services';
 
 @Component({
   selector: 'app-add-config-item',
@@ -76,10 +70,10 @@ export class AddConfigItemComponent implements OnInit {
         configItem
       )
       .subscribe(
-        data => {
+        (data) => {
           this.notify.emit();
           this.toggleModal(false, null);
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           if (form != null) {
             this.resetAddConfigItemForm(form);
           }

@@ -1,5 +1,6 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-side-menu',
   templateUrl: './side-menu.component.html',
@@ -11,12 +12,12 @@ export class SideMenuComponent implements OnInit {
 
   isAdmin = false;
   isSkip = false;
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
     this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin'));
     this.isSkip = JSON.parse(sessionStorage.getItem('skip'));
-    this.router.events.subscribe((res) => {
+    this.router.events.subscribe(() => {
       if (this.router.url === '/' || this.router.url === '/dashboard') {
         this.step = '/dashboard';
       } else {

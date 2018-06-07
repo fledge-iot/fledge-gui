@@ -1,22 +1,15 @@
-import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
-import { LoginComponent } from './components/layout/login/index';
-import { ConfigurationManagerComponent } from './components/core/configuration-manager/index';
-import { ScheduledProcessComponent } from './components/core/scheduler/scheduled-process/index';
-import { SystemLogComponent } from './components/core/system-log/index';
-import { AuditLogComponent } from './components/core/audit-log/index';
-import { CertificateStoreComponent } from './components/core/certificate/certificate-store/index';
-import { SupportComponent } from './components/core/support/index';
-import { BackupRestoreComponent } from './components/core/backup-restore/index';
-import { SettingsComponent } from './components/core/settings/index';
-import { ServicesHealthComponent } from './components/core/services-health/index';
-import { ServiceDiscoveryComponent } from './components/core/service-discovery/index';
-import { UserManagementComponent } from './components/core/user-management/index';
-import { AuthGuard } from './guards/index';
-import { UserProfileComponent } from './components/core/user-management/user-profile/user-profile.component';
-import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
-import { UserGuard } from './guards/user.guard';
+import { BackupRestoreComponent } from './components/core/backup-restore';
+import { CertificateStoreComponent } from './components/core/certificate/certificate-store';
 import { DashboardComponent } from './components/core/dashboard';
+import { ServiceDiscoveryComponent } from './components/core/service-discovery';
+import { ServicesHealthComponent } from './components/core/services-health';
+import { SettingsComponent } from './components/core/settings';
+import { SupportComponent } from './components/core/support';
+import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
+import { LoginComponent } from './components/layout/login';
+import { AuthGuard } from './guards';
 
 const appRoutes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuard] },

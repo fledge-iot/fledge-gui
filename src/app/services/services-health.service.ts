@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { throwError as observableThrowError } from 'rxjs';
+import { catchError, map, timeout } from 'rxjs/operators';
+
 import { environment } from '../../environments/environment';
 import { InterceptorSkipHeader } from '../services/http.request.interceptor';
-import 'rxjs/add/operator/timeout';
 
 @Injectable()
 export class ServicesHealthService {
@@ -18,28 +19,28 @@ export class ServicesHealthService {
      *  GET  | /foglamp/ping
      */
   pingService() {
-    return this.http.get(this.GET_PING_URL)
-      .timeout(this.REQUEST_TIMEOUT_INTERVAL)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.GET_PING_URL).pipe(
+      timeout(this.REQUEST_TIMEOUT_INTERVAL),
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
    *  PUT  | /foglamp/shutdown
    */
   shutdown() {
-    return this.http.put(this.FOGLAMP_SHUTDOWN_URL, null)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.put(this.FOGLAMP_SHUTDOWN_URL, null).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
    *  GET  | /foglamp/service
    */
   getAllServices() {
-    return this.http.get(this.GET_SERVICES_URL)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.get(this.GET_SERVICES_URL).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -53,8 +54,8 @@ export class ServicesHealthService {
     const serviceUrl = baseUrl.replace(/^https?/i, protocol);
     const url = new URL(serviceUrl);
     url.port = port;
-    return this.http.post(String(url) + '/shutdown', null)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.post(String(url) + '/shutdown',  { headers: headers }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 }

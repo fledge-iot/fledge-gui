@@ -1,9 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter, NgModule, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from '../../../../environments/environment';
-import { PingService } from '../../../services/index';
+
+import { PingService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
-import { PlatformLocation } from '@angular/common';
 import { ServiceDiscoveryComponent } from '../service-discovery';
 
 @Component({
@@ -22,8 +21,7 @@ export class SettingsComponent implements OnInit {
   pingInterval;
   isSkipped = false;
   serviceUrl = '';
-  constructor(private router: Router, private pingService: PingService,
-    private platformLocation: PlatformLocation) {
+  constructor(private router: Router, private pingService: PingService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
     localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
     this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;

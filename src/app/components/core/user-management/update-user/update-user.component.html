@@ -4,7 +4,7 @@
     <header class="modal-card-head">
       <p *ngIf="showRoleSection" class="modal-card-title is-size-5">Update User Role</p>
       <p *ngIf="!showRoleSection" class="modal-card-title is-size-5">Update User Password</p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false, f)"></button>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <form name="form" id="updateForm" (ngSubmit)="f.form.valid && updateUser()" #f="ngForm" novalidate>

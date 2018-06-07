@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { AssetsService } from '../../../../services/index';
+import { Subject } from 'rxjs';
+
+import { AssetsService } from '../../../../services';
 
 @Injectable()
 export class AssetSummaryService {

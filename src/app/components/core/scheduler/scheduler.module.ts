@@ -1,19 +1,18 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ScheduledProcessComponent } from './scheduled-process/scheduled-process.component';
-import { ListTasksComponent } from './list-tasks/list-tasks.component';
-import { CreateScheduleComponent } from './create-schedule/create-schedule.component';
-import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
+import { RouterModule, Routes } from '@angular/router';
 import { NgProgressModule } from 'ngx-progressbar';
-import { SchedulesService } from '../../../services';
+
+import { InputMaskDirective } from '../../../directives/input-mask.directive';
+import { AuthGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
+import { CreateScheduleComponent } from './create-schedule/create-schedule.component';
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
-
-import { Routes, RouterModule } from '@angular/router';
-import { AuthGuard } from '../../../guards';
-import { InputMaskDirective } from '../../../directives/input-mask.directive';
+import { ListTasksComponent } from './list-tasks/list-tasks.component';
+import { ScheduledProcessComponent } from './scheduled-process/scheduled-process.component';
+import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
 
 const routes: Routes = [
   {

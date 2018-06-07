@@ -89,7 +89,7 @@ export class SystemLogComponent implements OnInit {
   /**
    *  Go to the last page
    */
-  onLast(n: number): void {
+  onLast(): void {
     const p = Math.ceil(this.recordCount / this.limit) || 0;
     this.page = p;
     this.setLimitOffset();
@@ -138,11 +138,11 @@ export class SystemLogComponent implements OnInit {
     }
     this.systemLogService.getSysLogs(this.limit, this.tempOffset, this.source).
       subscribe(
-        data => {
+        (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.logs = data.logs;
-          this.totalCount = data.count;
+          this.logs = data['logs'];
+          this.totalCount = data['count'];
           // console.log('System Logs', this.logs, 'Total count', this.totalCount);
           if (this.offset !== 0) {
             this.recordCount = this.totalCount - this.offset;

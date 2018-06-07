@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgProgress } from 'ngx-progressbar';
-import { AlertService, AuthService, UserService } from '../../../../services/index';
-import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, AuthService, UserService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 
 @Component({
@@ -33,13 +34,13 @@ export class UserProfileComponent implements OnInit {
     // Get SignedIn user details
     this.userService.getUser(id)
       .subscribe(
-        userData => {
+        (userData) => {
           this.userService.getRole()
             .subscribe(
-              roleRecord => {
+              (roleRecord) => {
                 this.ngProgress.done();
-                roleRecord.roles.filter(role => {
-                  if (role.id == userData.roleId) {
+                roleRecord['roles'].filter(role => {
+                  if (role.id == userData['roleId']) {
                     userData['roleName'] = role.name;
                   }
                 });
@@ -94,9 +95,9 @@ export class UserProfileComponent implements OnInit {
     this.ngProgress.start();
     this.userService.changePassword(passwordPayload, userName).
       subscribe(
-        data => {
+        (data) => {
           this.ngProgress.done();
-          this.alertService.success(data.message);
+          this.alertService.success(data['message']);
           if (form != null) {
             this.toggleModal(false);
             this.resetUserForm(form);
@@ -137,7 +138,7 @@ export class UserProfileComponent implements OnInit {
     this.ngProgress.start();
     this.authService.clearAllSessions(id).
       subscribe(
-        data => {
+        () => {
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
           this.router.navigate(['/login']);
