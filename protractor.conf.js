@@ -21,9 +21,9 @@ exports.config = {
   },
   onPrepare() {
     var HtmlReporter = require('protractor-beautiful-reporter');
-    // Add a screenshot reporter and store screenshots to `/tmp`:
+    // Add a screenshot reporter and store screenshots to `/e2e-test-report`:
       jasmine.getEnv().addReporter(new HtmlReporter({
-         baseDirectory: 'tmp',
+         baseDirectory: 'e2e-test-report',
          jsonsSubfolder: 'json',
          screenshotsSubfolder: 'screenshots',
          takeScreenShotsOnlyForFailedSpecs: true,
