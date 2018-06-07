@@ -1,8 +1,9 @@
-import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
-import { SchedulesService, AlertService } from '../../../../services/index';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import Utils from '../../../../utils';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { CustomValidator } from '../../../../directives/custom-validator';
+import { AlertService, SchedulesService } from '../../../../services';
+import Utils from '../../../../utils';
 
 @Component({
   selector: 'app-create-schedule',
@@ -90,7 +91,7 @@ export class CreateScheduleComponent implements OnInit {
 
       this.schedulesService.createSchedule(payload).
         subscribe(
-          (data) => {
+          () => {
             this.notify.emit();
             this.toggleModal(false);
             this.alertService.success('Schedule created successfully.');

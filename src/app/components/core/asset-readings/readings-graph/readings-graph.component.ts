@@ -1,11 +1,9 @@
-import { Component, OnInit, Input, SimpleChanges, ViewChild } from '@angular/core';
-import { AssetsService } from '../../../../services/index';
-import Utils from '../../../../utils';
-import { ChartComponent } from '../../../common/chart/chart.component';
-import { AssetSummaryService } from './../asset-summary/asset-summary-service';
-import ReadingsValidator from '../assets/readings-validator';
-import { MomentDatePipe } from '../../../../pipes/moment-date';
+import { Component, OnInit } from '@angular/core';
 
+import { MomentDatePipe } from '../../../../pipes/moment-date';
+import { AssetsService } from '../../../../services';
+import ReadingsValidator from '../assets/readings-validator';
+import { AssetSummaryService } from './../asset-summary/asset-summary-service';
 
 @Component({
   selector: 'app-readings-graph',
@@ -21,8 +19,6 @@ export class ReadingsGraphComponent implements OnInit {
   public isReadingsAvailable = false;
   public isInvalidLimit = false;
   public isInvalidOffset = false;
-
-  @ViewChild(ChartComponent) private chartComp;
 
   constructor(private assetService: AssetsService, private assetSummaryService: AssetSummaryService) {
     this.assetChart = 'line';

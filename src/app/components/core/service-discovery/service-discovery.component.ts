@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertService, DiscoveryService, PingService } from '../../../services/index';
-import { Router } from '@angular/router';
-import { ConnectedServiceStatus } from '../../../services/connected-service-status.service';
 import { FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { DiscoveryService } from '../../../services';
+import { ConnectedServiceStatus } from '../../../services/connected-service-status.service';
 
 @Component({
   selector: 'app-service-discovery',
@@ -26,8 +27,7 @@ export class ServiceDiscoveryComponent implements OnInit {
   discoveryHostControl;
   discoveryPortControl;
   constructor(private discoveryService: DiscoveryService, private router: Router,
-    private status: ConnectedServiceStatus,
-    private alertService: AlertService) {
+    private status: ConnectedServiceStatus) {
     this.JSON = JSON;
     this.discoveryProtocol = localStorage.getItem('DISCOVERY_PROTOCOL') != null ? localStorage.getItem('DISCOVERY_PROTOCOL') : 'http';
     this.discoveryHost = localStorage.getItem('DISCOVERY_HOST') != null ? localStorage.getItem('DISCOVERY_HOST') : 'localhost';

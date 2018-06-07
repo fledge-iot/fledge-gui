@@ -1,8 +1,9 @@
-import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { SchedulesService, AlertService } from '../../../../services/index';
-import Utils from '../../../../utils';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { CustomValidator } from '../../../../directives/custom-validator';
+import { AlertService, SchedulesService } from '../../../../services';
+import Utils from '../../../../utils';
 
 @Component({
   selector: 'app-update-schedule',
@@ -163,7 +164,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
     this.schedulesService.updateSchedule(this.childData.id, updatePayload).
       subscribe(
-        (data) => {
+        () => {
           this.alertService.success('Schedule updated successfully.');
           this.notify.emit();
           this.toggleModal(false);

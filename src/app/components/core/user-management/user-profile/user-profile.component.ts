@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgProgress } from 'ngx-progressbar';
-import { AlertService, AuthService, UserService } from '../../../../services/index';
-import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, AuthService, UserService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 
 @Component({
@@ -137,7 +138,7 @@ export class UserProfileComponent implements OnInit {
     this.ngProgress.start();
     this.authService.clearAllSessions(id).
       subscribe(
-        (data) => {
+        () => {
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
           this.router.navigate(['/login']);

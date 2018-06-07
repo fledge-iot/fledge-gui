@@ -1,8 +1,8 @@
-import { Component, OnInit, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
-import { CertificateService, AlertService } from '../../../../services/index';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
-import { CustomValidator } from '../../../../directives/custom-validator';
+
+import { AlertService, CertificateService } from '../../../../services';
 
 @Component({
   selector: 'app-upload-cert',

@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { StatisticsService, AlertService } from '../../../services/index';
-import Utils from '../../../utils';
-import { MomentDatePipe } from '../../../pipes/moment-date';
-import { NgProgress } from 'ngx-progressbar';
-
 import map from 'lodash-es/map';
 import * as moment from 'moment';
+import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, StatisticsService } from '../../../services';
 
 @Component({
   selector: 'app-dashboard',

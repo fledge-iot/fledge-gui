@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AlertService, AuthService, UserService } from '../../../services/index';
-import { SharedService } from '../../../services/shared.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, AuthService, UserService } from '../../../services';
+import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
-import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-user-management',
@@ -25,11 +24,8 @@ export class UserManagementComponent implements OnInit {
   public roles = [];
   seletedTab: Number = 1;  // 1: user-management , 2 : roles
 
-  constructor(private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService,
+  constructor(private authService: AuthService,
     private alertService: AlertService,
-    private sharedService: SharedService,
     private userService: UserService,
     public ngProgress: NgProgress) { }
 
@@ -152,7 +148,7 @@ export class UserManagementComponent implements OnInit {
     this.ngProgress.start();
     this.authService.clearAllSessions(id).
       subscribe(
-        (data) => {
+        () => {
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
         },

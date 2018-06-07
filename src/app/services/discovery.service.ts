@@ -15,7 +15,7 @@ export class DiscoveryService {
    */
   discover(discoveryUrl) {
     const headers = new HttpHeaders().set(InterceptorSkipHeader, '');
-    return this.http.get(discoveryUrl).pipe(
+    return this.http.get(discoveryUrl, { headers: headers }).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }

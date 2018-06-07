@@ -25,7 +25,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
       }
       return next.handle(req).pipe(map((event: HttpEvent<any>) => {
         return event;
-      }), catchError((err: any, caught) => {
+      }), catchError((err: any) => {
         if (err instanceof HttpErrorResponse) {
           if (err.status === 401) {
             sessionStorage.clear();

@@ -1,8 +1,8 @@
-import { Component, OnInit, EventEmitter, Input, Output, Directive } from '@angular/core';
-import { UserService, AlertService } from '../../../../services/index';
-import Utils from '../../../../utils';
-import { User } from '../../../../models';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
+
+import { User } from '../../../../models';
+import { AlertService, UserService } from '../../../../services';
 
 @Component({
   selector: 'app-create-user',

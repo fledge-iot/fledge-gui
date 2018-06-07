@@ -1,7 +1,7 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+
 import { User } from '../../../../models';
-import { AlertService, AuthService, UserService } from '../../../../services/index';
+import { AlertService, UserService } from '../../../../services';
 
 @Component({
   selector: 'app-update-user',
@@ -14,8 +14,7 @@ export class UpdateUserComponent implements OnInit {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   showRoleSection = false;
 
-  constructor(private authService: AuthService,
-    private alertService: AlertService,
+  constructor(private alertService: AlertService,
     private userService: UserService) { }
 
   ngOnInit() {
@@ -50,7 +49,7 @@ export class UpdateUserComponent implements OnInit {
     }
   }
 
-  public toggleModal(isOpen: Boolean, form: NgForm = null) {
+  public toggleModal(isOpen: Boolean) {
     const updateUserModal = <HTMLDivElement>document.getElementById('update_user_modal');
     if (isOpen) {
       updateUserModal.classList.add('is-active');
@@ -97,7 +96,7 @@ export class UpdateUserComponent implements OnInit {
       subscribe(
         (data) => {
           this.notify.emit();
-          this.toggleModal(false, null);
+          this.toggleModal(false);
           this.alertService.success(data['message']);
         },
         error => {
@@ -118,7 +117,7 @@ export class UpdateUserComponent implements OnInit {
       subscribe(
         (data) => {
           this.notify.emit();
-          this.toggleModal(false, null);
+          this.toggleModal(false);
           this.alertService.success(data['message']);
         },
         error => {

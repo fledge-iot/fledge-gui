@@ -1,13 +1,19 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { POLLING_INTERVAL } from '../../../utils';
-import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
-import { NgProgress } from 'ngx-progressbar';
 import {
-  AlertService, AuthService, ConnectedServiceStatus,
-  PingService, ServicesHealthService
-} from '../../../services/index';
-import { SharedService } from '../../../services/shared.service';
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
+import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService } from '../../../services';
+import { SharedService } from '../../../services/shared.service';
+import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -128,7 +134,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.child.toggleModal(true);
   }
 
-  shutdown(port) {
+  shutdown() {
     /** request started */
     this.ngProgress.start();
     this.servicesHealthService.shutdown()
@@ -175,7 +181,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngProgress.start();
     this.authService.logout().
       subscribe(
-        (data) => {
+        () => {
           this.ngProgress.done();
           this.router.navigate(['/login']);
           this.alertService.success('You have been successfully logged out!');

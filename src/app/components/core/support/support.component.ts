@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { SupportService, AlertService } from '../../../services/index';
 import { NgProgress } from 'ngx-progressbar';
-import { environment } from '../../../../environments/environment';
+
+import { AlertService, SupportService } from '../../../services';
 
 @Component({
   selector: 'app-support',
@@ -41,7 +41,7 @@ export class SupportComponent implements OnInit {
     this.ngProgress.start();
     this.supportBundleService.post().
       subscribe(
-        (data) => {
+        () => {
           this.ngProgress.done();
           this.alertService.success('Support bundle created successfully');
           this.getBundles();
@@ -55,6 +55,5 @@ export class SupportComponent implements OnInit {
           }
         });
   }
-
 }
 
