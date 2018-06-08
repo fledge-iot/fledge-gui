@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, StatisticsService } from '../../../services';
+import { MAX_INT_SIZE } from '../../../utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,6 +35,7 @@ export class DashboardComponent implements OnInit {
   public chartOptions: object;
 
   public DEFAULT_LIMIT = 20;
+  public MAX_RANGE = MAX_INT_SIZE;
   public limit = this.DEFAULT_LIMIT;
   public invalidLimitSize = false;
 
@@ -67,7 +69,7 @@ export class DashboardComponent implements OnInit {
       limit = this.DEFAULT_LIMIT;
     }
 
-    if (limit > 2147483647) {
+    if (limit > this.MAX_RANGE) {
       this.invalidLimitSize = true; // limit range validation
       return;
     }

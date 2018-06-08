@@ -4,6 +4,7 @@ import { MomentDatePipe } from '../../../../pipes/moment-date';
 import { AssetsService } from '../../../../services';
 import ReadingsValidator from '../assets/readings-validator';
 import { AssetSummaryService } from './../asset-summary/asset-summary-service';
+import { MAX_INT_SIZE } from '../../../../utils';
 
 @Component({
   selector: 'app-readings-graph',
@@ -19,6 +20,7 @@ export class ReadingsGraphComponent implements OnInit {
   public isReadingsAvailable = false;
   public isInvalidLimit = false;
   public isInvalidOffset = false;
+  public MAX_RANGE = MAX_INT_SIZE;
 
   constructor(private assetService: AssetsService, private assetSummaryService: AssetSummaryService) {
     this.assetChart = 'line';
@@ -50,10 +52,10 @@ export class ReadingsGraphComponent implements OnInit {
       offset = 0;
     }
 
-    if (!Number.isInteger(+limit) || +limit < 0 || +limit > 1000) { // check for limit range
+    if (!Number.isInteger(+limit) || +limit < 0 || +limit > this.MAX_RANGE) { // max limit of int in c++
       this.isInvalidLimit = true;
     }
-    if (!Number.isInteger(+offset) || +offset < 0 || +offset > 2147483647) {  // max limit of int in c++
+    if (!Number.isInteger(+offset) || +offset < 0 || +offset > this.MAX_RANGE) {  // max limit of int in c++
       this.isInvalidOffset = true;
     }
 

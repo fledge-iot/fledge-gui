@@ -15,7 +15,7 @@
             </div>
             <div class="column is-2">
               <app-number-input-debounce placeholder="limit" (value)="getLimitBasedGraph($event)" [val]='limit'></app-number-input-debounce>
-              <p *ngIf='invalidLimitSize' class='help is-danger'>Limit must be in range 1 - 2147483647</p>
+              <p *ngIf='invalidLimitSize' class='help is-danger'>Limit must be in range 1 - {{MAX_RANGE}}</p>
             </div>
             <div class="column">
               <button (click)="refreshGraph()" class="button is-small is-pulled-right">
