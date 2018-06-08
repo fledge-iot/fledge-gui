@@ -142,6 +142,7 @@ export class SystemLogComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           this.logs = data['logs'];
+          this.logs = this.logs.reverse();
           this.totalCount = data['count'];
           // console.log('System Logs', this.logs, 'Total count', this.totalCount);
           if (this.offset !== 0) {
