@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuditService, AlertService } from '../../../services/index';
 import { NgProgress } from 'ngx-progressbar';
+import { MAX_INT_SIZE } from '../../../utils';
 
 @Component({
   selector: 'app-audit-log',
@@ -12,7 +13,8 @@ export class AuditLogComponent implements OnInit {
   public logSeverityList = [];
   public audit: any;
   public totalCount: any;
-  DEFAULT_LIMIT = 20;
+  public DEFAULT_LIMIT = 20;
+  public MAX_RANGE = MAX_INT_SIZE;
   limit = this.DEFAULT_LIMIT;
   offset = 0;
   public source: String = '';
@@ -131,7 +133,7 @@ export class AuditLogComponent implements OnInit {
 
   public setLimit(limit) {
     this.isInvalidLimit = false;
-    if (+limit > 1000) {
+    if (+limit > this.MAX_RANGE) {
       this.isInvalidLimit = true; // limit range validation
       return;
     }
@@ -150,7 +152,7 @@ export class AuditLogComponent implements OnInit {
 
   public setOffset(offset: number) {
     this.isInvalidOffset = false;
-    if (offset > 2147483647) {
+    if (offset > this.MAX_RANGE) {
       this.isInvalidOffset = true; // offset range validation
       return;
     }

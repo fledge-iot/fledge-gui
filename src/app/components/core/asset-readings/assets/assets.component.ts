@@ -3,6 +3,7 @@ import { AssetsService, AlertService } from '../../../../services/index';
 import { AssetSummaryComponent } from './../asset-summary/asset-summary.component';
 import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
 import { NgProgress } from 'ngx-progressbar';
+import { MAX_INT_SIZE } from '../../../../utils';
 
 @Component({
   selector: 'app-assets',
@@ -13,6 +14,7 @@ export class AssetsComponent implements OnInit {
 
   selectedAsset: any; // Selected asset object (assetCode, count)
   DEFAULT_LIMIT = 20;
+  MAX_RANGE = MAX_INT_SIZE;
   limit = this.DEFAULT_LIMIT;
   offset = 0;
 
@@ -130,7 +132,7 @@ export class AssetsComponent implements OnInit {
       return;
     }
     this.isInvalidLimit = false;
-    if (+limit > 2147483647) {
+    if (+limit > this.MAX_RANGE) {
       this.isInvalidLimit = true; // limit range validation
       return;
     }
@@ -154,7 +156,7 @@ export class AssetsComponent implements OnInit {
       return;
     }
     this.isInvalidOffset = false;
-    if (offset > 2147483647) {
+    if (offset > this.MAX_RANGE) {
       this.isInvalidOffset = true; // offset range validation
       return;
     }
