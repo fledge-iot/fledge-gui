@@ -54,6 +54,7 @@ memory_footprints(){
 
   # Check Disk Usages
   rm -f /tmp/diskusage
+  # TODO: add check for ubuntu vs raspbian, and PRINT for ubuntu machine too
   sudo fdisk -l| grep 'Device\|/dev/mmcblk0*' > /tmp/diskusage
   echo -e "${CINFO}Disk Usages : ${CRESET}"
   cat /tmp/diskusage
@@ -90,9 +91,11 @@ install () {
       echo -e INFO: "${CINFO} Found ${nginx_version} ${CRESET}"
   fi
 
-  # download foglamp-gui build artifacts i.e. dist directory contents
+  # Download foglamp-gui build artifacts i.e. dist directory compressed file
   # url e.g. http://192.168.1.120/foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
+  # github release https://github.com/foglamp/foglamp-gui/releases/download/v1.2.0/foglamp-gui-1.2.0.tar.gz
   # wget ${BUILD_URL}
+
   # FIXME: scp foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz pi@<IP>:/home/pi
   tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
@@ -100,6 +103,8 @@ install () {
   sudo rm -rf /var/www/html/*
   sudo mv dist/* /var/www/html/.
   sudo rm -rf dist
+
+  # FIXME: if --keep, then don't remove
   sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   echo -e INFO: "${CINFO} nginx status ${CRESET}"

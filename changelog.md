@@ -1,3 +1,22 @@
+## v1.3.0 [Unreleased]
+ 
+#### Added
+
+* e2e Tests HTML Report
+
+#### Changed
+
+* Upgraded to Angular v6 (including compatible TypeScript / CLI versions)
+
+#### Removed
+
+* Input mask external lib
+
+#### Bug Fixes
+
+#### Known Issues
+
+
 ## v1.2
  
 #### Features Addition
@@ -26,13 +45,14 @@
 * Create / Update schedule modal overlapping issue on iPhone
 * and squashed many more :]
 
-#### Known issues
+#### Known Issues
 
 * Support bundles download via browser is not possible when authentication is mandatory (Please use curl request manually with authorization token header)
 
 ## v1.1.1
 
 #### Bug Fixes
+
 * Configuration Management: 
     * Category items alignment issue
     * JSON (object) display and save issue
