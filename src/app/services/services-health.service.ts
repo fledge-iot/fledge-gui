@@ -44,6 +44,15 @@ export class ServicesHealthService {
   }
 
   /**
+  *  POST  | /foglamp/service
+  */
+  addService(payload) {
+    return this.http.post(this.GET_SERVICES_URL, payload).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
    *  POST  | /foglamp/service/shutdown
    */
   shutDownService(svcInfo) {
@@ -54,7 +63,7 @@ export class ServicesHealthService {
     const serviceUrl = baseUrl.replace(/^https?/i, protocol);
     const url = new URL(serviceUrl);
     url.port = port;
-    return this.http.post(String(url) + '/shutdown',  { headers: headers }).pipe(
+    return this.http.post(String(url) + '/shutdown', { headers: headers }).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }

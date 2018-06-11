@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ServicesHealthService } from '../../../services/index';
-import { environment } from '../../../../environments/environment';
+import { NgProgress } from 'ngx-progressbar';
+
+import { ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import Utils from '../../../utils';
-import { NgProgress } from 'ngx-progressbar';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
+import { AddServiceComponent } from './add-service/add-service.component';
 
 @Component({
   selector: 'app-services-health',
@@ -15,9 +16,11 @@ export class ServicesHealthComponent implements OnInit {
   timer: any = '';
   time: number;
   public service_data;
-
   public isAdmin = false;
-  // Object to hold schedule id and name to delete
+
+  @ViewChild(AddServiceComponent) addServiceModal: AddServiceComponent;
+
+  // Object to hold service details to shutdown
   public shutDownServiceData = {
     port: '',
     key: '',
@@ -69,6 +72,10 @@ export class ServicesHealthComponent implements OnInit {
     return false;
   }
 
+  openAddServiceModal() {
+    this.addServiceModal.toggleModal(true);
+  }
+
   openModal(port, name, protocol, address) {
     this.shutDownServiceData = {
       port: port,
@@ -114,4 +121,13 @@ export class ServicesHealthComponent implements OnInit {
     }
     return s;
   }
+
+  /**
+   * To reload running services list
+   * @param notify
+   */
+  onNotify() {
+    this.getServiceData();
+  }
+
 }

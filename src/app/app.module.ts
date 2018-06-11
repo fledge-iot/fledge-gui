@@ -16,6 +16,7 @@ import { CertificateModule } from './components/core/certificate/certificate.mod
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 import { ServicesHealthComponent } from './components/core/services-health';
+import { AddServiceComponent } from './components/core/services-health/add-service/add-service.component';
 import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support/support.component';
 import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
@@ -76,7 +77,8 @@ import { SharedService } from './services/shared.service';
     ShutdownModalComponent,
     SupportComponent,
     BackupRestoreComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    AddServiceComponent
   ],
   providers: [
     AuthGuard,
