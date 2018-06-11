@@ -4,19 +4,22 @@
   </ng-progress>
   <div class="card">
     <header class="card-header">
-      <div class="card-content">
+      <div id="scheduled-process" class="card-header-title">
         <div class="media-content">
-          <h5 class="title is-5">
+          <p class="title is-5">
             Services Status &nbsp;
             <button (click)="getServiceData()" class="button is-small">
               <i class="fa fa-refresh" aria-hidden="true"></i>
             </button>
-          </h5>
-          <h6 class='subtitle is-6'>
+          </p>
+          <p class='subtitle is-6'>
             <small>Last updated: {{time|date:'MMM d, y HH:mm:ss'}}</small>
-          </h6>
+          </p>
         </div>
       </div>
+      <a class="button is-light" (click)="openAddServiceModal()">Add Service &nbsp;
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </a>
     </header>
     <div class="card-content">
       <div class="content">
@@ -46,15 +49,17 @@
                   <span *ngIf="service.status == 'down'" class="tag is-danger">
                     <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
-                  <span *ngIf="service.status == 'failed'"  class="tag is-danger">
+                  <span *ngIf="service.status == 'failed'" class="tag is-danger">
                     <i class="fa fa-times-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
-                  <span *ngIf="service.status == 'unresponsive'"  class="tag is-warning">
+                  <span *ngIf="service.status == 'unresponsive'" class="tag is-warning">
                     <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
                   </span>
                 </div>
               </td>
-              <td><span class="tag is-rounded">{{service.type}}</span></td>
+              <td>
+                <span class="tag is-rounded">{{service.type}}</span>
+              </td>
               <td>{{service.protocol}}</td>
               <td>{{service.address}}</td>
               <td>{{service.service_port}}</td>
@@ -75,5 +80,6 @@
       </div>
     </div>
   </div>
+  <app-add-service (notify)='onNotify()'></app-add-service>
   <app-alert-dialog (shutdownService)='shutdownService($event)' [shutDownServiceData]='shutDownServiceData'></app-alert-dialog>
 </div>
