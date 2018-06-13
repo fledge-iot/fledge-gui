@@ -18,11 +18,14 @@ export class AddServiceComponent implements OnInit {
 
   }
 
-  public toggleModal(isOpen: Boolean) {
+  public toggleModal(isOpen: Boolean, form: NgForm) {
     const add_service_modal = <HTMLDivElement>document.getElementById('add_service_modal');
     if (isOpen) {
       add_service_modal.classList.add('is-active');
       return;
+    }
+    if (form != null) {
+      this.resetForm(form);
     }
     add_service_modal.classList.remove('is-active');
   }
@@ -31,10 +34,10 @@ export class AddServiceComponent implements OnInit {
     this.servicesHealthService.addService(form.value)
       .subscribe(
         () => {
-          this.notify.emit();
-          this.toggleModal(false);
+          this.toggleModal(false, form);
           this.alertService.success('Service added successfully.');
-          form.reset();
+          this.notify.emit();
+          this.resetForm(form);
         },
         (error) => {
           if (error.status === 0) {
@@ -43,5 +46,12 @@ export class AddServiceComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  resetForm(form: NgForm) {
+    form.controls['name'].reset();
+    form.controls['type'].reset('south');
+    form.controls['enabled'].reset(true);
+    form.controls['plugin'].reset();
   }
 }

@@ -73,7 +73,7 @@ export class ServicesHealthComponent implements OnInit {
   }
 
   openAddServiceModal() {
-    this.addServiceModal.toggleModal(true);
+    this.addServiceModal.toggleModal(true, null);
   }
 
   openModal(port, name, protocol, address) {
@@ -127,7 +127,8 @@ export class ServicesHealthComponent implements OnInit {
    * @param notify
    */
   onNotify() {
-    this.getServiceData();
+    setTimeout(() => {
+      this.getServiceData();
+    }, 2000);
   }
-
 }

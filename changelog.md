@@ -3,6 +3,7 @@
 #### Added
 
 * e2e Tests HTML Report
+* Add new service with specified plugin 
 
 #### Changed
 
