@@ -30,9 +30,9 @@ describe('FogLAMP gui', () => {
   it('Should Display Default Graphs', () => {
     skipLogin.clickSkip();
     expect(skipLogin.getCountOfSelectedGraph()).toEqual(3);
-    expect(skipLogin.getReadingsGraph()).toEqual('READINGS Statistics History');
-    expect(skipLogin.getSent1Graph()).toEqual('SENT_1 Statistics History');
-    expect(skipLogin.getPurgedGraph()).toEqual('PURGED Statistics History');
+    expect(skipLogin.getReadingsGraph()).toEqual('READINGS');
+    expect(skipLogin.getSent1Graph()).toEqual('SENT_1');
+    expect(skipLogin.getPurgedGraph()).toEqual('PURGED');
   });
 
   it('Should Display Assets & Readings', () => {
