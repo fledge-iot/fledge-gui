@@ -148,6 +148,7 @@ describe('FogLAMP gui', () => {
     ];
     skipLogin.navToServiceHealth();
     expect(skipLogin.getServiceStatusTitle()).toContain('Services Status');
+    expect(skipLogin.getAddServiceButton()).toContain('Add Service');
     expect(skipLogin.getServiceStatusRefreshButton()).toEqual(true);
 
     for (const ColumnName in ColumnsName) {

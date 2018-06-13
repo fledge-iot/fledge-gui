@@ -365,6 +365,11 @@ export class SkipLogin {
     return element(by.css('app-services-health .title.is-5')).getText();
   }
 
+  getAddServiceButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-services-health #add_service.button')).getText();
+  }
+
   getServiceStatusRefreshButton() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-services-health header button .fa.fa-refresh')).isDisplayed();
