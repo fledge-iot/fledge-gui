@@ -51,6 +51,7 @@ export class AssetSummaryComponent implements OnInit {
           this.assetSummaryService.assetReadingSummary.subscribe(
             value => {
               this.assetReadingSummary = value;
+              this.statsAssetReadingsSummaryGraph(this.assetReadingSummary);
             });
         } else {
           this.isValidData = false;
