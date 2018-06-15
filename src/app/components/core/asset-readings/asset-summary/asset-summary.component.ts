@@ -34,7 +34,12 @@ export class AssetSummaryComponent implements OnInit {
     this.invalidInputMessage = '';
   }
 
-  public getReadingSummary(dt) {
+  public getReadingSummary(dt, refreshAction = false) {
+    if (refreshAction === true) {
+      dt = {
+        assetCode: dt
+      };
+    }
     this.isValidData = true;
     this.assetCode = dt.assetCode;
     this.assetService.getAssetReadings(encodeURIComponent(dt.assetCode)).

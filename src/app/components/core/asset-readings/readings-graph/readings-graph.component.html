@@ -2,7 +2,11 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p [hidden]='!isValidData' class="modal-card-title is-size-5">{{assetCode}}</p>
+      <p [hidden]='!isValidData' class="modal-card-title is-size-5">{{assetCode}}
+        <button (click)="plotReadingsGraph(assetCode, 0, 0)" class="button is-small">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button>
+      </p>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false); clearField(limit, offset)"></button>
       </div>
