@@ -192,7 +192,7 @@ export class DashboardComponent implements OnInit {
           const record = map(data['statistics'], key);
           const history_ts = map(data['statistics'], 'history_ts');
           history_ts.forEach(element => {
-            element = moment(element).format('HH:mm:ss:SSS');
+            element = moment(element).format('HH:mm:ss');
             labels.push(element);
           });
           this.graphsToShow.map(statistics => {
