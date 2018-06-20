@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AssetsService } from '../../../../services/assets.service';
 import ReadingsValidator from '../assets/readings-validator';
 import { AssetSummaryService } from './../asset-summary/asset-summary-service';
+import { NgProgress } from 'ngx-progressbar';
 
 @Component({
   selector: 'app-asset-summary',
@@ -19,7 +20,7 @@ export class AssetSummaryComponent implements OnInit {
   public summaryValues: any;
   public chartOptions: any;
 
-  constructor(private assetService: AssetsService, private assetSummaryService: AssetSummaryService) { }
+  constructor(private assetService: AssetsService, private assetSummaryService: AssetSummaryService, public ngProgress: NgProgress) { }
 
   ngOnInit() { }
 
@@ -42,9 +43,11 @@ export class AssetSummaryComponent implements OnInit {
     }
     this.isValidData = true;
     this.assetCode = dt.assetCode;
+    this.ngProgress.start();
     this.assetService.getAssetReadings(encodeURIComponent(dt.assetCode)).
       subscribe(
       data => {
+        this.ngProgress.done();
         const validRecord = ReadingsValidator.validate(data);
         if (validRecord) {
           const record = {
@@ -64,6 +67,7 @@ export class AssetSummaryComponent implements OnInit {
         }
       },
       error => {
+        this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
