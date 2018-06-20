@@ -43,19 +43,19 @@
                   <p hidden="true"> {{v.value.type}} </p>
                   <input *ngIf='isObject(v?.value?.value)' id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input" type="text"
                     [value]="v?.value?.value != undefined ? (JSON.stringify(v?.value?.value)) : '' " [textContent]="v?.value?.value != undefined ? (JSON.stringify(v?.value?.value)) : '' "
-                    (input)="onTextChange(category.key.trim() + '-' + v.key.trim(), true)" />
+                    (input)="onTextChange(category.key.trim() + '-' + v.key.trim())" />
 
                   <input *ngIf='!isObject(v?.value?.value)' id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input" type="text"
                     [value]='v?.value?.value != undefined ? v?.value?.value : "" ' [textContent]='v?.value?.value != undefined ? v?.value?.value : "" '
-                    (input)="onTextChange(category.key.trim() + '-' + v.key.trim(), true)" />
+                    (input)="onTextChange(category.key.trim() + '-' + v.key.trim())" />
                 </div>
               </div>
               <div class="field is-grouped">
                 <div class="control">
-                  <button id="btn-save-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key, v?.key, v?.value?.type, true)">Save</button>
+                  <button id="btn-save-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key, v?.key, v?.value?.type)">Save</button>
                 </div>
                 <div class="control">
-                  <button id="btn-cancel-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-text" disabled (click)="restoreConfigFieldValue(category.key.trim() + '-' + v.key.trim(),false)">Cancel</button>
+                  <button id="btn-cancel-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-small is-text hidden" (click)="restoreConfigFieldValue(category.key.trim() + '-' + v.key.trim())">Cancel</button>
                 </div>
               </div>
             </div>

@@ -6,3 +6,6 @@
 .columns-fields {
     margin-top: auto;
 }
+.hidden {
+    display: none;
+}

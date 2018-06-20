@@ -70,20 +70,20 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  public restoreConfigFieldValue(config_item_key: string, flag: boolean) {
+  public restoreConfigFieldValue(config_item_key: string) {
     const inputField = <HTMLInputElement>document.getElementById(config_item_key.toLowerCase());
     inputField.value = inputField.textContent;
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
-    cancelButton.disabled = !flag;
+    cancelButton.classList.add('hidden');
   }
 
-  public saveConfigValue(category_name: string, config_item: string, type: string, flag: boolean) {
+  public saveConfigValue(category_name: string, config_item: string, type: string) {
     const cat_item_id = (category_name.trim() + '-' + config_item.trim()).toLowerCase();
     const inputField = <HTMLInputElement>document.getElementById(cat_item_id);
     const value = inputField.value.trim();
     const id = inputField.id.trim();
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
-    cancelButton.disabled = flag;
+    cancelButton.classList.add('hidden');
 
     /** request started */
     this.ngProgress.start();
@@ -129,9 +129,9 @@ export class ConfigurationManagerComponent implements OnInit {
     this.addConfigItemModal.toggleModal(true);
   }
 
-  public onTextChange(config_item_key: string, flag: boolean) {
+  public onTextChange(config_item_key: string) {
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
-    cancelButton.disabled = !flag;
+    cancelButton.classList.remove('hidden');
   }
 
   isObject(val) { return typeof val === 'object'; }
