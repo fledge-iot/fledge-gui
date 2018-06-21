@@ -3,7 +3,8 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <p [hidden]='!isValidData' class="modal-card-title is-size-5">{{assetCode}}
-        <button (click)="getReadingSummary(assetCode, true)" class="button is-small">
+        <button (click)="refreshData(assetCode, timeValue.inputValue, selectedType.value)" 
+        class="button is-small">
           <i class="fa fa-refresh" aria-hidden="true"></i>
         </button>
       </p>

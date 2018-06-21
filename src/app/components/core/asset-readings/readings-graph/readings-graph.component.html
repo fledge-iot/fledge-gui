@@ -3,7 +3,7 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <p [hidden]='!isValidData' class="modal-card-title is-size-5">{{assetCode}}
-        <button (click)="plotReadingsGraph(assetCode, 0, 0)" class="button is-small">
+        <button (click)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)" class="button is-small">
           <i class="fa fa-refresh" aria-hidden="true"></i>
         </button>
       </p>

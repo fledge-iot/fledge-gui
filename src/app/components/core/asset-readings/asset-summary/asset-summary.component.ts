@@ -35,12 +35,7 @@ export class AssetSummaryComponent implements OnInit {
     this.invalidInputMessage = '';
   }
 
-  public getReadingSummary(dt, refreshAction = false) {
-    if (refreshAction === true) {
-      dt = {
-        assetCode: dt
-      };
-    }
+  public getReadingSummary(dt) {
     this.isValidData = true;
     this.assetCode = dt.assetCode;
     this.ngProgress.start();
@@ -93,6 +88,17 @@ export class AssetSummaryComponent implements OnInit {
       time_param: (+time === (null || 0) ? undefined : { [key]: +time })
     };
     this.getReadingSummary(asset);
+  }
+
+  refreshData(assetCode, time, key) {
+    const dataObj = {
+      assetCode: assetCode,
+    };
+    if (time && key) {
+      this.getTimedBasedSummary(time, key);
+    } else {
+      this.getReadingSummary(dataObj);
+    }
   }
 
   clear(st, selectedType) {
