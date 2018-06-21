@@ -38,9 +38,7 @@
           </div>
         </div>
       </div>
-      <p *ngIf='(isInvalidOffset || isInvalidLimit || !isValidData || !isReadingsAvailable)'> Not Available </p>
-      <chart *ngIf='(!isInvalidOffset && !isInvalidLimit && isValidData  && isReadingsAvailable)' [type]="assetChart" [data]="assetReadingValues"
-        [options]=""></chart>
+      <chart [type]="assetChart" [data]="assetReadingValues" [options]=""></chart>
     </section>
   </div>
 </div>

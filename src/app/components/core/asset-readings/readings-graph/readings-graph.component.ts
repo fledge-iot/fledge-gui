@@ -5,6 +5,7 @@ import { AssetsService } from '../../../../services';
 import ReadingsValidator from '../assets/readings-validator';
 import { AssetSummaryService } from './../asset-summary/asset-summary-service';
 import { MAX_INT_SIZE } from '../../../../utils';
+import { NgProgress } from 'ngx-progressbar';
 
 @Component({
   selector: 'app-readings-graph',
@@ -22,7 +23,7 @@ export class ReadingsGraphComponent implements OnInit {
   public isInvalidOffset = false;
   public MAX_RANGE = MAX_INT_SIZE;
 
-  constructor(private assetService: AssetsService, private assetSummaryService: AssetSummaryService) {
+  constructor(private assetService: AssetsService, private assetSummaryService: AssetSummaryService, public ngProgress: NgProgress) {
     this.assetChart = 'line';
     this.assetReadingValues = [];
   }
@@ -60,15 +61,22 @@ export class ReadingsGraphComponent implements OnInit {
     }
 
     if (this.isInvalidLimit || this.isInvalidOffset) {
-      return;
+      const labels = [];
+      const ds = [];
+      this.setAssetReadingValues(labels, ds);
     }
 
     this.assetCode = assetCode;
+    this.ngProgress.start();
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, +offset).
       subscribe(
         (data: any[]) => {
+          this.ngProgress.done();
           if (data.length === 0) {
             this.isReadingsAvailable = false;
+            const labels = [];
+            const ds = [];
+            this.setAssetReadingValues(labels, ds);
             return;
           }
           const validRecord = ReadingsValidator.validate(data);
@@ -86,10 +94,14 @@ export class ReadingsGraphComponent implements OnInit {
               });
           } else {
             this.isValidData = false;
+            const labels = [];
+            const ds = [];
+            this.setAssetReadingValues(labels, ds);
             console.log('No valid data to show trends.');
           }
         },
         error => {
+          this.ngProgress.done();
           this.isValidData = false;
           console.log('error in response', error);
         });
@@ -211,6 +223,10 @@ export class ReadingsGraphComponent implements OnInit {
       }];
     }
     this.assetChart = 'line';
+    this.setAssetReadingValues(labels, ds);
+  }
+
+  setAssetReadingValues(labels, ds) {
     this.assetReadingValues = {
       labels: labels,
       datasets: ds
