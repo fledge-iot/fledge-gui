@@ -16,7 +16,6 @@ export class ReadingsGraphComponent implements OnInit {
   public assetChart: string;
   public assetReadingValues: any;
   public assetCode;
-  public isValidData = false;
   public showGraph = true;
   public assetReadingSummary = [];
   public isReadingsAvailable = false;
@@ -42,14 +41,12 @@ export class ReadingsGraphComponent implements OnInit {
   }
 
   public plotReadingsGraph(assetCode, limit: any, offset: any) {
-    this.isValidData = true;
     this.isReadingsAvailable = true;
     this.isInvalidLimit = false;
     this.isInvalidOffset = false;
     this.showGraph = true;
-
-    if (limit === undefined || limit === '') {
-      limit = 0;
+    if (limit === undefined || limit === '' || limit === 0) {
+      limit = 100;
     }
     if (offset === undefined || offset === '') {
       offset = 0;
@@ -95,7 +92,6 @@ export class ReadingsGraphComponent implements OnInit {
                 console.log('readings data to show trends.', this.assetReadingSummary);
               });
           } else {
-            this.isValidData = false;
             this.showGraph = false;
             const labels = [];
             const ds = [];
@@ -105,7 +101,6 @@ export class ReadingsGraphComponent implements OnInit {
         },
         error => {
           this.ngProgress.done();
-          this.isValidData = false;
           console.log('error in response', error);
         });
   }
