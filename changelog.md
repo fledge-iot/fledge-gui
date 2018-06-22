@@ -4,10 +4,11 @@
 
 * e2e Tests HTML Report
 * Add new service with specified plugin
-* `./make_deb` script to create debian package (in `packages/Debian/build/`)
+* `./make_deb` script to create debian package (in `packages/Debian/build)
 
 #### Changed
 
+* Renamed `deploy.sh` and `build.sh` to `deploy` and `build`
 * Upgraded to Angular v6 (including compatible TypeScript / CLI versions)
 
 #### Removed
