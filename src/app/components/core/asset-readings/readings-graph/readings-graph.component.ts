@@ -17,6 +17,7 @@ export class ReadingsGraphComponent implements OnInit {
   public assetReadingValues: any;
   public assetCode;
   public isValidData = false;
+  public showGraph = true;
   public assetReadingSummary = [];
   public isReadingsAvailable = false;
   public isInvalidLimit = false;
@@ -45,6 +46,7 @@ export class ReadingsGraphComponent implements OnInit {
     this.isReadingsAvailable = true;
     this.isInvalidLimit = false;
     this.isInvalidOffset = false;
+    this.showGraph = true;
 
     if (limit === undefined || limit === '') {
       limit = 0;
@@ -94,6 +96,7 @@ export class ReadingsGraphComponent implements OnInit {
               });
           } else {
             this.isValidData = false;
+            this.showGraph = false;
             const labels = [];
             const ds = [];
             this.setAssetReadingValues(labels, ds);

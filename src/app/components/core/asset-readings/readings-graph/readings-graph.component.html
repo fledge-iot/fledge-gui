@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p [hidden]='!isValidData' class="modal-card-title is-size-5">{{assetCode}}
+      <p [hidden]='!showGraph' class="modal-card-title is-size-5">{{assetCode}}
         <button (click)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)" class="button is-small">
           <i class="fa fa-refresh" aria-hidden="true"></i>
         </button>
@@ -12,7 +12,7 @@
       </div>
     </header>
     <section class="modal-card-body">
-      <div [hidden]='!isValidData' class="columns is-mobile">
+      <div [hidden]='!showGraph' class="columns is-mobile">
         <div class="column">
           <app-number-input-debounce placeholder="limit" #limit (value)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)"
             max="{{MAX_RANGE}}"></app-number-input-debounce>
@@ -23,7 +23,7 @@
           <p *ngIf='isInvalidOffset' class='help is-danger'>Offset must be in range 1 - {{MAX_RANGE}}</p>
         </div>
       </div>
-      <div [hidden]='!isValidData' class="field is-grouped is-grouped-multiline" *ngFor="let readings of assetReadingSummary">
+      <div [hidden]='!showGraph' class="field is-grouped is-grouped-multiline" *ngFor="let readings of assetReadingSummary">
         <div class="control">
           <div class="tags has-addons" *ngFor="let reading of readings.summary">
             <span>
@@ -38,7 +38,8 @@
           </div>
         </div>
       </div>
-      <chart [type]="assetChart" [data]="assetReadingValues" [options]=""></chart>
+      <p *ngIf='!showGraph'> Not Available </p>
+      <chart *ngIf='showGraph' [type]="assetChart" [data]="assetReadingValues" [options]=""></chart>
     </section>
   </div>
 </div>
