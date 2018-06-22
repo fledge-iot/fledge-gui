@@ -57,7 +57,17 @@ do
   esac
 done
 
-version=`jq -r '.version' package.json`
+# OS Type
+os=$(uname)
+echo "Operating System Type ${os}"
+
+if [[ ${os} == "Darwin" ]]
+then
+  echo "Script is not compatible with macOS"
+  exit 1
+fi
+
+version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
 BUILD_ROOT="${GIT_ROOT}/packages/build"
 
 # Final package name
@@ -96,9 +106,9 @@ mkdir "${package_name}"
 echo -n "Populating the package and updating version file..."
 cd "${package_name}"
 cp -R ${GIT_ROOT}/packages/Debian/* .
-sed -i "s/Version: ${version}/Version: $version/g" DEBIAN/control
+sed -i "s/Version: 1.2.0/Version: ${version}/g" DEBIAN/control
 
-echo "Copy build artifacts to nginx webroot directory"
+echo "Copy build artifacts for nginx webroot directory"
 mkdir -p var/www/html
 cd var/www/html
 cp -R ${GIT_ROOT}/dist/* .
