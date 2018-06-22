@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##--------------------------------------------------------------------
 ## Copyright (c) 2018 Dianomic Systems
@@ -59,11 +59,11 @@ done
 
 # OS Type
 os=$(uname)
-echo "Operating System Type ${os}"
+echo "Operating System Type: ${os}"
 
 if [[ ${os} == "Darwin" ]]
 then
-  echo "Script is not compatible with macOS"
+  echo "This script is not compatible with macOS."
   exit 1
 fi
 
@@ -82,7 +82,7 @@ echo
 
 # Prepare build artifacts
 rm -rf ${GIT_ROOT}/dist
-./build.sh
+./build
 
 # Create the package directory. If a directory with the same name exists,
 # it is copied with a version number.
@@ -110,8 +110,7 @@ sed -i "s/Version: 1.2.0/Version: ${version}/g" DEBIAN/control
 
 echo "Copy build artifacts for nginx webroot directory"
 mkdir -p var/www/html
-cd var/www/html
-cp -R ${GIT_ROOT}/dist/* .
+cp -R ${GIT_ROOT}/dist/* var/www/html/
 echo "Done."
 
 # Build the package
@@ -127,8 +126,8 @@ if [ -e "${package_name}.deb" ]; then
     mv "${package_name}.deb" "${new_stored_pkg}"
 fi
 
-echo "Building the new package..."
+echo "Building the new debian package..."
 dpkg-deb --build ${package_name}
-echo "Building Complete."
+echo "Done."
 
 exit 0

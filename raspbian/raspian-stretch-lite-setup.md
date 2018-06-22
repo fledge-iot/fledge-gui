@@ -110,7 +110,7 @@ make
 
 `cd foglamp-gui/`
 
-run `./build.sh`
+run `./build`
 
 **Copy compressed build file and deploy script to Raspbian**
 

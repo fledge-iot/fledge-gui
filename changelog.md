@@ -3,7 +3,8 @@
 #### Added
 
 * e2e Tests HTML Report
-* Add new service with specified plugin 
+* Add new service with specified plugin
+* `./make_deb` script to create debian package (in `packages/Debian/build/`)
 
 #### Changed
 
