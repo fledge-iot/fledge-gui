@@ -2,8 +2,8 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p [hidden]='!showGraph' class="modal-card-title is-size-5">{{assetCode}}
-        <button (click)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)" class="button is-small">
+      <p class="modal-card-title is-size-5">{{assetCode}}
+        <button [hidden]='!showGraph' (click)="plotReadingsGraph(assetCode, limit.inputValue, offset.inputValue)" class="button is-small">
           <i class="fa fa-refresh" aria-hidden="true"></i>
         </button>
       </p>
