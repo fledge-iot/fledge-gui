@@ -12,7 +12,7 @@ import { LoginComponent } from './components/layout/login';
 import { AuthGuard } from './guards';
 
 const appRoutes: Routes = [
-  { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: '', component: DashboardComponent },
   { path: 'login', component: LoginComponent },
   { path: 'configuration', loadChildren: './components/core/configuration-manager/configuration.module#ConfigurationModule' },
   { path: 'scheduled-task', loadChildren: './components/core/scheduler/scheduler.module#SchedulerModule' },

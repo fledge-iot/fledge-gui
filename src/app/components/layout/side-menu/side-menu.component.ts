@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { SharedService } from '../../../services/shared.service';
 
 @Component({
   selector: 'app-side-menu',
@@ -11,12 +12,11 @@ export class SideMenuComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
 
   isAdmin = false;
-  isSkip = false;
-  constructor(private router: Router) { }
-
+  constructor(private router: Router, private sharedService: SharedService) { }
   ngOnInit() {
-    this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin'));
-    this.isSkip = JSON.parse(sessionStorage.getItem('skip'));
+    this.sharedService.isAdmin.subscribe(value => {
+      this.isAdmin = value;
+    });
     this.router.events.subscribe(() => {
       if (this.router.url === '/' || this.router.url === '/dashboard') {
         this.step = '/dashboard';

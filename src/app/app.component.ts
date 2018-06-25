@@ -1,36 +1,25 @@
-import { Component, OnInit, HostListener, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
-import { SharedService } from './services/shared.service';
-import { PingService } from './services/index';
+import { PingService, ServicesHealthService } from './services/index';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
   title = 'app';
   @ViewChild('sidebar') sidebar: SidebarModule;
   navMode = 'side';
 
   public _opened = true;
-  returnUrl: string;
-  isUserLoggedIn = false;
-  skip = false;
-  isLoginView = false;
+  public returnUrl: string;
+  public isLoginView = false;
 
   constructor(private router: Router,
-    private sharedService: SharedService,
-    private cdr: ChangeDetectorRef, private ping: PingService) {
-    this.sharedService.isUserLoggedIn.subscribe(value => {
-      this.isUserLoggedIn = value.loggedIn;
-    });
-
-    this.sharedService.isLoginSkiped.subscribe(value => {
-      this.skip = value;
-    });
-  }
+    private ping: PingService,
+    private servicesHealthService: ServicesHealthService) { }
 
   public toggleSidebar() {
     if (this.navMode === 'over') {
@@ -51,18 +40,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.ping.setDefaultPingTime();
     const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
     this.ping.pingIntervalChanged.next(pingInterval);
-  }
-
-  ngAfterViewInit() {
-    // get loggedin user token from session
-    const token = sessionStorage.getItem('token');
-    const skip = sessionStorage.getItem('skip');
-    if (token != null && token.trim().length > 0) {
-      this.isUserLoggedIn = true;
-    } else if (skip != null && skip.trim().length > 0) {
-      this.skip = true;
-    }
-    this.cdr.detectChanges();
+    this.onLaunchAppRedirect();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -82,6 +60,21 @@ export class AppComponent implements OnInit, AfterViewInit {
       return this.isLoginView = true;
     } else {
       return this.isLoginView = false;
+    }
+  }
+
+  onLaunchAppRedirect() {
+    // Get ping service data on app launch
+    if (this.servicesHealthService.pingData) {
+      const auth = this.servicesHealthService.pingData.authenticationOptional;
+      sessionStorage.setItem('LOGIN_SKIPPED', auth);
+      if (auth) {
+        this.router.navigate(['']);
+      } else if (sessionStorage.getItem('token') == null && !auth) {
+        this.router.navigate(['/login']);
+      }
+    } else {
+      this.router.navigate(['/setting'], { queryParams: { id: '1' } });
     }
   }
 }
