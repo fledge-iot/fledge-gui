@@ -21,6 +21,8 @@
 
 set -e
 
+__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+ 
 # Colors
 CPFX="\033["
 

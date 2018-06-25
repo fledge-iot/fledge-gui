@@ -83,7 +83,7 @@ From your dev machine, `scp raspbian/deploy-core pi@<IP>:/home/pi/`
 
 SSH to Raspbian machine and:
 
-Run `./deploy-core` inside rasperry pi.
+Run `./deploy-core` inside raspberry pi.
 
 
 ```
@@ -112,7 +112,7 @@ make
 
 run `./build`
 
-**Copy compressed build file and deploy script to Raspbian**
+**Copy compressed build file and deploy script to (raspberry pi) Raspbian**
 
 `scp foglamp-gui-1.2.0.tar.gz pi@1<IP>:/home/pi/`
 
