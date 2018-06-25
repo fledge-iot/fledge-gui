@@ -87,7 +87,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.status.changeMessage(true);
       this.ping_data = data;
-      const statsTxt = 'Read:' + data['dataRead'] + '\n' + 'Sent:' + data['dataSent'] + '\n' + 'Purged:' + data['dataPurged'];
+      const statsTxt = 'Read: ' + data['dataRead'] + '\n' + 'Sent: ' + data['dataSent'] + '\n' + 'Purged: ' + data['dataPurged'];
       this.ping_info = { stats: statsTxt, is_alive: true, service_status: 'running' };
       if (JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED')) === true) {
         this.isUserLoggedIn = false;
