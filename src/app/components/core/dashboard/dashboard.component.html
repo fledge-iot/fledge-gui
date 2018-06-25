@@ -27,7 +27,7 @@
 
         <h6 class="subtitle is-6">{{ statistic.description }}</h6>
         <br/>
-        <chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></chart>
+        <app-chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></app-chart>
         <br/>
         <h6>Total since startup:
           <b> {{ statistic.value }} </b>

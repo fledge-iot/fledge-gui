@@ -2,7 +2,7 @@ import { Component, Input, ElementRef, OnInit, OnChanges, OnDestroy } from '@ang
 import { Chart } from 'chart.js';
 
 @Component({
-  selector: 'chart',
+  selector: 'app-chart',
   template: '<canvas></canvas>',
   styles: [':host { display: block; }']
 })
