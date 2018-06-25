@@ -108,11 +108,19 @@ Done.
 
 ```
 
-#### Install debian package
+#### Installing debian package
+
+Use the ``apt`` or the ``apt-get`` command
 
 ```
 $sudo cp packages/build/foglamp-gui-1.3.0.deb /var/cache/apt/archives/.
 $sudo apt install /var/cache/apt/archives/foglamp-gui-1.3.0.deb
+```
+
+#### Uninstalling debian package
+
+```
+$ sudo apt remove foglamp-gui
 ```
 
 > you may want to check debian package contents with `sudo dpkg -c foglamp-gui-1.3.0.deb` or can install in dev env with `sudo dpkg -i foglamp-gui-1.3.0.deb`
