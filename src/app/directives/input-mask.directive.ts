@@ -164,10 +164,10 @@ export class InputMaskDirective implements OnInit {
     }
 
     const currentSymbol = this.mask[position].toUpperCase();
-    const keys = Object.keys(placeholders);
-    const searchPosition = keys.indexOf(currentSymbol);
+    const ks = Object.keys(placeholders);
+    const searchPosition = ks.indexOf(currentSymbol);
     if (searchPosition >= 0) {
-      return new RegExp(placeholders[keys[searchPosition]], 'gi');
+      return new RegExp(placeholders[ks[searchPosition]], 'gi');
     }
     return null;
   }
