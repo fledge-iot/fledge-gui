@@ -1,10 +1,25 @@
 #!/usr/bin/env bash
-set -e
 
-__author__="Mohd. Shariq"
-__copyright__="Copyright (c) 2017-18 DIANOMIC SYSTEMS"
-__license__="Apache 2.0"
-__version__="1.2.0"
+##--------------------------------------------------------------------
+## Copyright (c) 2018 Dianomic Systems
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##--------------------------------------------------------------------
+##
+## Author: Mohd. Shariq
+##
+
+set -e
 
 # Colors
 CPFX="\033["
@@ -64,7 +79,7 @@ memory_footprints(){
 nginx_health(){
   if ! which nginx > /dev/null 2>&1; then
     echo -e "${CERR} FogLAMP GUI can not run, As Nginx(-light) is not installed.${CRESET}"
-    echo -e "${CINFO} Run ./deploy.sh without any argument to install the foglamp gui with nginx-light.${CRESET}"
+    echo -e "${CINFO} Run ./deploy without any argument to install the foglamp gui with nginx-light.${CRESET}"
   else
     machine_details
 
@@ -129,7 +144,7 @@ OPTIONS
   -h, --help                Display this help text
   -v, --version             Display this script's version information
   -H, --health, --dry-run   Run health check for nginx
-  -L, --local               Deploy on local with an internal call to ./build.sh
+  -L, --local               Deploy on local with an internal call to ./build
 
 
 EXAMPLES
@@ -155,7 +170,7 @@ execute_command() {
   elif [[ "$OPTION" == "LOCAL" ]]
   then
     machine_details
-    ./build.sh
+    ./build
     install
 
   fi

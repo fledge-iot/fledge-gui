@@ -90,6 +90,17 @@ export class AssetSummaryComponent implements OnInit {
     this.getReadingSummary(asset);
   }
 
+  refreshData(assetCode, time, key) {
+    const dataObj = {
+      assetCode: assetCode,
+    };
+    if (time && key) {
+      this.getTimedBasedSummary(time, key);
+    } else {
+      this.getReadingSummary(dataObj);
+    }
+  }
+
   clear(st, selectedType) {
     selectedType.value = 'select'; // reset to default
     st.inputValue = null;
