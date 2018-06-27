@@ -43,6 +43,7 @@ export class LoginComponent implements OnInit {
           sessionStorage.setItem('token', data['token']);
           sessionStorage.setItem('uid', data['uid']);
           sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
+          sessionStorage.setItem('skip', JSON.stringify(false));
           this.getUser(data['uid']);
           this.router.navigate(['']);
         },
@@ -51,9 +52,11 @@ export class LoginComponent implements OnInit {
           if (error.status === 0) {
             console.log('service down', error);
           } else if (error.status === 401) {
+            // to open reset password screen
+            sessionStorage.setItem('skip', JSON.stringify(false));
             if (error.statusText.toUpperCase().indexOf('PASSWORD') >= 0
               && error.statusText.toUpperCase().indexOf('EXPIRED') >= 0) {
-              this.router.navigate(['/reset-password'], { queryParams: { username: this.model.username } });
+              this.router.navigate(['/user/reset-password'], { queryParams: { username: this.model.username } });
             }
             this.alertService.error(error.statusText, true);
           } else {

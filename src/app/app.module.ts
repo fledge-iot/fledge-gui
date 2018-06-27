@@ -19,14 +19,13 @@ import { ServicesHealthComponent } from './components/core/services-health';
 import { AddServiceComponent } from './components/core/services-health/add-service/add-service.component';
 import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support/support.component';
-import { ResetPasswordComponent } from './components/core/user-management/reset-password/reset-password.component';
 import { FooterComponent } from './components/layout/footer';
 import { LoginComponent } from './components/layout/login';
 import { NavbarComponent } from './components/layout/navbar/navbar.component';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
 import { InputTrimDirective } from './directives/input-trim.directive';
 import { NumberOnlyDirective } from './directives/number-only.directive';
-import { AuthGuard } from './guards';
+import { AuthCheckGuard } from './guards';
 import { PipesModule } from './pipes/pipes.module';
 import {
   AlertService,
@@ -77,11 +76,10 @@ import { SharedService } from './services/shared.service';
     ShutdownModalComponent,
     SupportComponent,
     BackupRestoreComponent,
-    ResetPasswordComponent,
     AddServiceComponent
   ],
   providers: [
-    AuthGuard,
+    AuthCheckGuard,
     AlertService,
     AuthService,
     ConfigurationService,

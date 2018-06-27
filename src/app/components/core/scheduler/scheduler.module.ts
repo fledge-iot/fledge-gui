@@ -5,7 +5,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgProgressModule } from 'ngx-progressbar';
 
 import { InputMaskDirective } from '../../../directives/input-mask.directive';
-import { AuthGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { CreateScheduleComponent } from './create-schedule/create-schedule.component';
@@ -13,12 +12,13 @@ import { ListSchedulesComponent } from './list-schedules/list-schedules.componen
 import { ListTasksComponent } from './list-tasks/list-tasks.component';
 import { ScheduledProcessComponent } from './scheduled-process/scheduled-process.component';
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
+import { AuthCheckGuard } from '../../../guards';
 
 const routes: Routes = [
   {
     path: '',
     component: ScheduledProcessComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthCheckGuard]
   }
 ];
 
