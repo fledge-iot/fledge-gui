@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
           sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
           sessionStorage.setItem('skip', JSON.stringify(false));
           this.getUser(data['uid']);
-          this.router.navigate(['']);
+          this.router.navigate([''],  {replaceUrl : true});
         },
         error => {
           this.ngProgress.done();
@@ -53,7 +53,6 @@ export class LoginComponent implements OnInit {
             console.log('service down', error);
           } else if (error.status === 401) {
             // to open reset password screen
-            sessionStorage.setItem('skip', JSON.stringify(false));
             if (error.statusText.toUpperCase().indexOf('PASSWORD') >= 0
               && error.statusText.toUpperCase().indexOf('EXPIRED') >= 0) {
               this.router.navigate(['/user/reset-password'], { queryParams: { username: this.model.username } });
@@ -71,7 +70,7 @@ export class LoginComponent implements OnInit {
     sessionStorage.removeItem('uid');
     this.sharedService.isLoginSkiped.next(true);
     sessionStorage.setItem('skip', JSON.stringify(true));
-    this.router.navigate(['']);
+    this.router.navigate([''], {replaceUrl: true});
   }
 
   public setupInstance() {

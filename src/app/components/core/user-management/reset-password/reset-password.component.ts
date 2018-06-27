@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, UserService } from '../../../../services';
+import { SharedService } from '../../../../services/shared.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -17,13 +18,14 @@ export class ResetPasswordComponent implements OnInit {
   constructor(private alertService: AlertService,
     private userService: UserService,
     public ngProgress: NgProgress,
-    private activatedRoute: ActivatedRoute, private router: Router) {
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private sharedService: SharedService) {
     // get username from url
     this.userName = this.activatedRoute.snapshot.queryParams['username'];
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   public resetUserForm(form: NgForm) {
     form.controls['currentPassword'].reset();
@@ -45,7 +47,7 @@ export class ResetPasswordComponent implements OnInit {
           if (form != null) {
             this.resetUserForm(form);
           }
-          this.router.navigate(['/login']);
+          this.router.navigate(['/login'], {replaceUrl: true});
         },
         error => {
           this.ngProgress.done();

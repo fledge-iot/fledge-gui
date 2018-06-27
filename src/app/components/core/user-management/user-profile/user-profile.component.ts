@@ -141,7 +141,7 @@ export class UserProfileComponent implements OnInit {
         () => {
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
-          this.router.navigate(['/login']);
+          this.router.navigate(['/login'], {replaceUrl : true});
         },
         error => {
           this.ngProgress.done();
