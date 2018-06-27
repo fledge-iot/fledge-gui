@@ -30,4 +30,10 @@
     justify-content: flex-end;
     margin-left: auto;
 }
-
+.navbar.is-top-fixed {
+    left: 0;
+    position: fixed;
+    right: 0;
+    z-index: 30;
+    top: 0;
+  }

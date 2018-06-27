@@ -52,10 +52,10 @@ table.scroll tbody {
   overflow: hidden;
 }
 
-.navbar.is-top-fixed {
+/* .navbar.is-top-fixed {
   left: 0;
   position: fixed;
   right: 0;
   z-index: 30;
   top: 0;
-}
+} */
