@@ -32,7 +32,8 @@ CWARN="${CPFX}0;33m"
 echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
 # Variables
-FOGLAMP_GUI_VER=1.2.0
+# TODO: Get gui version dynamically
+FOGLAMP_GUI_VER=1.3.0
 
 machine_details() {
   # OS Type
