@@ -56,7 +56,7 @@ export class AppComponent implements OnInit {
   }
 
   isActive(href) {
-    if (href === '/login' || href === '/setting?id=1' || href.indexOf('reset-password') >= 0) {
+    if (href === '/login' || href === '/setting?id=1' || href.indexOf('user/reset-password') >= 0) {
       return this.isLoginView = true;
     } else {
       return this.isLoginView = false;

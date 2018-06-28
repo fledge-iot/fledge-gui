@@ -181,7 +181,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         () => {
           sessionStorage.clear();
           this.ngProgress.done();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/login'], {replaceUrl : true});
           this.alertService.success('You have been successfully logged out!');
         },
         error => {

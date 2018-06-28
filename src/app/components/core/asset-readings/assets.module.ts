@@ -11,15 +11,15 @@ import { ChartModule } from '../../common/chart/index';
 import { AssetsService } from '../../../services';
 
 import { Routes, RouterModule } from '@angular/router';
-import { AuthGuard } from '../../../guards';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
+import { AuthCheckGuard } from '../../../guards';
 
 const routes: Routes = [
   {
     path: '',
     component: AssetsComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthCheckGuard]
   }
 ];
 
