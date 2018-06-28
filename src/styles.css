@@ -109,7 +109,7 @@ table.scroll tbody {
     }
 }
 
-  .logo {
+.logo {
     width: 100px;
     height: 100px;
     background: url(./assets/favicon.ico) center center no-repeat;

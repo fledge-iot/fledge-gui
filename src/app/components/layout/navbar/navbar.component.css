@@ -21,6 +21,7 @@
 .navbar-menu{
     flex-grow: 1;
     flex-shrink: 0;
+    overflow: visible !important;
 }
 .navbar-start{
     justify-content: flex-start;
