@@ -6,14 +6,14 @@ import { PipesModule } from '../../../pipes/pipes.module';
 import { ConfigurationService } from '../../../services';
 import { ConfigurationManagerComponent } from '.';
 import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
-import { AuthGuard } from '../../../guards';
 import { Routes, RouterModule } from '@angular/router';
+import { AuthCheckGuard } from '../../../guards';
 
 const routes: Routes = [
   {
     path: '',
     component: ConfigurationManagerComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthCheckGuard]
   }
 ];
 
