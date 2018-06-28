@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, UserService } from '../../../../services';
-import { SharedService } from '../../../../services/shared.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -19,8 +18,7 @@ export class ResetPasswordComponent implements OnInit {
     private userService: UserService,
     public ngProgress: NgProgress,
     private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private sharedService: SharedService) {
+    private router: Router) {
     // get username from url
     this.userName = this.activatedRoute.snapshot.queryParams['username'];
   }
