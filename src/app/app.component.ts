@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
 import { PingService, ServicesHealthService } from './services/index';
+import { SharedService } from './services/shared.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router,
     private ping: PingService,
-    private servicesHealthService: ServicesHealthService) { }
+    private servicesHealthService: ServicesHealthService,
+    private sharedService: SharedService) { }
 
   public toggleSidebar() {
     if (this.navMode === 'over') {
@@ -72,9 +74,14 @@ export class AppComponent implements OnInit {
         this.router.navigate(['']);
       } else if (sessionStorage.getItem('token') == null && !auth) {
         this.router.navigate(['/login']);
+        this.isLoginView = false;
       }
-    } else {
-      this.router.navigate(['/setting'], { queryParams: { id: '1' } });
     }
+    this.sharedService.isServiceUp.subscribe(isServiceUp => {
+      if (!isServiceUp) {
+        this.router.navigate(['/setting'], { queryParams: { id: '1' } });
+      }
+    });
   }
 }
+

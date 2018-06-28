@@ -3,7 +3,6 @@ import { Router, CanActivate } from '@angular/router';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
-  skip: boolean;
   constructor(private router: Router) { }
   canActivate() {
     const isAdmin = JSON.parse(sessionStorage.getItem('isAdmin'));

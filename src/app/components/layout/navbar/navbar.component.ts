@@ -24,7 +24,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public ping_data = {};
-  public ping_info = { stats: 'No data', is_alive: false, service_status: 'service down' };
+  public ping_info = { stats: 'No data', is_alive: false, is_auth: false, service_status: 'service down' };
   public shutDownData = {
     key: '',
     message: ''
@@ -33,6 +33,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   // Define a variable to use for showing/hiding the Login button
   isUserLoggedIn: boolean;
   userName: string;
+  isAuthorize = false;  // Default to true for authorized access
+
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
 
   constructor(private servicesHealthService: ServicesHealthService,
@@ -88,7 +90,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.status.changeMessage(true);
       this.ping_data = data;
       const statsTxt = 'Read: ' + data['dataRead'] + '\n' + 'Sent: ' + data['dataSent'] + '\n' + 'Purged: ' + data['dataPurged'];
-      this.ping_info = { stats: statsTxt, is_alive: true, service_status: 'running' };
+      this.ping_info = { stats: statsTxt, is_alive: true, is_auth: false, service_status: 'running' };
       if (JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED')) === true) {
         this.isUserLoggedIn = false;
         sessionStorage.removeItem('token');
@@ -97,12 +99,20 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sharedService.isAdmin.next(JSON.parse(sessionStorage.getItem('isAdmin')));
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
     })
-      .catch(() => {
+      .catch((error) => {
         if (pingManually === true) {
           this.ngProgress.done();
         }
-        this.status.changeMessage(false);
-        this.ping_info = { stats: 'No data', is_alive: false, service_status: 'service down' };
+        if (error.status === 403) {
+          sessionStorage.clear();
+          this.status.changeMessage(false);
+          this.router.navigate(['/login']);
+          this.ping_info = { stats: 'Auth Required', is_alive: true, is_auth: true, service_status: 'running' };
+        } else {
+          this.status.changeMessage(false);
+          this.sharedService.isServiceUp.next(false);
+          this.ping_info = { stats: 'No Data', is_alive: false, is_auth: false, service_status: 'service down' };
+        }
       });
   }
 
@@ -171,6 +181,32 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.toggle.next('toggleSidebar');
   }
 
+  applyServiceStatusCustomCss(pingInfo) {
+    console.log(this.ping_info);
+    if (pingInfo.is_alive && !pingInfo.is_auth) {
+      return 'is-success';
+    }
+    if (pingInfo.is_alive && pingInfo.is_auth) {
+      return 'is-warning';
+    }
+    if (!pingInfo.is_alive && !pingInfo.is_auth) {
+      return 'is-danger';
+    }
+  }
+
+  applyServiceStatusIconCss(pingInfo) {
+    console.log(this.ping_info);
+    if (pingInfo.is_alive && !pingInfo.is_auth) {
+      return 'fa fa-check-circle-o';
+    }
+    if (pingInfo.is_alive && pingInfo.is_auth) {
+      return 'fa fa-lock';
+    }
+    if (!pingInfo.is_alive && !pingInfo.is_auth) {
+      return 'fa fa-times-circle';
+    }
+  }
+
   /**
      *  Signout the current user
      */
@@ -181,7 +217,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         () => {
           sessionStorage.clear();
           this.ngProgress.done();
-          this.router.navigate(['/login'], {replaceUrl : true});
+          this.router.navigate(['/login'], { replaceUrl: true });
           this.alertService.success('You have been successfully logged out!');
         },
         error => {

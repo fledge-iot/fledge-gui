@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+
 import { PingService } from './ping.service';
 
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
@@ -10,7 +11,8 @@ export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 @Injectable()
 export class HttpsRequestInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router, private pingService: PingService) { }
+  constructor(private router: Router,
+    private pingService: PingService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (req.headers.has(InterceptorSkipHeader)) {
@@ -31,7 +33,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           if (err.status === 401) {
             sessionStorage.clear();
           } else if (err.status === 403) {
-            this.router.navigate(['/login']);
+            sessionStorage.clear();
             this.pingService.pingIntervalChanged.next(0);
           }
           return observableThrowError(err);

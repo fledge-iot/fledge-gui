@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertService, AuthService, UserService, PingService } from '../../../services/index';
-import { SharedService } from '../../../services/shared.service';
 import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, AuthService, PingService, UserService } from '../../../services';
+import { SharedService } from '../../../services/shared.service';
 
 @Component({
   moduleId: module.id.toString(),
@@ -46,7 +47,6 @@ export class LoginComponent implements OnInit {
           sessionStorage.setItem('token', data['token']);
           sessionStorage.setItem('uid', data['uid']);
           sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
-          sessionStorage.setItem('skip', JSON.stringify(false));
           this.getUser(data['uid']);
           this.router.navigate([''],  {replaceUrl : true});
         },
