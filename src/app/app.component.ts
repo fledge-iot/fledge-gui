@@ -66,16 +66,6 @@ export class AppComponent implements OnInit {
   }
 
   onLaunchAppRedirect() {
-    // Get ping service data on app launch
-    if (this.servicesHealthService.pingData) {
-      const auth = this.servicesHealthService.pingData.authenticationOptional;
-      sessionStorage.setItem('LOGIN_SKIPPED', auth);
-      if (auth) {
-        this.router.navigate(['']);
-      } else if (sessionStorage.getItem('token') == null && !auth) {
-        this.router.navigate(['/login']);
-      }
-    }
     this.sharedService.isServiceUp.subscribe(isServiceUp => {
       if (!isServiceUp) {
         this.router.navigate(['/setting'], { queryParams: { id: '1' } });

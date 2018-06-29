@@ -15,10 +15,6 @@ export class ServicesHealthService {
   private _pingData: any;
   constructor(private http: HttpClient) { }
 
-  get pingData(): any {
-    return this._pingData;
-  }
-
   /**
      *  GET  | /foglamp/ping
      */
@@ -27,7 +23,6 @@ export class ServicesHealthService {
     return this.http.get(this.GET_PING_URL)
       .pipe(timeout(this.REQUEST_TIMEOUT_INTERVAL))
       .toPromise()
-      .then((data: any) => this._pingData = data)
       .catch(err => Promise.reject(err));
   }
 
