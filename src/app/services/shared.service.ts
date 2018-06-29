@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class SharedService {
-    public isUserLoggedIn: Subject<any> = new Subject<any>();
-    public isAdmin: Subject<boolean> = new Subject<boolean>();
-    public isServiceUp: Subject<boolean> = new Subject<boolean>();
+  public isUserLoggedIn: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public isAdmin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isServiceUp: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 }

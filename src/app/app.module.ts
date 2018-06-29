@@ -48,10 +48,20 @@ import { SharedService } from './services/shared.service';
 
 import { APP_INITIALIZER } from '@angular/core';
 
-export function pingServiceFactory(healthService: ServicesHealthService): Function {
-  return () => healthService.pingService().catch(error => {
-    console.log('error: ', error);
-  });
+export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
+  return () => healthService.pingService()
+    .then((data) => {
+      sharedService.isServiceUp.next(true);
+      sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
+    })
+    .catch(error => {
+      console.log('error: ', error);
+      if (error.status === 403) {
+        sharedService.isServiceUp.next(true);
+      } else {
+        sharedService.isServiceUp.next(false);
+      }
+    });
 }
 
 @NgModule({
@@ -97,7 +107,7 @@ export function pingServiceFactory(healthService: ServicesHealthService): Functi
     {
       provide: APP_INITIALIZER,
       useFactory: pingServiceFactory,
-      deps: [ServicesHealthService],
+      deps: [ServicesHealthService, SharedService],
       multi: true
     },
     ConnectedServiceStatus,

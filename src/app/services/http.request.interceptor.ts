@@ -5,6 +5,7 @@ import { Observable, throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { PingService } from './ping.service';
+import { SharedService } from './shared.service';
 
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 
@@ -12,7 +13,7 @@ export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 export class HttpsRequestInterceptor implements HttpInterceptor {
 
   constructor(private router: Router,
-    private pingService: PingService) { }
+    private pingService: PingService, private sharedService: SharedService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (req.headers.has(InterceptorSkipHeader)) {
@@ -34,7 +35,6 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             sessionStorage.clear();
           } else if (err.status === 403) {
             sessionStorage.clear();
-            this.pingService.pingIntervalChanged.next(0);
           }
           return observableThrowError(err);
         }

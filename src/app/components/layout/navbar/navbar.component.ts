@@ -91,7 +91,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ping_data = data;
       const statsTxt = 'Read: ' + data['dataRead'] + '\n' + 'Sent: ' + data['dataSent'] + '\n' + 'Purged: ' + data['dataPurged'];
       this.ping_info = { stats: statsTxt, is_alive: true, is_auth: false, service_status: 'running' };
-      if (JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED')) === true) {
+      if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         sessionStorage.removeItem('token');
         sessionStorage.setItem('isAdmin', JSON.stringify(false));
@@ -100,17 +100,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
     })
       .catch((error) => {
+        this.status.changeMessage(false);
         if (pingManually === true) {
           this.ngProgress.done();
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.status.changeMessage(false);
-          this.router.navigate(['/login']);
           this.ping_info = { stats: 'Auth Required', is_alive: true, is_auth: true, service_status: 'running' };
         } else {
-          this.status.changeMessage(false);
-          this.sharedService.isServiceUp.next(false);
           this.ping_info = { stats: 'No Data', is_alive: false, is_auth: false, service_status: 'service down' };
         }
       });
@@ -182,7 +179,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyServiceStatusCustomCss(pingInfo) {
-    console.log(this.ping_info);
     if (pingInfo.is_alive && !pingInfo.is_auth) {
       return 'is-success';
     }
@@ -195,7 +191,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyServiceStatusIconCss(pingInfo) {
-    console.log(this.ping_info);
     if (pingInfo.is_alive && !pingInfo.is_auth) {
       return 'fa fa-check-circle-o';
     }

@@ -74,12 +74,15 @@ export class AppComponent implements OnInit {
         this.router.navigate(['']);
       } else if (sessionStorage.getItem('token') == null && !auth) {
         this.router.navigate(['/login']);
-        this.isLoginView = false;
       }
     }
     this.sharedService.isServiceUp.subscribe(isServiceUp => {
       if (!isServiceUp) {
         this.router.navigate(['/setting'], { queryParams: { id: '1' } });
+      } else if (JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED')) === false) {
+        this.router.navigate(['/login']);
+      } else {
+        this.router.navigate(['']);
       }
     });
   }
