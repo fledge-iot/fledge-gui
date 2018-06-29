@@ -46,6 +46,24 @@ import {
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
 
+import { APP_INITIALIZER } from '@angular/core';
+
+export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
+  return () => healthService.pingService()
+    .then((data) => {
+      sharedService.isServiceUp.next(true);
+      sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
+    })
+    .catch(error => {
+      console.log('error: ', error);
+      if (error.status === 403) {
+        sharedService.isServiceUp.next(true);
+      } else {
+        sharedService.isServiceUp.next(false);
+      }
+    });
+}
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -86,6 +104,12 @@ import { SharedService } from './services/shared.service';
     AuditService,
     SystemLogService,
     ServicesHealthService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: pingServiceFactory,
+      deps: [ServicesHealthService, SharedService],
+      multi: true
+    },
     ConnectedServiceStatus,
     DiscoveryService,
     SharedService,
@@ -103,4 +127,5 @@ import { SharedService } from './services/shared.service';
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

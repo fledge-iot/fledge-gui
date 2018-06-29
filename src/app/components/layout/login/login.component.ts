@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertService, AuthService, UserService } from '../../../services/index';
-import { SharedService } from '../../../services/shared.service';
 import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, AuthService, PingService, UserService } from '../../../services';
+import { SharedService } from '../../../services/shared.service';
 
 @Component({
   moduleId: module.id.toString(),
@@ -13,17 +14,18 @@ import { NgProgress } from 'ngx-progressbar';
 export class LoginComponent implements OnInit {
   model: any = {};
   returnUrl: string;
+
   constructor(
     private router: Router,
     private authService: AuthService,
     private alertService: AlertService,
     private sharedService: SharedService,
     private userService: UserService,
+    private ping: PingService,
     public ngProgress: NgProgress) {
     this.sharedService.isUserLoggedIn.next({
       'loggedIn': false
     });
-    this.sharedService.isLoginSkiped.next(false);
   }
 
   ngOnInit() {
@@ -39,11 +41,12 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.model.username, this.model.password).
       subscribe(
         (data) => {
+          const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
+          this.ping.pingIntervalChanged.next(pingInterval);
           this.ngProgress.done();
           sessionStorage.setItem('token', data['token']);
           sessionStorage.setItem('uid', data['uid']);
           sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
-          sessionStorage.setItem('skip', JSON.stringify(false));
           this.getUser(data['uid']);
           this.router.navigate([''],  {replaceUrl : true});
         },
@@ -62,15 +65,6 @@ export class LoginComponent implements OnInit {
             this.alertService.error(error.statusText, true);
           }
         });
-  }
-
-  public skip() {
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('isAdmin');
-    sessionStorage.removeItem('uid');
-    this.sharedService.isLoginSkiped.next(true);
-    sessionStorage.setItem('skip', JSON.stringify(true));
-    this.router.navigate([''], {replaceUrl: true});
   }
 
   public setupInstance() {

@@ -5,9 +5,13 @@ import { CanActivate, Router } from '@angular/router';
 export class AuthGuard implements CanActivate {
   constructor(private router: Router) { }
   canActivate() {
-    if (sessionStorage.getItem('token') && !JSON.parse(sessionStorage.getItem('skip'))) {
+    if (sessionStorage.getItem('token') && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
       // logged in so return true
       return true;
+    }
+    if (!sessionStorage.getItem('token') && JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
+      this.router.navigate(['']);
+      return false;
     }
     // not logged in so redirect to login page with the return url
     this.router.navigate(['/login']);

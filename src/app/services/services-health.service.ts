@@ -12,17 +12,18 @@ export class ServicesHealthService {
   private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
-
+  private _pingData: any;
   constructor(private http: HttpClient) { }
 
   /**
      *  GET  | /foglamp/ping
      */
-  pingService() {
-    return this.http.get(this.GET_PING_URL).pipe(
-      timeout(this.REQUEST_TIMEOUT_INTERVAL),
-      map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+  pingService(): Promise<any> {
+    this._pingData = null;
+    return this.http.get(this.GET_PING_URL)
+      .pipe(timeout(this.REQUEST_TIMEOUT_INTERVAL))
+      .toPromise()
+      .catch(err => Promise.reject(err));
   }
 
   /**

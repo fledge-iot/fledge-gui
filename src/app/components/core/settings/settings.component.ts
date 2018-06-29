@@ -19,7 +19,6 @@ export class SettingsComponent implements OnInit {
   host;
   servicePort;
   pingInterval;
-  isSkipped = false;
   serviceUrl = '';
   constructor(private router: Router, private pingService: PingService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
@@ -29,7 +28,6 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isSkipped = JSON.parse(sessionStorage.getItem('skip'));
     this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
     // get last selected time interval
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
@@ -65,8 +63,6 @@ export class SettingsComponent implements OnInit {
 
   public reloadApp() {
     location.reload();
-    location.href = '';
-    this.router.navigate([location.href]);
   }
 
   /**
