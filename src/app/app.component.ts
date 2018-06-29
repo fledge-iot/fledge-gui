@@ -1,7 +1,8 @@
-import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
-import { PingService, ServicesHealthService } from './services/index';
+
+import { PingService } from './services';
 import { SharedService } from './services/shared.service';
 
 @Component({
@@ -20,7 +21,6 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router,
     private ping: PingService,
-    private servicesHealthService: ServicesHealthService,
     private sharedService: SharedService) { }
 
   public toggleSidebar() {
