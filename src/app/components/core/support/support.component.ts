@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
 
@@ -13,8 +12,7 @@ export class SupportComponent implements OnInit {
   public bundlesData = [];
   constructor(private supportBundleService: SupportService,
     public ngProgress: NgProgress,
-    private alertService: AlertService,
-    private http: HttpClient) { }
+    private alertService: AlertService) { }
 
   ngOnInit() {
     this.getBundles();
@@ -59,12 +57,13 @@ export class SupportComponent implements OnInit {
 
   public async downloadBundle(bundle): Promise<void> {
     const blob = await this.supportBundleService.downloadSupportBundle(bundle);
+    console.log(blob);
     const url = window.URL.createObjectURL(blob);
     // create a custom anchor tag
     const a = document.createElement('a');
-    document.body.appendChild(a);
     a.href = url;
     a.download = bundle;
+    document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
   }

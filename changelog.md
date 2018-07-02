@@ -16,6 +16,7 @@
 * Input mask external lib
 
 #### Bug Fixes
+* Fixed download support bundle issue in authentication required  mode
 
 #### Known Issues
 
