@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
     this.sharedService.isServiceUp.subscribe(isServiceUp => {
       if (!isServiceUp) {
         this.router.navigate(['/setting'], { queryParams: { id: '1' } });
-      } else if (JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED')) === false) {
+      } else if (!sessionStorage.getItem('token') && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
         this.router.navigate(['/login']);
       } else {
         this.router.navigate(['']);
