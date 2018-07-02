@@ -28,4 +28,11 @@ export class SupportService {
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
+
+  public async downloadSupportBundle(bundle): Promise<Blob> {
+    const file = await this.http.get<Blob>(
+      this.SUPPORT_BUNDLE_URL + '/' + bundle,
+      { responseType: 'blob' as 'json' }).toPromise();
+    return file;
+  }
 }

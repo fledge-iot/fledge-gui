@@ -22,7 +22,7 @@
           <tr *ngFor="let bundle of bundlesData">
             <td>{{ bundle }}</td>
             <td>
-              <a href="{{ supportUrl }}/{{ bundle }}" target="_blank" class="button is-text">
+              <a (click)="downloadBundle(bundle)" target="_blank" class="button is-text">
                 download
               </a>
             </td>
