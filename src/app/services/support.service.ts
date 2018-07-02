@@ -33,7 +33,6 @@ export class SupportService {
   public async downloadSupportBundle(bundle): Promise<Blob> {
     const file = await this.http.get<Blob>(
       this.SUPPORT_BUNDLE_URL + '/' + bundle,
-      // return blob(raw data) in json format i.e. Blob(153600) {size: 153600, type: "application/x-tar"}
       { responseType: 'blob' as 'json' }).toPromise();
     return file;
   }

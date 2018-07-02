@@ -57,7 +57,6 @@ export class SupportComponent implements OnInit {
 
   public async downloadBundle(bundle): Promise<void> {
     const blob = await this.supportBundleService.downloadSupportBundle(bundle);
-    console.log(blob);
     const url = window.URL.createObjectURL(blob);
     // create a custom anchor tag
     const a = document.createElement('a');
