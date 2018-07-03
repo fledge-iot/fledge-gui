@@ -374,7 +374,7 @@ export class SkipLogin {
     return element(by.css('app-services-health table thead tr')).getText();
   }
 
-  httpSouthServiceStatus() {
+  coreServiceStatus() {
     browser.ignoreSynchronization = true;
     // wait
     browser.wait(this.EC.visibilityOf(element(by.css('#FogLAMP_Core td:nth-child(2) div span'))), 4000);

@@ -153,11 +153,7 @@ describe('FogLAMP gui', () => {
       for (const ColumnName in ColumnsName) {
         expect(skipLogin.getServiceHealthColNames()).toContain(ColumnsName[ColumnName]);
       }
-      expect(skipLogin.httpSouthServiceStatus()).toContain('running');
-
-      //   Failing due to address binding.
-      //   skipLogin.shutdownHttpSouth();
-      //   expect(skipLogin.httpSouthServiceStatus()).toContain('down');
+      expect(skipLogin.coreServiceStatus()).toContain('running');
     });
 
     it('Should Display Certificate Store', () => {
