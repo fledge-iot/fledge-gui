@@ -191,7 +191,7 @@ export class DashboardComponent implements OnInit {
         this.graphsToShow.forEach(key => {
           if (key.itemName === keyToRefresh) {
             const labels = [];
-            const record = map(data['statistics'], key);
+            const record = map(data['statistics'], keyToRefresh);
             const history_ts = map(data['statistics'], 'history_ts');
             history_ts.forEach(element => {
               element = moment(element).format('HH:mm:ss');
