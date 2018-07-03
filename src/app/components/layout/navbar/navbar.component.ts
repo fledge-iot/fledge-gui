@@ -33,7 +33,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   // Define a variable to use for showing/hiding the Login button
   isUserLoggedIn: boolean;
   userName: string;
-  isAuthorize = false;  // Default to true for authorized access
+  isAuthOptional = true;  // Default to true for authorized access
 
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
 
@@ -51,6 +51,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sharedService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value.loggedIn;
       this.userName = value.userName;
+      this.isAuthOptional = value.isAuth;
       this.pingService();
     });
   }
@@ -78,7 +79,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.changeDetectorRef.detectChanges();
   }
 
-
   public pingService(pingManually = false) {
     if (pingManually === true) {
       this.ngProgress.start();
@@ -93,6 +93,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ping_info = { stats: statsTxt, is_alive: true, is_auth: false, service_status: 'running' };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
+        this.isAuthOptional = true;
         sessionStorage.removeItem('token');
         sessionStorage.setItem('isAdmin', JSON.stringify(false));
       }

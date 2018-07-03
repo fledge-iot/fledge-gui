@@ -24,13 +24,22 @@ export class LoginComponent implements OnInit {
     private ping: PingService,
     public ngProgress: NgProgress) {
     this.sharedService.isUserLoggedIn.next({
-      'loggedIn': false
+      'loggedIn': false,
+      'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
     });
   }
 
   ngOnInit() {
-    // clear session
-    this.resetSession();
+    if (sessionStorage.getItem('token')) {
+      this.sharedService.isUserLoggedIn.next({
+        'loggedIn': true,
+        'userName': sessionStorage.getItem('userName'),
+        'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
+      });
+      this.router.navigate(['']);
+    } else if (JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
+      this.router.navigate(['']);
+    }
   }
 
   /**
@@ -48,7 +57,7 @@ export class LoginComponent implements OnInit {
           sessionStorage.setItem('uid', data['uid']);
           sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
           this.getUser(data['uid']);
-          this.router.navigate([''],  {replaceUrl : true});
+          this.router.navigate([''], { replaceUrl: true });
         },
         error => {
           this.ngProgress.done();
@@ -78,7 +87,8 @@ export class LoginComponent implements OnInit {
         (userData) => {
           this.sharedService.isUserLoggedIn.next({
             'loggedIn': true,
-            'userName': userData['userName']
+            'userName': userData['userName'],
+            'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
           });
           sessionStorage.setItem('userName', userData['userName']);
         },
@@ -89,10 +99,6 @@ export class LoginComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  public resetSession() {
-    sessionStorage.clear();
   }
 
   public forgotPassword() {
