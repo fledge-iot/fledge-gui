@@ -50,7 +50,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="ping_info.is_alive && !isUserLoggedIn" class="icon has-text-danger is-large">
+      <div *ngIf="ping_info.is_alive && isAuthOptional" class="icon has-text-danger is-large">
         <a class=" tooltip is-tooltip-left" data-tooltip="Shut Down" (click)="openModal()">
           <i class="fa fa-power-off" aria-hidden="true"></i>
         </a>

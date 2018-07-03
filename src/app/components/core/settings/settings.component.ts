@@ -22,7 +22,7 @@ export class SettingsComponent implements OnInit {
   serviceUrl = '';
   constructor(private router: Router, private pingService: PingService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
-    localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
+      localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
     this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
     this.servicePort = localStorage.getItem('CONNECTED_PORT') != null ? localStorage.getItem('CONNECTED_PORT') : 8081;
   }

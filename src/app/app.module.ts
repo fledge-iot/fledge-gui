@@ -51,8 +51,8 @@ import { APP_INITIALIZER } from '@angular/core';
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
     .then((data) => {
-      sharedService.isServiceUp.next(true);
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
+      sharedService.isServiceUp.next(true);
     })
     .catch(error => {
       console.log('error: ', error);
