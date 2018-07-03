@@ -25,9 +25,12 @@ export class StatisticsService {
   /**
    *  GET | /foglamp/statistics/history
    */
-  public getStatisticsHistory(limit) {
+  public getStatisticsHistory(limit, key = null) {
     let params = new HttpParams();
     params = params.append('limit', limit);
+    if (key != null) {
+      params = params.append('key', key);
+    }
     return this.http.get(this.GET_STATISTICS_HISTORY, { params: params }).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
