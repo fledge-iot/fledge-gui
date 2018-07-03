@@ -10,7 +10,6 @@ export class SkipLogin {
 
   setUpInstance() {
     browser.waitForAngularEnabled(false);
-    element(by.css('app-login .has-text-grey a:nth-child(2)')).click();
     element(by.css('select option[value="http"]')).click();
     element(by.id('host')).clear();
     element(by.id('host')).sendKeys(environment.HOST);
@@ -33,11 +32,6 @@ export class SkipLogin {
   getLoginButton() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-login form button.is-info')).getText();
-  }
-
-  clickSkip() {
-    browser.ignoreSynchronization = true;
-    element(by.css('app-login .is-grouped div:nth-child(1) button')).click();
   }
 
   getCountOfSelectedGraph() {
@@ -380,11 +374,11 @@ export class SkipLogin {
     return element(by.css('app-services-health table thead tr')).getText();
   }
 
-  httpSouthServiceStatus() {
+  coreServiceStatus() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('#HTTP_SOUTH td:nth-child(2) div span'))), 4000);
-    return element(by.css('#HTTP_SOUTH td:nth-child(2) div span')).getText();
+    browser.wait(this.EC.visibilityOf(element(by.css('#FogLAMP_Core td:nth-child(2) div span'))), 4000);
+    return element(by.css('#FogLAMP_Core td:nth-child(2) div span')).getText();
   }
 
   shutdownHttpSouth() {
@@ -511,24 +505,18 @@ export class SkipLogin {
     return element.all(by.css('app-settings #set-url-restart-btn'));
   }
 
-  getLoginTextButton() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings #login-btn'));
-  }
-
   getTestConnectionTextButton() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('app-settings #test-connection-btn'));
   }
 
+  getDiscoverFoglampButton() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-settings #discover-foglamp-btn'));
+  }
+
   getPingDropdown() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('app-settings header div.select.is-small')).count();
-  }
-
-  goToLoginPage() {
-    browser.ignoreSynchronization = true;
-    element.all(by.css('#dropdown-box > div.dropdown-trigger > a')).click();
-    element.all(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
   }
 }
