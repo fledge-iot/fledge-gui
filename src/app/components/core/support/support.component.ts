@@ -10,10 +10,9 @@ import { AlertService, SupportService } from '../../../services';
 })
 export class SupportComponent implements OnInit {
   public bundlesData = [];
-  public supportUrl = this.supportBundleService.SUPPORT_BUNDLE_URL;
-
-  constructor(private supportBundleService: SupportService, public ngProgress: NgProgress, private alertService: AlertService) { }
-
+  constructor(private supportBundleService: SupportService,
+    public ngProgress: NgProgress,
+    private alertService: AlertService) { }
 
   ngOnInit() {
     this.getBundles();
@@ -54,6 +53,18 @@ export class SupportComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public async downloadBundle(bundle): Promise<void> {
+    const blob = await this.supportBundleService.downloadSupportBundle(bundle);
+    const url = window.URL.createObjectURL(blob);
+    // create a custom anchor tag
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = bundle;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 }
 
