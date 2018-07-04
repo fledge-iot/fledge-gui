@@ -63,7 +63,7 @@ export class DashboardComponent implements OnInit {
     this.getStatistics();
   }
 
-  getLimitBasedGraph(limit) {
+  getLimitBasedGraph(limit, key) {
     this.invalidLimitSize = false;
     if (limit === null || limit === undefined) {
       limit = this.DEFAULT_LIMIT;
@@ -73,11 +73,10 @@ export class DashboardComponent implements OnInit {
       this.invalidLimitSize = true; // limit range validation
       return;
     }
-
-    this.getStatistics(limit);
+    this.refreshGraph(limit, key);
   }
 
-  public getStatistics(limit = this.DEFAULT_LIMIT): void {
+  public getStatistics(): void {
     /** request started */
     this.ngProgress.start();
 
@@ -132,7 +131,7 @@ export class DashboardComponent implements OnInit {
         // Selected Items are the items, to show in the drop down (having keys- 'READINGS', 'SENT_1', 'PURGED')
         this.selectedItems = this.graphsToShow;
 
-        this.getStatisticsHistory(limit);
+        this.getStatisticsHistory();
       },
         error => {
           /** request completed */
@@ -179,14 +178,54 @@ export class DashboardComponent implements OnInit {
   /**
    *  Refresh graphs
    */
-  public refreshGraph() {
-    this.getStatistics();
+  public refreshGraph(limit, keyToRefresh) {
+    let updatedValue = '';
+    this.statisticsService.getStatistics().
+      subscribe((data: any[]) => {
+        const keyData = data.filter(value => value['key'] === keyToRefresh);
+        updatedValue = keyData[0]['value'];
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+    this.statisticsService.getStatisticsHistory(limit, keyToRefresh).
+      subscribe((data: any[]) => {
+        this.graphsToShow.forEach(key => {
+          if (key.itemName === keyToRefresh) {
+            const labels = [];
+            const record = map(data['statistics'], keyToRefresh);
+            const history_ts = map(data['statistics'], 'history_ts');
+            history_ts.forEach(element => {
+              element = moment(element).format('HH:mm:ss');
+              labels.push(element);
+            });
+            this.graphsToShow.map(statistics => {
+              if (statistics.itemName === keyToRefresh) {
+                statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
+                statistics.chartType = 'line';
+                statistics.value = updatedValue;
+                statistics.limit = limit;
+              }
+            });
+          }
+        });
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
-  public getStatisticsHistory(limit = this.DEFAULT_LIMIT): void {
-    this.statisticsService.getStatisticsHistory(limit).
+  public getStatisticsHistory(): void {
+    this.statisticsService.getStatisticsHistory(this.DEFAULT_LIMIT, null).
       subscribe((data: any[]) => {
-        this.limit = limit;
         this.statisticsKeys.forEach(key => {
           const labels = [];
           const record = map(data['statistics'], key);
@@ -199,7 +238,7 @@ export class DashboardComponent implements OnInit {
             if (statistics.itemName == key) {
               statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
               statistics.chartType = 'line';
-              return statistics;
+              statistics.limit = this.DEFAULT_LIMIT;
             }
           });
         });
