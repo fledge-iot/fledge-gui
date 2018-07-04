@@ -25,11 +25,11 @@ export class StatisticsService {
   /**
    *  GET | /foglamp/statistics/history
    */
-  public getStatisticsHistory(limit, key = null) {
+  public getStatisticsHistory(limitValue, keyValue = null) {
     let params = new HttpParams();
-    params = params.append('limit', limit);
-    if (key !== null) {
-      params = params.append('key', key);
+    params = params.append('limit', limitValue);
+    if (keyValue !== null) {
+      params = params.append('key', keyValue);
     }
     return this.http.get(this.GET_STATISTICS_HISTORY, { params: params }).pipe(
       map(response => response),

@@ -182,8 +182,8 @@ export class DashboardComponent implements OnInit {
     let updatedValue = '';
     this.statisticsService.getStatistics().
       subscribe((data: any[]) => {
-        const getObject = data.filter(value => value['key'] === keyToRefresh);
-        updatedValue = getObject[0]['value'];
+        const keyData = data.filter(value => value['key'] === keyToRefresh);
+        updatedValue = keyData[0]['value'];
       },
         error => {
           if (error.status === 0) {
