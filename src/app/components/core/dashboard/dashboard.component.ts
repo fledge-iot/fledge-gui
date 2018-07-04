@@ -65,16 +65,15 @@ export class DashboardComponent implements OnInit {
 
   getLimitBasedGraph(limit, key) {
     this.invalidLimitSize = false;
-    this.limit = limit;
     if (limit === null || limit === undefined) {
-      this.limit = this.DEFAULT_LIMIT;
+      limit = this.DEFAULT_LIMIT;
     }
 
     if (limit > this.MAX_RANGE) {
       this.invalidLimitSize = true; // limit range validation
       return;
     }
-    this.refreshGraph(key);
+    this.refreshGraph(limit, key);
   }
 
   public getStatistics(): void {
@@ -179,14 +178,21 @@ export class DashboardComponent implements OnInit {
   /**
    *  Refresh graphs
    */
-  public refreshGraph(keyToRefresh) {
+  public refreshGraph(limit, keyToRefresh) {
     let updatedValue = '';
     this.statisticsService.getStatistics().
       subscribe((data: any[]) => {
         const getObject = data.filter(value => value['key'] === keyToRefresh);
         updatedValue = getObject[0]['value'];
-      });
-    this.statisticsService.getStatisticsHistory(this.limit, keyToRefresh).
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+    this.statisticsService.getStatisticsHistory(limit, keyToRefresh).
       subscribe((data: any[]) => {
         this.graphsToShow.forEach(key => {
           if (key.itemName === keyToRefresh) {
@@ -197,16 +203,16 @@ export class DashboardComponent implements OnInit {
               element = moment(element).format('HH:mm:ss');
               labels.push(element);
             });
-          this.graphsToShow.map(statistics => {
-            if (statistics.itemName === keyToRefresh) {
-              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
-              statistics.chartType = 'line';
-              statistics.value = updatedValue;
-              statistics.limit = this.limit;
-              return statistics;
-            }
-          });
-        }
+            this.graphsToShow.map(statistics => {
+              if (statistics.itemName === keyToRefresh) {
+                statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
+                statistics.chartType = 'line';
+                statistics.value = updatedValue;
+                statistics.limit = limit;
+                return statistics;
+              }
+            });
+          }
         });
       },
         error => {
