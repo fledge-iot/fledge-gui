@@ -209,7 +209,6 @@ export class DashboardComponent implements OnInit {
                 statistics.chartType = 'line';
                 statistics.value = updatedValue;
                 statistics.limit = limit;
-                return statistics;
               }
             });
           }
@@ -227,7 +226,6 @@ export class DashboardComponent implements OnInit {
   public getStatisticsHistory(): void {
     this.statisticsService.getStatisticsHistory(this.DEFAULT_LIMIT, null).
       subscribe((data: any[]) => {
-        this.limit = this.DEFAULT_LIMIT;
         this.statisticsKeys.forEach(key => {
           const labels = [];
           const record = map(data['statistics'], key);
@@ -241,7 +239,6 @@ export class DashboardComponent implements OnInit {
               statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
-              return statistics;
             }
           });
         });

@@ -28,7 +28,7 @@ export class StatisticsService {
   public getStatisticsHistory(limit, key = null) {
     let params = new HttpParams();
     params = params.append('limit', limit);
-    if (key != null) {
+    if (key && key != null) {
       params = params.append('key', key);
     }
     return this.http.get(this.GET_STATISTICS_HISTORY, { params: params }).pipe(
