@@ -139,6 +139,7 @@ export class UserProfileComponent implements OnInit {
     this.authService.clearAllSessions(id).
       subscribe(
         () => {
+          sessionStorage.clear();
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
           this.router.navigate(['/login'], {replaceUrl : true});
