@@ -8,7 +8,7 @@ Use `./make_deb` script to create debian package, the package will be placed in 
 Operating System Type: Linux
 The package root directory is         : /home/foglamp/foglamp-gui
 The FogLAMP gui version is            : 1.3.0
-The Package will be built in          : /home/foglamp/foglamp-gui/packages/build
+The package will be built in          : /home/foglamp/foglamp-gui/packages/build
 The package name is                   : foglamp-gui-1.3.0
 
 INFO:  Cleaning the build and dependencies ...
