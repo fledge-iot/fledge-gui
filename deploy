@@ -32,7 +32,8 @@ CWARN="${CPFX}0;33m"
 echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
 # Variables
-FOGLAMP_GUI_VER=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+FOGLAMP_GUI_VER=${__version__}
 
 machine_details() {
   # OS Type
