@@ -133,7 +133,7 @@ install () {
 ############################################################
 # Usage text for this script
 ############################################################
-USAGE="$__version__
+USAGE="${__version__}
 
 DESCRIPTION
   This script installs foglamp-gui with nginx-light
@@ -148,8 +148,8 @@ OPTIONS
   -L, --local               Deploy on local with an internal call to ./build
 
 
-EXAMPLES
-  ./$0 --version"
+EXAMPLE
+  $0 --version"
 
 ############################################################
 # Execute the command specified in $OPTION

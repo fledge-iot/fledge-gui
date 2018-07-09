@@ -34,7 +34,7 @@ CWARN="${CPFX}0;33m"
 ############################################################
 # Usage text for this script
 ############################################################
-USAGE="$__version__
+USAGE="${__version__}
 
 DESCRIPTION
   This script build foglamp-gui distribution artifacts 
@@ -49,8 +49,8 @@ OPTIONS
   --clean-start  Clean the build dependencies and start
 
 
-EXAMPLES
-  ./$0 --version"
+EXAMPLE
+  $0 --version"
 
 #########################
 # functions def
