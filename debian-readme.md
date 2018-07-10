@@ -1,7 +1,7 @@
 
 #### Create debian package
 
-Use `./make_deb` script to create debian package, the package will be placed in `packages/Debian/build/`
+Use `./make_deb` script to create debian package, the package will be placed in `packages/build/`
 
 ```
  $ ./make_deb
