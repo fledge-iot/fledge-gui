@@ -27,13 +27,18 @@ With the SD card connected. In the root of the SD card create a new file named: 
 In the file, Add:
 
 ```
+
 country=US
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 
-network={ 
-    scan_ssid=1 
-    ssid="*NAME*" 
-    psk="*PASSWORD*" 
-    }
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+    ssid="your_real_wifi_ssid"
+    scan_ssid=1
+    psk="your_real_password"
+    key_mgmt=WPA-PSK
+}
+
 ```
 
 * country should be your country code. Change if you are outside of US
