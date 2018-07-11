@@ -1,0 +1,80 @@
+<div class="modal" id="service_discovery_modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Discover FogLAMP Instances</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="columns">
+        <div class="column is-4">
+          <label class="label">&nbsp;</label>
+          <div class="select is-fullwidth">
+            <select id="discovery_protocol" [ngModel]="discoveryProtocol">
+              <option>http</option>
+              <option>https</option>
+            </select>
+          </div>
+        </div>
+        <div class="column">
+          <label class="label is-fullwidth">Host</label>
+          <input id="discovery_host" class="input" [formControl]="discoveryHostControl" type="text" placeholder="localhost" [ngModel]="discoveryHost"
+            required>
+          <span class="help is-danger" *ngIf="discoveryHostControl.invalid">Host can't left blank</span>
+        </div>
+        <div class="column">
+          <label class="label is-fullwidth">Port</label>
+          <input id='discovery_port' class="input" type="number" maxlength="4" placeholder="3000" [formControl]="discoveryPortControl"
+            [ngModel]="discoveryPort" required>
+          <span class="help is-danger" *ngIf="discoveryPortControl.invalid">Port can't left blank</span>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column">
+          <div class="field">
+            <button [ngClass]="{'is-loading': isLoading}" [disabled]="discoveryHostControl.invalid || discoveryPortControl.invalid" class="button is-primary is-pulled-left is-small"
+              (click)="setServiceDiscoveryURL()">Discover</button>
+          </div>
+        </div>
+      </div>
+      &nbsp;
+      <div class="columns">
+        <div *ngIf="(!connectedServiceStatus || !discoveryServiceStatus)" class="column hidden" id="warning">
+          <div class="message is-warning ">
+            <div class="message-header">
+              <p>Warning</p>
+              <button class="delete" aria-label="delete" (click)="toggleMessage(true)"></button>
+            </div>
+            <div class="message-body" [innerHTML]='message'>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="columns">
+        <div *ngFor="let d of discoveredServices" class="column">
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title">
+                {{d.key}}
+              </p>
+              <a class="card-header-icon">
+                <button [ngClass]="{'is-primary':isServiceConnected(d), 'is-info': !isServiceConnected(d)}" class="button is-small" (click)="connectService(d)"
+                  [disabled]="isServiceConnected(d) ? 'disabled' : null">
+                  {{!isServiceConnected(d) ? 'Connect' : 'Connected'}}
+                </button>
+              </a>
+            </header>
+            <div class="card-content">
+              <div class="content">
+                <b>Service Port:</b> {{d.port}}
+              </div>
+              <div class="content">
+                <b>IP Address:</b> {{d.address}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,81 +1,68 @@
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { HttpsRequestInterceptor } from './services/http.request.interceptor';
+import { BrowserModule } from '@angular/platform-browser';
+import { SidebarModule } from 'ng-sidebar';
+import { NgProgressModule } from 'ngx-progressbar';
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
-
-import { AuthGuard, UserGuard } from './guards/index';
-import { AlertComponent } from './directives/index';
+import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog.module';
+import { AlertComponent } from './components/common/alert/alert.component';
+import { ChartModule } from './components/common/chart';
+import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
+import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
+import { CertificateModule } from './components/core/certificate/certificate.module';
+import { DashboardModule } from './components/core/dashboard/dashboard.module';
+import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
+import { ServicesHealthComponent } from './components/core/services-health';
+import { AddServiceComponent } from './components/core/services-health/add-service/add-service.component';
+import { SettingsComponent } from './components/core/settings';
+import { SupportComponent } from './components/core/support/support.component';
+import { FooterComponent } from './components/layout/footer';
+import { LoginComponent } from './components/layout/login';
+import { NavbarComponent } from './components/layout/navbar/navbar.component';
+import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
+import { InputTrimDirective } from './directives/input-trim.directive';
+import { NumberOnlyDirective } from './directives/number-only.directive';
+import { AuthCheckGuard } from './guards';
+import { PipesModule } from './pipes/pipes.module';
 import {
   AlertService,
-  AuthService,
-  AssetsService,
   AuditService,
+  AuthService,
+  BackupRestoreService,
+  CertificateService,
   ConfigurationService,
-  StatisticsService,
-  ServicesHealthService,
-  SchedulesService,
   ConnectedServiceStatus,
   DiscoveryService,
-  UserService,
-  CertificateService,
+  PingService,
+  SchedulesService,
+  ServicesHealthService,
   SupportService,
   SystemLogService,
-  BackupRestoreService,
-  PingService
-} from './services/index';
-
-import { LoginComponent } from './login/index';
-import { FooterComponent } from './footer/index';
-
-import { KeysPipe, FilterPipe, MomentDatePipe } from './pipes/index';
-import { DashboardComponent } from './dashboard/index';
-import { ConfigurationManagerComponent } from '../app/configuration-manager/index';
-
-import { ChartModule } from './chart/index';
-import { ScheduledProcessComponent } from '../app/scheduler/scheduled-process/index';
-import { SideMenuComponent } from '../app/side-menu/side-menu.component';
-import { NavbarComponent } from '../app/navbar/navbar.component';
-import { AssetsComponent } from '../app/asset-readings/assets/assets.component';
-import { AuditLogComponent } from '../app/audit-log/audit-log.component';
-import { CertificateStoreComponent } from '../app/certificate/certificate-store/certificate-store.component';
-import { NumberInputDebounceComponent } from '../app/number-input-debounce/number-input-debounce.component';
-
-import { NgxMaskModule } from 'ngx-mask';
-import { ModalComponent } from './modal/modal.component';
-import { UploadCertificateComponent } from './certificate/upload-certificate/upload-certificate.component';
-import { UpdateModalComponent } from './update-modal/update-modal.component';
-import { SidebarModule } from 'ng-sidebar';
-import { SettingsComponent } from './settings/index';
-import { PaginationComponent } from './pagination/index';
-import { ServicesHealthComponent } from './services-health/index';
-import { CreateScheduleComponent } from './scheduler/create-schedule/create-schedule.component';
-import { ListTasksComponent } from './scheduler/list-tasks/list-tasks.component';
-import { AssetSummaryComponent } from './asset-readings/asset-summary/asset-summary.component';
-import { ChartModalComponent } from './asset-readings/chart-modal/chart-modal.component';
-import { AssetSummaryService } from './asset-readings/asset-summary/asset-summary-service';
-import { NumberOnlyDirective } from './directives/number-only.directive';
-import { InputTrimDirective } from './directives/input-trim.directive';
-import { NgProgressModule } from 'ngx-progressbar';
-import { ServiceDiscoveryComponent } from './service-discovery/service-discovery.component';
-
-import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
-import { ShutdownModalComponent } from './shut-down/shutdown-modal.component';
+  UserService,
+} from './services';
+import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
-import { UserManagementComponent } from './user-management/user-management.component';
-import { CreateUserComponent } from './user-management/create-user/create-user.component';
 
-import { EqualValidator } from './directives/index';
-import { UpdateUserComponent } from './user-management/update-user/update-user.component';
-import { UserProfileComponent } from './user-management/user-profile/user-profile.component';
-import { SupportComponent } from './support/support.component';
-import { SystemLogComponent } from './system-log/system-log.component';
-import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
-import { AddConfigItemComponent } from './configuration-manager/add-config-item/add-config-item.component';
-import { ResetPasswordComponent } from './user-management/reset-password/reset-password.component';
+import { APP_INITIALIZER } from '@angular/core';
+
+export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
+  return () => healthService.pingService()
+    .then((data) => {
+      sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
+      sharedService.isServiceUp.next(true);
+    })
+    .catch(error => {
+      console.log('error: ', error);
+      if (error.status === 403) {
+        sharedService.isServiceUp.next(true);
+      } else {
+        sharedService.isServiceUp.next(false);
+      }
+    });
+}
 
 @NgModule({
   imports: [
@@ -85,66 +72,44 @@ import { ResetPasswordComponent } from './user-management/reset-password/reset-p
     HttpClientModule,
     routing,
     ChartModule,
-    NgxMaskModule,
     SidebarModule.forRoot(),
     NgProgressModule,
-    AngularMultiSelectModule
+    PipesModule,
+    AlertDialogModule,
+    CertificateModule,
+    DashboardModule
   ],
   declarations: [
     AppComponent,
     LoginComponent,
     AlertComponent,
     FooterComponent,
-    KeysPipe,
-    FilterPipe,
-    MomentDatePipe,
-    DashboardComponent,
-    ConfigurationManagerComponent,
-    ScheduledProcessComponent,
     SideMenuComponent,
     NavbarComponent,
-    AssetsComponent,
-    AuditLogComponent,
-    CertificateStoreComponent,
-    NumberInputDebounceComponent,
-    ModalComponent,
-    UploadCertificateComponent,
-    UpdateModalComponent,
     SettingsComponent,
     ServicesHealthComponent,
-    PaginationComponent,
-    CreateScheduleComponent,
-    ListTasksComponent,
-    AssetSummaryComponent,
-    ChartModalComponent,
     NumberOnlyDirective,
     InputTrimDirective,
     ServiceDiscoveryComponent,
     ShutdownModalComponent,
-    UserManagementComponent,
-    CreateUserComponent,
-    EqualValidator,
-    UpdateUserComponent,
-    UserProfileComponent,
     SupportComponent,
-    SystemLogComponent,
     BackupRestoreComponent,
-    AddConfigItemComponent,
-    ResetPasswordComponent
+    AddServiceComponent
   ],
   providers: [
-    AuthGuard,
-    UserGuard,
+    AuthCheckGuard,
     AlertService,
     AuthService,
     ConfigurationService,
-    StatisticsService,
-    AssetsService,
     AuditService,
     SystemLogService,
-    SchedulesService,
     ServicesHealthService,
-    AssetSummaryService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: pingServiceFactory,
+      deps: [ServicesHealthService, SharedService],
+      multi: true
+    },
     ConnectedServiceStatus,
     DiscoveryService,
     SharedService,
@@ -152,6 +117,7 @@ import { ResetPasswordComponent } from './user-management/reset-password/reset-p
     SupportService,
     BackupRestoreService,
     PingService,
+    SchedulesService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,
@@ -161,4 +127,5 @@ import { ResetPasswordComponent } from './user-management/reset-password/reset-p
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

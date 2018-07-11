@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { throwError as observableThrowError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
 import { environment } from '../../environments/environment';
 
 @Injectable()
@@ -17,9 +19,9 @@ export class AuthService {
    * @param password  User Password
    */
   login(username: string, password: string) {
-    return this.http.post(this.LOGIN_URL, JSON.stringify({ username: username, password: password }))
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.post(this.LOGIN_URL, JSON.stringify({ username: username, password: password })).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
@@ -27,17 +29,17 @@ export class AuthService {
     * @param string user id
     */
   clearAllSessions(id) {
-    return this.http.put(this.LOGOUT_URL + id + "/logout", null)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.put(this.LOGOUT_URL + id + '/logout', null).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
    *  logout user
    */
   logout() {
-    return this.http.put(this.LOGOUT_URL + "logout", null)
-      .map(response => response)
-      .catch((error: Response) => Observable.throw(error));
+    return this.http.put(this.LOGOUT_URL + 'logout', null).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 }

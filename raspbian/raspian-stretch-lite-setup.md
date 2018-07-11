@@ -79,11 +79,11 @@ After restart you will see the new locale. Run `locale` to view the set locales.
 
 ### Setting up FogLAMP
 
-From your dev machine, `scp raspbian/deploy-core.sh pi@<IP>:/home/pi/`
+From your dev machine, `scp raspbian/deploy-core pi@<IP>:/home/pi/`
 
 SSH to Raspbian machine and:
 
-Run `./deploy-core.sh` inside rasperry pi.
+Run `./deploy-core` inside raspberry pi.
 
 
 ```
@@ -106,13 +106,13 @@ make
 
 `git clone https://github.com/foglamp/foglamp-gui.git` 
 
-> default will be on develop branch
+> default will be the `develop` branch
 
 `cd foglamp-gui/`
 
-run `./build.sh`
+run `./build`
 
-**Copy compressed build file and deploy script to Raspbian**
+**Copy compressed build file and deploy script to (raspberry pi) Raspbian**
 
 `scp foglamp-gui-1.2.0.tar.gz pi@1<IP>:/home/pi/`
 
@@ -123,17 +123,17 @@ run `./build.sh`
 > foglamp-gui-1.2.0.tar.gz    100%  460KB   1.7MB/s   00:00
 
 
-`scp deploy.sh pi@<IP>:/home/pi/`
+`scp deploy pi@<IP>:/home/pi/`
 
-> scp deploy.sh pi@192.168.0.11:/home/pi/
+> scp deploy pi@192.168.0.11:/home/pi/
 
 > pi@192.168.0.11's password:
 
-> deploy.sh                   100% 4633   133.5KB/s   00:00
+> deploy                 100% 4633   133.5KB/s   00:00
 
 
 **SSH to Raspbian machine and do:**
 
 `cd /home/pi/`
 
-`./deploy.sh`
+`./deploy`

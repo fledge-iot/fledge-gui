@@ -1,0 +1,61 @@
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <div class="navbar-burger" (click)="toggleClick()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <a class="navbar-item is-flex-mobile is-hidden-tablet" href="/">
+      <b>FogLAMP</b>
+    </a>
+    <a class="navbar-item is-hidden-mobile is-flex-tablet" href="/">
+      <b>FogLAMP Management</b>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item">
+        <div class="tooltip-inner tags has-addons tooltip is-tooltip-right" [attr.data-tooltip]='ping_info.stats'>
+          <span class="tag" [ngClass]="applyServiceStatusCustomCss(ping_info)">
+            <i [ngClass]="applyServiceStatusIconCss(ping_info)" aria-hidden="true"></i>
+          </span>
+          <span class="tag is-hidden-mobile">{{ping_info.service_status}}</span>
+          <button (click)="pingService(true)" class="tag button is-small">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+          </button>
+        </div>
+      </a>
+    </div>
+    <div class="navbar-end">
+      <div *ngIf='isUserLoggedIn' class="dropdown is-right" id="dropdown-box" (click)="toggleDropdown()">
+        <div class="dropdown-trigger">
+          <a class="navbar-link">
+            <b class="has-text-grey"> &nbsp;{{userName}}&nbsp; </b>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down is-hidden-desktop" aria-hidden="true"></i>
+            </span>
+          </a>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item">
+              <i class="fa fa-user" aria-hidden="true"></i>&nbsp; Profile
+            </a>
+            <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item">
+              <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp; Log Out
+            </a>
+            <a *ngIf="ping_info.is_alive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
+              <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp; Shut Down
+            </a>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="ping_info.is_alive && isAuthOptional" class="icon has-text-danger is-large">
+        <a class=" tooltip is-tooltip-left" data-tooltip="Shut Down" (click)="openModal()">
+          <i class="fa fa-power-off" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <app-shutdown-modal (shutdown)='shutdown()' [shutDownData]='shutDownData'></app-shutdown-modal>
+</nav>

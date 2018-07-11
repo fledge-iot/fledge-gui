@@ -6,7 +6,7 @@
         <app-side-menu (toggle)="toggleSidebar()"></app-side-menu>
     </ng-sidebar>
     <div ng-sidebar-content [ngClass]="{'column is-offset-2 is-10 fixed-overflow':!isLoginView}">
-        <alert></alert>
+        <app-alert></app-alert>
         <router-outlet></router-outlet>
         <app-footer></app-footer>
     </div>

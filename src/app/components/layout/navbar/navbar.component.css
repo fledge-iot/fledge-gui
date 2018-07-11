@@ -1,0 +1,37 @@
+.navbar-item {
+    display: flex;
+}
+
+.navbar,
+.navbar-menu,
+.navbar-start,
+.navbar-end {
+    align-items: stretch;
+    display: flex;
+    padding: 0;
+}
+
+@media screen and (max-width: 1023px) {
+.navbar-menu.is-active {
+    display: flex !important;
+    padding: 0;
+}
+}
+
+.navbar-menu{
+    flex-grow: 1;
+    flex-shrink: 0;
+    overflow: visible !important;
+}
+.navbar-start{
+    justify-content: flex-start;
+    margin-right: auto;
+}
+.navbar-end{
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+.fa-power-off {
+  color: rgb(178, 34, 34);
+}

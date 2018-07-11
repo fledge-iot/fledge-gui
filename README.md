@@ -19,7 +19,7 @@ Run `yarn start` or `yarn start --host [ip_address of host machine]` (to allow a
 
 
 ## Production Build & Deployment
-Run `./build.sh` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `./build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 > It uses the `-prod` flag with `ng` for a production build.
 
@@ -54,15 +54,17 @@ See details [here](windows-nginx-deployment-guide.md)
 
 > Make sure to fix `include` directive and `server root` in `nginx.conf`; unless you want to use default.
 
+## Creating and Installing Debian Package
+[Debian packaging and usage](debian-readme.md)
 
 ## Running using Docker 
-[instructions](docker-readme.md)
+[Docker installation and using docker-compose](docker-readme.md)
 
 ## Supported/Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
 Safari (mac)  | 11.x   | latest 1
-Chrome  |66.0.x (64-bit) | latest 2 
+Chrome  |67.0.x (64-bit) | latest 2 
 Firefox |60.x (64-bit) | latest 2
 
 

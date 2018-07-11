@@ -1,4 +1,4 @@
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.8.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.7
 
 ## Code scaffolding
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
@@ -15,6 +15,8 @@ Run `yarn test` to execute the unit tests via [Karma](https://karma-runner.githu
 ## Running end-to-end tests
 Run `yarn e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
+Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; Open `report.html` in your favorite browser!
+
 > Before running the tests make sure app is able to communicate with the FogLAMP REST Server API. Put the REST API info in `e2e/environment.ts`.
 
 ## REST API URL Configuration:
@@ -30,10 +32,10 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core:
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 4.4.6         |        6.0.0          | MIT 
- Angular CLI  | 1.6.8         |        6.0.1          | MIT 
- TypeScript   | 2.3.4         |        2.8.3          | Apache 2.0
- rxjs         | 5.5.10         |        6.1.0          | Apache 2.0
+ Angular      | 6.0.3         |        6.0.3          | MIT 
+ Angular CLI  | 6.0.7         |        6.0.7          | MIT 
+ TypeScript   | 2.7.2         |        2.9            | Apache 2.0
+ rxjs         | 6.2.0         |        6.2.0          | Apache 2.0
  Bulma css    | 0.7.1         |        0.7.1          | MIT
 
 #### Dev:
@@ -42,11 +44,11 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 chart.js         |  2.7.2        |        2.7.2          | MIT 
 core-js          |  2.5.6        |        2.5.6          | MIT 
 lodash-es        |  4.17.10      |        4.17.10        | MIT
-ngx-mask         |  1.0.3        |        1.0.3          | MIT 
 ng-sidebar       |  6.0.4        |        7.1.0          | MIT 
 moment           |  2.22.1       |        2.22.1         | MIT
 ngx-progressbar  |  2.1.1        |        2.1.1          | MIT
 angular2-multiselect-dropdown | 2.7.0 |   2.9.0          | MIT
+protractor-beautiful-reporter |  1.2.1       |  1.2.1                | MIT
 
 
 #### Why Yarn?

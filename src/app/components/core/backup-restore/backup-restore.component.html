@@ -1,0 +1,46 @@
+<div class="container is-fluid">
+  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+  </ng-progress>
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title">
+        Backup &nbsp;
+        <button (click)="getBackup()" class="button is-small">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button>
+      </p>
+      <div>
+        <a class="button is-light" (click)="openModal('', '', 'Are you sure, You want to create a backup', 'createBackup')">Request Backup &nbsp;
+          <i class="fa fa-file" aria-hidden="true"></i>
+        </a>
+      </div>
+    </header>
+    <div class="card-content">
+      <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Date &amp; Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let backup of backupData">
+            <td>{{ backup.date }}</td>
+            <td>{{ backup.status }}</td>
+            <td>
+              <a class="button is-text" (click)="openModal(backup.id, backup.date, 'ATTENTION! This may result in a bad state of the system for current version. Are you sure, You want to restore the backup', 'restoreBackup')">restore
+              </a>
+            </td>
+            <td>
+              <a class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure, You want to delete the backup', 'deleteBackup')">delete
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <app-alert-dialog (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)' (deleteBackup)='deleteBackup($event)'
+    [childData]='childData'></app-alert-dialog>
+</div>

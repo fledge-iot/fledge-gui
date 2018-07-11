@@ -1,4 +1,5 @@
 export const POLLING_INTERVAL = 5000;   // milliseconds
+export const MAX_INT_SIZE = 2147483647;
 
 export default class Utils {
 

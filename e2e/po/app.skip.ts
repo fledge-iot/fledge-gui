@@ -10,7 +10,6 @@ export class SkipLogin {
 
   setUpInstance() {
     browser.waitForAngularEnabled(false);
-    element(by.css('app-login .has-text-grey a:nth-child(2)')).click();
     element(by.css('select option[value="http"]')).click();
     element(by.id('host')).clear();
     element(by.id('host')).sendKeys(environment.HOST);
@@ -33,11 +32,6 @@ export class SkipLogin {
   getLoginButton() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-login form button.is-info')).getText();
-  }
-
-  clickSkip() {
-    browser.ignoreSynchronization = true;
-    element(by.css('app-login .is-grouped div:nth-child(1) button')).click();
   }
 
   getCountOfSelectedGraph() {
@@ -102,7 +96,7 @@ export class SkipLogin {
 
   getAssetSummaryInputTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('#summary_modal number-input-debounce > input')).count();
+    return element.all(by.css('#summary_modal app-number-input-debounce > input')).count();
   }
 
   getAssetSummaryColNames() {
@@ -137,7 +131,7 @@ export class SkipLogin {
 
   getAssetChartInputTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('#chart_modal .modal-card number-input-debounce input')).count();
+    return element.all(by.css('#chart_modal .modal-card app-number-input-debounce input')).count();
   }
 
   closeChartModal() {
@@ -275,7 +269,7 @@ export class SkipLogin {
 
   getSchedulesRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(1) .fa.fa-refresh')).isDisplayed();
+    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-refresh')).isDisplayed();
   }
 
   getCreateScheduleButton() {
@@ -319,7 +313,7 @@ export class SkipLogin {
 
   isUpdatedSchedulePresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(1) .card-content')).getText();
+    return element(by.css('app-scheduled-process > div:nth-child(2) .card-content')).getText();
   }
 
   disableAndVerifySchedule() {
@@ -365,6 +359,11 @@ export class SkipLogin {
     return element(by.css('app-services-health .title.is-5')).getText();
   }
 
+  getAddServiceButton() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-services-health #add_service.button')).getText();
+  }
+
   getServiceStatusRefreshButton() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-services-health header button .fa.fa-refresh')).isDisplayed();
@@ -375,11 +374,11 @@ export class SkipLogin {
     return element(by.css('app-services-health table thead tr')).getText();
   }
 
-  httpSouthServiceStatus() {
+  coreServiceStatus() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('#HTTP_SOUTH td:nth-child(2) div span'))), 4000);
-    return element(by.css('#HTTP_SOUTH td:nth-child(2) div span')).getText();
+    browser.wait(this.EC.visibilityOf(element(by.css('#FogLAMP_Core td:nth-child(2) div span'))), 4000);
+    return element(by.css('#FogLAMP_Core td:nth-child(2) div span')).getText();
   }
 
   shutdownHttpSouth() {
@@ -396,34 +395,34 @@ export class SkipLogin {
 
   getCertificateStoreTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store > div > div > header > p')).getText();
+    return element(by.css('app-cert-store > div > div > header > p')).getText();
   }
 
   getCertificateStoreRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store button i')).isDisplayed();
+    return element(by.css('app-cert-store button i')).isDisplayed();
   }
 
   getCertificateStoreColNames() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store table thead tr')).getText();
+    return element(by.css('app-cert-store table thead tr')).getText();
   }
 
   getCertificateStoreImport() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store header a')).getText();
+    return element(by.css('app-cert-store header a')).getText();
   }
 
   isKeyPresent() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
-    return element(by.css('cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
+    browser.wait(this.EC.visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
   }
 
   isCertificatePresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
   }
 
   navToBackupRestore() {
@@ -506,24 +505,18 @@ export class SkipLogin {
     return element.all(by.css('app-settings #set-url-restart-btn'));
   }
 
-  getLoginTextButton() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings #login-btn'));
-  }
-
   getTestConnectionTextButton() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('app-settings #test-connection-btn'));
   }
 
+  getDiscoverFoglampButton() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-settings #discover-foglamp-btn'));
+  }
+
   getPingDropdown() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('app-settings header div.select.is-small')).count();
-  }
-
-  goToLoginPage() {
-    browser.ignoreSynchronization = true;
-    element.all(by.css('#dropdown-box > div.dropdown-trigger > a')).click();
-    element.all(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
   }
 }

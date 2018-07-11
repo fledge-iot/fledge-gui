@@ -1,0 +1,47 @@
+<div id="add_service_modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-5">Add Service</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false, f)"></button>
+    </header>
+    <section class="modal-card-body">
+      <form name="form" id="ngForm" #f="ngForm" (ngSubmit)=" f.valid && addService(f)" novalidate>
+        <div class="columns is-mobile">
+          <div class="column">
+            <label class="label">Name</label>
+            <input type="text" class="input" name="name" placeholder="name" ngModel #name="ngModel" trim="blur" required/>
+            <small *ngIf="f.submitted && !name.valid" class="help is-danger level-left">Service name is required</small>
+          </div>
+          <div class="column">
+            <label class="label">Enabled</label>
+            <div class="control">
+              <input type="checkbox" name="enabled" [(ngModel)]="isEnabled" #enabled="ngModel" >
+            </div>
+          </div>
+        </div>
+        <div class="columns is-mobile">
+          <div class="column">
+            <label class="label">Type</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select name="type" [(ngModel)]="selectedType" #type="ngModel">
+                  <option value='north'> North</option>
+                  <option value='south'> South</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            <label class="label">Plugin</label>
+            <input class="input" type='text' name="plugin" placeholder="plugin" ngModel #plugin="ngModel" trim="blur" required>
+            <small *ngIf="f.submitted && !plugin.valid" class="help is-danger level-left">Plugin name is required</small>
+          </div>
+        </div>
+      </form>
+    </section>
+    <footer class="modal-card-foot">
+      <button id="save" type="submit" form="ngForm" class="button is-success">Save</button>
+    </footer>
+  </div>
+</div>

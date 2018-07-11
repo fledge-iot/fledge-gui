@@ -2,7 +2,6 @@
 
 # compiled output
 /dist
-/tmp
 /out-tsc
 *.tar.gz
 
@@ -38,7 +37,11 @@ yarn-error.log
 # e2e
 /e2e/*.js
 /e2e/*.map
+/e2e-test-report
 
 # System Files
 .DS_Store
 Thumbs.db
+
+# Debian build packages
+packages/build/
