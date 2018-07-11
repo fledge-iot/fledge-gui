@@ -46,5 +46,13 @@ export class BackupRestoreService {
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
+
+
+  public async downloadBackup(id): Promise<Blob> {
+    const file = await this.http.get<Blob>(
+      this.BACKUP_URL + '/' + id + '/download',
+      { responseType: 'blob' as 'json' }).toPromise();
+    return file;
+  }
 }
 
