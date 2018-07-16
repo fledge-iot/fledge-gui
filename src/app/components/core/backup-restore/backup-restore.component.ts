@@ -123,4 +123,16 @@ export class BackupRestoreComponent implements OnInit {
         }
       );
   }
+
+  public async downloadBackup(backup): Promise<void> {
+    const blob = await this.backupRestoreService.downloadBackup(backup.id);
+    const url = window.URL.createObjectURL(blob);
+    // create a custom anchor tag
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'foglamp_backup_' + backup.date;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }
