@@ -5,6 +5,8 @@ import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.com
 import { BackupRestoreService } from '../../../services/backup-restore.service';
 import { AlertService } from '../../../services';
 
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-backup-restore',
   templateUrl: './backup-restore.component.html',
@@ -130,7 +132,8 @@ export class BackupRestoreComponent implements OnInit {
     // create a custom anchor tag
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'foglamp_backup_' + backup.date;
+    const date = moment(backup.date).format('YYYY_MM_DD_HH_mm_ss');
+    a.download = 'foglamp_backup_' + date + '.tar.gz';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
