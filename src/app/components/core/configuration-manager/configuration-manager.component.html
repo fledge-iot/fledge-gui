@@ -8,61 +8,32 @@
     <div class="column is-one-quarter">
       <nav class="panel">
         <div class="panel-heading">
-            <div class="dropdown is-hoverable">
-                <div class="dropdown-trigger">
-                  <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                    <span>General</span>
-                    <span class="icon is-small">
-                      <i class="fas fa-angle-down" aria-hidden="true"></i>
-                    </span>
-                  </button>
-                </div>
-                <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                  <div class="dropdown-content">
-                    <a class="dropdown-item">
-                      Advanced
-                    </a>
-                    <a href="#" class="dropdown-item is-active">
-                      South
-                    </a>
-                    <a href="#" class="dropdown-item">
-                      North
-                    </a>
-                    <a href="#" class="dropdown-item">
-                      Processes
-                    </a>
-    
-                  </div>
-                </div>
-              </div>
-            </div>
-        <div class="panel-block">
-          <p class="control has-icons-left">
-            <input class="input is-small" type="text" placeholder="search">
-            <span class="icon is-small is-left">
-              <i class="fas fa-search" aria-hidden="true"></i>
-            </span>
-          </p>
-        </div>
-     
-        <a class="panel-block">
-            <input type="checkbox" checked>
-          <span class="panel-icon">
-            <i class="fas fa-book" aria-hidden="true"></i>
-          </span>
-          Service
-        </a>
-        <a class="panel-block">
-            <input type="checkbox">
-          <span class="panel-icon">
-            <i class="fas fa-book" aria-hidden="true"></i>
-          </span>
-          REST API
-        </a>
-        <div class="panel-block">
-          <button class="button is-text is-fullwidth">
-            reset all filters
-          </button>
+          <div class="select is-fullwidth is-small">
+            <select (change)="getChildren($event.target.value)">
+              <option *ngFor="let rootCategory of rootCategories" [selected]="rootCategory.key == 'General'" [value]='rootCategory.key'>{{ rootCategory.key }}</option>
+            </select>
+          </div>
+          <div class="panel-block">
+            <!-- <p class="control has-icons-left">
+              <input class="input is-small" type="text" placeholder="search">
+              <span class="icon is-small is-left">
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </span>
+            </p> -->
+          </div>
+          <a *ngFor="let childCategory of childCategories" class="panel-block">
+            <label class="radio">
+              <small>
+                <input type="radio" name="category" (change)="getCategory(childCategory.key, childCategory.description)" [checked]="childCategory.key == 'rest_api'"
+                  [value]="childCategory.key"> {{childCategory.key}}
+              </small>
+            </label>
+          </a>
+          <div class="panel-block">
+            <button class="button is-text is-fullwidth" (click)="getRootCategories(true)">
+              reset all filters
+            </button>
+          </div>
         </div>
       </nav>
     </div>
@@ -73,7 +44,7 @@
             <div class="media">
               <div class="media-content">
                 <p class="subtitle is-6">{{category.description}}
-                  <a class="button is-small" (click)="this.getCategories()">
+                  <a class="button is-small" (click)="this.getCategory(category.key, category.description)">
                     <span class="icon is-small">
                       <i class="fa fa-refresh"></i>
                     </span>
@@ -130,6 +101,5 @@
       </div>
     </div>
   </div>
-
   <app-add-config-item (notify)='onNotify()'></app-add-config-item>
 </div>

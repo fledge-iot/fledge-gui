@@ -10,9 +10,10 @@ import { AddConfigItemComponent } from './add-config-item/add-config-item.compon
 })
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
+  public rootCategories = [];
+  public childCategories = [];
   public JSON;
   public addConfigItem: any;
-  public isCategoryData = false;
 
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
 
@@ -23,24 +24,45 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getCategories();
-    this.isCategoryData = true;
+    this.getRootCategories(true);
   }
 
-  public getCategories(): void {
-    if (this.isCategoryData === true) {
-      this.categoryData = [];
-    }
+  public getRootCategories(onLoadingPage = false) {
+    this.rootCategories = [];
+    this.configService.getRootCategories().
+      subscribe(
+        (data) => {
+          data['categories'].forEach(element => {
+            this.rootCategories.push({ key: element.key });
+          });
+          if (onLoadingPage === true) {
+            this.getChildren('General', true);
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public getChildren(category_name, onLoadingPage = false) {
     /** request started */
     this.ngProgress.start();
-    this.configService.getCategories().
+    this.childCategories = [];
+    this.configService.getChildren(category_name).
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
           data['categories'].forEach(element => {
-            this.getCategory(element.key, element.description);
+            this.childCategories.push({ key: element.key, description: element.description });
           });
+          if (onLoadingPage === true) {
+            this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
+          }
         },
         error => {
           /** request completed */
@@ -54,6 +76,7 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   private getCategory(category_name: string, category_desc: string): void {
+    this.categoryData = [];
     const categoryValues = [];
     this.configService.getCategory(category_name).
       subscribe(
@@ -117,7 +140,7 @@ export class ConfigurationManagerComponent implements OnInit {
   * To reload categories after adding a new config item for a category
   */
   onNotify() {
-    this.getCategories();
+    this.getRootCategories(true);
   }
 
   /**

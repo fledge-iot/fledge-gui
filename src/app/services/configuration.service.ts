@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -12,20 +12,31 @@ export class ConfigurationService {
     constructor(private http: HttpClient) { }
 
     /**
-     *   GET  | /foglamp/category
+     *   GET  | /foglamp/category/{category_name}
      */
-    getCategories() {
-        return this.http.get(this.CATEGORY_URL).pipe(
+    getCategory(category_name) {
+        return this.http.get(this.CATEGORY_URL + '/' + category_name).pipe(
             map(response => response),
             catchError((error: Response) => observableThrowError(error)));
     }
 
     /**
-     *   GET  | /foglamp/category/{category_name}
+     *   GET  | /foglamp/category/{category_name}/children
      */
-    getCategory(category_name) {
-        const categoryName = encodeURIComponent(category_name);
-        return this.http.get(this.CATEGORY_URL + '/' + categoryName).pipe(
+    getChildren(category_name) {
+        return this.http.get(this.CATEGORY_URL + '/' + category_name + '/children').pipe(
+            map(response => response),
+            catchError((error: Response) => observableThrowError(error)));
+    }
+
+    /**
+     *   GET  | /foglamp/category
+     *   @param root boolean type
+     */
+    getRootCategories() {
+        let params = new HttpParams();
+        params = params.set('root', 'true');
+        return this.http.get(this.CATEGORY_URL, { params: params }).pipe(
             map(response => response),
             catchError((error: Response) => observableThrowError(error)));
     }
@@ -34,12 +45,11 @@ export class ConfigurationService {
     *  PUT  | /foglamp/category/{category_name}/{config_item}
     */
     saveConfigItem(category_name: string, config_item: string, value: string, type: string) {
-        const categoryName = encodeURIComponent(category_name);
         let body = JSON.stringify({ 'value': value });
         if (type.toUpperCase() === 'JSON') {
             body = JSON.stringify({ 'value': JSON.parse(value) });
         }
-        return this.http.put(this.CATEGORY_URL + '/' + categoryName + '/' + config_item, body).pipe(
+        return this.http.put(this.CATEGORY_URL + '/' + category_name + '/' + config_item, body).pipe(
             map(response => response),
             catchError((error: Response) => observableThrowError(error)));
     }
@@ -48,8 +58,7 @@ export class ConfigurationService {
     *  POST  | /foglamp/category/{category_name}/{config_item}
     */
     addNewConfigItem(configItemData, category_name: string, config_item: string) {
-        const categoryName = encodeURIComponent(category_name);
-        return this.http.post(this.CATEGORY_URL + '/' + categoryName + '/' + config_item, configItemData).pipe(
+        return this.http.post(this.CATEGORY_URL + '/' + category_name + '/' + config_item, configItemData).pipe(
             map(response => response),
             catchError((error: Response) => observableThrowError(error)));
     }
