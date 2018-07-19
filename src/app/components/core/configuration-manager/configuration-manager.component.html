@@ -25,7 +25,7 @@
         <div *ngFor="let childCategory of childCategories; let i = index;" class="panel-block">
           <label class="checkbox">
             <small>
-              <input type="checkbox" (change)="getCategory(childCategory.key, childCategory.description, $event)" [checked]="i == '0'"
+              <input type="checkbox" (change)="getCategory(childCategory.key, childCategory.description, $event); getSelectedIndex(i, childCategory.key)" [checked] = "childCategory.is_selected == 'true'"
                 [value]="childCategory.key"> {{childCategory.key}}
             </small>
           </label>

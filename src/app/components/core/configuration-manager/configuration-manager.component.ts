@@ -16,6 +16,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public JSON;
   public addConfigItem: any;
   public selectedRootCategory = 'General';
+  public selectedChildIndex = [];
 
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
 
@@ -62,9 +63,10 @@ export class ConfigurationManagerComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           data['categories'].forEach(element => {
-            this.childCategories.push({ key: element.key, description: element.description });
+            this.childCategories.push({ key: element.key, description: element.description, is_selected: 'false' });
           });
           if (onLoadingPage === true) {
+            this.childCategories[0].is_selected = 'true';
             this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
           }
         },
@@ -124,6 +126,25 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
+  public getSelectedIndex (index, key) {
+    this.selectedChildIndex.push(index);
+    for (let i = 0; i < this.childCategories.length; i++) {
+      if (this.childCategories[i].key === key) {
+        this.childCategories[i].is_selected = !(this.childCategories[i].is_selected);
+      }
+    }
+  }
+
+  public isChildSelected (index) {
+    if (this.selectedChildIndex === [] && index === 0) {
+      return true;
+    }
+    this.selectedChildIndex.forEach(element => {
+      if (element === index) {
+        return true;
+      }
+    });
+  }
 
   public restoreConfigFieldValue(config_item_key: string) {
     const inputField = <HTMLInputElement>document.getElementById(config_item_key.toLowerCase());
@@ -173,7 +194,8 @@ export class ConfigurationManagerComponent implements OnInit {
   */
   onNotify(categoryData) {
     this.selectedRootCategory = categoryData.rootCategory;
-    this.getRootCategories(true);
+    this.getRootCategories();
+    this.refreshCategory(categoryData.categoryKey, categoryData.categoryDescription);
   }
 
   /**
