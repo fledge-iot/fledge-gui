@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConfigurationService, AlertService } from '../../../services/index';
 import { NgProgress } from 'ngx-progressbar';
 import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
+import _ from 'lodash-es/array';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -14,6 +15,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public childCategories = [];
   public JSON;
   public addConfigItem: any;
+  public selectedRootCategory = 'General';
 
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
 
@@ -36,7 +38,7 @@ export class ConfigurationManagerComponent implements OnInit {
             this.rootCategories.push({ key: element.key });
           });
           if (onLoadingPage === true) {
-            this.getChildren('General', true);
+            this.getChildren(this.selectedRootCategory, true);
           }
         },
         error => {
@@ -53,6 +55,7 @@ export class ConfigurationManagerComponent implements OnInit {
     this.ngProgress.start();
     this.childCategories = [];
     this.categoryData = [];
+    this.selectedRootCategory = category_name;
     this.configService.getChildren(category_name).
       subscribe(
         (data) => {
@@ -87,7 +90,6 @@ export class ConfigurationManagerComponent implements OnInit {
         (data) => {
           categoryValues.push(data);
           this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
-          console.log('this.categoryData', this.categoryData);
         },
         error => {
           if (error.status === 0) {
@@ -97,6 +99,31 @@ export class ConfigurationManagerComponent implements OnInit {
           }
         });
   }
+
+  public refreshCategory(category_name: string, category_desc: string): void {
+    /** request started */
+    this.ngProgress.start();
+    const categoryValues = [];
+    this.configService.getCategory(category_name).
+      subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          categoryValues.push(data);
+          const index = _.findIndex(this.categoryData, ['key', category_name]);
+          this.categoryData[index] = { key: category_name, value: categoryValues, description: category_desc };
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
 
   public restoreConfigFieldValue(config_item_key: string) {
     const inputField = <HTMLInputElement>document.getElementById(config_item_key.toLowerCase());
@@ -144,7 +171,8 @@ export class ConfigurationManagerComponent implements OnInit {
   * @param notify
   * To reload categories after adding a new config item for a category
   */
-  onNotify() {
+  onNotify(categoryData) {
+    this.selectedRootCategory = categoryData.rootCategory;
     this.getRootCategories(true);
   }
 
@@ -152,7 +180,7 @@ export class ConfigurationManagerComponent implements OnInit {
   * Open add Config Item modal dialog
   */
   openAddConfigItemModal(description, key) {
-    this.addConfigItemModal.setConfigName(description, key);
+    this.addConfigItemModal.setConfigName(description, key, this.selectedRootCategory);
     // call child component method to toggle modal
     this.addConfigItemModal.toggleModal(true);
   }

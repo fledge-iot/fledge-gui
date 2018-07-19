@@ -25,6 +25,7 @@ export class AddConfigItemComponent implements OnInit {
     this.categoryData = {
       categoryDescription: '',
       categoryKey: '',
+      rootCategory: '',
       configName: '',
       key: '',
       description: '',
@@ -33,10 +34,11 @@ export class AddConfigItemComponent implements OnInit {
     };
   }
 
-  public setConfigName(desc, key) {
+  public setConfigName(desc, key,  selectedRootCategory) {
     this.categoryData = {
       categoryDescription: desc,
-      categoryKey: key
+      categoryKey: key,
+      rootCategory:  selectedRootCategory
     };
   }
 
@@ -71,7 +73,7 @@ export class AddConfigItemComponent implements OnInit {
       )
       .subscribe(
         (data) => {
-          this.notify.emit();
+          this.notify.emit(this.categoryData);
           this.toggleModal(false, null);
           this.alertService.success(data['message']);
           if (form != null) {

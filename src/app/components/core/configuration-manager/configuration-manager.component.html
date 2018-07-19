@@ -4,13 +4,13 @@
   </ng-progress>
   <!-- cards to be rendered as config.categories.count-->
 
-  <div class="columns is-multiline is-mobile">
+  <div class="columns is-multiline">
     <div class="column is-one-quarter">
       <nav class="panel">
         <div class="panel-heading">
           <div class="select is-fullwidth is-small">
             <select (change)="getChildren($event.target.value, true)">
-              <option *ngFor="let rootCategory of rootCategories" [value]='rootCategory.key'>{{ rootCategory.key }}</option>
+              <option *ngFor="let rootCategory of rootCategories" [selected]='rootCategory.key === selectedRootCategory' [value]='rootCategory.key'>{{ rootCategory.key }}</option>
             </select>
           </div>
         </div>
@@ -44,7 +44,7 @@
             <div class="media">
               <div class="media-content">
                 <p class="subtitle is-6">{{category.description}}
-                  <a class="button is-small" (click)="this.getCategory(category.key, category.description)">
+                  <a class="button is-small" (click)="refreshCategory(category.key, category.description)">
                     <span class="icon is-small">
                       <i class="fa fa-refresh"></i>
                     </span>
@@ -101,5 +101,5 @@
       </div>
     </div>
   </div>
-  <app-add-config-item (notify)='onNotify()'></app-add-config-item>
+  <app-add-config-item (notify)='onNotify($event)'></app-add-config-item>
 </div>
