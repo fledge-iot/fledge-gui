@@ -14,7 +14,11 @@
 }
 .panel {
     background-color: #fff;
-}
-.panel {
     margin-top: 10px;
+}
+.column .box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }
