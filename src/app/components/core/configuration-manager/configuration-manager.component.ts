@@ -52,6 +52,7 @@ export class ConfigurationManagerComponent implements OnInit {
     /** request started */
     this.ngProgress.start();
     this.childCategories = [];
+    this.categoryData = [];
     this.configService.getChildren(category_name).
       subscribe(
         (data) => {
@@ -75,14 +76,18 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  private getCategory(category_name: string, category_desc: string): void {
-    this.categoryData = [];
+  private getCategory(category_name: string, category_desc: string, event = null): void {
+    if (event != null && event.target.checked === false) {
+      this.categoryData = this.categoryData.filter(value => value.key !== category_name);
+      return;
+    }
     const categoryValues = [];
     this.configService.getCategory(category_name).
       subscribe(
         (data) => {
           categoryValues.push(data);
           this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
+          console.log('this.categoryData', this.categoryData);
         },
         error => {
           if (error.status === 0) {

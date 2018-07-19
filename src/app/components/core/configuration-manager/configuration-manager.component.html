@@ -9,31 +9,31 @@
       <nav class="panel">
         <div class="panel-heading">
           <div class="select is-fullwidth is-small">
-            <select (change)="getChildren($event.target.value)">
-              <option *ngFor="let rootCategory of rootCategories" [selected]="rootCategory.key == 'General'" [value]='rootCategory.key'>{{ rootCategory.key }}</option>
+            <select (change)="getChildren($event.target.value, true)">
+              <option *ngFor="let rootCategory of rootCategories" [value]='rootCategory.key'>{{ rootCategory.key }}</option>
             </select>
           </div>
-          <div class="panel-block">
-            <!-- <p class="control has-icons-left">
-              <input class="input is-small" type="text" placeholder="search">
-              <span class="icon is-small is-left">
-                <i class="fa fa-search" aria-hidden="true"></i>
-              </span>
-            </p> -->
-          </div>
-          <a *ngFor="let childCategory of childCategories" class="panel-block">
-            <label class="radio">
-              <small>
-                <input type="radio" name="category" (change)="getCategory(childCategory.key, childCategory.description)" [checked]="childCategory.key == 'rest_api'"
-                  [value]="childCategory.key"> {{childCategory.key}}
-              </small>
-            </label>
-          </a>
-          <div class="panel-block">
-            <button class="button is-text is-fullwidth" (click)="getRootCategories(true)">
-              reset all filters
-            </button>
-          </div>
+        </div>
+        <!-- <div class="panel-block">
+          <p class="control has-icons-left">
+            <input class="input is-small" type="text" placeholder="search">
+            <span class="icon is-small is-left">
+              <i class="fa fa-search" aria-hidden="true"></i>
+            </span>
+          </p>
+        </div> -->
+        <div *ngFor="let childCategory of childCategories; let i = index;" class="panel-block">
+          <label class="checkbox">
+            <small>
+              <input type="checkbox" (change)="getCategory(childCategory.key, childCategory.description, $event)" [checked]="i == '0'"
+                [value]="childCategory.key"> {{childCategory.key}}
+            </small>
+          </label>
+        </div>
+        <div class="panel-block">
+          <button class="button is-text is-fullwidth" (click)="getRootCategories(true)">
+            reset all filters
+          </button>
         </div>
       </nav>
     </div>

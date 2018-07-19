@@ -12,3 +12,9 @@
 .input {
     width: auto;
 }
+.panel {
+    background-color: #fff;
+}
+.panel {
+    margin-top: 10px;
+}
