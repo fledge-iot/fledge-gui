@@ -23,16 +23,17 @@
           </p>
         </div> -->
         <div *ngFor="let childCategory of childCategories; let i = index;" class="panel-block">
-          <label class="checkbox">
-            <small>
-              <input type="checkbox" (change)="getCategory(childCategory.key, childCategory.description, $event); getSelectedIndex(i, childCategory.key)" [checked] = "childCategory.is_selected == 'true'"
-                [value]="childCategory.key"> {{childCategory.key}}
-            </small>
-          </label>
+          <input type="checkbox" (change)="getCategory(childCategory.key, childCategory.description, $event); getSelectedIndex(i, childCategory.key)"
+            [checked]="childCategory.is_selected == 'true'" [value]="childCategory.key">
+          <div>
+            <!-- <p class="title is-6"> {{ childCategory.key }}</p> -->
+            <!-- <p class="subtitle is-6"><small>{{ childCategory.description }}</small></p> -->
+            <p class="subtitle is-6">{{ childCategory.description }}</p>
+          </div>
         </div>
         <div class="panel-block">
           <button class="button is-text is-fullwidth" (click)="getRootCategories(true)">
-            reset all filters
+            <small>reset all filters</small>
           </button>
         </div>
       </nav>
