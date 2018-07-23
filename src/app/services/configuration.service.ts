@@ -24,7 +24,8 @@ export class ConfigurationService {
      *   GET  | /foglamp/category/{category_name}
      */
     getCategory(category_name) {
-        return this.http.get(this.CATEGORY_URL + '/' + category_name).pipe(
+        const categoryName = encodeURIComponent(category_name);
+        return this.http.get(this.CATEGORY_URL + '/' + categoryName).pipe(
             map(response => response),
             catchError((error: Response) => observableThrowError(error)));
     }
@@ -33,11 +34,12 @@ export class ConfigurationService {
     *  PUT  | /foglamp/category/{category_name}/{config_item}
     */
     saveConfigItem(category_name: string, config_item: string, value: string, type: string) {
+        const categoryName = encodeURIComponent(category_name);
         let body = JSON.stringify({ 'value': value });
         if (type.toUpperCase() === 'JSON') {
             body = JSON.stringify({ 'value': JSON.parse(value) });
         }
-        return this.http.put(this.CATEGORY_URL + '/' + category_name + '/' + config_item, body).pipe(
+        return this.http.put(this.CATEGORY_URL + '/' + categoryName + '/' + config_item, body).pipe(
             map(response => response),
             catchError((error: Response) => observableThrowError(error)));
     }
@@ -46,7 +48,8 @@ export class ConfigurationService {
     *  POST  | /foglamp/category/{category_name}/{config_item}
     */
     addNewConfigItem(configItemData, category_name: string, config_item: string) {
-        return this.http.post(this.CATEGORY_URL + '/' + category_name + '/' + config_item, configItemData).pipe(
+        const categoryName = encodeURIComponent(category_name);
+        return this.http.post(this.CATEGORY_URL + '/' + categoryName + '/' + config_item, configItemData).pipe(
             map(response => response),
             catchError((error: Response) => observableThrowError(error)));
     }

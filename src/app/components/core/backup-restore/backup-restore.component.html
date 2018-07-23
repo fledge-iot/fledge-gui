@@ -36,6 +36,11 @@
               <a class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure, You want to delete the backup', 'deleteBackup')">delete
               </a>
             </td>
+            <td>
+              <a (click)="downloadBackup(backup)" class="button is-text">
+                download
+              </a>
+            </td>
           </tr>
         </tbody>
       </table>
