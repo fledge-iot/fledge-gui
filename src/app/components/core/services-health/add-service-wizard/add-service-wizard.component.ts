@@ -15,6 +15,7 @@ export class AddServiceWizardComponent implements OnInit {
   public configurationData = [];
   public serviceId;
   public isServiceEnabled = false;
+  public isValidPlugin = false;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -41,97 +42,108 @@ export class AddServiceWizardComponent implements OnInit {
 
   movePrevious() {
     const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
-    const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const id = last.getAttribute('id');
     last.classList.remove('is-active');
     const sId = +id - 1;
     const previous = <HTMLElement>document.getElementById('' + sId);
     previous.setAttribute('class', 'step-item is-active');
+
     const stepContent = <HTMLElement>document.getElementById('c-' + id);
     if (stepContent != null) {
       stepContent.classList.remove('is-active');
     }
+
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
       nextContent.setAttribute('class', 'step-content has-text-centered is-active');
     }
-    if (+id === 2) {
-      this.serviceForm.get('plugin').setValue('select');
-      const previousButton = <HTMLButtonElement>document.getElementById('previous');
-      previousButton.disabled = true;
-    }
 
-    if (+id === 4) {
-      nxtButton.textContent = 'Enable & Start Service';
-      nxtButton.disabled = false;
-    } else {
-      nxtButton.textContent = 'Next';
-    }
+    const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    const previousButton = <HTMLButtonElement>document.getElementById('previous');
 
-    if (+id !== 4) {
-      this.serviceForm.get('name').setValue('');
-      this.serviceForm.get('type').setValue('south');
-      const nextButton = <HTMLButtonElement>document.getElementById('next');
-      nextButton.disabled = false;
+    switch (+id) {
+      case 2:
+        this.serviceForm.get('plugin').setValue('select');
+        previousButton.disabled = true;
+        break;
+      case 4:
+        nxtButton.textContent = 'Enable & Start Service';
+        nxtButton.disabled = false;
+        break;
+      default:
+        this.serviceForm.get('name').setValue('');
+        this.serviceForm.get('type').setValue('south');
+        nxtButton.textContent = 'Next';
+        nxtButton.disabled = false;
+        break;
     }
   }
 
   moveNext() {
+    this.isValidPlugin = true;
     const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = first.getAttribute('id');
+
+    if (!this.serviceForm.controls.name.valid) {
+      return;
+    }
+
+    if (this.serviceForm.controls.plugin.value === 'select' && +id === 2) {
+      this.isValidPlugin = false;
+      return;
+    }
+
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    const previousButton = <HTMLButtonElement>document.getElementById('previous');
 
-    if (+id === 1) {
-      const previousButton = <HTMLButtonElement>document.getElementById('previous');
-      previousButton.disabled = false;
-    }
-
-    if (+id === 2) {
-      nxtButton.textContent = 'Enable & Start Service';
-    }
-
-    if (+id === 3) {
-      nxtButton.disabled = true;
-      nxtButton.textContent = 'Done';
-    }
-
-    if (formValues['name'] !== '' && formValues['type'] !== '' && formValues['plugin'] === 'select') {
-      this.servicesHealthService.getPlugins(formValues['type']).subscribe(
-        (data: any) => {
-          this.plugins = data.plugins;
-          console.log(this.plugins);
-        },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-    }
-
-    if (formValues['plugin'].length > 0 && formValues['plugin'] !== 'select' && +id === 2) {
-      this.addService(formValues);
-    }
-
-    if (+id === 3) {
-      this.schedulesService.enableSchedule(this.serviceId).
-        subscribe(
-          (data) => {
-            /** request completed */
-            this.ngProgress.done();
-            this.alertService.success(data['message']);
-          },
-          error => {
-            /** request completed */
-            this.ngProgress.done();
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
+    switch (+id) {
+      case 1:
+        previousButton.disabled = false;
+        if (formValues['name'] !== '' && formValues['type'] !== '') {
+          this.servicesHealthService.getPlugins(formValues['type']).subscribe(
+            (data: any) => {
+              this.plugins = data.plugins;
+            },
+            (error) => {
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.alertService.error(error.statusText);
+              }
+            });
+        }
+        break;
+      case 2:
+        nxtButton.textContent = 'Enable & Start Service';
+        if (formValues['plugin'].length > 0 && formValues['plugin'] !== 'select') {
+          this.addService(formValues);
+        }
+        break;
+      case 3:
+        nxtButton.disabled = true;
+        nxtButton.textContent = 'Done';
+        if (this.serviceId.length > 0) {
+          this.schedulesService.enableSchedule(this.serviceId).
+            subscribe(
+              (data) => {
+                /** request completed */
+                this.ngProgress.done();
+                this.alertService.success(data['message']);
+              },
+              error => {
+                /** request completed */
+                this.ngProgress.done();
+                if (error.status === 0) {
+                  console.log('service down ', error);
+                } else {
+                  this.alertService.error(error.statusText);
+                }
+              });
+        }
+        break;
+      default:
+        break;
     }
 
     first.classList.remove('is-active');
@@ -185,8 +197,6 @@ export class AddServiceWizardComponent implements OnInit {
         });
   }
 
-  isObject(val) { return typeof val === 'object'; }
-
   public onTextChange(configItemKey: string) {
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
     cancelButton.classList.remove('hidden');
@@ -234,4 +244,9 @@ export class AddServiceWizardComponent implements OnInit {
         });
   }
 
+  validatePluginValue(event) {
+    if (event.target.value !== 'select') {
+      this.isValidPlugin = true;
+    }
+  }
 }

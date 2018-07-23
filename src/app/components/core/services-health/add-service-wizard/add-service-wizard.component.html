@@ -27,7 +27,7 @@
     </div>
   </div>
   <div class="steps-content">
-    <form [formGroup]="serviceForm" novalidate>
+    <form [formGroup]="serviceForm" validate>
       <div class="step-content  is-active" id="c-1">
         <div class="field is-horizontal form-group">
           <div class="field-label is-normal">
@@ -37,6 +37,8 @@
             <div class="field">
               <div class="control">
                 <input class="input" id="name" type="text" placeholder="name" formControlName="name" required autofocus>
+                <small *ngIf="!serviceForm.controls.name.valid && (serviceForm.controls.name.dirty || serviceForm.controls.name.touched)"
+                  class="help is-danger level-left">Service name is required</small>
               </div>
             </div>
           </div>
@@ -68,11 +70,13 @@
             <div class="field">
               <div class="control">
                 <div class="select is-fullwidth">
-                  <select name="type" formControlName="plugin">
+                  <select name="type" formControlName="plugin" (change)="validatePluginValue($event)" required>
                     <option value='select' disabled>Select</option>
                     <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
                   </select>
                 </div>
+                <small *ngIf="!isValidPlugin"
+                  class="help is-danger level-left">Please select a valid plugin</small>
               </div>
             </div>
           </div>
@@ -92,23 +96,22 @@
                 <div class="content">
                   <div class="field">
                     <div class="control">
-                      <input *ngIf='isObject(configItem?.value?.value)' id="{{ configItem.key.trim() | lowercase }}" class="input is-small" type="text"
-                        [value]="configItem?.value?.value != undefined ? (JSON.stringify(configItem?.value?.value)) : '' "
-                        [textContent]="configItem?.value?.value != undefined ? (JSON.stringify(configItem?.value?.value)) : '' "
+                      <p hidden="true"> {{configItem.value.type}} </p>
+                      <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" id="{{ configItem.key.trim() | lowercase }}" class="input is-small"
+                        type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" ' [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
                         (input)="onTextChange(configItem.key.trim())" />
 
-                      <input *ngIf='!isObject(configItem?.value?.value)' id="{{configItem.key.trim() | lowercase }}" class="input is-small" type="text"
-                        [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" ' [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
-                        (input)="onTextChange(configItem.key.trim())" />
+                      <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" id="{{ configItem.key.trim() | lowercase }}"
+                        (input)="onTextChange(configItem.key.trim())">{{configItem?.value?.value.trim()}}</textarea>
                     </div>
                   </div>
-                  <div class="field is-grouped">
-                    <div class="control">
-                      <button id="btn-save-{{configItem.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(configItem?.key, configItem?.value?.type)">Save</button>
-                    </div>
-                    <div class="control">
-                      <button id="btn-cancel-{{ configItem.key.trim() | lowercase}}" class="button is-small is-text hidden" (click)="restoreConfigFieldValue(configItem.key.trim())">Cancel</button>
-                    </div>
+                </div>
+                <div class="field is-grouped">
+                  <div class="control">
+                    <button id="btn-save-{{configItem.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(configItem?.key, configItem?.value?.type)">Save</button>
+                  </div>
+                  <div class="control">
+                    <button id="btn-cancel-{{ configItem.key.trim() | lowercase}}" class="button is-small is-text hidden" (click)="restoreConfigFieldValue(configItem.key.trim())">Cancel</button>
                   </div>
                 </div>
               </div>

@@ -24,7 +24,7 @@ const appRoutes: Routes = [
   { path: 'backup-restore', component: BackupRestoreComponent, canActivate: [AuthCheckGuard] },
   { path: 'setting', component: SettingsComponent },
   { path: 'services-health', component: ServicesHealthComponent, canActivate: [AuthCheckGuard] },
-  { path: 'add-service', component: AddServiceWizardComponent },
+  { path: 'add-service', component: AddServiceWizardComponent, canActivate: [AuthCheckGuard] },
   { path: 'service-discovery', component: ServiceDiscoveryComponent },
   // user-management
   { path: 'user-management', loadChildren: './components/core/user-management/user.management.module#UserManagementModule' },
