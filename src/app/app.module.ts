@@ -1,5 +1,5 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { SidebarModule } from 'ng-sidebar';
@@ -45,8 +45,7 @@ import {
 } from './services';
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
-
-import { APP_INITIALIZER } from '@angular/core';
+import { AddServiceWizardComponent } from './components/core/services-health/add-service-wizard/add-service-wizard.component';
 
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
@@ -94,7 +93,8 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     ShutdownModalComponent,
     SupportComponent,
     BackupRestoreComponent,
-    AddServiceComponent
+    AddServiceComponent,
+    AddServiceWizardComponent
   ],
   providers: [
     AuthCheckGuard,
