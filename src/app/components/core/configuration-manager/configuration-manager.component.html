@@ -45,10 +45,8 @@
                     type="text" [value]='v?.value?.value != undefined ? v?.value?.value : "" ' [textContent]='v?.value?.value != undefined ? v?.value?.value : "" '
                     (input)="onTextChange(category.key.trim() + '-' + v.key.trim())" />
 
-                  <textarea *ngIf="v.value.type.toUpperCase() === 'JSON'" class="textarea is-small" id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}"
-                    (input)="onTextChange(category.key.trim() + '-' + v.key.trim())">
-                      {{v?.value?.value }}
-                  </textarea>
+                  <textarea rows="3" *ngIf="v.value.type.toUpperCase() === 'JSON'" class="textarea is-small" id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}"
+                    (input)="onTextChange(category.key.trim() + '-' + v.key.trim())">{{v?.value?.value.trim()}}</textarea>
                 </div>
               </div>
               <div class="field is-grouped">
