@@ -36,9 +36,8 @@
           <div class="field-body">
             <div class="field">
               <div class="control">
-                <input class="input" id="name" type="text" placeholder="name" formControlName="name" required autofocus>
-                <small *ngIf="!serviceForm.controls.name.valid && (serviceForm.controls.name.dirty || serviceForm.controls.name.touched)"
-                  class="help is-danger level-left">Service name is required</small>
+                <input class="input" id="name" type="text" placeholder="name" formControlName="name" required  (input)="validateServiceName($event)">
+                <small *ngIf="!isValidName" class="help is-danger level-left">Service name is required</small>
               </div>
             </div>
           </div>
@@ -75,8 +74,7 @@
                     <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
                   </select>
                 </div>
-                <small *ngIf="!isValidPlugin"
-                  class="help is-danger level-left">Please select a valid plugin</small>
+                <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
               </div>
             </div>
           </div>

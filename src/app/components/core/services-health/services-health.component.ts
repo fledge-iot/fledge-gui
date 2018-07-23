@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
 
+import { Router } from '../../../../../node_modules/@angular/router';
 import { ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import Utils from '../../../utils';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
-import { AddServiceComponent } from './add-service/add-service.component';
-import { Router } from '../../../../../node_modules/@angular/router';
 
 @Component({
   selector: 'app-services-health',
@@ -18,8 +17,6 @@ export class ServicesHealthComponent implements OnInit {
   time: number;
   public service_data;
   public isAdmin = false;
-
-  @ViewChild(AddServiceComponent) addServiceModal: AddServiceComponent;
 
   // Object to hold service details to shutdown
   public shutDownServiceData = {
@@ -75,8 +72,7 @@ export class ServicesHealthComponent implements OnInit {
     return false;
   }
 
-  openAddServiceModal() {
-    // this.addServiceModal.toggleModal(true, null);
+  addService() {
     this.router.navigate(['/add-service']);
   }
 

@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService, ServicesHealthService, SchedulesService } from '../../../../services';
+import { Router } from '../../../../../../node_modules/@angular/router';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -16,6 +17,7 @@ export class AddServiceWizardComponent implements OnInit {
   public serviceId;
   public isServiceEnabled = false;
   public isValidPlugin = false;
+  public isValidName = true;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -28,6 +30,7 @@ export class AddServiceWizardComponent implements OnInit {
     private alertService: AlertService,
     private configService: ConfigurationService,
     private schedulesService: SchedulesService,
+    private router: Router,
     private ngProgress: NgProgress) { }
 
   ngOnInit() {
@@ -43,6 +46,7 @@ export class AddServiceWizardComponent implements OnInit {
   movePrevious() {
     const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = last.getAttribute('id');
+    console.log('previous', id);
     last.classList.remove('is-active');
     const sId = +id - 1;
     const previous = <HTMLElement>document.getElementById('' + sId);
@@ -81,24 +85,30 @@ export class AddServiceWizardComponent implements OnInit {
 
   moveNext() {
     this.isValidPlugin = true;
+    this.isValidName = true;
     const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = first.getAttribute('id');
 
-    if (!this.serviceForm.controls.name.valid) {
-      return;
-    }
+    // if (this.serviceForm.controls.name.value.trim().length === 0 && +id === 1) {
+    //   this.isValidName = false;
+    //   return;
+    // }
 
-    if (this.serviceForm.controls.plugin.value === 'select' && +id === 2) {
-      this.isValidPlugin = false;
-      return;
-    }
+    // if (this.serviceForm.controls.plugin.value === 'select' && +id === 2) {
+    //   this.isValidPlugin = false;
+    //   return;
+    // }
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
 
     switch (+id) {
       case 1:
+        if (this.serviceForm.controls.name.value.trim().length === 0) {
+          this.isValidName = false;
+          return;
+        }
         previousButton.disabled = false;
         if (formValues['name'] !== '' && formValues['type'] !== '') {
           this.servicesHealthService.getPlugins(formValues['type']).subscribe(
@@ -115,13 +125,16 @@ export class AddServiceWizardComponent implements OnInit {
         }
         break;
       case 2:
+        if (this.serviceForm.controls.plugin.value === 'select') {
+          this.isValidPlugin = false;
+          return;
+        }
         nxtButton.textContent = 'Enable & Start Service';
-        if (formValues['plugin'].length > 0 && formValues['plugin'] !== 'select') {
+        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['plugin'] !== 'select') {
           this.addService(formValues);
         }
         break;
       case 3:
-        nxtButton.disabled = true;
         nxtButton.textContent = 'Done';
         if (this.serviceId.length > 0) {
           this.schedulesService.enableSchedule(this.serviceId).
@@ -142,6 +155,9 @@ export class AddServiceWizardComponent implements OnInit {
               });
         }
         break;
+      case 4:
+        this.router.navigate(['/services-health']);
+        break;
       default:
         break;
     }
@@ -151,10 +167,14 @@ export class AddServiceWizardComponent implements OnInit {
 
     const sId = +id + 1;
     const next = <HTMLElement>document.getElementById('' + sId);
-    next.setAttribute('class', 'step-item is-active');
+    if (next != null) {
+      next.setAttribute('class', 'step-item is-active');
+    }
 
     const stepContent = <HTMLElement>document.getElementById('c-' + id);
-    stepContent.classList.remove('is-active');
+    if (stepContent != null) {
+      stepContent.classList.remove('is-active');
+    }
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
@@ -247,6 +267,13 @@ export class AddServiceWizardComponent implements OnInit {
   validatePluginValue(event) {
     if (event.target.value !== 'select') {
       this.isValidPlugin = true;
+    }
+  }
+
+  validateServiceName(event) {
+    console.log(event.target.value);
+    if (event.target.value.trim().length > 0) {
+      this.isValidName = true;
     }
   }
 }
