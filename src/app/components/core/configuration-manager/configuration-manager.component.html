@@ -78,13 +78,12 @@
                     <div class="field">
                       <div class="control">
                         <p hidden="true"> {{v.value.type}} </p>
-                        <input *ngIf='isObject(v?.value?.value)' id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input is-small"
-                          type="text" [value]="v?.value?.value != undefined ? (JSON.stringify(v?.value?.value)) : '' " [textContent]="v?.value?.value != undefined ? (JSON.stringify(v?.value?.value)) : '' "
-                          (input)="onTextChange(category.key.trim() + '-' + v.key.trim())" />
-
-                        <input *ngIf='!isObject(v?.value?.value)' id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input is-small"
+                        <input *ngIf="v.value.type.toUpperCase() !== 'JSON'" id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input is-small"
                           type="text" [value]='v?.value?.value != undefined ? v?.value?.value : "" ' [textContent]='v?.value?.value != undefined ? v?.value?.value : "" '
                           (input)="onTextChange(category.key.trim() + '-' + v.key.trim())" />
+
+                        <textarea rows="3" *ngIf="v.value.type.toUpperCase() === 'JSON'" class="textarea is-small" id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}"
+                          (input)="onTextChange(category.key.trim() + '-' + v.key.trim())">{{v?.value?.value.trim()}}</textarea>
                       </div>
                     </div>
                     <div class="field is-grouped">
