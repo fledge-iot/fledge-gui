@@ -64,9 +64,9 @@ export class ServicesHealthComponent implements OnInit {
   }
 
   checkServiceType(type, serviceStatus) {
-    if (type === 'storage' || type === 'core') {
+    if (type.trim().toLowerCase() === 'storage' || type.trim().toLowerCase() === 'core') {
       return false;
-    } else if (serviceStatus === 'running' || serviceStatus === 'unresponsive') {
+    } else if (serviceStatus.trim().toLowerCase() === 'running' || serviceStatus.trim().toLowerCase() === 'unresponsive') {
       return true;
     }
     return false;

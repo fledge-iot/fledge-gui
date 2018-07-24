@@ -28,7 +28,7 @@
   </div>
   <div class="steps-content">
     <form [formGroup]="serviceForm" validate>
-      <div class="step-content  is-active" id="c-1">
+      <div class="box step-content  is-active" id="c-1">
         <div class="field is-horizontal form-group">
           <div class="field-label is-normal">
             <label class="label">Name</label>
@@ -36,7 +36,7 @@
           <div class="field-body">
             <div class="field">
               <div class="control">
-                <input class="input" id="name" type="text" placeholder="name" formControlName="name" required  (input)="validateServiceName($event)">
+                <input class="input" id="name" type="text" placeholder="name" formControlName="name" required (input)="validateServiceName($event)">
                 <small *ngIf="!isValidName" class="help is-danger level-left">Service name is required</small>
               </div>
             </div>
@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>
-      <div class="step-content has-text-centered" id="c-2">
+      <div class="box step-content has-text-centered" id="c-2">
         <div class="field is-horizontal form-group">
           <div class="field-label is-normal">
             <label class="label">Plugin</label>
@@ -80,55 +80,72 @@
           </div>
         </div>
       </div>
-      <div class="step-content has-text-centered" id="c-3">
-        <div class="columns is-mobile is-multiline" *ngFor="let data of configurationData">
-          <div class="column is-narrow is-half" *ngFor="let configItem of (data | keys)">
-            <div class="is-clearfix"></div>
-            <div class="card">
-              <header class="card-header">
-                <p class="card-header-title">
-                  {{configItem.value.description}}
-                </p>
-              </header>
-              <div class="card-content">
-                <div class="content">
-                  <div class="field">
-                    <div class="control">
-                      <p hidden="true"> {{configItem.value.type}} </p>
-                      <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" id="{{ configItem.key.trim() | lowercase }}" class="input is-small"
-                        type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" ' [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
-                        (input)="onTextChange(configItem.key.trim())" />
+      <div class="box step-content has-text-centered" id="c-3">
+        <div *ngIf="isServiceAdded">
+          <div class="columns is-mobile is-multiline" *ngFor="let data of configurationData">
+            <div class="column is-narrow is-half" *ngFor="let configItem of (data | keys)">
+              <div class="is-clearfix"></div>
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    {{configItem.value.description}}
+                  </p>
+                </header>
+                <div class="card-content">
+                  <div class="content">
+                    <div class="field">
+                      <div class="control">
+                        <p hidden="true"> {{configItem.value.type}} </p>
+                        <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" id="{{ configItem.key.trim() | lowercase }}" class="input is-small"
+                          type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" ' [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
+                          (input)="onTextChange(configItem.key.trim())" />
 
-                      <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" id="{{ configItem.key.trim() | lowercase }}"
-                        (input)="onTextChange(configItem.key.trim())">{{configItem?.value?.value.trim()}}</textarea>
+                        <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" id="{{ configItem.key.trim() | lowercase }}"
+                          (input)="onTextChange(configItem.key.trim())">{{configItem?.value?.value.trim()}}</textarea>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="field is-grouped">
-                  <div class="control">
-                    <button id="btn-save-{{configItem.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(configItem?.key, configItem?.value?.type)">Save</button>
-                  </div>
-                  <div class="control">
-                    <button id="btn-cancel-{{ configItem.key.trim() | lowercase}}" class="button is-small is-text hidden" (click)="restoreConfigFieldValue(configItem.key.trim())">Cancel</button>
+                  <div class="field is-grouped">
+                    <div class="control">
+                      <button id="btn-save-{{configItem.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(configItem?.key, configItem?.value?.type)">Save</button>
+                    </div>
+                    <div class="control">
+                      <button id="btn-cancel-{{ configItem.key.trim() | lowercase}}" class="button is-small is-text hidden" (click)="restoreConfigFieldValue(configItem.key.trim())">Cancel</button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <p *ngIf="!isServiceAdded" class="has-text-weight-bold">
+          <span class="tag is-danger">
+            <i class="fa fa-times-circle" aria-hidden="true"></i>
+          </span> {{addServiceMsg}}
+        </p>
       </div>
-      <div class="step-content has-text-centered" id="c-4">
-        <p *ngIf="isServiceEnabled;else invalidMsg;">Service enabled and started successfully.</p>
-        <ng-template #invalidMsg>Failed to enable and start service.</ng-template>
+
+      <div class="box step-content has-text-centered" id="c-4">
+        <p *ngIf="isServiceEnabled" class="has-text-weight-bold">
+          <span class="tag is-success">
+            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+          </span> {{ enableServiceMsg }}
+        </p>
+
+        <p *ngIf="!isServiceEnabled && enableServiceMsg != ''" class="has-text-weight-bold">
+          <span class="tag is-danger">
+            <i class="fa fa-times-circle" aria-hidden="true"></i>
+          </span> {{ enableServiceMsg }}
+        </p>
       </div>
     </form>
   </div>
   <div class="steps-actions">
     <div class="steps-action">
-      <button (click)="movePrevious()" data-nav="previous" class="button is-light is-focused" id="previous" disabled>Previous</button>
+      <button (click)="movePrevious()" data-nav="previous" class="button is-text" id="previous" disabled>Previous</button>
     </div>
     <div class="steps-action">
-      <button (click)="moveNext()" data-nav="next" class="button is-light is-focused" id="next">Next</button>
+      <button (click)="moveNext()" data-nav="next" class="button is-text" id="next">Next</button>
     </div>
   </div>
 </div>

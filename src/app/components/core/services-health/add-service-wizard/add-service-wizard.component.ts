@@ -16,8 +16,11 @@ export class AddServiceWizardComponent implements OnInit {
   public configurationData = [];
   public serviceId;
   public isServiceEnabled = false;
+  public isServiceAdded = false;
   public isValidPlugin = false;
   public isValidName = true;
+  public addServiceMsg = '';
+  public enableServiceMsg = '';
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -46,7 +49,6 @@ export class AddServiceWizardComponent implements OnInit {
   movePrevious() {
     const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = last.getAttribute('id');
-    console.log('previous', id);
     last.classList.remove('is-active');
     const sId = +id - 1;
     const previous = <HTMLElement>document.getElementById('' + sId);
@@ -59,26 +61,33 @@ export class AddServiceWizardComponent implements OnInit {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
-      nextContent.setAttribute('class', 'step-content has-text-centered is-active');
+      nextContent.setAttribute('class', 'box step-content has-text-centered is-active');
     }
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
 
     switch (+id) {
+      case 1:
+        this.serviceForm.get('name').setValue('');
+        this.serviceForm.get('type').setValue('south');
+        nxtButton.textContent = 'Next';
+        nxtButton.disabled = false;
+        break;
       case 2:
         this.serviceForm.get('plugin').setValue('select');
+        nxtButton.textContent = 'Next';
         previousButton.disabled = true;
+        break;
+      case 3:
+        nxtButton.textContent = 'Add Service';
+        nxtButton.disabled = false;
         break;
       case 4:
         nxtButton.textContent = 'Enable & Start Service';
         nxtButton.disabled = false;
         break;
       default:
-        this.serviceForm.get('name').setValue('');
-        this.serviceForm.get('type').setValue('south');
-        nxtButton.textContent = 'Next';
-        nxtButton.disabled = false;
         break;
     }
   }
@@ -89,17 +98,6 @@ export class AddServiceWizardComponent implements OnInit {
     const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = first.getAttribute('id');
-
-    // if (this.serviceForm.controls.name.value.trim().length === 0 && +id === 1) {
-    //   this.isValidName = false;
-    //   return;
-    // }
-
-    // if (this.serviceForm.controls.plugin.value === 'select' && +id === 2) {
-    //   this.isValidPlugin = false;
-    //   return;
-    // }
-
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
 
@@ -109,9 +107,10 @@ export class AddServiceWizardComponent implements OnInit {
           this.isValidName = false;
           return;
         }
+        nxtButton.textContent = 'Add Service';
         previousButton.disabled = false;
         if (formValues['name'] !== '' && formValues['type'] !== '') {
-          this.servicesHealthService.getPlugins(formValues['type']).subscribe(
+          this.servicesHealthService.getInstalledPlugins(formValues['type']).subscribe(
             (data: any) => {
               this.plugins = data.plugins;
             },
@@ -131,25 +130,32 @@ export class AddServiceWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Enable & Start Service';
         if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['plugin'] !== 'select') {
-          this.addService(formValues);
+          this.isServiceAdded = true;
+          this.addService(formValues, nxtButton);
         }
         break;
       case 3:
         nxtButton.textContent = 'Done';
         if (this.serviceId.length > 0) {
+          /** request started */
+          this.ngProgress.start();
           this.schedulesService.enableSchedule(this.serviceId).
             subscribe(
-              (data) => {
+              () => {
                 /** request completed */
                 this.ngProgress.done();
-                this.alertService.success(data['message']);
+                this.isServiceEnabled = true;
+                this.enableServiceMsg = 'Service enabled and started successfully.';
+                this.alertService.success(this.enableServiceMsg);
               },
               error => {
+                this.isServiceEnabled = false;
                 /** request completed */
                 this.ngProgress.done();
                 if (error.status === 0) {
                   console.log('service down ', error);
                 } else {
+                  this.enableServiceMsg = error.statusText;
                   this.alertService.error(error.statusText);
                 }
               });
@@ -178,24 +184,27 @@ export class AddServiceWizardComponent implements OnInit {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
-      nextContent.setAttribute('class', 'step-content has-text-centered is-active');
+      nextContent.setAttribute('class', 'box step-content has-text-centered is-active');
     }
   }
 
-  addService(formValues) {
+  addService(formValues, nxtButton) {
     this.servicesHealthService.addService(formValues)
       .subscribe(
         (data) => {
           this.alertService.success('Service added successfully.');
           this.getCategory(data['name']);
           this.serviceId = data['id'];
-          this.isServiceEnabled = true;
+          this.isServiceAdded = true;
+          nxtButton.disabled = false;
         },
         (error) => {
-          this.isServiceEnabled = false;
+          nxtButton.disabled = true;
+          this.isServiceAdded = false;
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
+            this.addServiceMsg = error.statusText;
             this.alertService.error(error.statusText);
           }
         });
@@ -271,7 +280,6 @@ export class AddServiceWizardComponent implements OnInit {
   }
 
   validateServiceName(event) {
-    console.log(event.target.value);
     if (event.target.value.trim().length > 0) {
       this.isValidName = true;
     }

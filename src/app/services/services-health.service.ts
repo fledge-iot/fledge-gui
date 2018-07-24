@@ -11,7 +11,7 @@ export class ServicesHealthService {
   private GET_PING_URL = environment.BASE_URL + 'ping';
   private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
-  private GET_PLUGINS_URL = environment.BASE_URL + 'plugins/installed';
+  private GET_INSTALLED_PLUGINS_URL = environment.BASE_URL + 'plugins/installed';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
 
   constructor(private http: HttpClient) { }
@@ -72,9 +72,9 @@ export class ServicesHealthService {
   /**
    *  GET  | /foglamp/plugin/installed
    */
-  getPlugins(direction) {
+  getInstalledPlugins(direction) {
     const params = new HttpParams().set('type', direction);
-    return this.http.get(this.GET_PLUGINS_URL, { params: params }).pipe(
+    return this.http.get(this.GET_INSTALLED_PLUGINS_URL, { params: params }).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
