@@ -26,8 +26,9 @@
     </header>
     <div class="card-content">
       <div class="content">
-        <div class="columns" *ngFor="let valueObject of category.value">
-          <div class="column columns-content" *ngFor="let v of (valueObject | keys)">
+        <!-- <div  *ngFor="let valueObject of category.value"> -->
+          <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
+          <!--     <div class="column columns-content" *ngFor="let v of (valueObject | keys)">
             <div class="field">
               <div class="control">
                 <div class="media">
@@ -58,8 +59,8 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </div> -->
+        <!-- </div> -->
       </div>
     </div>
   </div>

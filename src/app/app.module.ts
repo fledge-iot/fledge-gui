@@ -15,7 +15,6 @@ import { BackupRestoreComponent } from './components/core/backup-restore/backup-
 import { CertificateModule } from './components/core/certificate/certificate.module';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
-import { ServicesHealthComponent } from './components/core/services-health';
 import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support/support.component';
 import { FooterComponent } from './components/layout/footer';
@@ -44,8 +43,7 @@ import {
 } from './services';
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
-import { AddServiceWizardComponent } from './components/core/services-health/add-service-wizard/add-service-wizard.component';
-
+import { SharedModule } from './shared.module';
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
     .then((data) => {
@@ -75,7 +73,8 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     PipesModule,
     AlertDialogModule,
     CertificateModule,
-    DashboardModule
+    DashboardModule,
+    SharedModule
   ],
   declarations: [
     AppComponent,
@@ -85,14 +84,12 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     SideMenuComponent,
     NavbarComponent,
     SettingsComponent,
-    ServicesHealthComponent,
     NumberOnlyDirective,
     InputTrimDirective,
     ServiceDiscoveryComponent,
     ShutdownModalComponent,
     SupportComponent,
-    BackupRestoreComponent,
-    AddServiceWizardComponent
+    BackupRestoreComponent
   ],
   providers: [
     AuthCheckGuard,

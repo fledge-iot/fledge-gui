@@ -73,7 +73,7 @@ export class ServicesHealthComponent implements OnInit {
   }
 
   addService() {
-    this.router.navigate(['/add-service']);
+    this.router.navigate(['/services-health/add']);
   }
 
   openModal(port, name, protocol, address) {

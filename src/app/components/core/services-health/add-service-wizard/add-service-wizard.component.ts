@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ConfigurationService, ServicesHealthService, SchedulesService } from '../../../../services';
 import { Router } from '../../../../../../node_modules/@angular/router';
+import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -13,7 +13,7 @@ import { Router } from '../../../../../../node_modules/@angular/router';
 export class AddServiceWizardComponent implements OnInit {
 
   public plugins = [];
-  public configurationData = [];
+  public configurationData;
   public serviceId;
   public isServiceEnabled = false;
   public isServiceAdded = false;
@@ -27,6 +27,8 @@ export class AddServiceWizardComponent implements OnInit {
     type: new FormControl(),
     plugin: new FormControl()
   });
+
+  @Input() categoryConfigurationData;
 
   constructor(private formBuilder: FormBuilder,
     private servicesHealthService: ServicesHealthService,
@@ -61,7 +63,7 @@ export class AddServiceWizardComponent implements OnInit {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
-      nextContent.setAttribute('class', 'box step-content has-text-centered is-active');
+      nextContent.setAttribute('class', 'box step-content  is-active');
     }
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
@@ -147,8 +149,10 @@ export class AddServiceWizardComponent implements OnInit {
                 this.isServiceEnabled = true;
                 this.enableServiceMsg = 'Service enabled and started successfully.';
                 this.alertService.success(this.enableServiceMsg);
+                previousButton.disabled = true;
               },
               error => {
+                previousButton.disabled = false;
                 this.isServiceEnabled = false;
                 /** request completed */
                 this.ngProgress.done();
@@ -184,14 +188,18 @@ export class AddServiceWizardComponent implements OnInit {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
-      nextContent.setAttribute('class', 'box step-content has-text-centered is-active');
+      nextContent.setAttribute('class', 'box step-content is-active');
     }
   }
 
   addService(formValues, nxtButton) {
+    /** request started */
+    this.ngProgress.start();
     this.servicesHealthService.addService(formValues)
       .subscribe(
         (data) => {
+          /** request completed */
+          this.ngProgress.done();
           this.alertService.success('Service added successfully.');
           this.getCategory(data['name']);
           this.serviceId = data['id'];
@@ -199,6 +207,8 @@ export class AddServiceWizardComponent implements OnInit {
           nxtButton.disabled = false;
         },
         (error) => {
+          /** request completed */
+          this.ngProgress.done();
           nxtButton.disabled = true;
           this.isServiceAdded = false;
           if (error.status === 0) {
@@ -212,55 +222,17 @@ export class AddServiceWizardComponent implements OnInit {
 
   private getCategory(categoryName: string): void {
     this.configurationData = [];
+    /** request started */
+    this.ngProgress.start();
     this.configService.getCategory(categoryName).
       subscribe(
         (data: any) => {
-          this.configurationData.push(data);
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  public onTextChange(configItemKey: string) {
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
-    cancelButton.classList.remove('hidden');
-  }
-
-  public restoreConfigFieldValue(configItemKey: string) {
-    const inputField = <HTMLInputElement>document.getElementById(configItemKey.toLowerCase());
-    inputField.value = inputField.textContent;
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
-    cancelButton.classList.add('hidden');
-  }
-
-  public saveConfigValue(configItem: string, type: string) {
-    const catItemId = (configItem.trim()).toLowerCase();
-    const inputField = <HTMLInputElement>document.getElementById(catItemId);
-    const value = inputField.value.trim();
-    const id = inputField.id.trim();
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
-    cancelButton.classList.add('hidden');
-    const categoryName = this.serviceForm.value['name'];
-    /** request started */
-    this.ngProgress.start();
-    this.configService.saveConfigItem(categoryName, configItem, value, type).
-      subscribe(
-        (data) => {
           /** request completed */
           this.ngProgress.done();
-          if (data['value'] !== undefined) {
-            if (type.toUpperCase() === 'JSON') {
-              inputField.textContent = inputField.value = JSON.stringify(data['value']);
-            } else {
-              inputField.textContent = inputField.value = data['value'];
-            }
-            this.alertService.success('Value updated successfully');
-          }
+          this.configurationData = {
+            value: [data],
+            key: categoryName
+          };
         },
         error => {
           /** request completed */
