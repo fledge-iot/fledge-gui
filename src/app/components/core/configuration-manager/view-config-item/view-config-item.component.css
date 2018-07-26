@@ -1,0 +1,33 @@
+.columns-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.columns-fields {
+    margin-top: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.input {
+    width: auto;
+}
+
+.textarea {
+    width: auto;
+}
+
+.panel {
+    background-color: #fff;
+    margin-top: 10px;
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}

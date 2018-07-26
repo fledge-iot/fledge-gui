@@ -9,6 +9,7 @@ import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support';
 import { LoginComponent } from './components/layout/login';
 import { AuthCheckGuard } from './guards';
+import { AddServiceWizardComponent } from './components/core/services-health/add-service-wizard/add-service-wizard.component';
 
 const appRoutes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthCheckGuard] },
@@ -22,7 +23,11 @@ const appRoutes: Routes = [
   { path: 'support', component: SupportComponent, canActivate: [AuthCheckGuard] },
   { path: 'backup-restore', component: BackupRestoreComponent, canActivate: [AuthCheckGuard] },
   { path: 'setting', component: SettingsComponent },
-  { path: 'services-health', component: ServicesHealthComponent, canActivate: [AuthCheckGuard] },
+  {
+    path: 'services-health',
+    loadChildren: './components/core/services-health/service-health.module#ServiceHealthModule',
+    canActivate: [AuthCheckGuard]
+  },
   { path: 'service-discovery', component: ServiceDiscoveryComponent },
   // user-management
   { path: 'user-management', loadChildren: './components/core/user-management/user.management.module#UserManagementModule' },
