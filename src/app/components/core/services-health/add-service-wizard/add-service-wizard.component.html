@@ -84,23 +84,23 @@
         <div *ngIf="isServiceAdded">
           <app-view-config-item [categoryConfigurationData]="configurationData"></app-view-config-item>
         </div>
-        <p *ngIf="!isServiceAdded" [ngClass]="{'has-text-centered': '!isServiceAdded'}" class="has-text-weight-bold">
-          <span class="tag is-danger">
-            <i class="fa fa-times-circle" aria-hidden="true"></i>
-          </span> {{addServiceMsg}}
+        <p *ngIf="!isServiceAdded" [ngClass]="{'has-text-centered': '!isServiceAdded'}">
+            <span class="icon has-text-danger">
+                <i class="fa fa-ban"></i>
+              </span> {{addServiceMsg}}
         </p>
       </div>
 
       <div class="box step-content has-text-centered" id="c-4">
-        <p *ngIf="isServiceEnabled" [ngClass]="{'has-text-centered': '!isServiceEnabled'}" class="has-text-weight-bold">
-          <span class="tag is-success">
-            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+        <p *ngIf="isServiceEnabled" [ngClass]="{'has-text-centered': '!isServiceEnabled'}">
+          <span class="icon has-text-success">
+            <i class="fa fa-check-square"></i>
           </span> {{ enableServiceMsg }}
         </p>
 
-        <p *ngIf="!isServiceEnabled && enableServiceMsg != ''" class="has-text-weight-bold">
-          <span class="tag is-danger">
-            <i class="fa fa-times-circle" aria-hidden="true"></i>
+        <p *ngIf="!isServiceEnabled && enableServiceMsg != ''" >
+          <span class="icon has-text-danger">
+            <i class="fa fa-ban"></i>
           </span> {{ enableServiceMsg }}
         </p>
       </div>
