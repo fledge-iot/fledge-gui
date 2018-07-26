@@ -23,6 +23,7 @@
               "src/assets/css/bulma.min.css",
               "src/assets/css/font-awesome.min.css",
               "src/assets/css/bulma-tooltip.min.css",
+              "src/assets/css/bulma-steps.min.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -74,6 +75,7 @@
             "scripts": [],
             "styles": [
               "src/assets/css/bulma.min.css",
+              "src/assets/css/bulma-steps.min.css",
               "src/assets/css/font-awesome.min.css",
               "src/assets/css/bulma-tooltip.min.css",
               "src/styles.css"

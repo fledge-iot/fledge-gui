@@ -17,7 +17,7 @@
           </p>
         </div>
       </div>
-      <a id="add_service" class="button is-light" (click)="openAddServiceModal()">Add Service &nbsp;
+      <a id="add_service" class="button is-light" (click)="addService()">Add Service &nbsp;
         <i class="fa fa-plus" aria-hidden="true"></i>
       </a>
     </header>
@@ -80,6 +80,5 @@
       </div>
     </div>
   </div>
-  <app-add-service (notify)='onNotify()'></app-add-service>
   <app-alert-dialog (shutdownService)='shutdownService($event)' [shutDownServiceData]='shutDownServiceData'></app-alert-dialog>
 </div>
