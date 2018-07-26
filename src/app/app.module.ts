@@ -47,6 +47,7 @@ import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
 
 import { APP_INITIALIZER } from '@angular/core';
+import { AddCategoryChildComponent } from './src/app/components/core/configuration-manager/add-category-child/add-category-child.component';
 
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
@@ -94,7 +95,8 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     ShutdownModalComponent,
     SupportComponent,
     BackupRestoreComponent,
-    AddServiceComponent
+    AddServiceComponent,
+    AddCategoryChildComponent
   ],
   providers: [
     AuthCheckGuard,

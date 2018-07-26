@@ -6,6 +6,7 @@ import { PipesModule } from '../../../pipes/pipes.module';
 import { ConfigurationService } from '../../../services';
 import { ConfigurationManagerComponent } from '.';
 import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
+import { AddCategoryChildComponent } from './add-category-child/add-category-child.component';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthCheckGuard } from '../../../guards';
 
@@ -20,7 +21,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     ConfigurationManagerComponent,
-    AddConfigItemComponent
+    AddConfigItemComponent,
+    AddCategoryChildComponent
   ],
   imports: [
     FormsModule,

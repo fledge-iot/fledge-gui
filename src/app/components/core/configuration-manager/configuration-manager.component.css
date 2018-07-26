@@ -25,3 +25,6 @@
 .textarea {
     width: auto;
 }
+.panel-block {
+    display: inherit !important;
+}
