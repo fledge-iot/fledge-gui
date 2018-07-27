@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddServiceComponent } from './add-service.component';
+import { ViewConfigItemComponent } from './view-config-item.component';
 
-describe('AddServiceComponent', () => {
-  let component: AddServiceComponent;
-  let fixture: ComponentFixture<AddServiceComponent>;
+describe('ViewConfigItemComponent', () => {
+  let component: ViewConfigItemComponent;
+  let fixture: ComponentFixture<ViewConfigItemComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddServiceComponent ]
+      declarations: [ ViewConfigItemComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddServiceComponent);
+    fixture = TestBed.createComponent(ViewConfigItemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

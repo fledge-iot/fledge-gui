@@ -62,42 +62,7 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <div class="columns is-multiline" *ngFor="let valueObject of category.value">
-              <div class="column columns-content is-half" *ngFor="let v of (valueObject | keys)">
-                <div class="box">
-                  <div class="field">
-                    <div class="control">
-                      <div class="media">
-                        <div class="media-content">
-                          <p class="subtitle is-6">{{v.value.description}}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="columns-fields">
-                    <div class="field">
-                      <div class="control">
-                        <p hidden="true"> {{v.value.type}} </p>
-                        <input *ngIf="v.value.type.toUpperCase() !== 'JSON'" id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}" class="input is-small"
-                          type="text" [value]='v?.value?.value != undefined ? v?.value?.value : "" ' [textContent]='v?.value?.value != undefined ? v?.value?.value : "" '
-                          (input)="onTextChange(category.key.trim() + '-' + v.key.trim())" />
-
-                        <textarea rows="3" *ngIf="v.value.type.toUpperCase() === 'JSON'" class="textarea is-small" id="{{category.key.trim() + '-' + v.key.trim() | lowercase }}"
-                          (input)="onTextChange(category.key.trim() + '-' + v.key.trim())">{{v?.value?.value.trim()}}</textarea>
-                      </div>
-                    </div>
-                    <div class="field is-grouped">
-                      <div class="control">
-                        <button id="btn-save-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(category?.key, v?.key, v?.value?.type)">Save</button>
-                      </div>
-                      <div class="control">
-                        <button id="btn-cancel-{{category.key.trim() + '-' + v.key.trim() | lowercase}}" class="button is-small is-text hidden" (click)="restoreConfigFieldValue(category.key.trim() + '-' + v.key.trim())">Cancel</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
           </div>
         </div>
       </div>
