@@ -38,4 +38,8 @@ export class AddCategoryChildComponent implements OnInit {
   public resetAddConfigItemForm(form: NgForm) {
     form.resetForm();
   }
+
+  public addCategoryChild(form: NgForm) {
+    console.log('form', form);
+  }
 }
