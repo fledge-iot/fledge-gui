@@ -39,11 +39,12 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data) => {
           data['categories'].forEach(element => {
-            this.rootCategories.push({ key: element.key });
+            this.rootCategories.push({ key: element.key, desc: element.description });
           });
           if (onLoadingPage === true) {
             this.getChildren(this.selectedRootCategory, true);
           }
+
         },
         error => {
           if (error.status === 0) {
@@ -65,12 +66,23 @@ export class ConfigurationManagerComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          data['categories'].forEach(element => {
-            this.childCategories.push({ key: element.key, description: element.description, is_selected: 'false' });
-          });
-          if (onLoadingPage === true) {
-            this.childCategories[0].is_selected = 'true';
-            this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
+
+          if (data['categories'].length == 0) {
+            this.rootCategories.forEach(el => {
+              if (el.key === category_name) {
+                this.getCategory(el.key, el.desc);
+              }
+            });
+          }
+          else {
+            data['categories'].forEach(element => {
+              this.childCategories.push({ key: element.key, description: element.description, is_selected: 'false' });
+            });
+
+            if (onLoadingPage === true) {
+              this.childCategories[0].is_selected = 'true';
+              this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
+            }
           }
         },
         error => {
