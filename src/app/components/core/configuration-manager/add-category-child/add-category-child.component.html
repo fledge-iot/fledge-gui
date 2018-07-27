@@ -6,7 +6,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" (ngSubmit)="addChild(f)" #f="ngForm" id="addChildren" novalidate>
+      <form name="form" (ngSubmit)="f.form.valid && addChild(f)" #f="ngForm" id="addChildren" novalidate>
         <div class="columns">
           <div class="column">
             <div class="field">
@@ -27,6 +27,7 @@
                 <p class="control is-fullwidth">
                   <input type="text" name="child" class="input" [(ngModel)]="categoryData.child" #child="ngModel" placeholder="child category" required
                     trim="blur" />
+                    <small *ngIf="f.submitted && !child.valid" class="help is-danger level-left">Child category is required</small>
                 </p>
               </div>
             </div>
