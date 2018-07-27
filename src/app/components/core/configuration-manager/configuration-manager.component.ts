@@ -38,13 +38,16 @@ export class ConfigurationManagerComponent implements OnInit {
 
       const i = evt.target.id;
       if (i.indexOf('UKEY-') !== -1) {
+        console.log('UKEY-');
         this.getChildren(i.replace('UKEY-', ''), false, i + '-children');
       }
       if (i.indexOf('UDESC-') !== -1) {
         const desc = document.getElementById(evt.target.id).innerText;
+        console.log('desc', desc);
         this.getCategory(i.replace('UDESC-', ''), desc);
       }
       if (i.indexOf('ADD-CHILD-') !== -1) {
+        console.log('ADD-CHILD-');
         this.addCategoryChild.setCategoryData(i.replace('ADD-CHILD-', ''));
         // call child component method to toggle modal
         this.addCategoryChild.toggleModal(true);
@@ -124,7 +127,12 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data) => {
           categoryValues.push(data);
-          this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
+          const index = this.categoryData.findIndex(element => element['key'] === category_name);
+          if (index > -1) {
+            this.categoryData[index] = { key: category_name, value: categoryValues, description: category_desc }
+          } else {
+            this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
+          }
         },
         error => {
           if (error.status === 0) {
