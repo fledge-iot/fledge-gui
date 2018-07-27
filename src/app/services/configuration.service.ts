@@ -63,6 +63,9 @@ export class ConfigurationService {
             catchError((error: Response) => observableThrowError(error)));
     }
 
+    /**
+    *  POST  | /foglamp/category/{category_name}/children
+    */
     addChild(category_name, child) {
         return this.http.post(this.CATEGORY_URL + '/' + category_name + '/children', JSON.stringify({ children: child })).pipe(
             map(response => response),

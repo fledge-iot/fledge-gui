@@ -34,8 +34,6 @@ export class ConfigurationManagerComponent implements OnInit {
     public ngProgress: NgProgress) {
     this.JSON = JSON;
     this.renderer.listen('document', 'click', (evt) => {
-      console.log('Clicking the button', evt.target.id);
-
       const i = evt.target.id;
       if (i.indexOf('UKEY-') !== -1) {
         this.getChildren(i.replace('UKEY-', ''), false, i + '-children');
@@ -99,7 +97,8 @@ export class ConfigurationManagerComponent implements OnInit {
               this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
             } else {
               this.childCategories = [];
-              document.getElementById('root-children').innerHTML = '<div class="panel-block">No Children</div>';
+              document.getElementById('root-children').innerHTML =
+              '<div class="panel-block"><span class="tag is-rounded">No sub Category</span></div>';
             }
           }
           if (this.childCategories.length) {
@@ -203,6 +202,14 @@ export class ConfigurationManagerComponent implements OnInit {
     this.selectedRootCategory = categoryData.rootCategory;
     this.getRootCategories();
     this.refreshCategory(categoryData.categoryKey, categoryData.categoryDescription);
+  }
+
+  /**
+  * @param notify
+  * To reload categories after adding a new child category
+  */
+  onAddChild(categoryData) {
+    this.getChildren(categoryData['parentCategory'], false, 'UKEY-' + categoryData['parentCategory'] + '-children');
   }
 
   /**
