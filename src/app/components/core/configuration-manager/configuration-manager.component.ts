@@ -41,8 +41,14 @@ export class ConfigurationManagerComponent implements OnInit {
         this.getChildren(i.replace('UKEY-', ''), false, i + '-children');
       }
       if (i.indexOf('UDESC-') !== -1) {
-        const desc = document.getElementById(evt.target.id).innerText;
-        console.log('desc', desc);
+        const elementId = document.getElementById(evt.target.id);
+        const desc = elementId.innerText;
+        const els = <HTMLCollection>document.getElementsByClassName('cat-desc');
+        for (let l = 0; l < els.length; l++) {
+          els[l].classList.remove('cat-desc');
+        }
+        const selectedElement = <HTMLElement>document.getElementById(i.replace('UDESC-', ''));
+        selectedElement.setAttribute('class', 'cat-desc');
         this.getCategory(i.replace('UDESC-', ''), desc);
       }
       if (i.indexOf('ADD-CHILD-') !== -1) {
@@ -102,7 +108,7 @@ export class ConfigurationManagerComponent implements OnInit {
             } else {
               this.childCategories = [];
               document.getElementById('root-children').innerHTML =
-              '<div class="panel-block"><span class="tag is-rounded">No sub Category</span></div>';
+                '<div class="panel-block"><span class="tag is-rounded">No sub Category</span></div>';
             }
           }
           if (this.childCategories.length) {
@@ -142,7 +148,7 @@ export class ConfigurationManagerComponent implements OnInit {
     let html = '';
     childCategories.forEach(el => {
       html += '<div class="panel-block" style="display: inherit;" id="root-child">';
-      html += '<ul><li><span class="icon">';
+      html += '<ul><li id="' + el.key.trim() + '"><span class="icon">';
       html += '<i id="UKEY-' + el.key.trim() + '" class="fa fa-plus-square" aria-hidden="true"></i>';
       html += '</span>';
       html += '<a class="subtitle is-6" id="UDESC-' + el.key.trim() + '">' + el.description + '</a>';

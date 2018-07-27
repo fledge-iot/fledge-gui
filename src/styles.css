@@ -114,3 +114,8 @@ table.scroll tbody {
     height: 100px;
     background: url(./assets/favicon.ico) center center no-repeat;
 }
+
+.cat-desc {
+  background-color: whitesmoke;
+}
+
