@@ -127,6 +127,11 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
+  public resetAllFilters() {
+    this.selectedRootCategory = 'General';
+    this.getRootCategories(true);
+  }
+
   private getCategory(category_name: string, category_desc: string): void {
     const categoryValues = [];
     this.configService.getCategory(category_name).
