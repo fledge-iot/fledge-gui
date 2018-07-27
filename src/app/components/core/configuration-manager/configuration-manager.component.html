@@ -8,7 +8,7 @@
     <div class="column is-one-quarter">
       <nav class="panel">
         <div class="panel-heading">
-          <div class="select is-fullwidth">
+          <div class="select is-rounded is-fullwidth">
             <select (change)="getChildren($event.target.value, true)">
               <option *ngFor="let rootCategory of rootCategories" [selected]='rootCategory.key === selectedRootCategory' [value]='rootCategory.key'>{{ rootCategory.key }}</option>
             </select>

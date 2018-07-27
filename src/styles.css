@@ -116,6 +116,14 @@ table.scroll tbody {
 }
 
 .cat-desc {
-  background-color: whitesmoke;
+    background-color: whitesmoke;
+    font-weight: bold;
 }
 
+.cat-desc a {
+    font-weight: bold;
+}
+
+.child-panel {
+    display: none;
+}

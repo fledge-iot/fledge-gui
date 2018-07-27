@@ -33,9 +33,21 @@ export class ConfigurationManagerComponent implements OnInit {
       const i = evt.target.id;
       if (i.indexOf('UKEY-') !== -1) {
         console.log('UKEY-');
-        this.getChildren(i.replace('UKEY-', ''), false, i + '-children');
-        const parentElement = document.getElementById(i);
-        parentElement.classList.replace('fa-plus-square', 'fa-minus-square');
+        const iconElement = document.getElementById(evt.target.id);
+        const childElementPanel = document.getElementById(evt.target.id + '-children');
+        const cl = iconElement.getAttribute('class');
+        if (cl === 'fa fa-plus-square') {
+          iconElement.setAttribute('class', 'fa fa-minus');
+          this.getChildren(i.replace('UKEY-', ''), false, i + '-children');
+          childElementPanel.classList.remove('child-panel');
+          const els = <HTMLCollection>document.getElementsByClassName('cat-desc');
+          for (let l = 0; l < els.length; l++) {
+            els[l].classList.remove('cat-desc');
+          }
+        } else {
+          iconElement.setAttribute('class', 'fa fa-plus-square');
+          childElementPanel.classList.add('child-panel');
+        }
       }
       if (i.indexOf('UDESC-') !== -1) {
         const elementId = document.getElementById(evt.target.id);
@@ -44,6 +56,7 @@ export class ConfigurationManagerComponent implements OnInit {
         for (let l = 0; l < els.length; l++) {
           els[l].classList.remove('cat-desc');
         }
+        console.log('UDESC-');
         const selectedElement = <HTMLElement>document.getElementById(i.replace('UDESC-', ''));
         selectedElement.setAttribute('class', 'cat-desc');
         this.getCategory(i.replace('UDESC-', ''), desc);
@@ -104,7 +117,7 @@ export class ConfigurationManagerComponent implements OnInit {
             } else {
               this.childCategories = [];
               document.getElementById('root-children').innerHTML =
-                '<div class="panel-block"><span class="tag is-rounded">No sub Category</span></div>';
+                '<div class="panel-block"><button class="button is-rounded is-small is-fullwidth" disabled>no sub-category</button></div>';
             }
           }
           if (this.childCategories.length) {
@@ -147,15 +160,21 @@ export class ConfigurationManagerComponent implements OnInit {
 
   public getchildCategoriesNodesHtml(childCategories) {
     let html = '';
+    let counter = 0;
+    let selClass = 'cat-desc';
     childCategories.forEach(el => {
+      if (counter > 0) {
+        selClass = '';
+      }
+      counter += 1;
       html += '<div class="panel-block" style="display: inherit;" id="root-child">';
-      html += '<ul><li id="' + el.key.trim() + '"><span class="icon">';
+      html += '<ul><li id="' + el.key.trim() + '" class="' + selClass + '"><span class="icon">';
       html += '<i id="UKEY-' + el.key.trim() + '" class="fa fa-plus-square" aria-hidden="true"></i>';
       html += '</span>';
       html += '<a class="subtitle is-6" id="UDESC-' + el.key.trim() + '">' + el.description + '</a>';
       html += '</li></ul>';
       html += '<br/><div id="UKEY-' + el.key.trim() + '-children"> </div>';
-      html += '<button class="panel-block" id="ADD-CHILD-' + el.key.trim() + '"> Add Child</button>';
+      html += '<center><button class="button is-text is-small" id="ADD-CHILD-' + el.key.trim() + '"> Add Child</button><center>';
       html += '</div>';
     });
     return html;
