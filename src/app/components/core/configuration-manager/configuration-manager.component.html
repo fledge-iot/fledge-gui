@@ -14,23 +14,8 @@
             </select>
           </div>
         </div>
-        <!-- <div class="panel-block">
-          <p class="control has-icons-left">
-            <input class="input is-small" type="text" placeholder="search">
-            <span class="icon is-small is-left">
-              <i class="fa fa-search" aria-hidden="true"></i>
-            </span>
-          </p>
-        </div> -->
-        <div *ngFor="let childCategory of childCategories; let i = index;" class="panel-block">
-          <input type="checkbox" (change)="getCategory(childCategory.key, childCategory.description, $event); getSelectedIndex(i, childCategory.key)"
-            [checked]="childCategory.is_selected == 'true'" [value]="childCategory.key">
-          <div>
-            <!-- <p class="title is-6"> {{ childCategory.key }}</p> -->
-            <!-- <p class="subtitle is-6"><small>{{ childCategory.description }}</small></p> -->
-            <p class="subtitle is-6">{{ childCategory.description }}</p>
-          </div>
-        </div>
+        <div id="x"></div>
+
         <div class="panel-block">
           <button class="button is-text is-fullwidth" (click)="getRootCategories(true)">
             <small>reset all filters</small>
@@ -69,4 +54,5 @@
     </div>
   </div>
   <app-add-config-item (notify)='onNotify($event)'></app-add-config-item>
+  <app-add-category-child (notify)='onNotify($event)'></app-add-category-child>
 </div>

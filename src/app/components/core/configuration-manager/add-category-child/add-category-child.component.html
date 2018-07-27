@@ -1,0 +1,41 @@
+<div id="add-category-child" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-5">Add Category Child</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <form name="form" (ngSubmit)="f.form.valid && addCategoryChild(f)" #f="ngForm" id="ngForm" novalidate>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <div class="form-group">
+                <p class="control is-fullwidth">
+                  <input type="text" name="parentCategory" disabled class="input" [(ngModel)]="categoryData.parentCategory" #parentCategory="ngModel"
+                    placeholder="parent category" required trim="blur" />
+                </p>
+                <small class="help"> {{ categoryData.categoryDescription }} </small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <div class="form-group">
+                <p class="control is-fullwidth">
+                  <input type="text" name="child" class="input" [(ngModel)]="categoryData.child" #child="ngModel" placeholder="child" required
+                    trim="blur" />
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+    <footer class="modal-card-foot">
+      <!-- <button id="save" type="submit" form="ngForm" class="button is-success">Save</button> -->
+    </footer>
+  </div>
+</div>
