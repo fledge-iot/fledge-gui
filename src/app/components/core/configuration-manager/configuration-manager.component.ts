@@ -18,13 +18,8 @@ export class ConfigurationManagerComponent implements OnInit {
   public JSON;
   public addConfigItem: any;
   public selectedRootCategory = 'General';
-  public selectedChildIndex = [];
-  public nestedChildren = [];
-  public isSelectedCategory;
-  htmlData;
   element: Element;
 
-  public isCategoryData = false;
   @Input() categoryConfigurationData;
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
   @ViewChild(AddCategoryChildComponent) addCategoryChild: AddCategoryChildComponent;
@@ -39,6 +34,8 @@ export class ConfigurationManagerComponent implements OnInit {
       if (i.indexOf('UKEY-') !== -1) {
         console.log('UKEY-');
         this.getChildren(i.replace('UKEY-', ''), false, i + '-children');
+        const parentElement = document.getElementById(i);
+        parentElement.classList.replace('fa-plus-square', 'fa-minus-square');
       }
       if (i.indexOf('UDESC-') !== -1) {
         const elementId = document.getElementById(evt.target.id);
@@ -99,11 +96,10 @@ export class ConfigurationManagerComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           data['categories'].forEach(element => {
-            this.childCategories.push({ key: element.key, description: element.description, is_selected: false });
+            this.childCategories.push({ key: element.key, description: element.description });
           });
           if (onLoadingPage === true) {
             if (this.childCategories.length) {
-              this.childCategories[0].is_selected = true;
               this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
             } else {
               this.childCategories = [];
@@ -187,26 +183,6 @@ export class ConfigurationManagerComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  public getSelectedIndex(index, key) {
-    this.selectedChildIndex.push(index);
-    for (let i = 0; i < this.childCategories.length; i++) {
-      if (this.childCategories[i].key === key) {
-        this.childCategories[i].is_selected = !(this.childCategories[i].is_selected);
-      }
-    }
-  }
-
-  public isChildSelected(index) {
-    if (this.selectedChildIndex === [] && index === 0) {
-      return true;
-    }
-    this.selectedChildIndex.forEach(element => {
-      if (element === index) {
-        return true;
-      }
-    });
   }
 
   /**
