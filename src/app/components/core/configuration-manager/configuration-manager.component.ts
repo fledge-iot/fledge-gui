@@ -80,11 +80,12 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data) => {
           data['categories'].forEach(element => {
-            this.rootCategories.push({ key: element.key });
+            this.rootCategories.push({ key: element.key, description: element.description });
           });
           if (onLoadingPage === true) {
             this.getChildren(this.selectedRootCategory, true);
           }
+
         },
         error => {
           if (error.status === 0) {
@@ -96,6 +97,7 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public getChildren(category_name, onLoadingPage = false, appendTo = 'root-children') {
+    console.log("onLoadingPage: ", onLoadingPage);
     /** request started */
     this.ngProgress.start();
     this.childCategories = [];
@@ -108,22 +110,31 @@ export class ConfigurationManagerComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          data['categories'].forEach(element => {
-            this.childCategories.push({ key: element.key, description: element.description });
-          });
-          if (onLoadingPage === true) {
+
+          if (data['categories'].length == 0) {
+            this.rootCategories.forEach(el => {
+              if (el.key === category_name) {
+                this.getCategory(el.key, el.description);
+                document.getElementById('root-children').innerHTML =
+                '<div class="panel-block"><button class="button is-rounded is-small is-fullwidth" disabled>no sub-category</button></div>';
+              }
+            });
+          }
+          else {
+            data['categories'].forEach(element => {
+              this.childCategories.push({ key: element.key, description: element.description });
+            });
+            
             if (this.childCategories.length) {
+              const h = this.getchildCategoriesNodesHtml(this.childCategories);
+              document.getElementById(appendTo).innerHTML = h;
               this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
-            } else {
+            }
+            else {
               this.childCategories = [];
               document.getElementById('root-children').innerHTML =
                 '<div class="panel-block"><button class="button is-rounded is-small is-fullwidth" disabled>no sub-category</button></div>';
             }
-          }
-          if (this.childCategories.length) {
-            const h = this.getchildCategoriesNodesHtml(this.childCategories);
-            document.getElementById(appendTo).innerHTML = h;
-            this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
           }
         },
         error => {
