@@ -123,6 +123,7 @@ export class ConfigurationManagerComponent implements OnInit {
           if (this.childCategories.length) {
             const h = this.getchildCategoriesNodesHtml(this.childCategories);
             document.getElementById(appendTo).innerHTML = h;
+            this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
           }
         },
         error => {
