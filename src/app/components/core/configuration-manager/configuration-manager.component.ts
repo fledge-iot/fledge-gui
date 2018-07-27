@@ -39,7 +39,7 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data) => {
           data['categories'].forEach(element => {
-            this.rootCategories.push({ key: element.key, desc: element.description });
+            this.rootCategories.push({ key: element.key, description: element.description });
           });
           if (onLoadingPage === true) {
             this.getChildren(this.selectedRootCategory, true);
@@ -70,7 +70,7 @@ export class ConfigurationManagerComponent implements OnInit {
           if (data['categories'].length == 0) {
             this.rootCategories.forEach(el => {
               if (el.key === category_name) {
-                this.getCategory(el.key, el.desc);
+                this.getCategory(el.key, el.description);
               }
             });
           }
