@@ -1,14 +1,15 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
 import { NgProgressModule } from 'ngx-progressbar';
-import { PipesModule } from '../../../pipes/pipes.module';
-import { ConfigurationService } from '../../../services';
+
 import { ConfigurationManagerComponent } from '.';
-import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
-import { AddCategoryChildComponent } from './add-category-child/add-category-child.component';
-import { Routes, RouterModule } from '@angular/router';
 import { AuthCheckGuard } from '../../../guards';
+import { ConfigurationService } from '../../../services';
+import { SharedModule } from '../../../shared.module';
+import { AddCategoryChildComponent } from './add-category-child/add-category-child.component';
+import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
 
 const routes: Routes = [
   {
@@ -29,8 +30,8 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     NgProgressModule,
-    PipesModule
+    SharedModule
   ],
-  providers: [ConfigurationService]
+  providers: [ConfigurationService],
 })
 export class ConfigurationModule { }

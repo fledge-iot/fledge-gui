@@ -1,16 +1,17 @@
-import { Component, OnInit, ViewChild, Renderer, AfterViewInit } from '@angular/core';
-import { ConfigurationService, AlertService } from '../../../services/index';
-import { NgProgress } from 'ngx-progressbar';
-import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
-import { AddCategoryChildComponent } from './add-category-child/add-category-child.component';
+import { Component, Input, OnInit, Renderer, ViewChild } from '@angular/core';
 import _ from 'lodash-es/array';
+import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, ConfigurationService } from '../../../services';
+import { AddCategoryChildComponent } from './add-category-child/add-category-child.component';
+import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
 
 @Component({
   selector: 'app-configuration-manager',
   templateUrl: './configuration-manager.component.html',
   styleUrls: ['./configuration-manager.component.css']
 })
-export class ConfigurationManagerComponent implements OnInit, AfterViewInit {
+export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
   public rootCategories = [];
   public childCategories = [];
@@ -22,6 +23,8 @@ export class ConfigurationManagerComponent implements OnInit, AfterViewInit {
   htmlData;
   element: Element;
 
+  public isCategoryData = false;
+  @Input() categoryConfigurationData;
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
   @ViewChild(AddCategoryChildComponent) addCategoryChild: AddCategoryChildComponent;
 
@@ -52,9 +55,6 @@ export class ConfigurationManagerComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.getRootCategories(true);
-  }
-
-  ngAfterViewInit() {
   }
 
   public getRootCategories(onLoadingPage = false) {
@@ -182,42 +182,15 @@ export class ConfigurationManagerComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public restoreConfigFieldValue(config_item_key: string) {
-    const inputField = <HTMLInputElement>document.getElementById(config_item_key.toLowerCase());
-    inputField.value = inputField.textContent;
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
-    cancelButton.classList.add('hidden');
-  }
-
-  public saveConfigValue(category_name: string, config_item: string, type: string) {
-    const cat_item_id = (category_name.trim() + '-' + config_item.trim()).toLowerCase();
-    const inputField = <HTMLInputElement>document.getElementById(cat_item_id);
-    const value = inputField.value.trim();
-    const id = inputField.id.trim();
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
-    cancelButton.classList.add('hidden');
-
-    /** request started */
-    this.ngProgress.start();
-    this.configService.saveConfigItem(category_name, config_item, value, type).
-      subscribe(
-        (data) => {
-          /** request completed */
-          this.ngProgress.done();
-          if (data['value'] !== undefined) {
-            inputField.textContent = inputField.value = data['value'];
-            this.alertService.success('Value updated successfully');
-          }
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+  public isChildSelected(index) {
+    if (this.selectedChildIndex === [] && index === 0) {
+      return true;
+    }
+    this.selectedChildIndex.forEach(element => {
+      if (element === index) {
+        return true;
+      }
+    });
   }
 
   /**
@@ -238,11 +211,4 @@ export class ConfigurationManagerComponent implements OnInit, AfterViewInit {
     // call child component method to toggle modal
     this.addConfigItemModal.toggleModal(true);
   }
-
-  public onTextChange(config_item_key: string) {
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
-    cancelButton.classList.remove('hidden');
-  }
-
-  isObject(val) { return typeof val === 'object'; }
 }

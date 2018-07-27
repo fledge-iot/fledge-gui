@@ -1,0 +1,31 @@
+<div class="columns is-mobile is-multiline" *ngFor="let categoryData of categoryConfigurationData?.value">
+    <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
+      <div class="is-clearfix"></div>
+      <div class="box">
+          <p class="subtitle is-6" >
+            {{configItem.value.description}}
+          </p>
+          <div class="content">
+            <div class="field">
+              <div class="control">
+                <p hidden="true"> {{configItem.value.type}} </p>
+                <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" id="{{ categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase }}" class="input is-small"
+                  type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" ' [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
+                  (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim())" />
+
+                <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" id="{{ categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase }}"
+                  (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim())">{{configItem?.value?.value.trim()}}</textarea>
+              </div>
+            </div>
+          </div>
+          <div class="field is-grouped">
+            <div class="control">
+              <button id="btn-save-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" class="button is-small is-primary" (click)="saveConfigValue(categoryConfigurationData.key.trim(), configItem?.key, configItem?.value?.type)">Save</button>
+            </div>
+            <div class="control">
+              <button id="btn-cancel-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" class="button is-small is-text hidden" (click)="restoreConfigFieldValue(categoryConfigurationData.key.trim() + '-' + configItem.key.trim())">Cancel</button>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>

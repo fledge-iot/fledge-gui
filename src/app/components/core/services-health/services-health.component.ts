@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
 
+import { Router } from '../../../../../node_modules/@angular/router';
 import { ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import Utils from '../../../utils';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
-import { AddServiceComponent } from './add-service/add-service.component';
 
 @Component({
   selector: 'app-services-health',
@@ -18,8 +18,6 @@ export class ServicesHealthComponent implements OnInit {
   public service_data;
   public isAdmin = false;
 
-  @ViewChild(AddServiceComponent) addServiceModal: AddServiceComponent;
-
   // Object to hold service details to shutdown
   public shutDownServiceData = {
     port: '',
@@ -31,7 +29,9 @@ export class ServicesHealthComponent implements OnInit {
 
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
-  constructor(private servicesHealthService: ServicesHealthService, private alertService: AlertService, public ngProgress: NgProgress) { }
+  constructor(private servicesHealthService: ServicesHealthService,
+    private alertService: AlertService,
+    public ngProgress: NgProgress, private router: Router) { }
 
   ngOnInit() {
     this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin'));
@@ -64,16 +64,16 @@ export class ServicesHealthComponent implements OnInit {
   }
 
   checkServiceType(type, serviceStatus) {
-    if (type == 'storage' || type == 'core') {
+    if (type.trim().toLowerCase() === 'storage' || type.trim().toLowerCase() === 'core') {
       return false;
-    } else if (serviceStatus == 'running' || serviceStatus == 'unresponsive') {
+    } else if (serviceStatus.trim().toLowerCase() === 'running' || serviceStatus.trim().toLowerCase() === 'unresponsive') {
       return true;
     }
     return false;
   }
 
-  openAddServiceModal() {
-    this.addServiceModal.toggleModal(true, null);
+  addService() {
+    this.router.navigate(['/services-health/add']);
   }
 
   openModal(port, name, protocol, address) {
