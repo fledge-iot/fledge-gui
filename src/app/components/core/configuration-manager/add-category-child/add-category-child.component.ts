@@ -47,16 +47,15 @@ export class AddCategoryChildComponent implements OnInit {
   }
 
   public addChild(form: NgForm) {
-    console.log('form', form);
     const parent = form.controls['parentCategory'].value;
-    const child = form.controls['child'].value;
+    const child = [];
+    child.push(form.controls['child'].value) ;
     this.configService
       .addChild(parent, child)
-      .subscribe(
-        (data) => {
+      .subscribe(() => {
           this.notify.emit(this.categoryData);
           this.toggleModal(false, null);
-          this.alertService.success(data['message']);
+          this.alertService.success('Children has been added successfully');
           if (form != null) {
             this.resetAddChildForm(form);
           }
