@@ -32,7 +32,7 @@ export class AddCategoryChildComponent implements OnInit {
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
-      this.resetAddConfigItemForm(form);
+      this.resetAddChildForm(form);
     }
     const modal = <HTMLDivElement>document.getElementById('add-category-child');
     if (isOpen) {
@@ -42,7 +42,7 @@ export class AddCategoryChildComponent implements OnInit {
     modal.classList.remove('is-active');
   }
 
-  public resetAddConfigItemForm(form: NgForm) {
+  public resetAddChildForm(form: NgForm) {
     form.resetForm();
   }
 
@@ -58,7 +58,7 @@ export class AddCategoryChildComponent implements OnInit {
           this.toggleModal(false, null);
           this.alertService.success(data['message']);
           if (form != null) {
-            this.resetAddConfigItemForm(form);
+            this.resetAddChildForm(form);
           }
         },
         error => {
