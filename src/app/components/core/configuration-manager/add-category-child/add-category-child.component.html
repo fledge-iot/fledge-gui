@@ -6,7 +6,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" (ngSubmit)="f.form.valid && addCategoryChild(f)" #f="ngForm" id="ngForm" novalidate>
+      <form name="form" (ngSubmit)="addChild(f)" #f="ngForm" id="ngForm" novalidate>
         <div class="columns">
           <div class="column">
             <div class="field">
@@ -35,7 +35,7 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <!-- <button id="save" type="submit" form="ngForm" class="button is-success">Save</button> -->
+      <button id="save" type="submit" form="ngForm" class="button is-success">Save</button>
     </footer>
   </div>
 </div>

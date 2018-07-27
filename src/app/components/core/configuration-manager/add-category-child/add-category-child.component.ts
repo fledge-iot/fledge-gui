@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { AlertService, ConfigurationService } from '../../../../services';
 
 @Component({
   selector: 'app-add-category-child',
@@ -9,11 +10,17 @@ import { NgForm } from '@angular/forms';
 export class AddCategoryChildComponent implements OnInit {
   public categoryData: any;
 
-  constructor() { }
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+
+  constructor(
+    private configService: ConfigurationService,
+    private alertService: AlertService
+  ) {}
 
   ngOnInit() {
     this.categoryData = {
-      parentCategory: ''
+      parentCategory: '',
+      child: ''
     };
   }
 
@@ -39,7 +46,28 @@ export class AddCategoryChildComponent implements OnInit {
     form.resetForm();
   }
 
-  public addCategoryChild(form: NgForm) {
+  public addChild(form: NgForm) {
     console.log('form', form);
+    const parent = form.controls['parentCategory'].value;
+    const child = form.controls['child'].value;
+    this.configService
+      .addChild(parent, child)
+      .subscribe(
+        (data) => {
+          this.notify.emit(this.categoryData);
+          this.toggleModal(false, null);
+          this.alertService.success(data['message']);
+          if (form != null) {
+            this.resetAddConfigItemForm(form);
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        }
+      );
   }
 }

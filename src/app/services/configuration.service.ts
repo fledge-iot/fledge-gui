@@ -62,4 +62,10 @@ export class ConfigurationService {
             map(response => response),
             catchError((error: Response) => observableThrowError(error)));
     }
+
+    addChild(category_name, child) {
+        return this.http.post(this.CATEGORY_URL + '/' + category_name + '/children', JSON.stringify({ children: child })).pipe(
+            map(response => response),
+            catchError((error: Response) => observableThrowError(error)));
+    }
 }

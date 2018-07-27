@@ -45,7 +45,6 @@ export class ConfigurationManagerComponent implements OnInit {
         this.getCategory(i.replace('UDESC-', ''), desc);
       }
       if (i.indexOf('ADD-CHILD-') !== -1) {
-        // alert('add a child for:  ' + i.replace('ADD-CHILD-', ''));
         this.addCategoryChild.setCategoryData(i.replace('ADD-CHILD-', ''));
         // call child component method to toggle modal
         this.addCategoryChild.toggleModal(true);
@@ -78,11 +77,11 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  public getChildren(category_name, onLoadingPage = false, appendTo = 'x') {
+  public getChildren(category_name, onLoadingPage = false, appendTo = 'root-children') {
     /** request started */
     this.ngProgress.start();
     this.childCategories = [];
-    if (appendTo === 'x') {
+    if (appendTo === 'root-children') {
       this.selectedRootCategory = category_name;
       this.categoryData = [];
     }
@@ -91,19 +90,22 @@ export class ConfigurationManagerComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          console.log('data1111', data['categories']);
           data['categories'].forEach(element => {
             this.childCategories.push({ key: element.key, description: element.description, is_selected: false });
           });
           if (onLoadingPage === true) {
-            this.childCategories[0].is_selected = true;
-            this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
+            if (this.childCategories.length) {
+              this.childCategories[0].is_selected = true;
+              this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
+            } else {
+              this.childCategories = [];
+              document.getElementById('root-children').innerHTML = '<div class="panel-block">No Children</div>';
+            }
           }
           if (this.childCategories.length) {
-            const h = this.get_child_html(this.childCategories);
+            const h = this.getchildCategoriesNodesHtml(this.childCategories);
             document.getElementById(appendTo).innerHTML = h;
           }
-          console.log('childCategories', this.childCategories);
         },
         error => {
           /** request completed */
@@ -133,9 +135,9 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  public get_child_html(c) {
+  public getchildCategoriesNodesHtml(childCategories) {
     let html = '';
-    c.forEach(el => {
+    childCategories.forEach(el => {
       html += '<div class="panel-block" style="display: inherit;" id="root-child">';
       html += '<ul><li><span class="icon">';
       html += '<i id="UKEY-' + el.key.trim() + '" class="fa fa-plus-square" aria-hidden="true"></i>';
