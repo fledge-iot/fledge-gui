@@ -11,6 +11,7 @@ import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog
 import { AlertComponent } from './components/common/alert/alert.component';
 import { ChartModule } from './components/common/chart';
 import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
+import { RestartModalComponent } from './components/common/restart-modal/restart-modal.component';
 import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
 import { CertificateModule } from './components/core/certificate/certificate.module';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
@@ -88,6 +89,7 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     InputTrimDirective,
     ServiceDiscoveryComponent,
     ShutdownModalComponent,
+    RestartModalComponent,
     SupportComponent,
     BackupRestoreComponent
   ],

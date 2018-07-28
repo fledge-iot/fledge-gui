@@ -14,6 +14,7 @@ import { NgProgress } from 'ngx-progressbar';
 import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
+import { RestartModalComponent } from '../../common/restart-modal/restart-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -29,13 +30,17 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     key: '',
     message: ''
   };
-
+  public restartData = {
+    key: '',
+    message: ''
+  };
   // Define a variable to use for showing/hiding the Login button
   isUserLoggedIn: boolean;
   userName: string;
   isAuthOptional = true;  // Default to true for authorized access
 
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
+  @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
 
   constructor(private servicesHealthService: ServicesHealthService,
     private status: ConnectedServiceStatus,
@@ -137,6 +142,36 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
+  }
+
+  openRestartModal() {
+    this.restartData = {
+      key: 'restart',
+      message: 'Do you really want to restart the FogLAMP?'
+    };
+    // call childRestart component method to toggle modal
+    this.childRestart.toggleModal(true);
+  }
+
+  restart() {
+    /** request started */
+    this.ngProgress.start();
+    this.servicesHealthService.restart()
+      .subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data['message']);
+        },
+        (error) => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   shutdown() {
