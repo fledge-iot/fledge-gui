@@ -10,6 +10,7 @@ import { InterceptorSkipHeader } from '../services/http.request.interceptor';
 export class ServicesHealthService {
   private GET_PING_URL = environment.BASE_URL + 'ping';
   private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
+  private FOGLAMP_RESTART_URL = environment.BASE_URL + 'restart';
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
   private GET_INSTALLED_PLUGINS_URL = environment.BASE_URL + 'plugins/installed';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
@@ -31,6 +32,15 @@ export class ServicesHealthService {
    */
   shutdown() {
     return this.http.put(this.FOGLAMP_SHUTDOWN_URL, null).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+   *  PUT  | /foglamp/restart
+   */
+  restart() {
+    return this.http.put(this.FOGLAMP_RESTART_URL, null).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
