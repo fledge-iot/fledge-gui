@@ -47,6 +47,9 @@
             <a *ngIf="ping_info.is_alive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
               <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp; Shut Down
             </a>
+            <a id="restart" *ngIf="ping_info.is_alive && isUserLoggedIn" (click)="openRestartModal()" class="dropdown-item">
+              <i class="fa fa-refresh" aria-hidden="true"></i>&nbsp; Restart
+            </a>
           </div>
         </div>
       </div>
@@ -55,7 +58,13 @@
           <i class="fa fa-power-off" aria-hidden="true"></i>
         </a>
       </div>
+      <div *ngIf="ping_info.is_alive && isAuthOptional" class="icon has-text-danger is-large">
+        <a id="restart" class=" tooltip is-tooltip-left" data-tooltip="Restart" (click)="openRestartModal()">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </a>
+      </div>
     </div>
   </div>
   <app-shutdown-modal (shutdown)='shutdown()' [shutDownData]='shutDownData'></app-shutdown-modal>
+  <app-restart-modal (restart)='restart()' [restartData]='restartData'></app-restart-modal>
 </nav>
