@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { NgProgressModule } from 'ngx-progressbar';
+import { TreeModule } from 'angular-tree-component';
 
 import { ConfigurationManagerComponent } from '.';
 import { AuthCheckGuard } from '../../../guards';
@@ -30,7 +31,8 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     NgProgressModule,
-    SharedModule
+    SharedModule,
+    TreeModule
   ],
   providers: [ConfigurationService],
 })
