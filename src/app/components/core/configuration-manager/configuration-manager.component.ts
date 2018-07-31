@@ -48,7 +48,7 @@ export class ConfigurationManagerComponent implements OnInit {
             this.rootCategories.push({ key: element.key, description: element.description });
           });
           if (onLoadingPage === true) {
-            this.getChildren(this.selectedRootCategory);
+          this.getChildren(this.selectedRootCategory);
           }
         },
         error => {
@@ -61,16 +61,26 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
 
-  public getChildren(category_name) {
+  public getChildren(categoryName) {
+    console.log(categoryName);
+    this.tree.treeModel.nodes = [];
     this.nodes = [];
-    this.configService.getChildren(category_name).
+    this.configService.getChildren(categoryName).
       subscribe(
         (data) => {
+          const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
+          if (rootCategories.length > 0 && data['categories'].length === 0) {
+            this.categoryData = [];
+          }
           data['categories'].forEach(element => {
             this.nodes.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
           });
           this.tree.treeModel.update();
-          this.tree.treeModel.getFirstRoot().setIsActive(true);
+          if (this.tree.treeModel.getFirstRoot()) {
+            this.tree.treeModel.getFirstRoot().setIsActive(true);
+            this.tree.treeModel.getFirstRoot().setIsExpanded(false);
+            this.tree.treeModel.getFirstRoot().setIsExpanded(true);
+          }
         },
         error => {
           if (error.status === 0) {
@@ -82,6 +92,7 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public onNodeToggleExpanded(event) {
+    console.log('event.node.data.id', event.node.data.id);
     event.node.data.children = [];
     if (event.node.isExpanded) {
       this.configService.getChildren(event.node.data.id).
@@ -91,6 +102,7 @@ export class ConfigurationManagerComponent implements OnInit {
               event.node.data.children.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
               this.tree.treeModel.update();
             });
+            // event.node.data.children.push({ id: event.node.data.id, name: 'Add sub-category', hasChildren: false, children: [] });
           }, error => {
             if (error.status === 0) {
               console.log('service down ', error);
@@ -103,6 +115,10 @@ export class ConfigurationManagerComponent implements OnInit {
 
   public onNodeActive(event) {
     this.getCategory(event.node.data.id, event.node.data.name);
+    // if (event.node.data.name === 'Add sub-category') {
+    //   this.addCategoryChild.setCategoryData(event.node.data.id);
+    //   this.addCategoryChild.toggleModal(true);
+    // }
   }
 
   public resetAllFilters() {
