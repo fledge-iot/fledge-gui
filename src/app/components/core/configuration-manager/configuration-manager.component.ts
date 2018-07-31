@@ -69,9 +69,9 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data) => {
           const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
-
           // To check if there is any category
           if (rootCategories.length > 0 && data['categories'].length === 0) {
+            this.getCategory(rootCategories[0].key, rootCategories[0].description);
             this.categoryData = [];
             // add a node to create child relationship
             this.nodes.push({ id: categoryName, name: this.ADD_CHILD_BUTTON_KEY, hasChildren: false, children: [] });
