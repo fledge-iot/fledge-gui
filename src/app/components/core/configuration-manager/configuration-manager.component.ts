@@ -18,6 +18,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public JSON;
   public addConfigItem: any;
   public selectedRootCategory = 'General';
+  public ADD_CHILD_BUTTON_KEY = 'Add Child';
   element: Element;
   @Input() categoryConfigurationData;
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
@@ -48,7 +49,7 @@ export class ConfigurationManagerComponent implements OnInit {
             this.rootCategories.push({ key: element.key, description: element.description });
           });
           if (onLoadingPage === true) {
-          this.getChildren(this.selectedRootCategory);
+            this.getChildren(this.selectedRootCategory);
           }
         },
         error => {
@@ -62,20 +63,28 @@ export class ConfigurationManagerComponent implements OnInit {
 
 
   public getChildren(categoryName) {
-    console.log(categoryName);
     this.tree.treeModel.nodes = [];
     this.nodes = [];
     this.configService.getChildren(categoryName).
       subscribe(
         (data) => {
           const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
+
+          // To check if there is any category
           if (rootCategories.length > 0 && data['categories'].length === 0) {
             this.categoryData = [];
+            // add a node to create child relationship
+            this.nodes.push({ id: categoryName, name: this.ADD_CHILD_BUTTON_KEY, hasChildren: false, children: [] });
+            this.tree.treeModel.update();
+            return;
           }
           data['categories'].forEach(element => {
             this.nodes.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
           });
+          // add a node to create child relationship
+          this.nodes.push({ id: categoryName, name: this.ADD_CHILD_BUTTON_KEY, hasChildren: false, children: [] });
           this.tree.treeModel.update();
+
           if (this.tree.treeModel.getFirstRoot()) {
             this.tree.treeModel.getFirstRoot().setIsActive(true);
             this.tree.treeModel.getFirstRoot().setIsExpanded(false);
@@ -92,7 +101,6 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public onNodeToggleExpanded(event) {
-    console.log('event.node.data.id', event.node.data.id);
     event.node.data.children = [];
     if (event.node.isExpanded) {
       this.configService.getChildren(event.node.data.id).
@@ -102,7 +110,7 @@ export class ConfigurationManagerComponent implements OnInit {
               event.node.data.children.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
               this.tree.treeModel.update();
             });
-            // event.node.data.children.push({ id: event.node.data.id, name: 'Add sub-category', hasChildren: false, children: [] });
+            // event.node.data.children.push({ id: event.node.data.id, name: 'add', hasChildren: false, children: [] });
           }, error => {
             if (error.status === 0) {
               console.log('service down ', error);
@@ -114,11 +122,12 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public onNodeActive(event) {
-    this.getCategory(event.node.data.id, event.node.data.name);
-    // if (event.node.data.name === 'Add sub-category') {
-    //   this.addCategoryChild.setCategoryData(event.node.data.id);
-    //   this.addCategoryChild.toggleModal(true);
-    // }
+    if (event.node.data.name === this.ADD_CHILD_BUTTON_KEY) {
+      this.addCategoryChild.setCategoryData(event.node.data.id);
+      this.addCategoryChild.toggleModal(true);
+    } else {
+      this.getCategory(event.node.data.id, event.node.data.name);
+    }
   }
 
   public resetAllFilters() {
@@ -182,7 +191,6 @@ export class ConfigurationManagerComponent implements OnInit {
   * To reload categories after adding a new child category
   */
   onAddChild(categoryData) {
-    console.log('categoryData', categoryData);
     this.getChildren(categoryData['parentCategory']);
   }
 
