@@ -15,12 +15,18 @@
           </div>
         </div>
         <div id="root-children">
-            <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)" (activate)="onNodeActive($event)"></tree-root>
+          <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)" (activate)="onNodeActive($event)"></tree-root>
         </div>
         <div class="panel-block">
-          <button class="button is-text is-fullwidth" (click)="resetAllFilters()">
-            <small>reset all filters</small>
+          <button class="button is-text" (click)="addChildRelation()">
+            <small>Add Child</small>
           </button>
+          <button class="button is-text" (click)="deleteChildRelation()">
+            <small>Delete Child</small>
+          </button>
+          <!-- <button class="button is-text is-small" (click)="resetAllFilters()">
+            <small>Reset filter</small>
+          </button> -->
         </div>
       </nav>
     </div>
@@ -48,7 +54,7 @@
         </header>
         <div class="card-content">
           <div class="content">
-              <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
+            <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
           </div>
         </div>
       </div>

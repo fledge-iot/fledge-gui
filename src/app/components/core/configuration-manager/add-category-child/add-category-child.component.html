@@ -2,33 +2,33 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">Add Category Child</p>
+      <p class="modal-card-title is-size-5">Add Child Category</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" (ngSubmit)="f.form.valid && addChild(f)" #f="ngForm" id="addChildren" novalidate>
+      <form name="form" (ngSubmit)="f.form.valid && addChild(f)" #f="ngForm" id="addChildForm" novalidate>
         <div class="columns">
           <div class="column">
             <div class="field">
-              <div class="form-group">
-                <p class="control is-fullwidth">
-                  <input type="text" name="parentCategory" disabled class="input" [(ngModel)]="categoryData.parentCategory" #parentCategory="ngModel"
-                    placeholder="parent category" required trim="blur" />
-                </p>
-                <small class="help"> {{ categoryData.categoryDescription }} </small>
+              <label class="label">Parent Category</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select [(ngModel)]="parentCategory" name="parentCategory" (change)="changeParent($event.target.value)">
+                    <option *ngFor="let category of parentCategoriesList" [value]="category.key" [selected]="category.key == parentCategory">{{ category.description }}</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="columns">
           <div class="column">
             <div class="field">
-              <div class="form-group">
-                <p class="control is-fullwidth">
-                  <input type="text" name="child" class="input" [(ngModel)]="categoryData.child" #child="ngModel" placeholder="child category" required
-                    trim="blur" />
-                    <small *ngIf="f.submitted && !child.valid" class="help is-danger level-left">Child category is required</small>
-                </p>
+              <label class="label">Child Category</label>
+              <div class="control">
+                <div class="select is-fullwidth is-multiple">
+                  <select multiple [(ngModel)]="selectedChildren" name="childCategories">
+                    <option *ngFor="let child of childCategoriesList" [value]="child.key">{{ child.description }}</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -36,7 +36,7 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" type="submit" form="addChildren" class="button is-success">Save</button>
+      <button id="save" type="submit" form="addChildForm" class="button is-success">Add Relation</button>
     </footer>
   </div>
 </div>
