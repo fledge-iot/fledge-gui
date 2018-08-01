@@ -8,8 +8,8 @@ import { AlertService, ConfigurationService } from '../../../../services';
   styleUrls: ['./add-category-child.component.css']
 })
 export class AddCategoryChildComponent implements OnInit {
-  public parentCategoriesList;
-  public childCategoriesList;
+  public parentCategories;
+  public childCategories;
   public parentCategory;
   public selectedChildren: string[] = [];
 
@@ -24,13 +24,32 @@ export class AddCategoryChildComponent implements OnInit {
     this.getAllCategories();
   }
 
+  public getChildren(categoryName) {
+    this.configService.getChildren(categoryName).
+      subscribe(
+        (data: any) => {
+          data['categories'].forEach(el => {
+            const index = this.childCategories.findIndex(item => item.key === el.key);
+            this.childCategories.splice(index, 1);
+          });
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   private getAllCategories(): void {
     this.configService.getCategories().
       subscribe(
         (data) => {
-          this.parentCategoriesList = data['categories'];
-          this.parentCategory = this.parentCategoriesList[0]['key'];
-          this.childCategoriesList = this.parentCategoriesList.filter(element => element.key !== this.parentCategory);
+          this.parentCategories = data['categories'];
+          this.parentCategory = this.parentCategories[0]['key'];
+          this.childCategories = this.parentCategories.filter(element => element.key !== this.parentCategory);
+          this.getChildren(this.parentCategory);
         },
         error => {
           if (error.status === 0) {
@@ -44,7 +63,7 @@ export class AddCategoryChildComponent implements OnInit {
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
       form.controls['parentCategory'].reset(this.parentCategory);
-      form.controls['childCategories'].reset();
+      form.controls['childCategory'].reset();
     }
     const modal = <HTMLDivElement>document.getElementById('add-category-child');
     if (isOpen) {
@@ -55,13 +74,13 @@ export class AddCategoryChildComponent implements OnInit {
   }
 
   public changeParent(value) {
-    this.childCategoriesList = this.parentCategoriesList.filter(el => el.key !== value);
+    this.childCategories = this.parentCategories.filter(el => el.key !== value);
+    this.getChildren(value);
   }
 
   public addChild(form: NgForm) {
-
     const parent = form.controls['parentCategory'].value;
-    const children = form.controls['childCategories'].value;
+    const children = form.controls['childCategory'].value;
     this.configService
       .addChild(parent, children)
       .subscribe(() => {
@@ -70,7 +89,7 @@ export class AddCategoryChildComponent implements OnInit {
         this.alertService.success('Children have been added successfully');
         if (form != null) {
           form.controls['parentCategory'].reset(this.parentCategory);
-          form.controls['childCategories'].reset();
+          form.controls['childCategory'].reset();
         }
       },
         error => {

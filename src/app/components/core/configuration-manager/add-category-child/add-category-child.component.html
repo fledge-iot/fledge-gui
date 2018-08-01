@@ -14,7 +14,7 @@
               <div class="control">
                 <div class="select is-fullwidth">
                   <select [(ngModel)]="parentCategory" name="parentCategory" (change)="changeParent($event.target.value)">
-                    <option *ngFor="let category of parentCategoriesList" [value]="category.key" [selected]="category.key == parentCategory">{{ category.description }}</option>
+                    <option *ngFor="let category of parentCategories" [value]="category.key" [selected]="category.key == parentCategory">{{ category.description }}</option>
                   </select>
                 </div>
               </div>
@@ -25,8 +25,8 @@
               <label class="label">Child Category</label>
               <div class="control">
                 <div class="select is-fullwidth is-multiple">
-                  <select multiple [(ngModel)]="selectedChildren" name="childCategories">
-                    <option *ngFor="let child of childCategoriesList" [value]="child.key">{{ child.description }}</option>
+                  <select multiple [(ngModel)]="selectedChildren" name="childCategory">
+                    <option *ngFor="let child of childCategories" [value]="child.key">{{ child.description }}</option>
                   </select>
                 </div>
               </div>
