@@ -1,9 +1,13 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import _ from 'lodash-es/array';
+import { isEmpty } from 'lodash-es/';
+
 import { NgProgress } from 'ngx-progressbar';
+import { TreeComponent } from 'angular-tree-component';
 
 import { AlertService, ConfigurationService } from '../../../services';
+import { AddCategoryChildComponent } from './add-category-child/add-category-child.component';
 import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
-import _ from 'lodash-es/array';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -13,15 +17,19 @@ import _ from 'lodash-es/array';
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
   public rootCategories = [];
-  public childCategories = [];
   public JSON;
   public addConfigItem: any;
   public selectedRootCategory = 'General';
-  public selectedChildIndex = [];
-
-  public isCategoryData = false;
+  element: Element;
   @Input() categoryConfigurationData;
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
+  @ViewChild(AddCategoryChildComponent) addCategoryChild: AddCategoryChildComponent;
+
+  nodes: any[] = [];
+  options = {};
+
+  @ViewChild(TreeComponent)
+  private tree: TreeComponent;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -42,9 +50,8 @@ export class ConfigurationManagerComponent implements OnInit {
             this.rootCategories.push({ key: element.key, description: element.description });
           });
           if (onLoadingPage === true) {
-            this.getChildren(this.selectedRootCategory, true);
+            this.getChildren(this.selectedRootCategory);
           }
-
         },
         error => {
           if (error.status === 0) {
@@ -55,39 +62,30 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  public getChildren(category_name, onLoadingPage = false) {
-    /** request started */
-    this.ngProgress.start();
-    this.childCategories = [];
-    this.categoryData = [];
-    this.selectedRootCategory = category_name;
-    this.configService.getChildren(category_name).
+  public getChildren(categoryName) {
+    this.tree.treeModel.nodes = [];
+    this.nodes = [];
+    this.configService.getChildren(categoryName).
       subscribe(
         (data) => {
-          /** request completed */
-          this.ngProgress.done();
-
-          if (data['categories'].length == 0) {
-            this.rootCategories.forEach(el => {
-              if (el.key === category_name) {
-                this.getCategory(el.key, el.description);
-              }
-            });
+          const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
+          // Check if there is any category
+          if (rootCategories.length > 0 && data['categories'].length === 0) {
+            this.getCategory(rootCategories[0].key, rootCategories[0].description);
+            this.categoryData = [];
+            return;
           }
-          else {
-            data['categories'].forEach(element => {
-              this.childCategories.push({ key: element.key, description: element.description, is_selected: 'false' });
-            });
-
-            if (onLoadingPage === true) {
-              this.childCategories[0].is_selected = 'true';
-              this.getCategory(this.childCategories[0].key, this.childCategories[0].description);
-            }
+          data['categories'].forEach(element => {
+            this.nodes.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
+          });
+          this.tree.treeModel.update();
+          if (this.tree.treeModel.getFirstRoot()) {
+            this.tree.treeModel.getFirstRoot().setIsActive(true);
+            this.tree.treeModel.getFirstRoot().setIsExpanded(false);
+            this.tree.treeModel.getFirstRoot().setIsExpanded(true);
           }
         },
         error => {
-          /** request completed */
-          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -96,17 +94,54 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  private getCategory(category_name: string, category_desc: string, event = null): void {
-    if (event != null && event.target.checked === false) {
-      this.categoryData = this.categoryData.filter(value => value.key !== category_name);
-      return;
+  public onNodeToggleExpanded(event) {
+    event.node.data.children = [];
+    if (event.node.isExpanded) {
+      this.configService.getChildren(event.node.data.id).
+        subscribe(
+          (data) => {
+            data['categories'].forEach(element => {
+              event.node.data.children.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
+              this.tree.treeModel.update();
+            });
+          }, error => {
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
     }
+  }
+
+  public onNodeActive(event) {
+    this.getCategory(event.node.data.id, event.node.data.name);
+  }
+
+  public addChildRelation() {
+    this.addCategoryChild.setModalType('add');
+    this.addCategoryChild.toggleModal(true);
+  }
+
+  public deleteChildRelation() {
+    this.addCategoryChild.setModalType('delete');
+    this.addCategoryChild.toggleModal(true);
+  }
+
+  public resetAllFilters() {
+    this.selectedRootCategory = 'General';
+    this.getRootCategories(true);
+  }
+
+  private getCategory(category_name: string, category_desc: string): void {
     const categoryValues = [];
     this.configService.getCategory(category_name).
       subscribe(
-        (data) => {
-          categoryValues.push(data);
-          this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
+        (data: any) => {
+          if (!isEmpty(data)) {
+            categoryValues.push(data);
+            this.categoryData = [{ key: category_name, value: categoryValues, description: category_desc }];
+          }
         },
         error => {
           if (error.status === 0) {
@@ -141,26 +176,6 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  public getSelectedIndex(index, key) {
-    this.selectedChildIndex.push(index);
-    for (let i = 0; i < this.childCategories.length; i++) {
-      if (this.childCategories[i].key === key) {
-        this.childCategories[i].is_selected = !(this.childCategories[i].is_selected);
-      }
-    }
-  }
-
-  public isChildSelected(index) {
-    if (this.selectedChildIndex === [] && index === 0) {
-      return true;
-    }
-    this.selectedChildIndex.forEach(element => {
-      if (element === index) {
-        return true;
-      }
-    });
-  }
-
   /**
   * @param notify
   * To reload categories after adding a new config item for a category
@@ -169,6 +184,14 @@ export class ConfigurationManagerComponent implements OnInit {
     this.selectedRootCategory = categoryData.rootCategory;
     this.getRootCategories();
     this.refreshCategory(categoryData.categoryKey, categoryData.categoryDescription);
+  }
+
+  /**
+  * @param notify
+  * To reload categories after adding a new child category
+  */
+  onAddChild() {
+    this.getRootCategories(true);
   }
 
   /**

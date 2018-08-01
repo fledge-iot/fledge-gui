@@ -45,6 +45,7 @@ import {
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
+
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
     .then((data) => {
