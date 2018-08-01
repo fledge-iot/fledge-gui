@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SchedulesService, AlertService } from '../../../../services/index';
 import { NgProgress } from 'ngx-progressbar';
+import { Router } from '../../../../../../node_modules/@angular/router';
 
 @Component({
   selector: 'app-list-tasks',
@@ -11,7 +12,11 @@ export class ListTasksComponent implements OnInit {
   public tasksData = [];
   public selectedTaskType = 'Latest'; // Default is LATEST
 
-  constructor(private schedulesService: SchedulesService, private alertService: AlertService, public ngProgress: NgProgress) {}
+  constructor(
+    private schedulesService: SchedulesService,
+    private alertService: AlertService,
+    public ngProgress: NgProgress,
+    private router: Router) {}
 
   ngOnInit() {
     this.getLatestTasks();
@@ -118,5 +123,9 @@ export class ListTasksComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  addTask() {
+    this.router.navigate(['/scheduled-task/add-task']);
   }
 }

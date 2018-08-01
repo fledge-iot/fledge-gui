@@ -10,7 +10,8 @@ export class SchedulesService {
 
   private GET_SCHEDULE_TYPE = environment.BASE_URL + 'schedule/type';
   private GET_SCHEDULE_PROCESS = environment.BASE_URL + 'schedule/process';
-  private GET_SCHEDULE = environment.BASE_URL + 'schedule';
+  private SCHEDULE_URL = environment.BASE_URL + 'schedule';
+  private CREATE_TASK = environment.BASE_URL + 'scheduled/task';
 
   private TASKS_URL = environment.BASE_URL + 'task';
   private LATEST_TASK_URL = environment.BASE_URL + 'task/latest';
@@ -31,7 +32,7 @@ export class SchedulesService {
    *  GET | /foglamp/schedule
    */
   public getSchedules() {
-    return this.http.get(this.GET_SCHEDULE).pipe(
+    return this.http.get(this.SCHEDULE_URL).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -40,7 +41,7 @@ export class SchedulesService {
    *  GET | /foglamp/schedule/{schedule_id}
    */
   public getSchedule(schedule_id) {
-    return this.http.get(this.GET_SCHEDULE + '/' + schedule_id).pipe(
+    return this.http.get(this.SCHEDULE_URL + '/' + schedule_id).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -52,7 +53,7 @@ export class SchedulesService {
    *
    */
   public createSchedule(payload: any) {
-    return this.http.post(this.GET_SCHEDULE, JSON.stringify(payload)).pipe(
+    return this.http.post(this.SCHEDULE_URL, JSON.stringify(payload)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -64,7 +65,7 @@ export class SchedulesService {
     *
     */
   public updateSchedule(schedule_id, payload: any) {
-    return this.http.put(this.GET_SCHEDULE + '/' + schedule_id, JSON.stringify(payload)).pipe(
+    return this.http.put(this.SCHEDULE_URL + '/' + schedule_id, JSON.stringify(payload)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -77,7 +78,7 @@ export class SchedulesService {
     *
     */
   public deleteSchedule(schedule_id: any) {
-    return this.http.delete(this.GET_SCHEDULE + '/' + schedule_id).pipe(
+    return this.http.delete(this.SCHEDULE_URL + '/' + schedule_id).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -96,7 +97,7 @@ export class SchedulesService {
    *  PUT | /foglamp/schedule/{schedule_id}/enable
    */
   public enableSchedule(id) {
-    return this.http.put(this.GET_SCHEDULE + '/' + id + '/' + 'enable', null).pipe(
+    return this.http.put(this.SCHEDULE_URL + '/' + id + '/' + 'enable', null).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -105,7 +106,7 @@ export class SchedulesService {
    *  PUT | /foglamp/schedule/{schedule_id}/disable
    */
   public disableSchedule(id) {
-    return this.http.put(this.GET_SCHEDULE + '/' + id + '/' + 'disable', null).pipe(
+    return this.http.put(this.SCHEDULE_URL + '/' + id + '/' + 'disable', null).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -135,6 +136,18 @@ export class SchedulesService {
    */
   public cancelTask(id) {
     return this.http.put(this.TASKS_URL + '/' + id + '/cancel', null).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+   * Create a task
+   *
+   * POST | /foglamp/scheduled/task
+   *
+   */
+  public createTask(payload: any) {
+    return this.http.post(this.CREATE_TASK, JSON.stringify(payload)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
