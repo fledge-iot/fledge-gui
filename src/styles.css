@@ -127,3 +127,8 @@ table.scroll tbody {
 .child-panel {
     display: none;
 }
+
+.node-content-wrapper-active.node-content-wrapper-focused {
+  background: whitesmoke;
+  font-weight: bold;
+}

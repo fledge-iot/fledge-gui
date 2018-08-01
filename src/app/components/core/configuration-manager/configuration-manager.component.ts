@@ -1,5 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import _ from 'lodash-es/array';
+import { isEmpty } from 'lodash-es/';
+
 import { NgProgress } from 'ngx-progressbar';
 import { TreeComponent } from 'angular-tree-component';
 
@@ -135,9 +137,11 @@ export class ConfigurationManagerComponent implements OnInit {
     const categoryValues = [];
     this.configService.getCategory(category_name).
       subscribe(
-        (data) => {
-          categoryValues.push(data);
-          this.categoryData = [{ key: category_name, value: categoryValues, description: category_desc }];
+        (data: any) => {
+          if (!isEmpty(data)) {
+            categoryValues.push(data);
+            this.categoryData = [{ key: category_name, value: categoryValues, description: category_desc }];
+          }
         },
         error => {
           if (error.status === 0) {

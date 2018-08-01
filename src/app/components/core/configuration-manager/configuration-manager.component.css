@@ -2,3 +2,8 @@
     background-color: #fff;
     margin-top: 10px;
 }
+
+#root-children {
+  border-left: 1px solid #dbdbdb;
+  border-right: 1px solid #dbdbdb;
+}
