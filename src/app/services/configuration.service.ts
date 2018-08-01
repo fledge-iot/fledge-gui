@@ -81,4 +81,13 @@ export class ConfigurationService {
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
+
+  /**
+  *  DELETE  | /foglamp/category/{category_name}/children/{childCategory}
+  */
+  deleteChild(categoryName, child) {
+    return this.http.delete(this.CATEGORY_URL + '/' + categoryName + '/children/' + child).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
 }

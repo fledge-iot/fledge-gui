@@ -117,11 +117,13 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public addChildRelation() {
+    this.addCategoryChild.setModalType('add');
     this.addCategoryChild.toggleModal(true);
   }
 
   public deleteChildRelation() {
-
+    this.addCategoryChild.setModalType('delete');
+    this.addCategoryChild.toggleModal(true);
   }
 
   public resetAllFilters() {

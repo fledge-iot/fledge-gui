@@ -2,7 +2,8 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">Add Parent Child Relationship</p>
+      <p *ngIf="modalType === 'add'" class="modal-card-title is-size-5">Add Parent Child Relationship</p>
+      <p *ngIf="modalType === 'delete'" class="modal-card-title is-size-5">Delete Parent Child Relationship</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -36,7 +37,8 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" type="submit" form="addChildForm" class="button is-success">Add</button>
+      <button *ngIf="modalType === 'add'" id="save" type="submit" form="addChildForm" class="button is-success">Add</button>
+      <button *ngIf="modalType === 'delete'" id="save" (click)="deleteRelationship(f)" class="button is-success">Delete</button>
     </footer>
   </div>
 </div>

@@ -1,5 +1,6 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
+
 import { AlertService, ConfigurationService } from '../../../../services';
 
 @Component({
@@ -12,6 +13,7 @@ export class AddCategoryChildComponent implements OnInit {
   public childCategories;
   public parentCategory;
   public selectedChildren: string[] = [];
+  public modalType = 'add';
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
@@ -20,18 +22,22 @@ export class AddCategoryChildComponent implements OnInit {
     private alertService: AlertService
   ) { }
 
-  ngOnInit() {
-    this.getAllCategories();
-  }
+  ngOnInit() { }
 
   public getChildren(categoryName) {
+    this.childCategories = [];
     this.configService.getChildren(categoryName).
       subscribe(
         (data: any) => {
-          data['categories'].forEach(el => {
-            const index = this.childCategories.findIndex(item => item.key === el.key);
-            this.childCategories.splice(index, 1);
-          });
+          if (this.modalType === 'add') {
+            this.childCategories = this.parentCategories.filter(element => element.key !== this.parentCategory);
+            data['categories'].forEach(el => {
+              const index = this.childCategories.findIndex(item => item.key === el.key);
+              this.childCategories.splice(index, 1);
+            });
+          } else {
+            this.childCategories = data['categories'];
+          }
         },
         error => {
           if (error.status === 0) {
@@ -43,12 +49,12 @@ export class AddCategoryChildComponent implements OnInit {
   }
 
   private getAllCategories(): void {
+    this.childCategories = [];
     this.configService.getCategories().
       subscribe(
         (data) => {
           this.parentCategories = data['categories'];
           this.parentCategory = this.parentCategories[0]['key'];
-          this.childCategories = this.parentCategories.filter(element => element.key !== this.parentCategory);
           this.getChildren(this.parentCategory);
         },
         error => {
@@ -71,6 +77,39 @@ export class AddCategoryChildComponent implements OnInit {
       return;
     }
     modal.classList.remove('is-active');
+  }
+
+  public setModalType(type) {
+    if (type === 'add') {
+      this.modalType = 'add';
+    } else {
+      this.modalType = 'delete';
+    }
+    this.getAllCategories();
+  }
+
+  public deleteRelationship(form: NgForm) {
+    const parent = form.controls['parentCategory'].value;
+    const children = form.controls['childCategory'].value;
+    this.configService
+      .deleteChild(parent, children)
+      .subscribe(() => {
+        this.notify.emit();
+        this.toggleModal(false, null);
+        this.alertService.success('Parent Child relationship has been removed successfully.');
+        if (form != null) {
+          form.controls['parentCategory'].reset(this.parentCategory);
+          form.controls['childCategory'].reset();
+        }
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        }
+      );
   }
 
   public changeParent(value) {
