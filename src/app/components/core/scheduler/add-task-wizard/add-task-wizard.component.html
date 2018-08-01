@@ -68,12 +68,10 @@
             <div class="field">
               <div class="control">
                 <div class="select is-fullwidth">
-                  <select name="plugin" formControlName="plugin" (change)="validatePluginValue($event)" required>
-                    <option value='select' disabled>Select</option>
-                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
+                  <select name="plugin" formControlName="plugin" required>
+                    <option *ngFor="let p of plugins" [selected]="p.name == plugin" [value]="p.name"> {{ p.name }}</option>
                   </select>
                 </div>
-                <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
               </div>
             </div>
           </div>

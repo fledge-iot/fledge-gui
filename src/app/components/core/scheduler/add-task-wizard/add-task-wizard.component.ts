@@ -14,12 +14,10 @@ export class AddTaskWizardComponent implements OnInit {
 
   public plugins = [];
   public scheduleType = [];
-  public scheduleProcess = [];
   public configurationData;
   public taskId;
   public isTaskEnabled = false;
   public isTaskAdded = false;
-  public isValidPlugin = false;
   public isValidName = true;
   public addTaskMsg = '';
   public enableTaskMsg = '';
@@ -28,7 +26,6 @@ export class AddTaskWizardComponent implements OnInit {
     name: new FormControl(),
     type: new FormControl(),
     plugin: new FormControl(),
-    processName: new FormControl(),
     schedule_type: new FormControl()
   });
 
@@ -50,7 +47,6 @@ export class AddTaskWizardComponent implements OnInit {
       schedule_type: ['', Validators.required]
     });
     this.taskForm.get('type').setValue('north');
-    this.taskForm.get('plugin').setValue('select');
     this.taskForm.get('schedule_type').setValue(3);
   }
 
@@ -83,8 +79,8 @@ export class AddTaskWizardComponent implements OnInit {
         nxtButton.disabled = false;
         break;
       case 2:
-        this.taskForm.get('plugin').setValue('select');
-        this.taskForm.get('schedule_type').setValue(1);
+        this.taskForm.get('plugin').setValue(this.plugins[0].name);
+        this.taskForm.get('schedule_type').setValue(3);
         nxtButton.textContent = 'Next';
         previousButton.disabled = true;
         break;
@@ -102,7 +98,6 @@ export class AddTaskWizardComponent implements OnInit {
   }
 
   moveNext() {
-    this.isValidPlugin = true;
     this.isValidName = true;
     const formValues = this.taskForm.value;
     const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
@@ -122,6 +117,7 @@ export class AddTaskWizardComponent implements OnInit {
           this.servicesHealthService.getInstalledPlugins(formValues['type']).subscribe(
             (data: any) => {
               this.plugins = data.plugins;
+              this.taskForm.get('plugin').setValue(this.plugins[0].name);
             },
             (error) => {
               if (error.status === 0) {
@@ -134,12 +130,8 @@ export class AddTaskWizardComponent implements OnInit {
         }
         break;
       case 2:
-        if (this.taskForm.controls.plugin.value === 'select') {
-          this.isValidPlugin = false;
-          return;
-        }
         nxtButton.textContent = 'Enable & Start Task';
-        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['plugin'] !== 'select') {
+        if (formValues['name'] !== '' && formValues['plugin'].length > 0) {
           this.isTaskAdded = true;
           this.addScheduledTask(formValues, nxtButton);
         }
@@ -204,9 +196,8 @@ export class AddTaskWizardComponent implements OnInit {
     /** request started */
     this.ngProgress.start();
     formValues['schedule_enabled'] = false,
-      formValues['schedule_repeat'] = 30,
-      formValues['cmd_params'] = { 'stream_id': '1', 'debug_level': '1' };
-    console.log('called addScheduledTask', formValues, nxtButton);
+    formValues['schedule_repeat'] = 30,
+    formValues['cmd_params'] = { 'stream_id': '1', 'debug_level': '1' };
     this.schedulesService.createTask(formValues)
       .subscribe(
         (data) => {
@@ -259,12 +250,6 @@ export class AddTaskWizardComponent implements OnInit {
 
   public getScheduleType() {
     this.scheduleType = [{ name: 'INTERVAL', index: 3 }];
-  }
-
-  validatePluginValue(event) {
-    if (event.target.value !== 'select') {
-      this.isValidPlugin = true;
-    }
   }
 
   validateTaskName(event) {
