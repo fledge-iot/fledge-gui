@@ -17,16 +17,18 @@
         <div id="root-children">
           <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)" (activate)="onNodeActive($event)"></tree-root>
         </div>
-        <div class="panel-block">
+        <div class="panel-block is-fullwidth">
           <button class="button is-text" (click)="addChildRelation()">
             <small>Add Child</small>
           </button>
           <button class="button is-text" (click)="deleteChildRelation()">
             <small>Delete Child</small>
           </button>
-          <!-- <button class="button is-text is-small" (click)="resetAllFilters()">
-            <small>Reset filter</small>
-          </button> -->
+        </div>
+        <div class="panel-block">
+          <button class="button is-text is-fullwidth" (click)="resetAllFilters()">
+            <small>Reset Filter</small>
+          </button>
         </div>
       </nav>
     </div>
@@ -61,5 +63,5 @@
     </div>
   </div>
   <app-add-config-item (notify)='onNotify($event)'></app-add-config-item>
-  <app-add-category-child (notify)='onAddChild($event)'></app-add-category-child>
+  <app-add-category-child (notify)='onAddChild()'></app-add-category-child>
 </div>

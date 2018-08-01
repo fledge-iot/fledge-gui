@@ -120,6 +120,10 @@ export class ConfigurationManagerComponent implements OnInit {
     this.addCategoryChild.toggleModal(true);
   }
 
+  public deleteChildRelation() {
+
+  }
+
   public resetAllFilters() {
     this.selectedRootCategory = 'General';
     this.getRootCategories(true);

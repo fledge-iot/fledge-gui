@@ -25,12 +25,12 @@ export class AddCategoryChildComponent implements OnInit {
   }
 
   private getAllCategories(): void {
-    this.configService.getCategoriesList().
+    this.configService.getCategories().
       subscribe(
         (data) => {
           this.parentCategoriesList = data['categories'];
           this.parentCategory = this.parentCategoriesList[0]['key'];
-          this.childCategoriesList = this.parentCategoriesList.filter(element => element.key !== this.parentCategoriesList[0]['key']);
+          this.childCategoriesList = this.parentCategoriesList.filter(element => element.key !== this.parentCategory);
         },
         error => {
           if (error.status === 0) {

@@ -15,26 +15,26 @@ export class ConfigurationService {
   /**
    *   GET  | /foglamp/category
    */
-  getCategoriesList() {
+  getCategories() {
     return this.http.get(this.CATEGORY_URL).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
-   *   GET  | /foglamp/category/{category_name}
+   *   GET  | /foglamp/category/{categoryName}
    */
-  getCategory(category_name) {
-    return this.http.get(this.CATEGORY_URL + '/' + category_name).pipe(
+  getCategory(categoryName) {
+    return this.http.get(this.CATEGORY_URL + '/' + categoryName).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
-   *   GET  | /foglamp/category/{category_name}/children
+   *   GET  | /foglamp/category/{categoryName}/children
    */
-  getChildren(category_name) {
-    return this.http.get(this.CATEGORY_URL + '/' + category_name + '/children').pipe(
+  getChildren(categoryName) {
+    return this.http.get(this.CATEGORY_URL + '/' + categoryName + '/children').pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -52,32 +52,32 @@ export class ConfigurationService {
   }
 
   /**
-  *  PUT  | /foglamp/category/{category_name}/{config_item}
+  *  PUT  | /foglamp/category/{categoryName}/{config_item}
   */
-  saveConfigItem(category_name: string, config_item: string, value: string, type: string) {
+  saveConfigItem(categoryName: string, configItem: string, value: string, type: string) {
     let body = JSON.stringify({ 'value': value });
     if (type.toUpperCase() === 'JSON') {
       body = JSON.stringify({ 'value': JSON.parse(value) });
     }
-    return this.http.put(this.CATEGORY_URL + '/' + category_name + '/' + config_item, body).pipe(
+    return this.http.put(this.CATEGORY_URL + '/' + categoryName + '/' + configItem, body).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
-  *  POST  | /foglamp/category/{category_name}/{config_item}
+  *  POST  | /foglamp/category/{categoryName}/{config_item}
   */
-  addNewConfigItem(configItemData, category_name: string, config_item: string) {
-    return this.http.post(this.CATEGORY_URL + '/' + category_name + '/' + config_item, configItemData).pipe(
+  addNewConfigItem(configItemData, categoryName: string, configItem: string) {
+    return this.http.post(this.CATEGORY_URL + '/' + categoryName + '/' + configItem, configItemData).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
 
   /**
-  *  POST  | /foglamp/category/{category_name}/children
+  *  POST  | /foglamp/category/{categoryName}/children
   */
-  addChild(category_name, child) {
-    return this.http.post(this.CATEGORY_URL + '/' + category_name + '/children', JSON.stringify({ children: child })).pipe(
+  addChild(categoryName, child) {
+    return this.http.post(this.CATEGORY_URL + '/' + categoryName + '/children', JSON.stringify({ children: child })).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
