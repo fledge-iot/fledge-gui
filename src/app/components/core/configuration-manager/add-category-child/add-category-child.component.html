@@ -4,7 +4,7 @@
     <header class="modal-card-head">
       <p *ngIf="modalType === 'add'" class="modal-card-title is-size-5">Add Parent Child Relationship</p>
       <p *ngIf="modalType === 'delete'" class="modal-card-title is-size-5">Delete Parent Child Relationship</p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" (click)="toggleModal(false, f)"></button>
     </header>
     <section class="modal-card-body">
       <form name="form" (ngSubmit)="f.form.valid && addChild(f)" #f="ngForm" id="addChildForm" novalidate>
@@ -25,7 +25,10 @@
             <div class="field">
               <label class="label">Child Category</label>
               <div class="control">
-                <div class="select is-fullwidth is-multiple">
+                <div *ngIf="childCategories !== undefined && childCategories.length === 0">
+                  <p class="is-info">No child category</p>
+                </div>
+                <div *ngIf="childCategories !== undefined && childCategories.length > 0" class="select is-fullwidth is-multiple">
                   <select multiple [(ngModel)]="selectedChildren" name="childCategory">
                     <option *ngFor="let child of childCategories" [value]="child.key">{{ child.description }}</option>
                   </select>
@@ -35,6 +38,7 @@
           </div>
         </div>
       </form>
+      <p *ngIf="invalidForm" class="error-msg"> Please select parent and child categories first.</p>
     </section>
     <footer class="modal-card-foot">
       <button *ngIf="modalType === 'add'" id="save" type="submit" form="addChildForm" class="button is-success">Add</button>

@@ -14,6 +14,7 @@ export class AddCategoryChildComponent implements OnInit {
   public parentCategory;
   public selectedChildren: string[] = [];
   public modalType = 'add';
+  invalidForm = false;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
@@ -68,8 +69,12 @@ export class AddCategoryChildComponent implements OnInit {
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
+      this.invalidForm = false;
       form.controls['parentCategory'].reset(this.parentCategory);
-      form.controls['childCategory'].reset();
+      const children = form.controls['childCategory'] !== undefined ? form.controls['childCategory'].value : undefined;
+      if (children !== undefined) {
+        form.controls['childCategory'].reset();
+      }
     }
     const modal = <HTMLDivElement>document.getElementById('add-category-child');
     if (isOpen) {
@@ -90,10 +95,15 @@ export class AddCategoryChildComponent implements OnInit {
 
   public deleteRelationship(form: NgForm) {
     const parent = form.controls['parentCategory'].value;
-    const children = form.controls['childCategory'].value;
+    const children = form.controls['childCategory'] !== undefined ? form.controls['childCategory'].value : undefined;
+    if (children === undefined || children.length === 0) {
+      this.invalidForm = true;
+      return;
+    }
     this.configService
       .deleteChild(parent, children)
       .subscribe(() => {
+        this.invalidForm = false;
         this.notify.emit();
         this.toggleModal(false, null);
         this.alertService.success('Parent Child relationship has been removed successfully.');
@@ -113,6 +123,7 @@ export class AddCategoryChildComponent implements OnInit {
   }
 
   public changeParent(value) {
+    this.invalidForm = false;
     this.childCategories = this.parentCategories.filter(el => el.key !== value);
     this.getChildren(value);
   }
@@ -120,9 +131,14 @@ export class AddCategoryChildComponent implements OnInit {
   public addChild(form: NgForm) {
     const parent = form.controls['parentCategory'].value;
     const children = form.controls['childCategory'].value;
+    if (children == null || children.length === 0) {
+      this.invalidForm = true;
+      return;
+    }
     this.configService
       .addChild(parent, children)
       .subscribe(() => {
+        this.invalidForm = false;
         this.notify.emit();
         this.toggleModal(false, null);
         this.alertService.success('Children have been added successfully');
