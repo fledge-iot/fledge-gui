@@ -9,7 +9,6 @@ import { ConfigurationManagerComponent } from '.';
 import { AuthCheckGuard } from '../../../guards';
 import { ConfigurationService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
-import { AddCategoryChildComponent } from './add-category-child/add-category-child.component';
 import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
 
 const routes: Routes = [
@@ -23,8 +22,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     ConfigurationManagerComponent,
-    AddConfigItemComponent,
-    AddCategoryChildComponent
+    AddConfigItemComponent
   ],
   imports: [
     FormsModule,
