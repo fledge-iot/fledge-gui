@@ -97,10 +97,10 @@ export class DashboardComponent implements OnInit {
 
         // If graphs are not selected yet, then show graphs of 'READINGS' and 'PURGED' and save in local storage
         this.selectedKeys = ['READINGS', 'PURGED'];
-        let optedGraphKeys = localStorage.getItem('OPTED_GRAPHS')
+        const optedGraphKeys = localStorage.getItem('OPTED_GRAPHS');
         if (optedGraphKeys) {
-          let optedGraphKeysList = JSON.parse(optedGraphKeys)
-          this.selectedKeys = optedGraphKeysList.filter(function(v) { return v !== "SENT_1" });
+          const optedGraphKeysList = JSON.parse(optedGraphKeys);
+          this.selectedKeys = optedGraphKeysList.filter(value => value.toLowerCase().indexOf('sent') === -1);
         }
         localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
 
