@@ -128,7 +128,16 @@ table.scroll tbody {
     display: none;
 }
 
+.node-content-wrapper.node-content-wrapper-active:hover,
 .node-content-wrapper-active.node-content-wrapper-focused {
-  background: whitesmoke;
+  background: transparent;
   font-weight: bold;
+  box-shadow: inset 0 0 0px;
+  color: #707070;
+}
+
+.node-content-wrapper:hover {
+  background: transparent;
+  box-shadow: inset 0 0 0px;
+  color: #707070;
 }
