@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit {
         const optedGraphKeys = localStorage.getItem('OPTED_GRAPHS');
         if (optedGraphKeys) {
           const optedGraphKeysList = JSON.parse(optedGraphKeys);
-          this.selectedKeys = optedGraphKeysList.filter(value => value.toLowerCase().indexOf('sent') === -1);
+          this.selectedKeys = optedGraphKeysList.filter(function(v) { return ! v.startsWith("SENT_") });
         }
         localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
 
