@@ -95,11 +95,14 @@ export class DashboardComponent implements OnInit {
         }
         console.log('keys array', this.statisticsKeys);
 
-        // If graphs are not selected yet, then show graphs of 'READINGS', 'SENT_1' and 'PURGED' and save in local storage
-        if (!localStorage.getItem('OPTED_GRAPHS')) {
-          this.selectedKeys = ['READINGS', 'SENT_1', 'PURGED'];
-          localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
+        // If graphs are not selected yet, then show graphs of 'READINGS' and 'PURGED' and save in local storage
+        this.selectedKeys = ['READINGS', 'PURGED'];
+        let optedGraphKeys = localStorage.getItem('OPTED_GRAPHS')
+        if (optedGraphKeys) {
+          let optedGraphKeysList = JSON.parse(optedGraphKeys)
+          this.selectedKeys = optedGraphKeysList.filter(function(v) { return v !== "SENT_1" });
         }
+        localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
 
         // Rename 'key' to 'itemName' and add a new key as named 'id'
         for (let i = 0; i < this.statistics.length; i++) {
