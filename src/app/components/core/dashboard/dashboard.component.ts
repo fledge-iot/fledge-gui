@@ -29,7 +29,7 @@ export class DashboardComponent implements OnInit {
   // Array of the graphs to show
   graphsToShow = [];
 
-  // Array of default graphs to show ('READINGS', 'SENT_1', 'PURGED')
+  // Array of default graphs to show ('READINGS', 'PURGED')
   showDefaultGraphs = [];
 
   public chartOptions: object;
@@ -131,7 +131,7 @@ export class DashboardComponent implements OnInit {
           console.log('graphsToShow', this.graphsToShow);
         }
 
-        // Selected Items are the items, to show in the drop down (having keys- 'READINGS', 'SENT_1', 'PURGED')
+        // Selected Items are the items, to show in the drop down (having keys- 'READINGS', 'PURGED')
         this.selectedItems = this.graphsToShow;
 
         this.getStatisticsHistory();

@@ -48,11 +48,6 @@ export class SkipLogin {
     return element(by.css('app-dashboard div:nth-child(3) div article h5')).getText();
   }
 
-  getSent1Graph() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-dashboard div:nth-child(4) div article h5')).getText();
-  }
-
   getPurgedGraph() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-dashboard div:nth-child(5) div article h5')).getText();
