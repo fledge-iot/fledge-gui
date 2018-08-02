@@ -6,7 +6,6 @@ import { NgProgress } from 'ngx-progressbar';
 import { TreeComponent } from 'angular-tree-component';
 
 import { AlertService, ConfigurationService } from '../../../services';
-import { AddCategoryChildComponent } from './add-category-child/add-category-child.component';
 import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
 
 @Component({
@@ -23,7 +22,6 @@ export class ConfigurationManagerComponent implements OnInit {
   element: Element;
   @Input() categoryConfigurationData;
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
-  @ViewChild(AddCategoryChildComponent) addCategoryChild: AddCategoryChildComponent;
 
   nodes: any[] = [];
   options = {};
@@ -116,16 +114,6 @@ export class ConfigurationManagerComponent implements OnInit {
 
   public onNodeActive(event) {
     this.getCategory(event.node.data.id, event.node.data.name);
-  }
-
-  public addChildRelation() {
-    this.addCategoryChild.setModalType('add');
-    this.addCategoryChild.toggleModal(true);
-  }
-
-  public deleteChildRelation() {
-    this.addCategoryChild.setModalType('delete');
-    this.addCategoryChild.toggleModal(true);
   }
 
   public resetAllFilters() {
