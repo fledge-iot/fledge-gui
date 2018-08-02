@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
+import Utils from '../../../../utils';
 
 import { Router } from '@angular/router';
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
@@ -19,6 +20,8 @@ export class AddTaskWizardComponent implements OnInit {
   public isTaskEnabled = false;
   public isTaskAdded = false;
   public isValidName = true;
+  public isValidDay = true;
+  public isValidTime = true;
   public addTaskMsg = '';
   public enableTaskMsg = '';
 
@@ -26,7 +29,9 @@ export class AddTaskWizardComponent implements OnInit {
     name: new FormControl(),
     type: new FormControl(),
     plugin: new FormControl(),
-    schedule_type: new FormControl()
+    schedule_type: new FormControl(),
+    repeat_day: new FormControl(),
+    repeat_time: new FormControl()
   });
 
   @Input() categoryConfigurationData;
@@ -40,11 +45,14 @@ export class AddTaskWizardComponent implements OnInit {
     private ngProgress: NgProgress) { }
 
   ngOnInit() {
+    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to varify time format 00:00:00
     this.taskForm = this.formBuilder.group({
       name: ['', Validators.required],
       type: ['', Validators.required],
       plugin: ['', Validators.required],
-      schedule_type: ['', Validators.required]
+      schedule_type: ['', Validators.required],
+      repeat_day: [Validators.min(0), Validators.max(365)],
+      repeat_time: ['', [Validators.required, Validators.pattern(regExp)]],
     });
     this.taskForm.get('type').setValue('north');
     this.taskForm.get('schedule_type').setValue(3);
@@ -99,6 +107,8 @@ export class AddTaskWizardComponent implements OnInit {
 
   moveNext() {
     this.isValidName = true;
+    this.isValidDay = true;
+    this.isValidTime = true;
     const formValues = this.taskForm.value;
     const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = first.getAttribute('id');
@@ -130,8 +140,17 @@ export class AddTaskWizardComponent implements OnInit {
         }
         break;
       case 2:
+       if (this.taskForm.controls.repeat_day.invalid) {
+          this.isValidDay = false;
+          return;
+        }
+        if (this.taskForm.controls.repeat_time.value.length === 0 || this.taskForm.controls.repeat_time.invalid) {
+          this.isValidTime = false;
+          return;
+        }
+        console.log('isValidDay', this.isValidDay, 'isValidTime', this.isValidTime);
         nxtButton.textContent = 'Enable & Start Task';
-        if (formValues['name'] !== '' && formValues['plugin'].length > 0) {
+        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['repeat_time'].length > 0) {
           this.isTaskAdded = true;
           this.addScheduledTask(formValues, nxtButton);
         }
@@ -195,9 +214,18 @@ export class AddTaskWizardComponent implements OnInit {
   addScheduledTask(formValues, nxtButton) {
     /** request started */
     this.ngProgress.start();
-    formValues['schedule_repeat'] = 30,
-    formValues['cmd_params'] = {};
-    this.schedulesService.createTask(formValues)
+    // total time with days and hh:mm:ss
+    const RepeatTime = this.taskForm.get('repeat_time').value !== ('' || undefined) ? Utils.convertTimeToSec(
+      this.taskForm.get('repeat_time').value, this.taskForm.get('repeat_day').value) : 0;
+    const payload = {
+      'name': formValues['name'],
+      'plugin': formValues['plugin'],
+      'type': formValues['type'],
+      'schedule_repeat': RepeatTime,
+      'schedule_type': formValues['schedule_type'],
+      'cmd_params': {}
+    };
+    this.schedulesService.createTask(payload)
       .subscribe(
         (data) => {
           /** request completed */
@@ -254,6 +282,18 @@ export class AddTaskWizardComponent implements OnInit {
   validateTaskName(event) {
     if (event.target.value.trim().length > 0) {
       this.isValidName = true;
+    }
+  }
+
+  validateRepeatDay() {
+    if (!this.taskForm.controls.repeat_day.invalid) {
+      this.isValidDay = true;
+    }
+  }
+
+  validateRepeatTime(event) {
+    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeat_time.invalid) {
+      this.isValidTime = true;
     }
   }
 }
