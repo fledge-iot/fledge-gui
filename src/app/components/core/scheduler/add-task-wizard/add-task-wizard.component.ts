@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
 
-import { Router } from '../../../../../../node_modules/@angular/router';
+import { Router } from '@angular/router';
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
 
 @Component({
@@ -195,9 +195,8 @@ export class AddTaskWizardComponent implements OnInit {
   addScheduledTask(formValues, nxtButton) {
     /** request started */
     this.ngProgress.start();
-    formValues['schedule_enabled'] = false,
     formValues['schedule_repeat'] = 30,
-    formValues['cmd_params'] = { 'stream_id': '1', 'debug_level': '1' };
+    formValues['cmd_params'] = {};
     this.schedulesService.createTask(formValues)
       .subscribe(
         (data) => {

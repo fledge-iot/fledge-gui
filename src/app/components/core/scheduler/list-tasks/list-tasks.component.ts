@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SchedulesService, AlertService } from '../../../../services/index';
 import { NgProgress } from 'ngx-progressbar';
-import { Router } from '../../../../../../node_modules/@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-tasks',
