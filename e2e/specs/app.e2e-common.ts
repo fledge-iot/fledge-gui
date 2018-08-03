@@ -30,7 +30,6 @@ describe('FogLAMP gui', () => {
     it('Should Display Default Graphs', () => {
       expect(skipLogin.getCountOfSelectedGraph()).toEqual(3);
       expect(skipLogin.getReadingsGraph()).toEqual('READINGS');
-      expect(skipLogin.getSent1Graph()).toEqual('SENT_1');
       expect(skipLogin.getPurgedGraph()).toEqual('PURGED');
     });
 
