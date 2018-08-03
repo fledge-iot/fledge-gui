@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ConfigurationService, AlertService } from '../../../../services';
 import { NgProgress } from '../../../../../../node_modules/ngx-progressbar';
-import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-view-config-item',
@@ -11,6 +10,7 @@ import { NgForm } from '@angular/forms';
 export class ViewConfigItemComponent implements OnInit {
   @Input() categoryConfigurationData: any;
   public oldValue;
+  public selectedValue;
   public isValidJson = true;
 
   constructor(private configService: ConfigurationService,
@@ -19,28 +19,46 @@ export class ViewConfigItemComponent implements OnInit {
 
   ngOnInit() { }
 
-  public restoreConfigFieldValue(configItemKey, categoryKey, form: NgForm) {
-    const itemKey = categoryKey.toLowerCase() + '-' + configItemKey.toLowerCase();
-    if (this.oldValue !== undefined) {
-      form.controls[itemKey].setValue(this.oldValue);
+  public restoreConfigFieldValue(configItemKey, categoryKey, configValue, configType) {
+    let itemKey = categoryKey.toLowerCase() + '-' + configItemKey.toLowerCase();
+    if (itemKey.includes('select')) {
+      itemKey = itemKey.replace('select-', '');
+    }
+
+    let htmlElement;
+    htmlElement = <HTMLInputElement>document.getElementById(itemKey);
+    if (htmlElement == null) {
+      htmlElement = <HTMLSelectElement>document.getElementById('select-' + itemKey);
+      htmlElement.selectedIndex = (this.selectedValue === 'true' ? 1 : 0);
+    } else {
+      htmlElement.value = htmlElement.textContent;
+    }
+    if (configType.toUpperCase() === 'JSON') {
+      this.isValidJson = this.isValidJsonString(configValue);
+      return;
     }
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + itemKey);
-    cancelButton.classList.remove('active');
     cancelButton.classList.add('hidden');
   }
 
-  public saveConfigValue(categoryName, configItem, type, form: NgForm) {
-
+  public saveConfigValue(categoryName, configItem, type) {
     const catItemId = categoryName.toLowerCase() + '-' + configItem.toLowerCase();
-    const value = form.controls[catItemId].value;
+    let htmlElement;
+    htmlElement = <HTMLInputElement>document.getElementById(catItemId);
 
-    const inputField = <HTMLInputElement>document.getElementById(catItemId);
-    const id = inputField.id.trim();
+    let value;
+    if (htmlElement == null) {
+      htmlElement = <HTMLSelectElement>document.getElementById('select-' + catItemId);
+      value = htmlElement.options[htmlElement.selectedIndex].value;
+    } else {
+      value = htmlElement.value.trim();
+    }
 
     if (type.toUpperCase() === 'JSON') {
-      this.isValidJsonString(value);
+      this.isValidJson = this.isValidJsonString(value);
       return;
     }
+
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + catItemId);
     cancelButton.classList.add('hidden');
 
@@ -52,11 +70,10 @@ export class ViewConfigItemComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           if (data['value'] !== undefined) {
-            if (type.toUpperCase() === 'JSON') {
-              inputField.textContent = inputField.value = data['value'];
-              form.controls[catItemId.toLowerCase()].setValue(data['value']);
+            if (htmlElement.type === 'select-one') {
+              htmlElement.selectedIndex = (data['value'] === 'true' ? 0 : 1);
             } else {
-              form.controls[catItemId.toLowerCase()].setValue(data['value']);
+              htmlElement.textContent = htmlElement.value = data['value'];
             }
             this.alertService.success('Value updated successfully');
           }
@@ -78,7 +95,6 @@ export class ViewConfigItemComponent implements OnInit {
       case 'STRING':
       case 'IPV4':
       case 'IPV6':
-      case 'X509 CERTIFICATE':
       case 'PASSWORD':
         type = 'TEXT';
         break;
@@ -113,13 +129,12 @@ export class ViewConfigItemComponent implements OnInit {
     return true;
   }
 
-  public onTextChange(configItemKey, value, key) {
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
-    cancelButton.classList.add('active');
-    cancelButton.classList.remove('hidden');
-    if (key.toUpperCase() === 'JSON') {
-      this.isValidJson = this.isValidJsonString(value);
-      return;
+  public onTextChange(configItemKey, value) {
+    if (configItemKey.includes('select')) {
+      configItemKey = configItemKey.replace('select-', '');
+      this.selectedValue = value;
     }
+    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
+    cancelButton.classList.remove('hidden');
   }
 }
