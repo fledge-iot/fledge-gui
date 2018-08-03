@@ -14,15 +14,15 @@
             </select>
           </div>
         </div>
-        <div id="root-children">
+        <div id="root-children" class="panel-block">
           <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)" (activate)="onNodeActive($event)"></tree-root>
         </div>
 
-        <div class="panel-block">
+        <!-- <div class="panel-block">
           <button class="button is-text is-fullwidth" (click)="resetAllFilters()">
             <small>Reset Filter</small>
           </button>
-        </div>
+        </div> -->
       </nav>
     </div>
     <div class="column is-two-thirds">

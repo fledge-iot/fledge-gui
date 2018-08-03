@@ -45,7 +45,7 @@ export class ViewConfigItemComponent implements OnInit {
 
   public saveConfigValue(categoryName, configItem, type) {
     const catItemId = categoryName.toLowerCase() + '-' + configItem.toLowerCase();
-    let htmlElement;
+    let htmlElement: any;
     htmlElement = <HTMLInputElement>document.getElementById(catItemId);
 
     let value;
@@ -57,7 +57,6 @@ export class ViewConfigItemComponent implements OnInit {
     }
 
     if (type.toUpperCase() === 'JSON') {
-      this.isValidJson = true;
       this.isValidJson = this.isValidJsonString(value);
       if (!this.isValidJson) {
         return;
