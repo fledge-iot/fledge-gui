@@ -32,7 +32,13 @@ CWARN="${CPFX}0;33m"
 echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
 # Variables
-__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+__version__="1.4.0-dev"
+if [ -f "package.json" ]
+  then
+	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+fi
+
+
 FOGLAMP_GUI_VER=${__version__}
 
 machine_details() {
@@ -42,7 +48,7 @@ machine_details() {
 
   if [[ ${os} == "Darwin" ]]
   then
-      echo -e Error:"${CERR} Script is not compatible with macOS ${CRESET}"
+      echo -e Error:"${CERR} Script ${FOGLAMP_GUI_VER} is not compatible with macOS ${CRESET}"
       exit 1
   fi
 
