@@ -11,6 +11,7 @@ import { NgForm } from '@angular/forms';
 export class ViewConfigItemComponent implements OnInit {
   @Input() categoryConfigurationData: any;
   public oldValue;
+  public isValidJson = true;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -29,12 +30,19 @@ export class ViewConfigItemComponent implements OnInit {
   }
 
   public saveConfigValue(categoryName, configItem, type, form: NgForm) {
-    const catItemId = categoryName + '-' + configItem;
-    // const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
-    // cancelButton.classList.add('hidden');
 
-    console.log('form value ', form.controls[catItemId.toLowerCase()].value);
-    const value = form.controls[catItemId.toLowerCase()].value;
+    const catItemId = categoryName.toLowerCase() + '-' + configItem.toLowerCase();
+    const value = form.controls[catItemId].value;
+
+    const inputField = <HTMLInputElement>document.getElementById(catItemId);
+    const id = inputField.id.trim();
+
+    if (type.toUpperCase() === 'JSON') {
+      this.isValidJsonString(value);
+      return;
+    }
+    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + catItemId);
+    cancelButton.classList.add('hidden');
 
     /** request started */
     this.ngProgress.start();
@@ -45,7 +53,8 @@ export class ViewConfigItemComponent implements OnInit {
           this.ngProgress.done();
           if (data['value'] !== undefined) {
             if (type.toUpperCase() === 'JSON') {
-              form.controls[catItemId.toLowerCase()].setValue(JSON.stringify(data['value']));
+              inputField.textContent = inputField.value = data['value'];
+              form.controls[catItemId.toLowerCase()].setValue(data['value']);
             } else {
               form.controls[catItemId.toLowerCase()].setValue(data['value']);
             }
@@ -95,20 +104,22 @@ export class ViewConfigItemComponent implements OnInit {
     }
   }
 
-  public onTextChange(configItemKey: string, form: NgForm) {
-    // const previousCancelButton = <HTMLButtonElement>document.getElementsByClassName('active')[0];
-    // if (previousCancelButton !== undefined) {
-    //   previousCancelButton.classList.remove('active');
-    //   previousCancelButton.classList.add('hidden');
-    //   console.log(form.value);
-    //   if (this.oldValue !== undefined) {
-    //     form.controls[configItemKey.toLowerCase()].setValue(this.oldValue);
-    //   }
-    // }
+  public isValidJsonString(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
 
-
+  public onTextChange(configItemKey, value, key) {
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
     cancelButton.classList.add('active');
     cancelButton.classList.remove('hidden');
+    if (key.toUpperCase() === 'JSON') {
+      this.isValidJson = this.isValidJsonString(value);
+      return;
+    }
   }
 }

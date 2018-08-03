@@ -13,7 +13,7 @@
               <form name="form" id="ngForm" #f="ngForm" novalidate>
                 <div>
                   <div *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'" class="select is-fullwidth is-small">
-                    <select id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), f)"
+                    <select id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value, configItem.value.type)"
                       (focus)="oldVal=configItem.value.value" [(ngModel)]="configItem.value.value" name="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
                       #configItem.key.trim()="ngModel" (ngModelChange)="onModelChange(oldVal)">
                       <option value="true">true</option>
@@ -21,21 +21,24 @@
                     </select>
                   </div>
                   <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
-                    class="input is-small" type="text" (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), f)"
+                    class="input is-small" type="text" (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value, configItem.value.type)"
                     (focus)="oldVal=configItem.value.value" name="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
                     (ngModelChange)="onModelChange(oldVal)" [(ngModel)]="configItem.value.value" #configItem.key.trim()="ngModel"
                   />
 
                   <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
-                    (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), f)" (focus)="oldVal=configItem.value.value"
-                    type="number" class="input is-small" name="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
+                    (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value, configItem.value.type)"
+                    (focus)="oldVal=configItem.value.value" type="number" class="input is-small" name="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
                     (ngModelChange)="onModelChange(oldVal)" [(ngModel)]="configItem.value.value" #configItem.key.trim()="ngModel"
                     appNumberOnly />
 
-                  <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-small" id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
-                    (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), f)" type="text"
-                    name="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" (focus)="oldVal=configItem.value.value"
-                    (ngModelChange)="onModelChange(oldVal)" [(ngModel)]="configItem.value.value" #configItem.key.trim()="ngModel">{{configItem?.value?.value}}</textarea>
+                  <div class="field">
+                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-small" id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
+                      (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value, configItem.value.type)"
+                      type="text" name="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
+                      [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : "" ' (ngModelChange)="onModelChange(oldVal)" [(ngModel)]="configItem.value.value">{{configItem?.value?.value}}</textarea>
+                    <div *ngIf="!isValidJson && (configItem.value.type | uppercase) == 'JSON'" class="help is-danger level-left">Invalid json string.</div>
+                  </div>
                 </div>
               </form>
             </div>
