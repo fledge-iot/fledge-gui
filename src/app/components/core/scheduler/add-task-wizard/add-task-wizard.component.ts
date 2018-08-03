@@ -215,15 +215,14 @@ export class AddTaskWizardComponent implements OnInit {
     /** request started */
     this.ngProgress.start();
     // total time with days and hh:mm:ss
-    const RepeatTime = this.taskForm.get('repeat_time').value !== ('' || undefined) ? Utils.convertTimeToSec(
+    const repeatTime = this.taskForm.get('repeat_time').value !== ('' || undefined) ? Utils.convertTimeToSec(
       this.taskForm.get('repeat_time').value, this.taskForm.get('repeat_day').value) : 0;
     const payload = {
       'name': formValues['name'],
       'plugin': formValues['plugin'],
       'type': formValues['type'],
-      'schedule_repeat': RepeatTime,
-      'schedule_type': formValues['schedule_type'],
-      'cmd_params': {}
+      'schedule_repeat': repeatTime,
+      'schedule_type': formValues['schedule_type']
     };
     this.schedulesService.createTask(payload)
       .subscribe(

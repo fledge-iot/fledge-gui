@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddTaskWizardComponent } from './add-task-wizard.component';
 
-describe('AddServiceWizardComponent', () => {
+describe('AddTaskWizardComponent', () => {
   let component: AddTaskWizardComponent;
   let fixture: ComponentFixture<AddTaskWizardComponent>;
 
