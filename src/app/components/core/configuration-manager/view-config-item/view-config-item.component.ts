@@ -33,12 +33,14 @@ export class ViewConfigItemComponent implements OnInit {
     } else {
       htmlElement.value = htmlElement.textContent;
     }
+
+    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + itemKey);
+    cancelButton.classList.add('hidden');
+
     if (configType.toUpperCase() === 'JSON') {
       this.isValidJson = this.isValidJsonString(configValue);
       return;
     }
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + itemKey);
-    cancelButton.classList.add('hidden');
   }
 
   public saveConfigValue(categoryName, configItem, type) {
@@ -55,8 +57,11 @@ export class ViewConfigItemComponent implements OnInit {
     }
 
     if (type.toUpperCase() === 'JSON') {
+      this.isValidJson = true;
       this.isValidJson = this.isValidJsonString(value);
-      return;
+      if (!this.isValidJson) {
+        return;
+      }
     }
 
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + catItemId);
@@ -79,6 +84,8 @@ export class ViewConfigItemComponent implements OnInit {
           }
         },
         error => {
+          // reset to default value
+          this.restoreConfigFieldValue(configItem, categoryName, value, type);
           /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
