@@ -148,7 +148,6 @@ export class AddTaskWizardComponent implements OnInit {
           this.isValidTime = false;
           return;
         }
-        console.log('isValidDay', this.isValidDay, 'isValidTime', this.isValidTime);
         nxtButton.textContent = 'Enable & Start Task';
         if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['repeat_time'].length > 0) {
           this.isTaskAdded = true;
