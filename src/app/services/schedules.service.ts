@@ -146,7 +146,7 @@ export class SchedulesService {
    * POST | /foglamp/scheduled/task
    *
    */
-  public createTask(payload: any) {
+  public createScheduledTask(payload: any) {
     return this.http.post(this.CREATE_TASK, JSON.stringify(payload)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));

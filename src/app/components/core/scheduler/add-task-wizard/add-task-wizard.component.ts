@@ -224,7 +224,7 @@ export class AddTaskWizardComponent implements OnInit {
       'schedule_repeat': repeatTime,
       'schedule_type': formValues['schedule_type']
     };
-    this.schedulesService.createTask(payload)
+    this.schedulesService.createScheduledTask(payload)
       .subscribe(
         (data) => {
           /** request completed */
