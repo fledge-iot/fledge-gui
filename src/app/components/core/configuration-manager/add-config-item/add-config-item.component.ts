@@ -11,14 +11,16 @@ import { AlertService, ConfigurationService } from '../../../../services';
 export class AddConfigItemComponent implements OnInit {
   public catName = '';
   public categoryData: any;
-  configItemType = [];
+  public configItemType = [];
+  public configType = 'TEXT';
+  public boolValue = true; // default value of select type
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private configService: ConfigurationService,
     private alertService: AlertService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.configItemType = ['boolean', 'integer', 'string', 'IPv4', 'IPv6', 'X509 certificate', 'password', 'JSON'];
@@ -34,11 +36,11 @@ export class AddConfigItemComponent implements OnInit {
     };
   }
 
-  public setConfigName(desc, key,  selectedRootCategory) {
+  public setConfigName(desc, key, selectedRootCategory) {
     this.categoryData = {
       categoryDescription: desc,
       categoryKey: key,
-      rootCategory:  selectedRootCategory
+      rootCategory: selectedRootCategory
     };
   }
 
@@ -59,10 +61,11 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public addConfigItem(form: NgForm) {
+    console.log('form', form);
     const configItem = form.controls['configName'].value;
     const configItemData = {
       'type': form.controls['type'].value,
-      'default': form.controls['defaultValue'].value,
+      'default': form.controls['defaultValue'].value.toString(),
       'description': form.controls['description'].value
     };
     this.configService
@@ -88,5 +91,31 @@ export class AddConfigItemComponent implements OnInit {
           }
         }
       );
+  }
+
+  public modelChanged(type) {
+
+    if (type != null) {
+      switch (type.toUpperCase()) {
+        case 'IPV4':
+        case 'IPV6':
+        case 'STRING':
+        case 'PASSWORD':
+          this.configType = 'TEXT';
+          break;
+        case 'INTEGER':
+          this.configType = 'NUMBER';
+          break;
+        case 'BOOLEAN':
+          this.configType = 'BOOLEAN';
+          break;
+        case 'JSON':
+        case 'X509 CERTIFICATE':
+          this.configType = 'LONG_TEXT';
+          break;
+        default:
+          break;
+      }
+    }
   }
 }
