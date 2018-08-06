@@ -1,3 +1,5 @@
+import ConfigTypeValidation, { CONFIG_ITEM_TYPES } from '../configuration-type-validation';
+
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
@@ -11,10 +13,10 @@ import { AlertService, ConfigurationService } from '../../../../services';
 export class AddConfigItemComponent implements OnInit {
   public catName = '';
   public categoryData: any;
-  public configItemType = [];
-  public configType = 'TEXT';
+  public configItemTypes = CONFIG_ITEM_TYPES;
+  public configFieldType = 'TEXT';
   public boolValue = true; // default value of select type
-
+  public isValidJson = true;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
@@ -23,7 +25,6 @@ export class AddConfigItemComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.configItemType = ['boolean', 'integer', 'string', 'IPv4', 'IPv6', 'X509 certificate', 'password', 'JSON'];
     this.categoryData = {
       categoryDescription: '',
       categoryKey: '',
@@ -61,7 +62,13 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public addConfigItem(form: NgForm) {
-    console.log('form', form);
+    console.log(form.value);
+    if (form.controls['type'].value === 'JSON') {
+      this.isValidJson = ConfigTypeValidation.isValidJsonString(form.controls['defaultValue'].value.trim());
+    }
+    if (!this.isValidJson) {
+      return;
+    }
     const configItem = form.controls['configName'].value;
     const configItemData = {
       'type': form.controls['type'].value,
@@ -94,28 +101,8 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public modelChanged(type) {
-
     if (type != null) {
-      switch (type.toUpperCase()) {
-        case 'IPV4':
-        case 'IPV6':
-        case 'STRING':
-        case 'PASSWORD':
-          this.configType = 'TEXT';
-          break;
-        case 'INTEGER':
-          this.configType = 'NUMBER';
-          break;
-        case 'BOOLEAN':
-          this.configType = 'BOOLEAN';
-          break;
-        case 'JSON':
-        case 'X509 CERTIFICATE':
-          this.configType = 'LONG_TEXT';
-          break;
-        default:
-          break;
-      }
+      this.configFieldType = ConfigTypeValidation.getValueType(type);
     }
   }
 }

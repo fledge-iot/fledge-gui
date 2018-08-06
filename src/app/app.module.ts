@@ -10,8 +10,8 @@ import { routing } from './app.routing';
 import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog.module';
 import { AlertComponent } from './components/common/alert/alert.component';
 import { ChartModule } from './components/common/chart';
-import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
 import { RestartModalComponent } from './components/common/restart-modal/restart-modal.component';
+import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
 import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
 import { CertificateModule } from './components/core/certificate/certificate.module';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
@@ -22,8 +22,6 @@ import { FooterComponent } from './components/layout/footer';
 import { LoginComponent } from './components/layout/login';
 import { NavbarComponent } from './components/layout/navbar/navbar.component';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
-import { InputTrimDirective } from './directives/input-trim.directive';
-import { NumberOnlyDirective } from './directives/number-only.directive';
 import { AuthCheckGuard } from './guards';
 import { PipesModule } from './pipes/pipes.module';
 import {
@@ -45,6 +43,7 @@ import {
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
+import { DirectivesModule } from './directives/directives.module';
 
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
@@ -76,7 +75,8 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     AlertDialogModule,
     CertificateModule,
     DashboardModule,
-    SharedModule
+    SharedModule,
+    DirectivesModule
   ],
   declarations: [
     AppComponent,
@@ -86,8 +86,6 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     SideMenuComponent,
     NavbarComponent,
     SettingsComponent,
-    NumberOnlyDirective,
-    InputTrimDirective,
     ServiceDiscoveryComponent,
     ShutdownModalComponent,
     RestartModalComponent,
