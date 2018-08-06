@@ -21,7 +21,6 @@ export class ConfigurationManagerComponent implements OnInit {
   public selectedRootCategory = 'General';
   public isChild = true;
 
-  element: Element;
   @Input() categoryConfigurationData;
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
 
@@ -63,6 +62,8 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public getChildren(categoryName) {
+    /** request started */
+    this.ngProgress.start();
     this.selectedRootCategory = categoryName;
     this.tree.treeModel.nodes = [];
 
@@ -70,10 +71,11 @@ export class ConfigurationManagerComponent implements OnInit {
     this.configService.getChildren(categoryName).
       subscribe(
         (data) => {
+          /** request completed */
+          this.ngProgress.done();
           const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
+
           // Check if there is any category
-
-
           if (rootCategories.length > 0 && data['categories'].length === 0) {
             this.isChild = false;
             this.getCategory(rootCategories[0].key, rootCategories[0].description);
@@ -88,12 +90,11 @@ export class ConfigurationManagerComponent implements OnInit {
           this.tree.treeModel.update();
           if (this.tree.treeModel.getFirstRoot()) {
             this.tree.treeModel.getFirstRoot().setIsActive(true);
-            this.tree.treeModel.getFirstRoot().setIsExpanded(false);
-            this.tree.treeModel.getFirstRoot().setIsExpanded(true);
           }
-
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
