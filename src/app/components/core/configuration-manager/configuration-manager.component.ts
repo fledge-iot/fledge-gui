@@ -19,6 +19,8 @@ export class ConfigurationManagerComponent implements OnInit {
   public JSON;
   public addConfigItem: any;
   public selectedRootCategory = 'General';
+  public isChild = true;
+
   element: Element;
   @Input() categoryConfigurationData;
   @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
@@ -61,27 +63,35 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public getChildren(categoryName) {
+    this.selectedRootCategory = categoryName;
     this.tree.treeModel.nodes = [];
+
     this.nodes = [];
     this.configService.getChildren(categoryName).
       subscribe(
         (data) => {
           const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
           // Check if there is any category
+
+
           if (rootCategories.length > 0 && data['categories'].length === 0) {
+            this.isChild = false;
             this.getCategory(rootCategories[0].key, rootCategories[0].description);
             this.categoryData = [];
             return;
           }
+          this.isChild = true;
           data['categories'].forEach(element => {
             this.nodes.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
           });
+
           this.tree.treeModel.update();
           if (this.tree.treeModel.getFirstRoot()) {
             this.tree.treeModel.getFirstRoot().setIsActive(true);
             this.tree.treeModel.getFirstRoot().setIsExpanded(false);
             this.tree.treeModel.getFirstRoot().setIsExpanded(true);
           }
+
         },
         error => {
           if (error.status === 0) {
@@ -172,14 +182,6 @@ export class ConfigurationManagerComponent implements OnInit {
     this.selectedRootCategory = categoryData.rootCategory;
     this.getRootCategories();
     this.refreshCategory(categoryData.categoryKey, categoryData.categoryDescription);
-  }
-
-  /**
-  * @param notify
-  * To reload categories after adding a new child category
-  */
-  onAddChild() {
-    this.getRootCategories(true);
   }
 
   /**

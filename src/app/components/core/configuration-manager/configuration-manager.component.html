@@ -14,6 +14,11 @@
             </select>
           </div>
         </div>
+        <div *ngIf="!isChild" class="panel-block">
+          <button class="button is-rounded is-fullwidth" disabled>
+            NO CHILD
+          </button>
+        </div>
         <div id="root-children" class="panel-block">
           <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)" (activate)="onNodeActive($event)"></tree-root>
         </div>

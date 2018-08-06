@@ -9,8 +9,7 @@ import { NgProgress } from '../../../../../../node_modules/ngx-progressbar';
 })
 export class ViewConfigItemComponent implements OnInit {
   @Input() categoryConfigurationData: any;
-  public oldValue;
-  public selectedValue;
+  public selectedValue: string;
   public isValidJson = true;
 
   constructor(private configService: ConfigurationService,
@@ -25,7 +24,7 @@ export class ViewConfigItemComponent implements OnInit {
       itemKey = itemKey.replace('select-', '');
     }
 
-    let htmlElement;
+    let htmlElement: any;
     htmlElement = <HTMLInputElement>document.getElementById(itemKey);
     if (htmlElement == null) {
       htmlElement = <HTMLSelectElement>document.getElementById('select-' + itemKey);
@@ -118,12 +117,6 @@ export class ViewConfigItemComponent implements OnInit {
         break;
     }
     return type;
-  }
-
-  onModelChange(oldVal) {
-    if (oldVal !== undefined) {
-      this.oldValue = oldVal;
-    }
   }
 
   public isValidJsonString(str) {
