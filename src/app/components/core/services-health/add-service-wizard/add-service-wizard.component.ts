@@ -166,7 +166,7 @@ export class AddServiceWizardComponent implements OnInit {
         }
         break;
       case 4:
-        this.router.navigate(['/services-health']);
+        this.router.navigate(['/services']);
         break;
       default:
         break;

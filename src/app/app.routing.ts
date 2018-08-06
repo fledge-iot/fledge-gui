@@ -24,7 +24,7 @@ const appRoutes: Routes = [
   { path: 'backup-restore', component: BackupRestoreComponent, canActivate: [AuthCheckGuard] },
   { path: 'setting', component: SettingsComponent },
   {
-    path: 'services-health',
+    path: 'services',
     loadChildren: './components/core/services-health/service-health.module#ServiceHealthModule',
     canActivate: [AuthCheckGuard]
   },
