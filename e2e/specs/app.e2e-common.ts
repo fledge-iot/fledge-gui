@@ -28,7 +28,7 @@ describe('FogLAMP gui', () => {
     });
 
     it('Should Display Default Graphs', () => {
-      expect(skipLogin.getCountOfSelectedGraph()).toEqual(3);
+      expect(skipLogin.getCountOfSelectedGraph()).toEqual(2);
       expect(skipLogin.getReadingsGraph()).toEqual('READINGS');
       expect(skipLogin.getPurgedGraph()).toEqual('PURGED');
     });
@@ -145,8 +145,8 @@ describe('FogLAMP gui', () => {
         'Management Port'
       ];
       skipLogin.navToServiceHealth();
-      expect(skipLogin.getServiceStatusTitle()).toContain('Services Status');
-      expect(skipLogin.getAddServiceButton()).toContain('Add Service');
+      expect(skipLogin.getServiceStatusTitle()).toContain('Services');
+      expect(skipLogin.getAddServiceButton()).toContain('Add');
       expect(skipLogin.getServiceStatusRefreshButton()).toEqual(true);
 
       for (const ColumnName in ColumnsName) {
