@@ -58,7 +58,7 @@
                 <input type="text" class="input" name="defaultValue" #stringValue="ngModel" placeholder="default value" [(ngModel)]="string" required
                   trim="blur" />
               </div>
-              <small *ngIf="f.submitted && !stringValue.valid" class="help is-danger level-left">Value is required|Must be an string</small>
+              <small *ngIf="f.submitted && !stringValue.valid" class="help is-danger level-left">Value is required | Must be an string</small>
             </div>
           </div>
           <div *ngIf="configFieldType === 'NUMBER'" class="column">
@@ -67,7 +67,7 @@
                 <input type="number" class="input" name="defaultValue" #numberValue="ngModel" placeholder="default value" [(ngModel)]="number"
                   required trim="blur" appNumberOnly/>
               </div>
-              <small *ngIf="f.submitted && !numberValue.valid" class="help is-danger level-left">Value is required|Must be an integer</small>
+              <small *ngIf="f.submitted && !numberValue.valid" class="help is-danger level-left">Value is required | Must be an integer</small>
             </div>
           </div>
           <div *ngIf="configFieldType === 'LONG_TEXT'" class="column">
@@ -76,7 +76,7 @@
                 <textarea row='3' type="text" class="input" name="defaultValue" #textAreaValue="ngModel" placeholder="default value" [(ngModel)]="textA"
                   required trim="blur"></textarea>
               </div>
-              <small *ngIf="f.submitted && !textAreaValue.valid" class="help is-danger level-left">Value is required|Must be an string</small>
+              <small *ngIf="f.submitted && !textAreaValue.valid" class="help is-danger level-left">Value is required | Must be an string</small>
               <small *ngIf="!isValidJson" class="help is-danger level-left">Invalid JSON</small>
             </div>
           </div>
@@ -85,8 +85,8 @@
               <div class="control is-fullwidth">
                 <div class="select is-fullwidth">
                   <select [(ngModel)]="boolValue" #booleanValue="ngModel" name="defaultValue" required>
-                    <option [ngValue]="true">True</option>
-                    <option [ngValue]="false">False</option>
+                    <option [ngValue]="true">true</option>
+                    <option [ngValue]="false">false</option>
                   </select>
                 </div>
               </div>

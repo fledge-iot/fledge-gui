@@ -47,6 +47,7 @@ export class AddConfigItemComponent implements OnInit {
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
+      this.isValidJson = true;
       this.resetAddConfigItemForm(form);
     }
     const modal = <HTMLDivElement>document.getElementById('add-config-item');

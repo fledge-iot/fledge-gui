@@ -13,6 +13,7 @@ export class ViewConfigItemComponent implements OnInit {
   @Input() categoryConfigurationData: any;
   public selectedValue: string;
   public isValidJson = true;
+  public selectedCategoryId: string;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -59,7 +60,9 @@ export class ViewConfigItemComponent implements OnInit {
 
     if (type.toUpperCase() === 'JSON') {
       this.isValidJson = ConfigTypeValidation.isValidJsonString(value);
+
       if (!this.isValidJson) {
+        this.selectedCategoryId = catItemId;
         return;
       }
     }

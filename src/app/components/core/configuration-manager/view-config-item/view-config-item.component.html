@@ -34,7 +34,7 @@
                     type="text" [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'>
                     {{configItem?.value?.value}}
                     </textarea>
-                  <div *ngIf="!isValidJson && (configItem.value.type | uppercase) == 'JSON'" class="help is-danger level-left">Invalid JSON</div>
+                  <div *ngIf="!isValidJson && (selectedCategoryId === (categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase)) && (configItem.value.type | uppercase) == 'JSON'" class="help is-danger level-left">Invalid JSON</div>
                 </div>
               </div>
             </div>
