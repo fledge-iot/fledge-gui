@@ -50,7 +50,7 @@ export class SkipLogin {
 
   getPurgedGraph() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-dashboard div:nth-child(5) div article h5')).getText();
+    return element(by.css('app-dashboard div:nth-child(4) div article h5')).getText();
   }
 
   getAppStatus() {
@@ -346,7 +346,7 @@ export class SkipLogin {
   }
 
   navToServiceHealth() {
-    return browser.get('/#/services-health');
+    return browser.get('/#/services');
   }
 
   getServiceStatusTitle() {
