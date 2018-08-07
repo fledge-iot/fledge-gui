@@ -1,3 +1,5 @@
+import ConfigTypeValidation, { CONFIG_ITEM_TYPES } from '../configuration-type-validation';
+
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
@@ -11,17 +13,18 @@ import { AlertService, ConfigurationService } from '../../../../services';
 export class AddConfigItemComponent implements OnInit {
   public catName = '';
   public categoryData: any;
-  configItemType = [];
-
+  public configItemTypes = CONFIG_ITEM_TYPES;
+  public configFieldType = 'TEXT';
+  public boolValue = true; // default value of select type
+  public isValidJson = true;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private configService: ConfigurationService,
     private alertService: AlertService
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.configItemType = ['boolean', 'integer', 'string', 'IPv4', 'IPv6', 'X509 certificate', 'password', 'JSON'];
     this.categoryData = {
       categoryDescription: '',
       categoryKey: '',
@@ -34,17 +37,20 @@ export class AddConfigItemComponent implements OnInit {
     };
   }
 
-  public setConfigName(desc, key,  selectedRootCategory) {
+  public setConfigName(desc, key, selectedRootCategory) {
     this.categoryData = {
       categoryDescription: desc,
       categoryKey: key,
-      rootCategory:  selectedRootCategory
+      rootCategory: selectedRootCategory
     };
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
     if (form != null) {
+      this.isValidJson = true;
       this.resetAddConfigItemForm(form);
+      this.configFieldType = 'TEXT';
+      this.boolValue = true;
     }
     const modal = <HTMLDivElement>document.getElementById('add-config-item');
     if (isOpen) {
@@ -59,11 +65,17 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public addConfigItem(form: NgForm) {
+    if (form.controls['type'].value.toUpperCase() === 'JSON') {
+      this.isValidJson = ConfigTypeValidation.isValidJsonString(form.controls['defaultValue'].value.trim());
+      if (!this.isValidJson) {
+        return;
+      }
+    }
     const configItem = form.controls['configName'].value;
     const configItemData = {
       'type': form.controls['type'].value,
-      'default': form.controls['defaultValue'].value,
-      'description': form.controls['description'].value
+      'default': form.controls['defaultValue'].value.toString(),
+      'description': form.controls['description'].value.trim()
     };
     this.configService
       .addNewConfigItem(
@@ -74,11 +86,8 @@ export class AddConfigItemComponent implements OnInit {
       .subscribe(
         (data) => {
           this.notify.emit(this.categoryData);
-          this.toggleModal(false, null);
+          this.toggleModal(false, form);
           this.alertService.success(data['message']);
-          if (form != null) {
-            this.resetAddConfigItemForm(form);
-          }
         },
         error => {
           if (error.status === 0) {
@@ -88,5 +97,11 @@ export class AddConfigItemComponent implements OnInit {
           }
         }
       );
+  }
+
+  public modelChanged(type) {
+    if (type !== null) {
+      this.configFieldType = ConfigTypeValidation.getValueType(type);
+    }
   }
 }

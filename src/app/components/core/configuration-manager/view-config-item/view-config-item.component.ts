@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ConfigurationService, AlertService } from '../../../../services';
+
 import { NgProgress } from '../../../../../../node_modules/ngx-progressbar';
+import { AlertService, ConfigurationService } from '../../../../services';
+import ConfigTypeValidation from '../configuration-type-validation';
 
 @Component({
   selector: 'app-view-config-item',
@@ -11,6 +13,8 @@ export class ViewConfigItemComponent implements OnInit {
   @Input() categoryConfigurationData: any;
   public selectedValue: string;
   public isValidJson = true;
+  public selectedCategoryId: string;
+  public isEmptyValue = false;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -23,7 +27,7 @@ export class ViewConfigItemComponent implements OnInit {
     if (itemKey.includes('select')) {
       itemKey = itemKey.replace('select-', '');
     }
-
+    this.isEmptyValue = false;
     let htmlElement: any;
     htmlElement = <HTMLInputElement>document.getElementById(itemKey);
     if (htmlElement == null) {
@@ -37,13 +41,14 @@ export class ViewConfigItemComponent implements OnInit {
     cancelButton.classList.add('hidden');
 
     if (configType.toUpperCase() === 'JSON') {
-      this.isValidJson = this.isValidJsonString(configValue);
+      this.isValidJson = ConfigTypeValidation.isValidJsonString(configValue);
       return;
     }
   }
 
   public saveConfigValue(categoryName, configItem, type) {
     const catItemId = categoryName.toLowerCase() + '-' + configItem.toLowerCase();
+    this.selectedCategoryId = catItemId;
     let htmlElement: any;
     htmlElement = <HTMLInputElement>document.getElementById(catItemId);
 
@@ -51,12 +56,17 @@ export class ViewConfigItemComponent implements OnInit {
     if (htmlElement == null) {
       htmlElement = <HTMLSelectElement>document.getElementById('select-' + catItemId);
       value = htmlElement.options[htmlElement.selectedIndex].value;
+      this.isEmptyValue = false;
     } else {
       value = htmlElement.value.trim();
+      if (value.length === 0) {
+        this.isEmptyValue = true;
+        return;
+      }
     }
 
     if (type.toUpperCase() === 'JSON') {
-      this.isValidJson = this.isValidJsonString(value);
+      this.isValidJson = ConfigTypeValidation.isValidJsonString(value);
       if (!this.isValidJson) {
         return;
       }
@@ -95,37 +105,7 @@ export class ViewConfigItemComponent implements OnInit {
   }
 
   public getConfigAttributeType(key) {
-    let type = '';
-    switch (key.trim().toUpperCase()) {
-      case 'STRING':
-      case 'IPV4':
-      case 'IPV6':
-      case 'PASSWORD':
-        type = 'TEXT';
-        break;
-      case 'INTEGER':
-        type = 'NUMBER';
-        break;
-      case 'BOOLEAN':
-        type = 'BOOLEAN';
-        break;
-      case 'JSON':
-      case 'X509 CERTIFICATE':
-        type = 'LONG_TEXT';
-        break;
-      default:
-        break;
-    }
-    return type;
-  }
-
-  public isValidJsonString(str) {
-    try {
-      JSON.parse(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
+    return ConfigTypeValidation.getValueType(key);
   }
 
   public onTextChange(configItemKey, value) {
@@ -135,5 +115,10 @@ export class ViewConfigItemComponent implements OnInit {
     }
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
     cancelButton.classList.remove('hidden');
+    console.log('value', value);
+    if (value.trim().length !== 0) {
+      this.isEmptyValue = false;
+      return;
+    }
   }
 }

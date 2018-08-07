@@ -10,6 +10,7 @@ import { AuthCheckGuard } from '../../../guards';
 import { ConfigurationService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
+import { DirectivesModule } from '../../../directives/directives.module';
 
 const routes: Routes = [
   {
@@ -30,6 +31,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     NgProgressModule,
     SharedModule,
+    DirectivesModule,
     TreeModule
   ],
   providers: [ConfigurationService],
