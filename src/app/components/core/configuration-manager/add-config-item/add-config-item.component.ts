@@ -49,6 +49,8 @@ export class AddConfigItemComponent implements OnInit {
     if (form != null) {
       this.isValidJson = true;
       this.resetAddConfigItemForm(form);
+      this.configFieldType = 'TEXT';
+      this.boolValue = true;
     }
     const modal = <HTMLDivElement>document.getElementById('add-config-item');
     if (isOpen) {
@@ -63,7 +65,7 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public addConfigItem(form: NgForm) {
-    if (form.controls['type'].value === 'JSON') {
+    if (form.controls['type'].value.toUpperCase() === 'JSON') {
       this.isValidJson = ConfigTypeValidation.isValidJsonString(form.controls['defaultValue'].value.trim());
       if (!this.isValidJson) {
         return;
@@ -71,9 +73,9 @@ export class AddConfigItemComponent implements OnInit {
     }
     const configItem = form.controls['configName'].value;
     const configItemData = {
-      'type': form.controls['type'].value,
+      'type': form.controls['type'].value.trim().toLowerCase(),
       'default': form.controls['defaultValue'].value.toString(),
-      'description': form.controls['description'].value
+      'description': form.controls['description'].value.trim()
     };
     this.configService
       .addNewConfigItem(
@@ -84,11 +86,17 @@ export class AddConfigItemComponent implements OnInit {
       .subscribe(
         (data) => {
           this.notify.emit(this.categoryData);
-          this.toggleModal(false, null);
+          this.toggleModal(false, form);
           this.alertService.success(data['message']);
-          if (form != null) {
-            this.resetAddConfigItemForm(form);
-          }
+          // if (form != null) {
+          //   this.configFieldType = 'TEXT';
+          //   this.resetAddConfigItemForm(form);
+          //   if (form.controls['type'].value.trim().toLowerCase() === 'boolean') {
+          //     form.controls['defaultValue'].setValue(true);
+          //   } else {
+          //     form.controls['defaultValue'].setValue('');
+          //   }
+          // }
         },
         error => {
           if (error.status === 0) {
