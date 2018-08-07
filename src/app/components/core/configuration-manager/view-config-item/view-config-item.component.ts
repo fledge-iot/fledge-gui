@@ -115,7 +115,8 @@ export class ViewConfigItemComponent implements OnInit {
     }
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
     cancelButton.classList.remove('hidden');
-    if (value.trim().length === 0) {
+    console.log('value', value);
+    if (value.trim().length !== 0) {
       this.isEmptyValue = false;
       return;
     }
