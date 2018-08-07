@@ -14,6 +14,7 @@ export class ViewConfigItemComponent implements OnInit {
   public selectedValue: string;
   public isValidJson = true;
   public selectedCategoryId: string;
+  public isEmptyValue = false;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -26,7 +27,7 @@ export class ViewConfigItemComponent implements OnInit {
     if (itemKey.includes('select')) {
       itemKey = itemKey.replace('select-', '');
     }
-
+    this.isEmptyValue = false;
     let htmlElement: any;
     htmlElement = <HTMLInputElement>document.getElementById(itemKey);
     if (htmlElement == null) {
@@ -47,6 +48,7 @@ export class ViewConfigItemComponent implements OnInit {
 
   public saveConfigValue(categoryName, configItem, type) {
     const catItemId = categoryName.toLowerCase() + '-' + configItem.toLowerCase();
+    this.selectedCategoryId = catItemId;
     let htmlElement: any;
     htmlElement = <HTMLInputElement>document.getElementById(catItemId);
 
@@ -54,15 +56,18 @@ export class ViewConfigItemComponent implements OnInit {
     if (htmlElement == null) {
       htmlElement = <HTMLSelectElement>document.getElementById('select-' + catItemId);
       value = htmlElement.options[htmlElement.selectedIndex].value;
+      this.isEmptyValue = false;
     } else {
       value = htmlElement.value.trim();
+      if (value.length === 0) {
+        this.isEmptyValue = true;
+        return;
+      }
     }
 
     if (type.toUpperCase() === 'JSON') {
       this.isValidJson = ConfigTypeValidation.isValidJsonString(value);
-
       if (!this.isValidJson) {
-        this.selectedCategoryId = catItemId;
         return;
       }
     }
@@ -110,5 +115,9 @@ export class ViewConfigItemComponent implements OnInit {
     }
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
     cancelButton.classList.remove('hidden');
+    if (value.trim().length === 0) {
+      this.isEmptyValue = false;
+      return;
+    }
   }
 }

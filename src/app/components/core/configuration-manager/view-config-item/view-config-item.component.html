@@ -35,6 +35,7 @@
                     {{configItem?.value?.value}}
                     </textarea>
                   <div *ngIf="!isValidJson && (selectedCategoryId === (categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase)) && (configItem.value.type | uppercase) == 'JSON'" class="help is-danger level-left">Invalid JSON</div>
+                  <div *ngIf="isEmptyValue && (selectedCategoryId === (categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase))" class="help is-danger level-left">Field can't left blank</div>
                 </div>
               </div>
             </div>
