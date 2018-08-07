@@ -1,4 +1,12 @@
-export const CONFIG_ITEM_TYPES = ['Boolean', 'Integer', 'String', 'IPv4', 'IPv6', 'X509 certificate', 'Password', 'JSON'];
+export const CONFIG_ITEM_TYPES = [
+  {'key': 'boolean', 'value': 'Boolean'},
+  {'key': 'string', 'value': 'String'},
+  {'key': 'integer', 'value': 'Integer'},
+  {'key': 'password', 'value': 'Password'},
+  {'key': 'IPv4', 'value': 'IPv4'},
+  {'key': 'IPv6', 'value': 'IPv6'},
+  {'key': 'X509 certificate', 'value': 'X509 certificate'},
+  {'key': 'JSON', 'value': 'JSON'}];
 
 export default class ConfigTypeValidation {
   public static getValueType(configType) {

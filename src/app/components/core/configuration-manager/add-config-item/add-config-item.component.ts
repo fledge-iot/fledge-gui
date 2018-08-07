@@ -73,7 +73,7 @@ export class AddConfigItemComponent implements OnInit {
     }
     const configItem = form.controls['configName'].value;
     const configItemData = {
-      'type': form.controls['type'].value.trim().toLowerCase(),
+      'type': form.controls['type'].value,
       'default': form.controls['defaultValue'].value.toString(),
       'description': form.controls['description'].value.trim()
     };
@@ -88,15 +88,6 @@ export class AddConfigItemComponent implements OnInit {
           this.notify.emit(this.categoryData);
           this.toggleModal(false, form);
           this.alertService.success(data['message']);
-          // if (form != null) {
-          //   this.configFieldType = 'TEXT';
-          //   this.resetAddConfigItemForm(form);
-          //   if (form.controls['type'].value.trim().toLowerCase() === 'boolean') {
-          //     form.controls['defaultValue'].setValue(true);
-          //   } else {
-          //     form.controls['defaultValue'].setValue('');
-          //   }
-          // }
         },
         error => {
           if (error.status === 0) {

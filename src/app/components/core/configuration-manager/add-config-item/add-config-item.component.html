@@ -43,7 +43,7 @@
                 <div class="select is-fullwidth">
                   <select name="type" [(ngModel)]="categoryData.type" #type="ngModel" (ngModelChange)="modelChanged($event)" required>
                     <option [value]="undefined" disabled>Select</option>
-                    <option [value]="type" *ngFor="let type of configItemTypes">{{type}}</option>
+                    <option [value]="type.key" *ngFor="let type of configItemTypes">{{type.value}}</option>
                   </select>
                 </div>
               </div>
