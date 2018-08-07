@@ -2,7 +2,7 @@ export const CONFIG_ITEM_TYPES = ['boolean', 'integer', 'string', 'IPv4', 'IPv6'
 
 export default class ConfigTypeValidation {
   public static getValueType(configType) {
-    let valueType;
+    let valueType: string;
     switch (configType.toUpperCase()) {
       case 'IPV4':
       case 'IPV6':

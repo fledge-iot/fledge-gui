@@ -62,12 +62,11 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public addConfigItem(form: NgForm) {
-    console.log(form.value);
     if (form.controls['type'].value === 'JSON') {
       this.isValidJson = ConfigTypeValidation.isValidJsonString(form.controls['defaultValue'].value.trim());
-    }
-    if (!this.isValidJson) {
-      return;
+      if (!this.isValidJson) {
+        return;
+      }
     }
     const configItem = form.controls['configName'].value;
     const configItemData = {
@@ -101,7 +100,7 @@ export class AddConfigItemComponent implements OnInit {
   }
 
   public modelChanged(type) {
-    if (type != null) {
+    if (type !== null) {
       this.configFieldType = ConfigTypeValidation.getValueType(type);
     }
   }
