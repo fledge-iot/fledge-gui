@@ -5,26 +5,50 @@
       <span></span>
       <span></span>
     </div>
-    <a class="navbar-item is-flex-mobile is-hidden-tablet" href="/">
+    <a class="navbar-item" href="/">
+      <div class="foglamp-logo"></div>
       <b>FogLAMP</b>
     </a>
-    <a class="navbar-item is-hidden-mobile is-flex-tablet" href="/">
-      <b>FogLAMP Management</b>
-    </a>
   </div>
-  <div class="navbar-menu">
+  <div class="navbar-menu is-active">
     <div class="navbar-start">
-      <a class="navbar-item">
-        <div class="tooltip-inner tags has-addons tooltip is-tooltip-right" [attr.data-tooltip]='ping_info.stats'>
-          <span class="tag" [ngClass]="applyServiceStatusCustomCss(ping_info)">
-            <i [ngClass]="applyServiceStatusIconCss(ping_info)" aria-hidden="true"></i>
-          </span>
-          <span class="tag is-hidden-mobile">{{ping_info.service_status}}</span>
-          <button (click)="pingService(true)" class="tag button is-small">
-            <i class="fa fa-refresh" aria-hidden="true"></i>
-          </button>
+      <div class="navbar-item">
+        <div class="field is-grouped is-grouped-multiline">
+          <div class="control">
+            <div class="tags has-addons">
+              <span class="tag" [ngClass]="applyServiceStatusCustomCss(ping_info)">{{ping_info.host_name}}</span>
+            </div>
+          </div>
+
+          <div *ngIf='ping_info.is_alive' class="control">
+            <div class="tags has-addons">
+              <span class="tag">Received</span>
+              <span class="tag is-primary">{{ping_data['dataRead']}}</span>
+            </div>
+          </div>
+
+          <div *ngIf='ping_info.is_alive' class="control">
+            <div class="tags has-addons">
+              <span class="tag">Sent</span>
+              <span class="tag is-primary">{{ping_data['dataSent']}}</span>
+            </div>
+          </div>
+
+          <div *ngIf='ping_info.is_alive' class="control">
+            <div class="tags has-addons">
+              <span class="tag">Purged</span>
+              <span class="tag is-primary">{{ping_data['dataPurged']}}</span>
+            </div>
+          </div>
+
+          <div *ngIf='ping_info.is_alive' class="control">
+            <div class="tags has-addons">
+              <span class="tag">Uptime</span>
+              <span class="tag is-primary">{{uptime}}</span>
+            </div>
+          </div>
         </div>
-      </a>
+      </div>
     </div>
     <div class="navbar-end">
       <div *ngIf='isUserLoggedIn' class="dropdown is-right" id="dropdown-box" (click)="toggleDropdown()">
@@ -54,12 +78,12 @@
         </div>
       </div>
       <div *ngIf="ping_info.is_alive && isAuthOptional" class="icon has-text-danger is-large">
-        <a class=" tooltip is-tooltip-left" data-tooltip="Shut Down" (click)="openModal()">
+        <a class=" tooltip is-tooltip-left" data-tooltip="Shut Down FogLAMP" (click)="openModal()">
           <i class="fa fa-power-off" aria-hidden="true"></i>
         </a>
       </div>
       <div *ngIf="ping_info.is_alive && isAuthOptional" class="icon has-text-danger is-large">
-        <a id="restart" class=" tooltip is-tooltip-left" data-tooltip="Restart" (click)="openRestartModal()">
+        <a id="restart" class=" tooltip is-tooltip-left" data-tooltip="Restart FogLAMP" (click)="openRestartModal()">
           <i class="fa fa-refresh" aria-hidden="true"></i>
         </a>
       </div>

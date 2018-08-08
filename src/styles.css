@@ -114,3 +114,9 @@ table.scroll tbody {
     height: 100px;
     background: url(./assets/favicon.ico) center center no-repeat;
 }
+
+.foglamp-logo {
+    width: 72px;
+    height: 35px;
+    background: url(./assets/foglamp.png) center center no-repeat;
+}

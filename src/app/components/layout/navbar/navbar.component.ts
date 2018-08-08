@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
-
+import Utils from '../../../utils';
 import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
@@ -25,7 +25,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public ping_data = {};
-  public ping_info = { stats: 'No data', is_alive: false, is_auth: false, service_status: 'service down' };
+  public ping_info = { stats: 'No data', is_alive: false, is_auth: false, host_name: 'service down' };
   public shutDownData = {
     key: '',
     message: ''
@@ -38,6 +38,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   isUserLoggedIn: boolean;
   userName: string;
   isAuthOptional = true;  // Default to true for authorized access
+  uptime: any = '';
 
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
@@ -94,8 +95,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.status.changeMessage(true);
       this.ping_data = data;
-      const statsTxt = 'Read: ' + data['dataRead'] + '\n' + 'Sent: ' + data['dataSent'] + '\n' + 'Purged: ' + data['dataPurged'];
-      this.ping_info = { stats: statsTxt, is_alive: true, is_auth: false, service_status: 'running' };
+      this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
+      this.ping_info = { is_alive: true, is_auth: false, host_name: this.ping_data['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -112,9 +113,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.ping_info = { stats: 'Auth Required', is_alive: true, is_auth: true, service_status: 'running' };
+          this.ping_info = { stats: 'Auth Required', is_alive: true, is_auth: true, host_name: this.ping_data['hostName'] };
         } else {
-          this.ping_info = { stats: 'No Data', is_alive: false, is_auth: false, service_status: 'service down' };
+          this.ping_info = { stats: 'No Data', is_alive: false, is_auth: false, host_name: 'service down' };
         }
       });
   }
@@ -226,17 +227,17 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  applyServiceStatusIconCss(pingInfo) {
-    if (pingInfo.is_alive && !pingInfo.is_auth) {
-      return 'fa fa-check-circle-o';
-    }
-    if (pingInfo.is_alive && pingInfo.is_auth) {
-      return 'fa fa-lock';
-    }
-    if (!pingInfo.is_alive && !pingInfo.is_auth) {
-      return 'fa fa-times-circle';
-    }
-  }
+  // applyServiceStatusIconCss(pingInfo) {
+  //   if (pingInfo.is_alive && !pingInfo.is_auth) {
+  //     return 'fa fa-check-circle-o';
+  //   }
+  //   if (pingInfo.is_alive && pingInfo.is_auth) {
+  //     return 'fa fa-lock';
+  //   }
+  //   if (!pingInfo.is_alive && !pingInfo.is_auth) {
+  //     return 'fa fa-times-circle';
+  //   }
+  // }
 
   /**
      *  Signout the current user
