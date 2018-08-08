@@ -216,28 +216,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyServiceStatusCustomCss(pingInfo) {
-    if (pingInfo.is_alive && !pingInfo.is_auth) {
-      return 'is-success';
+    if (this.ping_data['health'] === 'green') {
+      return 'has-text-success';
     }
-    if (pingInfo.is_alive && pingInfo.is_auth) {
-      return 'is-warning';
+    if (this.ping_data['health'] === 'amber') {
+      return 'has-text-warning';
     }
-    if (!pingInfo.is_alive && !pingInfo.is_auth) {
-      return 'is-danger';
+    if (this.ping_data['health'] === 'red' || !pingInfo.is_alive) {
+      return 'has-text-danger';
     }
   }
-
-  // applyServiceStatusIconCss(pingInfo) {
-  //   if (pingInfo.is_alive && !pingInfo.is_auth) {
-  //     return 'fa fa-check-circle-o';
-  //   }
-  //   if (pingInfo.is_alive && pingInfo.is_auth) {
-  //     return 'fa fa-lock';
-  //   }
-  //   if (!pingInfo.is_alive && !pingInfo.is_auth) {
-  //     return 'fa fa-times-circle';
-  //   }
-  // }
 
   /**
      *  Signout the current user

@@ -120,3 +120,7 @@ table.scroll tbody {
     height: 35px;
     background: url(./assets/foglamp.png) center center no-repeat;
 }
+
+.navbar-menu {
+    box-shadow: none !important;
+}

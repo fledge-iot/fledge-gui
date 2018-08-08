@@ -5,42 +5,96 @@
       <span></span>
       <span></span>
     </div>
-    <a class="navbar-item" href="/">
-      <div class="foglamp-logo"></div>
-      <b>FogLAMP</b>
-    </a>
+    <div class="navbar-item">
+      <div class="foglamp-logo is-hidden-mobile is-flex-tablet"></div>
+      <div class="is-hidden-mobile is-flex-tablet">
+          <b>FogLAMP</b>
+      </div>
+      <div *ngIf='!ping_info.is_alive' class="is-flex-mobile is-hidden-tablet">
+        <span class="icon" [ngClass]="applyServiceStatusCustomCss(ping_info)">
+          <i class="fa fa-circle"> </i>
+        </span>
+        <b>FogLAMP</b>
+      </div>
+      <div *ngIf='ping_info.is_alive' class="dropdown is-left is-flex-mobile is-hidden-tablet" id="dropdown-box" (click)="toggleDropdown()">
+        <div class="dropdown-trigger">
+          <a class="navbar-link">
+            <span class="icon" [ngClass]="applyServiceStatusCustomCss(ping_info)">
+              <i class="fa fa-circle"> </i>
+            </span>
+            <b>FogLAMP</b>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down is-hidden-desktop" aria-hidden="true"></i>
+            </span>
+          </a>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div class="dropdown-item">
+              <span class="tag">
+                <b>{{ping_info.host_name}}/{{ping_data['serviceName']}}</b>
+              </span>
+            </div>
+            <div class="dropdown-item">
+              <div class="tags has-addons">
+                <span class="tag">Received</span>
+                <span class="tag is-info">{{ping_data['dataRead']}}</span>
+              </div>
+            </div>
+            <div class="dropdown-item">
+              <div class="tags has-addons">
+                <span class="tag">Purged&nbsp;&nbsp;&nbsp;</span>
+                <span class="tag is-info">{{ping_data['dataPurged']}}</span>
+              </div>
+            </div>
+            <div class="dropdown-item">
+              <div class="tags has-addons">
+                <span class="tag">Sent&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="tag is-info">{{ping_data['dataSent']}}</span>
+              </div>
+            </div>
+            <div class="dropdown-item">
+              <div class="tags has-addons">
+                <span class="tag">Uptime&nbsp;&nbsp;</span>
+                <span class="tag is-info">{{uptime}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="navbar-menu is-active">
-    <div class="navbar-start">
+  <div class="navbar-menu">
+    <div class="navbar-start is-hidden-mobile is-flex-tablet">
       <div class="navbar-item">
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <div class="tags has-addons">
-              <span class="tag" [ngClass]="applyServiceStatusCustomCss(ping_info)">{{ping_info.host_name}}</span>
-            </div>
+            <span class="tag">
+              <b *ngIf="!ping_data['serviceName']">{{ping_info.host_name}}</b>
+              <b *ngIf="ping_data['serviceName']">{{ping_info.host_name}}/{{ping_data['serviceName']}}</b>
+              <span class="icon" [ngClass]="applyServiceStatusCustomCss(ping_info)">
+                <i class="fa fa-circle"> </i>
+              </span>
+            </span>
           </div>
-
           <div *ngIf='ping_info.is_alive' class="control">
             <div class="tags has-addons">
               <span class="tag">Received</span>
               <span class="tag is-primary">{{ping_data['dataRead']}}</span>
             </div>
           </div>
-
           <div *ngIf='ping_info.is_alive' class="control">
             <div class="tags has-addons">
               <span class="tag">Sent</span>
               <span class="tag is-primary">{{ping_data['dataSent']}}</span>
             </div>
           </div>
-
           <div *ngIf='ping_info.is_alive' class="control">
             <div class="tags has-addons">
               <span class="tag">Purged</span>
               <span class="tag is-primary">{{ping_data['dataPurged']}}</span>
             </div>
           </div>
-
           <div *ngIf='ping_info.is_alive' class="control">
             <div class="tags has-addons">
               <span class="tag">Uptime</span>
