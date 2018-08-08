@@ -96,7 +96,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.status.changeMessage(true);
       this.ping_data = data;
       this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
-      this.ping_info = { is_alive: true, is_auth: false, host_name: this.ping_data['hostName'] };
+      this.ping_info = { stats: '', is_alive: true, is_auth: false, host_name: this.ping_data['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
