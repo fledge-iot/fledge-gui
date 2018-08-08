@@ -3,32 +3,62 @@
     [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
   <!-- cards to be rendered as config.categories.count-->
-  <div class="card" *ngFor="let category of categoryData">
-    <header class="card-header">
-      <div class="card-header-title">
-        <div class="media">
-          <div class="media-content">
-            <p class="subtitle is-6">{{category.description}}
-              <a class="button is-small" (click)="this.getCategories()">
-                <span class="icon is-small">
-                  <i class="fa fa-refresh"></i>
-                </span>
-              </a>
-            </p>
+
+  <div class="columns is-multiline">
+    <div class="column is-one-quarter">
+      <nav class="panel">
+        <div class="panel-heading">
+          <div class="select is-rounded is-fullwidth">
+            <select (change)="getChildren($event.target.value)">
+              <option *ngFor="let rootCategory of rootCategories" [selected]='rootCategory.key === selectedRootCategory' [value]='rootCategory.key'>{{ rootCategory.description }}</option>
+            </select>
+          </div>
+        </div>
+        <div *ngIf="!isChild" class="panel-block">
+          <button class="button is-rounded is-fullwidth" disabled>
+            no sub-category
+          </button>
+        </div>
+        <div id="root-children" class="panel-block">
+          <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)" (activate)="onNodeActive($event)"></tree-root>
+        </div>
+
+        <!-- <div class="panel-block">
+          <button class="button is-text is-fullwidth" (click)="resetAllFilters()">
+            <small>Reset Filter</small>
+          </button>
+        </div> -->
+      </nav>
+    </div>
+    <div class="column is-two-thirds">
+      <div class="card" *ngFor="let category of categoryData">
+        <header class="card-header">
+          <div class="card-header-title">
+            <div class="media">
+              <div class="media-content">
+                <p class="subtitle is-6">{{ category.description }}
+                  <a class="button is-small" (click)="refreshCategory(category.key, category.description)">
+                    <span class="icon is-small">
+                      <i class="fa fa-refresh"></i>
+                    </span>
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <a class="button is-light" (click)="openAddConfigItemModal(category?.description, category?.key)">Add &nbsp;
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </a>
+          </div>
+        </header>
+        <div class="card-content">
+          <div class="content">
+            <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
           </div>
         </div>
       </div>
-      <div>
-        <a class="button is-light" (click)="openAddConfigItemModal(category?.description, category?.key)">Add &nbsp;
-          <i class="fa fa-plus" aria-hidden="true"></i>
-        </a>
-      </div>
-    </header>
-    <div class="card-content">
-      <div class="content">
-          <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
-      </div>
     </div>
   </div>
-  <app-add-config-item (notify)='onNotify()'></app-add-config-item>
+  <app-add-config-item (notify)='onNotify($event)'></app-add-config-item>
 </div>

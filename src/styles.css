@@ -114,3 +114,30 @@ table.scroll tbody {
     height: 100px;
     background: url(./assets/favicon.ico) center center no-repeat;
 }
+
+.cat-desc {
+    background-color: whitesmoke;
+    font-weight: bold;
+}
+
+.cat-desc a {
+    font-weight: bold;
+}
+
+.child-panel {
+    display: none;
+}
+
+.node-content-wrapper.node-content-wrapper-active:hover,
+.node-content-wrapper-active.node-content-wrapper-focused {
+  background: transparent;
+  font-weight: bold;
+  box-shadow: inset 0 0 0px;
+  color: #707070;
+}
+
+.node-content-wrapper:hover {
+  background: transparent;
+  box-shadow: inset 0 0 0px;
+  color: #707070;
+}
