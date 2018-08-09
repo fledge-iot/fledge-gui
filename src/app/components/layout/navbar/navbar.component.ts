@@ -40,7 +40,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   userName: string;
   isAuthOptional = true;  // Default to true for authorized access
   uptime: any = '';
-  isMobileView = false;
+  viewPort: any = '';
 
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
@@ -79,17 +79,20 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(event = null) {
     if (event === null) {
-      if (window.screen.width <= 1024) {
-        this.isMobileView = true;
+      if (window.screen.width < 768) {
+        this.viewPort = 'mobile';
+      } else if (768 <= window.screen.width && window.screen.width <= 1024) {
+        this.viewPort = 'tablet';
       } else {
-        this.isMobileView = false;
+        this.viewPort = 'desktop';
       }
     } else {
-      if (event.target.innerWidth <= 1024) {
-        this.isMobileView = true;
-      }
-      if (event.target.innerWidth > 1024) {
-        this.isMobileView = false;
+      if (event.target.innerWidth < 768) {
+        this.viewPort = 'mobile';
+      } else if (768 <= event.target.innerWidth && event.target.innerWidth <= 1024) {
+        this.viewPort = 'tablet';
+      } else {
+        this.viewPort = 'desktop';
       }
     }
   }
