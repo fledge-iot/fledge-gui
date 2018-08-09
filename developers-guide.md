@@ -47,7 +47,6 @@ lodash-es        |  4.17.10      |        4.17.10        | MIT
 ng-sidebar       |  6.0.4        |        7.1.0          | MIT 
 moment           |  2.22.1       |        2.22.1         | MIT
 ngx-progressbar  |  2.1.1        |        2.1.1          | MIT
-angular2-multiselect-dropdown | 2.7.0 |   2.9.0          | MIT
 protractor-beautiful-reporter |  1.2.1       |  1.2.1                | MIT
 
 

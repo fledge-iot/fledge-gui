@@ -33,6 +33,6 @@ export class StatisticsService {
     }
     return this.http.get(this.GET_STATISTICS_HISTORY, { params: params }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError((error: Response) => observableThrowError(error))).share();
   }
 }

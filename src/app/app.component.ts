@@ -39,9 +39,8 @@ export class AppComponent implements OnInit {
         this.isActive(event.url);
       }
     });
-    this.ping.setDefaultPingTime();
-    const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
-    this.ping.pingIntervalChanged.next(pingInterval);
+    this.setPingIntervalOnAppLaunch();
+    this.setGraphRefreshIntervalOnAppLaunch();
     this.onLaunchAppRedirect();
   }
 
@@ -77,6 +76,18 @@ export class AppComponent implements OnInit {
         }
       }
     });
+  }
+
+  setPingIntervalOnAppLaunch() {
+    this.ping.setDefaultPingTime();
+    const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
+    this.ping.pingIntervalChanged.next(pingInterval);
+  }
+
+  setGraphRefreshIntervalOnAppLaunch() {
+    this.ping.setDefaultRefreshGraphTime();
+    const refreshInterval = JSON.parse(localStorage.getItem('GRAPH_REFRESH_INTERVAL'));
+    this.ping.refreshIntervalChanged.next(refreshInterval);
   }
 }
 
