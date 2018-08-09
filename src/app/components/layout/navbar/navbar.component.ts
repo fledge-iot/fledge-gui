@@ -25,8 +25,8 @@ import { RestartModalComponent } from '../../common/restart-modal/restart-modal.
 export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
-  public ping_data = {};
-  public ping_info = { is_alive: false, is_auth: false, host_name: 'service down' };
+  public pingData = {};
+  public pingInfo = { isAlive: false, isAuth: false, hostName: 'service down' };
   public shutDownData = {
     key: '',
     message: ''
@@ -79,16 +79,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(event = null) {
     if (event === null) {
-      if (window.screen.width < 1024) {
+      if (window.screen.width <= 1024) {
         this.isMobileView = true;
       } else {
         this.isMobileView = false;
       }
     } else {
-      if (event.target.innerWidth < 1024) {
+      if (event.target.innerWidth <= 1024) {
         this.isMobileView = true;
       }
-      if (event.target.innerWidth >= 1024) {
+      if (event.target.innerWidth > 1024) {
         this.isMobileView = false;
       }
     }
@@ -115,9 +115,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.ngProgress.done();
       }
       this.status.changeMessage(true);
-      this.ping_data = data;
+      this.pingData = data;
       this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
-      this.ping_info = { is_alive: true, is_auth: false, host_name: this.ping_data['hostName'] };
+      this.pingInfo = { isAlive: true, isAuth: false, hostName: this.pingData['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -134,9 +134,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.ping_info = { is_alive: true, is_auth: true, host_name: this.ping_data['hostName'] };
+          this.pingInfo = { isAlive: true, isAuth: true, hostName: this.pingData['hostName'] };
         } else {
-          this.ping_info = { is_alive: false, is_auth: false, host_name: 'service down' };
+          this.pingInfo = { isAlive: false, isAuth: false, hostName: 'service down' };
         }
       });
   }
@@ -155,6 +155,18 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     userDropdown.classList.add('is-active');
+  }
+
+  public toggleInfoDropdown() {
+    const foglampDropdown = <HTMLDivElement>document.getElementById('foglamp-info');
+    const classes = foglampDropdown.className.split(' ');
+    for (const cls of classes) {
+      if (cls === 'is-active') {
+        foglampDropdown.classList.remove('is-active');
+        return;
+      }
+    }
+    foglampDropdown.classList.add('is-active');
   }
 
   openModal() {
@@ -236,14 +248,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.toggle.next('toggleSidebar');
   }
 
-  applyServiceStatusCustomCss(pingInfo) {
-    if (this.ping_data['health'] === 'green') {
+  applyServiceStatusCustomCss(ping_info) {
+    if (this.pingData['health'] === 'green') {
       return 'has-text-success';
     }
-    if (this.ping_data['health'] === 'amber') {
+    if (this.pingData['health'] === 'amber') {
       return 'has-text-warning';
     }
-    if (this.ping_data['health'] === 'red' || !pingInfo.is_alive) {
+    if (this.pingData['health'] === 'red' || !ping_info.isAlive) {
       return 'has-text-danger';
     }
   }

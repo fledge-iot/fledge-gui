@@ -10,16 +10,19 @@
         <div *ngIf="!isMobileView" class="is-hidden-mobile is-flex-tablet">
             <b>FogLAMP</b>
         </div>
-        <div *ngIf='!ping_info.is_alive && !isMobileView'>
-          <span class="icon" [ngClass]="applyServiceStatusCustomCss(ping_info)">
+        <div *ngIf="pingInfo.isAuth && isMobileView">
+            <b>FogLAMP</b>
+        </div>
+        <div *ngIf='!pingInfo.isAlive && !isMobileView'>
+          <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
             <i class="fa fa-circle"> </i>
           </span>
           <b>FogLAMP</b>
         </div>
-        <div *ngIf='ping_info.is_alive && isMobileView' class="dropdown is-left" id="dropdown-box" (click)="toggleDropdown()">
+        <div *ngIf='pingInfo.isAlive && isMobileView && !pingInfo.isAuth' class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
           <div class="dropdown-trigger">
             <a class="navbar-link">
-              <span class="icon" [ngClass]="applyServiceStatusCustomCss(ping_info)">
+              <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
                 <i class="fa fa-circle"> </i>
               </span>
               <b>FogLAMP</b>
@@ -32,25 +35,25 @@
             <div class="dropdown-content">
               <div class="dropdown-item">
                 <span class="tag">
-                  <b>{{ping_info.host_name}}/{{ping_data['serviceName']}}</b>
+                  <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
                 </span>
               </div>
               <div class="dropdown-item">
                 <div class="tags has-addons">
                   <span class="tag">Received</span>
-                  <span class="tag is-info">{{ping_data['dataRead']}}</span>
+                  <span class="tag is-info">{{pingData['dataRead']}}</span>
                 </div>
               </div>
               <div class="dropdown-item">
                 <div class="tags has-addons">
                   <span class="tag">Purged&nbsp;&nbsp;&nbsp;</span>
-                  <span class="tag is-info">{{ping_data['dataPurged']}}</span>
+                  <span class="tag is-info">{{pingData['dataPurged']}}</span>
                 </div>
               </div>
               <div class="dropdown-item">
                 <div class="tags has-addons">
                   <span class="tag">Sent&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                  <span class="tag is-info">{{ping_data['dataSent']}}</span>
+                  <span class="tag is-info">{{pingData['dataSent']}}</span>
                 </div>
               </div>
               <div class="dropdown-item">
@@ -65,37 +68,37 @@
       </div>
     </div>
     <div class="navbar-menu">
-      <div *ngIf="!isMobileView" class="navbar-start is-hidden-mobile is-flex-tablet">
+      <div *ngIf="!isMobileView && !pingInfo.isAuth" class="navbar-start">
         <div class="navbar-item">
           <div class="field is-grouped is-grouped-multiline">
             <div class="control">
               <span class="tag">
-                <b *ngIf="!ping_data['serviceName']">{{ping_info.host_name}}</b>
-                <b *ngIf="ping_data['serviceName']">{{ping_info.host_name}}/{{ping_data['serviceName']}}</b>
-                <span class="icon" [ngClass]="applyServiceStatusCustomCss(ping_info)">
+                <b *ngIf="!pingData['serviceName']">{{pingInfo.hostName}}</b>
+                <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+                <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
                   <i class="fa fa-circle"> </i>
                 </span>
               </span>
             </div>
-            <div *ngIf='ping_info.is_alive' class="control">
+            <div *ngIf='pingInfo.isAlive' class="control">
               <div class="tags has-addons">
                 <span class="tag">Received</span>
-                <span class="tag is-primary">{{ping_data['dataRead']}}</span>
+                <span class="tag is-primary">{{pingData['dataRead']}}</span>
               </div>
             </div>
-            <div *ngIf='ping_info.is_alive' class="control">
+            <div *ngIf='pingInfo.isAlive' class="control">
               <div class="tags has-addons">
                 <span class="tag">Sent</span>
-                <span class="tag is-primary">{{ping_data['dataSent']}}</span>
+                <span class="tag is-primary">{{pingData['dataSent']}}</span>
               </div>
             </div>
-            <div *ngIf='ping_info.is_alive' class="control">
+            <div *ngIf='pingInfo.isAlive' class="control">
               <div class="tags has-addons">
                 <span class="tag">Purged</span>
-                <span class="tag is-primary">{{ping_data['dataPurged']}}</span>
+                <span class="tag is-primary">{{pingData['dataPurged']}}</span>
               </div>
             </div>
-            <div *ngIf='ping_info.is_alive' class="control">
+            <div *ngIf='pingInfo.isAlive' class="control">
               <div class="tags has-addons">
                 <span class="tag">Uptime</span>
                 <span class="tag is-primary">{{uptime}}</span>
@@ -122,21 +125,21 @@
               <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item">
                 <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp; Log Out
               </a>
-              <a *ngIf="ping_info.is_alive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
+              <a *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
                 <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp; Shut Down
               </a>
-              <a id="restart" *ngIf="ping_info.is_alive && isUserLoggedIn" (click)="openRestartModal()" class="dropdown-item">
+              <a id="restart" *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openRestartModal()" class="dropdown-item">
                 <i class="fa fa-refresh" aria-hidden="true"></i>&nbsp; Restart
               </a>
             </div>
           </div>
         </div>
-        <div *ngIf="ping_info.is_alive && isAuthOptional" class="icon has-text-danger is-large">
-          <a class=" tooltip is-tooltip-left" data-tooltip="Shut down FogLAMP" (click)="openModal()">
+        <div *ngIf="pingInfo.isAlive && isAuthOptional" class="icon has-text-danger is-large">
+          <a class=" tooltip is-tooltip-left" data-tooltip="Shut Down FogLAMP" (click)="openModal()">
             <i class="fa fa-power-off" aria-hidden="true"></i>
           </a>
         </div>
-        <div *ngIf="ping_info.is_alive && isAuthOptional" class="icon has-text-danger is-large">
+        <div *ngIf="pingInfo.isAlive && isAuthOptional" class="icon has-text-danger is-large">
           <a id="restart" class=" tooltip is-tooltip-left" data-tooltip="Restart FogLAMP" (click)="openRestartModal()">
             <i class="fa fa-refresh" aria-hidden="true"></i>
           </a>
