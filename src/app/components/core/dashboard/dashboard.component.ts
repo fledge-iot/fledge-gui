@@ -39,6 +39,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private statisticsService: StatisticsService, private alertService: AlertService, private ping: PingService) { }
 
   ngOnInit() {
+    // To check if data saved in valid format in local storage
+    const optedGraphStorage = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
+    console.log(typeof (optedGraphStorage), optedGraphStorage);
+    if (optedGraphStorage.length === 0  || typeof (optedGraphStorage[0]) !== 'object') {
+      localStorage.removeItem('OPTED_GRAPHS');
+    }
     this.getStatistics();
     this.ping.refreshIntervalChanged.subscribe((timeInterval: number) => {
       this.refreshTimer = timeInterval;
