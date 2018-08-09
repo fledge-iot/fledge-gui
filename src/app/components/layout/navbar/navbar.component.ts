@@ -7,6 +7,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  HostListener
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
@@ -25,7 +26,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public ping_data = {};
-  public ping_info = { stats: 'No data', is_alive: false, is_auth: false, host_name: 'service down' };
+  public ping_info = { is_alive: false, is_auth: false, host_name: 'service down' };
   public shutDownData = {
     key: '',
     message: ''
@@ -39,6 +40,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   userName: string;
   isAuthOptional = true;  // Default to true for authorized access
   uptime: any = '';
+  isMobileView = false;
 
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
@@ -71,6 +73,25 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.start(pingTime);
       }
     });
+    this.onResize();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event = null) {
+    if (event === null) {
+      if (window.screen.width < 1024) {
+        this.isMobileView = true;
+      } else {
+        this.isMobileView = false;
+      }
+    } else {
+      if (event.target.innerWidth < 1024) {
+        this.isMobileView = true;
+      }
+      if (event.target.innerWidth >= 1024) {
+        this.isMobileView = false;
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -96,7 +117,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.status.changeMessage(true);
       this.ping_data = data;
       this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
-      this.ping_info = { stats: '', is_alive: true, is_auth: false, host_name: this.ping_data['hostName'] };
+      this.ping_info = { is_alive: true, is_auth: false, host_name: this.ping_data['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -113,9 +134,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.ping_info = { stats: 'Auth Required', is_alive: true, is_auth: true, host_name: this.ping_data['hostName'] };
+          this.ping_info = { is_alive: true, is_auth: true, host_name: this.ping_data['hostName'] };
         } else {
-          this.ping_info = { stats: 'No Data', is_alive: false, is_auth: false, host_name: 'service down' };
+          this.ping_info = { is_alive: false, is_auth: false, host_name: 'service down' };
         }
       });
   }
