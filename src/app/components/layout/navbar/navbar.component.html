@@ -18,7 +18,6 @@
         <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
           <i class="fa fa-circle"> </i>
         </span>
-        <b *ngIf="pingData['hostName']">{{pingInfo.hostName}}</b>
         <b *ngIf="!pingData['hostName']">FogLAMP</b>
         <b> DOWN</b>
       </div>
@@ -62,6 +61,7 @@
             <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
+            <!-- <b>FogLAMP</b> -->
             <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
             &nbsp;
             <span class="icon is-small">
@@ -71,6 +71,9 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
+              <!-- <div class="dropdown-item">
+                  Read: <b>{{pingData['dataRead'] | number}}</b>
+                </div> -->
             <div class="dropdown-item">
               Read: <b>{{pingData['dataRead'] | number}}</b>
             </div>

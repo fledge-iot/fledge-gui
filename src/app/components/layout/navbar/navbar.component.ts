@@ -119,6 +119,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.status.changeMessage(true);
       this.pingData = data;
+      console.log('Data', data);
       this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
       this.pingInfo = { isAlive: true, isAuth: false, hostName: this.pingData['hostName'] };
       if (data['authenticationOptional'] === true) {
@@ -131,6 +132,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
     })
       .catch((error) => {
+        this.pingData = [];
         this.status.changeMessage(false);
         if (pingManually === true) {
           this.ngProgress.done();
@@ -221,6 +223,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.pingData = [];
+          console.log('this.pingData', this.pingData);
           this.alertService.success(data['message']);
         },
         (error) => {
