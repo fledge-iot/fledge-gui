@@ -7,10 +7,11 @@ import {
   OnInit,
   Output,
   ViewChild,
+  HostListener
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
-
+import Utils from '../../../utils';
 import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
@@ -24,8 +25,8 @@ import { RestartModalComponent } from '../../common/restart-modal/restart-modal.
 export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
-  public ping_data = {};
-  public ping_info = { stats: 'No data', is_alive: false, is_auth: false, service_status: 'service down' };
+  public pingData = {};
+  public pingInfo = { isAlive: false, isAuth: false, hostName: '' };
   public shutDownData = {
     key: '',
     message: ''
@@ -38,6 +39,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   isUserLoggedIn: boolean;
   userName: string;
   isAuthOptional = true;  // Default to true for authorized access
+  uptime: any = '';
+  viewPort: any = '';
 
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
@@ -70,6 +73,28 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.start(pingTime);
       }
     });
+    this.onResize();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event = null) {
+    if (event === null) {
+      if (window.screen.width < 768) {
+        this.viewPort = 'mobile';
+      } else if (768 <= window.screen.width && window.screen.width <= 1024) {
+        this.viewPort = 'tablet';
+      } else {
+        this.viewPort = 'desktop';
+      }
+    } else {
+      if (event.target.innerWidth < 768) {
+        this.viewPort = 'mobile';
+      } else if (768 <= event.target.innerWidth && event.target.innerWidth <= 1024) {
+        this.viewPort = 'tablet';
+      } else {
+        this.viewPort = 'desktop';
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -93,9 +118,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.ngProgress.done();
       }
       this.status.changeMessage(true);
-      this.ping_data = data;
-      const statsTxt = 'Read: ' + data['dataRead'] + '\n' + 'Sent: ' + data['dataSent'] + '\n' + 'Purged: ' + data['dataPurged'];
-      this.ping_info = { stats: statsTxt, is_alive: true, is_auth: false, service_status: 'running' };
+      this.pingData = data;
+      console.log('Data', data);
+      this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
+      this.pingInfo = { isAlive: true, isAuth: false, hostName: this.pingData['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -106,15 +132,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
     })
       .catch((error) => {
+        this.pingData = [];
         this.status.changeMessage(false);
         if (pingManually === true) {
           this.ngProgress.done();
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.ping_info = { stats: 'Auth Required', is_alive: true, is_auth: true, service_status: 'running' };
+          this.pingInfo = { isAlive: true, isAuth: true, hostName: this.pingData['hostName'] };
         } else {
-          this.ping_info = { stats: 'No Data', is_alive: false, is_auth: false, service_status: 'service down' };
+          this.pingInfo = { isAlive: false, isAuth: false, hostName: '' };
         }
       });
   }
@@ -133,6 +160,18 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     userDropdown.classList.add('is-active');
+  }
+
+  public toggleInfoDropdown() {
+    const foglampDropdown = <HTMLDivElement>document.getElementById('foglamp-info');
+    const classes = foglampDropdown.className.split(' ');
+    for (const cls of classes) {
+      if (cls === 'is-active') {
+        foglampDropdown.classList.remove('is-active');
+        return;
+      }
+    }
+    foglampDropdown.classList.add('is-active');
   }
 
   openModal() {
@@ -161,6 +200,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          this.pingData = [];
           this.alertService.success(data['message']);
         },
         (error) => {
@@ -182,6 +222,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          this.pingData = [];
+          console.log('this.pingData', this.pingData);
           this.alertService.success(data['message']);
         },
         (error) => {
@@ -214,27 +256,19 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.toggle.next('toggleSidebar');
   }
 
-  applyServiceStatusCustomCss(pingInfo) {
-    if (pingInfo.is_alive && !pingInfo.is_auth) {
-      return 'is-success';
-    }
-    if (pingInfo.is_alive && pingInfo.is_auth) {
-      return 'is-warning';
-    }
-    if (!pingInfo.is_alive && !pingInfo.is_auth) {
-      return 'is-danger';
-    }
-  }
-
-  applyServiceStatusIconCss(pingInfo) {
-    if (pingInfo.is_alive && !pingInfo.is_auth) {
-      return 'fa fa-check-circle-o';
-    }
-    if (pingInfo.is_alive && pingInfo.is_auth) {
-      return 'fa fa-lock';
-    }
-    if (!pingInfo.is_alive && !pingInfo.is_auth) {
-      return 'fa fa-times-circle';
+  applyServiceStatusCustomCss(ping_info) {
+    if (this.pingData) {
+      if (this.pingData['health'] === 'green') {
+        return 'has-text-success';
+      }
+      if (this.pingData['health'] === 'amber') {
+        return 'has-text-warning';
+      }
+      if (this.pingData['health'] === 'red' || !ping_info.isAlive) {
+        return 'has-text-danger';
+      }
+    } else {
+      return 'has-text-danger';
     }
   }
 
