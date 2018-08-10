@@ -8,31 +8,30 @@
     <div class="navbar-item">
       <div *ngIf="viewPort !== 'mobile'" class="foglamp-logo"></div>
       <div *ngIf="viewPort !== 'mobile'">
-        <b>FogLAMP</b>
+        &nbsp;&nbsp;<b>FogLAMP</b>
+        &nbsp;&nbsp;&nbsp;&nbsp;
       </div>
       <div *ngIf="pingInfo.isAuth && viewPort == 'mobile'">
         <b>FogLAMP</b>
       </div>
       <div *ngIf="!pingInfo.isAlive">
-        <span class="tag">
-          <b *ngIf="!pingData['serviceName']">{{pingInfo.hostName}}</b>
-          <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
-            <i class="fa fa-circle"> </i>
-          </span>
+        <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+          <i class="fa fa-circle"> </i>
         </span>
+        <b *ngIf="pingData['hostName']">{{pingInfo.hostName}}</b>
+        <b *ngIf="!pingData['hostName']">FogLAMP</b>
+        <b> DOWN</b>
       </div>
 
       <!-- tablet -->
       <div *ngIf="pingInfo.isAlive && viewPort == 'tablet' && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
           <a class="navbar-link">
-            <span class="tag">
-              <b *ngIf="!pingData['serviceName']">{{pingInfo.hostName}}</b>
-              <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
-              <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
-                <i class="fa fa-circle"> </i>
-              </span>
+            <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+              <i class="fa fa-circle"> </i>
             </span>
+            <b *ngIf="!pingData['serviceName']">{{pingInfo.hostName}}</b>
+            <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
             <span class="icon is-small">
               <i class="fa fa-angle-down is-hidden-desktop" aria-hidden="true"></i>
             </span>
@@ -41,28 +40,16 @@
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             <div class="dropdown-item">
-              <div class="tags has-addons">
-                <span class="tag">Received</span>
-                <span class="tag is-info">{{pingData['dataRead']}}</span>
-              </div>
+                Received: <b>{{pingData['dataRead'] | number}}</b>
             </div>
             <div class="dropdown-item">
-              <div class="tags has-addons">
-                <span class="tag">Purged&nbsp;&nbsp;&nbsp;</span>
-                <span class="tag is-info">{{pingData['dataPurged']}}</span>
-              </div>
+              Sent: <b>{{pingData['dataSent'] | number}}</b>
             </div>
             <div class="dropdown-item">
-              <div class="tags has-addons">
-                <span class="tag">Sent&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <span class="tag is-info">{{pingData['dataSent']}}</span>
-              </div>
+              Purged: <b>{{pingData['dataPurged'] | number}}</b>
             </div>
             <div class="dropdown-item">
-              <div class="tags has-addons">
-                <span class="tag">Uptime&nbsp;&nbsp;</span>
-                <span class="tag is-info">{{uptime}}</span>
-              </div>
+              Uptime: <b>{{uptime}}</b>
             </div>
           </div>
         </div>
@@ -75,7 +62,9 @@
             <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
-            <b>FogLAMP</b>
+            <b *ngIf="!pingData['serviceName']">{{pingInfo.hostName}}</b>
+            <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+            &nbsp;
             <span class="icon is-small">
               <i class="fa fa-angle-down is-hidden-desktop" aria-hidden="true"></i>
             </span>
@@ -84,33 +73,16 @@
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             <div class="dropdown-item">
-              <span class="tag">
-                <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
-              </span>
+              Read: <b>{{pingData['dataRead'] | number}}</b>
             </div>
             <div class="dropdown-item">
-              <div class="tags has-addons">
-                <span class="tag">Received</span>
-                <span class="tag is-info">{{pingData['dataRead']}}</span>
-              </div>
+              Sent: <b>{{pingData['dataSent'] | number}}</b>
             </div>
             <div class="dropdown-item">
-              <div class="tags has-addons">
-                <span class="tag">Purged&nbsp;&nbsp;&nbsp;</span>
-                <span class="tag is-info">{{pingData['dataPurged']}}</span>
-              </div>
+              Purged: <b>{{pingData['dataPurged'] | number}}</b>
             </div>
             <div class="dropdown-item">
-              <div class="tags has-addons">
-                <span class="tag">Sent&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <span class="tag is-info">{{pingData['dataSent']}}</span>
-              </div>
-            </div>
-            <div class="dropdown-item">
-              <div class="tags has-addons">
-                <span class="tag">Uptime&nbsp;&nbsp;</span>
-                <span class="tag is-info">{{uptime}}</span>
-              </div>
+              Uptime: <b>{{uptime}}</b>
             </div>
           </div>
         </div>
@@ -124,36 +96,24 @@
       <div class="navbar-item">
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <span class="tag">
-              <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
               <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
                 <i class="fa fa-circle"> </i>
               </span>
-            </span>
+              <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+          </div>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <div *ngIf='pingInfo.isAlive' class="control">
+              Received: <b>{{pingData['dataRead'] | number}}</b>
           </div>
           <div *ngIf='pingInfo.isAlive' class="control">
-            <div class="tags has-addons">
-              <span class="tag">Received</span>
-              <span class="tag is-primary">{{pingData['dataRead']}}</span>
-            </div>
+            Sent: <b>{{pingData['dataSent'] | number}}</b>
           </div>
           <div *ngIf='pingInfo.isAlive' class="control">
-            <div class="tags has-addons">
-              <span class="tag">Sent</span>
-              <span class="tag is-primary">{{pingData['dataSent']}}</span>
-            </div>
+            Purged: <b>{{pingData['dataPurged'] | number}}</b>
           </div>
+          &nbsp;&nbsp;&nbsp;&nbsp;
           <div *ngIf='pingInfo.isAlive' class="control">
-            <div class="tags has-addons">
-              <span class="tag">Purged</span>
-              <span class="tag is-primary">{{pingData['dataPurged']}}</span>
-            </div>
-          </div>
-          <div *ngIf='pingInfo.isAlive' class="control">
-            <div class="tags has-addons">
-              <span class="tag">Uptime</span>
-              <span class="tag is-primary">{{uptime}}</span>
-            </div>
+            Uptime: <b>{{uptime}}</b>
           </div>
         </div>
       </div>
