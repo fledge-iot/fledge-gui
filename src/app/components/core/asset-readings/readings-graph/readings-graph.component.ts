@@ -67,12 +67,12 @@ export class ReadingsGraphComponent implements OnInit, OnDestroy {
     }
 
     this.assetCode = assetCode;
-    this.ngProgress.start();
+    // this.ngProgress.start();
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit).
       subscribe(
         (data: any[]) => {
           this.showGraph = true;
-          this.ngProgress.done();
+          // this.ngProgress.done();
           if (data.length === 0) {
             this.getAssetTimeReading(data);
             return;
@@ -96,7 +96,7 @@ export class ReadingsGraphComponent implements OnInit, OnDestroy {
           this.refreshData();
         },
         error => {
-          this.ngProgress.done();
+          // this.ngProgress.done();
           console.log('error in response', error);
         });
   }

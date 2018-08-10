@@ -18,9 +18,9 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() { }
 
   ngOnChanges() {
-    if (this.chart) {
-      this.chart.destroy();
-    }
+    // if (this.chart) {
+    //   this.chart.destroy();
+    // }
     this.chart = new Chart(this.elementRef.nativeElement.querySelector('canvas'), {
       type: this.type,
       data: this.data,
@@ -34,6 +34,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     //   });
     //   this.chart.update();
     // }
+    this.chart.update(0);
   }
 
   ngOnDestroy() {
