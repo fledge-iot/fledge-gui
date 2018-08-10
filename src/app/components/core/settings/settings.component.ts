@@ -31,7 +31,7 @@ export class SettingsComponent implements OnInit {
     this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
     // get last selected time interval
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
-    this.refreshInterval = localStorage.getItem('GRAPH_REFRESH_INTERVAL');
+    this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
   }
 
   public testServiceConnection(): void {
@@ -77,7 +77,7 @@ export class SettingsComponent implements OnInit {
 
   setDashboardRefreshTime(event) {
     const time = event.target.value;
-    localStorage.setItem('GRAPH_REFRESH_INTERVAL', time);
+    localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
     this.pingService.refreshIntervalChanged.next(+time);
   }
 }

@@ -1,3 +1,6 @@
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+</ng-progress>
 <div class="columns is-mobile">
   <div class="column">
     <div class="is-pulled-right dropdown is-right">
@@ -27,7 +30,7 @@
   <div class="column">
     <div class="columns is-multiline">
       <div class="column columns-content is-one-third" *ngFor="let statistic of graphsToShow">
-        <div class="box">
+        <div *ngIf="statistic != undefined" class="box">
           <h6 class="subtitle is-6">{{ statistic.description }}</h6>
           <br/>
           <app-chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></app-chart>

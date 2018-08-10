@@ -16,9 +16,9 @@ export class PingService {
   }
 
   public setDefaultRefreshGraphTime() {
-    const refreshTime = localStorage.getItem('GRAPH_REFRESH_INTERVAL');
+    const refreshTime = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     if (refreshTime == null) {
-      localStorage.setItem('GRAPH_REFRESH_INTERVAL', JSON.stringify(GRAPH_REFRESH_INTERVAL));
+      localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', JSON.stringify(GRAPH_REFRESH_INTERVAL));
     }
   }
 }

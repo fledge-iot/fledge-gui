@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
       }
     });
     this.setPingIntervalOnAppLaunch();
-    this.setGraphRefreshIntervalOnAppLaunch();
+    this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
     this.onLaunchAppRedirect();
   }
 
@@ -84,9 +84,9 @@ export class AppComponent implements OnInit {
     this.ping.pingIntervalChanged.next(pingInterval);
   }
 
-  setGraphRefreshIntervalOnAppLaunch() {
+  setStasHistoryGraphRefreshIntervalOnAppLaunch() {
     this.ping.setDefaultRefreshGraphTime();
-    const refreshInterval = JSON.parse(localStorage.getItem('GRAPH_REFRESH_INTERVAL'));
+    const refreshInterval = JSON.parse(localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL'));
     this.ping.refreshIntervalChanged.next(refreshInterval);
   }
 }
