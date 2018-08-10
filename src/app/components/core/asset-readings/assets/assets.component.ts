@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AssetsService, AlertService, PingService } from '../../../../services/index';
-import { AssetSummaryComponent } from './../asset-summary/asset-summary.component';
+// remove this and corresponding files
+// import { AssetSummaryComponent } from './../asset-summary/asset-summary.component';
 import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
 import { NgProgress } from 'ngx-progressbar';
 import { MAX_INT_SIZE } from '../../../../utils';
@@ -18,7 +19,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   selectedAsset: any; // Selected asset object (assetCode, count)
   MAX_RANGE = MAX_INT_SIZE;
   assets = [];
-  assetsReadingsData = [];
+  // assetsReadingsData = [];
   public assetData: Object;
   public isChart = false;
   public refreshInterval = POLLING_INTERVAL;
@@ -40,7 +41,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   public getAsset(): void {
-    this.assets = [];
+    // this.assets = [];
     this.assetService.getAsset().
       subscribe(
         (data: any[]) => {
@@ -102,11 +103,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
     }
   }
 
   private refreshData(): void {
-    this.timerSubscription = null;
     this.timerSubscription = Observable.timer(this.refreshInterval)
       .subscribe(() => this.getAsset());
   }
