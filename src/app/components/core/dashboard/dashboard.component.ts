@@ -105,9 +105,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
           this.graphsToShow.push(selectedGraph[0]);
         }
-
         this.getStatisticsHistory();
-        this.refreshData();
       },
         error => {
           if (error.status === 0) {
@@ -152,41 +150,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /**
    *  Refresh graphs
    */
-  public refreshGraph(limit, keyToRefresh) {
-    let updatedValue = '';
+  public refreshGraph() {
     this.statisticsService.getStatistics().
       subscribe((data: any[]) => {
-        const keyData = data.filter(value => value['key'] === keyToRefresh);
-        updatedValue = keyData[0]['value'];
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-    this.statisticsService.getStatisticsHistory(limit, keyToRefresh).
-      subscribe((data: any[]) => {
-        this.graphsToShow.forEach(key => {
-          if (key.itemName === keyToRefresh) {
-            const labels = [];
-            const record = map(data['statistics'], keyToRefresh);
-            const history_ts = map(data['statistics'], 'history_ts');
-            history_ts.forEach(element => {
-              element = moment(element).format('HH:mm:ss');
-              labels.push(element);
-            });
-            this.graphsToShow.map(statistics => {
-              if (statistics.itemName === keyToRefresh) {
-                statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
-                statistics.chartType = 'line';
-                statistics.value = updatedValue;
-                statistics.limit = limit;
-              }
-            });
-          }
-        });
+        this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
+
+        this.statisticsKeys = [];
+        for (const stats of this.statistics) {
+          this.statisticsKeys.push({ key: stats.key, checked: false });
+        }
+
+        if (localStorage.getItem('OPTED_GRAPHS')) {
+          this.selectedGraphsList = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
+        }
+
+        // Rename 'key' to 'itemName' and add a new key as named 'id'
+        for (let i = 0; i < this.statistics.length; i++) {
+          this.statistics[i].id = i;
+          this.statistics[i].itemName = this.statistics[i]['key'];
+          delete this.statistics[i].key;
+        }
+
+        for (const stats of this.statistics) {
+          this.graphsToShow.map((item) => item.itemName === stats.itemName ? item.value = stats.value : item.value);
+        }
+
+        for (const graph of this.selectedGraphsList) {
+          this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
+        }
       },
         error => {
           if (error.status === 0) {
@@ -216,6 +207,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
           });
         });
+        this.refreshData();
       },
         error => {
           if (error.status === 0) {
@@ -238,7 +230,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private refreshData(): void {
     this.timerSubscription = null;
     this.timerSubscription = Observable.timer(this.refreshTimer)
-      .subscribe(() => this.getStatistics());
+      .subscribe(() => {
+        this.getStatisticsHistory();
+        this.refreshGraph();
+      });
   }
 
   public toggleDropdown() {
