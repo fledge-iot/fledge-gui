@@ -242,7 +242,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public toggleDropdown() {
-    const dropDown = document.querySelector('.dropdown');
+    const dropDown = document.querySelector('#graph-key-dropdown');
     dropDown.classList.toggle('is-active');
   }
 
