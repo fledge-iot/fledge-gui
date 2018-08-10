@@ -30,8 +30,7 @@
             <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
-            <b *ngIf="!pingData['serviceName']">{{pingInfo.hostName}}</b>
-            <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
             <span class="icon is-small">
               <i class="fa fa-angle-down is-hidden-desktop" aria-hidden="true"></i>
             </span>
@@ -40,20 +39,36 @@
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             <div class="dropdown-item">
-              Received:
-              <b>{{pingData['dataRead'] | number}}</b>
-            </div>
-            <div class="dropdown-item">
-              Sent:
-              <b>{{pingData['dataSent'] | number}}</b>
-            </div>
-            <div class="dropdown-item">
-              Purged:
-              <b>{{pingData['dataPurged'] | number}}</b>
-            </div>
-            <div class="dropdown-item">
-              Uptime:
-              <b>{{uptime}}</b>
+              <table>
+                <tr>
+                  <td class="has-text-left">Received</td>
+                  <td>
+                    :
+                    <b>{{pingData['dataRead'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Sent</td>
+                  <td>
+                    :
+                    <b>{{pingData['dataSent'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Purged</td>
+                  <td>
+                    :
+                    <b>{{pingData['dataPurged'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Uptime</td>
+                  <td>
+                    :
+                    <b>{{uptime}}</b>
+                  </td>
+                </tr>
+              </table>
             </div>
           </div>
         </div>
@@ -66,8 +81,7 @@
             <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
-            <b>FogLAMP</b>
-            &nbsp;
+            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0, 7)}}/{{pingData['serviceName'].substr(0, 7)}}</b>
             <span class="icon is-small">
               <i class="fa fa-angle-down is-hidden-desktop" aria-hidden="true"></i>
             </span>
@@ -76,23 +90,36 @@
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             <div class="dropdown-item">
-              <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
-            </div>
-            <div class="dropdown-item">
-              Read:
-              <b>{{pingData['dataRead'] | number}}</b>
-            </div>
-            <div class="dropdown-item">
-              Sent:
-              <b>{{pingData['dataSent'] | number}}</b>
-            </div>
-            <div class="dropdown-item">
-              Purged:
-              <b>{{pingData['dataPurged'] | number}}</b>
-            </div>
-            <div class="dropdown-item">
-              Uptime:
-              <b>{{uptime}}</b>
+              <table>
+                <tr>
+                  <td class="has-text-left">Received</td>
+                  <td>
+                    :
+                    <b>{{pingData['dataRead'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Sent</td>
+                  <td>
+                    :
+                    <b>{{pingData['dataSent'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Purged</td>
+                  <td>
+                    :
+                    <b>{{pingData['dataPurged'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Uptime</td>
+                  <td>
+                    :
+                    <b>{{uptime}}</b>
+                  </td>
+                </tr>
+              </table>
             </div>
           </div>
         </div>
@@ -109,7 +136,7 @@
             <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
-            <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
           </div>
           &nbsp;&nbsp;&nbsp;&nbsp;
           <div *ngIf='pingInfo.isAlive' class="control">
