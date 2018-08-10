@@ -38,11 +38,14 @@ export default class Utils {
     const days = Math.floor(totalSeconds / 86400);
     const hours = Math.floor((totalSeconds % 86400) / 3600);
     const minutes = Math.floor(((totalSeconds % 86400) % 3600) / 60);
+    const roundOffSeconds = Math.floor(((totalSeconds % 86400) % 3600) % 60);
     const seconds = ((totalSeconds % 86400) % 3600) % 60;
     const formatedTime = Utils.pad(hours, 2, 0) + ':' + Utils.pad(minutes, 2, 0) + ':' + Utils.pad(seconds, 2, 0);
+    const roundOffTime = Utils.pad(hours, 2, 0) + ':' + Utils.pad(minutes, 2, 0) + ':' + Utils.pad(roundOffSeconds, 2, 0);
     return {
       'days': days,
-      'time': formatedTime
+      'time': formatedTime,
+      'roundOffTime': roundOffTime
     };
   }
 
