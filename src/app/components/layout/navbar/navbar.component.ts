@@ -26,7 +26,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public pingData = {};
-  public pingInfo = { isAlive: false, isAuth: false, hostName: 'service down' };
+  public pingInfo = { isAlive: false, isAuth: false };
   public shutDownData = {
     key: '',
     message: ''
@@ -139,7 +139,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           sessionStorage.clear();
           this.pingInfo = { isAlive: true, isAuth: true, hostName: this.pingData['hostName'] };
         } else {
-          this.pingInfo = { isAlive: false, isAuth: false, hostName: 'service down' };
+          this.pingInfo = { isAlive: false, isAuth: false };
         }
       });
   }
@@ -198,6 +198,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          this.pingData = [];
           this.alertService.success(data['message']);
         },
         (error) => {
@@ -219,6 +220,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          this.pingData = [];
           this.alertService.success(data['message']);
         },
         (error) => {
@@ -252,13 +254,17 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyServiceStatusCustomCss(ping_info) {
-    if (this.pingData['health'] === 'green') {
-      return 'has-text-success';
-    }
-    if (this.pingData['health'] === 'amber') {
-      return 'has-text-warning';
-    }
-    if (this.pingData['health'] === 'red' || !ping_info.isAlive) {
+    if (this.pingData) {
+      if (this.pingData['health'] === 'green') {
+        return 'has-text-success';
+      }
+      if (this.pingData['health'] === 'amber') {
+        return 'has-text-warning';
+      }
+      if (this.pingData['health'] === 'red' || !ping_info.isAlive) {
+        return 'has-text-danger';
+      }
+    } else {
       return 'has-text-danger';
     }
   }

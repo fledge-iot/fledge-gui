@@ -62,7 +62,6 @@
             <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
-            <b *ngIf="!pingData['serviceName']">{{pingInfo.hostName}}</b>
             <b *ngIf="pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
             &nbsp;
             <span class="icon is-small">
