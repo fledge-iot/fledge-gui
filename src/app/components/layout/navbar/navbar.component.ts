@@ -26,7 +26,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public pingData = {};
-  public pingInfo = { isAlive: false, isAuth: false };
+  public pingInfo = { isAlive: false, isAuth: false, hostName: '' };
   public shutDownData = {
     key: '',
     message: ''
@@ -139,7 +139,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           sessionStorage.clear();
           this.pingInfo = { isAlive: true, isAuth: true, hostName: this.pingData['hostName'] };
         } else {
-          this.pingInfo = { isAlive: false, isAuth: false };
+          this.pingInfo = { isAlive: false, isAuth: false, hostName: '' };
         }
       });
   }
