@@ -23,11 +23,11 @@
               <b>{{readings.key}} &nbsp;</b>
             </span>
             <span class="tag is-light"> Avg </span>
-            <span class="tag is-info">{{reading.average}}</span> &nbsp;
+            <span class="tag is-info">{{roundTo(reading.average, 5)}}</span> &nbsp;
             <span class="tag is-light"> Min </span>
-            <span class="tag is-info">{{reading.min}}</span> &nbsp;
+            <span class="tag is-info">{{roundTo(reading.min, 5)}}</span> &nbsp;
             <span class="tag is-light"> Max </span>
-            <span class="tag is-info">{{reading.max}}</span> &nbsp;
+            <span class="tag is-info">{{roundTo(reading.max, 5)}}</span> &nbsp;
           </div>
         </div>
       </div>

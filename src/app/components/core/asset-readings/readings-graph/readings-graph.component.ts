@@ -43,6 +43,11 @@ export class ReadingsGraphComponent implements OnInit, OnDestroy {
     });
   }
 
+  public roundTo(num, to) {
+    const _to = Math.pow(10, to)
+    return Math.round(num * _to) / _to;
+  }
+
   public toggleModal(shouldOpen: Boolean) {
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
