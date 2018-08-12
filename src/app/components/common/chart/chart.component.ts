@@ -18,14 +18,12 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() { }
 
   ngOnChanges() {
-    if (this.chart) {
-      this.chart.destroy();
-    }
     this.chart = new Chart(this.elementRef.nativeElement.querySelector('canvas'), {
       type: this.type,
       data: this.data,
       options: this.options
     });
+    this.chart.update(0);
     // TODO: Need to fix for dynamic graphs
     // if (this.chart && changes['data']) {
     //   const currentValue = changes['data'].currentValue;
