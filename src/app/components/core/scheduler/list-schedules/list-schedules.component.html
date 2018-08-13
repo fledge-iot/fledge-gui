@@ -60,8 +60,14 @@
           </a>
         </td> -->
         <td>
-          <button name={{schedule.name}} *ngIf='schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to disable the schedule', 'disable')">disable</button>
-          <button name={{schedule.name}} *ngIf='!schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to enable the schedule', 'enable')">enable</button>
+            <div class="field">
+                <input id="x" *ngIf='schedule.enabled' type="checkbox" name="switchRoundedOutlinedDefault" class="switch is-rounded is-outlined is-success" checked="checked">
+                <input id="x" *ngIf='!schedule.enabled' type="checkbox" name="switchRoundedOutlinedDefault" class="switch is-rounded is-outlined">
+                <label for="x"></label>
+
+              </div>
+          <!-- <button name={{schedule.name}} *ngIf='schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to disable the schedule', 'disable')">disable</button> -->
+          <!-- <button name={{schedule.name}} *ngIf='!schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to enable the schedule', 'enable')">enable</button> -->
         </td>
       </tr>
     </table>
