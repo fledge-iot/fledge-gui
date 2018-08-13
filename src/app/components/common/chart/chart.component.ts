@@ -26,14 +26,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
       data: this.data,
       options: this.options
     });
-    // TODO: Need to fix for dynamic graphs
-    // if (this.chart && changes['data']) {
-    //   const currentValue = changes['data'].currentValue;
-    //   ['datasets', 'labels', 'xLabels', 'yLabels'].forEach(property => {
-    //     this.chart.data[property] = currentValue[property];
-    //   });
-    //   this.chart.update();
-    // }
+    this.chart.update(0);
   }
 
   ngOnDestroy() {

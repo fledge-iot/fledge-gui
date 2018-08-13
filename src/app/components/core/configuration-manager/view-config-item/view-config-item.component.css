@@ -1,7 +1,8 @@
-.columns-content {
+.box {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  height: 100%;
 }
 .columns-fields {
   margin-top: auto;
