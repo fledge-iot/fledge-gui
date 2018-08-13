@@ -1,9 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AssetsService, AlertService, PingService } from '../../../../services/index';
 import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
-import { NgProgress } from 'ngx-progressbar';
-import { MAX_INT_SIZE } from '../../../../utils';
-import { POLLING_INTERVAL } from '../../../../utils';
+import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { AnonymousSubscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Rx';
 
@@ -26,7 +24,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   constructor(private assetService: AssetsService,
     private alertService: AlertService,
-    public ngProgress: NgProgress,
     private ping: PingService) { }
 
   ngOnInit() {
@@ -64,8 +61,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.timerSubscription.unsubscribe();
-    this.timerSubscription = null;
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
   }
 
   private refreshData(): void {
