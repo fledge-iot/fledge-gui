@@ -44,7 +44,7 @@ export class ReadingsGraphComponent implements OnInit, OnDestroy {
   }
 
   public roundTo(num, to) {
-    const _to = Math.pow(10, to)
+    const _to = Math.pow(10, to);
     return Math.round(num * _to) / _to;
   }
 
@@ -53,6 +53,10 @@ export class ReadingsGraphComponent implements OnInit, OnDestroy {
     if (shouldOpen) {
       chart_modal.classList.add('is-active');
       return;
+    }
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
     }
     chart_modal.classList.remove('is-active');
     this.assetCode = '';
@@ -72,12 +76,10 @@ export class ReadingsGraphComponent implements OnInit, OnDestroy {
     }
 
     this.assetCode = assetCode;
-    // this.ngProgress.start();
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit).
       subscribe(
         (data: any[]) => {
           this.showGraph = true;
-          // this.ngProgress.done();
           if (data.length === 0) {
             this.getAssetTimeReading(data);
             return;
@@ -101,7 +103,6 @@ export class ReadingsGraphComponent implements OnInit, OnDestroy {
           this.refreshData();
         },
         error => {
-          // this.ngProgress.done();
           console.log('error in response', error);
         });
   }
