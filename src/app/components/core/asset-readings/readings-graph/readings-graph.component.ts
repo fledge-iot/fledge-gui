@@ -16,7 +16,7 @@ import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
   templateUrl: './readings-graph.component.html',
   styleUrls: ['./readings-graph.component.css']
 })
-export class ReadingsGraphComponent implements OnInit {
+export class ReadingsGraphComponent {
   public assetCode: string;
   public assetChartType: string;
   public assetReadingValues: any;
@@ -238,7 +238,7 @@ export class ReadingsGraphComponent implements OnInit {
         borderColor: '#82E0AA',
       }];
     }
-    this.assetChart = 'line';
+    this.assetChartType = 'line';
     this.setAssetReadingValues(labels, ds);
   }
 
@@ -249,7 +249,7 @@ export class ReadingsGraphComponent implements OnInit {
     };
   }
 
-  private clearField(limitField) {
+  public clearField(limitField) {
     limitField.inputValue = '';
   }
 
