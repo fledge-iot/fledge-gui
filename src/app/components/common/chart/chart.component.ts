@@ -34,6 +34,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     //   });
     //   this.chart.update();
     // }
+    this.chart.update(0);
   }
 
   ngOnDestroy() {

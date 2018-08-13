@@ -25,20 +25,13 @@ export class AssetsService {
   *  /foglamp/asset/{assetCode}
   * @param assetCode
   * @param limit
-  * @param offset
   *  Return a set of asset readings for the given asset code
   */
-  public getAssetReadings(assetCode, limit: Number = 0, offset: Number = 0) {
+  public getAssetReadings(assetCode, limit: Number = 0) {
     let params = new HttpParams();
-    if (limit && offset) {
+    if (limit) {
       params = params.set('limit', limit.toString());
-      params = params.set('skip', offset.toString());
-    } else if (limit) {
-      params = params.set('limit', limit.toString());
-    } else if (offset) {  // offset works withOUT limit in postgres!
-      params = params.set('skip', offset.toString());
     }
-
     return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
