@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import map from 'lodash-es/map';
 import * as moment from 'moment';
-import { NgProgress } from 'ngx-progressbar';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
 
@@ -32,7 +31,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public chartOptions: object;
 
   private timerSubscription: AnonymousSubscription;
-  private postsSubscription: AnonymousSubscription;
 
   public refreshTimer = GRAPH_REFRESH_INTERVAL;
 
@@ -40,7 +38,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(private statisticsService: StatisticsService,
     private alertService: AlertService,
-    public ngProgress: NgProgress,
     private ping: PingService) { }
 
   ngOnInit() {
@@ -219,9 +216,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    if (this.postsSubscription) {
-      this.postsSubscription.unsubscribe();
-    }
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
     }
