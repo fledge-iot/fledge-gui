@@ -1,71 +1,86 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { AnonymousSubscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Rx';
 
 import { MomentDatePipe } from '../../../../pipes/moment-date';
-import { AssetsService } from '../../../../services';
-import ReadingsValidator from '../assets/readings-validator';
+
+import { AssetsService, PingService } from '../../../../services';
 import { AssetSummaryService } from './../asset-summary/asset-summary-service';
-import { MAX_INT_SIZE } from '../../../../utils';
-import { NgProgress } from 'ngx-progressbar';
+
+import ReadingsValidator from '../assets/readings-validator';
+import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+
 
 @Component({
   selector: 'app-readings-graph',
   templateUrl: './readings-graph.component.html',
   styleUrls: ['./readings-graph.component.css']
 })
-export class ReadingsGraphComponent implements OnInit {
-  public assetChart: string;
+export class ReadingsGraphComponent {
+  public assetCode: string;
+  public assetChartType: string;
   public assetReadingValues: any;
-  public assetCode;
   public showGraph = true;
   public assetReadingSummary = [];
   public isInvalidLimit = false;
-  public isInvalidOffset = false;
   public MAX_RANGE = MAX_INT_SIZE;
   public DEFAULT_LIMIT = 100;
+  public graphRefreshInterval = POLLING_INTERVAL;
+  private graphTimerSubscription: AnonymousSubscription;
+  public limit: number;
 
-  constructor(private assetService: AssetsService, private assetSummaryService: AssetSummaryService, public ngProgress: NgProgress) {
-    this.assetChart = 'line';
+  constructor(private assetService: AssetsService,
+    private assetSummaryService: AssetSummaryService,
+    private ping: PingService) {
+    this.assetChartType = 'line';
     this.assetReadingValues = [];
   }
 
-  ngOnInit() { }
+  public roundTo(num, to) {
+    const _to = Math.pow(10, to);
+    return Math.round(num * _to) / _to;
+  }
 
   public toggleModal(shouldOpen: Boolean) {
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
+      this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+        this.graphRefreshInterval = timeInterval;
+      });
       chart_modal.classList.add('is-active');
       return;
     }
+    if (this.graphTimerSubscription) {
+      this.graphTimerSubscription.unsubscribe();
+      this.graphTimerSubscription = null;
+    }
     chart_modal.classList.remove('is-active');
-    this.assetCode = '';
   }
 
-  public plotReadingsGraph(assetCode, limit: any, offset: any) {
-    this.isInvalidLimit = false;
-    this.isInvalidOffset = false;
-    if (limit === undefined || limit === null || limit === '' || limit === 0) {
-      limit = this.DEFAULT_LIMIT;
+  public plotReadingsGraph(assetCode, limit: any) {
+    if (this.assetCode === '') {
+      return false;
     }
-    if (offset === undefined || offset === '') {
-      offset = 0;
+    if (this.graphTimerSubscription) {
+      this.graphTimerSubscription.unsubscribe();
+      this.graphTimerSubscription = null;
     }
 
-    if (!Number.isInteger(+limit) || +limit < 0 || +limit > this.MAX_RANGE) { // max limit of int in c++
+    this.isInvalidLimit = false;
+    if (limit === undefined || limit === null || limit === '' || limit === 0) {
+      limit = this.DEFAULT_LIMIT;
+    } else if (!Number.isInteger(+limit) || +limit < 0 || +limit > this.MAX_RANGE) { // max limit of int in c++
       this.isInvalidLimit = true;
       return;
     }
-    if (!Number.isInteger(+offset) || +offset < 0 || +offset > this.MAX_RANGE) {  // max limit of int in c++
-      this.isInvalidOffset = true;
-      return;
-    }
 
+    this.limit = limit;
     this.assetCode = assetCode;
-    this.ngProgress.start();
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, +offset).
+
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit).
       subscribe(
         (data: any[]) => {
           this.showGraph = true;
-          this.ngProgress.done();
           if (data.length === 0) {
             this.getAssetTimeReading(data);
             return;
@@ -80,20 +95,19 @@ export class ReadingsGraphComponent implements OnInit {
             this.assetSummaryService.assetReadingSummary.subscribe(
               value => {
                 this.assetReadingSummary = value;
-                console.log('readings data to show trends.', this.assetReadingSummary);
               });
             this.getAssetTimeReading(data);
           } else {
             this.showGraph = false;
           }
+          this.refreshGraphData();
         },
         error => {
-          this.ngProgress.done();
           console.log('error in response', error);
         });
   }
 
-  getAssetTimeReading(assetChartRecord) {
+  public getAssetTimeReading(assetChartRecord) {
     let assetTimeLabels = [];
     let assetReading = [];
     const first_dataset = [];
@@ -138,7 +152,7 @@ export class ReadingsGraphComponent implements OnInit {
               break;
           }
         });
-        assetTimeLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss:SSS'));
+        assetTimeLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss'));
       });
       assetReading.push(d1);
       assetReading.push(d2);
@@ -149,7 +163,7 @@ export class ReadingsGraphComponent implements OnInit {
     this.statsAssetReadingsGraph(assetTimeLabels, assetReading);
   }
 
-  statsAssetReadingsGraph(labels, assetReading): void {
+  private statsAssetReadingsGraph(labels, assetReading): void {
     let ds = [];
     if (assetReading.length === 3) {
       const d1 = assetReading[0].data;
@@ -224,19 +238,23 @@ export class ReadingsGraphComponent implements OnInit {
         borderColor: '#82E0AA',
       }];
     }
-    this.assetChart = 'line';
+    this.assetChartType = 'line';
     this.setAssetReadingValues(labels, ds);
   }
 
-  setAssetReadingValues(labels, ds) {
+  private setAssetReadingValues(labels, ds) {
     this.assetReadingValues = {
       labels: labels,
       datasets: ds
     };
   }
 
-  clearField(limitField, offsetField) {
+  public clearField(limitField) {
     limitField.inputValue = '';
-    offsetField.inputValue = '';
+  }
+
+  private refreshGraphData(): void {
+    this.graphTimerSubscription = Observable.timer(this.graphRefreshInterval)
+      .subscribe(() => this.plotReadingsGraph(this.assetCode, this.limit));
   }
 }
