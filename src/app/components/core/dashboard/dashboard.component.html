@@ -1,20 +1,39 @@
 <div class="columns is-mobile">
   <div class="column">
-    <div id="graph-key-dropdown" class="is-pulled-right dropdown is-right">
-      <div class="dropdown-trigger">
-        <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
-          <span>Select Graphs</span>
-          <span class="icon is-small">
-            <i class="fa fa-angle-down" aria-hidden="true"></i>
-          </span>
-        </button>
+    <div class="field-body is-pulled-right">
+      <div class="field has-addons">
+        <p class="control">
+          <a class="button is-static">
+            Last
+          </a>
+        </p>
+        <p class="control is-expanded" style="width:10%">
+          <input class="input" type="number" placeholder="100"/>
+        </p>
+          <div class="select">
+            <select>
+              <option>Minutes</option>
+              <option>Hours</option>
+              <option>Days</option>
+            </select>
+          </div>
       </div>
-      <div class="dropdown-menu" id="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-          <div *ngFor="let data of statisticsKeys" class="dropdown-item">
-            <div class="field is-grouped">
-              <div class="control checkbox">
-                <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph($event)"> {{data.key}}
+      <div id="graph-key-dropdown" class="dropdown">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
+            <span>Select Graphs</span>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div *ngFor="let data of statisticsKeys" class="dropdown-item">
+              <div class="field is-grouped">
+                <div class="control checkbox">
+                  <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph($event)"> {{data.key}}
+                </div>
               </div>
             </div>
           </div>
