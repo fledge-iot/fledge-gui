@@ -1,3 +1,7 @@
 table.scroll {
     height: 300px;
 }
+
+.cancel-btn {
+    height: 2.25em;
+}

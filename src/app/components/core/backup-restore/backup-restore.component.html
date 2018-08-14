@@ -26,8 +26,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let backup of backupData">
-            <td>{{ backup.date }}</td>
-            <td>{{ backup.status }}</td>
+            <td style="vertical-align: middle;">
+              <span class="tag is-rounded"> {{ backup.date }} </span>
+            </td>
+            <td style="vertical-align: middle;">{{ backup.status }}</td>
             <td>
               <a class="button is-text" (click)="openModal(backup.id, backup.date, 'ATTENTION! This may result in a bad state of the system for current version. Are you sure, You want to restore the backup', 'restoreBackup')">restore
               </a>
