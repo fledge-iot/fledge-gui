@@ -1,0 +1,61 @@
+<div class="card">
+  <header class="card-header">
+    <div id="scheduled-process" class="card-header-title">
+      <div class="media-content">
+        <p class="title is-5">
+          South Services &nbsp;
+          <button (click)="getServiceData()" class="button is-small">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+          </button>
+        </p>
+      </div>
+    </div>
+    <a id="add_south_service" class="button is-light" (click)="addSouthService()">Add &nbsp;
+      <i class="fa fa-plus" aria-hidden="true"></i>
+    </a>
+  </header>
+  <div class="card-content">
+    <div class="content">
+      <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Asset</th>
+            <th>Readings</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let svc of services">
+            <td>
+              <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+            </td>
+            <td>
+              <div class="tags has-addons">
+                <span *ngIf="svc.status == 'running'" class="tag is-success">
+                  <i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; {{svc.status}}
+                </span>
+                <span *ngIf="svc.status == 'down'" class="tag is-danger">
+                  <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{svc.status}}
+                </span>
+                <span *ngIf="svc.status == 'failed'" class="tag is-danger">
+                  <i class="fa fa-times-circle" aria-hidden="true"></i>&nbsp; {{svc.status}}
+                </span>
+                <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">
+                  <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{svc.status}}
+                </span>
+              </div>
+            </td>
+            <td>
+              sinusoid
+            </td>
+            <td>
+              1,000
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<app-south-service-modal [service]="service"></app-south-service-modal>
