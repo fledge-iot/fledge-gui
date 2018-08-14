@@ -36,14 +36,13 @@
           <small>{{task.state}}</small>
         </td>
         <td>
-          <small>{{task.startTime != 'None' ?(task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
+          <span class="tag is-rounded">{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</span>
         </td>
         <td>
-          <small>{{task.endTime != 'None'?(task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
+          <span *ngIf="task.endTime != ''" class="tag is-rounded">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</span>
         </td>
-        <td>
-          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small is-text" (click)="cancelRunninTask(task.id)">Cancel</button>
-        </td>
+        
+        <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small is-text" (click)="cancelRunninTask(task.id)">Cancel</button>
       </tr>
     </table>
   </div>
