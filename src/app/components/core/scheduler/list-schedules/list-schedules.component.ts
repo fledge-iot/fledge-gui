@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { EventEmitter, Output } from '@angular/core';
 import { SchedulesService, AlertService } from '../../../../services/index';
 import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
 import Utils from '../../../../utils';
@@ -27,6 +28,10 @@ export class ListSchedulesComponent implements OnInit {
   public days = [];
   public scheduler_name: string;
 
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+  @Output() process: EventEmitter<any> = new EventEmitter<any>();
+  @Output() type: EventEmitter<any> = new EventEmitter<any>();
+
   // Object to hold schedule id and name to delete
   public childData = {
     id: 0,
@@ -41,6 +46,10 @@ export class ListSchedulesComponent implements OnInit {
   constructor(private schedulesService: SchedulesService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
   ngOnInit() {
+
+    this.getScheduleType();
+    this.getSchedulesProcesses();
+
     this.days = Object.keys(weekDays).map(key => weekDays[key]).filter(value => typeof value == 'string') as string[];
     this.getSchedules();
 
@@ -50,6 +59,39 @@ export class ListSchedulesComponent implements OnInit {
       day: this.days
     };
   }
+
+  public getSchedulesProcesses(): void {
+    this.scheduleProcess = [];
+    this.schedulesService.getScheduledProcess().
+      subscribe(
+        (data) => {
+          this.scheduleProcess = data['processes'];
+          this.process.emit(this.scheduleProcess);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public getScheduleType(): void {
+    this.schedulesService.getScheduleType().
+      subscribe(
+        (data) => {
+          this.scheduleType = data['scheduleType'];
+          this.type.emit(this.scheduleType);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+}
 
   public getSchedules(): void {
     this.scheduleData = [];
