@@ -6,11 +6,6 @@
         <i class="fa fa-refresh" aria-hidden="true"></i>
       </button>
     </p>
-    <!-- <div>
-      <a class="button is-light" (click)="openCreateSchedulerModal()">Create &nbsp;
-        <i class="fa fa-plus" aria-hidden="true"></i>
-      </a>
-    </div> -->
   </header>
   <div class="card-content">
     <table class="table scroll is-responsive">
@@ -22,6 +17,7 @@
           <th>Time</th>-->
           <th>Interval</th>
           <!-- <th>Exclusive</th>  -->
+          <th></th>
           <th></th>
         </tr>
       </thead>
@@ -51,13 +47,7 @@
             <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
           </a>
         </td>
-        <!-- <td>
-          <a name={{schedule.name}} (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to delete the schedule', 'delete')"
-            class="button is-text">
-            <i class="fa fa-minus-circle" aria-hidden="true"></i>
-          </a>
-        </td> -->
-
+        
         <!-- TODO: Only show edit and move this switch to edit modal-->
         <td>
             <div class="field">
@@ -75,4 +65,3 @@
 <app-alert-dialog (enable)='enableSchedule($event)' (disable)='disableSchedule($event)' (delete)='deleteSchedule($event)'
   [childData]='childData'></app-alert-dialog>
 <app-update-schedule (notify)='onNotify()' [childData]='updateScheduleData'></app-update-schedule>
-<!-- <app-create-schedule (notify)='onNotify()' (process)='setScheduleProcess($event)' (type)='setScheduleType($event)'></app-create-schedule> -->

@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { SchedulesService, AlertService } from '../../../../services/index';
 import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
 import Utils from '../../../../utils';
-import { CreateScheduleComponent } from '../create-schedule/create-schedule.component';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { sortBy, reverse } from 'lodash';
@@ -38,7 +37,6 @@ export class ListSchedulesComponent implements OnInit {
   public updateScheduleData: any;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(UpdateScheduleComponent) updateScheduleModal: UpdateScheduleComponent;
-  @ViewChild(CreateScheduleComponent) createModal: CreateScheduleComponent;
 
   constructor(private schedulesService: SchedulesService, private alertService: AlertService, public ngProgress: NgProgress) { }
 
@@ -143,14 +141,6 @@ export class ListSchedulesComponent implements OnInit {
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
-  }
-
-  /**
-  * Open create scheduler modal dialog
-  */
-  openCreateSchedulerModal() {
-    // call child component method to toggle modal
-    this.createModal.toggleModal(true);
   }
 
   /**
