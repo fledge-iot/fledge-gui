@@ -2,6 +2,7 @@
   <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
     [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
+  
   <!-- cards to be rendered as config.categories.count-->
 
   <div class="columns is-multiline">
@@ -22,12 +23,6 @@
         <div id="root-children" class="panel-block">
           <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)" (activate)="onNodeActive($event)"></tree-root>
         </div>
-
-        <!-- <div class="panel-block">
-          <button class="button is-text is-fullwidth" (click)="resetAllFilters()">
-            <small>Reset Filter</small>
-          </button>
-        </div> -->
       </nav>
     </div>
     <div class="column is-two-thirds">
@@ -46,11 +41,6 @@
               </div>
             </div>
           </div>
-          <div>
-            <a class="button is-light" (click)="openAddConfigItemModal(category?.description, category?.key)">Add &nbsp;
-              <i class="fa fa-plus" aria-hidden="true"></i>
-            </a>
-          </div>
         </header>
         <div class="card-content">
           <div class="content">
@@ -60,5 +50,3 @@
       </div>
     </div>
   </div>
-  <app-add-config-item (notify)='onNotify($event)'></app-add-config-item>
-</div>

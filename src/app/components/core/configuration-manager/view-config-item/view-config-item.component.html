@@ -22,7 +22,6 @@
                   class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                   (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value)"
                   [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' />
-
                 <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
                   (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value)"
                   type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' class="input is-small"

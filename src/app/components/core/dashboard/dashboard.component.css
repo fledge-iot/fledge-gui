@@ -1,4 +1,19 @@
-hr{
-    border:.5px solid #000;
-    margin-top: 5px;
+.box {
+  height: 100%;
+}
+
+.columns {
+  padding: 0% !important;
+}
+
+.dropdown-content {
+  width: auto;
+  min-height: 200px;
+  height: 400px;
+  overflow-y: scroll;
+  overflow-x:hidden;
+}
+
+.columns:not(:last-child) {
+   margin-bottom: 0% !important;
 }

@@ -141,3 +141,13 @@ table.scroll tbody {
   box-shadow: inset 0 0 0px;
   color: #707070;
 }
+
+.foglamp-logo {
+    width: 34px;
+    height: 20px;
+    background: url(./assets/foglamp.png) center center no-repeat;
+}
+
+.navbar-menu {
+    box-shadow: none !important;
+}

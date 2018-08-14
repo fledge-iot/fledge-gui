@@ -7,7 +7,6 @@ import { SharedModule } from '../../../shared.module';
 
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
-import { CreateScheduleComponent } from './create-schedule/create-schedule.component';
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
 import { ListTasksComponent } from './list-tasks/list-tasks.component';
 import { ScheduledProcessComponent } from './scheduled-process/scheduled-process.component';
@@ -33,7 +32,6 @@ const routes: Routes = [
   declarations: [
     ScheduledProcessComponent,
     ListTasksComponent,
-    CreateScheduleComponent,
     UpdateScheduleComponent,
     ListSchedulesComponent,
     AddTaskWizardComponent
