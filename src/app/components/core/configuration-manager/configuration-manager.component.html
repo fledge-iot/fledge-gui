@@ -9,14 +9,14 @@
     <div class="column is-one-quarter">
       <nav class="panel">
         <div class="panel-heading">
-          <div class="select is-rounded is-fullwidth">
+          <div class="select is-rounded is-fullwidth is-small">
             <select (change)="getChildren($event.target.value)">
               <option *ngFor="let rootCategory of rootCategories" [selected]='rootCategory.key === selectedRootCategory' [value]='rootCategory.key'>{{ rootCategory.description }}</option>
             </select>
           </div>
         </div>
         <div *ngIf="!isChild" class="panel-block">
-          <button class="button is-rounded is-fullwidth" disabled>
+          <button class="button is-rounded is-fullwidth is-small" disabled>
             no sub-category
           </button>
         </div>
