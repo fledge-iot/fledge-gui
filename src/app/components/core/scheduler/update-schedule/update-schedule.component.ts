@@ -19,6 +19,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   public scheduleProcess = [];
   public scheduleType = [];
   public days = [];
+  public schedule_name: any;
 
   @Input() childData: { id: Number, schedule_process: any, schedule_type: any, day: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -96,7 +97,6 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     this.schedulesService.getSchedule(id).
       subscribe(
         (data) => {
-          console.log('data', data);
           if (data['type'] == 'TIMED') {
             this.selected_schedule_type = this.setScheduleTypeKey(data['type']);
             schedule_day = this.getSelectedDay(data['day']);
@@ -107,6 +107,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
           const repeatTimeObj = Utils.secondsToDhms(data['repeat']);
           const timeObj = Utils.secondsToDhms(data['time']);
 
+          this.schedule_name = data['name'];
           // Fill form field values
           this.form.patchValue({
             name: data['name'],

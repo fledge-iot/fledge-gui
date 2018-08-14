@@ -29,10 +29,11 @@
           </div>
           <div class="column is-3">
             <div class="field">
-              <input id="x" formControlName="enabled" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
+              <label class="label">Enabled</label>
+              <input id={{schedule_name}} formControlName="enabled" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
                 checked="checked">
-              <input id="x" formControlName="enabled" type="checkbox" name="switchRoundedOutlinedDefault" class="switch is-rounded is-outlined">
-              <label for="x"></label>
+              <input id={{schedule_name}} formControlName="enabled" type="checkbox" name="switchRoundedOutlinedDefault" class="switch is-rounded is-outlined" checked="checked">
+              <label for={{schedule_name}}></label>
             </div>
           </div>
         </div>
