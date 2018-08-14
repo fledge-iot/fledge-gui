@@ -40,6 +40,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       type: [Validators.required],
       day: [Validators.required],
       time: [Validators.required, Validators.pattern(regExp)],
+      enabled: [Validators.required]
     });
 
     if (changes['childData']) {
@@ -95,6 +96,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     this.schedulesService.getSchedule(id).
       subscribe(
         (data) => {
+          console.log('data', data);
           if (data['type'] == 'TIMED') {
             this.selected_schedule_type = this.setScheduleTypeKey(data['type']);
             schedule_day = this.getSelectedDay(data['day']);
@@ -114,7 +116,8 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
             process_name: data['processName'],
             type: data['type'],
             day: schedule_day,
-            time: timeObj.time
+            time: timeObj.time,
+            enabled: data['enabled']
           });
         },
         error => {
@@ -160,6 +163,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       'day': dayIndex,
       'time': time,
       'exclusive': this.form.get('exclusive').value,
+      'enabled': this.form.get('enabled').value
     };
 
     this.schedulesService.updateSchedule(this.childData.id, updatePayload).
