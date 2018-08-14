@@ -65,7 +65,6 @@ export class ListSchedulesComponent implements OnInit {
       subscribe(
         (data) => {
           this.scheduleProcess = data['processes'];
-          console.log('This is the getScheduleProcess ', this.scheduleProcess);
           this.process.emit(this.scheduleProcess);
         },
         error => {
