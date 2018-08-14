@@ -25,10 +25,8 @@
         <td>
           <span class="tag is-rounded"> {{schedule.type}}</span>
         </td>
-        <!-- if interval is 00:00:00 show empty string -->
-        <!-- FIXME -->
         <td>
-          <small> {{!schedule.repeat.trim() == '00:00:00' ? schedule.repeat.trim() : '' }}</small>
+          <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
         </td>
         <td>
           <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
