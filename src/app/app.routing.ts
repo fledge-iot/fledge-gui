@@ -9,10 +9,10 @@ import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support';
 import { LoginComponent } from './components/layout/login';
 import { AuthCheckGuard } from './guards';
-import { AddServiceWizardComponent } from './components/core/services-health/add-service-wizard/add-service-wizard.component';
 
 const appRoutes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthCheckGuard] },
+  { path: 'south', loadChildren: './components/core/south/south.module#SouthModule' },
   { path: 'login', component: LoginComponent },
   { path: 'configuration', loadChildren: './components/core/configuration-manager/configuration.module#ConfigurationModule' },
   { path: 'scheduled-task', loadChildren: './components/core/scheduler/scheduler.module#SchedulerModule' },

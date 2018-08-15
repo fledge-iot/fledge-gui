@@ -4,6 +4,11 @@
       Dashboard
     </a>
   </li>
+  <li>
+    <a id="south" [ngClass]="{'is-active': step==='/south'}" (click)="onToggle('/south')">
+      South
+    </a>
+  </li>
 
   <li>
     <a id="asset" [ngClass]="{'is-active': step==='/asset'}" (click)="onToggle('/asset')">
