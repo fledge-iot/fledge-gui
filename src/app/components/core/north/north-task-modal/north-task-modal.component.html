@@ -7,50 +7,6 @@
     </header>
     <section class="modal-card-body">
       <div class="card">
-        <!--
-          Play
-        -->
-        <div class="box">
-          <div class="content">
-            <div class="is-pulled-left">
-              <p class="title is-6"> Schedule </p>
-            </div>
-            <div class="is-pulled-left">&nbsp;&nbsp;&nbsp;</div>
-            <div class="is-pulled-left">
-              <input id="switchRoundedOutlinedSuccess" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
-                checked="checked">
-              <label for="switchRoundedOutlinedSuccess"></label>
-            </div>
-            <br>
-            <br>
-            <div class="columns">
-              <div class="column">
-                <div class="field">
-                  <label class="label">Interval</label>
-                  <div class="control">
-                    <input class="input is-small" type="text" placeholder="00:00:00" value="00:00:30">
-                  </div>
-                </div>
-              </div>
-              <div class="column">
-                <div class="field">
-                  <label class="label">Exclusive</label>
-                  <div class="control">
-                    <input class="checkbox" type="checkbox" checked="checked">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <footer class="modal-card-foot">
-          <button class="button is-small is-success">Save</button>
-        </footer>
-        <!--Play-->
-      </div>
-
-      <div class="card">
         <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
           <div class="columns is-multiline" *ngFor="let categoryData of category?.value">
             <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
@@ -84,6 +40,63 @@
           </div>
         </footer>
       </div>
+
+      <div class="card">
+        <!--
+            Play
+          -->
+        <div class="box">
+          <div class="content">
+            <!-- <div class="is-pulled-left">
+                <p class="title is-6"> Schedule </p>
+              </div>
+              <div class="is-pulled-left">&nbsp;&nbsp;&nbsp;</div>
+              <div class="is-pulled-left">
+                <input id="switchRoundedOutlinedSuccess" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
+                  checked="checked">
+                <label for="switchRoundedOutlinedSuccess"></label>
+              </div>
+              <br>
+              <br> -->
+            <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label subtitle is-6">Enabled</label>
+                  <div class="control">
+                    <input class="checkbox" type="checkbox" checked="checked">
+                  </div>
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                  <label class="label subtitle is-6">Exclusive</label>
+                  <div class="control">
+                    <input class="checkbox" type="checkbox" checked="checked">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                      <label class="label subtitle is-6">Interval</label>
+                      <div class="control">
+                        <input class="input is-small" type="text" placeholder="00:00:00" value="00:00:30">
+                      </div>
+                    </div>
+                  </div>
+            </div>
+
+          </div>
+        </div>
+
+        <footer class="modal-card-foot">
+          <button class="button is-small is-success">Save</button>
+        </footer>
+        <!--Play-->
+      </div>
+
+
     </section>
 
   </div>
