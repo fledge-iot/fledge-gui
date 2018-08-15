@@ -13,10 +13,7 @@
         <tr>
           <th>Name</th>
           <th>Type</th>
-          <!-- <th>Day</th>
-          <th>Time</th>-->
           <th>Interval</th>
-          <!-- <th>Exclusive</th>  -->
           <th></th>
           <th></th>
         </tr>
@@ -28,35 +25,13 @@
         <td>
           <span class="tag is-rounded"> {{schedule.type}}</span>
         </td>
-        <!-- <td>
-          <small> {{getISODay(schedule.day)}} </small>
+        <td>
+          <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
         </td>
-        <td>
-          <small> {{schedule.time}}</small>
-        </td>-->
-        <!-- if interval is 00:00:00 show empty string -->
-        <!-- FIXME -->
-        <td>
-          <small> {{!schedule.repeat.trim() == '00:00:00' ? schedule.repeat.trim() : '' }}</small>
-        </td> 
-        <!-- <td>
-          <small> {{schedule.exclusive}}</small>
-        </td> -->
         <td>
           <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
             <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
           </a>
-        </td>
-        
-        <!-- TODO: Only show edit and move this switch to edit modal-->
-        <td>
-            <div class="field">
-                <input id="x" *ngIf='schedule.enabled' type="checkbox" name="switchRoundedOutlinedDefault" class="switch is-rounded is-outlined is-success" checked="checked">
-                <input id="x" *ngIf='!schedule.enabled' type="checkbox" name="switchRoundedOutlinedDefault" class="switch is-rounded is-outlined">
-                <label for="x"></label>
-              </div>
-          <!-- <button name={{schedule.name}} *ngIf='schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to disable the schedule', 'disable')">disable</button> -->
-          <!-- <button name={{schedule.name}} *ngIf='!schedule.enabled' class="button is-text" (click)="openModal(schedule.id, schedule.name, 'Are you sure, You want to enable the schedule', 'enable')">enable</button> -->
         </td>
       </tr>
     </table>

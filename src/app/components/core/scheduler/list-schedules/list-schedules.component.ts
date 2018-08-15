@@ -116,7 +116,8 @@ export class ListSchedulesComponent implements OnInit {
             element.time = Utils.secondsToDhms(element.time).time;
           });
           // sort by enabled and then (TODO) by name
-          this.scheduleData = sortBy(this.scheduleData, ['enabled']).reverse()
+          // this.scheduleData = sortBy(this.scheduleData, ['enabled']).reverse()
+          this.scheduleData = sortBy(this.scheduleData, ['enabled', 'name']).reverse();
         },
         error => {
           /** request completed */
