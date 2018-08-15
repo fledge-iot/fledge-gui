@@ -2,15 +2,10 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service</p>
+      <p *ngIf="service != undefined" class="modal-card-title is-size-6">{{service.name}} South Service</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="field">
-        <input id="switchRoundedOutlinedSuccess" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
-          checked="checked">
-        <label for="switchRoundedOutlinedSuccess"></label>
-      </div>
       <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
         <div class="columns is-multiline" *ngFor="let categoryData of category?.value">
           <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
@@ -34,11 +29,23 @@
           </div>
         </div>
       </form>
-      <div *ngIf="service != undefined" class="field">
-        <div class="control">
-          <b>Service Info: </b>{{service.protocol}}://{{service.address}}:{{service.management_port}}
+
+      <div class="columns">
+        <div *ngIf="service != undefined" class="column">
+          <div class="box">
+            <b>Service Info:</b> &nbsp;	
+            <span class="has-text-grey">{{service.protocol}}://{{service.address}}:{{service.management_port}}</span>
+          </div>
+        </div>
+        <div class="column">
+          <div class="box">
+            <input id="switchRoundedOutlinedSuccess" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
+              checked="checked">
+            <label for="switchRoundedOutlinedSuccess"></label>
+          </div>
         </div>
       </div>
+
     </section>
     <footer class="modal-card-foot">
       <div class="control">
