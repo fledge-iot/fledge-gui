@@ -24,7 +24,7 @@ export class AddServiceWizardComponent implements OnInit {
 
   serviceForm = new FormGroup({
     name: new FormControl(),
-    type: new FormControl(),
+    // type: new FormControl(),
     plugin: new FormControl()
   });
 
@@ -41,10 +41,10 @@ export class AddServiceWizardComponent implements OnInit {
   ngOnInit() {
     this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
-      type: ['', Validators.required],
+      // type: ['', Validators.required],
       plugin: ['', Validators.required]
     });
-    this.serviceForm.get('type').setValue('south');
+    // this.serviceForm.get('type').setValue('south');
     this.serviceForm.get('plugin').setValue('select');
   }
 
@@ -72,7 +72,7 @@ export class AddServiceWizardComponent implements OnInit {
     switch (+id) {
       case 1:
         this.serviceForm.get('name').setValue('');
-        this.serviceForm.get('type').setValue('south');
+        // this.serviceForm.get('type').setValue('south');
         nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
@@ -111,8 +111,8 @@ export class AddServiceWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Add Service';
         previousButton.disabled = false;
-        if (formValues['name'] !== '' && formValues['type'] !== '') {
-          this.servicesHealthService.getInstalledPlugins(formValues['type']).subscribe(
+        if (formValues['name'] !== '') {
+          this.servicesHealthService.getInstalledPlugins('south').subscribe(
             (data: any) => {
               this.plugins = data.plugins;
             },

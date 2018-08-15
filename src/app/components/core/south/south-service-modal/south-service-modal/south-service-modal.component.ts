@@ -53,22 +53,23 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
         console.log("category", this.category);
 
-        for (const key in data) {
-          if (data.hasOwnProperty(key)) {
-            this.configItems.push({
-              [key]: data[key].value
-            });
+          for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+              this.configItems.push({
+                [key]: data[key].value,
+                type: data[key].type
+              });
+            }
+          }
+          // console.log(this.configItems);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText, true);
           }
         }
-        // console.log(this.configItems);
-      },
-      error => {
-        if (error.status === 0) {
-          console.log("service down ", error);
-        } else {
-          this.alertService.error(error.statusText, true);
-        }
-      }
     );
   }
 
@@ -82,9 +83,18 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
       }
     }
-    console.log("updatedRecord", updatedRecord);
-    const d = this.difference(updatedRecord, this.configItems);
-    console.log("obj diff", d);
+    const diff = this.difference(updatedRecord, this.configItems);
+    this.configItems.forEach(item => {
+      for (const key in item) {
+        diff.forEach(changedItem => {
+          for (const k in changedItem) {
+            if (key === k && item[key] !== changedItem[k]) {
+              this.saveConfigValue(this.service['name'], key, changedItem[k], item.type);
+            }
+          }
+        });
+      }
+    });
   }
 
   public difference(obj, bs) {
@@ -99,5 +109,24 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       });
     }
     return changes(obj, bs);
+  }
+
+  public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
+    console.log('item ', categoryName, configItem, value, type);
+    this.configService.saveConfigItem(categoryName, configItem, value, type).
+      subscribe(
+        (data) => {
+          if (data['value'] !== undefined) {
+            this.alertService.success('Value updated successfully');
+          }
+          this.toggleModal(false);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }
