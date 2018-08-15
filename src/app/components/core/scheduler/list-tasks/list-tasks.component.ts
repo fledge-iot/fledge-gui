@@ -1,22 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { SchedulesService, AlertService } from '../../../../services/index';
-import { NgProgress } from 'ngx-progressbar';
-import { Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { SchedulesService, AlertService } from "../../../../services/index";
+import { NgProgress } from "ngx-progressbar";
 
 @Component({
-  selector: 'app-list-tasks',
-  templateUrl: './list-tasks.component.html',
-  styleUrls: ['./list-tasks.component.css']
+  selector: "app-list-tasks",
+  templateUrl: "./list-tasks.component.html",
+  styleUrls: ["./list-tasks.component.css"]
 })
 export class ListTasksComponent implements OnInit {
   public tasksData = [];
-  public selectedTaskType = 'Latest'; // Default is LATEST
+  public selectedTaskType = "Latest"; // Default is LATEST
 
   constructor(
     private schedulesService: SchedulesService,
     private alertService: AlertService,
-    public ngProgress: NgProgress,
-    private router: Router) {}
+    public ngProgress: NgProgress
+  ) {}
 
   ngOnInit() {
     this.getLatestTasks();
@@ -27,12 +26,12 @@ export class ListTasksComponent implements OnInit {
    * @param state Task state
    */
   public getTasks(state) {
-    if (state.toUpperCase() === 'RUNNING') {
-      this.selectedTaskType = 'Running';
+    if (state.toUpperCase() === "RUNNING") {
+      this.selectedTaskType = "Running";
       this.getRunningTasks();
       return;
     }
-    this.selectedTaskType = 'Latest';
+    this.selectedTaskType = "Latest";
     this.getLatestTasks();
   }
 
@@ -43,23 +42,23 @@ export class ListTasksComponent implements OnInit {
     this.tasksData = [];
     /** request started */
     this.ngProgress.start();
-    this.schedulesService.getLatestTask().
-      subscribe(
-        (data) => {
+    this.schedulesService.getLatestTask().subscribe(
+      data => {
         /** request completed */
         this.ngProgress.done();
-        this.tasksData = data['tasks'];
-        console.log('Latest tasks ', data['tasks']);
+        this.tasksData = data["tasks"];
+        console.log("Latest tasks ", data["tasks"]);
       },
       error => {
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
-          console.log('service down ', error);
+          console.log("service down ", error);
         } else {
           this.alertService.error(error.statusText);
         }
-      });
+      }
+    );
   }
 
   /**
@@ -69,23 +68,23 @@ export class ListTasksComponent implements OnInit {
     this.tasksData = [];
     /** request started */
     this.ngProgress.start();
-    this.schedulesService.getTasks('RUNNING').
-      subscribe(
-        (data) => {
+    this.schedulesService.getTasks("RUNNING").subscribe(
+      data => {
         /** request completed */
         this.ngProgress.done();
-        this.tasksData = data['tasks'];
-        console.log('Running tasks ', this.tasksData);
+        this.tasksData = data["tasks"];
+        console.log("Running tasks ", this.tasksData);
       },
       error => {
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
-          console.log('service down ', error);
+          console.log("service down ", error);
         } else {
           this.alertService.error(error.statusText);
         }
-      });
+      }
+    );
   }
 
   /**
@@ -93,20 +92,19 @@ export class ListTasksComponent implements OnInit {
    * @param id task id
    */
   public cancelRunninTask(id) {
-    console.log('Task UUID:', id);
+    console.log("Task UUID:", id);
     /** request started */
     this.ngProgress.start();
-    this.schedulesService.cancelTask(id).
-      subscribe(
-        (data) => {
+    this.schedulesService.cancelTask(id).subscribe(
+      data => {
         /** request completed */
         this.ngProgress.done();
-        if (data['message']) {
-          this.alertService.success(data['message'] + ' Wait for 5 seconds!');
+        if (data["message"]) {
+          this.alertService.success(data["message"] + " Wait for 5 seconds!");
           // TODO: remove cancelled task object from local list
           setTimeout(() => {
-            console.log('waiting...', this.selectedTaskType);
-            if (this.selectedTaskType === 'Running') {
+            console.log("waiting...", this.selectedTaskType);
+            if (this.selectedTaskType === "Running") {
               this.getRunningTasks();
             } else {
               this.getLatestTasks();
@@ -118,14 +116,11 @@ export class ListTasksComponent implements OnInit {
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
-          console.log('service down ', error);
+          console.log("service down ", error);
         } else {
           this.alertService.error(error.statusText);
         }
-      });
-  }
-
-  addTask() {
-    this.router.navigate(['/scheduled-task/add-task']);
+      }
+    );
   }
 }

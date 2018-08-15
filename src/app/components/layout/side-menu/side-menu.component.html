@@ -9,7 +9,11 @@
       South
     </a>
   </li>
-
+  <li>
+    <a id="north" [ngClass]="{'is-active': step==='/north'}" (click)="onToggle('/north')">
+      North
+    </a>
+  </li>
   <li>
     <a id="asset" [ngClass]="{'is-active': step==='/asset'}" (click)="onToggle('/asset')">
       Assets &amp; Readings
@@ -40,11 +44,11 @@
     </a>
   </li>
 
-  <li>
+  <!-- <li>
     <a id="services" [ngClass]="{'is-active': step==='/services'}" (click)="onToggle('/services')">
       Services
     </a>
-  </li>
+  </li> -->
 
   <li>
     <a id="certificate" [ngClass]="{'is-active': step==='/certificate'}" (click)="onToggle('/certificate')">

@@ -11,7 +11,6 @@ import { ListSchedulesComponent } from './list-schedules/list-schedules.componen
 import { ListTasksComponent } from './list-tasks/list-tasks.component';
 import { ScheduledProcessComponent } from './scheduled-process/scheduled-process.component';
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
-import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.component';
 import { AuthCheckGuard } from '../../../guards';
 import { DirectivesModule } from '../../../directives/directives.module';
 
@@ -19,11 +18,6 @@ const routes: Routes = [
   {
     path: '',
     component: ScheduledProcessComponent,
-    canActivate: [AuthCheckGuard]
-  },
-  {
-    path: 'add-task',
-    component: AddTaskWizardComponent,
     canActivate: [AuthCheckGuard]
   }
 ];
@@ -33,8 +27,7 @@ const routes: Routes = [
     ScheduledProcessComponent,
     ListTasksComponent,
     UpdateScheduleComponent,
-    ListSchedulesComponent,
-    AddTaskWizardComponent
+    ListSchedulesComponent
   ],
   imports: [
     ReactiveFormsModule,

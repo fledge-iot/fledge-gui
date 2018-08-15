@@ -1,10 +1,10 @@
 <div class="card">
   <header class="card-header">
-    <div class="card-header-title">
+    <div class="card-header-title" style="flex-grow: 0;">
       Tasks &nbsp;
-      <button (click)="getTasks(selectedTaskType)" class="button is-small">
+      <!-- <button (click)="getTasks(selectedTaskType)" class="button is-small">
         <i class="fa fa-refresh" aria-hidden="true"></i>
-      </button>
+      </button> -->
     </div>
     <a class="card-header-icon">
       <div class="select is-small is-rounded">
@@ -13,9 +13,6 @@
           <option value='Running'>Running</option>
         </select>
       </div>
-      <a id="add_task" class="button is-light is-small" (click)="addTask()"><b>Add North Task</b> &nbsp;
-        <i class="fa fa-plus" aria-hidden="true"></i>
-      </a>
     </a>
   </header>
   <div class="card-content">
