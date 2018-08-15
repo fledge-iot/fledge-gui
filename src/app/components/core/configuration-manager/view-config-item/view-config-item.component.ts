@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ConfigurationService, AlertService } from '../../../../services';
+
 import { NgProgress } from '../../../../../../node_modules/ngx-progressbar';
+import { AlertService, ConfigurationService } from '../../../../services';
+import ConfigTypeValidation from '../configuration-type-validation';
 
 @Component({
   selector: 'app-view-config-item',
@@ -9,6 +11,10 @@ import { NgProgress } from '../../../../../../node_modules/ngx-progressbar';
 })
 export class ViewConfigItemComponent implements OnInit {
   @Input() categoryConfigurationData: any;
+  public selectedValue: string;
+  public isValidJson = true;
+  public selectedCategoryId: string;
+  public isEmptyValue = false;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -16,34 +22,78 @@ export class ViewConfigItemComponent implements OnInit {
 
   ngOnInit() { }
 
-  public restoreConfigFieldValue(config_item_key: string) {
-    const inputField = <HTMLInputElement>document.getElementById(config_item_key.toLowerCase());
-    inputField.value = inputField.textContent;
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
+  public restoreConfigFieldValue(configItemKey, categoryKey, configValue, configType) {
+    let itemKey = categoryKey.toLowerCase() + '-' + configItemKey.toLowerCase();
+    if (itemKey.includes('select')) {
+      itemKey = itemKey.replace('select-', '');
+    }
+    this.isEmptyValue = false;
+    let htmlElement: any;
+    htmlElement = <HTMLInputElement>document.getElementById(itemKey);
+    if (htmlElement == null) {
+      htmlElement = <HTMLSelectElement>document.getElementById('select-' + itemKey);
+      htmlElement.selectedIndex = (this.selectedValue === 'true' ? 1 : 0);
+    } else {
+      htmlElement.value = htmlElement.textContent;
+    }
+
+    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + itemKey);
     cancelButton.classList.add('hidden');
+
+    if (configType.toUpperCase() === 'JSON') {
+      this.isValidJson = ConfigTypeValidation.isValidJsonString(configValue);
+      return;
+    }
   }
 
-  public saveConfigValue(category_name: string, config_item: string, type: string) {
-    const cat_item_id = (category_name.trim() + '-' + config_item.trim()).toLowerCase();
-    const inputField = <HTMLInputElement>document.getElementById(cat_item_id);
-    const value = inputField.value.trim();
-    const id = inputField.id.trim();
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
+  public saveConfigValue(categoryName, configItem, type) {
+    const catItemId = categoryName.toLowerCase() + '-' + configItem.toLowerCase();
+    this.selectedCategoryId = catItemId;
+    let htmlElement: any;
+    htmlElement = <HTMLInputElement>document.getElementById(catItemId);
+
+    let value;
+    if (htmlElement == null) {
+      htmlElement = <HTMLSelectElement>document.getElementById('select-' + catItemId);
+      value = htmlElement.options[htmlElement.selectedIndex].value;
+      this.isEmptyValue = false;
+    } else {
+      value = htmlElement.value.trim();
+      if (value.length === 0) {
+        this.isEmptyValue = true;
+        return;
+      }
+    }
+
+    if (type.toUpperCase() === 'JSON') {
+      this.isValidJson = ConfigTypeValidation.isValidJsonString(value);
+      if (!this.isValidJson) {
+        return;
+      }
+    }
+
+    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + catItemId);
     cancelButton.classList.add('hidden');
 
     /** request started */
     this.ngProgress.start();
-    this.configService.saveConfigItem(category_name, config_item, value, type).
+    this.configService.saveConfigItem(categoryName, configItem, value, type).
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
           if (data['value'] !== undefined) {
-            inputField.textContent = inputField.value = data['value'];
+            if (htmlElement.type === 'select-one') {
+              htmlElement.selectedIndex = (data['value'] === 'true' ? 0 : 1);
+            } else {
+              htmlElement.textContent = htmlElement.value = data['value'];
+            }
             this.alertService.success('Value updated successfully');
           }
         },
         error => {
+          // reset to default value
+          this.restoreConfigFieldValue(configItem, categoryName, value, type);
           /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
@@ -54,8 +104,21 @@ export class ViewConfigItemComponent implements OnInit {
         });
   }
 
-  public onTextChange(config_item_key: string) {
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
+  public getConfigAttributeType(key) {
+    return ConfigTypeValidation.getValueType(key);
+  }
+
+  public onTextChange(configItemKey, value) {
+    if (configItemKey.includes('select')) {
+      configItemKey = configItemKey.replace('select-', '');
+      this.selectedValue = value;
+    }
+    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
     cancelButton.classList.remove('hidden');
+    console.log('value', value);
+    if (value.trim().length !== 0) {
+      this.isEmptyValue = false;
+      return;
+    }
   }
 }

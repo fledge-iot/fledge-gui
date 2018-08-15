@@ -5,7 +5,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgProgressModule } from 'ngx-progressbar';
 import { SharedModule } from '../../../shared.module';
 
-import { InputMaskDirective } from '../../../directives/input-mask.directive';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
@@ -14,6 +13,7 @@ import { ScheduledProcessComponent } from './scheduled-process/scheduled-process
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
 import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.component';
 import { AuthCheckGuard } from '../../../guards';
+import { DirectivesModule } from '../../../directives/directives.module';
 
 const routes: Routes = [
   {
@@ -34,7 +34,6 @@ const routes: Routes = [
     ListTasksComponent,
     UpdateScheduleComponent,
     ListSchedulesComponent,
-    InputMaskDirective,
     AddTaskWizardComponent
   ],
   imports: [
@@ -45,9 +44,10 @@ const routes: Routes = [
     NgProgressModule,
     PipesModule,
     AlertDialogModule,
+    DirectivesModule,
     SharedModule
   ],
   providers: [],
-  exports: [InputMaskDirective]
+  exports: []
 })
 export class SchedulerModule { }
