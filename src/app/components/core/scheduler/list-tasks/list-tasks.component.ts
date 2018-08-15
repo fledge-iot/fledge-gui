@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { SchedulesService, AlertService } from "../../../../services/index";
+import { SchedulesService, AlertService } from "../../../../services";
 import { NgProgress } from "ngx-progressbar";
 
 @Component({

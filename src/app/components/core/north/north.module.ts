@@ -7,8 +7,10 @@ import { NgProgressModule } from 'ngx-progressbar';
 import { AuthCheckGuard } from '../../../guards';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
-import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.component';
 import { NorthComponent } from './north.component';
+import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.component';
+import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
+
 import { PipesModule } from '../../../pipes/pipes.module';
 
 const routes: Routes = [
@@ -28,7 +30,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     NorthComponent,
-    AddTaskWizardComponent
+    AddTaskWizardComponent,
+    NorthTaskModalComponent
   ],
   imports: [
     FormsModule,

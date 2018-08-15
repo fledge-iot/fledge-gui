@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
 
-import { Router } from '../../../../../../node_modules/@angular/router';
+import { Router } from '@angular/router';
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
 
 @Component({
