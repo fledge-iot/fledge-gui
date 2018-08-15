@@ -37,6 +37,10 @@
       <div *ngIf="service != undefined" class="field">
         <div class="control">
           <b>Service Info: </b>{{service.protocol}}://{{service.address}}:{{service.management_port}}
+          <div *ngIf="isSaved" id="message" class="control notification is-success is-pulled-right">
+            <button id="delete" class="delete" (click)="hideNotification()"></button>
+            Record Saved Successfully
+          </div>
         </div>
       </div>
     </section>

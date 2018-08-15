@@ -4,7 +4,7 @@ import { NgProgress } from 'ngx-progressbar';
 
 import { ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
-import { SouthServiceModalComponent } from './south-service-modal/south-service-modal/south-service-modal.component';
+import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 
 @Component({
   selector: 'app-south',
