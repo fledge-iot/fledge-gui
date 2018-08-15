@@ -42,23 +42,59 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public getCategory(): void {
     console.log(this.task);
     const c = this.task["name"];
+    
+    // Hard coded block starts
+    let data = {
+      URL: {
+        default: "https://pi-server:5460/ingress/messages",
+        description: "Destination URL of PI Connector",
+        type: "string",
+        value: "https://pi-server:5460/ingress/messages"
+      },
+      producerToken: {
+        default: "ue5ced49X",
+        value: "ue5ced49X ...",
+        type: "string",
+        description: "Producer token"
+      }
+    };
+
+    this.category = {
+      value: [data],
+      key: c
+    };
+
+    let cc = this.category;
+    for (const key in cc) {
+      if (cc.hasOwnProperty(key)) {
+        this.configItems.push({
+          [key]: cc[key].value,
+          type: cc[key].type
+        });
+      }
+    }
+    // Hard coded block ends
+
     this.configService.getCategory(c).subscribe(
       (data: any) => {
-        this.category = {
-          value: [data],
-          key: c
-        };
+        console.log(data);
+        // Fetch original
+        
+        // this.category = {
+        //   value: [data],
+        //   key: c
+        // };
 
-        console.log("category", this.category);
+        // console.log("category", this.category);
 
-        for (const key in data) {
-          if (data.hasOwnProperty(key)) {
-            this.configItems.push({
-              [key]: data[key].value,
-              type: data[key].type
-            });
-          }
-        }
+        // for (const key in data) {
+        //   if (data.hasOwnProperty(key)) {
+        //     this.configItems.push({
+        //       [key]: data[key].value,
+        //       type: data[key].type
+        //     });
+        //   }
+        // }
         // console.log(this.configItems);
       },
       error => {
