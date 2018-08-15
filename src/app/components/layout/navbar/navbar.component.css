@@ -1,41 +1,47 @@
+.navbar-brand {
+          align-items: center;
+}
+
 .navbar-item {
-    display: flex;
+          display: flex;
 }
 
 .navbar,
 .navbar-menu,
 .navbar-start,
 .navbar-end {
-    align-items: stretch;
-    display: flex;
-    padding: 0;
+          align-items: center;
+          display: flex;
+          padding: 0;
 }
 
 @media screen and (max-width: 1023px) {
-.navbar-menu.is-active {
-    display: flex !important;
-    padding: 0;
-}
+          .navbar-menu.is-active {
+                    display: flex !important;
+                    padding: 0;
+          }
 }
 
-.navbar-menu{
-    flex-grow: 1;
-    flex-shrink: 0;
-    overflow: visible !important;
+.navbar-menu {
+          flex-grow: 1;
+          flex-shrink: 0;
+          overflow: visible !important;
 }
-.navbar-start{
-    justify-content: flex-start;
-    margin-right: auto;
+
+.navbar-start {
+          justify-content: flex-start;
+          margin-right: auto;
 }
-.navbar-end{
-    justify-content: flex-end;
-    margin-left: auto;
+
+.navbar-end {
+          justify-content: flex-end;
+          margin-left: auto;
 }
 
 .fa-power-off {
-  color: rgb(178, 34, 34);
+          color: rgb(178, 34, 34);
 }
 
 #restart i {
-    color: rgb(178, 34, 34);
+          color: rgb(178, 34, 34);
 }
