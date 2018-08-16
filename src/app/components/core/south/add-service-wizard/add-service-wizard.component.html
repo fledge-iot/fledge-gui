@@ -5,23 +5,17 @@
   <div class="step-item is-active is-success" id="1">
     <div class="step-marker">1</div>
     <div class="step-details">
-      <p>Service Name &amp; Direction</p>
+      <p>Plugin &amp; Service Name</p>
     </div>
   </div>
   <div class="step-item" id="2">
     <div class="step-marker">2</div>
     <div class="step-details">
-      <p>Choose Plugin</p>
+      <p>Review Configuration</p>
     </div>
   </div>
   <div class="step-item" id="3">
     <div class="step-marker">3</div>
-    <div class="step-details">
-      <p>Review Configuration</p>
-    </div>
-  </div>
-  <div class="step-item" id="4">
-    <div class="step-marker">4</div>
     <div class="step-details">
       <p>Start Service</p>
     </div>
@@ -29,6 +23,24 @@
   <div class="steps-content">
     <form [formGroup]="serviceForm" validate>
       <div class="box step-content  is-active" id="c-1">
+        <div class="field is-horizontal form-group">
+          <div class="field-label is-normal">
+            <label class="label">South Plugin</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <div class="select is-multiple">
+                  <select multiple name="type" formControlName="plugin" (change)="isSinglePlugin = true" required>
+                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
+                  </select>
+                </div>
+                <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
+                <small *ngIf="!isSinglePlugin" class="help is-danger level-left">Please select a single plugin</small>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="field is-horizontal form-group">
           <div class="field-label is-normal">
             <label class="label">Name</label>
@@ -42,63 +54,26 @@
             </div>
           </div>
         </div>
-        <div class="field is-horizontal form-group">
-          <div class="field-label is-normal">
-            <label class="label">Direction</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select name="type" formControlName="type">
-                    <option value='north'>North</option>
-                    <option value='south'>South</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-      <div class="box step-content has-text-centered" id="c-2">
-        <div class="field is-horizontal form-group">
-          <div class="field-label is-normal">
-            <label class="label">Plugin</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select name="type" formControlName="plugin" (change)="validatePluginValue($event)" required>
-                    <option value='select' disabled>Select</option>
-                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
-                  </select>
-                </div>
-                <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="box step-content" id="c-3">
+      <div class="box step-content" id="c-2">
         <div *ngIf="isServiceAdded">
           <app-view-config-item [categoryConfigurationData]="configurationData"></app-view-config-item>
         </div>
         <p *ngIf="!isServiceAdded" [ngClass]="{'has-text-centered': '!isServiceAdded'}">
-            <span class="icon has-text-danger">
-                <i class="fa fa-ban"></i>
-              </span> {{addServiceMsg}}
+          <span class="icon has-text-danger">
+            <i class="fa fa-ban"></i>
+          </span> {{addServiceMsg}}
         </p>
       </div>
 
-      <div class="box step-content has-text-centered" id="c-4">
+      <div class="box step-content has-text-centered" id="c-3">
         <p *ngIf="isServiceEnabled" [ngClass]="{'has-text-centered': '!isServiceEnabled'}">
           <span class="icon has-text-success">
             <i class="fa fa-check-square"></i>
           </span> {{ enableServiceMsg }}
         </p>
 
-        <p *ngIf="!isServiceEnabled && enableServiceMsg != ''" >
+        <p *ngIf="!isServiceEnabled && enableServiceMsg != ''">
           <span class="icon has-text-danger">
             <i class="fa fa-ban"></i>
           </span> {{ enableServiceMsg }}
@@ -108,10 +83,10 @@
   </div>
   <div class="steps-actions">
     <div class="steps-action">
-      <button (click)="movePrevious()" data-nav="previous" class="button is-text" id="previous" disabled>Previous</button>
+      <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
     </div>
     <div class="steps-action">
-      <button (click)="moveNext()" data-nav="next" class="button is-text" id="next">Next</button>
+      <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
     </div>
   </div>
 </div>

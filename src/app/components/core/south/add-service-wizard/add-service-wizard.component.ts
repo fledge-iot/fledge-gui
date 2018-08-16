@@ -17,14 +17,17 @@ export class AddServiceWizardComponent implements OnInit {
   public serviceId;
   public isServiceEnabled = false;
   public isServiceAdded = false;
-  public isValidPlugin = false;
+  public isValidPlugin = true;
+  public isSinglePlugin = true;
   public isValidName = true;
   public addServiceMsg = '';
   public enableServiceMsg = '';
+  public selectedPlugins = [];
+
+  public serviceType = 'South';
 
   serviceForm = new FormGroup({
     name: new FormControl(),
-    type: new FormControl(),
     plugin: new FormControl()
   });
 
@@ -41,16 +44,18 @@ export class AddServiceWizardComponent implements OnInit {
   ngOnInit() {
     this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
-      type: ['', Validators.required],
       plugin: ['', Validators.required]
     });
-    this.serviceForm.get('type').setValue('south');
-    this.serviceForm.get('plugin').setValue('select');
+    this.getInstalledSouthPlugins();
   }
 
   movePrevious() {
     const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = last.getAttribute('id');
+    if (+id === 1) {
+      this.router.navigate(['/south']);
+      return;
+    }
     last.classList.remove('is-active');
     const sId = +id - 1;
     const previous = <HTMLElement>document.getElementById('' + sId);
@@ -70,23 +75,13 @@ export class AddServiceWizardComponent implements OnInit {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
 
     switch (+id) {
-      case 1:
-        this.serviceForm.get('name').setValue('');
-        this.serviceForm.get('type').setValue('south');
-        nxtButton.textContent = 'Next';
-        nxtButton.disabled = false;
-        break;
       case 2:
-        this.serviceForm.get('plugin').setValue('select');
         nxtButton.textContent = 'Next';
-        previousButton.disabled = true;
+        previousButton.textContent = 'Back';
+        nxtButton.disabled = false;
         break;
       case 3:
-        nxtButton.textContent = 'Add Service';
-        nxtButton.disabled = false;
-        break;
-      case 4:
-        nxtButton.textContent = 'Enable & Start Service';
+        nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
       default:
@@ -102,41 +97,35 @@ export class AddServiceWizardComponent implements OnInit {
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
-
     switch (+id) {
       case 1:
-        if (this.serviceForm.controls.name.value.trim().length === 0) {
-          this.isValidName = false;
-          return;
-        }
-        nxtButton.textContent = 'Add Service';
-        previousButton.disabled = false;
-        if (formValues['name'] !== '' && formValues['type'] !== '') {
-          this.servicesHealthService.getInstalledPlugins(formValues['type']).subscribe(
-            (data: any) => {
-              this.plugins = data.plugins;
-            },
-            (error) => {
-              if (error.status === 0) {
-                console.log('service down ', error);
-              } else {
-                this.alertService.error(error.statusText);
-              }
-            });
-        }
-        break;
-      case 2:
-        if (this.serviceForm.controls.plugin.value === 'select') {
+        if (formValues['plugin'] === '') {
           this.isValidPlugin = false;
           return;
         }
-        nxtButton.textContent = 'Enable & Start Service';
-        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['plugin'] !== 'select') {
+        if (formValues['plugin'].length > 1) {
+          this.isSinglePlugin = false;
+          return;
+        }
+
+        if (formValues['name'] === '') {
+          this.isValidName = false;
+          return;
+        }
+
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
+        if (formValues['name'] !== '' && formValues['plugin'].length > 0) {
+          const payload = {
+            name: formValues['name'],
+            type: this.serviceType,
+            plugin: formValues['plugin'][0]
+          };
           this.isServiceAdded = true;
-          this.addService(formValues, nxtButton);
+          this.addService(payload, nxtButton);
         }
         break;
-      case 3:
+      case 2:
         nxtButton.textContent = 'Done';
         if (this.serviceId.length > 0) {
           /** request started */
@@ -165,7 +154,7 @@ export class AddServiceWizardComponent implements OnInit {
               });
         }
         break;
-      case 4:
+      case 3:
         this.router.navigate(['/south']);
         break;
       default:
@@ -192,10 +181,10 @@ export class AddServiceWizardComponent implements OnInit {
     }
   }
 
-  addService(formValues, nxtButton) {
+  addService(payload, nxtButton) {
     /** request started */
     this.ngProgress.start();
-    this.servicesHealthService.addService(formValues)
+    this.servicesHealthService.addService(payload)
       .subscribe(
         (data) => {
           /** request completed */
@@ -245,15 +234,29 @@ export class AddServiceWizardComponent implements OnInit {
         });
   }
 
-  validatePluginValue(event) {
-    if (event.target.value !== 'select') {
-      this.isValidPlugin = true;
-    }
-  }
-
   validateServiceName(event) {
     if (event.target.value.trim().length > 0) {
       this.isValidName = true;
     }
+  }
+
+  public getInstalledSouthPlugins() {
+    /** request started */
+    this.ngProgress.start();
+    this.servicesHealthService.getInstalledPlugins('south').subscribe(
+      (data: any) => {
+        /** request completed */
+        this.ngProgress.done();
+        this.plugins = data.plugins;
+      },
+      (error) => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 }
