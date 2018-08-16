@@ -5,3 +5,7 @@
 .is-hidden {
   display: none;
 }
+
+.align {
+  vertical-align: middle;
+}
