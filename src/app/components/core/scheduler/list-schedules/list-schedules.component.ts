@@ -115,7 +115,7 @@ export class ListSchedulesComponent implements OnInit {
             // Time
             element.time = Utils.secondsToDhms(element.time).time;
           });
-          this.scheduleData = sortBy(this.scheduleData, function(obj, callback) {
+          this.scheduleData = sortBy(this.scheduleData, function(obj) {
             return !obj.enabled + obj.name.toLowerCase();
           });
         },

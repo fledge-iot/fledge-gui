@@ -44,32 +44,16 @@
             <div class="dropdown-item">
               <table>
                 <tr>
-                  <td class="has-text-left">Received</td>
-                  <td>
-                    :
-                    <b>{{pingData['dataRead'] | number}}</b>
-                  </td>
+                  <td class="has-text-left">Received: </td>
+                  <td><b>{{pingData['dataRead'] | number}}</b></td>
                 </tr>
                 <tr>
-                  <td class="has-text-left">Sent</td>
-                  <td>
-                    :
-                    <b>{{pingData['dataSent'] | number}}</b>
-                  </td>
+                  <td class="has-text-left">Sent: </td>
+                  <td><b>{{pingData['dataSent'] | number}}</b></td>
                 </tr>
                 <tr>
-                  <td class="has-text-left">Purged</td>
-                  <td>
-                    :
-                    <b>{{pingData['dataPurged'] | number}}</b>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="has-text-left">Uptime</td>
-                  <td>
-                    :
-                    <b>{{uptime}}</b>
-                  </td>
+                  <td class="has-text-left">Uptime: </td>
+                  <td><b>{{uptime}}</b></td>
                 </tr>
               </table>
             </div>
@@ -97,32 +81,16 @@
               <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
               <table>
                 <tr>
-                  <td class="has-text-left">Received</td>
-                  <td>
-                    :
-                    <b>{{pingData['dataRead'] | number}}</b>
-                  </td>
+                  <td class="has-text-left">Received: </td>
+                  <td><b>{{pingData['dataRead'] | number}}</b></td>
                 </tr>
                 <tr>
-                  <td class="has-text-left">Sent</td>
-                  <td>
-                    :
-                    <b>{{pingData['dataSent'] | number}}</b>
-                  </td>
+                  <td class="has-text-left">Sent: </td>
+                  <td><b>{{pingData['dataSent'] | number}}</b></td>
                 </tr>
                 <tr>
-                  <td class="has-text-left">Purged</td>
-                  <td>
-                    :
-                    <b>{{pingData['dataPurged'] | number}}</b>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="has-text-left">Uptime</td>
-                  <td>
-                    :
-                    <b>{{uptime}}</b>
-                  </td>
+                  <td class="has-text-left">Uptime: </td>
+                  <td><b>{{uptime}}</b></td>
                 </tr>
               </table>
             </div>
@@ -150,10 +118,6 @@
           <div *ngIf='pingInfo.isAlive' class="control">
             Sent:
             <b>{{pingData['dataSent'] | number}}</b>
-          </div>
-          <div *ngIf='pingInfo.isAlive' class="control">
-            Purged:
-            <b>{{pingData['dataPurged'] | number}}</b>
           </div>
           &nbsp;&nbsp;&nbsp;&nbsp;
           <div *ngIf='pingInfo.isAlive' class="control">
