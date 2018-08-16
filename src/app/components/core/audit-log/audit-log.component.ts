@@ -104,7 +104,6 @@ export class AuditLogComponent implements OnInit {
       subscribe(
         (data) => {
           this.logSourceList = data['logCode'];
-          console.log('Log code', this.logSourceList);
         },
         error => {
           if (error.status === 0) {
@@ -120,7 +119,6 @@ export class AuditLogComponent implements OnInit {
       subscribe(
         (data) => {
           this.logSeverityList = data['logSeverity'];
-          console.log('Log severity ', this.logSeverityList);
         },
         error => {
           if (error.status === 0) {
@@ -208,7 +206,6 @@ export class AuditLogComponent implements OnInit {
           this.ngProgress.done();
           this.audit = data['audit'];
           this.totalCount = data['totalCount'];
-          console.log('Audit Logs', this.audit, 'Total count', this.totalCount);
           if (this.offset !== 0) {
             this.recordCount = this.totalCount - this.offset;
           } else {

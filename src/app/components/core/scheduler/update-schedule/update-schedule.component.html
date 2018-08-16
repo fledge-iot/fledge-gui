@@ -30,10 +30,9 @@
           <div class="column is-3">
             <div class="field">
               <label class="label">Enabled</label>
-              <input id={{schedule_name}} formControlName="enabled" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
-                checked="checked">
-              <input id={{schedule_name}} formControlName="enabled" type="checkbox" name="switchRoundedOutlinedDefault" class="switch is-rounded is-outlined" checked="checked">
-              <label for={{schedule_name}}></label>
+              <div class="control">
+                <input type="checkbox" checked formControlName="enabled">
+              </div>
             </div>
           </div>
         </div>
@@ -55,7 +54,7 @@
               <label class="label">Type</label>
               <div class="control">
                 <div class="select is-fullwidth">
-                  <select [(ngModel)]="selectedTypeValue" (change)="selected_schedule_type = setScheduleTypeKey(selectedTypeValue)" formControlName="type">
+                  <select [(ngModel)]="selectedTypeValue" (change)="selectedScheduleType = setScheduleTypeKey(selectedTypeValue)" formControlName="type">
                     <option [selected]="type.name == type" *ngFor="let type of scheduleType">{{type.name}}</option>
                   </select>
                 </div>
@@ -81,7 +80,7 @@
         </div>
         <div class="columns is-mobile">
           <div class="column">
-            <div *ngIf="selected_schedule_type == 2" class="field">
+            <div *ngIf="selectedScheduleType == 2" class="field">
               <label class="label">Day &nbsp;
                 <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (1-7 Mon-Sun)">
                   <i class="fa fa-info-circle"></i>
@@ -89,7 +88,7 @@
               </label>
               <div class="control">
                 <div class="select is-fullwidth">
-                  <select [(ngModel)]="selectedDay" (change)="selected_day_index = getSelectedDayIndex(selectedDay)" formControlName="day">
+                  <select [(ngModel)]="selectedDay" (change)="selectedDayIndex = getSelectedDayIndex(selectedDay)" formControlName="day">
                     <option *ngIf="None == day">None</option>
                     <option [selected]="d == day" *ngFor="let d of days">{{d}}</option>
                   </select>
@@ -98,7 +97,7 @@
             </div>
           </div>
           <div class="column">
-            <div *ngIf="selected_schedule_type == 2" class="field">
+            <div *ngIf="selectedScheduleType == 2" class="field">
               <label class="label">Time</label>
               <p class="control is-fullwidth">
                 <input class="input" type='text' placeholder="hh:mm:ss" mask="00:00:00" formControlName="time">
@@ -110,8 +109,8 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" type="submit" class="button is-success" (click)="f.form.valid && updateSchedule()">Save</button>
-      <button type="button" id="cancel" class="button is-danger" (click)="toggleModal(false)">Cancel</button>
+      <button id="save" type="submit" class="button is-link" (click)="f.form.valid && updateSchedule()">Save</button>
+      <button type="button" id="cancel" class="button" (click)="toggleModal(false)">Cancel</button>
     </footer>
   </div>
 </div>

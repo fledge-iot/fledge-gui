@@ -27,7 +27,7 @@
         <tbody>
           <tr *ngFor="let backup of backupData">
             <td style="vertical-align: middle;">
-              <span class="tag is-rounded"> {{ backup.date }} </span>
+              <small>{{ backup.date | date:"yyyy-mm-dd hh:mm:ss"}}</small>
             </td>
             <td style="vertical-align: middle;">{{ backup.status }}</td>
             <td>

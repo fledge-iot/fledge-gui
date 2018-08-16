@@ -49,7 +49,6 @@ export class ListTasksComponent implements OnInit {
         /** request completed */
         this.ngProgress.done();
         this.tasksData = data['tasks'];
-        console.log('Latest tasks ', data['tasks']);
       },
       error => {
         /** request completed */

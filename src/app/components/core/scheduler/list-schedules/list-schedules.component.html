@@ -20,11 +20,9 @@
       </thead>
       <tr *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}" id={{schedule.name}}>
         <td>
-          <small> {{schedule.name}} </small>
+          {{schedule.name}} 
         </td>
-        <td>
-          <span class="tag is-rounded"> {{schedule.type}}</span>
-        </td>
+        <td>{{schedule.type}}</td>
         <td>
           <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
         </td>
