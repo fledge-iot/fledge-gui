@@ -16,7 +16,9 @@
                   <div class="field">
                     <div class="control">
                       <p class="subtitle is-6">
-                        {{configItem.value.description}}
+                        <span class="tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
+                          {{configItem.key}}
+                        </span>
                       </p>
                       <p hidden="true"> {{configItem.value.type}} </p>
                       <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
@@ -32,7 +34,7 @@
         </form>
         <footer class="modal-card-foot">
           <div class="control">
-            <button id="save" type="submit" class="button is-small is-success" form="ngForm">Save</button>
+            <button id="save" type="submit" class="button is-small is-link" form="ngForm">Save</button>
           </div>
           &nbsp;
           <div class="control">
@@ -77,21 +79,21 @@
               </div>
             </div>
             <div class="columns">
-                <div class="column">
-                    <div class="field">
-                      <label class="label subtitle is-6">Interval</label>
-                      <div class="control">
-                        <input class="input is-small" type="text" placeholder="00:00:00" value="00:00:30">
-                      </div>
-                    </div>
+              <div class="column">
+                <div class="field">
+                  <label class="label subtitle is-6">Interval</label>
+                  <div class="control">
+                    <input class="input is-small" type="text" placeholder="00:00:00" value="00:00:30">
                   </div>
+                </div>
+              </div>
             </div>
 
           </div>
         </div>
 
         <footer class="modal-card-foot">
-          <button class="button is-small is-success">Save</button>
+          <button class="button is-small is-link">Save</button>
         </footer>
         <!--Play-->
       </div>

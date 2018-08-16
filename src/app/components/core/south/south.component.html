@@ -30,10 +30,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let svc of services">
-            <td>
+            <td class="align">
               <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
             </td>
-            <td>
+            <td class="align">
               <div class="tags has-addons">
                 <span *ngIf="svc.status == 'running'" class="tag is-success">
                   <i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; {{svc.status}}
@@ -49,10 +49,10 @@
                 </span>
               </div>
             </td>
-            <td>
+            <td class="align">
               sinusoid
             </td>
-            <td>
+            <td class="align">
               1,000
             </td>
           </tr>

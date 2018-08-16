@@ -1,12 +1,12 @@
-import { ConfigurationService, AlertService } from "../../../../services";
-import { Component, OnInit, Input, OnChanges } from "@angular/core";
-import { NgForm } from "@angular/forms";
-import * as _ from "lodash";
+import { ConfigurationService, AlertService } from '../../../../services';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import * as _ from 'lodash';
 
 @Component({
-  selector: "app-north-task-modal",
-  templateUrl: "./north-task-modal.component.html",
-  styleUrls: ["./north-task-modal.component.css"]
+  selector: 'app-north-task-modal',
+  templateUrl: './north-task-modal.component.html',
+  styleUrls: ['./north-task-modal.component.css']
 })
 export class NorthTaskModalComponent implements OnInit, OnChanges {
   category: any;
@@ -31,40 +31,40 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
   }
   public toggleModal(isOpen: Boolean) {
-    const modal = <HTMLDivElement>document.getElementById("north-task-modal");
+    const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
-      modal.classList.add("is-active");
+      modal.classList.add('is-active');
       return;
     }
-    modal.classList.remove("is-active");
+    modal.classList.remove('is-active');
   }
 
   public getCategory(): void {
     console.log(this.task);
-    const c = this.task["name"];
-    
+    const c = this.task['name'];
+
     // Hard coded block starts
-    let data = {
-      URL: {
-        default: "https://pi-server:5460/ingress/messages",
-        description: "Destination URL of PI Connector",
-        type: "string",
-        value: "https://pi-server:5460/ingress/messages"
+    const d = {
+      'URL': {
+        'default': 'https://pi-server:5460/ingress/messages',
+        'description': 'Destination URL of PI Connector',
+        'type': 'string',
+        'value': 'https://pi-server:5460/ingress/messages'
       },
-      producerToken: {
-        default: "ue5ced49X",
-        value: "ue5ced49X ...",
-        type: "string",
-        description: "Producer token"
+      'producerToken': {
+        'default': 'ue5ced49X',
+        'value': 'ue5ced49X ...',
+        'type': 'string',
+        'description': 'Producer token'
       }
     };
 
     this.category = {
-      value: [data],
+      value: [d],
       key: c
     };
 
-    let cc = this.category;
+    const cc = this.category;
     for (const key in cc) {
       if (cc.hasOwnProperty(key)) {
         this.configItems.push({
@@ -79,13 +79,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       (data: any) => {
         console.log(data);
         // Fetch original
-        
+
         // this.category = {
         //   value: [data],
         //   key: c
         // };
 
-        // console.log("category", this.category);
+        // console.log('category', this.category);
 
         // for (const key in data) {
         //   if (data.hasOwnProperty(key)) {
@@ -99,7 +99,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       },
       error => {
         if (error.status === 0) {
-          console.log("service down ", error);
+          console.log('service down ', error);
         } else {
           this.alertService.error(error.statusText, true);
         }
@@ -124,7 +124,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           for (const k in changedItem) {
             if (key === k && item[key] !== changedItem[k]) {
               this.saveConfigValue(
-                this.task["name"],
+                this.task['name'],
                 key,
                 changedItem[k],
                 item.type
@@ -161,14 +161,14 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       .saveConfigItem(categoryName, configItem, value, type)
       .subscribe(
         data => {
-          if (data["value"] !== undefined) {
-            this.alertService.success("Value updated successfully");
+          if (data['value'] !== undefined) {
+            this.alertService.success('Value updated successfully');
           }
           this.toggleModal(false);
         },
         error => {
           if (error.status === 0) {
-            console.log("service down ", error);
+            console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
           }

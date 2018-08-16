@@ -1,12 +1,12 @@
-import { ConfigurationService, AlertService } from "../../../../../services";
-import { Component, OnInit, Input, OnChanges } from "@angular/core";
-import { NgForm } from "@angular/forms";
-import * as _ from "lodash";
+import { ConfigurationService, AlertService } from '../../../../services';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import * as _ from 'lodash';
 
 @Component({
-  selector: "app-south-service-modal",
-  templateUrl: "./south-service-modal.component.html",
-  styleUrls: ["./south-service-modal.component.css"]
+  selector: 'app-south-service-modal',
+  templateUrl: './south-service-modal.component.html',
+  styleUrls: ['./south-service-modal.component.css']
 })
 export class SouthServiceModalComponent implements OnInit, OnChanges {
   category: any;
@@ -18,10 +18,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @Input()
   service: { service: any };
 
-  constructor(
-    private configService: ConfigurationService,
-    private alertService: AlertService
-  ) {}
+  isSaved = false;
+
+  constructor(private configService: ConfigurationService, private alertService: AlertService) { }
 
   ngOnInit() {}
 
@@ -31,27 +30,23 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
   }
   public toggleModal(isOpen: Boolean) {
-    const schedule_name = <HTMLDivElement>(
-      document.getElementById("south-service-modal")
-    );
+    this.isSaved = false;
+    const modal = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
-      schedule_name.classList.add("is-active");
+      modal.classList.add('is-active');
       return;
     }
-    schedule_name.classList.remove("is-active");
+    modal.classList.remove('is-active');
   }
 
   public getCategory(): void {
-    console.log(this.service);
-    // this.configurationData = [];
-    this.configService.getCategory(this.service["name"]).subscribe(
-      (data: any) => {
-        this.category = {
-          value: [data],
-          key: this.service["name"]
-        };
-
-        console.log("category", this.category);
+    this.configService.getCategory(this.service['name']).
+      subscribe(
+        (data: any) => {
+          this.category = {
+            value: [data],
+            key: this.service['name']
+          };
 
           for (const key in data) {
             if (data.hasOwnProperty(key)) {
@@ -61,7 +56,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
               });
             }
           }
-          // console.log(this.configItems);
         },
         error => {
           if (error.status === 0) {
@@ -84,12 +78,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       }
     }
     const diff = this.difference(updatedRecord, this.configItems);
+
     this.configItems.forEach(item => {
       for (const key in item) {
         diff.forEach(changedItem => {
           for (const k in changedItem) {
             if (key === k && item[key] !== changedItem[k]) {
-              this.saveConfigValue(this.service['name'], key, changedItem[k], item.type);
+              item[key] = changedItem[k],
+                this.saveConfigValue(this.service['name'], key, changedItem[k], item.type);
             }
           }
         });
@@ -112,14 +108,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
-    console.log('item ', categoryName, configItem, value, type);
     this.configService.saveConfigItem(categoryName, configItem, value, type).
       subscribe(
         (data) => {
           if (data['value'] !== undefined) {
-            this.alertService.success('Value updated successfully');
+            this.isSaved = true;
           }
-          this.toggleModal(false);
         },
         error => {
           if (error.status === 0) {
@@ -129,4 +123,18 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           }
         });
   }
+
+  public showNotification() {
+    const notificationMsg = <HTMLDivElement>document.getElementById('message');
+    notificationMsg.classList.remove('is-hidden');
+    return false;
+  }
+
+  public hideNotification() {
+    this.isSaved = false;
+    const deleteBtn = <HTMLDivElement>document.getElementById('delete');
+    deleteBtn.parentElement.classList.add('is-hidden');
+    return false;
+  }
+
 }

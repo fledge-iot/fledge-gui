@@ -1,0 +1,44 @@
+<div id="south-service-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
+        <div class="columns is-multiline" *ngFor="let categoryData of category?.value">
+          <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
+            <span class="tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
+              {{configItem.key}}
+            </span>
+            <p hidden="true"> {{configItem.value.type}} </p>
+            <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
+              name="{{configItem.key}}" [(ngModel)]="configItem.value.value" />
+            <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" name='configItem.key'
+              [(ngModel)]="configItem.value.value">{{configItem?.value?.value.trim()}}</textarea>
+          </div>
+        </div>
+      </form>
+      <br/>
+      <div *ngIf="service != undefined" class="field">
+        <div class="control">
+          Service Info: {{service.protocol}}://{{service.address}}:{{service.management_port}}
+          <div *ngIf="isSaved" id="message" class="control notification is-success is-pulled-right">
+            <button id="delete" class="delete" (click)="hideNotification()"></button>
+            Record Saved Successfully
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <div class="control">
+        <button id="save" type="submit" class="button is-small is-info" form="ngForm">Save</button>
+      </div>
+      &nbsp;
+      <div class="control">
+        <button class="button is-small is-text hidden" (click)="toggleModal(false)">Cancel</button>
+      </div>
+    </footer>
+  </div>
+</div>

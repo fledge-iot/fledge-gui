@@ -10,7 +10,7 @@ import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { SouthComponent } from './south.component';
-import { SouthServiceModalComponent } from './south-service-modal/south-service-modal/south-service-modal.component';
+import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { PipesModule } from '../../../pipes/pipes.module';
 
 const routes: Routes = [

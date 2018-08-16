@@ -24,7 +24,6 @@
       Configuration
     </a>
   </li>
-
   <li>
     <a id="backup-restore" [ngClass]="{'is-active': step==='/backup-restore'}" (click)="onToggle('/backup-restore')">
       Backup &amp; Restore
@@ -59,8 +58,6 @@
       Services
     </a>
   </li> -->
-
-
 
   <li>
     <a id="user-management" *ngIf="isAdmin" [ngClass]="{'is-active': step==='/user-management'}" (click)="onToggle('/user-management')">
