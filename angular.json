@@ -25,8 +25,7 @@
               "src/assets/css/font-awesome.min.css",
               "src/assets/css/bulma-tooltip.min.css",
               "src/assets/css/bulma-steps.min.css",
-              "src/styles.css",
-              "node_modules/bulma-switch/dist/css/bulma-switch.min.css"
+              "src/styles.css"
             ],
             "scripts": []
           },
