@@ -5,7 +5,7 @@ import { UpdateScheduleComponent } from '../update-schedule/update-schedule.comp
 import Utils from '../../../../utils';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import { sortBy, reverse } from 'lodash';
+import { sortBy } from 'lodash';
 
 enum weekDays {
   Mon = 1,
@@ -115,9 +115,9 @@ export class ListSchedulesComponent implements OnInit {
             // Time
             element.time = Utils.secondsToDhms(element.time).time;
           });
-          // sort by enabled and then (TODO) by name
-          // this.scheduleData = sortBy(this.scheduleData, ['enabled']).reverse()
-          this.scheduleData = sortBy(this.scheduleData, ['enabled', 'name']).reverse();
+          this.scheduleData = sortBy(this.scheduleData, function(obj, callback) {
+            return !obj.enabled + obj.name.toLowerCase();
+          });
         },
         error => {
           /** request completed */

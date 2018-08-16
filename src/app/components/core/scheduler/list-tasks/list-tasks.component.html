@@ -26,6 +26,7 @@
           <th>State</th>
           <th>Start Time</th>
           <th>End Time</th>
+          <th></th>
         </tr>
       </thead>
       <tr *ngFor="let task of tasksData">
@@ -41,8 +42,9 @@
         <td>
           <span *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</span>
         </td>
-
-        <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-text cancel-btn" (click)="cancelRunninTask(task.id)">Cancel</button>
+        <td>
+        <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button" (click)="cancelRunninTask(task.id)">Cancel</button>
+      </td>
       </tr>
     </table>
   </div>
