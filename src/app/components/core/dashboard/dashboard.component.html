@@ -1,24 +1,18 @@
 <div class="columns is-mobile">
   <div class="column">
     <div class="field-body is-pulled-right">
-      <div class="field has-addons">
-        <p class="control">
-          <a class="button is-static">
-            Last
-          </a>
-        </p>
-        <p class="control is-expanded" style="width:10%">
-          <input class="input" type="number" placeholder="100"/>
-        </p>
-          <div class="select">
-            <select>
-              <option>Minutes</option>
-              <option>Hours</option>
-              <option>Days</option>
-            </select>
-          </div>
+      <div class="select is-rounded">
+        <select #selectedTime (change)="getStatisticsHistory(selectedTime.value)">
+          <option value="1">1 minute</option>
+          <option value="10">10 minutes</option>
+          <option value="30">30 minutes</option>
+          <option value="60">1 hour</option>
+          <option value="480" selected>8 hours</option>
+          <option value="1440">1 day</option>
+          <option value="10080">1 week</option>
+        </select>
       </div>
-      <div id="graph-key-dropdown" class="dropdown">
+      <div id="graph-key-dropdown" class="dropdown is-right">
         <div class="dropdown-trigger">
           <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
             <span>Select Graphs</span>
@@ -54,9 +48,6 @@
           <h6>Total since startup:
             <b> {{ statistic.value }} </b>
           </h6>
-          <small>
-            <i class="has-text-weight-light has-text-grey">* latest {{statistic.limit}} records</i>
-          </small>
         </div>
       </div>
     </div>

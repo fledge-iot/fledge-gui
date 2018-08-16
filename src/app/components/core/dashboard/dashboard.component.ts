@@ -35,6 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public refreshTimer = GRAPH_REFRESH_INTERVAL;
 
   DEFAULT_LIMIT = 20;
+  DEFAULT_TIME = 480;
 
   constructor(private statisticsService: StatisticsService,
     private alertService: AlertService,
@@ -185,8 +186,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public getStatisticsHistory(): void {
-    this.statisticsService.getStatisticsHistory(this.DEFAULT_LIMIT, null).
+  public getStatisticsHistory(time = null): void {
+    if (time == null) {
+      time = this.DEFAULT_TIME;
+    }
+    this.statisticsService.getStatisticsHistory(time, null, null).
       subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
           const labels = [];
