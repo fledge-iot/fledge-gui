@@ -31,12 +31,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
   public toggleModal(isOpen: Boolean) {
     this.isSaved = false;
-    const schedule_name = <HTMLDivElement>document.getElementById('south-service-modal');
+    const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
-      schedule_name.classList.add('is-active');
+      modalWindow.classList.add('is-active');
       return;
     }
-    schedule_name.classList.remove('is-active');
+    modalWindow.classList.remove('is-active');
   }
 
   public getCategory(): void {
