@@ -22,9 +22,7 @@
         <td>
           <small> {{schedule.name}} </small>
         </td>
-        <td>
-          <span class="tag is-rounded"> {{schedule.type}}</span>
-        </td>
+        <td>{{schedule.type}}</td>
         <td>
           <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
         </td>

@@ -24,7 +24,7 @@
         <tr>
           <th>Process</th>
           <th>State</th>
-          <th>Start time</th>
+          <th>Start Time</th>
           <th>End Time</th>
         </tr>
       </thead>
@@ -36,13 +36,13 @@
           <small>{{task.state}}</small>
         </td>
         <td>
-          <span class="tag is-rounded">{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</span>
+          {{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}
         </td>
         <td>
-          <span *ngIf="task.endTime != ''" class="tag is-rounded">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</span>
+          <span *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</span>
         </td>
-        
-        <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small is-text cancel-btn" (click)="cancelRunninTask(task.id)">Cancel</button>
+
+        <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-text cancel-btn" (click)="cancelRunninTask(task.id)">Cancel</button>
       </tr>
     </table>
   </div>

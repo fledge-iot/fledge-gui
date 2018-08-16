@@ -67,7 +67,7 @@
               <small> {{log.severity}}</small>
             </td>
             <td>
-              <span class="tag is-rounded"> {{log.timestamp | dateparser: 'DD-MM-YYYY HH:mm:ss'}}</span>
+              {{log.timestamp | dateparser: 'DD-MM-YYYY HH:mm:ss'}}
             </td>
             <td>
               <small>
