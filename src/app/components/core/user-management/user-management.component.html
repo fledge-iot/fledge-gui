@@ -37,11 +37,11 @@
               </tr>
             </thead>
             <tr *ngFor="let user of userRecord">
-              <td>{{user.userId}}</td>
-              <td>
+              <td style="vertical-align: middle;">{{user.userId}}</td>
+              <td style="vertical-align: middle;">
                 {{user.userName}}
               </td>
-              <td>
+              <td style="vertical-align: middle;">
                 {{user.roleName}}
               </td>
               <td *ngIf='user.userId != uid && user.userId != 1'>

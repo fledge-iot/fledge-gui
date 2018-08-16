@@ -5,6 +5,7 @@ import { UpdateScheduleComponent } from '../update-schedule/update-schedule.comp
 import Utils from '../../../../utils';
 import { NgProgress } from 'ngx-progressbar';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+import { sortBy } from 'lodash';
 
 enum weekDays {
   Mon = 1,
@@ -114,7 +115,9 @@ export class ListSchedulesComponent implements OnInit {
             // Time
             element.time = Utils.secondsToDhms(element.time).time;
           });
-          console.log('This is the getSchedule ', data['schedules']);
+          this.scheduleData = sortBy(this.scheduleData, function(obj) {
+            return !obj.enabled + obj.name.toLowerCase();
+          });
         },
         error => {
           /** request completed */
