@@ -20,6 +20,7 @@ export class AddTaskWizardComponent implements OnInit {
   public isTaskEnabled = false;
   public isTaskAdded = false;
   public isValidName = true;
+  public isValidPlugin = true;
   public isValidDay = true;
   public isValidTime = true;
   public addTaskMsg = '';
@@ -55,12 +56,17 @@ export class AddTaskWizardComponent implements OnInit {
       repeat_time: ['', [Validators.required, Validators.pattern(regExp)]],
     });
     this.taskForm.get('type').setValue('north');
+    this.getInstalledPlugins();
     // this.taskForm.get('schedule_type').setValue(3);
   }
 
   movePrevious() {
     const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = last.getAttribute('id');
+    if (+id === 1) {
+      this.router.navigate(['/north']);
+      return;
+    }
     last.classList.remove('is-active');
     const sId = +id - 1;
     const previous = <HTMLElement>document.getElementById('' + sId);
@@ -80,33 +86,23 @@ export class AddTaskWizardComponent implements OnInit {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
 
     switch (+id) {
-      case 1:
-        this.taskForm.get('name').setValue('');
-        this.taskForm.get('type').setValue('north');
-        nxtButton.textContent = 'Next';
-        nxtButton.disabled = false;
-        break;
       case 2:
-        this.taskForm.get('plugin').setValue(this.plugins[0].name);
-        this.taskForm.get('schedule_type').setValue(3);
-        nxtButton.textContent = 'Next';
-        previousButton.disabled = true;
-        break;
-      case 3:
-        nxtButton.textContent = 'Add Task';
-        nxtButton.disabled = false;
-        break;
-      case 4:
-        nxtButton.textContent = 'Enable & Start Task';
-        nxtButton.disabled = false;
-        break;
-      default:
-        break;
+      nxtButton.textContent = 'Next';
+      previousButton.textContent = 'Back';
+      nxtButton.disabled = false;
+      break;
+    case 3:
+      nxtButton.textContent = 'Next';
+      nxtButton.disabled = false;
+      break;
+    default:
+      break;
     }
   }
 
   moveNext() {
     this.isValidName = true;
+    this.isValidPlugin = true;
     this.isValidDay = true;
     this.isValidTime = true;
     const formValues = this.taskForm.value;
@@ -117,6 +113,11 @@ export class AddTaskWizardComponent implements OnInit {
 
     switch (+id) {
       case 1:
+      if (formValues['plugin'] === '') {
+        this.isValidPlugin = false;
+        return;
+      }
+
         if (this.taskForm.controls.name.value.trim().length === 0) {
           this.isValidName = false;
           return;
@@ -124,18 +125,6 @@ export class AddTaskWizardComponent implements OnInit {
         nxtButton.textContent = 'Add Task';
         previousButton.disabled = false;
         if (formValues['name'] !== '' && formValues['type'] !== '') {
-          this.servicesHealthService.getInstalledPlugins(formValues['type']).subscribe(
-            (data: any) => {
-              this.plugins = data.plugins;
-              this.taskForm.get('plugin').setValue(this.plugins[0].name);
-            },
-            (error) => {
-              if (error.status === 0) {
-                console.log('service down ', error);
-              } else {
-                this.alertService.error(error.statusText);
-              }
-            });
           // this.getScheduleType();
         }
         break;
@@ -210,7 +199,22 @@ export class AddTaskWizardComponent implements OnInit {
     }
   }
 
-  addScheduledTask(formValues, nxtButton) {
+  private getInstalledPlugins() {
+    this.servicesHealthService.getInstalledPlugins('north').subscribe(
+      (data: any) => {
+        this.plugins = data.plugins;
+        this.taskForm.get('plugin').setValue(this.plugins[0].name);
+      },
+      (error) => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  private addScheduledTask(formValues, nxtButton) {
     /** request started */
     this.ngProgress.start();
     // total time with days and hh:mm:ss
