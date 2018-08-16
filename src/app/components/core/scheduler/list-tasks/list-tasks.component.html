@@ -7,13 +7,13 @@
       </button>
     </div>
     <a class="card-header-icon">
-      <div class="select is-small">
+      <div class="select is-small is-rounded">
         <select [ngModel]="selectedTaskType" (ngModelChange)="getTasks($event)" id="task-state">
           <option value='Latest'>Latest</option>
           <option value='Running'>Running</option>
         </select>
       </div>
-      <a id="add_task" class="button is-light" (click)="addTask()">Add North Task &nbsp;
+      <a id="add_task" class="button is-light is-small" (click)="addTask()"><b>Add North Task</b> &nbsp;
         <i class="fa fa-plus" aria-hidden="true"></i>
       </a>
     </a>
@@ -24,8 +24,9 @@
         <tr>
           <th>Process</th>
           <th>State</th>
-          <th>Start time</th>
+          <th>Start Time</th>
           <th>End Time</th>
+          <th></th>
         </tr>
       </thead>
       <tr *ngFor="let task of tasksData">
@@ -36,14 +37,14 @@
           <small>{{task.state}}</small>
         </td>
         <td>
-          <small>{{task.startTime != 'None' ?(task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
+          <small>{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
         </td>
         <td>
-          <small>{{task.endTime != 'None'?(task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
+          <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
         </td>
         <td>
-          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small is-text" (click)="cancelRunninTask(task.id)">cancel</button>
-        </td>
+        <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button" (click)="cancelRunninTask(task.id)">Cancel</button>
+      </td>
       </tr>
     </table>
   </div>

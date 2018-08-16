@@ -13,3 +13,7 @@ table.scroll {
 .fa::before {
   display: inline-block;
 }
+
+.ed-btn {
+  height: auto;
+}

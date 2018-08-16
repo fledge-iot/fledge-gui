@@ -1,9 +1,12 @@
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+</ng-progress>
 <div id="add-config-item" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title is-size-5">Add Configuration Item</p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" (click)="toggleModal(false, f)"></button>
     </header>
     <section class="modal-card-body">
       <form name="form" (ngSubmit)="f.form.valid && addConfigItem(f)" #f="ngForm" id="ngForm" novalidate>
@@ -38,9 +41,9 @@
             <div class="field">
               <div class="control">
                 <div class="select is-fullwidth">
-                  <select name="type" [(ngModel)]="categoryData.type" #type="ngModel" required>
-                    <option [ngValue]="undefined" disabled>Select</option>
-                    <option [ngValue]="type" *ngFor="let type of configItemType">{{type}}</option>
+                  <select name="type" [(ngModel)]="categoryData.type" #type="ngModel" (ngModelChange)="modelChanged($event)" required>
+                    <option [value]="undefined" disabled>Select</option>
+                    <option [value]="type.key" *ngFor="let type of configItemTypes">{{type.value}}</option>
                   </select>
                 </div>
               </div>
@@ -49,13 +52,45 @@
           </div>
         </div>
         <div class="columns">
-          <div class="column">
+          <div *ngIf="configFieldType === 'TEXT'" class="column">
             <div class="field">
-              <p class="control is-fullwidth">
-                <input type="text" class="input" name="defaultValue" placeholder="default value" [(ngModel)]="categoryData.defaultValue"
-                  #defaultValue="ngModel" required trim="blur" />
-              </p>
-              <small *ngIf="f.submitted && !defaultValue.valid" class="help is-danger level-left">Default value is required</small>
+              <div class="control is-fullwidth">
+                <input type="text" class="input" name="defaultValue" #stringValue="ngModel" placeholder="default value" [(ngModel)]="string" required
+                  trim="blur" />
+              </div>
+              <small *ngIf="f.submitted && !stringValue.valid" class="help is-danger level-left">Value is required | Must be an string</small>
+            </div>
+          </div>
+          <div *ngIf="configFieldType === 'NUMBER'" class="column">
+            <div class="field">
+              <div class="control is-fullwidth">
+                <input type="number" class="input" name="defaultValue" #numberValue="ngModel" placeholder="default value" [(ngModel)]="number"
+                  required trim="blur" appNumberOnly/>
+              </div>
+              <small *ngIf="f.submitted && !numberValue.valid" class="help is-danger level-left">Value is required | Must be an integer</small>
+            </div>
+          </div>
+          <div *ngIf="configFieldType === 'LONG_TEXT'" class="column">
+            <div class="field">
+              <div class="control is-fullwidth">
+                <textarea row='3' type="text" class="input" name="defaultValue" #textAreaValue="ngModel" placeholder="default value" [(ngModel)]="textA"
+                  required trim="blur"></textarea>
+              </div>
+              <small *ngIf="f.submitted && !textAreaValue.valid" class="help is-danger level-left">Value is required | Must be an string</small>
+              <small *ngIf="!isValidJson" class="help is-danger level-left">Invalid JSON</small>
+            </div>
+          </div>
+          <div *ngIf="configFieldType === 'BOOLEAN'" class="column">
+            <div class="field">
+              <div class="control is-fullwidth">
+                <div class="select is-fullwidth">
+                  <select [(ngModel)]="boolValue" #booleanValue="ngModel" name="defaultValue" required>
+                    <option [ngValue]="true">true</option>
+                    <option [ngValue]="false">false</option>
+                  </select>
+                </div>
+              </div>
+              <small *ngIf="f.submitted && !booleanValue.valid" class="help is-danger level-left">Value is required|Must be a boolean</small>
             </div>
           </div>
         </div>
@@ -73,7 +108,7 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" type="submit" form="ngForm" class="button is-success">Save</button>
+      <button id="save" type="submit" form="ngForm" class="button is-link">Save</button>
     </footer>
   </div>
 </div>

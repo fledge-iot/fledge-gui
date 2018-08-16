@@ -10,6 +10,7 @@ import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { ServicesHealthComponent } from './services-health.component';
+import { DirectivesModule } from '../../../directives/directives.module';
 
 const routes: Routes = [
   {
@@ -36,7 +37,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     NgProgressModule,
     AlertDialogModule,
-    SharedModule
+    SharedModule,
+    DirectivesModule
   ],
   providers: [ServicesHealthService],
 })

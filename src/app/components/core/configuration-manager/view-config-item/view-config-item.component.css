@@ -4,15 +4,31 @@
   align-items: flex-start;
   height: 100%;
 }
+
 .columns-fields {
-  margin-top: auto;
+    margin-top: auto;
 }
+
 .hidden {
-  display: none;
+    display: none;
 }
+
 .input {
-  width: auto;
+    width: auto;
 }
+
 .textarea {
-  width: auto;
+    width: auto;
+}
+
+.panel {
+    background-color: #fff;
+    margin-top: 10px;
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
 }
