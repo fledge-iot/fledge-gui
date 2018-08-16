@@ -54,26 +54,20 @@
       <table class="table is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
         <thead>
           <tr>
-            <th>Source</th>
-            <th>Severity</th>
             <th>Timestamp</th>
+            <th>Severity</th>
+            <th>Source</th>
             <th>Details</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let log of audit">
+            <td>
+              {{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}
+            </td>
+            <td><small>{{log.severity}}</small></td>
             <td>{{log.source}}</td>
-            <td>
-              <small> {{log.severity}}</small>
-            </td>
-            <td>
-              {{log.timestamp | dateparser: 'DD-MM-YYYY HH:mm:ss'}}
-            </td>
-            <td>
-              <small>
-                <pre>{{log.details | json}}</pre>
-              </small>
-            </td>
+            <td><small>{{log.details | json}}</small></td>
           </tr>
         </tbody>
       </table>
