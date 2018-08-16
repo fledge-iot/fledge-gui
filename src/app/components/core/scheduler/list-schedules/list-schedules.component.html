@@ -20,7 +20,7 @@
       </thead>
       <tr *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}" id={{schedule.name}}>
         <td>
-          <small> {{schedule.name}} </small>
+          {{schedule.name}} 
         </td>
         <td>{{schedule.type}}</td>
         <td>

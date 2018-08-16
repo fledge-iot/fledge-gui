@@ -63,11 +63,11 @@
         <tbody>
           <tr *ngFor="let log of audit">
             <td>
-              {{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}
+              <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
             </td>
             <td><small>{{log.severity}}</small></td>
             <td>{{log.source}}</td>
-            <td><small>{{log.details | json}}</small></td>
+            <td><pre class="has-text-gray" style="background-color:white;">{{log.details | json}}</pre></td>
           </tr>
         </tbody>
       </table>

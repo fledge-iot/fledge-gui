@@ -37,10 +37,10 @@
           <small>{{task.state}}</small>
         </td>
         <td>
-          {{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}
+          <small>{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
         </td>
         <td>
-          <span *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</span>
+          <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
         </td>
         <td>
         <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button" (click)="cancelRunninTask(task.id)">Cancel</button>
