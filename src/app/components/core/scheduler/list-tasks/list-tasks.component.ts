@@ -1,15 +1,15 @@
-import { Component, OnInit } from "@angular/core";
-import { SchedulesService, AlertService } from "../../../../services";
-import { NgProgress } from "ngx-progressbar";
+import { Component, OnInit } from '@angular/core';
+import { SchedulesService, AlertService } from '../../../../services';
+import { NgProgress } from 'ngx-progressbar';
 
 @Component({
-  selector: "app-list-tasks",
-  templateUrl: "./list-tasks.component.html",
-  styleUrls: ["./list-tasks.component.css"]
+  selector: 'app-list-tasks',
+  templateUrl: './list-tasks.component.html',
+  styleUrls: ['./list-tasks.component.css']
 })
 export class ListTasksComponent implements OnInit {
   public tasksData = [];
-  public selectedTaskType = "Latest"; // Default is LATEST
+  public selectedTaskType = 'Latest'; // Default is LATEST
 
   constructor(
     private schedulesService: SchedulesService,
@@ -26,12 +26,12 @@ export class ListTasksComponent implements OnInit {
    * @param state Task state
    */
   public getTasks(state) {
-    if (state.toUpperCase() === "RUNNING") {
-      this.selectedTaskType = "Running";
+    if (state.toUpperCase() === 'RUNNING') {
+      this.selectedTaskType = 'Running';
       this.getRunningTasks();
       return;
     }
-    this.selectedTaskType = "Latest";
+    this.selectedTaskType = 'Latest';
     this.getLatestTasks();
   }
 
@@ -46,14 +46,13 @@ export class ListTasksComponent implements OnInit {
       data => {
         /** request completed */
         this.ngProgress.done();
-        this.tasksData = data["tasks"];
-        console.log("Latest tasks ", data["tasks"]);
+        this.tasksData = data['tasks'];
       },
       error => {
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
-          console.log("service down ", error);
+          console.log('service down', error);
         } else {
           this.alertService.error(error.statusText);
         }

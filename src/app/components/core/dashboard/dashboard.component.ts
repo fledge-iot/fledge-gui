@@ -22,7 +22,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   selectedGraphsList = [] =
     [{ key: 'READINGS', checked: true },
-    { key: 'PURGED', checked: true },
     { key: 'North Readings to PI', checked: true }];
 
   // Array of the graphs to show
@@ -62,11 +61,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.selectedGraphsList.push(selectedGraph);
     }
 
-    // if there is no graph selected the set default to READINGS and PURGED
+    // if there is no graph selected, set default to "READINGS" and "North Readings to PI"
     if (this.selectedGraphsList.length === 0) {
       this.selectedGraphsList = [
         { key: 'READINGS', checked: true },
-        { key: 'PURGED', checked: true },
         { key: 'North Readings to PI', checked: true }];
     }
 

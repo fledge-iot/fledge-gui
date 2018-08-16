@@ -42,11 +42,11 @@
         </div>
         <div class="field is-grouped">
           <div class="control">
-            <button id="btn-save-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" class="button is-small is-primary"
+            <button id="btn-save-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" class="button is-small is-link"
               (click)="saveConfigValue(categoryConfigurationData.key.trim(), configItem?.key, configItem?.value?.type)">Save</button>
           </div>
           <div class="control">
-            <button id="btn-cancel-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" class="button is-small is-text hidden"
+            <button id="btn-cancel-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" class="button is-small hidden"
               (click)="restoreConfigFieldValue(configItem.key.trim(), categoryConfigurationData.key.trim(), configItem.value.value.trim(), configItem.value.type.trim())">Cancel</button>
           </div>
         </div>

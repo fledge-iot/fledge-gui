@@ -30,8 +30,9 @@
           <div class="column is-3">
             <div class="field">
               <label class="label">Enabled</label>
-              <input id={{scheduleName}} formControlName="enabled" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success">
-              <label for={{scheduleName}}></label>
+              <div class="control">
+                <input type="checkbox" checked formControlName="enabled">
+              </div>
             </div>
           </div>
         </div>
@@ -108,8 +109,8 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" type="submit" class="button is-success" (click)="f.form.valid && updateSchedule()">Save</button>
-      <button type="button" id="cancel" class="button is-danger" (click)="toggleModal(false)">Cancel</button>
+      <button id="save" type="submit" class="button is-link" (click)="f.form.valid && updateSchedule()">Save</button>
+      <button type="button" id="cancel" class="button" (click)="toggleModal(false)">Cancel</button>
     </footer>
   </div>
 </div>
