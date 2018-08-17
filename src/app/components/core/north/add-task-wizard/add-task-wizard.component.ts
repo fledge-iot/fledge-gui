@@ -21,6 +21,7 @@ export class AddTaskWizardComponent implements OnInit {
   public isTaskAdded = false;
   public isValidName = true;
   public isValidPlugin = true;
+  public isSinglePlugin = true;
   public isValidDay = true;
   public isValidTime = true;
   public addTaskMsg = '';
@@ -46,7 +47,7 @@ export class AddTaskWizardComponent implements OnInit {
     private ngProgress: NgProgress) { }
 
   ngOnInit() {
-    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to varify time format 00:00:00
+    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
     this.taskForm = this.formBuilder.group({
       name: ['', Validators.required],
       type: ['', Validators.required],
@@ -56,8 +57,8 @@ export class AddTaskWizardComponent implements OnInit {
       repeat_time: ['', [Validators.required, Validators.pattern(regExp)]],
     });
     this.taskForm.get('type').setValue('north');
-    this.getInstalledPlugins();
-    // this.taskForm.get('schedule_type').setValue(3);
+    this.taskForm.get('repeat_time').setValue('00:00:30');
+    this.getInstalledNorthPlugins();
   }
 
   movePrevious() {
@@ -87,16 +88,16 @@ export class AddTaskWizardComponent implements OnInit {
 
     switch (+id) {
       case 2:
-      nxtButton.textContent = 'Next';
-      previousButton.textContent = 'Back';
-      nxtButton.disabled = false;
-      break;
-    case 3:
-      nxtButton.textContent = 'Next';
-      nxtButton.disabled = false;
-      break;
-    default:
-      break;
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Back';
+        nxtButton.disabled = false;
+        break;
+      case 3:
+        nxtButton.textContent = 'Next';
+        nxtButton.disabled = false;
+        break;
+      default:
+        break;
     }
   }
 
@@ -113,37 +114,46 @@ export class AddTaskWizardComponent implements OnInit {
 
     switch (+id) {
       case 1:
-      if (formValues['plugin'] === '') {
-        this.isValidPlugin = false;
-        return;
-      }
+        console.log(this.taskForm.value);
+        if (formValues['plugin'] === '') {
+          this.isValidPlugin = false;
+          return;
+        }
 
-        if (this.taskForm.controls.name.value.trim().length === 0) {
+        if (formValues['plugin'].length > 1) {
+          this.isSinglePlugin = false;
+          return;
+        }
+
+        if (formValues['name'] === '') {
           this.isValidName = false;
           return;
         }
-        nxtButton.textContent = 'Add Task';
+        nxtButton.textContent = 'Done';
         previousButton.disabled = false;
-        if (formValues['name'] !== '' && formValues['type'] !== '') {
-          // this.getScheduleType();
-        }
-        break;
-      case 2:
-       if (this.taskForm.controls.repeat_day.invalid) {
+        if (formValues['repeat_day'] === '') {
           this.isValidDay = false;
           return;
         }
-        if (this.taskForm.controls.repeat_time.value.length === 0 || this.taskForm.controls.repeat_time.invalid) {
+        if (formValues['repeat_time'] === '' || formValues['repeat_time'] === 0) {
           this.isValidTime = false;
           return;
         }
-        nxtButton.textContent = 'Enable & Start Task';
+
+        const repeatTime = formValues['repeat_time'] !== ('' || undefined) ? Utils.convertTimeToSec(
+          formValues['repeat_time'], formValues['repeat_day']) : 0;
+
+        if (repeatTime === 0) {
+          this.isValidTime = false;
+          return;
+        }
+
         if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['repeat_time'].length > 0) {
           this.isTaskAdded = true;
-          this.addScheduledTask(formValues, nxtButton);
+          this.addScheduledTask(formValues, repeatTime, nxtButton);
         }
         break;
-      case 3:
+      case 2:
         nxtButton.textContent = 'Done';
         if (this.taskId.length > 0) {
           /** request started */
@@ -157,6 +167,7 @@ export class AddTaskWizardComponent implements OnInit {
                 this.enableTaskMsg = 'Task scheduled and enabled successfully.';
                 this.alertService.success(this.enableTaskMsg);
                 previousButton.disabled = true;
+                this.router.navigate(['/north']);
               },
               error => {
                 previousButton.disabled = false;
@@ -171,9 +182,6 @@ export class AddTaskWizardComponent implements OnInit {
                 }
               });
         }
-        break;
-      case 4:
-        this.router.navigate(['/scheduled-task']);
         break;
       default:
         break;
@@ -199,13 +207,18 @@ export class AddTaskWizardComponent implements OnInit {
     }
   }
 
-  private getInstalledPlugins() {
+  private getInstalledNorthPlugins() {
+    /** request started */
+    this.ngProgress.start();
     this.servicesHealthService.getInstalledPlugins('north').subscribe(
       (data: any) => {
+        /** request completed */
+        this.ngProgress.done();
         this.plugins = data.plugins;
-        this.taskForm.get('plugin').setValue(this.plugins[0].name);
       },
       (error) => {
+        /** request completed */
+        this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -214,15 +227,13 @@ export class AddTaskWizardComponent implements OnInit {
       });
   }
 
-  private addScheduledTask(formValues, nxtButton) {
+  private addScheduledTask(formValues, repeatTime, nxtButton) {
     /** request started */
     this.ngProgress.start();
-    // total time with days and hh:mm:ss
-    const repeatTime = this.taskForm.get('repeat_time').value !== ('' || undefined) ? Utils.convertTimeToSec(
-      this.taskForm.get('repeat_time').value, this.taskForm.get('repeat_day').value) : 0;
+
     const payload = {
       'name': formValues['name'],
-      'plugin': formValues['plugin'],
+      'plugin': formValues['plugin'][0],
       'type': 'north',
       'schedule_repeat': repeatTime,
       'schedule_type': '3'
@@ -277,10 +288,6 @@ export class AddTaskWizardComponent implements OnInit {
         });
   }
 
-  // public getScheduleType() {
-  //   this.scheduleType = [{ name: 'INTERVAL', index: 3 }];
-  // }
-
   validateTaskName(event) {
     if (event.target.value.trim().length > 0) {
       this.isValidName = true;
@@ -297,5 +304,10 @@ export class AddTaskWizardComponent implements OnInit {
     if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeat_time.invalid) {
       this.isValidTime = true;
     }
+  }
+
+  changedSelectedPlugin() {
+    this.isValidPlugin = true;
+    this.isSinglePlugin = true;
   }
 }
