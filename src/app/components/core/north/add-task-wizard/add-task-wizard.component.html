@@ -79,7 +79,7 @@
       </div>
       <div class="box step-content" id="c-2">
         <div *ngIf="isTaskAdded">
-          <app-view-config-item [categoryConfigurationData]="configurationData"></app-view-config-item>
+          <app-mock-view-config-item [categoryConfigurationData]="configurationData"></app-mock-view-config-item>
         </div>
         <p *ngIf="!isTaskAdded" [ngClass]="{'has-text-centered': '!isTaskAdded'}">
           <span class="icon has-text-danger">

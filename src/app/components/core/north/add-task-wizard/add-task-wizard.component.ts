@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
 import Utils from '../../../../utils';
+import { pick } from 'lodash';
 
 import { Router } from '@angular/router';
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
@@ -272,8 +273,14 @@ export class AddTaskWizardComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+
+          // console.log('Recieved', data);
+          let filteredObj = data;
+          const allowed = ['URL', 'producerToken'];
+          filteredObj = pick(data, allowed);
+      
           this.configurationData = {
-            value: [data],
+            value: [filteredObj],
             key: categoryName
           };
         },
