@@ -35,7 +35,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public time: number;
 
   DEFAULT_LIMIT = 20;
-  DEFAULT_TIME = 480;
 
   constructor(private statisticsService: StatisticsService,
     private alertService: AlertService,
@@ -102,7 +101,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
           this.graphsToShow.push(selectedGraph[0]);
         }
-        this.getStatisticsHistory(this.time);
+        this.getStatisticsHistory(localStorage.getItem('OPTED_TIME'));
       },
         error => {
           if (error.status === 0) {
@@ -191,9 +190,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.timerSubscription = null;
     }
     if (time == null) {
-      time = this.DEFAULT_TIME;
+      localStorage.setItem('OPTED_TIME', '480');
+    } else {
+      localStorage.setItem('OPTED_TIME', time);
     }
-    this.time = time;
+    time = localStorage.getItem('OPTED_TIME');
     this.statisticsService.getStatisticsHistory(time, null, null).
       subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
@@ -233,7 +234,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.timerSubscription = null;
     this.timerSubscription = Observable.timer(this.refreshTimer)
       .subscribe(() => {
-        this.getStatisticsHistory(this.time);
+        this.getStatisticsHistory(localStorage.getItem('OPTED_TIME'));
         this.refreshGraph();
       });
   }
