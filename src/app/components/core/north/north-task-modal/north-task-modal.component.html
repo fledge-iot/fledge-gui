@@ -1,0 +1,105 @@
+<div id="north-task-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head" style="flex-grow:0;">
+      <p *ngIf="task != undefined" class="modal-card-title is-size-6">{{task.process}}</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="card">
+        <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
+          <div class="columns is-multiline" *ngFor="let categoryData of category?.value">
+            <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
+              <div class="is-clearfix"></div>
+              <div class="box">
+                <div class="content">
+                  <div class="field">
+                    <div class="control">
+                      <p class="subtitle is-6">
+                        <span class="tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
+                          {{configItem.key}}
+                        </span>
+                      </p>
+                      <p hidden="true"> {{configItem.value.type}} </p>
+                      <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
+                        name="{{configItem.key}}" [(ngModel)]="configItem.value.value" />
+                      <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" name='configItem.key'
+                        [(ngModel)]="configItem.value.value">{{configItem?.value?.value.trim()}}</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <footer class="modal-card-foot">
+          <div class="control">
+            <button id="save" type="submit" class="button is-small is-link" form="ngForm">Save</button>
+          </div>
+          &nbsp;
+          <div class="control">
+            <button class="button is-small is-text hidden" (click)="toggleModal(false)">Cancel</button>
+          </div>
+        </footer>
+      </div>
+
+      <div class="card">
+        <!--
+            Play
+          -->
+        <div class="box">
+          <div class="content">
+            <!-- <div class="is-pulled-left">
+                <p class="title is-6"> Schedule </p>
+              </div>
+              <div class="is-pulled-left">&nbsp;&nbsp;&nbsp;</div>
+              <div class="is-pulled-left">
+                <input id="switchRoundedOutlinedSuccess" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
+                  checked="checked">
+                <label for="switchRoundedOutlinedSuccess"></label>
+              </div>
+              <br>
+              <br> -->
+            <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label subtitle is-6">Enabled</label>
+                  <div class="control">
+                    <input class="checkbox" type="checkbox" checked="checked">
+                  </div>
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                  <label class="label subtitle is-6">Exclusive</label>
+                  <div class="control">
+                    <input class="checkbox" type="checkbox" checked="checked">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label subtitle is-6">Interval</label>
+                  <div class="control">
+                    <input class="input is-small" type="text" placeholder="00:00:00" value="00:00:30">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <footer class="modal-card-foot">
+          <button class="button is-small is-link">Save</button>
+        </footer>
+        <!--Play-->
+      </div>
+
+
+    </section>
+
+  </div>
+</div>

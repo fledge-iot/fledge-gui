@@ -1,0 +1,44 @@
+<div class="card">
+  <header class="card-header">
+    <div id="scheduled-process" class="card-header-title">
+      <div class="media-content">
+        <p class="title is-5">
+          North Plugins &nbsp;
+          <button (click)="getNorthTasks()" class="button is-small">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+          </button>
+        </p>
+      </div>
+    </div>
+    <a id="add_task" class="button is-light" (click)="addNorthInstance()">Create North Instance &nbsp;
+      <i class="fa fa-plus" aria-hidden="true"></i>
+    </a>
+  </header>
+  <div class="card-content">
+    <div class="content">
+      <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Process</th>
+            <th>Status</th>
+            <th>Sent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of tasks">
+            <td>
+              <a class="button is-text" (click)="openNorthTaskModal(t)">{{t.process}}</a>
+            </td>
+            <td>
+              {{t.enabled}}
+            </td>
+            <td>
+              {{t.sent}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<app-north-task-modal [task]="task"></app-north-task-modal>

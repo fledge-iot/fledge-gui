@@ -1,10 +1,10 @@
 <div class="card">
   <header class="card-header">
-    <div class="card-header-title">
+    <div class="card-header-title" style="flex-grow: 0;">
       Tasks &nbsp;
-      <button (click)="getTasks(selectedTaskType)" class="button is-small">
-        <i class="fa fa-refresh" aria-hidden="true"></i>
-      </button>
+      <!-- <button (click)="getTasks(selectedTaskType)" class="button is-small">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button> -->
     </div>
     <a class="card-header-icon">
       <div class="select is-small is-rounded">
@@ -13,9 +13,6 @@
           <option value='Running'>Running</option>
         </select>
       </div>
-      <a id="add_task" class="button is-light is-small" (click)="addTask()"><b>Add North Task</b> &nbsp;
-        <i class="fa fa-plus" aria-hidden="true"></i>
-      </a>
     </a>
   </header>
   <div class="card-content">
@@ -43,8 +40,8 @@
           <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
         </td>
         <td>
-        <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button" (click)="cancelRunninTask(task.id)">Cancel</button>
-      </td>
+          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button" (click)="cancelRunninTask(task.id)">Cancel</button>
+        </td>
       </tr>
     </table>
   </div>

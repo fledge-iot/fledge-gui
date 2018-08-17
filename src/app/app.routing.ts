@@ -15,6 +15,7 @@ const appRoutes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthCheckGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'configuration', loadChildren: './components/core/configuration-manager/configuration.module#ConfigurationModule' },
+  { path: 'north', loadChildren: './components/core/north/north.module#NorthModule' },
   { path: 'scheduled-task', loadChildren: './components/core/scheduler/scheduler.module#SchedulerModule' },
   { path: 'syslog', loadChildren: './components/core/system-log/system-log.module#SystemLogModule' },
   { path: 'asset', loadChildren: './components/core/asset-readings/assets.module#AssetsModule' },

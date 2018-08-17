@@ -1,0 +1,114 @@
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+</ng-progress>
+<div class="steps">
+  <div class="step-item is-active is-success" id="1">
+    <div class="step-marker">1</div>
+    <div class="step-details">
+      <p>Plugin &amp; Name</p>
+    </div>
+  </div>
+  <div class="step-item" id="2">
+    <div class="step-marker">2</div>
+    <div class="step-details">
+      <p>Review Configuration</p>
+    </div>
+  </div>
+  <div class="step-item" id="3">
+    <div class="step-marker">3</div>
+    <div class="step-details">
+      <p>Done</p>
+    </div>
+  </div>
+  <div class="steps-content">
+    <form [formGroup]="taskForm" validate>
+      <div class="box step-content has-text-centered is-active" id="c-1">
+        <div class="field is-horizontal form-group">
+          <div class="field-label is-normal">
+            <label class="label">North Plugin</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <div class="select is-multiple">
+                  <select multiple name="plugin" formControlName="plugin" (change)="changedSelectedPlugin()" required>
+                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
+                  </select>
+                </div>
+                <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
+                <small *ngIf="!isSinglePlugin" class="help is-danger level-left">Please select a single plugin</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal form-group">
+          <div class="field-label is-normal">
+            <label class="label">Name</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="input" id="name" type="text" placeholder="name" formControlName="name" required (input)="validateTaskName($event)">
+                <small *ngIf="!isValidName" class="help is-danger level-left">North instance name is required</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal form-group">
+          <div class="field-label is-normal">
+            <label class="label">Repeat (Interval)</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <div class="columns is-mobile">
+                  <div class="column">
+                    <input id="repeat_day" class="input" type='number' appNumberOnly min="0" max="365" placeholder="days" formControlName="repeat_day"
+                      (input)="validateRepeatDay()">
+                    <small *ngIf="!isValidDay" class="help is-danger level-left">&nbsp; Repeat days must be in range 0 - 365.</small>
+                  </div>
+                  <div class="column">
+                    <input id="repeat_time" class="input" type='text' placeholder="hh:mm:ss" formControlName="repeat_time" mask='00:00:00' (input)="validateRepeatTime($event)">
+                    <small *ngIf="!isValidTime" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:01 - 23:59:59 </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="box step-content" id="c-2">
+        <div *ngIf="isTaskAdded">
+          <app-view-config-item [categoryConfigurationData]="configurationData"></app-view-config-item>
+        </div>
+        <p *ngIf="!isTaskAdded" [ngClass]="{'has-text-centered': '!isTaskAdded'}">
+          <span class="icon has-text-danger">
+            <i class="fa fa-ban"></i>
+          </span> {{ addTaskMsg }}
+        </p>
+      </div>
+
+      <div class="box step-content has-text-centered" id="c-3">
+        <p *ngIf="isTaskEnabled" [ngClass]="{'has-text-centered': '!isTaskEnabled'}">
+          <span class="icon has-text-success">
+            <i class="fa fa-check-square"></i>
+          </span> {{ enableTaskMsg }}
+        </p>
+
+        <p *ngIf="!isTaskEnabled && enableTaskMsg != ''">
+          <span class="icon has-text-danger">
+            <i class="fa fa-ban"></i>
+          </span> {{ enableTaskMsg }}
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="steps-actions">
+    <div class="steps-action">
+      <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
+    </div>
+    <div class="steps-action">
+      <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+    </div>
+  </div>
+</div>
