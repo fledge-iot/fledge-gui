@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
 
 import { AlertService, PingService, StatisticsService } from '../../../services';
-import { GRAPH_REFRESH_INTERVAL } from '../../../utils';
+import { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -190,7 +190,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.timerSubscription = null;
     }
     if (time == null) {
-      localStorage.setItem('OPTED_TIME', '480');
+      localStorage.setItem('OPTED_TIME', STATS_HISTORY_TIME_FILTER);
     } else {
       localStorage.setItem('OPTED_TIME', time);
     }
