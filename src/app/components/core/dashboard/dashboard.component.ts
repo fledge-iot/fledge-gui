@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private timerSubscription: AnonymousSubscription;
 
   public refreshTimer = GRAPH_REFRESH_INTERVAL;
-  public time: number;
+  public optedTime: number;
 
   DEFAULT_LIMIT = 20;
 
@@ -194,8 +194,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     } else {
       localStorage.setItem('OPTED_TIME', time);
     }
-    time = localStorage.getItem('OPTED_TIME');
-    this.statisticsService.getStatisticsHistory(time, null, null).
+    this.optedTime = localStorage.getItem('OPTED_TIME');
+    console.log('optedTime', this.optedTime);
+    this.statisticsService.getStatisticsHistory(this.optedTime, null, null).
       subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
           const labels = [];
