@@ -27,7 +27,7 @@ export class NorthComponent implements OnInit {
   }
 
   getNorthTasks() {
-    console.log('getNorthTasks');
+    // console.log('getNorthTasks');
     this.tasks = [
       { 'name': 'North Readings to PI', 'process': 'OMF to PI North', 'enabled': true, 'sent': 23103 },
       { 'name': 'North Readings to PI', 'process': 'OMF Stats to PI North', 'enabled': true, 'sent': 2290 }
