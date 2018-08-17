@@ -20,16 +20,23 @@
           </div>
         </div>
       </form>
-      <br/>
-      <div *ngIf="service != undefined" class="field">
-        <div class="control">
+      <div *ngIf="service != undefined" class="columns">
+        <div class="column is-narrow is-half">
           Service Info: {{service.protocol}}://{{service.address}}:{{service.management_port}}
           <div *ngIf="isSaved" id="message" class="control notification is-success is-pulled-right">
             <button id="delete" class="delete" (click)="hideNotification()"></button>
             Record Saved Successfully
           </div>
         </div>
+        <div class="column is-narrow is-half">
+
+          <label class="checkbox">
+            <input type="checkbox" [checked]="isEnabled" (click)="onCheckboxClicked($event, service.scheduleId)"> Enabled
+          </label>
+
+        </div>
       </div>
+
     </section>
     <footer class="modal-card-foot">
       <div class="control">

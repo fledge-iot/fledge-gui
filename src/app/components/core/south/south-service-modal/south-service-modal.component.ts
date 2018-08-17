@@ -1,7 +1,8 @@
-import { ConfigurationService, AlertService } from '../../../../services';
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import * as _ from 'lodash';
+
+import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -20,7 +21,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   isSaved = false;
 
-  constructor(private configService: ConfigurationService, private alertService: AlertService) { }
+  public isEnabled = true;
+
+  constructor(private configService: ConfigurationService,
+    private alertService: AlertService, private schedulesService: SchedulesService) { }
 
   ngOnInit() { }
 
@@ -132,6 +136,59 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     const deleteBtn = <HTMLDivElement>document.getElementById('delete');
     deleteBtn.parentElement.classList.add('is-hidden');
     return false;
+  }
+
+
+  /**
+   * Disable schedule
+   * @param schedule_id id of the schedule to disable
+   */
+  public disableSchedule(scheduleId) {
+    console.log('Disabling Schedule:', scheduleId);
+    this.schedulesService.disableSchedule(scheduleId).
+      subscribe(
+        (data) => {
+          this.alertService.success(data['message'], true);
+          this.toggleModal(false);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  /**
+   * Disable schedule
+   * @param schedule_id id of the schedule to disable
+   */
+  public enableSchedule(scheduleId) {
+    console.log('Enabling Schedule:', scheduleId);
+    this.schedulesService.enableSchedule(scheduleId).
+      subscribe(
+        (data) => {
+          this.toggleModal(false);
+          this.alertService.success(data['message'], true);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  onCheckboxClicked(event, scheduleId) {
+    if (event.target.checked) {
+      this.isEnabled = true;
+      this.enableSchedule(scheduleId);
+    } else {
+      this.isEnabled = false;
+      this.disableSchedule(scheduleId);
+    }
   }
 
 }
