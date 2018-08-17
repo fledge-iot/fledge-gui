@@ -112,8 +112,7 @@ export class AddServiceWizardComponent implements OnInit {
           this.isValidName = false;
           return;
         }
-
-        nxtButton.textContent = 'Next';
+        nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         if (formValues['name'] !== '' && formValues['plugin'].length > 0) {
           const payload = {
@@ -126,7 +125,6 @@ export class AddServiceWizardComponent implements OnInit {
         }
         break;
       case 2:
-        nxtButton.textContent = 'Done';
         if (this.serviceId.length > 0) {
           /** request started */
           this.ngProgress.start();
@@ -139,6 +137,7 @@ export class AddServiceWizardComponent implements OnInit {
                 this.enableServiceMsg = 'Service enabled and started successfully.';
                 this.alertService.success(this.enableServiceMsg);
                 previousButton.disabled = true;
+                this.router.navigate(['/south']);
               },
               error => {
                 previousButton.disabled = false;
@@ -153,9 +152,6 @@ export class AddServiceWizardComponent implements OnInit {
                 }
               });
         }
-        break;
-      case 3:
-        this.router.navigate(['/south']);
         break;
       default:
         break;
@@ -189,7 +185,7 @@ export class AddServiceWizardComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success('Service added successfully.');
+          this.alertService.success('Service added successfully.', true);
           this.getCategory(data['name']);
           this.serviceId = data['id'];
           this.isServiceAdded = true;
