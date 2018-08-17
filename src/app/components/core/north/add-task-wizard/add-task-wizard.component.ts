@@ -278,7 +278,7 @@ export class AddTaskWizardComponent implements OnInit {
           let filteredObj = data;
           const allowed = ['URL', 'producerToken'];
           filteredObj = pick(data, allowed);
-      
+
           this.configurationData = {
             value: [filteredObj],
             key: categoryName
