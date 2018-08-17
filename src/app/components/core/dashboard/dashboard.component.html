@@ -1,20 +1,34 @@
 <div class="columns is-mobile">
   <div class="column">
-    <div id="graph-key-dropdown" class="is-pulled-right dropdown is-right">
-      <div class="dropdown-trigger">
-        <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
-          <span>Select Graphs</span>
-          <span class="icon is-small">
-            <i class="fa fa-angle-down" aria-hidden="true"></i>
-          </span>
-        </button>
+    <div class="field-body is-pulled-right">
+      <div class="select is-rounded">
+        <select #selectedTime (change)="getStatisticsHistory(selectedTime.value)">
+          <option value="1" [selected]="optedTime == 1">1 minute</option>
+          <option value="10" [selected]="optedTime == 10">10 minutes</option>
+          <option value="30" [selected]="optedTime == 30">30 minutes</option>
+          <option value="60" [selected]="optedTime == 60">1 hour</option>
+          <option value="480" [selected]="optedTime == 480">8 hours</option>
+          <option value="1440" [selected]="optedTime == 1440">1 day</option>
+          <option value="10080" [selected]="optedTime == 10080">1 week</option>
+        </select>
       </div>
-      <div class="dropdown-menu" id="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-          <div *ngFor="let data of statisticsKeys" class="dropdown-item">
-            <div class="field is-grouped">
-              <div class="control checkbox">
-                <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph($event)"> {{data.key}}
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <div id="graph-key-dropdown" class="dropdown is-right">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
+            <span>Select Graphs</span>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div *ngFor="let data of statisticsKeys" class="dropdown-item">
+              <div class="field is-grouped">
+                <div class="control checkbox">
+                  <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph($event)"> {{data.key}}
+                </div>
               </div>
             </div>
           </div>
@@ -35,9 +49,6 @@
           <h6>Total since startup:
             <b> {{ statistic.value | number }} </b>
           </h6>
-          <small>
-            <i class="has-text-weight-light has-text-grey">last {{statistic.limit | number}} records</i>
-          </small>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 export const POLLING_INTERVAL = 5000;   // milliseconds
 export const MAX_INT_SIZE = 2147483647;
 export const GRAPH_REFRESH_INTERVAL = 5000; // milliseconds
+export const STATS_HISTORY_TIME_FILTER = '480';
 
 export default class Utils {
 
