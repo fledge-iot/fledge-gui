@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgProgressModule } from 'ngx-progressbar';
 
 import { AuthCheckGuard } from '../../../guards';
-import { ServicesHealthService } from '../../../services';
+import { ServicesHealthService, AssetsService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
@@ -43,6 +43,6 @@ const routes: Routes = [
     SharedModule,
     PipesModule
   ],
-  providers: [ServicesHealthService],
+  providers: [ServicesHealthService, AssetsService],
 })
 export class SouthModule { }

@@ -22,10 +22,18 @@
       <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Asset</th>
-            <th>Readings</th>
+            <th class="align-content">Name</th>
+            <th class="align-content">Status</th>
+            <th class="align-content">
+              <table class="table is-responsive">
+                <tr>
+                  <td>Assets</td>
+                  <td>Readings</td>
+                </tr>
+              </table>
+              <!-- Asset &amp; Readings -->
+            </th>
+            <!-- <th>Readings</th> -->
           </tr>
         </thead>
         <tbody>
@@ -49,11 +57,30 @@
                 </span>
               </div>
             </td>
+            <!-- <td class="align-content">
+              <table class="table is-narrow is-responsive" style="border: 0px !important">
+                <tr *ngFor='let asset of svc.assets'>
+                  <td >
+                   <small>{{asset}}</small>
+                  </td>
+                </tr>
+              </table>
+            </td> -->
             <td class="align-content">
-              sinusoid
-            </td>
-            <td class="align-content">
-              1,000
+              <table class="table is-narrow is-responsive">
+                <!-- <tr style="display: none">
+                  <td>Assets</td>
+                  <td>Readings</td>
+                </tr> -->
+                <tr *ngFor='let data of svc.readings'>
+                  <td>
+                    <small>{{data.asset}}</small>
+                  </td>
+                  <td class="is-pulled-right">
+                    <small>{{data.readings}}</small>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
         </tbody>
