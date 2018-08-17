@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private timerSubscription: AnonymousSubscription;
 
   public refreshTimer = GRAPH_REFRESH_INTERVAL;
+  public time: number;
 
   DEFAULT_LIMIT = 20;
   DEFAULT_TIME = 480;
@@ -101,7 +102,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
           this.graphsToShow.push(selectedGraph[0]);
         }
-        this.getStatisticsHistory();
+        this.getStatisticsHistory(this.time);
       },
         error => {
           if (error.status === 0) {
@@ -185,9 +186,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public getStatisticsHistory(time = null): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
     if (time == null) {
       time = this.DEFAULT_TIME;
     }
+    this.time = time;
     this.statisticsService.getStatisticsHistory(time, null, null).
       subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
@@ -227,7 +233,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.timerSubscription = null;
     this.timerSubscription = Observable.timer(this.refreshTimer)
       .subscribe(() => {
-        this.getStatisticsHistory();
+        this.getStatisticsHistory(this.time);
         this.refreshGraph();
       });
   }
