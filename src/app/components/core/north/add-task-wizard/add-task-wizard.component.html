@@ -32,7 +32,7 @@
               <div class="control">
                 <div class="select is-multiple">
                   <select multiple name="plugin" formControlName="plugin" (change)="changedSelectedPlugin()" required>
-                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
+                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.description }}</option>
                   </select>
                 </div>
                 <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
@@ -77,7 +77,7 @@
           </div>
         </div>
       </div>
-      <div class="box step-content" id="c-2">
+      <div class="step-content" id="c-2">
         <div *ngIf="isTaskAdded">
           <app-mock-view-config-item [categoryConfigurationData]="configurationData"></app-mock-view-config-item>
         </div>
