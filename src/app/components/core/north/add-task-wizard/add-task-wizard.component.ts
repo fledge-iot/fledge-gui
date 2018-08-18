@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
 import Utils from '../../../../utils';
+import { pick } from 'lodash';
 
 import { Router } from '@angular/router';
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
@@ -208,6 +209,14 @@ export class AddTaskWizardComponent implements OnInit {
   }
 
   private getInstalledNorthPlugins() {
+    const data = [
+                  {'name': 'omf', 'type': 'north', 'description': 'PI', 'version': '1.0.0'},
+                  {'name': 'ocs', 'type': 'north', 'description': 'OCS', 'version': '1.0.0'},
+                  {'name': 'http-north', 'type': 'north', 'description': 'HTTP North', 'version': '1.0.0'}
+                ];
+    this.plugins = data;
+  }
+  private getInstalledNorthPluginsOriginal() {
     /** request started */
     this.ngProgress.start();
     this.servicesHealthService.getInstalledPlugins('north').subscribe(
@@ -215,6 +224,7 @@ export class AddTaskWizardComponent implements OnInit {
         /** request completed */
         this.ngProgress.done();
         this.plugins = data.plugins;
+        console.log(this.plugins);
       },
       (error) => {
         /** request completed */
@@ -272,8 +282,15 @@ export class AddTaskWizardComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+
+          console.log('categoryName', categoryName);
+          let filteredObj = data;
+
+          const allowed = ['URL', 'producerToken'];
+          filteredObj = pick(data, allowed);
+
           this.configurationData = {
-            value: [data],
+            value: [filteredObj],
             key: categoryName
           };
         },
