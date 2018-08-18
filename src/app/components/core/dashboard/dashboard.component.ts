@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
 
 import { AlertService, PingService, StatisticsService } from '../../../services';
-import { GRAPH_REFRESH_INTERVAL } from '../../../utils';
+import { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private timerSubscription: AnonymousSubscription;
 
   public refreshTimer = GRAPH_REFRESH_INTERVAL;
+  public optedTime;
 
   DEFAULT_LIMIT = 20;
 
@@ -100,7 +101,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
           this.graphsToShow.push(selectedGraph[0]);
         }
-        this.getStatisticsHistory();
+        this.getStatisticsHistory(localStorage.getItem('OPTED_TIME'));
       },
         error => {
           if (error.status === 0) {
@@ -183,8 +184,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public getStatisticsHistory(): void {
-    this.statisticsService.getStatisticsHistory(this.DEFAULT_LIMIT, null).
+  public getStatisticsHistory(time = null): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
+    if (time == null) {
+      localStorage.setItem('OPTED_TIME', STATS_HISTORY_TIME_FILTER);
+    } else {
+      localStorage.setItem('OPTED_TIME', time);
+    }
+    this.optedTime = localStorage.getItem('OPTED_TIME');
+    this.statisticsService.getStatisticsHistory(this.optedTime, null, null).
       subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
           const labels = [];
@@ -223,7 +234,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.timerSubscription = null;
     this.timerSubscription = Observable.timer(this.refreshTimer)
       .subscribe(() => {
-        this.getStatisticsHistory();
+        this.getStatisticsHistory(localStorage.getItem('OPTED_TIME'));
         this.refreshGraph();
       });
   }
