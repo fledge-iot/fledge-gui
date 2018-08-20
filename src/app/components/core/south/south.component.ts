@@ -1,9 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
+import { Observable } from 'rxjs/Rx';
+import { AnonymousSubscription } from 'rxjs/Subscription';
 
-import { ServicesHealthService } from '../../../services';
+import { PingService, ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
+import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 
 @Component({
@@ -11,23 +14,26 @@ import { SouthServiceModalComponent } from './south-service-modal/south-service-
   templateUrl: './south.component.html',
   styleUrls: ['./south.component.css']
 })
-export class SouthComponent implements OnInit {
-  public services = [];
+export class SouthComponent implements OnInit, OnDestroy {
   public service;
-  public pluginsAsset = [];
-  public assets = [];
-  public schedules = [];
   public southPluginsRecord = [];
+  private timerSubscription: AnonymousSubscription;
+
+  public refreshSouthDataInterval = POLLING_INTERVAL;
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
 
   constructor(private servicesHealthService: ServicesHealthService,
     private alertService: AlertService,
     public ngProgress: NgProgress,
-    private router: Router) { }
+    private router: Router,
+    private ping: PingService) { }
 
   ngOnInit() {
     this.getInstalledSouthPluginData();
+    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      this.refreshSouthDataInterval = timeInterval;
+    });
   }
 
   public getInstalledSouthPluginData() {
@@ -39,6 +45,10 @@ export class SouthComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           this.southPluginsRecord = data['services'];
+
+          if (this.refreshSouthDataInterval !== -1) { // stop rfresh in case of manual
+            this.refreshSouthPluginsData();
+          }
         },
         error => {
           /** request completed */
@@ -65,5 +75,17 @@ export class SouthComponent implements OnInit {
 
   onNotify() {
     this.getInstalledSouthPluginData();
+  }
+
+  private refreshSouthPluginsData(): void {
+    this.timerSubscription = Observable.timer(this.refreshSouthDataInterval)
+      .subscribe(() => this.getInstalledSouthPluginData());
+  }
+
+  public ngOnDestroy(): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
   }
 }
