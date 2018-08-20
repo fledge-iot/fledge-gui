@@ -7,7 +7,7 @@
       <div class="media-content">
         <p class="title is-5">
           South Services &nbsp;
-          <!-- <button (click)="getInstalledSouthPluginData()" class="button is-small">
+          <!-- <button (click)="getSouthboundServices()" class="button is-small">
             <i class="fa fa-refresh" aria-hidden="true"></i>
           </button> -->
         </p>
@@ -35,7 +35,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let svc of southPluginsRecord">
+          <tr *ngFor="let svc of southboundServices">
             <td class="align-content">
               <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
             </td>

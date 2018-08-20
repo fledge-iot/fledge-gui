@@ -16,10 +16,9 @@ import { SouthServiceModalComponent } from './south-service-modal/south-service-
 })
 export class SouthComponent implements OnInit, OnDestroy {
   public service;
-  public southPluginsRecord = [];
+  public southboundServices = [];
   private timerSubscription: AnonymousSubscription;
-
-  public refreshSouthDataInterval = POLLING_INTERVAL;
+  public refreshSouthboundServiceInterval = POLLING_INTERVAL;
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
 
@@ -30,19 +29,19 @@ export class SouthComponent implements OnInit, OnDestroy {
     private ping: PingService) { }
 
   ngOnInit() {
-    this.getInstalledSouthPluginData();
+    this.getSouthboundServices();
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-      this.refreshSouthDataInterval = timeInterval;
+      this.refreshSouthboundServiceInterval = timeInterval;
     });
   }
 
-  public getInstalledSouthPluginData() {
-    this.servicesHealthService.getSouthPluginData().
+  public getSouthboundServices() {
+    this.servicesHealthService.getSouthServices().
       subscribe(
         (data: any) => {
-          this.southPluginsRecord = data['services'];
-          if (this.refreshSouthDataInterval !== -1) {
-            this.refreshSouthPluginsData();
+          this.southboundServices = data['services'];
+          if (this.refreshSouthboundServiceInterval > 0) {
+            this.refreshSouthboundServices();
           }
         },
         error => {
@@ -67,12 +66,12 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   onNotify() {
-    this.getInstalledSouthPluginData();
+    this.getSouthboundServices();
   }
 
-  private refreshSouthPluginsData(): void {
-    this.timerSubscription = Observable.timer(this.refreshSouthDataInterval)
-      .subscribe(() => { if (this.refreshSouthDataInterval !== -1) { this.getInstalledSouthPluginData(); } });
+  private refreshSouthboundServices(): void {
+    this.timerSubscription = Observable.timer(this.refreshSouthboundServiceInterval)
+      .subscribe(() => { if (this.refreshSouthboundServiceInterval > 0) { this.getSouthboundServices(); } });
   }
 
   public ngOnDestroy(): void {
