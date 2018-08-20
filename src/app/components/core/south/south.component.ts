@@ -37,22 +37,15 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   public getInstalledSouthPluginData() {
-    /** request started */
-    this.ngProgress.start();
     this.servicesHealthService.getSouthPluginData().
       subscribe(
         (data: any) => {
-          /** request completed */
-          this.ngProgress.done();
           this.southPluginsRecord = data['services'];
-
-          if (this.refreshSouthDataInterval !== -1) { // stop rfresh in case of manual
+          if (this.refreshSouthDataInterval !== -1) {
             this.refreshSouthPluginsData();
           }
         },
         error => {
-          /** request completed */
-          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -79,7 +72,7 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   private refreshSouthPluginsData(): void {
     this.timerSubscription = Observable.timer(this.refreshSouthDataInterval)
-      .subscribe(() => this.getInstalledSouthPluginData());
+      .subscribe(() => { if (this.refreshSouthDataInterval !== -1) { this.getInstalledSouthPluginData(); } });
   }
 
   public ngOnDestroy(): void {
