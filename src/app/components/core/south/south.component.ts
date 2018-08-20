@@ -1,9 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
+import { Observable } from 'rxjs/Rx';
+import { AnonymousSubscription } from 'rxjs/Subscription';
 
-import { ServicesHealthService } from '../../../services';
+import { PingService, ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
+import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 
 @Component({
@@ -11,43 +14,42 @@ import { SouthServiceModalComponent } from './south-service-modal/south-service-
   templateUrl: './south.component.html',
   styleUrls: ['./south.component.css']
 })
-export class SouthComponent implements OnInit {
-  public services = [];
-  public service: string;
+export class SouthComponent implements OnInit, OnDestroy {
+  public service;
+  public southboundServices = [];
+  private timerSubscription: AnonymousSubscription;
+  public refreshSouthboundServiceInterval = POLLING_INTERVAL;
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
 
   constructor(private servicesHealthService: ServicesHealthService,
     private alertService: AlertService,
     public ngProgress: NgProgress,
-    private router: Router) { }
+    private router: Router,
+    private ping: PingService) { }
 
   ngOnInit() {
-    this.getServiceData();
+    this.getSouthboundServices();
+    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      this.refreshSouthboundServiceInterval = timeInterval;
+    });
   }
 
-
-  public getServiceData() {
-    /** request start */
-    this.ngProgress.start();
-    this.servicesHealthService.getAllServices()
-      .subscribe(
-        (data) => {
-          if (data['error']) {
-            console.log('error in response', data['error']);
-            this.alertService.warning('Could not connect to API');
-            return;
+  public getSouthboundServices() {
+    this.servicesHealthService.getSouthServices().
+      subscribe(
+        (data: any) => {
+          this.southboundServices = data['services'];
+          if (this.refreshSouthboundServiceInterval > 0) {
+            this.refreshSouthboundServices();
           }
-          this.services = data['services'];
-          this.services = this.services.filter((item) => item.type === 'Southbound');
-          /** request completed */
-          this.ngProgress.done();
         },
-        (error) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.warning('Could not connect to API');
-          console.log('error: ', error);
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
         });
   }
 
@@ -60,7 +62,22 @@ export class SouthComponent implements OnInit {
  */
   openSouthServiceModal(service) {
     this.service = service;
-    // call child component method to toggle modal
     this.southServiceModal.toggleModal(true);
+  }
+
+  onNotify() {
+    this.getSouthboundServices();
+  }
+
+  private refreshSouthboundServices(): void {
+    this.timerSubscription = Observable.timer(this.refreshSouthboundServiceInterval)
+      .subscribe(() => { if (this.refreshSouthboundServiceInterval > 0) { this.getSouthboundServices(); } });
+  }
+
+  public ngOnDestroy(): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
   }
 }

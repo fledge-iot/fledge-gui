@@ -1,7 +1,9 @@
-import { ConfigurationService, AlertService } from '../../../../services';
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import * as _ from 'lodash';
+
+import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import { NgProgress } from 'ngx-progressbar';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -20,23 +22,32 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   isSaved = false;
 
-  constructor(private configService: ConfigurationService, private alertService: AlertService) { }
+  public isEnabled;
 
-  ngOnInit() {}
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+
+  constructor(private configService: ConfigurationService,
+    private alertService: AlertService,
+    public ngProgress: NgProgress,
+    private schedulesService: SchedulesService) { }
+
+  ngOnInit() {
+  }
 
   ngOnChanges() {
     if (this.service !== undefined) {
+      console.log(this.service);
       this.getCategory();
     }
   }
   public toggleModal(isOpen: Boolean) {
     this.isSaved = false;
-    const modal = <HTMLDivElement>document.getElementById('south-service-modal');
+    const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
-      modal.classList.add('is-active');
+      modalWindow.classList.add('is-active');
       return;
     }
-    modal.classList.remove('is-active');
+    modalWindow.classList.remove('is-active');
   }
 
   public getCategory(): void {
@@ -137,4 +148,66 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     return false;
   }
 
+  public disableSchedule(serviceName) {
+    console.log('Disabling Schedule:', serviceName);
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.disableScheduleByName(serviceName).
+      subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.notify.emit();
+          this.alertService.success(data['message'], true);
+          this.toggleModal(false);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public enableSchedule(serviceName) {
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.enableScheduleByName(serviceName).
+      subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.notify.emit();
+          this.toggleModal(false);
+          this.alertService.success(data['message'], true);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  onCheckboxClicked(event) {
+    if (event.target.checked) {
+      this.isEnabled = true;
+    } else {
+      this.isEnabled = false;
+    }
+  }
+
+  changeServiceStatus(serviceName) {
+    if (this.isEnabled) {
+      this.enableSchedule(serviceName);
+    } else {
+      this.disableSchedule(serviceName);
+    }
+  }
 }

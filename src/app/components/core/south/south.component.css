@@ -1,4 +1,5 @@
-table tr td {
-    vertical-align: middle;
+
+.align-content {
+  vertical-align: middle;
 }
 

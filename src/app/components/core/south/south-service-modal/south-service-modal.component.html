@@ -1,3 +1,6 @@
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+</ng-progress>
 <div id="south-service-modal" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
@@ -6,39 +9,72 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
-        <div class="columns is-multiline" *ngFor="let categoryData of category?.value">
-          <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
-            <span class="tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
-              {{configItem.key}}
-            </span>
-            <p hidden="true"> {{configItem.value.type}} </p>
-            <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
-              name="{{configItem.key}}" [(ngModel)]="configItem.value.value" />
-            <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" name='configItem.key'
-              [(ngModel)]="configItem.value.value">{{configItem?.value?.value.trim()}}</textarea>
+      <div class="card">
+        <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
+          <div class="columns is-multiline" *ngFor="let categoryData of category?.value">
+            <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
+              <div class="is-clearfix"></div>
+              <div class="box">
+                <div class="content">
+                  <div class="field">
+                    <div class="control">
+                      <p class="subtitle is-6">
+                        <span class="tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
+                          {{configItem.key}}
+                        </span>
+                        <p hidden="true"> {{configItem.value.type}} </p>
+                        <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
+                          name="{{configItem.key}}" [(ngModel)]="configItem.value.value" />
+                        <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" name='configItem.key'
+                          [(ngModel)]="configItem.value.value">{{configItem?.value?.value.trim()}}</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </form>
-      <br/>
-      <div *ngIf="service != undefined" class="field">
-        <div class="control">
-          Service Info: {{service.protocol}}://{{service.address}}:{{service.management_port}}
-          <div *ngIf="isSaved" id="message" class="control notification is-success is-pulled-right">
+          <div *ngIf="isSaved" id="message" class="notification is-success is-small is-pulled-right">
             <button id="delete" class="delete" (click)="hideNotification()"></button>
             Record Saved Successfully
           </div>
+        </form>
+        <footer class="modal-card-foot">
+          <div class="control">
+            <button id="save" type="submit" class="button is-small is-link" form="ngForm">Save</button>
+          </div>
+          &nbsp;
+          <div class="control">
+            <button class="button is-small is-text hidden" (click)="toggleModal(false)">Cancel</button>
+          </div>
+        </footer>
+      </div>
+      <div class="card">
+        <div class="box">
+          <div class="content">
+            <div *ngIf="service != undefined" class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label subtitle is-6">Service Info</label>
+                  <div class="control">
+                    <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                  </div>
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                  <label class="label subtitle is-6">Enabled</label>
+                  <div class="control">
+                    <input class="checkbox" type="checkbox" [checked]="service.status === 'running'" (click)="onCheckboxClicked($event)">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <footer class="modal-card-foot">
+          <button *ngIf="service != undefined" class="button is-small is-link" (click)="changeServiceStatus(service.name)">Save</button>
+        </footer>
       </div>
     </section>
-    <footer class="modal-card-foot">
-      <div class="control">
-        <button id="save" type="submit" class="button is-small is-info" form="ngForm">Save</button>
-      </div>
-      &nbsp;
-      <div class="control">
-        <button class="button is-small is-text hidden" (click)="toggleModal(false)">Cancel</button>
-      </div>
-    </footer>
   </div>
 </div>

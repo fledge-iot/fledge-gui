@@ -7,9 +7,9 @@
       <div class="media-content">
         <p class="title is-5">
           South Services &nbsp;
-          <button (click)="getServiceData()" class="button is-small">
+          <!-- <button (click)="getSouthboundServices()" class="button is-small">
             <i class="fa fa-refresh" aria-hidden="true"></i>
-          </button>
+          </button> -->
         </p>
       </div>
     </div>
@@ -22,18 +22,24 @@
       <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Asset</th>
-            <th>Readings</th>
+            <th class="align-content">Name</th>
+            <th class="align-content">Status</th>
+            <th class="align-content">
+              <table class="table is-responsive">
+                <tr>
+                  <td>Assets</td>
+                  <td>Readings</td>
+                </tr>
+              </table>
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let svc of services">
-            <td class="align">
+          <tr *ngFor="let svc of southboundServices">
+            <td class="align-content">
               <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
             </td>
-            <td class="align">
+            <td class="align-content">
               <div class="tags has-addons">
                 <span *ngIf="svc.status == 'running'" class="tag is-success">
                   <i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; {{svc.status}}
@@ -49,11 +55,17 @@
                 </span>
               </div>
             </td>
-            <td class="align">
-              sinusoid
-            </td>
-            <td class="align">
-              1,000
+            <td class="align-content">
+              <table class="table is-narrow is-responsive">
+                <tr *ngFor='let data of svc.assets'>
+                  <td>
+                    <small>{{data.asset}}</small>
+                  </td>
+                  <td class="is-pulled-right">
+                    <small>{{data.count}}</small>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
         </tbody>
@@ -61,4 +73,4 @@
     </div>
   </div>
 </div>
-<app-south-service-modal [service]="service"></app-south-service-modal>
+<app-south-service-modal (notify)='onNotify()' [service]="service"></app-south-service-modal>

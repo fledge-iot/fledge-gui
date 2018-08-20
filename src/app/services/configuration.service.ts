@@ -25,6 +25,7 @@ export class ConfigurationService {
    *   GET  | /foglamp/category/{categoryName}
    */
   getCategory(categoryName) {
+    categoryName = encodeURIComponent(categoryName);
     return this.http.get(this.CATEGORY_URL + '/' + categoryName).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
@@ -34,6 +35,7 @@ export class ConfigurationService {
    *   GET  | /foglamp/category/{categoryName}/children
    */
   getChildren(categoryName) {
+    categoryName = encodeURIComponent(categoryName);
     return this.http.get(this.CATEGORY_URL + '/' + categoryName + '/children').pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
