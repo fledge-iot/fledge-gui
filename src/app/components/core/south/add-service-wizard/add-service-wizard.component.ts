@@ -108,13 +108,13 @@ export class AddServiceWizardComponent implements OnInit {
           return;
         }
 
-        if (formValues['name'] === '') {
+        if (formValues['name'].trim() === '') {
           this.isValidName = false;
           return;
         }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
-        if (formValues['name'] !== '' && formValues['plugin'].length > 0) {
+        if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
           const payload = {
             name: formValues['name'],
             type: this.serviceType,
