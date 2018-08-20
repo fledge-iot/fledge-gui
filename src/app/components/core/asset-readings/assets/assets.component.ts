@@ -41,8 +41,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
           if (this.selectedAsset) {
             this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
           }
-          if (this.refreshInterval !== 0) {
-            this.refreshData();
+          if (this.refreshInterval !== -1) {
+            this.enableRefreshTimer();
           }
         },
         error => {
@@ -69,7 +69,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private refreshData(): void {
+  private enableRefreshTimer(): void {
     this.timerSubscription = Observable.timer(this.refreshInterval)
       .subscribe(() => this.getAsset());
   }
