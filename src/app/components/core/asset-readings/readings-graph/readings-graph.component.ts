@@ -100,7 +100,9 @@ export class ReadingsGraphComponent {
           } else {
             this.showGraph = false;
           }
-          this.refreshGraphData();
+          if (this.graphRefreshInterval > 0) {
+            this.enableRefreshTimer();
+          }
         },
         error => {
           console.log('error in response', error);
@@ -253,7 +255,7 @@ export class ReadingsGraphComponent {
     limitField.inputValue = '';
   }
 
-  private refreshGraphData(): void {
+  private enableRefreshTimer(): void {
     this.graphTimerSubscription = Observable.timer(this.graphRefreshInterval)
       .subscribe(() => this.plotReadingsGraph(this.assetCode, this.limit));
   }
