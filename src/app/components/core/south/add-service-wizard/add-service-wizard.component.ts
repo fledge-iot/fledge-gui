@@ -209,7 +209,7 @@ export class AddServiceWizardComponent implements OnInit {
     this.configurationData = [];
     /** request started */
     this.ngProgress.start();
-    this.configService.getCategory(encodeURIComponent(categoryName)).
+    this.configService.getCategory(categoryName).
       subscribe(
         (data: any) => {
           /** request completed */
