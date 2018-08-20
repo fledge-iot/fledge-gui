@@ -100,7 +100,7 @@ export class ReadingsGraphComponent {
           } else {
             this.showGraph = false;
           }
-          if (this.graphRefreshInterval !== -1) {
+          if (this.graphRefreshInterval > 0) {
             this.enableRefreshTimer();
           }
         },
