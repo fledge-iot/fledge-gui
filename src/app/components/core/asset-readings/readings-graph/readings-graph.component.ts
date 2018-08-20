@@ -100,7 +100,9 @@ export class ReadingsGraphComponent {
           } else {
             this.showGraph = false;
           }
-          this.refreshGraphData();
+          if (this.graphRefreshInterval !== 0) {
+            this.refreshGraphData();
+          }
         },
         error => {
           console.log('error in response', error);

@@ -41,7 +41,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
           if (this.selectedAsset) {
             this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
           }
-          this.refreshData();
+          if (this.refreshInterval !== 0) {
+            this.refreshData();
+          }
         },
         error => {
           if (error.status === 0) {
