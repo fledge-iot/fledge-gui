@@ -36,6 +36,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     if (this.service !== undefined) {
+      console.log(this.service);
       this.getCategory();
     }
   }

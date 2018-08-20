@@ -72,7 +72,7 @@
           </div>
         </div>
         <footer class="modal-card-foot">
-          <button class="button is-small is-link" (click)="changeServiceStatus(service.name)">Save</button>
+          <button *ngIf="service != undefined" class="button is-small is-link" (click)="changeServiceStatus(service.name)">Save</button>
         </footer>
       </div>
     </section>
