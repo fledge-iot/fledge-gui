@@ -11,6 +11,12 @@ html,
     background-color: #f5f5f5 !important;
 }
 
+@media only screen and (min-height: 500px) {
+    aside {
+        overflow-y: hidden !important;
+    }
+}
+
 #app {
     min-height: 100%;
 }

@@ -205,6 +205,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             element = moment(element).format('HH:mm:ss');
             labels.push(element);
           });
+          this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
           this.graphsToShow.map(statistics => {
             if (statistics.itemName === dt.key) {
               statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');

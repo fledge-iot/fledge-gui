@@ -7,9 +7,9 @@
       <div class="media-content">
         <p class="title is-5">
           South Services &nbsp;
-          <button (click)="getServiceData()" class="button is-small">
+          <!-- <button (click)="getSouthboundServices()" class="button is-small">
             <i class="fa fa-refresh" aria-hidden="true"></i>
-          </button>
+          </button> -->
         </p>
       </div>
     </div>
@@ -31,13 +31,11 @@
                   <td>Readings</td>
                 </tr>
               </table>
-              <!-- Asset &amp; Readings -->
             </th>
-            <!-- <th>Readings</th> -->
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let svc of services">
+          <tr *ngFor="let svc of southboundServices">
             <td class="align-content">
               <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
             </td>
@@ -57,27 +55,14 @@
                 </span>
               </div>
             </td>
-            <!-- <td class="align-content">
-              <table class="table is-narrow is-responsive" style="border: 0px !important">
-                <tr *ngFor='let asset of svc.assets'>
-                  <td >
-                   <small>{{asset}}</small>
-                  </td>
-                </tr>
-              </table>
-            </td> -->
             <td class="align-content">
               <table class="table is-narrow is-responsive">
-                <!-- <tr style="display: none">
-                  <td>Assets</td>
-                  <td>Readings</td>
-                </tr> -->
-                <tr *ngFor='let data of svc.readings'>
+                <tr *ngFor='let data of svc.assets'>
                   <td>
                     <small>{{data.asset}}</small>
                   </td>
                   <td class="is-pulled-right">
-                    <small>{{data.readings}}</small>
+                    <small>{{data.count}}</small>
                   </td>
                 </tr>
               </table>
@@ -88,4 +73,4 @@
     </div>
   </div>
 </div>
-<app-south-service-modal [service]="service"></app-south-service-modal>
+<app-south-service-modal (notify)='onNotify()' [service]="service"></app-south-service-modal>

@@ -15,6 +15,7 @@ export class ServicesHealthService {
   private GET_INSTALLED_PLUGINS_URL = environment.BASE_URL + 'plugins/installed';
   private TRACK_SERVICE_URL = environment.BASE_URL + 'track';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
+  private SOUTH_URL = environment.BASE_URL + 'south';
 
   constructor(private http: HttpClient) { }
 
@@ -96,6 +97,12 @@ export class ServicesHealthService {
   getInstalledPluginAsset(serviceName) {
     const params = new HttpParams().set('service', serviceName);
     return this.http.get(this.TRACK_SERVICE_URL, { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  getSouthServices() {
+    return this.http.get(this.SOUTH_URL).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }

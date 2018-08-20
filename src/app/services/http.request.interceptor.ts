@@ -23,7 +23,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
       if (sessionStorage.getItem('token') != null) {
         req = req.clone({
           setHeaders: {
-            authorization: sessionStorage.getItem('token')
+            authorization: sessionStorage.getItem('token'),
+            'Content-Type': 'application/x-www-form-urlencoded'
           }
         });
       }

@@ -112,6 +112,24 @@ export class SchedulesService {
   }
 
   /**
+   *  PUT | /foglamp/schedule/enable
+   */
+  public enableScheduleByName(scheduleName) {
+    return this.http.put(this.SCHEDULE_URL + '/enable', { 'schedule_name': scheduleName }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+   *  PUT | /foglamp/schedule/disable
+   */
+  public disableScheduleByName(scheduleName) {
+    return this.http.put(this.SCHEDULE_URL + '/disable', { 'schedule_name': scheduleName }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
    *  GET | /foglamp/task/latest
    */
   public getLatestTask() {

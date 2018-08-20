@@ -72,10 +72,6 @@ export class ServicesHealthComponent implements OnInit {
     return false;
   }
 
-  addService() {
-    this.router.navigate(['/services/add']);
-  }
-
   openModal(port, name, protocol, address) {
     this.shutDownServiceData = {
       port: port,
