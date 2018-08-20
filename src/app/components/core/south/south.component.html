@@ -7,7 +7,7 @@
       <div class="media-content">
         <p class="title is-5">
           South Services &nbsp;
-          <button (click)="getServiceData()" class="button is-small">
+          <button (click)="getInstalledSouthPluginData()" class="button is-small">
             <i class="fa fa-refresh" aria-hidden="true"></i>
           </button>
         </p>
@@ -37,7 +37,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let svc of services">
+          <tr *ngFor="let svc of southPluginsRecord">
             <td class="align-content">
               <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
             </td>
@@ -72,12 +72,12 @@
                   <td>Assets</td>
                   <td>Readings</td>
                 </tr> -->
-                <tr *ngFor='let data of svc.readings'>
+                <tr *ngFor='let data of svc.assets'>
                   <td>
                     <small>{{data.asset}}</small>
                   </td>
                   <td class="is-pulled-right">
-                    <small>{{data.readings}}</small>
+                    <small>{{data.count}}</small>
                   </td>
                 </tr>
               </table>
@@ -88,4 +88,4 @@
     </div>
   </div>
 </div>
-<app-south-service-modal [service]="service"></app-south-service-modal>
+<app-south-service-modal (notify)='onNotify()' [service]="service"></app-south-service-modal>

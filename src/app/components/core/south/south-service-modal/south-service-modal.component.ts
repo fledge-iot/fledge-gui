@@ -1,8 +1,9 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import * as _ from 'lodash';
 
 import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import { NgProgress } from 'ngx-progressbar';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -21,12 +22,17 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   isSaved = false;
 
-  public isEnabled = true;
+  public isEnabled;
+
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private configService: ConfigurationService,
-    private alertService: AlertService, private schedulesService: SchedulesService) { }
+    private alertService: AlertService,
+    public ngProgress: NgProgress,
+    private schedulesService: SchedulesService) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
 
   ngOnChanges() {
     if (this.service !== undefined) {
@@ -138,20 +144,22 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     return false;
   }
 
-
-  /**
-   * Disable schedule
-   * @param schedule_id id of the schedule to disable
-   */
-  public disableSchedule(scheduleId) {
-    console.log('Disabling Schedule:', scheduleId);
-    this.schedulesService.disableSchedule(scheduleId).
+  public disableSchedule(serviceName) {
+    console.log('Disabling Schedule:', serviceName);
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.disableScheduleByName(serviceName).
       subscribe(
         (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.notify.emit();
           this.alertService.success(data['message'], true);
           this.toggleModal(false);
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -160,19 +168,21 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  /**
-   * Disable schedule
-   * @param schedule_id id of the schedule to disable
-   */
-  public enableSchedule(scheduleId) {
-    console.log('Enabling Schedule:', scheduleId);
-    this.schedulesService.enableSchedule(scheduleId).
+  public enableSchedule(serviceName) {
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.enableScheduleByName(serviceName).
       subscribe(
         (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.notify.emit();
           this.toggleModal(false);
           this.alertService.success(data['message'], true);
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -181,14 +191,19 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  onCheckboxClicked(event, scheduleId) {
+  onCheckboxClicked(event) {
     if (event.target.checked) {
       this.isEnabled = true;
-      this.enableSchedule(scheduleId);
     } else {
       this.isEnabled = false;
-      this.disableSchedule(scheduleId);
     }
   }
 
+  changeServiceStatus(serviceName) {
+    if (this.isEnabled) {
+      this.enableSchedule(serviceName);
+    } else {
+      this.disableSchedule(serviceName);
+    }
+  }
 }
