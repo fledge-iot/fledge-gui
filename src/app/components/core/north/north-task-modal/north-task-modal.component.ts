@@ -162,8 +162,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     const updatePayload = {
       'process_name': this.processName,
       'repeat': repeatTime,
-      'exclusive': this.form.get('exclusive').value,
-      'enabled': this.form.get('enabled').value
+      'exclusive': form.controls['exclusive'].value,
+      'enabled': form.controls['enabled'].value
     };
 
     this.schedulesService.updateSchedule(this.task['id'], updatePayload).
