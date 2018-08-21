@@ -56,13 +56,13 @@
               </div>
               <br>
               <br> -->
-            <form name="schedule-form" id="scheduleForm" #f="ngForm" (ngSubmit)="saveScheduleFields(f)" novalidate>
+            <form name="schedule-form" id="scheduleForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
               <div class="columns">
                 <div class="column">
                   <div class="field">
                     <label class="label subtitle is-6">Enabled</label>
                     <div class="control">
-                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled">
+                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled" [(ngModel)]="enabled">
                     </div>
                   </div>
                 </div>
@@ -70,7 +70,7 @@
                   <div class="field">
                     <label class="label subtitle is-6">Exclusive</label>
                     <div class="control">
-                      <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive">
+                      <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive" [(ngModel)]="exclusive">
                     </div>
                   </div>
                 </div>
@@ -80,7 +80,7 @@
                   <div class="field">
                     <label class="label subtitle is-6">Interval</label>
                     <div class="control">
-                      <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' required>
+                      <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' [(ngModel)]="repeat" required>
                       <!-- <small *ngIf="!f.schedule-form.valid" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:00 - 23:59:59</small> -->
                     </div>
                   </div>
