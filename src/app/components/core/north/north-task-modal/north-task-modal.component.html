@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head" style="flex-grow:0;">
-      <p *ngIf="task != undefined" class="modal-card-title is-size-6">{{task.process}}</p>
+      <p *ngIf="task != undefined" class="modal-card-title is-size-6">{{task.processName}}</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -42,11 +42,7 @@
           </div>
         </footer>
       </div>
-
       <div class="card">
-        <!--
-            Play
-          -->
         <div class="box">
           <div class="content">
             <!-- <div class="is-pulled-left">
@@ -60,46 +56,43 @@
               </div>
               <br>
               <br> -->
-            <div class="columns">
-              <div class="column">
-                <div class="field">
-                  <label class="label subtitle is-6">Enabled</label>
-                  <div class="control">
-                    <input class="checkbox" type="checkbox" checked="checked">
+            <form name="schedule-form" id="scheduleForm" #f="ngForm" (ngSubmit)="saveScheduleFields(f)" novalidate>
+              <div class="columns">
+                <div class="column">
+                  <div class="field">
+                    <label class="label subtitle is-6">Enabled</label>
+                    <div class="control">
+                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled">
+                    </div>
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="field">
+                    <label class="label subtitle is-6">Exclusive</label>
+                    <div class="control">
+                      <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive">
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="column">
-                <div class="field">
-                  <label class="label subtitle is-6">Exclusive</label>
-                  <div class="control">
-                    <input class="checkbox" type="checkbox" checked="checked">
+              <div class="columns">
+                <div class="column">
+                  <div class="field">
+                    <label class="label subtitle is-6">Interval</label>
+                    <div class="control">
+                      <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' required>
+                      <!-- <small *ngIf="!f.schedule-form.valid" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:00 - 23:59:59</small> -->
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="columns">
-              <div class="column">
-                <div class="field">
-                  <label class="label subtitle is-6">Interval</label>
-                  <div class="control">
-                    <input class="input is-small" type="text" placeholder="00:00:00" value="00:00:30">
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            </form>
           </div>
         </div>
-
         <footer class="modal-card-foot">
-          <button class="button is-small is-link">Save</button>
+          <button class="button is-small is-link" form="scheduleForm">Save</button>
         </footer>
-        <!--Play-->
       </div>
-
-
     </section>
-
   </div>
 </div>

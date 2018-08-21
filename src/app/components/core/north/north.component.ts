@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertService } from '../../../services/alert.service';
+import { NorthService, AlertService } from '../../../services/index';
 import { Router } from '@angular/router';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
+import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-north',
@@ -10,15 +11,14 @@ import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.com
 })
 export class NorthComponent implements OnInit {
   public task: string;
-  public tasks = [];
+  public tasks: any;
 
-  constructor(private alertService: AlertService, private router: Router) {}
+  constructor(private northService: NorthService, private alertService: AlertService, private router: Router) {}
 
   @ViewChild(NorthTaskModalComponent)
   northTaskModal: NorthTaskModalComponent;
 
   ngOnInit() {
-    // GET north tasks only
     this.getNorthTasks();
   }
 
@@ -26,12 +26,20 @@ export class NorthComponent implements OnInit {
     this.router.navigate(['/north/add']);
   }
 
-  getNorthTasks() {
-    // console.log('getNorthTasks');
-    this.tasks = [
-      { 'name': 'North Readings to PI', 'process': 'OMF to PI North', 'enabled': true, 'sent': 23103 },
-      { 'name': 'North Readings to PI', 'process': 'OMF Stats to PI North', 'enabled': true, 'sent': 2290 }
-    ];
+  public getNorthTasks(): void {
+    this.northService.getNorthTasks().
+      subscribe(
+        (data) => {
+          this.tasks = data;
+          this.tasks = sortBy(this.tasks, ['name']);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   openNorthTaskModal(task) {

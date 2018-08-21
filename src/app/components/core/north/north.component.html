@@ -1,12 +1,9 @@
 <div class="card">
   <header class="card-header">
-    <div id="scheduled-process" class="card-header-title">
+    <div id="north-tasks" class="card-header-title">
       <div class="media-content">
         <p class="title is-5">
-          North Plugins &nbsp;
-          <button (click)="getNorthTasks()" class="button is-small">
-            <i class="fa fa-refresh" aria-hidden="true"></i>
-          </button>
+          North Plugins
         </p>
       </div>
     </div>
@@ -16,7 +13,7 @@
   </header>
   <div class="card-content">
     <div class="content">
-      <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
+      <table class="table is-fullwidth scroll is-narrow is-responsive">
         <thead>
           <tr>
             <th>Process</th>
@@ -25,15 +22,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let t of tasks">
+          <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
             <td>
-              <a class="button is-text" (click)="openNorthTaskModal(t)">{{t.process}}</a>
+              <a class="button is-text" (click)="openNorthTaskModal(t)">
+                <small>{{t.processName}}</small>
+              </a>
             </td>
             <td>
-              {{t.enabled}}
+              <small *ngIf="t.enabled == true">enabled</small>
+              <small *ngIf="t.enabled == false">disabled</small>
             </td>
             <td>
-              {{t.sent}}
+              <small *ngIf="t.sent >= '0'" class="level-right">{{t.sent}}</small>
             </td>
           </tr>
         </tbody>

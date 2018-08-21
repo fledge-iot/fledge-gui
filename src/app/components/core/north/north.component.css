@@ -1,3 +1,7 @@
 table tr td {
     vertical-align: middle;
 }
+
+.fade {
+    background-color:#f5f5f5
+}

@@ -1,7 +1,8 @@
-import { ConfigurationService, AlertService } from '../../../../services';
+import { ConfigurationService, AlertService, SchedulesService } from '../../../../services';
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
+import Utils from '../../../../utils';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -15,12 +16,20 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   model: any;
 
+  enabled: Boolean;
+  exclusive: Boolean;
+  repeat: any;
+  processName: any;
+  form: FormGroup;
+
   @Input()
   task: { task: any };
 
   constructor(
+    private schedulesService: SchedulesService,
     private configService: ConfigurationService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    public fb: FormBuilder
   ) {}
 
   ngOnInit() {}
@@ -29,7 +38,14 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.task !== undefined) {
       this.getCategory();
     }
+    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to varify time format 00:00:00
+    this.form = this.fb.group({
+      repeat: ['', [Validators.required, Validators.pattern(regExp)]],
+      exclusive: [Validators.required],
+      enabled: [Validators.required]
+    });
   }
+
   public toggleModal(isOpen: Boolean) {
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
@@ -40,62 +56,26 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public getCategory(): void {
-    console.log(this.task);
-    const c = this.task['name'];
+    this.enabled = this.task['enabled'];
+    this.exclusive = this.task['exclusive'];
+    this.repeat = Utils.secondsToDhms(this.task['repeat']).time;
+    this.processName = this.task['processName'];
 
-    // Hard coded block starts
-    const d = {
-      'URL': {
-        'default': 'https://pi-server:5460/ingress/messages',
-        'description': 'Destination URL of PI Connector',
-        'type': 'string',
-        'value': 'https://pi-server:5460/ingress/messages'
-      },
-      'producerToken': {
-        'default': 'ue5ced49X',
-        'value': 'ue5ced49X ...',
-        'type': 'string',
-        'description': 'Producer token'
-      }
-    };
-
-    this.category = {
-      value: [d],
-      key: c
-    };
-
-    const cc = this.category;
-    for (const key in cc) {
-      if (cc.hasOwnProperty(key)) {
-        this.configItems.push({
-          [key]: cc[key].value,
-          type: cc[key].type
-        });
-      }
-    }
-    // Hard coded block ends
-
-    this.configService.getCategory(c).subscribe(
+    this.configService.getCategory(this.processName).subscribe(
       (data: any) => {
-        console.log(data);
-        // Fetch original
+        this.category = {
+          value: [data],
+          key: this.processName
+        };
 
-        // this.category = {
-        //   value: [data],
-        //   key: c
-        // };
-
-        // console.log('category', this.category);
-
-        // for (const key in data) {
-        //   if (data.hasOwnProperty(key)) {
-        //     this.configItems.push({
-        //       [key]: data[key].value,
-        //       type: data[key].type
-        //     });
-        //   }
-        // }
-        // console.log(this.configItems);
+        for (const key in data) {
+          if (data.hasOwnProperty(key)) {
+            this.configItems.push({
+              [key]: data[key].value,
+              type: data[key].type
+            });
+          }
+        }
       },
       error => {
         if (error.status === 0) {
@@ -118,13 +98,14 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       }
     }
     const diff = this.difference(updatedRecord, this.configItems);
+
     this.configItems.forEach(item => {
       for (const key in item) {
         diff.forEach(changedItem => {
           for (const k in changedItem) {
             if (key === k && item[key] !== changedItem[k]) {
               this.saveConfigValue(
-                this.task['name'],
+                this.task['processName'],
                 key,
                 changedItem[k],
                 item.type
@@ -156,7 +137,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     value: string,
     type: string
   ) {
-    // console.log('item ', categoryName, configItem, value, type);
     this.configService
       .saveConfigItem(categoryName, configItem, value, type)
       .subscribe(
@@ -174,5 +154,30 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           }
         }
       );
+  }
+
+  public saveScheduleFields(form: NgForm) {
+    const repeatTime = Utils.convertTimeToSec(form.controls['repeat'].value);
+
+    const updatePayload = {
+      'process_name': this.processName,
+      'repeat': repeatTime,
+      'exclusive': this.form.get('exclusive').value,
+      'enabled': this.form.get('enabled').value
+    };
+
+    this.schedulesService.updateSchedule(this.task['id'], updatePayload).
+      subscribe(
+        () => {
+          this.alertService.success('Schedule updated successfully.');
+          this.toggleModal(false);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }
