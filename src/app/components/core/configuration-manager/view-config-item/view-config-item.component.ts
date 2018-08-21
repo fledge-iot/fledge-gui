@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { sortBy } from 'lodash';
+import { NgProgress } from 'ngx-progressbar';
 
-import { NgProgress } from '../../../../../../node_modules/ngx-progressbar';
 import { AlertService, ConfigurationService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
 
@@ -9,8 +10,9 @@ import ConfigTypeValidation from '../configuration-type-validation';
   templateUrl: './view-config-item.component.html',
   styleUrls: ['./view-config-item.component.css']
 })
-export class ViewConfigItemComponent implements OnInit {
+export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
+  public categoryConfiguration = [];
   public selectedValue: string;
   public isValidJson = true;
   public selectedCategoryId: string;
@@ -21,6 +23,15 @@ export class ViewConfigItemComponent implements OnInit {
     public ngProgress: NgProgress) { }
 
   ngOnInit() { }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.categoryConfigurationData.currentValue !== undefined) {
+      const configInfo = changes.categoryConfigurationData.currentValue.value;
+      configInfo[0] = sortBy(configInfo[0], ['order', 'description']);
+      changes.categoryConfigurationData.currentValue.value = configInfo;
+    }
+    this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
+  }
 
   public restoreConfigFieldValue(configItemKey, categoryKey, configValue, configType) {
     let itemKey = categoryKey.toLowerCase() + '-' + configItemKey.toLowerCase();
@@ -115,7 +126,6 @@ export class ViewConfigItemComponent implements OnInit {
     }
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
     cancelButton.classList.remove('hidden');
-    console.log('value', value);
     if (value.trim().length !== 0) {
       this.isEmptyValue = false;
       return;
