@@ -31,7 +31,7 @@ export class NorthComponent implements OnInit {
       subscribe(
         (data) => {
           this.tasks = data;
-          this.tasks = sortBy(this.tasks, ['name']);
+          this.tasks = sortBy(this.tasks, ['enabled']).reverse();
         },
         error => {
           if (error.status === 0) {
