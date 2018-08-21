@@ -27,8 +27,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.categoryConfigurationData.currentValue !== undefined) {
       const configInfo = changes.categoryConfigurationData.currentValue.value;
-      configInfo[0] = sortBy(configInfo[0], ['order', 'description']);
-      changes.categoryConfigurationData.currentValue.value = configInfo;
+      if (configInfo !== undefined) {
+        configInfo[0] = sortBy(configInfo[0], ['order', 'description']);
+        changes.categoryConfigurationData.currentValue.value = configInfo;
+      }
     }
     this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
   }
