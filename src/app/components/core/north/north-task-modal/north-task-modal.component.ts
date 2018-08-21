@@ -160,7 +160,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     const repeatTime = Utils.convertTimeToSec(form.controls['repeat'].value);
 
     const updatePayload = {
-      'process_name': this.processName,
       'repeat': repeatTime,
       'exclusive': form.controls['exclusive'].value,
       'enabled': form.controls['enabled'].value
