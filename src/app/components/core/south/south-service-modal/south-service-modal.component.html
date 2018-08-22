@@ -11,8 +11,8 @@
     <section class="modal-card-body">
       <div class="card">
         <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
-          <div class="columns is-multiline" *ngFor="let categoryData of category?.value">
-            <ng-container *ngFor="let configItem of (categoryData | keys)">
+          <div *ngIf="category != undefined" class="columns is-multiline">
+            <ng-container *ngFor="let configItem of (category.value | keys)">
               <div *ngIf="!configItem.value.readonly" class="column is-narrow is-half">
                 <div class="is-clearfix"></div>
                 <div class="box">
@@ -26,18 +26,18 @@
                         </p>
                         <div class="control is-fullwidth">
                           <div *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'" class="select is-fullwidth is-small">
-                            <select name="{{configItem.key}}" [(ngModel)]="configItem.value.value">
+                            <select name="{{configItem.value.key}}" [(ngModel)]="configItem.value.value">
                               <option [value]="true">true</option>
                               <option [value]="false">false</option>
                             </select>
                           </div>
-                          <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" class="input is-small" type="text" name="{{configItem.key}}"
+                          <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" class="input is-small" type="text" name="{{configItem.value.key}}"
                             [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' [(ngModel)]="configItem.value.value"
                           />
-                          <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" type="number" name="{{configItem.key}}" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                          <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" type="number" name="{{configItem.value.key}}" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                             class="input is-small" [(ngModel)]="configItem.value.value" appNumberOnly />
                           <div class="field">
-                            <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" name="{{configItem.key}}" class="textarea is-small"
+                            <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" name="{{configItem.value.key}}" class="textarea is-small"
                               type="text" [(ngModel)]="configItem.value.value">
                           {{configItem?.value?.value}}
                           </textarea>

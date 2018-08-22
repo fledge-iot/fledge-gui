@@ -48,7 +48,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.configService.getCategory(this.service['name']).
       subscribe(
         (data) => {
-
           let configAttributes = [];
           for (const key in data) {
             if (data.hasOwnProperty(key)) {
@@ -57,11 +56,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
               configAttributes.push(element);
             }
           }
-          configAttributes = sortBy(data, ['order', 'description']);
+          configAttributes = sortBy(configAttributes, ['order', 'description']);
           this.category = {
-            value: [configAttributes],
+            value: configAttributes,
             key: this.service['name']
           };
+          console.log('category', this.category);
           for (const key in data) {
             if (data.hasOwnProperty(key)) {
               this.configItems.push({
