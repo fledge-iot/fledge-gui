@@ -22,7 +22,7 @@
         <td>
           {{schedule.name}} 
         </td>
-        <td>{{schedule.type}}</td>
+        <td><small>{{schedule.type}}</small></td>
         <td>
           <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
         </td>

@@ -40,7 +40,7 @@
           <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
         </td>
         <td>
-          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button" (click)="cancelRunninTask(task.id)">Cancel</button>
+          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small" (click)="cancelRunninTask(task.id)">Cancel</button>
         </td>
       </tr>
     </table>
