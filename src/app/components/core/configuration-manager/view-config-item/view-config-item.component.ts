@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { sortBy } from 'lodash';
+import { NgProgress } from 'ngx-progressbar';
 
-import { NgProgress } from '../../../../../../node_modules/ngx-progressbar';
 import { AlertService, ConfigurationService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
 
@@ -9,8 +10,9 @@ import ConfigTypeValidation from '../configuration-type-validation';
   templateUrl: './view-config-item.component.html',
   styleUrls: ['./view-config-item.component.css']
 })
-export class ViewConfigItemComponent implements OnInit {
+export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
+  public categoryConfiguration;
   public selectedValue: string;
   public isValidJson = true;
   public selectedCategoryId: string;
@@ -21,6 +23,25 @@ export class ViewConfigItemComponent implements OnInit {
     public ngProgress: NgProgress) { }
 
   ngOnInit() { }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.categoryConfigurationData.currentValue !== undefined) {
+      let configAttributes = [];
+      if (changes.categoryConfigurationData.currentValue.length !== 0) {
+        const currentConfigValue = changes.categoryConfigurationData.currentValue.value;
+        for (const key in currentConfigValue[0]) {
+          if (currentConfigValue[0].hasOwnProperty(key)) {
+            const element = currentConfigValue[0][key];
+            element.key = key;
+            configAttributes.push(element);
+          }
+        }
+        configAttributes = sortBy(configAttributes, ['order', 'description']);
+        changes.categoryConfigurationData.currentValue.value = configAttributes;
+        this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
+      }
+    }
+  }
 
   public restoreConfigFieldValue(configItemKey, categoryKey, configValue, configType) {
     let itemKey = categoryKey.toLowerCase() + '-' + configItemKey.toLowerCase();
@@ -115,7 +136,6 @@ export class ViewConfigItemComponent implements OnInit {
     }
     const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + configItemKey.toLowerCase());
     cancelButton.classList.remove('hidden');
-    console.log('value', value);
     if (value.trim().length !== 0) {
       this.isEmptyValue = false;
       return;
