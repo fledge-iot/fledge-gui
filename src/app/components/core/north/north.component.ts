@@ -45,7 +45,9 @@ export class NorthComponent implements OnInit, OnDestroy {
       subscribe(
         (data) => {
           this.tasks = data;
-          this.tasks = sortBy(this.tasks, ['enabled']).reverse();
+          this.tasks = sortBy(this.tasks, function(obj) {
+            return !obj.enabled + obj.processName.toLowerCase();
+          });
           if (this.refreshInterval > 0) {
             this.enableRefreshTimer();
           }
