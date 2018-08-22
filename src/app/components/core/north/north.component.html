@@ -41,4 +41,4 @@
     </div>
   </div>
 </div>
-<app-north-task-modal [task]="task"></app-north-task-modal>
+<app-north-task-modal (notify)='onNotify()' [task]="task"></app-north-task-modal>

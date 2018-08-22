@@ -31,6 +31,10 @@
               </div>
             </div>
           </div>
+          <div *ngIf="isSaved" id="message" class="notification is-success is-small is-pulled-right">
+              <button id="delete" class="delete" (click)="hideNotification()"></button>
+              Record Saved Successfully
+            </div>
         </form>
         <footer class="modal-card-foot">
           <div class="control">
@@ -38,7 +42,7 @@
           </div>
           &nbsp;
           <div class="control">
-            <button class="button is-small hidden" (click)="toggleModal(false)">Cancel</button>
+            <button class="button is-small is-text" (click)="toggleModal(false)">Cancel</button>
           </div>
         </footer>
       </div>

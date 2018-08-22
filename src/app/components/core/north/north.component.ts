@@ -76,4 +76,9 @@ export class NorthComponent implements OnInit, OnDestroy {
     this.timerSubscription = Observable.timer(this.refreshInterval)
       .subscribe(() => this.getNorthTasks());
   }
+
+  onNotify() {
+    this.getNorthTasks();
+  }
+
 }

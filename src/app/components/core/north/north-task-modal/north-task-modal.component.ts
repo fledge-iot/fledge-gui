@@ -1,5 +1,5 @@
 import { ConfigurationService, AlertService, SchedulesService } from '../../../../services';
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
 import { NgForm, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 import Utils from '../../../../utils';
@@ -22,8 +22,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   processName: any;
   form: FormGroup;
 
+  isSaved = false;
+
   @Input()
   task: { task: any };
+
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private schedulesService: SchedulesService,
@@ -47,6 +51,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public toggleModal(isOpen: Boolean) {
+    this.isSaved = false;
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
       modal.classList.add('is-active');
@@ -131,6 +136,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     return changes(obj, bs);
   }
 
+  public hideNotification() {
+    this.isSaved = false;
+    const deleteBtn = <HTMLDivElement>document.getElementById('delete');
+    deleteBtn.parentElement.classList.add('is-hidden');
+    return false;
+  }
+
   public saveConfigValue(
     categoryName: string,
     configItem: string,
@@ -142,9 +154,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       .subscribe(
         data => {
           if (data['value'] !== undefined) {
-            this.alertService.success('Value updated successfully');
+            this.isSaved = true;
           }
-          this.toggleModal(false);
         },
         error => {
           if (error.status === 0) {
@@ -169,6 +180,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       subscribe(
         () => {
           this.alertService.success('Schedule updated successfully.');
+          this.notify.emit();
           this.toggleModal(false);
         },
         error => {
