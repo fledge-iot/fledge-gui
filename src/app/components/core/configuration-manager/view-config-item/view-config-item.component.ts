@@ -12,7 +12,7 @@ import ConfigTypeValidation from '../configuration-type-validation';
 })
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
-  public categoryConfiguration = [];
+  public categoryConfiguration;
   public selectedValue: string;
   public isValidJson = true;
   public selectedCategoryId: string;
