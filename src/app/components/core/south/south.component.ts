@@ -36,6 +36,10 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   public getSouthboundServices() {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
     this.servicesHealthService.getSouthServices().
       subscribe(
         (data: any) => {
