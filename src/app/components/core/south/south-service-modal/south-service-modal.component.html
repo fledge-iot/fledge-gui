@@ -73,7 +73,8 @@
                 <div class="field">
                   <label class="label subtitle is-6">Service Info</label>
                   <div class="control">
-                    <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                    <small *ngIf="service.address !== ''">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                    <span *ngIf="service.address === ''" class="tag is-rounded">not available</span>
                   </div>
                 </div>
               </div>

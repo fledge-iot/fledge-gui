@@ -61,7 +61,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             value: configAttributes,
             key: this.service['name']
           };
-          console.log('category', this.category);
           for (const key in data) {
             if (data.hasOwnProperty(key)) {
               this.configItems.push({
