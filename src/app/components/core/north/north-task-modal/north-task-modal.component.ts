@@ -3,6 +3,7 @@ import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angu
 import { NgForm, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as _ from 'lodash';
 import Utils from '../../../../utils';
+import { NgProgress } from 'ngx-progressbar';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -29,10 +30,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private schedulesService: SchedulesService,
     private configService: ConfigurationService,
     private alertService: AlertService,
-    public fb: FormBuilder
-  ) {}
+    public fb: FormBuilder,
+    public ngProgress: NgProgress,
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnChanges() {
     if (this.task !== undefined) {
@@ -122,7 +124,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   public difference(obj, bs) {
     function changes(object, base) {
-      return _.transform(object, function(result, value, key) {
+      return _.transform(object, function (result, value, key) {
         if (!_.isEqual(value, base[key])) {
           result[key] =
             _.isObject(value) && _.isObject(base[key])
@@ -174,15 +176,20 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       'exclusive': form.controls['exclusive'].value,
       'enabled': form.controls['enabled'].value
     };
-
+    /** request started */
+    this.ngProgress.start();
     this.schedulesService.updateSchedule(this.task['id'], updatePayload).
       subscribe(
         () => {
+          /** request completed */
+          this.ngProgress.done();
           this.alertService.success('Schedule updated successfully.');
           this.notify.emit();
           this.toggleModal(false);
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
