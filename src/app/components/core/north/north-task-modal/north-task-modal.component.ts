@@ -99,6 +99,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
       }
     }
+
     const diff = this.difference(updatedRecord, this.configItems);
     this.configItems.forEach(item => {
       for (const key in item) {
@@ -111,6 +112,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
                 changedItem[k],
                 item.type
               );
+              item[key] = changedItem[k];
             }
           }
         });
