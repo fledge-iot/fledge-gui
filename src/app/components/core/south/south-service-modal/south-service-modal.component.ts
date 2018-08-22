@@ -1,9 +1,10 @@
-import { Component, Input, OnChanges, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import * as _ from 'lodash';
+import { isEqual, isObject, sortBy, transform } from 'lodash';
+import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
-import { NgProgress } from 'ngx-progressbar';
+import ConfigTypeValidation from '../../configuration-manager/configuration-type-validation';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -11,19 +12,14 @@ import { NgProgress } from 'ngx-progressbar';
   styleUrls: ['./south-service-modal.component.css']
 })
 export class SouthServiceModalComponent implements OnInit, OnChanges {
-  category: any;
 
-  configItems = [];
-
-  model: any;
-
-  @Input()
-  service: { service: any };
-
-  isSaved = false;
-
+  public category: any;
+  public configItems = [];
+  public model: any;
+  public isSaved = false;
   public isEnabled;
 
+  @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private configService: ConfigurationService,
@@ -31,12 +27,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public ngProgress: NgProgress,
     private schedulesService: SchedulesService) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   ngOnChanges() {
     if (this.service !== undefined) {
-      console.log(this.service);
       this.getCategory();
     }
   }
@@ -53,12 +47,20 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public getCategory(): void {
     this.configService.getCategory(this.service['name']).
       subscribe(
-        (data: any) => {
+        (data) => {
+          let configAttributes = [];
+          for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+              const element = data[key];
+              element.key = key;
+              configAttributes.push(element);
+            }
+          }
+          configAttributes = sortBy(configAttributes, ['order', 'description']);
           this.category = {
-            value: [data],
+            value: configAttributes,
             key: this.service['name']
           };
-
           for (const key in data) {
             if (data.hasOwnProperty(key)) {
               this.configItems.push({
@@ -77,6 +79,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         }
     );
   }
+
+  public getConfigAttributeType(key) {
+    return ConfigTypeValidation.getValueType(key);
+  }
+
 
   public saveConfiguration(form: NgForm) {
     const updatedRecord = [];
@@ -106,12 +113,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public difference(obj, bs) {
     function changes(object, base) {
-      return _.transform(object, function(result, value, key) {
-        if (!_.isEqual(value, base[key])) {
-          result[key] =
-            _.isObject(value) && _.isObject(base[key])
-              ? changes(value, base[key])
-              : value;
+      return transform(object, function (result, value, key) {
+        if (!isEqual(value, base[key])) {
+          result[key] = (isObject(value) && isObject(base[key])) ? changes(value, base[key]) : value;
         }
       });
     }
