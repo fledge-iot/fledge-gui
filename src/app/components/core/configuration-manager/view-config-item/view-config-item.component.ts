@@ -26,13 +26,21 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.categoryConfigurationData.currentValue !== undefined) {
-      const configInfo = changes.categoryConfigurationData.currentValue.value;
-      if (configInfo !== undefined) {
-        configInfo[0] = sortBy(configInfo[0], ['order', 'description']);
-        changes.categoryConfigurationData.currentValue.value = configInfo;
+      let configAttributes = [];
+      if (changes.categoryConfigurationData.currentValue.length !== 0) {
+        const currentConfigValue = changes.categoryConfigurationData.currentValue.value;
+        for (const key in currentConfigValue[0]) {
+          if (currentConfigValue[0].hasOwnProperty(key)) {
+            const element = currentConfigValue[0][key];
+            element.key = key;
+            configAttributes.push(element);
+          }
+        }
+        configAttributes = sortBy(configAttributes, ['order', 'description']);
+        changes.categoryConfigurationData.currentValue.value = configAttributes;
+        this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
       }
     }
-    this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
   }
 
   public restoreConfigFieldValue(configItemKey, categoryKey, configValue, configType) {
