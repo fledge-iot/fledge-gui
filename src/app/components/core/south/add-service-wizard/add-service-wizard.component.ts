@@ -26,6 +26,8 @@ export class AddServiceWizardComponent implements OnInit {
 
   public serviceType = 'South';
 
+  isScheduleEnabled = true;
+
   serviceForm = new FormGroup({
     name: new FormControl(),
     plugin: new FormControl()
@@ -113,7 +115,7 @@ export class AddServiceWizardComponent implements OnInit {
           this.isValidName = false;
           return;
         }
-        nxtButton.textContent = 'Done';
+        nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
           const payload = {
@@ -126,7 +128,11 @@ export class AddServiceWizardComponent implements OnInit {
         }
         break;
       case 2:
-        if (this.serviceId.length > 0) {
+        nxtButton.textContent = 'Done';
+        previousButton.textContent = 'Previous';
+        break;
+      case 3:
+        if (this.serviceId.length > 0 && this.isScheduleEnabled) {
           /** request started */
           this.ngProgress.start();
           this.schedulesService.enableSchedule(this.serviceId).
@@ -152,6 +158,8 @@ export class AddServiceWizardComponent implements OnInit {
                   this.alertService.error(error.statusText);
                 }
               });
+        } else {
+          this.router.navigate(['/south']);
         }
         break;
       default:
@@ -256,4 +264,13 @@ export class AddServiceWizardComponent implements OnInit {
         }
       });
   }
+
+  onCheckboxClicked(event) {
+    if (event.target.checked) {
+      this.isScheduleEnabled = true;
+    } else {
+      this.isScheduleEnabled = false;
+    }
+  }
+
 }
