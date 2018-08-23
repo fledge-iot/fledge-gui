@@ -65,11 +65,13 @@
                   <div class="column">
                     <input id="repeat_day" class="input" type='number' appNumberOnly min="0" max="365" placeholder="days" formControlName="repeat_day"
                       (input)="validateRepeatDay()">
-                    <small *ngIf="!isValidDay" class="help is-danger level-left">&nbsp; Repeat days must be in range 0 - 365.</small>
+                    <small *ngIf="!isValidDay" class="help is-danger level-left">&nbsp; Repeat days must be in range 0 -
+                      365.</small>
                   </div>
                   <div class="column">
                     <input id="repeat_time" class="input" type='text' placeholder="hh:mm:ss" formControlName="repeat_time" mask='00:00:00' (input)="validateRepeatTime($event)">
-                    <small *ngIf="!isValidTime" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:01 - 23:59:59 </small>
+                    <small *ngIf="!isValidTime" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:01
+                      - 23:59:59 </small>
                   </div>
                 </div>
               </div>
@@ -89,18 +91,11 @@
         </p>
       </div>
 
-      <div class="box step-content has-text-centered" id="c-3">
-        <p *ngIf="isTaskEnabled" [ngClass]="{'has-text-centered': '!isTaskEnabled'}">
-          <span class="icon has-text-success">
-            <i class="fa fa-check-square"></i>
-          </span> {{ enableTaskMsg }}
-        </p>
-
-        <p *ngIf="!isTaskEnabled && enableTaskMsg != ''">
-          <span class="icon has-text-danger">
-            <i class="fa fa-ban"></i>
-          </span> {{ enableTaskMsg }}
-        </p>
+      <div class="box step-content" id="c-3">
+        <div class="field has-text-centered">
+          <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+          <label class="label subtitle is-6">Enabled</label>
+        </div>
       </div>
     </form>
   </div>

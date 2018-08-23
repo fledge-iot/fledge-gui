@@ -26,6 +26,7 @@ export class AddTaskWizardComponent implements OnInit {
   public isValidTime = true;
   public addTaskMsg = '';
   public enableTaskMsg = '';
+  public isScheduleEnabled = true;
 
   taskForm = new FormGroup({
     name: new FormControl(),
@@ -129,7 +130,7 @@ export class AddTaskWizardComponent implements OnInit {
           this.isValidName = false;
           return;
         }
-        nxtButton.textContent = 'Done';
+        nxtButton.textContent = 'Next';
         previousButton.disabled = false;
         if (formValues['repeat_day'] === '') {
           this.isValidDay = false;
@@ -155,7 +156,10 @@ export class AddTaskWizardComponent implements OnInit {
         break;
       case 2:
         nxtButton.textContent = 'Done';
-        if (this.taskId.length > 0) {
+        previousButton.textContent = 'Previous';
+        break;
+      case 3:
+        if (this.taskId.length > 0 && this.isScheduleEnabled) {
           /** request started */
           this.ngProgress.start();
           this.schedulesService.enableSchedule(this.taskId).
@@ -181,6 +185,8 @@ export class AddTaskWizardComponent implements OnInit {
                   this.alertService.error(error.statusText);
                 }
               });
+        } else {
+          this.router.navigate(['/north']);
         }
         break;
       default:
@@ -309,5 +315,13 @@ export class AddTaskWizardComponent implements OnInit {
   changedSelectedPlugin() {
     this.isValidPlugin = true;
     this.isSinglePlugin = true;
+  }
+
+  onCheckboxClicked(event) {
+    if (event.target.checked) {
+      this.isScheduleEnabled = true;
+    } else {
+      this.isScheduleEnabled = false;
+    }
   }
 }
