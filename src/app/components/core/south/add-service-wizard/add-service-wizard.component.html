@@ -67,17 +67,10 @@
       </div>
 
       <div class="box step-content has-text-centered" id="c-3">
-        <p *ngIf="isServiceEnabled" [ngClass]="{'has-text-centered': '!isServiceEnabled'}">
-          <span class="icon has-text-success">
-            <i class="fa fa-check-square"></i>
-          </span> {{ enableServiceMsg }}
-        </p>
-
-        <p *ngIf="!isServiceEnabled && enableServiceMsg != ''">
-          <span class="icon has-text-danger">
-            <i class="fa fa-ban"></i>
-          </span> {{ enableServiceMsg }}
-        </p>
+          <div class="field has-text-centered">
+            <input class="checkbox" type="checkbox"  checked (click)="onCheckboxClicked($event)">
+            <label class="label subtitle is-6">Enabled</label>
+          </div>
       </div>
     </form>
   </div>
