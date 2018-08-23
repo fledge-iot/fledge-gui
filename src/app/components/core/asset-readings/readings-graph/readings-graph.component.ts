@@ -8,7 +8,7 @@ import { AssetsService, PingService } from '../../../../services';
 import { AssetSummaryService } from './../asset-summary/asset-summary-service';
 
 import ReadingsValidator from '../assets/readings-validator';
-import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import { MAX_INT_SIZE, POLLING_INTERVAL, COLOR_CODES } from '../../../../utils';
 
 
 @Component({
@@ -24,10 +24,11 @@ export class ReadingsGraphComponent {
   public assetReadingSummary = [];
   public isInvalidLimit = false;
   public MAX_RANGE = MAX_INT_SIZE;
-  public DEFAULT_LIMIT = 100;
+  public DEFAULT_LIMIT = 10;
   public graphRefreshInterval = POLLING_INTERVAL;
   private graphTimerSubscription: AnonymousSubscription;
   public limit: number;
+  public readKeyColorLabel = [];
 
   constructor(private assetService: AssetsService,
     private assetSummaryService: AssetSummaryService,
@@ -95,6 +96,7 @@ export class ReadingsGraphComponent {
             this.assetSummaryService.assetReadingSummary.subscribe(
               value => {
                 this.assetReadingSummary = value;
+                console.log('this.assetReadingSummary', this.assetReadingSummary);
               });
             this.getAssetTimeReading(data);
           } else {
@@ -111,135 +113,75 @@ export class ReadingsGraphComponent {
 
   public getAssetTimeReading(assetChartRecord) {
     let assetTimeLabels = [];
-    let assetReading = [];
-    const first_dataset = [];
-    const second_dataset = [];
-    const third_dataset = [];
-    let d1;
-    let d2;
-    let d3;
     const datePipe = new MomentDatePipe();
 
+    let assetReading = [];
     if (assetChartRecord.length === 0) {
       assetTimeLabels = [];
       assetReading = [];
     } else {
       assetChartRecord.reverse().forEach(data => {
-        let count = 0;
         Object.keys(data.reading).forEach(key => {
-          count++;
-          switch (count) {
-            case 1:
-              first_dataset.push(data.reading[key]);
-              d1 = {
-                data: first_dataset,
-                label: key
-              };
-              break;
-            case 2:
-              second_dataset.push(data.reading[key]);
-              d2 = {
-                data: second_dataset,
-                label: key
-              };
-              break;
-            case 3:
-              third_dataset.push(data.reading[key]);
-              d3 = {
-                data: third_dataset,
-                label: key
-              };
-              break;
-            default:
-              break;
+          if (assetReading.length < Object.keys(data.reading).length) {
+            const read = {
+              key: key,
+              values: [data.reading[key]],
+            };
+            assetReading.push(read);
+          } else {
+            assetReading.map(el => {
+              if (el.key === key) {
+                el.values.push(data.reading[key]);
+              }
+            });
           }
         });
         assetTimeLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss'));
       });
-      assetReading.push(d1);
-      assetReading.push(d2);
-      assetReading.push(d3);
-      // remove undefined dataset from the array
-      assetReading = assetReading.filter(function (n) { return n !== undefined; });
     }
     this.statsAssetReadingsGraph(assetTimeLabels, assetReading);
   }
 
-  private statsAssetReadingsGraph(labels, assetReading): void {
-    let ds = [];
-    if (assetReading.length === 3) {
-      const d1 = assetReading[0].data;
-      const d2 = assetReading[1].data;
-      const d3 = assetReading[2].data;
-      ds = [{
-        label: assetReading[0].label,
-        data: d1,
-        fill: false,
-        lineTension: 0.1,
-        spanGaps: true,
-        backgroundColor: '#3498DB',
-        borderColor: '#85C1E9'
-      },
-      {
-        label: assetReading[1].label,
-        data: d2,
-        fill: false,
-        lineTension: 0.1,
-        spanGaps: true,
-        backgroundColor: '#239B56',
-        borderColor: '#82E0AA',
-      },
-      {
-        label: assetReading[2].label,
-        data: d3,
-        fill: false,
-        lineTension: 0.1,
-        spanGaps: true,
-        backgroundColor: '#B03A2E',
-        borderColor: '#F1948A',
-      }];
-    } else if (assetReading.length === 2) {
-      const d1 = assetReading[0].data;
-      const d2 = assetReading[1].data;
-      ds = [{
-        label: assetReading[0].label,
-        data: d1,
-        fill: false,
-        lineTension: 0.1,
-        spanGaps: true,
-        backgroundColor: '#3498DB',
-        borderColor: '#85C1E9'
-      },
-      {
-        label: assetReading[1].label,
-        data: d2,
-        fill: false,
-        lineTension: 0.1,
-        spanGaps: true,
-        backgroundColor: '#239B56',
-        borderColor: '#82E0AA',
-      }];
-    } else if (assetReading.length === 1) {
-      ds = [{
-        label: assetReading[0].label,
-        data: assetReading[0].data,
-        fill: false,
-        lineTension: 0.1,
-        spanGaps: true,
-        backgroundColor: '#239B56',
-        borderColor: '#82E0AA',
-      }];
-    } else {
-      ds = [{
-        label: [],
-        data: [],
-        fill: false,
-        lineTension: 0.1,
-        spanGaps: true,
-        backgroundColor: '#239B56',
-        borderColor: '#82E0AA',
-      }];
+  getColorCode(readKey, cnt, fill) {
+    let cc = '';
+    if (!['RED', 'GREEN', 'BLUE'].includes(readKey.toUpperCase())) {
+      cc = COLOR_CODES[cnt];
     }
+    if (readKey.toUpperCase() === 'RED') {
+      cc = '#FF334C';
+    } else if (readKey.toUpperCase() === 'BLUE') {
+      cc = '#339FFF';
+    } else if (readKey.toUpperCase() === 'GREEN') {
+      cc = '#008000';
+    }
+
+    if (fill) {
+      const o = {
+        readKey: cc
+      };
+      this.readKeyColorLabel.push({ [readKey] : cc });
+    }
+    console.log(this.readKeyColorLabel);
+    return cc;
+  }
+
+  private statsAssetReadingsGraph(labels, assetReading): void {
+    this.readKeyColorLabel = [];
+    const ds = [];
+    let count = 0;
+    assetReading.forEach(element => {
+      const dt = {
+        label: element.key,
+        data: element.values,
+        fill: false,
+        lineTension: 0.1,
+        spanGaps: true,
+        backgroundColor: this.getColorCode(element.key.trim(), count, true),
+        borderColor: this.getColorCode(element.key, count, false)
+      };
+      count++;
+      ds.push(dt);
+    });
     this.assetChartType = 'line';
     this.setAssetReadingValues(labels, ds);
   }
