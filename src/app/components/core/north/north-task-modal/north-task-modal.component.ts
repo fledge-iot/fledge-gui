@@ -1,7 +1,7 @@
 import { ConfigurationService, AlertService, SchedulesService } from '../../../../services';
 import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
 import { NgForm, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import * as _ from 'lodash';
+import { isEqual, isObject, sortBy, transform } from 'lodash';
 import Utils from '../../../../utils';
 import { NgProgress } from 'ngx-progressbar';
 
@@ -67,8 +67,19 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
     this.configService.getCategory(this.processName).subscribe(
       (data: any) => {
+
+        let configAttributes = [];
+        for (const key in data) {
+          if (data.hasOwnProperty(key)) {
+            const element = data[key];
+            element.key = key;
+            configAttributes.push(element);
+          }
+        }
+        configAttributes = sortBy(configAttributes, ['order', 'description']);
+
         this.category = {
-          value: [data],
+          value: configAttributes,
           key: this.processName
         };
 
@@ -124,10 +135,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   public difference(obj, bs) {
     function changes(object, base) {
-      return _.transform(object, function (result, value, key) {
-        if (!_.isEqual(value, base[key])) {
+      return transform(object, function (result, value, key) {
+        if (!isEqual(value, base[key])) {
           result[key] =
-            _.isObject(value) && _.isObject(base[key])
+            isObject(value) && isObject(base[key])
               ? changes(value, base[key])
               : value;
         }

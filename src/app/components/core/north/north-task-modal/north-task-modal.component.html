@@ -11,8 +11,9 @@
     <section class="modal-card-body">
       <div class="card">
         <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
-          <div class="columns is-multiline" *ngFor="let categoryData of category?.value">
-            <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
+          <div *ngIf="category != undefined" class="columns is-multiline">
+            <ng-container *ngFor="let configItem of (category.value | keys)">
+            <div *ngIf="!configItem.value.readonly" class="column is-narrow is-half">
               <div class="is-clearfix"></div>
               <div class="box">
                 <div class="content">
@@ -20,19 +21,20 @@
                     <div class="control">
                       <p class="subtitle is-6">
                         <span class="tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
-                          {{configItem.key}}
+                          {{configItem.value.key}}
                         </span>
                       </p>
                       <p hidden="true"> {{configItem.value.type}} </p>
                       <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
-                        name="{{configItem.key}}" [(ngModel)]="configItem.value.value" />
-                      <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" name='configItem.key'
+                        name="{{configItem.value.key}}" [(ngModel)]="configItem.value.value" />
+                      <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" name='configItem.value.key'
                         [(ngModel)]="configItem.value.value">{{configItem?.value?.value.trim()}}</textarea>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            </ng-container>
           </div>
 
           <div *ngIf="isSaved" id="message" class="notification is-success is-small is-pulled-right">
