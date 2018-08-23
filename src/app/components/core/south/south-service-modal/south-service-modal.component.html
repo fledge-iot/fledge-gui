@@ -37,8 +37,8 @@
                           <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" type="number" name="{{configItem.value.key}}" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                             class="input is-small" [(ngModel)]="configItem.value.value" appNumberOnly />
                           <div class="field">
-                            <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" name="{{configItem.value.key}}" class="textarea is-small"
-                              type="text" [(ngModel)]="configItem.value.value">
+                            <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" name="{{configItem.value.key}}"
+                              class="textarea is-small" type="text" [(ngModel)]="configItem.value.value">
                           {{configItem?.value?.value}}
                           </textarea>
                           </div>
@@ -71,18 +71,18 @@
             <div *ngIf="service != undefined" class="columns">
               <div class="column">
                 <div class="field">
-                  <label class="label subtitle is-6">Service Info</label>
+                  <label class="label subtitle is-6">Enabled</label>
                   <div class="control">
-                    <small *ngIf="service.address !== ''">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
-                    <span *ngIf="service.address === ''" class="tag is-rounded">not available</span>
+                    <input class="checkbox" type="checkbox" [checked]="service.status === 'running'" (click)="onCheckboxClicked($event)">
                   </div>
                 </div>
               </div>
               <div class="column">
                 <div class="field">
-                  <label class="label subtitle is-6">Enabled</label>
+                  <label class="label subtitle is-6">Service Info</label>
                   <div class="control">
-                    <input class="checkbox" type="checkbox" [checked]="service.status === 'running'" (click)="onCheckboxClicked($event)">
+                    <small *ngIf="service.address !== ''">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                    <span *ngIf="service.address === ''" class="tag is-rounded">not available</span>
                   </div>
                 </div>
               </div>
