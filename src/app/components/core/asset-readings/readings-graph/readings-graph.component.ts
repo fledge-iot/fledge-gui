@@ -24,7 +24,7 @@ export class ReadingsGraphComponent {
   public assetReadingSummary = [];
   public isInvalidLimit = false;
   public MAX_RANGE = MAX_INT_SIZE;
-  public DEFAULT_LIMIT = 10;
+  public DEFAULT_LIMIT = 100;
   public graphRefreshInterval = POLLING_INTERVAL;
   private graphTimerSubscription: AnonymousSubscription;
   public limit: number;
@@ -96,7 +96,6 @@ export class ReadingsGraphComponent {
             this.assetSummaryService.assetReadingSummary.subscribe(
               value => {
                 this.assetReadingSummary = value;
-                console.log('this.assetReadingSummary', this.assetReadingSummary);
               });
             this.getAssetTimeReading(data);
           } else {
@@ -154,14 +153,9 @@ export class ReadingsGraphComponent {
     } else if (readKey.toUpperCase() === 'GREEN') {
       cc = '#008000';
     }
-
     if (fill) {
-      const o = {
-        readKey: cc
-      };
       this.readKeyColorLabel.push({ [readKey] : cc });
     }
-    console.log(this.readKeyColorLabel);
     return cc;
   }
 
