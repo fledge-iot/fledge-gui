@@ -92,9 +92,17 @@
       </div>
 
       <div class="box step-content" id="c-3">
-        <div class="field has-text-centered">
-          <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
-          <label class="label subtitle is-6">Enabled</label>
+        <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Enabled</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+                </div>
+              </div>
+            </div>
         </div>
       </div>
     </form>

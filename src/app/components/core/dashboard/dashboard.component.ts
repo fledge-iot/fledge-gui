@@ -22,7 +22,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   selectedGraphsList = [] =
     [{ key: 'READINGS', checked: true },
-    { key: 'North Readings to PI', checked: true }];
+    { key: 'Readings Sent', checked: true }];
 
   // Array of the graphs to show
   graphsToShow = [];
@@ -66,7 +66,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.selectedGraphsList.length === 0) {
       this.selectedGraphsList = [
         { key: 'READINGS', checked: true },
-        { key: 'North Readings to PI', checked: true }];
+        { key: 'Readings Sent', checked: true }];
     }
 
     localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedGraphsList));
