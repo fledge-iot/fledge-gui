@@ -9,3 +9,8 @@
 .align {
   vertical-align: middle;
 }
+
+label{
+  width: 10vw !important;
+  margin-right: 2vw;
+}

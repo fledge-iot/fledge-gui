@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { isEqual, isObject, sortBy, transform } from 'lodash';
+import { isEqual, isObject, sortBy, isEmpty, transform } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
@@ -15,7 +15,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public category: any;
   public configItems = [];
-  public model: any;
   public isSaved = false;
   public isEnabled;
 
@@ -45,29 +44,13 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public getCategory(): void {
+    const categoryValues = [];
     this.configService.getCategory(this.service['name']).
       subscribe(
         (data) => {
-          let configAttributes = [];
-          for (const key in data) {
-            if (data.hasOwnProperty(key)) {
-              const element = data[key];
-              element.key = key;
-              configAttributes.push(element);
-            }
-          }
-          configAttributes = sortBy(configAttributes, ['order', 'description']);
-          this.category = {
-            value: configAttributes,
-            key: this.service['name']
-          };
-          for (const key in data) {
-            if (data.hasOwnProperty(key)) {
-              this.configItems.push({
-                [key]: data[key].value,
-                type: data[key].type
-              });
-            }
+          if (!isEmpty(data)) {
+            categoryValues.push(data);
+            this.category = { key: this.service['name'], value: categoryValues};
           }
         },
         error => {
