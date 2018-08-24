@@ -33,3 +33,7 @@ label{
 .config-div {
   margin-top: 1vw;
 }
+
+.error {
+  color: red;
+}
