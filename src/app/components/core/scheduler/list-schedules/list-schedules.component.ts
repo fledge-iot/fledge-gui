@@ -64,6 +64,28 @@ export class ListSchedulesComponent implements OnInit {
     };
   }
 
+  private filterCategories(categories) {
+    const allCats  = [];
+    categories.forEach(element => {
+      allCats.push({ key: element.key, children: element.children });
+    });
+
+    const sn = [];
+    const south = allCats.filter(el => el.key.toUpperCase() === 'SOUTH');
+    south.forEach(s => {
+      s.children.forEach( el => {
+        sn.push(el.key);
+      });
+    });
+    const north = allCats.filter(el => el.key.toUpperCase() === 'NORTH');
+    north.forEach(n => {
+      n.children.forEach( el => {
+        sn.push(el.key);
+      });
+    });
+    return sn;
+  }
+
   public filterSouthAndNorth (schedules): void {
     //  TODO: remove log
     console.log('Schedules', schedules);
@@ -72,26 +94,7 @@ export class ListSchedulesComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-
-          const allCats  = [];
-          data['categories'].forEach(element => {
-            allCats.push({ key: element.key, children: element.children });
-          });
-
-          const sn = [];
-          const south = allCats.filter(el => el.key.toUpperCase() === 'SOUTH');
-          south.forEach(s => {
-            s.children.forEach( el => {
-              sn.push(el.key);
-            });
-          });
-          const north = allCats.filter(el => el.key.toUpperCase() === 'NORTH');
-          north.forEach(n => {
-            n.children.forEach( el => {
-              sn.push(el.key);
-            });
-          });
-
+          const sn = this.filterCategories(data['categories']);
           // TODO: Remove log
           console.log('South and North Schedule (category names)', sn);
           //  filter by South and North categories name
