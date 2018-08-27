@@ -40,18 +40,10 @@
               <td>{{service.name}}</td>
               <td>
                 <div class="tags has-addons">
-                  <span *ngIf="service.status == 'running'" class="tag is-success">
-                    <i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; {{service.status}}
-                  </span>
-                  <span *ngIf="service.status == 'down'" class="tag is-danger">
-                    <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
-                  </span>
-                  <span *ngIf="service.status == 'failed'" class="tag is-danger">
-                    <i class="fa fa-times-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
-                  </span>
-                  <span *ngIf="service.status == 'unresponsive'" class="tag is-warning">
-                    <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{service.status}}
-                  </span>
+                  <span *ngIf="service.status == 'running'" class="tag is-success">{{service.status}}</span>
+                  <span *ngIf="service.status == 'down'" class="tag">disabled</span>
+                  <span *ngIf="service.status == 'failed'" class="tag is-danger">{{service.status}}</span>
+                  <span *ngIf="service.status == 'unresponsive'" class="tag is-warning">{{service.status}}</span>
                 </div>
               </td>
               <td>{{service.type}}</td>

@@ -41,18 +41,10 @@
             </td>
             <td class="align-content">
               <div class="tags has-addons">
-                <span *ngIf="svc.status == 'running'" class="tag is-success">
-                  <i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; {{svc.status}}
-                </span>
-                <span *ngIf="svc.status == 'down'" class="tag is-danger">
-                  <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{svc.status}}
-                </span>
-                <span *ngIf="svc.status == 'failed'" class="tag is-danger">
-                  <i class="fa fa-times-circle" aria-hidden="true"></i>&nbsp; {{svc.status}}
-                </span>
-                <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">
-                  <i class="fa fa-circle" aria-hidden="true"></i>&nbsp; {{svc.status}}
-                </span>
+                <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
+                <span *ngIf="svc.status == 'down'" class="tag">disabled</span>
+                <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
+                <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
               </div>
             </td>
             <td class="align-content">
@@ -62,7 +54,7 @@
                     <small>{{data.asset}}</small>
                   </td>
                   <td class="is-pulled-right">
-                    <small>{{data.count}}</small>
+                    <small>{{data.count | number}}</small>
                   </td>
                 </tr>
               </table>
