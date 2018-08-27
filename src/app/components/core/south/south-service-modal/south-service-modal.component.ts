@@ -16,10 +16,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public category: any;
   public useProxy: 'true';
 
-  public configItems = [];
-  public isSaved = false;
-  public isEnabled;
-
   svcCheckbox: FormControl = new FormControl();
 
   @Input() service: { service: any };
@@ -38,13 +34,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
   }
   public toggleModal(isOpen: Boolean) {
-    this.isSaved = false;
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
+      this.svcCheckbox.setValue((this.service['status'] === 'down' || this.service['status'] === '') ? false : true);
       modalWindow.classList.add('is-active');
       return;
     }
-    this.svcCheckbox.setValue((this.service['status'] === 'down' || this.service['status'] === '') ? false : true);
     modalWindow.classList.remove('is-active');
   }
 
@@ -69,65 +64,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     );
   }
 
-  public getConfigAttributeType(key) {
-    return ConfigTypeValidation.getValueType(key);
-  }
-
-
-  public saveConfiguration(form: NgForm) {
-    const updatedRecord = [];
-    const formData = form.value;
-    for (const key in formData) {
-      if (formData.hasOwnProperty(key)) {
-        updatedRecord.push({
-          [key]: formData[key]
-        });
-      }
-    }
-    const diff = this.difference(updatedRecord, this.configItems);
-
-    this.configItems.forEach(item => {
-      for (const key in item) {
-        diff.forEach(changedItem => {
-          for (const k in changedItem) {
-            if (key === k && item[key] !== changedItem[k]) {
-              item[key] = changedItem[k],
-                this.saveConfigValue(this.service['name'], key, changedItem[k], item.type);
-            }
-          }
-        });
-      }
-    });
-  }
-
-  public difference(obj, bs) {
-    function changes(object, base) {
-      return transform(object, function (result, value, key) {
-        if (!isEqual(value, base[key])) {
-          result[key] = (isObject(value) && isObject(base[key])) ? changes(value, base[key]) : value;
-        }
-      });
-    }
-    return changes(obj, bs);
-  }
-
-  public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
-    this.configService.saveConfigItem(categoryName, configItem, value, type).
-      subscribe(
-        (data) => {
-          if (data['value'] !== undefined) {
-            this.isSaved = true;
-          }
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
   public showNotification() {
     const notificationMsg = <HTMLDivElement>document.getElementById('message');
     notificationMsg.classList.remove('is-hidden');
@@ -135,7 +71,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public hideNotification() {
-    this.isSaved = false;
     const deleteBtn = <HTMLDivElement>document.getElementById('delete');
     deleteBtn.parentElement.classList.add('is-hidden');
     return false;
@@ -187,16 +122,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  onCheckboxClicked(event) {
-    if (event.target.checked) {
-      this.isEnabled = true;
-    } else {
-      this.isEnabled = false;
-    }
-  }
-
   changeServiceStatus(serviceName) {
-    if (this.isEnabled) {
+    if (this.svcCheckbox.value === null) {
+      return false;
+    }
+    if (this.svcCheckbox.value === true) {
       this.enableSchedule(serviceName);
     } else {
       this.disableSchedule(serviceName);
