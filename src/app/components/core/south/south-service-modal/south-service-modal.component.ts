@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormControl } from '@angular/forms';
 import { isEqual, isObject, sortBy, isEmpty, transform } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
@@ -18,6 +18,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public isSaved = false;
   public isEnabled;
 
+  svcCheckbox: FormControl = new FormControl();
+
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
@@ -26,7 +28,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public ngProgress: NgProgress,
     private schedulesService: SchedulesService) { }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   ngOnChanges() {
     if (this.service !== undefined) {
@@ -40,6 +42,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       modalWindow.classList.add('is-active');
       return;
     }
+    this.svcCheckbox.setValue(this.service['status'] === 'down' ? false : true);
     modalWindow.classList.remove('is-active');
   }
 
@@ -136,7 +139,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public disableSchedule(serviceName) {
-    console.log('Disabling Schedule:', serviceName);
     /** request started */
     this.ngProgress.start();
     this.schedulesService.disableScheduleByName(serviceName).

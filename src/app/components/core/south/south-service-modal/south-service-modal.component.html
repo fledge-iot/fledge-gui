@@ -22,18 +22,17 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <input class="checkbox" type="checkbox" [checked]="service.status === 'running'" (click)="onCheckboxClicked($event)">
+                  <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'down'" (click)="onCheckboxClicked($event)">
                 </div>
               </div>
             </div>
-            <div class="field is-horizontal">
+            <div *ngIf="service.status !== 'down'" class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label class="label">Service Info</label>
               </div>
               <div class="field-body">
                 <div class="field">
-                  <small *ngIf="service.address !== ''">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
-                  <span *ngIf="service.address === ''" class="tag is-rounded">not available</span>
+                  <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
                 </div>
               </div>
             </div>

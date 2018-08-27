@@ -8,6 +8,7 @@ import { PingService, ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
+import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-south',
@@ -44,6 +45,9 @@ export class SouthComponent implements OnInit, OnDestroy {
       subscribe(
         (data: any) => {
           this.southboundServices = data['services'];
+          this.southboundServices = sortBy(this.southboundServices, function(svc) {
+            return svc['status'] === 'down';
+          });
           if (this.refreshSouthboundServiceInterval > 0) {
             this.refreshSouthboundServices();
           }
