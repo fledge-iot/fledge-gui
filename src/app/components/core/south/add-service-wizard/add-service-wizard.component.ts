@@ -1,37 +1,36 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
-import Utils from '../../../../utils';
 
 import { Router } from '@angular/router';
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
 
 @Component({
-  selector: 'app-add-task-wizard',
-  templateUrl: './add-task-wizard.component.html',
-  styleUrls: ['./add-task-wizard.component.css']
+  selector: 'app-add-service-wizard',
+  templateUrl: './add-service-wizard.component.html',
+  styleUrls: ['./add-service-wizard.component.css']
 })
-export class AddTaskWizardComponent implements OnInit {
+export class AddServiceWizardComponent implements OnInit {
 
   public plugins = [];
-  public scheduleType = [];
   public configurationData;
-  public taskId;
-  public isTaskEnabled = false;
-  public isTaskAdded = false;
+  public serviceId;
+  public isServiceEnabled = false;
+  public isServiceAdded = false;
+  public isValidPlugin = true;
+  public isSinglePlugin = true;
   public isValidName = true;
-  public isValidDay = true;
-  public isValidTime = true;
-  public addTaskMsg = '';
-  public enableTaskMsg = '';
+  public addServiceMsg = '';
+  public enableServiceMsg = '';
+  public selectedPlugins = [];
 
-  taskForm = new FormGroup({
+  public serviceType = 'South';
+
+  isScheduleEnabled = true;
+
+  serviceForm = new FormGroup({
     name: new FormControl(),
-    type: new FormControl(),
-    plugin: new FormControl(),
-    schedule_type: new FormControl(),
-    repeat_day: new FormControl(),
-    repeat_time: new FormControl()
+    plugin: new FormControl()
   });
 
   @Input() categoryConfigurationData;
@@ -45,22 +44,20 @@ export class AddTaskWizardComponent implements OnInit {
     private ngProgress: NgProgress) { }
 
   ngOnInit() {
-    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to varify time format 00:00:00
-    this.taskForm = this.formBuilder.group({
+    this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
-      type: ['', Validators.required],
-      plugin: ['', Validators.required],
-      schedule_type: ['', Validators.required],
-      repeat_day: [Validators.min(0), Validators.max(365)],
-      repeat_time: ['', [Validators.required, Validators.pattern(regExp)]],
+      plugin: ['', Validators.required]
     });
-    this.taskForm.get('type').setValue('north');
-    this.taskForm.get('schedule_type').setValue(3);
+    this.getInstalledSouthPlugins();
   }
 
   movePrevious() {
     const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = last.getAttribute('id');
+    if (+id === 1) {
+      this.router.navigate(['/south']);
+      return;
+    }
     last.classList.remove('is-active');
     const sId = +id - 1;
     const previous = <HTMLElement>document.getElementById('' + sId);
@@ -80,24 +77,13 @@ export class AddTaskWizardComponent implements OnInit {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
 
     switch (+id) {
-      case 1:
-        this.taskForm.get('name').setValue('');
-        this.taskForm.get('type').setValue('north');
-        nxtButton.textContent = 'Next';
-        nxtButton.disabled = false;
-        break;
       case 2:
-        this.taskForm.get('plugin').setValue(this.plugins[0].name);
-        this.taskForm.get('schedule_type').setValue(3);
         nxtButton.textContent = 'Next';
-        previousButton.disabled = true;
+        previousButton.textContent = 'Back';
+        nxtButton.disabled = false;
         break;
       case 3:
-        nxtButton.textContent = 'Add Task';
-        nxtButton.disabled = false;
-        break;
-      case 4:
-        nxtButton.textContent = 'Enable & Start Task';
+        nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
       default:
@@ -106,85 +92,75 @@ export class AddTaskWizardComponent implements OnInit {
   }
 
   moveNext() {
+    this.isValidPlugin = true;
     this.isValidName = true;
-    this.isValidDay = true;
-    this.isValidTime = true;
-    const formValues = this.taskForm.value;
+    const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
-
     switch (+id) {
       case 1:
-        if (this.taskForm.controls.name.value.trim().length === 0) {
+        if (formValues['plugin'] === '') {
+          this.isValidPlugin = false;
+          return;
+        }
+
+        if (formValues['plugin'].length > 1) {
+          this.isSinglePlugin = false;
+          return;
+        }
+
+        if (formValues['name'].trim() === '') {
           this.isValidName = false;
           return;
         }
-        nxtButton.textContent = 'Add Task';
-        previousButton.disabled = false;
-        if (formValues['name'] !== '' && formValues['type'] !== '') {
-          this.servicesHealthService.getInstalledPlugins(formValues['type']).subscribe(
-            (data: any) => {
-              this.plugins = data.plugins;
-              this.taskForm.get('plugin').setValue(this.plugins[0].name);
-            },
-            (error) => {
-              if (error.status === 0) {
-                console.log('service down ', error);
-              } else {
-                this.alertService.error(error.statusText);
-              }
-            });
-          this.getScheduleType();
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
+        if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
+          const payload = {
+            name: formValues['name'],
+            type: this.serviceType,
+            plugin: formValues['plugin'][0]
+          };
+          this.isServiceAdded = true;
+          this.addService(payload, nxtButton);
         }
         break;
       case 2:
-       if (this.taskForm.controls.repeat_day.invalid) {
-          this.isValidDay = false;
-          return;
-        }
-        if (this.taskForm.controls.repeat_time.value.length === 0 || this.taskForm.controls.repeat_time.invalid) {
-          this.isValidTime = false;
-          return;
-        }
-        nxtButton.textContent = 'Enable & Start Task';
-        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['repeat_time'].length > 0) {
-          this.isTaskAdded = true;
-          this.addScheduledTask(formValues, nxtButton);
-        }
+        nxtButton.textContent = 'Done';
+        previousButton.textContent = 'Previous';
         break;
       case 3:
-        nxtButton.textContent = 'Done';
-        if (this.taskId.length > 0) {
+        if (this.serviceId.length > 0 && this.isScheduleEnabled) {
           /** request started */
           this.ngProgress.start();
-          this.schedulesService.enableSchedule(this.taskId).
+          this.schedulesService.enableSchedule(this.serviceId).
             subscribe(
               () => {
                 /** request completed */
                 this.ngProgress.done();
-                this.isTaskEnabled = true;
-                this.enableTaskMsg = 'Task scheduled and enabled successfully.';
-                this.alertService.success(this.enableTaskMsg);
+                this.isServiceEnabled = true;
+                this.enableServiceMsg = 'Service enabled and started successfully.';
+                this.alertService.success(this.enableServiceMsg);
                 previousButton.disabled = true;
+                this.router.navigate(['/south']);
               },
               error => {
                 previousButton.disabled = false;
-                this.isTaskEnabled = false;
+                this.isServiceEnabled = false;
                 /** request completed */
                 this.ngProgress.done();
                 if (error.status === 0) {
                   console.log('service down ', error);
                 } else {
-                  this.enableTaskMsg = error.statusText;
+                  this.enableServiceMsg = error.statusText;
                   this.alertService.error(error.statusText);
                 }
               });
+        } else {
+          this.router.navigate(['/south']);
         }
-        break;
-      case 4:
-        this.router.navigate(['/scheduled-task']);
         break;
       default:
         break;
@@ -210,39 +186,29 @@ export class AddTaskWizardComponent implements OnInit {
     }
   }
 
-  addScheduledTask(formValues, nxtButton) {
+  addService(payload, nxtButton) {
     /** request started */
     this.ngProgress.start();
-    // total time with days and hh:mm:ss
-    const repeatTime = this.taskForm.get('repeat_time').value !== ('' || undefined) ? Utils.convertTimeToSec(
-      this.taskForm.get('repeat_time').value, this.taskForm.get('repeat_day').value) : 0;
-    const payload = {
-      'name': formValues['name'],
-      'plugin': formValues['plugin'],
-      'type': formValues['type'],
-      'schedule_repeat': repeatTime,
-      'schedule_type': formValues['schedule_type']
-    };
-    this.schedulesService.createScheduledTask(payload)
+    this.servicesHealthService.addService(payload)
       .subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success('Task added successfully.');
+          this.alertService.success('Service added successfully.', true);
           this.getCategory(data['name']);
-          this.taskId = data['id'];
-          this.isTaskAdded = true;
+          this.serviceId = data['id'];
+          this.isServiceAdded = true;
           nxtButton.disabled = false;
         },
         (error) => {
           /** request completed */
           this.ngProgress.done();
           nxtButton.disabled = true;
-          this.isTaskAdded = false;
+          this.isServiceAdded = false;
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.addTaskMsg = error.statusText;
+            this.addServiceMsg = error.statusText;
             this.alertService.error(error.statusText);
           }
         });
@@ -273,25 +239,38 @@ export class AddTaskWizardComponent implements OnInit {
         });
   }
 
-  public getScheduleType() {
-    this.scheduleType = [{ name: 'INTERVAL', index: 3 }];
-  }
-
-  validateTaskName(event) {
+  validateServiceName(event) {
     if (event.target.value.trim().length > 0) {
       this.isValidName = true;
     }
   }
 
-  validateRepeatDay() {
-    if (!this.taskForm.controls.repeat_day.invalid) {
-      this.isValidDay = true;
+  public getInstalledSouthPlugins() {
+    /** request started */
+    this.ngProgress.start();
+    this.servicesHealthService.getInstalledPlugins('south').subscribe(
+      (data: any) => {
+        /** request completed */
+        this.ngProgress.done();
+        this.plugins = data.plugins;
+      },
+      (error) => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  onCheckboxClicked(event) {
+    if (event.target.checked) {
+      this.isScheduleEnabled = true;
+    } else {
+      this.isScheduleEnabled = false;
     }
   }
 
-  validateRepeatTime(event) {
-    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeat_time.invalid) {
-      this.isValidTime = true;
-    }
-  }
 }

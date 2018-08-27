@@ -1,55 +1,50 @@
-<div class="columns is-mobile is-multiline" *ngFor="let categoryData of categoryConfigurationData?.value">
-  <div class="column is-narrow is-half" *ngFor="let configItem of (categoryData | keys)">
-    <div class="is-clearfix"></div>
-    <div class="box">
-      <p class="subtitle is-6">
-        {{configItem.value.description}}
-      </p>
-      <div class="content">
-        <div class="field">
-          <div class="control">
-            <p hidden="true"> {{configItem.value.type}} </p>
-            <div class="control is-fullwidth">
-              <div>
-                <div *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'" class="select is-fullwidth is-small">
-                  <select id="select-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" (change)="onTextChange('select-' + categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value)"
-                    name='configItem.value.value' [(ngModel)]="configItem.value.value">
-                    <option [value]="true">true</option>
-                    <option [value]="false">false</option>
-                  </select>
-                </div>
-                <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
-                  class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                  (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value)"
-                  [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' />
-                <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}"
-                  (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value)"
-                  type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' class="input is-small"
-                  [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' appNumberOnly />
-
+<div class="columns">
+  <div class="column">
+    <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
+      <div *ngIf="categoryConfiguration != undefined">
+        <ng-container *ngFor="let configItem of (categoryConfiguration.value | keys)">
+          <div class="config-div" *ngIf="!configItem.value.readonly">
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
+                  {{configItem.value.key}}
+                </label>
+              </div>
+              <div class="field-body">
                 <div class="field">
-                  <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-small" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                    id="{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" (input)="onTextChange(categoryConfigurationData.key.trim() + '-' + configItem.key.trim(), configItem.value.value)"
-                    type="text" [textContent]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'>
-                    {{configItem?.value?.value}}
-                    </textarea>
-                  <div *ngIf="!isValidJson && (selectedCategoryId === (categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase)) && (configItem.value.type | uppercase) == 'JSON'" class="help is-danger level-left">Invalid JSON</div>
-                  <div *ngIf="isEmptyValue && (selectedCategoryId === (categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase))" class="help is-danger level-left">Field can't left blank</div>
+                  <div *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'" class="select is-small">
+                    <select name='{{configItem.value.key}}' [(ngModel)]="configItem.value.value">
+                      <option [value]="true">true</option>
+                      <option [value]="false">false</option>
+                    </select>
+                  </div>
+                  <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
+                    type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                    required />
+                  <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" name="{{configItem.value.key}}" type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                    class="input is-fullwidth is-small" [(ngModel)]="configItem.value.value" appNumberOnly required/>
+
+                  <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
+                    name="{{configItem.value.key}}" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                    type="text" required>{{configItem?.value?.value}}</textarea>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="field is-grouped">
-          <div class="control">
-            <button id="btn-save-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" class="button is-small is-link"
-              (click)="saveConfigValue(categoryConfigurationData.key.trim(), configItem?.key, configItem?.value?.type)">Save</button>
+        </ng-container>
+        &nbsp;
+        <div class="field">
+          <div *ngIf="!f.valid" class="error">
+            <sup>*</sup> Field can't left blank.
+          </div>
+          <div *ngIf="!isValidJson" class="error">
+            Invalid JSON.
           </div>
           <div class="control">
-            <button id="btn-cancel-{{categoryConfigurationData.key.trim() + '-' + configItem.key.trim() | lowercase}}" class="button is-small hidden"
-              (click)="restoreConfigFieldValue(configItem.key.trim(), categoryConfigurationData.key.trim(), configItem.value.value.trim(), configItem.value.type.trim())">Cancel</button>
+            <button type="submit"  class="button is-small is-link is-pulled-right">Save</button>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   </div>
+</div>

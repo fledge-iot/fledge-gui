@@ -31,7 +31,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges(changes: SimpleChanges) {
-    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to varify time format 00:00:00
+    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to verify time format 00:00:00
     this.form = this.fb.group({
       name: ['', [CustomValidator.nospaceValidator]],
       repeatDay: ['', [Validators.min(0), Validators.max(365)]],

@@ -1,0 +1,58 @@
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+</ng-progress>
+<div id="north-task-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head" style="flex-grow:0;">
+      <p *ngIf="task != undefined" class="modal-card-title is-size-6">{{task.processName}}</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="box">
+        <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
+      </div>
+      <hr>
+      <div class="box">
+          <form name="schedule-form" id="scheduleForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
+            <div class="columns">
+              <div class="column">
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Enabled</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled" [(ngModel)]="enabled">
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Exclusive</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive" [(ngModel)]="exclusive">
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Interval</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' [(ngModel)]="repeat"
+                        required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="button is-small is-link is-pulled-right" form="scheduleForm">Save</button>
+          </form>
+        </div>
+    </section>
+  </div>
+</div>

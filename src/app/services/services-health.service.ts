@@ -13,7 +13,9 @@ export class ServicesHealthService {
   private FOGLAMP_RESTART_URL = environment.BASE_URL + 'restart';
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
   private GET_INSTALLED_PLUGINS_URL = environment.BASE_URL + 'plugins/installed';
+  private TRACK_SERVICE_URL = environment.BASE_URL + 'track';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
+  private SOUTH_URL = environment.BASE_URL + 'south';
 
   constructor(private http: HttpClient) { }
 
@@ -85,6 +87,22 @@ export class ServicesHealthService {
   getInstalledPlugins(direction) {
     const params = new HttpParams().set('type', direction);
     return this.http.get(this.GET_INSTALLED_PLUGINS_URL, { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+   *  GET  | /foglamp/track?service=<serviceName>
+   */
+  getInstalledPluginAsset(serviceName) {
+    const params = new HttpParams().set('service', serviceName);
+    return this.http.get(this.TRACK_SERVICE_URL, { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  getSouthServices() {
+    return this.http.get(this.SOUTH_URL).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }

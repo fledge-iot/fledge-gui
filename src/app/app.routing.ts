@@ -4,17 +4,19 @@ import { BackupRestoreComponent } from './components/core/backup-restore';
 import { CertificateStoreComponent } from './components/core/certificate/certificate-store';
 import { DashboardComponent } from './components/core/dashboard';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery';
-import { ServicesHealthComponent } from './components/core/services-health';
+// import { ServicesHealthComponent } from './components/core/services-health';
 import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support';
 import { LoginComponent } from './components/layout/login';
 import { AuthCheckGuard } from './guards';
-import { AddServiceWizardComponent } from './components/core/services-health/add-service-wizard/add-service-wizard.component';
 
 const appRoutes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthCheckGuard] },
+  { path: 'south', loadChildren: './components/core/south/south.module#SouthModule' },
+  { path: 'north', loadChildren: './components/core/north/north.module#NorthModule' },
   { path: 'login', component: LoginComponent },
   { path: 'configuration', loadChildren: './components/core/configuration-manager/configuration.module#ConfigurationModule' },
+  { path: 'north', loadChildren: './components/core/north/north.module#NorthModule' },
   { path: 'scheduled-task', loadChildren: './components/core/scheduler/scheduler.module#SchedulerModule' },
   { path: 'syslog', loadChildren: './components/core/system-log/system-log.module#SystemLogModule' },
   { path: 'asset', loadChildren: './components/core/asset-readings/assets.module#AssetsModule' },

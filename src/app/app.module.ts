@@ -33,6 +33,7 @@ import {
   ConfigurationService,
   ConnectedServiceStatus,
   DiscoveryService,
+  NorthService,
   PingService,
   SchedulesService,
   ServicesHealthService,
@@ -113,6 +114,7 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     SupportService,
     BackupRestoreService,
     PingService,
+    NorthService,
     SchedulesService,
     UserService,
     {

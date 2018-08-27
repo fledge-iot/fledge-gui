@@ -47,6 +47,8 @@ export class ConfigurationManagerComponent implements OnInit {
         (data) => {
           data['categories'].forEach(element => {
             this.rootCategories.push({ key: element.key, description: element.description });
+            this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'SOUTH');
+            this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'NORTH');
           });
           if (onLoadingPage === true) {
             this.getChildren(this.selectedRootCategory);

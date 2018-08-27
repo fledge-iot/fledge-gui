@@ -13,14 +13,6 @@
     display: none;
 }
 
-.input {
-    width: auto;
-}
-
-.textarea {
-    width: auto;
-}
-
 .panel {
     background-color: #fff;
     margin-top: 10px;
@@ -31,4 +23,17 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
+}
+
+label{
+  width: 10vw !important;
+  margin-right: 2vw;
+}
+
+.config-div {
+  margin-top: 1vw;
+}
+
+.error {
+  color: red;
 }
