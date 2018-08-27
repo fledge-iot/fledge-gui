@@ -9,102 +9,50 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="card">
-        <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
-          <div *ngIf="category != undefined" class="columns is-multiline">
-            <ng-container *ngFor="let configItem of (category.value | keys)">
-            <div *ngIf="!configItem.value.readonly" class="column is-narrow is-half">
-              <div class="is-clearfix"></div>
-              <div class="box">
-                <div class="content">
-                  <div class="field">
-                    <div class="control">
-                      <p class="subtitle is-6">
-                        <span class="tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
-                          {{configItem.value.key}}
-                        </span>
-                      </p>
-                      <p hidden="true"> {{configItem.value.type}} </p>
-                      <input *ngIf="configItem.value.type.toUpperCase() !== 'JSON'" class="input is-small" type="text" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : "" '
-                        name="{{configItem.value.key}}" [(ngModel)]="configItem.value.value" />
-                      <textarea rows="3" *ngIf="configItem.value.type.toUpperCase() === 'JSON'" class="textarea is-small" name='configItem.value.key'
-                        [(ngModel)]="configItem.value.value">{{configItem?.value?.value.trim()}}</textarea>
+      <div class="box">
+        <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
+      </div>
+      <hr>
+      <div class="box">
+          <form name="schedule-form" id="scheduleForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
+            <div class="columns">
+              <div class="column">
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Enabled</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled" [(ngModel)]="enabled">
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Exclusive</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive" [(ngModel)]="exclusive">
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Interval</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' [(ngModel)]="repeat"
+                        required>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            </ng-container>
-          </div>
-
-          <div *ngIf="isSaved" id="message" class="notification is-success is-small is-pulled-right">
-            <button id="delete" class="delete" (click)="hideNotification()"></button>
-            Record Saved Successfully
-          </div>
-        </form>
-        <footer class="modal-card-foot">
-          <div class="control">
-            <button id="save" type="submit" class="button is-small is-link" form="ngForm">Save</button>
-          </div>
-          &nbsp;
-          <div class="control">
-            <button class="button is-small is-text" (click)="toggleModal(false)">Cancel</button>
-          </div>
-        </footer>
-      </div>
-      <div class="card">
-        <div class="box">
-          <div class="content">
-            <!-- <div class="is-pulled-left">
-                <p class="title is-6"> Schedule </p>
-              </div>
-              <div class="is-pulled-left">&nbsp;&nbsp;&nbsp;</div>
-              <div class="is-pulled-left">
-                <input id="switchRoundedOutlinedSuccess" type="checkbox" name="switchRoundedOutlinedSuccess" class="switch is-rounded is-outlined is-success"
-                  checked="checked">
-                <label for="switchRoundedOutlinedSuccess"></label>
-              </div>
-              <br>
-              <br> -->
-
-            <form name="schedule-form" id="scheduleForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
-              <div class="columns">
-                <div class="column">
-                  <div class="field">
-                    <label class="label subtitle is-6">Enabled</label>
-                    <div class="control">
-                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled" [(ngModel)]="enabled">
-                    </div>
-                  </div>
-                </div>
-                <div class="column">
-                  <div class="field">
-                    <label class="label subtitle is-6">Exclusive</label>
-                    <div class="control">
-                      <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive" [(ngModel)]="exclusive">
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="columns">
-                <div class="column">
-                  <div class="field">
-                    <label class="label subtitle is-6">Interval</label>
-                    <div class="control">
-                      <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' [(ngModel)]="repeat"
-                        required>
-                      <!-- <small *ngIf="!f.schedule-form.valid" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:00 - 23:59:59</small> -->
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
+            <button class="button is-small is-link is-pulled-right" form="scheduleForm">Save</button>
+          </form>
         </div>
-        <footer class="modal-card-foot">
-          <button class="button is-small is-link" form="scheduleForm">Save</button>
-        </footer>
-      </div>
     </section>
   </div>
 </div>

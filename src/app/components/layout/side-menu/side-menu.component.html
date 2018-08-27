@@ -25,13 +25,18 @@
     </a>
   </li>
   <li>
-    <a id="backup-restore" [ngClass]="{'is-active': step==='/backup-restore'}" (click)="onToggle('/backup-restore')">
-      Backup &amp; Restore
+    <a id="scheduled-task" [ngClass]="{'is-active': step==='/scheduled-task'}" (click)="onToggle('/scheduled-task')">
+      Scheduled Tasks
     </a>
   </li>
   <li>
     <a id="certificate" [ngClass]="{'is-active': step==='/certificate'}" (click)="onToggle('/certificate')">
       Certificate Store
+    </a>
+  </li>
+  <li>
+    <a id="backup-restore" [ngClass]="{'is-active': step==='/backup-restore'}" (click)="onToggle('/backup-restore')">
+      Backup &amp; Restore
     </a>
   </li>
   <li>
@@ -45,20 +50,11 @@
       </li>
     </ul>
   </li>
-
-
-  <li>
-    <a id="scheduled-task" [ngClass]="{'is-active': step==='/scheduled-task'}" (click)="onToggle('/scheduled-task')">
-      Scheduled Tasks
-    </a>
-  </li>
-
   <!-- <li>
     <a id="services" [ngClass]="{'is-active': step==='/services'}" (click)="onToggle('/services')">
       Services
     </a>
   </li> -->
-
   <li>
     <a id="user-management" *ngIf="isAdmin" [ngClass]="{'is-active': step==='/user-management'}" (click)="onToggle('/user-management')">
       User Management

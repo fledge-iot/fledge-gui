@@ -66,8 +66,8 @@
               <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
             </td>
             <td><small>{{log.severity}}</small></td>
-            <td>{{log.source}}</td>
-            <td><pre class="has-text-gray" style="background-color:white;">{{log.details | json}}</pre></td>
+            <td><small>{{log.source}}</small></td>
+            <td><small>{{log.details | json}}</small></td>
           </tr>
         </tbody>
       </table>

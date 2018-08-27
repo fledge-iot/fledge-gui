@@ -9,89 +9,37 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="card">
-        <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
-          <div *ngIf="category != undefined" class="columns is-multiline">
-            <ng-container *ngFor="let configItem of (category.value | keys)">
-              <div *ngIf="!configItem.value.readonly" class="column is-narrow is-half">
-                <div class="is-clearfix"></div>
-                <div class="box">
-                  <div class="content">
-                    <div class="field">
-                      <div class="control">
-                        <p class="subtitle is-6">
-                          <span class="tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
-                            {{configItem.value.description}}
-                          </span>
-                        </p>
-                        <div class="control is-fullwidth">
-                          <div *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'" class="select is-fullwidth is-small">
-                            <select name="{{configItem.value.key}}" [(ngModel)]="configItem.value.value">
-                              <option [value]="true">true</option>
-                              <option [value]="false">false</option>
-                            </select>
-                          </div>
-                          <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" class="input is-small" type="text" name="{{configItem.value.key}}"
-                            [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' [(ngModel)]="configItem.value.value"
-                          />
-                          <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" type="number" name="{{configItem.value.key}}" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                            class="input is-small" [(ngModel)]="configItem.value.value" appNumberOnly />
-                          <div class="field">
-                            <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" name="{{configItem.value.key}}"
-                              class="textarea is-small" type="text" [(ngModel)]="configItem.value.value">
-                          {{configItem?.value?.value}}
-                          </textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-          </div>
-          <div *ngIf="isSaved" id="message" class="notification is-success is-small is-pulled-right">
-            <button id="delete" class="delete" (click)="hideNotification()"></button>
-            Record Saved Successfully
-          </div>
-        </form>
-        <footer class="modal-card-foot">
-          <div class="control">
-            <button id="save" type="submit" class="button is-small is-link" form="ngForm">Save</button>
-          </div>
-          &nbsp;
-          <div class="control">
-            <button class="button is-small is-text hidden" (click)="toggleModal(false)">Cancel</button>
-          </div>
-        </footer>
+      <div class="box">
+        <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
       </div>
-      <div class="card">
-        <div class="box">
-          <div class="content">
-            <div *ngIf="service != undefined" class="columns">
-              <div class="column">
+      <hr>
+      <div class="box">
+        <div *ngIf="service != undefined" class="columns">
+          <div class="column">
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label">Enabled</label>
+              </div>
+              <div class="field-body">
                 <div class="field">
-                  <label class="label subtitle is-6">Enabled</label>
-                  <div class="control">
-                    <input class="checkbox" type="checkbox" [checked]="service.status === 'running'" (click)="onCheckboxClicked($event)">
-                  </div>
+                  <input class="checkbox" type="checkbox" [checked]="service.status === 'running'" (click)="onCheckboxClicked($event)">
                 </div>
               </div>
-              <div class="column">
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label">Service Info</label>
+              </div>
+              <div class="field-body">
                 <div class="field">
-                  <label class="label subtitle is-6">Service Info</label>
-                  <div class="control">
-                    <small *ngIf="service.address !== ''">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
-                    <span *ngIf="service.address === ''" class="tag is-rounded">not available</span>
-                  </div>
+                  <small *ngIf="service.address !== ''">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                  <span *ngIf="service.address === ''" class="tag is-rounded">not available</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <footer class="modal-card-foot">
-          <button *ngIf="service != undefined" class="button is-small is-link" (click)="changeServiceStatus(service.name)">Save</button>
-        </footer>
+        <button *ngIf="service != undefined" class="button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
       </div>
     </section>
   </div>

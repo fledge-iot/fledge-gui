@@ -1,7 +1,7 @@
 import { ConfigurationService, AlertService, SchedulesService } from '../../../../services';
 import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
 import { NgForm, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { isEqual, isObject, sortBy, transform } from 'lodash';
+import { isEqual, isObject, isEmpty, transform } from 'lodash';
 import Utils from '../../../../utils';
 import { NgProgress } from 'ngx-progressbar';
 
@@ -65,31 +65,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.repeat = Utils.secondsToDhms(this.task['repeat']).time;
     this.processName = this.task['processName'];
 
+    const categoryValues = [];
     this.configService.getCategory(this.processName).subscribe(
       (data: any) => {
 
-        let configAttributes = [];
-        for (const key in data) {
-          if (data.hasOwnProperty(key)) {
-            const element = data[key];
-            element.key = key;
-            configAttributes.push(element);
-          }
-        }
-        configAttributes = sortBy(configAttributes, ['order', 'description']);
-
-        this.category = {
-          value: configAttributes,
-          key: this.processName
-        };
-
-        for (const key in data) {
-          if (data.hasOwnProperty(key)) {
-            this.configItems.push({
-              [key]: data[key].value,
-              type: data[key].type
-            });
-          }
+        if (!isEmpty(data)) {
+          categoryValues.push(data);
+          this.category = { key: this.processName, value: categoryValues};
         }
       },
       error => {
