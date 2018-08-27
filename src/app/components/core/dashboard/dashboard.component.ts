@@ -199,8 +199,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
           const labels = [];
-          const record = map(data['statistics'], dt.key);
-          const history_ts = map(data['statistics'], 'history_ts');
+          const record = map(data['statistics'], dt.key).reverse();
+          let history_ts = map(data['statistics'], 'history_ts');
+          history_ts = history_ts.reverse();
           history_ts.forEach(element => {
             element = moment(element).format('HH:mm:ss');
             labels.push(element);
