@@ -11,7 +11,7 @@
         </button>
       </p>
       <div>
-        <a class="button is-light" (click)="openModal('', '', 'Are you sure, You want to create a backup', 'createBackup')">Request Backup &nbsp;
+        <a class="button is-light" (click)="requestBackup()">Backup &nbsp;
           <i class="fa fa-file" aria-hidden="true"></i>
         </a>
       </div>
@@ -29,13 +29,13 @@
             <td style="vertical-align: middle;">
               <small>{{ backup.date | date:"yyyy-mm-dd hh:mm:ss"}}</small>
             </td>
-            <td style="vertical-align: middle;">{{ backup.status }}</td>
+            <td style="vertical-align: middle;"><small>{{ backup.status }}</small></td>
             <td>
-              <a class="button is-text" (click)="openModal(backup.id, backup.date, 'ATTENTION! This may result in a bad state of the system for current version. Are you sure, You want to restore the backup', 'restoreBackup')">restore
+              <a class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
               </a>
             </td>
             <td>
-              <a class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure, You want to delete the backup', 'deleteBackup')">delete
+              <a class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
               </a>
             </td>
             <td>
