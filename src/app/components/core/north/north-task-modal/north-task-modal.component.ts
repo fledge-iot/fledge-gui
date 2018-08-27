@@ -12,6 +12,7 @@ import { NgProgress } from 'ngx-progressbar';
 })
 export class NorthTaskModalComponent implements OnInit, OnChanges {
   category: any;
+  useProxy: 'true';
   configItems = [];
   model: any;
   enabled: Boolean;
@@ -73,6 +74,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           categoryValues.push(data);
           this.category = { key: this.processName, value: categoryValues};
         }
+        this.useProxy = 'true';
       },
       error => {
         if (error.status === 0) {
