@@ -38,7 +38,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
             configAttributes.push(element);
           }
         }
-        configAttributes = sortBy(configAttributes, ['order', 'description']);
+        configAttributes = sortBy(configAttributes, function(ca){
+          return parseInt(ca.order, 10)
+        });
         changes.categoryConfigurationData.currentValue.value = configAttributes;
         this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
         configAttributes.forEach(el => {
