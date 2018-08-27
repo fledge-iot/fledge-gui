@@ -7,10 +7,9 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class ConfigurationService {
-  // private instance variable to hold base url
+
   private CATEGORY_URL = environment.BASE_URL + 'category';
   constructor(private http: HttpClient) { }
-
 
   /**
    *   GET  | /foglamp/category
@@ -21,6 +20,14 @@ export class ConfigurationService {
       catchError((error: Response) => observableThrowError(error)));
   }
 
+  /**
+   *   GET  | /foglamp/category?root=true&children=true
+   */
+  getCategoryWithChildren() {
+    return this.http.get(this.CATEGORY_URL + '?root=true&children=true').pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
   /**
    *   GET  | /foglamp/category/{categoryName}
    */
