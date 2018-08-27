@@ -41,7 +41,8 @@
             Invalid JSON.
           </div>
           <div class="control">
-            <button type="submit"  class="button is-small is-link is-pulled-right">Save</button>
+            <button *ngIf="useProxy == 'true'" id="vci" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
+            <button *ngIf="useProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-right">Save</button>
           </div>
         </div>
       </div>

@@ -14,6 +14,8 @@ import ConfigTypeValidation from '../../configuration-manager/configuration-type
 export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public category: any;
+  public useProxy: 'true';
+
   public configItems = [];
   public isSaved = false;
   public isEnabled;
@@ -42,7 +44,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       modalWindow.classList.add('is-active');
       return;
     }
-    this.svcCheckbox.setValue(this.service['status'] === 'down' ? false : true);
+    this.svcCheckbox.setValue((this.service['status'] === 'down' || this.service['status'] === '') ? false : true);
     modalWindow.classList.remove('is-active');
   }
 
@@ -54,6 +56,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           if (!isEmpty(data)) {
             categoryValues.push(data);
             this.category = { key: this.service['name'], value: categoryValues};
+            this.useProxy = 'true';
           }
         },
         error => {
@@ -198,5 +201,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     } else {
       this.disableSchedule(serviceName);
     }
+  }
+
+  proxy() {
+    document.getElementById('vci').click();
+    document.getElementById('ss').click();
   }
 }

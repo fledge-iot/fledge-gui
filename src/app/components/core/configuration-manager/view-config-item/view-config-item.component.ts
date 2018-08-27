@@ -13,6 +13,8 @@ import ConfigTypeValidation from '../configuration-type-validation';
 })
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
+  @Input() useProxy: 'true';
+
   public categoryConfiguration;
   public selectedValue: string;
   public isValidJson = true;
@@ -39,7 +41,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
           }
         }
         configAttributes = sortBy(configAttributes, function(ca){
-          return parseInt(ca.order, 10)
+          return parseInt(ca.order, 10);
         });
         changes.categoryConfigurationData.currentValue.value = configAttributes;
         this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
