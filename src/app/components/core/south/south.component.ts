@@ -46,7 +46,7 @@ export class SouthComponent implements OnInit, OnDestroy {
         (data: any) => {
           this.southboundServices = data['services'];
           this.southboundServices = sortBy(this.southboundServices, function(svc) {
-            return svc['status'] !== 'running';
+            return svc['status'] === 'down';
           });
           if (this.refreshSouthboundServiceInterval > 0) {
             this.refreshSouthboundServices();
