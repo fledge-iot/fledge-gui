@@ -13,14 +13,13 @@ import { NgProgress } from 'ngx-progressbar';
 export class NorthTaskModalComponent implements OnInit, OnChanges {
   category: any;
   useProxy: 'true';
-  configItems = [];
-  model: any;
+
   enabled: Boolean;
   exclusive: Boolean;
   repeat: any;
   processName: any;
+
   form: FormGroup;
-  isSaved = false;
 
   @Input()
   task: { task: any };
@@ -51,7 +50,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public toggleModal(isOpen: Boolean) {
-    this.isSaved = false;
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
       modal.classList.add('is-active');
@@ -69,12 +67,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     const categoryValues = [];
     this.configService.getCategory(this.processName).subscribe(
       (data: any) => {
-
         if (!isEmpty(data)) {
           categoryValues.push(data);
           this.category = { key: this.processName, value: categoryValues};
+          this.useProxy = 'true';
         }
-        this.useProxy = 'true';
       },
       error => {
         if (error.status === 0) {
@@ -86,81 +83,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     );
   }
 
-  public saveConfiguration(form: NgForm) {
-    const updatedRecord = [];
-    const formData = form.value;
-    for (const key in formData) {
-      if (formData.hasOwnProperty(key)) {
-        updatedRecord.push({
-          [key]: formData[key]
-        });
-      }
-    }
-
-    const diff = this.difference(updatedRecord, this.configItems);
-    this.configItems.forEach(item => {
-      for (const key in item) {
-        diff.forEach(changedItem => {
-          for (const k in changedItem) {
-            if (key === k && item[key] !== changedItem[k]) {
-              this.saveConfigValue(
-                this.task['processName'],
-                key,
-                changedItem[k],
-                item.type
-              );
-              item[key] = changedItem[k];
-            }
-          }
-        });
-      }
-    });
-  }
-
-  public difference(obj, bs) {
-    function changes(object, base) {
-      return transform(object, function (result, value, key) {
-        if (!isEqual(value, base[key])) {
-          result[key] =
-            isObject(value) && isObject(base[key])
-              ? changes(value, base[key])
-              : value;
-        }
-      });
-    }
-    return changes(obj, bs);
-  }
-
   public hideNotification() {
-    this.isSaved = false;
     const deleteBtn = <HTMLDivElement>document.getElementById('delete');
     deleteBtn.parentElement.classList.add('is-hidden');
     return false;
-  }
-
-  public saveConfigValue(
-    categoryName: string,
-    configItem: string,
-    value: string,
-    type: string
-  ) {
-
-    this.configService
-      .saveConfigItem(categoryName, configItem, value, type)
-      .subscribe(
-        data => {
-          if (data['value'] !== undefined) {
-            this.isSaved = true;
-          }
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        }
-      );
   }
 
   public saveScheduleFields(form: NgForm) {
@@ -192,4 +118,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           }
         });
   }
+
+  proxy() {
+    document.getElementById('vci').click();
+    document.getElementById('ss').click();
+  }
+
 }
