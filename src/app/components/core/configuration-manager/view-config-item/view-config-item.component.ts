@@ -29,7 +29,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('useProxy', changes.useProxy);
     this.configItems = [];
     if (changes.categoryConfigurationData.currentValue !== undefined) {
       let configAttributes = [];

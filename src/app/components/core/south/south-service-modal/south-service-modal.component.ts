@@ -14,6 +14,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public category: any;
   public useProxy: 'true';
+  public isEnabled = false;
 
   svcCheckbox: FormControl = new FormControl();
 
@@ -25,7 +26,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public ngProgress: NgProgress,
     private schedulesService: SchedulesService) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.svcCheckbox.valueChanges.subscribe(val => {
+      this.isEnabled = val;
+    });
+  }
 
   ngOnChanges() {
     if (this.service !== undefined) {
@@ -122,13 +127,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   changeServiceStatus(serviceName) {
-    console.log('serviceName', this.svcCheckbox.value);
-    if (this.svcCheckbox.value === null) {
-      return false;
-    }
-    if (this.svcCheckbox.value === true) {
+    console.log('Action on schedule, enable: ', this.isEnabled);
+    if (this.isEnabled) {
       this.enableSchedule(serviceName);
-    } else {
+    } else if (!this.isEnabled) {
       this.disableSchedule(serviceName);
     }
   }
