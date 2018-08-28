@@ -78,9 +78,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       }
     }
 
+    console.log('config items', this.configItems);
     // TODO: This code need to be optimized further
     let diff = [] = this.difference(updatedRecord, this.configItems);
     diff = reject(diff, isEmpty);
+    console.log('config diff', diff);
     diff.forEach(changedItem => {
       let item = null;
       let changedItemKey = null;

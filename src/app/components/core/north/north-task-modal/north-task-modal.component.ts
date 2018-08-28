@@ -1,9 +1,10 @@
-import { ConfigurationService, AlertService, SchedulesService } from '../../../../services';
-import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
-import { NgForm, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { isEqual, isObject, isEmpty, transform } from 'lodash';
-import Utils from '../../../../utils';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import Utils from '../../../../utils';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -120,7 +121,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    document.getElementById('vci').click();
+    document.getElementById('vci-proxy').click();
     document.getElementById('ss').click();
   }
 

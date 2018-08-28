@@ -131,7 +131,7 @@ export class AddServiceWizardComponent implements OnInit {
       case 2:
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
-        document.getElementById('vci').click();
+        document.getElementById('vci-proxy').click();
         break;
       case 3:
         if (this.serviceId.length > 0 && this.isScheduleEnabled) {
