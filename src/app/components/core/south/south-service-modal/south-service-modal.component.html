@@ -11,7 +11,7 @@
     <section class="modal-card-body">
       <div class="box">
         <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
-      
+
         <div *ngIf="service != undefined" class="columns">
           <div class="column">
             <div class="field is-horizontal">
@@ -20,7 +20,7 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'down' && service.status !== '' ">
+                    <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'down' && service.status !== '' ">
                 </div>
               </div>
             </div>
@@ -38,7 +38,6 @@
         </div>
         <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
         <button class="button is-small is-link is-pulled-right" (click)="proxy()">Save</button>
-
       </div>
     </section>
   </div>
