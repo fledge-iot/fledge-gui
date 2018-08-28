@@ -14,6 +14,7 @@ export class AddServiceWizardComponent implements OnInit {
 
   public plugins = [];
   public configurationData;
+  public useProxy;
   public serviceId;
   public isServiceEnabled = false;
   public isServiceAdded = false;
@@ -130,6 +131,7 @@ export class AddServiceWizardComponent implements OnInit {
       case 2:
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        document.getElementById('vci-proxy').click();
         break;
       case 3:
         if (this.serviceId.length > 0 && this.isScheduleEnabled) {
@@ -227,6 +229,7 @@ export class AddServiceWizardComponent implements OnInit {
             value: [data],
             key: categoryName
           };
+          this.useProxy = 'true';
         },
         error => {
           /** request completed */
