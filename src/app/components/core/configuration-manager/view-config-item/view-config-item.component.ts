@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { sortBy, transform, isObject, isEqual } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 import { NgForm } from '@angular/forms';
+import { isEmpty, isEqual, isObject, reject, sortBy, transform } from 'lodash';
+import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -29,6 +29,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log('useProxy', changes.useProxy);
+    this.configItems = [];
     if (changes.categoryConfigurationData.currentValue !== undefined) {
       let configAttributes = [];
       if (changes.categoryConfigurationData.currentValue.length !== 0) {
@@ -40,7 +42,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
             configAttributes.push(element);
           }
         }
-        configAttributes = sortBy(configAttributes, function(ca){
+        configAttributes = sortBy(configAttributes, function (ca) {
           return parseInt(ca.order, 10);
         });
         changes.categoryConfigurationData.currentValue.value = configAttributes;
@@ -76,19 +78,29 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         });
       }
     }
-    const diff = this.difference(updatedRecord, this.configItems);
-    this.configItems.forEach(item => {
-      for (const key in item) {
-        diff.forEach(changedItem => {
-          for (const k in changedItem) {
-            if (key === k && item[key] !== changedItem[k]) {
-              item[key] = changedItem[k];
-              this.saveConfigValue(this.categoryConfiguration.key, key, changedItem[k], item.type);
-            }
-          }
-        });
+
+    // TODO: This code need to be optimized further
+    let diff = [] = this.difference(updatedRecord, this.configItems);
+    diff = reject(diff, isEmpty);
+    diff.forEach(changedItem => {
+      let item = null;
+      let changedItemKey = null;
+      for (const x in changedItem) {
+        item = this.getConfigItemToSave(x);
+        changedItemKey = x;
       }
+      this.saveConfigValue(this.categoryConfiguration.key, changedItemKey, changedItem[changedItemKey], item.type);
     });
+  }
+
+  getConfigItemToSave(catKey) {
+    for (const ci in this.configItems) {
+      for (const key in this.configItems[ci]) {
+        if (key === catKey) {
+          return this.configItems[ci];
+        }
+      }
+    }
   }
 
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
@@ -98,6 +110,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         return;
       }
     }
+
     /** request started */
     this.ngProgress.start();
     this.configService.saveConfigItem(categoryName, configItem, value.toString(), type).

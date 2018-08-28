@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { NgForm, FormControl } from '@angular/forms';
-import { isEqual, isObject, sortBy, isEmpty, transform } from 'lodash';
+import { FormControl } from '@angular/forms';
+import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
-import ConfigTypeValidation from '../../configuration-manager/configuration-type-validation';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -26,7 +25,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public ngProgress: NgProgress,
     private schedulesService: SchedulesService) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnChanges() {
     if (this.service !== undefined) {
@@ -50,7 +49,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         (data) => {
           if (!isEmpty(data)) {
             categoryValues.push(data);
-            this.category = { key: this.service['name'], value: categoryValues};
+            this.category = { key: this.service['name'], value: categoryValues };
             this.useProxy = 'true';
           }
         },
@@ -61,7 +60,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText, true);
           }
         }
-    );
+      );
   }
 
   public showNotification() {
@@ -123,6 +122,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   changeServiceStatus(serviceName) {
+    console.log('serviceName', this.svcCheckbox.value);
     if (this.svcCheckbox.value === null) {
       return false;
     }
@@ -134,7 +134,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    document.getElementById('vci').click();
+    document.getElementById('vci-proxy').click();
     document.getElementById('ss').click();
   }
 }
