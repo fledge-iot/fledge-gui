@@ -13,7 +13,7 @@ import ConfigTypeValidation from '../configuration-type-validation';
 })
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
-  @Input() useProxy: 'true';
+  @Input() useProxy: 'false';
 
   public categoryConfiguration;
   public selectedValue: string;
@@ -80,7 +80,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
     console.log('config items', this.configItems);
     // TODO: This code need to be optimized further
-    let diff = [] = this.difference(updatedRecord, this.configItems);
+    const copyConfigItems = [];
+    for (const k in updatedRecord) {
+      for (const kk in updatedRecord[k]) {
+        copyConfigItems.push({ [kk]: this.getConfigItemToSave(kk)[kk] });
+      }
+    }
+    console.log('copy of config items', copyConfigItems);
+
+    let diff = [] = this.difference(updatedRecord, copyConfigItems);
     diff = reject(diff, isEmpty);
     console.log('config diff', diff);
     diff.forEach(changedItem => {
