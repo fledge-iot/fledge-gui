@@ -3,7 +3,7 @@
     <div class="field-body is-pulled-right">
       <div class="select is-rounded">
         <select #selectedTime (change)="getStatisticsHistory(selectedTime.value)">
-          <option value="1" [selected]="optedTime == 1">1 minute</option>
+          <!-- <option value="1" [selected]="optedTime == 1">1 minute</option> -->
           <option value="10" [selected]="optedTime == 10">10 minutes</option>
           <option value="30" [selected]="optedTime == 30">30 minutes</option>
           <option value="60" [selected]="optedTime == 60">1 hour</option>

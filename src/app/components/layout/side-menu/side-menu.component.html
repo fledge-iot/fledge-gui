@@ -25,8 +25,8 @@
     </a>
   </li>
   <li>
-    <a id="scheduled-task" [ngClass]="{'is-active': step==='/scheduled-task'}" (click)="onToggle('/scheduled-task')">
-      Scheduled Tasks
+    <a id="schedules" [ngClass]="{'is-active': step==='/schedules'}" (click)="onToggle('/schedules')">
+      Schedules
     </a>
   </li>
   <li>
@@ -48,6 +48,9 @@
       <li>
         <a id="syslog" [ngClass]="{'is-active': step==='/syslog'}" (click)="onToggle('/syslog')">System</a>
       </li>
+      <li>
+          <a id="tasks" [ngClass]="{'is-active': step==='/tasks'}" (click)="onToggle('/tasks')">Tasks</a>
+        </li>
     </ul>
   </li>
   <!-- <li>
