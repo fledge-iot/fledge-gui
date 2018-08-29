@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { isEmpty, isEqual, isObject, reject, sortBy, transform, differenceWith } from 'lodash';
+import { sortBy, forEach, find, differenceWith } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -59,18 +59,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public difference(obj, bs) {
-    const changedValues = [];
-    differenceWith(bs, obj, function (oldData, newData) {
-      if (oldData.key === newData.key && oldData.value.toString() !== newData.value.toString()) {
-        changedValues.push({
-          key: newData.key,
-          value: newData.value,
-          type: oldData.type
-        });
+    const changedValues = differenceWith(obj, bs, (oldData: any, newData: any) => {
+      return oldData.key === newData.key && oldData.value.toString() === newData.value.toString();
+    });
+
+    changedValues.forEach(element => {
+      const f = find(bs, { key: element.key });
+      if (f !== undefined) {
+        element.type = f['type'];
       }
     });
+    console.log('changed values', changedValues);
     return changedValues;
   }
+
 
   public saveConfiguration(form: NgForm) {
     const formData = [];
@@ -99,7 +101,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     this.ngProgress.start();
     this.configService.saveConfigItem(categoryName, configItem, value.toString(), type).
       subscribe(
-        (data) => {
+        (data: any) => {
           // fill configItems with changed data
           this.configItems.map(item => item.key === configItem ? item.value = data.value.toString() : item.value);
           /** request completed */
