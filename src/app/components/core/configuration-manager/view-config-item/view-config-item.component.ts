@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { isEmpty, isEqual, isObject, reject, sortBy, transform } from 'lodash';
+import { sortBy, forEach, find, differenceWith } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -44,11 +44,13 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         configAttributes = sortBy(configAttributes, function (ca) {
           return parseInt(ca.order, 10);
         });
+
         changes.categoryConfigurationData.currentValue.value = configAttributes;
         this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
         configAttributes.forEach(el => {
           this.configItems.push({
-            [el.key]: el.value,
+            key: el.key,
+            value: el.value,
             type: el.type
           });
         });
@@ -57,59 +59,34 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public difference(obj, bs) {
-    function changes(object, base) {
-      return transform(object, function (result, value, key) {
-        if (!isEqual(value, base[key])) {
-          result[key] = (isObject(value) && isObject(base[key])) ? changes(value, base[key]) : value;
-        }
-      });
-    }
-    return changes(obj, bs);
+    const changedValues = differenceWith(obj, bs, (oldData: any, newData: any) => {
+      return oldData.key === newData.key && oldData.value.toString() === newData.value.toString();
+    });
+
+    changedValues.forEach(element => {
+      const f = find(bs, { key: element.key });
+      if (f !== undefined) {
+        element.type = f['type'];
+      }
+    });
+    console.log('changed values', changedValues);
+    return changedValues;
   }
+
 
   public saveConfiguration(form: NgForm) {
-    const updatedRecord = [];
-    const formData = form.value;
-    for (const key in formData) {
-      if (formData.hasOwnProperty(key)) {
-        updatedRecord.push({
-          [key]: formData[key]
-        });
-      }
+    const formData = [];
+    for (const key in form.value) {
+      const d = {
+        key: key,
+        value: form.value[key]
+      };
+      formData.push(d);
     }
-
-    console.log('config items', this.configItems);
-    // TODO: This code need to be optimized further
-    const copyConfigItems = [];
-    for (const k in updatedRecord) {
-      for (const kk in updatedRecord[k]) {
-        copyConfigItems.push({ [kk]: this.getConfigItemToSave(kk)[kk] });
-      }
-    }
-    console.log('copy of config items', copyConfigItems);
-
-    let diff = [] = this.difference(updatedRecord, copyConfigItems);
-    diff = reject(diff, isEmpty);
-    console.log('config diff', diff);
+    const diff = this.difference(formData, this.configItems);
     diff.forEach(changedItem => {
-      let item = null;
-      let changedItemKey = null;
-      for (const x in changedItem) {
-        item = this.getConfigItemToSave(x);
-        changedItemKey = x;
-      }
-      this.saveConfigValue(this.categoryConfiguration.key, changedItemKey, changedItem[changedItemKey], item.type);
+      this.saveConfigValue(this.categoryConfiguration.key, changedItem.key, changedItem.value, changedItem.type);
     });
-  }
-
-  getConfigItemToSave(catKey) {
-    for (const ci in this.configItems) {
-      for (const key in this.configItems[ci]) {
-        if (key === catKey) {
-          return this.configItems[ci];
-        }
-      }
-    }
   }
 
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
@@ -124,10 +101,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     this.ngProgress.start();
     this.configService.saveConfigItem(categoryName, configItem, value.toString(), type).
       subscribe(
-        () => {
+        (data: any) => {
+          // fill configItems with changed data
+          this.configItems.map(item => item.key === configItem ? item.value = data.value.toString() : item.value);
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success('Value updated successfully');
+          this.alertService.success('Configuration updated successfully.');
         },
         error => {
           /** request completed */

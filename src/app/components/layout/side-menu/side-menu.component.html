@@ -49,15 +49,10 @@
         <a id="syslog" [ngClass]="{'is-active': step==='/syslog'}" (click)="onToggle('/syslog')">System</a>
       </li>
       <li>
-          <a id="tasks" [ngClass]="{'is-active': step==='/tasks'}" (click)="onToggle('/tasks')">Tasks</a>
-        </li>
+        <a id="tasks" [ngClass]="{'is-active': step==='/tasks'}" (click)="onToggle('/tasks')">Tasks</a>
+      </li>
     </ul>
   </li>
-  <!-- <li>
-    <a id="services" [ngClass]="{'is-active': step==='/services'}" (click)="onToggle('/services')">
-      Services
-    </a>
-  </li> -->
   <li>
     <a id="user-management" *ngIf="isAdmin" [ngClass]="{'is-active': step==='/user-management'}" (click)="onToggle('/user-management')">
       User Management
