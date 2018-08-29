@@ -7,7 +7,7 @@ export class AlertService {
   private subject = new Subject<any>();
   private keepAfterNavigationChange = false;
 
-  constructor(private router: Router) {
+  constructor(router: Router) {
     // clear alert message on route change
     router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
