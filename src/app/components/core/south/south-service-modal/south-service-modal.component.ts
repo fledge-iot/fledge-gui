@@ -133,6 +133,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       } else if (!this.isEnabled) {
         this.disableSchedule(serviceName);
       }
+      this.svcCheckbox.reset();
     }
   }
 

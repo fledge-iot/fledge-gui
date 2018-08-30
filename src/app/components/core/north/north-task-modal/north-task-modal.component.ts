@@ -110,6 +110,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           this.alertService.success('Schedule updated successfully.');
           this.notify.emit();
           this.toggleModal(false);
+          form.reset();
         },
         error => {
           /** request completed */
