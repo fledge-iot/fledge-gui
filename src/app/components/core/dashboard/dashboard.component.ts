@@ -101,7 +101,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
           this.graphsToShow.push(selectedGraph[0]);
         }
-        this.getStatisticsHistory(localStorage.getItem('OPTED_TIME'));
+        this.getStatisticsHistory(localStorage.getItem('STATS_HISTORY_TIME_FILTER'));
       },
         error => {
           if (error.status === 0) {
@@ -190,11 +190,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.timerSubscription = null;
     }
     if (time == null) {
-      localStorage.setItem('OPTED_TIME', STATS_HISTORY_TIME_FILTER);
+      localStorage.setItem('STATS_HISTORY_TIME_FILTER', STATS_HISTORY_TIME_FILTER);
     } else {
-      localStorage.setItem('OPTED_TIME', time);
+      localStorage.setItem('STATS_HISTORY_TIME_FILTER', time);
     }
-    this.optedTime = localStorage.getItem('OPTED_TIME');
+    this.optedTime = localStorage.getItem('STATS_HISTORY_TIME_FILTER');
     this.statisticsService.getStatisticsHistory(this.optedTime, null, null).
       subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
@@ -236,7 +236,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.timerSubscription = null;
     this.timerSubscription = Observable.timer(this.refreshTimer)
       .subscribe(() => {
-        this.getStatisticsHistory(localStorage.getItem('OPTED_TIME'));
+        this.getStatisticsHistory(localStorage.getItem('STATS_HISTORY_TIME_FILTER'));
         this.refreshGraph();
       });
   }

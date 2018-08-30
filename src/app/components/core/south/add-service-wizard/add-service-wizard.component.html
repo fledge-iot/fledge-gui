@@ -57,7 +57,7 @@
       </div>
       <div class="box step-content" id="c-2">
         <div *ngIf="isServiceAdded">
-          <app-view-config-item [categoryConfigurationData]="configurationData"></app-view-config-item>
+          <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"></app-view-config-item>
         </div>
         <p *ngIf="!isServiceAdded" [ngClass]="{'has-text-centered': '!isServiceAdded'}">
           <span class="icon has-text-danger">

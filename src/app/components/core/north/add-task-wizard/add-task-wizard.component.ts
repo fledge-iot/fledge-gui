@@ -16,6 +16,8 @@ export class AddTaskWizardComponent implements OnInit {
   public plugins = [];
   public scheduleType = [];
   public configurationData;
+  public useProxy;
+
   public taskId;
   public isTaskEnabled = false;
   public isTaskAdded = false;
@@ -157,6 +159,7 @@ export class AddTaskWizardComponent implements OnInit {
       case 2:
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        document.getElementById('vci-proxy').click();
         break;
       case 3:
         if (this.taskId.length > 0 && this.isScheduleEnabled) {
@@ -282,6 +285,7 @@ export class AddTaskWizardComponent implements OnInit {
             value: [data],
             key: categoryName
           };
+          this.useProxy = 'true';
         },
         error => {
           /** request completed */

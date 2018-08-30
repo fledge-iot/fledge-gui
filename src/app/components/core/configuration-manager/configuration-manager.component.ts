@@ -6,7 +6,6 @@ import { NgProgress } from 'ngx-progressbar';
 import { TreeComponent } from 'angular-tree-component';
 
 import { AlertService, ConfigurationService } from '../../../services';
-import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -22,8 +21,6 @@ export class ConfigurationManagerComponent implements OnInit {
   public isChild = true;
 
   @Input() categoryConfigurationData;
-  @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
-
   nodes: any[] = [];
   options = {};
 
@@ -185,14 +182,5 @@ export class ConfigurationManagerComponent implements OnInit {
     this.selectedRootCategory = categoryData.rootCategory;
     this.getRootCategories();
     this.refreshCategory(categoryData.categoryKey, categoryData.categoryDescription);
-  }
-
-  /**
-  * Open add Config Item modal dialog
-  */
-  openAddConfigItemModal(description, key) {
-    this.addConfigItemModal.setConfigName(description, key, this.selectedRootCategory);
-    // call child component method to toggle modal
-    this.addConfigItemModal.toggleModal(true);
   }
 }

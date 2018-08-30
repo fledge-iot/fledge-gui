@@ -69,9 +69,9 @@
               <div class="select is-small" (change)="ping($event)">
                 <select>
                   <option value="-1" [selected]="pingInterval == '-1'">Manual</option>
-                  <option value="2000" [selected]="pingInterval == '2000'">Every 2 Seconds</option>
-                  <option value="5000" [selected]="pingInterval == '5000'">Every 5 Seconds</option>
-                  <option value="10000" [selected]="pingInterval == '10000'">Every 10 Seconds</option>
+                  <option value="2000" [selected]="pingInterval == '5000'">Every 5 Seconds</option>
+                  <option value="5000" [selected]="pingInterval == '10000'">Every 10 Seconds</option>
+                  <option value="10000" [selected]="pingInterval == '15000'">Every 15 Seconds</option>
                 </select>
               </div>
             </div>
