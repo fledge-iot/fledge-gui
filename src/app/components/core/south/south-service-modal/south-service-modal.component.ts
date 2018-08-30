@@ -89,7 +89,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           this.ngProgress.done();
           this.notify.emit();
           this.alertService.success(data['message'], true);
-          this.toggleModal(false);
+          // this.toggleModal(false);
         },
         error => {
           /** request completed */
@@ -111,7 +111,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           /** request completed */
           this.ngProgress.done();
           this.notify.emit();
-          this.toggleModal(false);
+          // this.toggleModal(false);
           this.alertService.success(data['message'], true);
         },
         error => {
@@ -126,6 +126,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   changeServiceStatus(serviceName) {
+    this.toggleModal(false);
     if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
       return false;
     }
