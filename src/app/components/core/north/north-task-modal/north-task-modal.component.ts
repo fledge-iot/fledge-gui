@@ -70,7 +70,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       (data: any) => {
         if (!isEmpty(data)) {
           categoryValues.push(data);
-          this.category = { key: this.processName, value: categoryValues};
+          this.category = { key: this.processName, value: categoryValues };
           this.useProxy = 'true';
         }
       },
@@ -91,8 +91,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public saveScheduleFields(form: NgForm) {
+    if (!form.dirty || !form.touched) {
+      return;
+    }
     const repeatTime = Utils.convertTimeToSec(form.controls['repeat'].value);
-
     const updatePayload = {
       'repeat': repeatTime,
       'exclusive': form.controls['exclusive'].value,

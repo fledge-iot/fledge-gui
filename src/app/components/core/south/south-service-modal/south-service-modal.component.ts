@@ -15,7 +15,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public category: any;
   public useProxy: 'true';
   public isEnabled = false;
-
   svcCheckbox: FormControl = new FormControl();
 
   @Input() service: { service: any };
@@ -128,10 +127,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   changeServiceStatus(serviceName) {
     console.log('Action on schedule, enable: ', this.isEnabled);
-    if (this.isEnabled) {
-      this.enableSchedule(serviceName);
-    } else if (!this.isEnabled) {
-      this.disableSchedule(serviceName);
+    if (this.svcCheckbox.dirty || this.svcCheckbox.touched) {
+      if (this.isEnabled) {
+        this.enableSchedule(serviceName);
+      } else if (!this.isEnabled) {
+        this.disableSchedule(serviceName);
+      }
     }
   }
 
