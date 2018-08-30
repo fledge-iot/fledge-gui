@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { orderBy } from 'lodash';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
@@ -13,7 +13,7 @@ import ReadingsValidator from '../assets/readings-validator';
   templateUrl: './readings-graph.component.html',
   styleUrls: ['./readings-graph.component.css']
 })
-export class ReadingsGraphComponent {
+export class ReadingsGraphComponent implements OnDestroy {
   public assetCode: string;
   public assetChartType: string;
   public assetReadingValues: any;
@@ -115,9 +115,6 @@ export class ReadingsGraphComponent {
             this.getAssetTimeReading(data);
           } else {
             this.showGraph = false;
-          }
-          if (this.graphRefreshInterval > 0) {
-            this.enableRefreshTimer();
           }
         },
         error => {
