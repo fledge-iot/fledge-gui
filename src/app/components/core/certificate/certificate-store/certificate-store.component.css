@@ -1,3 +1,7 @@
 .showInCenter {
-    text-align: center !important;    
+    text-align: center !important;
+}
+
+.fix-pad{
+  padding-top: 1.0rem;
 }

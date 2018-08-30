@@ -10,10 +10,8 @@
     </header>
     <section class="modal-card-body">
       <div class="box">
-        <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
-      </div>
-      <hr>
-      <div class="box">
+        <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+
         <div *ngIf="service != undefined" class="columns">
           <div class="column">
             <div class="field is-horizontal">
@@ -22,11 +20,11 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'down'" (click)="onCheckboxClicked($event)">
+                    <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'down' && service.status !== '' ">
                 </div>
               </div>
             </div>
-            <div *ngIf="service.status !== 'down'" class="field is-horizontal">
+            <div *ngIf="service.status !== 'down' && service.status !== ''" class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label class="label">Service Info</label>
               </div>
@@ -38,7 +36,8 @@
             </div>
           </div>
         </div>
-        <button *ngIf="service != undefined" class="button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
+        <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
+        <button class="button is-small is-link is-pulled-right" (click)="proxy()">Save</button>
       </div>
     </section>
   </div>

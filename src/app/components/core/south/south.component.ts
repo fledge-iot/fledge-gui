@@ -70,6 +70,7 @@ export class SouthComponent implements OnInit, OnDestroy {
  */
   openSouthServiceModal(service) {
     this.service = service;
+    this.southServiceModal.service = service;
     this.southServiceModal.toggleModal(true);
   }
 

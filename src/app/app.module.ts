@@ -24,6 +24,8 @@ import { NavbarComponent } from './components/layout/navbar/navbar.component';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
 import { AuthCheckGuard } from './guards';
 import { PipesModule } from './pipes/pipes.module';
+import { ListTasksComponent } from './components/core/logs/list-tasks/list-tasks.component';
+
 import {
   AlertService,
   AuditService,
@@ -91,7 +93,8 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     ShutdownModalComponent,
     RestartModalComponent,
     SupportComponent,
-    BackupRestoreComponent
+    BackupRestoreComponent,
+    ListTasksComponent
   ],
   providers: [
     AuthCheckGuard,
