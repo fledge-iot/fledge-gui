@@ -157,3 +157,7 @@ table.scroll tbody {
 .navbar-menu {
     box-shadow: none !important;
 }
+
+.fix-pad{
+    padding-top: 1.0rem;
+  }
