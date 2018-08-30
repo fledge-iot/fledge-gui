@@ -91,8 +91,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public saveScheduleFields(form: NgForm) {
-    if (!form.dirty || !form.touched) {
-      return;
+    if (!form.dirty && !form.touched) {
+      return false;
     }
     const repeatTime = Utils.convertTimeToSec(form.controls['repeat'].value);
     const updatePayload = {

@@ -126,14 +126,16 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   changeServiceStatus(serviceName) {
-    console.log('Action on schedule, enable: ', this.isEnabled);
-    if (this.svcCheckbox.dirty || this.svcCheckbox.touched) {
-      if (this.isEnabled) {
-        this.enableSchedule(serviceName);
-      } else if (!this.isEnabled) {
-        this.disableSchedule(serviceName);
-      }
-      this.svcCheckbox.reset();
+    if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
+      return false;
+    }
+    console.log('Action on service schedule, enable: ', this.isEnabled);
+    if (this.isEnabled) {
+      this.enableSchedule(serviceName);
+      this.svcCheckbox.reset(true);
+    } else if (!this.isEnabled) {
+      this.disableSchedule(serviceName);
+      this.svcCheckbox.reset(false);
     }
   }
 
