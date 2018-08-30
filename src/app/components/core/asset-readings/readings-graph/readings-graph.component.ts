@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { orderBy } from 'lodash';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
 
 import { MomentDatePipe } from '../../../../pipes/moment-date';
-import { AssetsService, PingService, AlertService } from '../../../../services';
+import { AlertService, AssetsService, PingService } from '../../../../services';
 import { COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import ReadingsValidator from '../assets/readings-validator';
 
@@ -69,6 +70,7 @@ export class ReadingsGraphComponent {
             value: [o[k]]
           };
         });
+        this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
       },
       error => {
         if (error.status === 0) {

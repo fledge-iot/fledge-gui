@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
-
+import { orderBy } from 'lodash';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
@@ -39,6 +39,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       subscribe(
         (data: any[]) => {
           this.assets = data;
+          this.assets = orderBy(this.assets, ['assetCode'], ['asc']);
           if (this.selectedAsset) {
             this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
           }
