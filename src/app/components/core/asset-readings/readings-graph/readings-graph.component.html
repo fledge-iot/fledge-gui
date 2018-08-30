@@ -16,15 +16,15 @@
           <p *ngIf='isInvalidLimit' class='help is-danger'>Number of readings must be in range 1 - {{MAX_RANGE}}</p>
         </div>
       </div>
-      <div [hidden]='!showGraph' class="field is-grouped is-grouped-multiline" *ngFor="let readings of assetReadingSummary; let i = index">
+      <div [hidden]='!showGraph' class="field is-grouped is-grouped-multiline" *ngFor="let asset of assetReadingSummary">
         <div class="control">
-          <div class="tags has-addons" *ngFor="let reading of readings.summary">
+          <div class="tags has-addons" *ngFor="let reading of asset.value">
             <span>
-              <b>{{readings.key}} &nbsp;</b>
+              <b>{{asset.name}} &nbsp;</b>
             </span>
             <span class="tag is-light"> Avg </span>
-            <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.average,
-              5)}}</span> &nbsp;
+            <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.average, 5)}}
+            </span> &nbsp;
             <span class="tag is-light"> Min </span>
             <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.min, 5)}}</span> &nbsp;
             <span class="tag is-light"> Max </span>

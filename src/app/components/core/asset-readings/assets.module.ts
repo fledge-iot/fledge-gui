@@ -3,9 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgProgressModule } from 'ngx-progressbar';
 import { AssetsComponent } from './assets/assets.component';
-import { AssetSummaryComponent } from '../asset-readings/asset-summary/asset-summary.component';
 import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
-import { AssetSummaryService } from '../asset-readings/asset-summary/asset-summary-service';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { ChartModule } from '../../common/chart/index';
 import { AssetsService } from '../../../services';
@@ -26,7 +24,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     AssetsComponent,
-    AssetSummaryComponent,
     ReadingsGraphComponent
   ],
   imports: [
@@ -39,7 +36,7 @@ const routes: Routes = [
     NumberInputDebounceModule,
     PaginationModule
   ],
-  providers: [AssetSummaryService, AssetsService],
+  providers: [AssetsService],
   exports: []
 })
 export class AssetsModule { }

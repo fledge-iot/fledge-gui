@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { AssetsService, AlertService, PingService } from '../../../../services/index';
-import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
-import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
-import { AnonymousSubscription } from 'rxjs/Subscription';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
+import { AnonymousSubscription } from 'rxjs/Subscription';
+
+import { AlertService, AssetsService, PingService } from '../../../../services';
+import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
 
 @Component({
   selector: 'app-assets',
@@ -58,7 +59,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   * Open asset chart modal dialog
   */
   public showAssetChart(assetCode) {
-    this.readingsGraphComponent.plotReadingsGraph(assetCode, 0);
+    this.readingsGraphComponent.getAssetCode(assetCode);
     this.readingsGraphComponent.toggleModal(true);
   }
 

@@ -1,15 +1,11 @@
 import { Component } from '@angular/core';
-import { AnonymousSubscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Rx';
+import { AnonymousSubscription } from 'rxjs/Subscription';
 
 import { MomentDatePipe } from '../../../../pipes/moment-date';
-
-import { AssetsService, PingService } from '../../../../services';
-import { AssetSummaryService } from './../asset-summary/asset-summary-service';
-
+import { AssetsService, PingService, AlertService } from '../../../../services';
+import { COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import ReadingsValidator from '../assets/readings-validator';
-import { MAX_INT_SIZE, POLLING_INTERVAL, COLOR_CODES } from '../../../../utils';
-
 
 @Component({
   selector: 'app-readings-graph',
@@ -30,8 +26,7 @@ export class ReadingsGraphComponent {
   public limit: number;
   public readKeyColorLabel = [];
 
-  constructor(private assetService: AssetsService,
-    private assetSummaryService: AssetSummaryService,
+  constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
     this.assetChartType = 'line';
     this.assetReadingValues = [];
@@ -58,8 +53,34 @@ export class ReadingsGraphComponent {
     chart_modal.classList.remove('is-active');
   }
 
+  public getAssetCode(assetCode) {
+    this.assetCode = assetCode;
+    this.plotReadingsGraph(assetCode, 0);
+    this.showAssetReadingsSummary(assetCode);
+  }
+
+  public showAssetReadingsSummary(assetCode) {
+    this.assetService.getAllAssetSummary(assetCode).subscribe(
+      (data: any) => {
+        this.assetReadingSummary = data.map(o => {
+          const k = Object.keys(o)[0];
+          return {
+            name: k,
+            value: [o[k]]
+          };
+        });
+      },
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
   public plotReadingsGraph(assetCode, limit: any) {
-    if (this.assetCode === '') {
+    if (assetCode === '') {
       return false;
     }
     if (this.graphTimerSubscription) {
@@ -76,8 +97,6 @@ export class ReadingsGraphComponent {
     }
 
     this.limit = limit;
-    this.assetCode = assetCode;
-
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit).
       subscribe(
         (data: any[]) => {
@@ -88,15 +107,6 @@ export class ReadingsGraphComponent {
           }
           const validRecord = ReadingsValidator.validate(data);
           if (validRecord) {
-            this.assetSummaryService.getReadingSummary(
-              {
-                assetCode: assetCode,
-                readings: data[0],
-              });
-            this.assetSummaryService.assetReadingSummary.subscribe(
-              value => {
-                this.assetReadingSummary = value;
-              });
             this.getAssetTimeReading(data);
           } else {
             this.showGraph = false;
@@ -109,6 +119,8 @@ export class ReadingsGraphComponent {
           console.log('error in response', error);
         });
   }
+
+
 
   public getAssetTimeReading(assetChartRecord) {
     let assetTimeLabels = [];
@@ -154,7 +166,7 @@ export class ReadingsGraphComponent {
       cc = '#008000';
     }
     if (fill) {
-      this.readKeyColorLabel.push({ [readKey] : cc });
+      this.readKeyColorLabel.push({ [readKey]: cc });
     }
     return cc;
   }

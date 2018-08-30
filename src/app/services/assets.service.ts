@@ -37,17 +37,17 @@ export class AssetsService {
       catchError((error: Response) => observableThrowError(error)));
   }
 
-  public getAssetSummary(assetObject: any) {
-    let params = new HttpParams();
-    if (assetObject.time !== undefined) {
-      const keys = Object.keys(assetObject.time);
-      params = params.set(keys[0], assetObject.time[keys[0]]);
-    }
-    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode)
-      + '/' + assetObject.reading + '/summary', { params: params }).pipe(
-        map(response => response),
-        catchError((error: Response) => observableThrowError(error)));
+  /**
+  *  foglamp/{assetCode}/summary
+  *  @param assetCode
+  *  Return a set of readings summary for the given asset code
+  */
+  public getAllAssetSummary(assetCode: string) {
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetCode) + '/summary').pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
+
 
   // TODO: Not in use yet
   public getAssetAverage(assetObject: any) {
