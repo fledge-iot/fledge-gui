@@ -29,13 +29,15 @@
             <td style="vertical-align: middle;">
               <small>{{ backup.date | date:"yyyy-mm-dd hh:mm:ss"}}</small>
             </td>
-            <td style="vertical-align: middle;"><small>{{ backup.status }}</small></td>
-            <td>
-              <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
-              </a>
+            <td style="vertical-align: middle;">
+              <small>{{ backup.status }}</small>
             </td>
             <td>
               <a *ngIf="backup.status != 'RUNNING'" class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
+              </a>
+            </td>
+            <td>
+              <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
               </a>
             </td>
             <td>
