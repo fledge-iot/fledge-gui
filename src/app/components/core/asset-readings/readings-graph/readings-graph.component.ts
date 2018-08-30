@@ -71,6 +71,9 @@ export class ReadingsGraphComponent {
           };
         });
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+        if (this.graphRefreshInterval > 0) {
+          this.enableRefreshTimer();
+        }
       },
       error => {
         if (error.status === 0) {
@@ -207,6 +210,6 @@ export class ReadingsGraphComponent {
 
   private enableRefreshTimer(): void {
     this.graphTimerSubscription = Observable.timer(this.graphRefreshInterval)
-      .subscribe(() => this.plotReadingsGraph(this.assetCode, this.limit));
+      .subscribe(() => { this.plotReadingsGraph(this.assetCode, this.limit); this.showAssetReadingsSummary(this.assetCode); });
   }
 }
