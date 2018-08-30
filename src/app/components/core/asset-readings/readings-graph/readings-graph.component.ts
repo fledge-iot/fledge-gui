@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { orderBy } from 'lodash';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
@@ -13,7 +13,7 @@ import ReadingsValidator from '../assets/readings-validator';
   templateUrl: './readings-graph.component.html',
   styleUrls: ['./readings-graph.component.css']
 })
-export class ReadingsGraphComponent implements OnDestroy {
+export class ReadingsGraphComponent {
   public assetCode: string;
   public assetChartType: string;
   public assetReadingValues: any;
