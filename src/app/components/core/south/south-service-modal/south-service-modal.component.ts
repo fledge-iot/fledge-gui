@@ -47,6 +47,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public getCategory(): void {
+    /** request started */
+    this.ngProgress.start();
     const categoryValues = [];
     this.configService.getCategory(this.service['name']).
       subscribe(
@@ -56,8 +58,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.category = { key: this.service['name'], value: categoryValues };
             this.useProxy = 'true';
           }
+          /** request completed */
+          this.ngProgress.done();
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

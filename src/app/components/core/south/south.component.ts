@@ -20,6 +20,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   public southboundServices = [];
   private timerSubscription: AnonymousSubscription;
   public refreshSouthboundServiceInterval = POLLING_INTERVAL;
+  public showSpinner = false;
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
 
@@ -30,6 +31,7 @@ export class SouthComponent implements OnInit, OnDestroy {
     private ping: PingService) { }
 
   ngOnInit() {
+    this.showLoadingSpinner();
     this.getSouthboundServices();
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
       this.refreshSouthboundServiceInterval = timeInterval;
@@ -45,14 +47,16 @@ export class SouthComponent implements OnInit, OnDestroy {
       subscribe(
         (data: any) => {
           this.southboundServices = data['services'];
-          this.southboundServices = sortBy(this.southboundServices, function(svc) {
+          this.southboundServices = sortBy(this.southboundServices, function (svc) {
             return svc['status'] === 'down';
           });
+          this.hideLoadingSpinner();
           if (this.refreshSouthboundServiceInterval > 0) {
             this.refreshSouthboundServices();
           }
         },
         error => {
+          this.hideLoadingSpinner();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -88,5 +92,13 @@ export class SouthComponent implements OnInit, OnDestroy {
       this.timerSubscription.unsubscribe();
       this.timerSubscription = null;
     }
+  }
+
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
   }
 }

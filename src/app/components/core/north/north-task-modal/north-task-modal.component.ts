@@ -60,11 +60,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public getCategory(): void {
+    /** request started */
+    this.ngProgress.start();
     this.enabled = this.task['enabled'];
     this.exclusive = this.task['exclusive'];
     this.repeat = Utils.secondsToDhms(this.task['repeat']).time;
     this.processName = this.task['processName'];
-
     const categoryValues = [];
     this.configService.getCategory(this.processName).subscribe(
       (data: any) => {
@@ -73,8 +74,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           this.category = { key: this.processName, value: categoryValues };
           this.useProxy = 'true';
         }
+         /** request completed */
+         this.ngProgress.done();
       },
       error => {
+         /** request completed */
+         this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
