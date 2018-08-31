@@ -12,12 +12,11 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <div *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'" class="select is-small">
-                    <select name='{{configItem.value.key}}' [(ngModel)]="configItem.value.value">
-                      <option [value]="true">true</option>
-                      <option [value]="false">false</option>
-                    </select>
-                  </div>
+                  <ng-container *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'">
+                    <label class="checkbox">
+                      <input type="checkbox" name='{{configItem.value.key}}' value="{{configItem.value.value}}" [ngModel]="configItem.value.value == 'true'">
+                    </label>
+                  </ng-container>
                   <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                     type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                     required />
