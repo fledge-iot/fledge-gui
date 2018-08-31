@@ -9,7 +9,7 @@
 .dropdown-content {
   width: auto;
   min-height: 200px;
-  height: 400px;
+  height: auto;
   overflow-y: scroll;
   overflow-x:hidden;
   padding-right: .5rem;
