@@ -9,29 +9,31 @@
           </svg>
         </div>
         <ng-container *ngIf="!showSpinner">
-          <div class="has-text-centered" *ngIf="tasks != undefined && tasks.length === 0">
+          <div class="has-text-centered" *ngIf="assets != undefined && assets.length === 0">
             <small>No Record</small>
           </div>
-          <table class="table is-striped is-narrow scroll is-responsive">
-            <thead>
-              <tr>
-                <th>Asset</th>
-                <th>Readings</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let asset of assets">
-                <td>{{asset.assetCode}}</td>
-                <td>{{asset.count | number}}</td>
-                <td>
-                  <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
-                    <i class="fa fa-line-chart" aria-hidden="true"></i>
-                  </a>
-                </td>
-              </tr>
+          <ng-container *ngIf="assets!= undefined && assets.length > 0">
+            <table class="table is-striped is-narrow scroll is-responsive">
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>Readings</th>
+                  <th></th>
+                </tr>
+              </thead>
               <tbody>
-          </table>
+                <tr *ngFor="let asset of assets">
+                  <td>{{asset.assetCode}}</td>
+                  <td>{{asset.count | number}}</td>
+                  <td>
+                    <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
+                      <i class="fa fa-line-chart" aria-hidden="true"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tbody>
+            </table>
+          </ng-container>
         </ng-container>
       </div>
     </div>
