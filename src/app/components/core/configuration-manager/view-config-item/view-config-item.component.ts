@@ -22,6 +22,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isEmptyValue = false;
   public configItems = [];
 
+  public checkboxValue = false;
+
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     public ngProgress: NgProgress) { }
@@ -121,5 +123,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   public getConfigAttributeType(key) {
     return ConfigTypeValidation.getValueType(key);
+  }
+
+  public onChange(value) {
+    console.log('value', value);
+    this.checkboxValue = value;
   }
 }
