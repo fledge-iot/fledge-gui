@@ -21,7 +21,7 @@
       </div>
       <ng-container *ngIf="!showSpinner">
         <div class="has-text-centered" *ngIf="tasks != undefined && tasks.length === 0">
-          <small>No Record</small>
+          <small class="no-rec">No Record</small>
         </div>
         <ng-container *ngIf="tasks!= undefined && tasks.length > 0">
           <table class="table is-fullwidth scroll is-responsive">
