@@ -11,7 +11,7 @@ html,
     background-color: #f5f5f5 !important;
 }
 
-@media only screen and (min-height: 500px) {
+@media only screen and (min-height: 600px) {
     aside {
         overflow-y: hidden !important;
     }
@@ -161,3 +161,9 @@ table.scroll tbody {
 .fix-pad{
     padding-top: 1.0rem;
   }
+  
+@media only screen and (max-width: 768px) {
+    .modal-card {
+        padding-top: 4.00rem !important;
+    }
+}
