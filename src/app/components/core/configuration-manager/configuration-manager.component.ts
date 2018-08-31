@@ -132,16 +132,22 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   private getCategory(category_name: string, category_desc: string): void {
+    /** request started */
+    this.ngProgress.start();
     const categoryValues = [];
     this.configService.getCategory(category_name).
       subscribe(
         (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
           if (!isEmpty(data)) {
             categoryValues.push(data);
             this.categoryData = [{ key: category_name, value: categoryValues, description: category_desc }];
           }
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

@@ -19,49 +19,62 @@
   </header>
   <div class="card-content">
     <div class="content">
-      <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
-        <thead>
-          <tr>
-            <th class="align-content">Name</th>
-            <th class="align-content">Status</th>
-            <th class="align-content">
-              <table class="table is-responsive">
-                <tr>
-                  <td>Assets</td>
-                  <td>Readings</td>
-                </tr>
-              </table>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let svc of southboundServices">
-            <td class="align-content">
-              <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
-            </td>
-            <td class="align-content">
-              <div class="tags has-addons">
-                <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
-                <span *ngIf="svc.status == 'down'" class="tag">disabled</span>
-                <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
-                <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
-              </div>
-            </td>
-            <td class="align-content">
-              <table class="table is-narrow is-responsive">
-                <tr *ngFor='let data of svc.assets'>
-                  <td>
-                    <small>{{data.asset}}</small>
-                  </td>
-                  <td class="is-pulled-right">
-                    <small>{{data.count | number}}</small>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div *ngIf="showSpinner" class="app-loading">
+        &nbsp;
+        <svg class="spinner" viewBox="0 0 100 100">
+          <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+        </svg>
+      </div>
+      <ng-container *ngIf="!showSpinner">
+        <div class="has-text-centered" *ngIf="southboundServices != undefined && southboundServices.length === 0">
+          <small>No Record</small>
+        </div>
+        <ng-container *ngIf="southboundServices!= undefined && southboundServices.length > 0">
+          <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
+            <thead>
+              <tr>
+                <th class="align-content">Name</th>
+                <th class="align-content">Status</th>
+                <th class="align-content">
+                  <table class="table is-responsive">
+                    <tr>
+                      <td>Assets</td>
+                      <td>Readings</td>
+                    </tr>
+                  </table>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let svc of southboundServices">
+                <td class="align-content">
+                  <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                </td>
+                <td class="align-content">
+                  <div class="tags has-addons">
+                    <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
+                    <span *ngIf="svc.status == 'down'" class="tag">disabled</span>
+                    <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
+                    <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
+                  </div>
+                </td>
+                <td class="align-content">
+                  <table class="table is-narrow is-responsive">
+                    <tr *ngFor='let data of svc.assets'>
+                      <td>
+                        <small>{{data.asset}}</small>
+                      </td>
+                      <td class="is-pulled-right">
+                        <small>{{data.count | number}}</small>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+      </ng-container>
     </div>
   </div>
 </div>
