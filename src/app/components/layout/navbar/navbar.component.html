@@ -10,20 +10,23 @@
       <div class="navbar-item">
         <div class="foglamp-logo"></div>
         &nbsp;&nbsp;
-        <b>FogLAMP</b>
+        <b>
+          <a href="/" style="color: #363636;">FogLAMP</a>
+        </b>
         &nbsp;&nbsp;&nbsp;&nbsp;
       </div>
     </div>
     <div *ngIf="pingInfo.isAuth || !pingInfo.isAlive">
       <div *ngIf="viewPort == 'mobile'" class="navbar-item">
-        <b>FogLAMP</b>
+        <b>FogLAMP
+        </b>
       </div>
     </div>
     <div *ngIf="!pingInfo.isAlive" class="navbar-item">
       <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
         <i class="fa fa-circle"> </i>
       </span>
-      <b>&nbsp;DOWN</b>
+      <b style="color:gray;">&nbsp;DOWN</b>
     </div>
     <div *ngIf="viewPort == 'tablet'" class="navbar-item">
       <!-- tablet -->
@@ -45,15 +48,21 @@
               <table>
                 <tr>
                   <td class="has-text-left">Received: </td>
-                  <td><b>{{pingData['dataRead'] | number}}</b></td>
+                  <td>
+                    <b>{{pingData['dataRead'] | number}}</b>
+                  </td>
                 </tr>
                 <tr>
                   <td class="has-text-left">Sent: </td>
-                  <td><b>{{pingData['dataSent'] | number}}</b></td>
+                  <td>
+                    <b>{{pingData['dataSent'] | number}}</b>
+                  </td>
                 </tr>
                 <tr>
                   <td class="has-text-left">Uptime: </td>
-                  <td><b>{{uptime}}</b></td>
+                  <td>
+                    <b>{{uptime}}</b>
+                  </td>
                 </tr>
               </table>
             </div>
@@ -82,15 +91,21 @@
               <table>
                 <tr>
                   <td class="has-text-left">Received: </td>
-                  <td><b>{{pingData['dataRead'] | number}}</b></td>
+                  <td>
+                    <b>{{pingData['dataRead'] | number}}</b>
+                  </td>
                 </tr>
                 <tr>
                   <td class="has-text-left">Sent: </td>
-                  <td><b>{{pingData['dataSent'] | number}}</b></td>
+                  <td>
+                    <b>{{pingData['dataSent'] | number}}</b>
+                  </td>
                 </tr>
                 <tr>
                   <td class="has-text-left">Uptime: </td>
-                  <td><b>{{uptime}}</b></td>
+                  <td>
+                    <b>{{uptime}}</b>
+                  </td>
                 </tr>
               </table>
             </div>
