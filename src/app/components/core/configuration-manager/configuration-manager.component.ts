@@ -16,7 +16,6 @@ export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
   public rootCategories = [];
   public JSON;
-  public addConfigItem: any;
   public selectedRootCategory = 'General';
   public isChild = true;
 
