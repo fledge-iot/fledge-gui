@@ -56,7 +56,6 @@ export class ReadingsGraphComponent {
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
-    console.log('time', time);
     if (time == null) {
       localStorage.setItem('ASSET_READINGS_TIME_FILTER', ASSET_READINGS_TIME_FILTER);
     } else {
