@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { orderBy } from 'lodash';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
-import { orderBy } from 'lodash';
+
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
@@ -20,7 +21,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public isChart = false;
   public refreshInterval = POLLING_INTERVAL;
   private timerSubscription: AnonymousSubscription;
-
+  public showSpinner = false;
   @ViewChild(ReadingsGraphComponent) readingsGraphComponent: ReadingsGraphComponent;
 
   constructor(private assetService: AssetsService,
@@ -28,6 +29,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private ping: PingService) { }
 
   ngOnInit() {
+    this.showLoadingSpinner();
     this.getAsset();
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
       this.refreshInterval = timeInterval;
@@ -46,8 +48,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
           if (this.refreshInterval > 0) {
             this.enableRefreshTimer();
           }
+          this.hideLoadingSpinner();
         },
         error => {
+          this.hideLoadingSpinner();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -76,4 +80,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
       .subscribe(() => this.getAsset());
   }
 
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
+  }
 }

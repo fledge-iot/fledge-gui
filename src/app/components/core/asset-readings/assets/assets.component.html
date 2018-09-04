@@ -2,26 +2,39 @@
   <div class="card">
     <div class="card-content">
       <div class="content">
-        <table class="table is-striped is-narrow scroll is-responsive">
-          <thead>
-            <tr>
-              <th>Asset</th>
-              <th>Readings</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let asset of assets">
-              <td>{{asset.assetCode}}</td>
-              <td>{{asset.count | number}}</td>
-              <td>
-                <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
-                  <i class="fa fa-line-chart" aria-hidden="true"></i>
-                </a>
-              </td>
-            </tr>
-            <tbody>
-        </table>
+        <div *ngIf="showSpinner" class="app-loading">
+          &nbsp;
+          <svg class="spinner" viewBox="0 0 100 100">
+            <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+          </svg>
+        </div>
+        <ng-container *ngIf="!showSpinner">
+          <div class="has-text-centered" *ngIf="assets != undefined && assets.length === 0">
+            <small class="no-rec">No Record</small>
+          </div>
+          <ng-container *ngIf="assets!= undefined && assets.length > 0">
+            <table class="table is-striped is-narrow scroll is-responsive">
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>Readings</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let asset of assets">
+                  <td>{{asset.assetCode}}</td>
+                  <td>{{asset.count | number}}</td>
+                  <td>
+                    <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
+                      <i class="fa fa-line-chart" aria-hidden="true"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tbody>
+            </table>
+          </ng-container>
+        </ng-container>
       </div>
     </div>
   </div>

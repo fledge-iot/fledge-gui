@@ -73,31 +73,4 @@ export class ConfigurationService {
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
-
-  /**
-  *  POST  | /foglamp/category/{categoryName}/{config_item}
-  */
-  addNewConfigItem(configItemData, categoryName: string, configItem: string) {
-    return this.http.post(this.CATEGORY_URL + '/' + categoryName + '/' + configItem, configItemData).pipe(
-      map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
-  }
-
-  /**
-  *  POST  | /foglamp/category/{categoryName}/children
-  */
-  addChild(categoryName, child) {
-    return this.http.post(this.CATEGORY_URL + '/' + categoryName + '/children', JSON.stringify({ children: child })).pipe(
-      map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
-  }
-
-  /**
-  *  DELETE  | /foglamp/category/{category_name}/children/{childCategory}
-  */
-  deleteChild(categoryName, child) {
-    return this.http.delete(this.CATEGORY_URL + '/' + categoryName + '/children/' + child).pipe(
-      map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
-  }
 }

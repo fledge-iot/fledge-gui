@@ -1,13 +1,13 @@
-
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { NorthService, AlertService, PingService } from '../../../services/index';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
 import { sortBy } from 'lodash';
-
-import { POLLING_INTERVAL } from '../../../utils';
-import { AnonymousSubscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Rx';
+import { AnonymousSubscription } from 'rxjs/Subscription';
+
+import { AlertService, NorthService, PingService } from '../../../services';
+import { POLLING_INTERVAL } from '../../../utils';
+import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
+
 
 @Component({
   selector: 'app-north',
@@ -21,14 +21,17 @@ export class NorthComponent implements OnInit, OnDestroy {
 
   public refreshInterval = POLLING_INTERVAL;
   private timerSubscription: AnonymousSubscription;
+  public showSpinner = false;
 
-  constructor(private northService: NorthService, private ping: PingService, private alertService: AlertService, private router: Router) {}
+  constructor(private northService: NorthService,
+    private ping: PingService,
+    private alertService: AlertService,
+    private router: Router) { }
 
-  @ViewChild(NorthTaskModalComponent)
-  northTaskModal: NorthTaskModalComponent;
+  @ViewChild(NorthTaskModalComponent) northTaskModal: NorthTaskModalComponent;
 
   ngOnInit() {
-
+    this.showLoadingSpinner();
     this.getNorthTasks();
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
       this.refreshInterval = timeInterval;
@@ -48,14 +51,16 @@ export class NorthComponent implements OnInit, OnDestroy {
       subscribe(
         (data) => {
           this.tasks = data;
-          this.tasks = sortBy(this.tasks, function(obj) {
+          this.tasks = sortBy(this.tasks, function (obj) {
             return !obj.enabled + obj.processName.toLowerCase();
           });
           if (this.refreshInterval > 0) {
             this.enableRefreshTimer();
           }
+          this.hideLoadingSpinner();
         },
         error => {
+          this.hideLoadingSpinner();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -86,4 +91,11 @@ export class NorthComponent implements OnInit, OnDestroy {
     this.getNorthTasks();
   }
 
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
+  }
 }
