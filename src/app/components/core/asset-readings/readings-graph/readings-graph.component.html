@@ -44,7 +44,6 @@
           </div>
         </div>
       </div>
-      <p *ngIf='showGraph'><small> * last {{limit}} records </small></p>
       <p *ngIf='!showGraph'> Not Available </p>
       <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]=""></app-chart>
     </section>
