@@ -21,11 +21,10 @@ export class ReadingsGraphComponent {
   public assetReadingSummary = [];
   public isInvalidLimit = false;
   public MAX_RANGE = MAX_INT_SIZE;
-  public DEFAULT_LIMIT = 100;
   public graphRefreshInterval = POLLING_INTERVAL;
   private graphTimerSubscription: AnonymousSubscription;
   public limit: number;
-  public optedTime;
+  public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
@@ -56,19 +55,13 @@ export class ReadingsGraphComponent {
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
-    if (time == null) {
-      localStorage.setItem('ASSET_READINGS_TIME_FILTER', ASSET_READINGS_TIME_FILTER);
-    } else {
-      localStorage.setItem('ASSET_READINGS_TIME_FILTER', time);
-    }
-    this.optedTime = localStorage.getItem('ASSET_READINGS_TIME_FILTER');
-    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    this.optedTime = time;
+    this.showAssetReadingsSummary(this.assetCode, this.limit, time);
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
   }
 
   public getAssetCode(assetCode) {
     this.assetCode = assetCode;
-    this.optedTime = localStorage.getItem('ASSET_READINGS_TIME_FILTER');
     this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
     this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
   }
@@ -108,7 +101,7 @@ export class ReadingsGraphComponent {
 
     this.isInvalidLimit = false;
     if (limit === undefined || limit === null || limit === '' || limit === 0) {
-      limit = this.DEFAULT_LIMIT;
+      limit = 0;
     } else if (!Number.isInteger(+limit) || +limit < 0 || +limit > this.MAX_RANGE) { // max limit of int in c++
       this.isInvalidLimit = true;
       return;
@@ -216,7 +209,8 @@ export class ReadingsGraphComponent {
 
   public clearField(limitField) {
     limitField.inputValue = '';
-    this.limit = this.DEFAULT_LIMIT;
+    this.limit = 0;
+    this.optedTime = ASSET_READINGS_TIME_FILTER;
     if (this.graphTimerSubscription) {
       this.graphTimerSubscription.unsubscribe();
       this.graphTimerSubscription = null;
