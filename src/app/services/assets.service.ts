@@ -27,8 +27,11 @@ export class AssetsService {
   * @param limit
   *  Return a set of asset readings for the given asset code
   */
-  public getAssetReadings(assetCode, limit: Number = 0) {
+  public getAssetReadings(assetCode, limit: Number = 0, time = null) {
     let params = new HttpParams();
+    if (time) {
+      params = params.append('sss', time);
+    }
     if (limit) {
       params = params.set('limit', limit.toString());
     }
@@ -42,8 +45,15 @@ export class AssetsService {
   *  @param assetCode
   *  Return a set of readings summary for the given asset code
   */
-  public getAllAssetSummary(assetCode: string) {
-    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetCode) + '/summary').pipe(
+  public getAllAssetSummary(assetCode: string, limit: Number = 0, time = null) {
+    let params = new HttpParams();
+    if (time) {
+      params = params.append('seconds', time);
+    }
+    if (limit) {
+      params = params.set('limit', limit.toString());
+    }
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetCode) + '/summary', { params: params }).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }

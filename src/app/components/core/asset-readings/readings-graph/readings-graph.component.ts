@@ -5,7 +5,7 @@ import { AnonymousSubscription } from 'rxjs/Subscription';
 
 import { MomentDatePipe } from '../../../../pipes/moment-date';
 import { AlertService, AssetsService, PingService } from '../../../../services';
-import { COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import ReadingsValidator from '../assets/readings-validator';
 
 @Component({
@@ -25,6 +25,7 @@ export class ReadingsGraphComponent {
   public graphRefreshInterval = POLLING_INTERVAL;
   private graphTimerSubscription: AnonymousSubscription;
   public limit: number;
+  public optedTime;
   public readKeyColorLabel = [];
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
@@ -54,14 +55,27 @@ export class ReadingsGraphComponent {
     chart_modal.classList.remove('is-active');
   }
 
-  public getAssetCode(assetCode) {
-    this.assetCode = assetCode;
-    this.plotReadingsGraph(assetCode, 0);
-    this.showAssetReadingsSummary(assetCode);
+  getTimeBasedAssetReadingsAndSummary(time) {
+    console.log('time', time);
+    if (time == null) {
+      localStorage.setItem('ASSET_READINGS_TIME_FILTER', ASSET_READINGS_TIME_FILTER);
+    } else {
+      localStorage.setItem('ASSET_READINGS_TIME_FILTER', time);
+    }
+    this.optedTime = localStorage.getItem('ASSET_READINGS_TIME_FILTER');
+    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
   }
 
-  public showAssetReadingsSummary(assetCode) {
-    this.assetService.getAllAssetSummary(assetCode).subscribe(
+  public getAssetCode(assetCode) {
+    this.assetCode = assetCode;
+    this.optedTime = localStorage.getItem('ASSET_READINGS_TIME_FILTER');
+    this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
+    this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
+  }
+
+  public showAssetReadingsSummary(assetCode, limit = null, time = null) {
+    this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
           const k = Object.keys(o)[0];
@@ -84,7 +98,7 @@ export class ReadingsGraphComponent {
       });
   }
 
-  public plotReadingsGraph(assetCode, limit: any) {
+  public plotReadingsGraph(assetCode, limit = null, time = null) {
     if (assetCode === '') {
       return false;
     }
@@ -102,7 +116,7 @@ export class ReadingsGraphComponent {
     }
 
     this.limit = limit;
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit).
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, time).
       subscribe(
         (data: any[]) => {
           this.showGraph = true;
@@ -207,6 +221,9 @@ export class ReadingsGraphComponent {
 
   private enableRefreshTimer(): void {
     this.graphTimerSubscription = Observable.timer(this.graphRefreshInterval)
-      .subscribe(() => { this.plotReadingsGraph(this.assetCode, this.limit); this.showAssetReadingsSummary(this.assetCode); });
+      .subscribe(() => {
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      });
   }
 }
