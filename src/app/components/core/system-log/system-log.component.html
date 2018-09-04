@@ -32,6 +32,15 @@
             </div>
           </div>
           <div class="column">
+              <div class="select is-fullwidth is-small">
+                <select (change)="filterLevel($event)">
+                  <option selected="selected" value="">Info</option>
+                  <option value="WARNING">Warning</option>
+                  <option value="ERROR">Error</option>
+                </select>
+              </div>
+            </div>
+          <div class="column">
             <app-number-input-debounce placeholder="limit" (value)="setLimit($event)" [val]="limit"></app-number-input-debounce>
           </div>
           <div class="column">
