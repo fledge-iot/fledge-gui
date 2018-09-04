@@ -10,7 +10,7 @@ import { NgProgress } from 'ngx-progressbar';
 export class SystemLogComponent implements OnInit {
   public logs: any;
   public source: String = '';
-  public level: String = 'info';
+  public level: String = '';
   public totalCount: any;
   DEFAULT_LIMIT = 50;
   limit = this.DEFAULT_LIMIT;
