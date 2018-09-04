@@ -18,7 +18,6 @@ export default class ConfigTypeValidation {
       case 'IPV6':
       case 'STRING':
       case 'PASSWORD':
-      case 'URL':
         valueType = 'TEXT';
         break;
       case 'INTEGER':
@@ -33,6 +32,9 @@ export default class ConfigTypeValidation {
         break;
       case 'ENUMERATION':
         valueType = 'ENUMERATION';
+        break;
+      case 'URL':
+        valueType = 'URL';
         break;
       default:
         break;

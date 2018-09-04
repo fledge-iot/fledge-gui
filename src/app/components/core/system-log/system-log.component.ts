@@ -10,6 +10,7 @@ import { NgProgress } from 'ngx-progressbar';
 export class SystemLogComponent implements OnInit {
   public logs: any;
   public source: String = '';
+  public level: String = '';
   public totalCount: any;
   DEFAULT_LIMIT = 50;
   limit = this.DEFAULT_LIMIT;
@@ -127,8 +128,23 @@ export class SystemLogComponent implements OnInit {
       this.page = 1;
     }
     this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
+    // level?
     this.getSysLogs();
   }
+
+  public filterLevel(event) {
+    this.limit = 0;
+    this.offset = 0;
+    this.tempOffset = 0;
+    this.recordCount = 0;
+    if (this.page !== 1) {
+      this.page = 1;
+    }
+    // source?
+    this.level = event.target.value.trim().toLowerCase();
+    this.getSysLogs();
+  }
+
 
   public getSysLogs() {
     /** request started */
@@ -136,7 +152,7 @@ export class SystemLogComponent implements OnInit {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.limit, this.tempOffset, this.source).
+    this.systemLogService.getSysLogs(this.limit, this.tempOffset, this.source, this.level).
       subscribe(
         (data) => {
           /** request completed */
