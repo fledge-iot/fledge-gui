@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NgProgress } from 'ngx-progressbar';
-import Utils from '../../../../utils';
-
 import { Router } from '@angular/router';
+import { NgProgress } from 'ngx-progressbar';
+
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
+import Utils from '../../../../utils';
+import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
   selector: 'app-add-task-wizard',
@@ -40,6 +41,7 @@ export class AddTaskWizardComponent implements OnInit {
   });
 
   @Input() categoryConfigurationData;
+  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
   constructor(private formBuilder: FormBuilder,
     private servicesHealthService: ServicesHealthService,
@@ -157,6 +159,9 @@ export class AddTaskWizardComponent implements OnInit {
         }
         break;
       case 2:
+        if (!this.viewConfigItemComponent.validRange) {
+          return;
+        }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         document.getElementById('vci-proxy').click();

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { sortBy, find, differenceWith } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
@@ -14,6 +14,7 @@ import ConfigTypeValidation from '../configuration-type-validation';
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
   @Input() useProxy: 'false';
+  @ViewChild(NgForm) configForm;
 
   public categoryConfiguration;
   public selectedValue: string;
@@ -132,8 +133,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     const min = event.target.min;
     const value = event.target.value;
     if (+value < +min || +value > +max) {
-      return false;
+      console.log('this.configForm.invalid', this.configForm.invalid);
+      return this.configForm.invalid;
     }
-    return true;
+    console.log('this.configForm.valid', this.configForm.valid);
+    return this.configForm.valid;
   }
 }
