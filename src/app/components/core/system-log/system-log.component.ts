@@ -128,6 +128,7 @@ export class SystemLogComponent implements OnInit {
       this.page = 1;
     }
     this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
+    // level?
     this.getSysLogs();
   }
 
@@ -139,6 +140,7 @@ export class SystemLogComponent implements OnInit {
     if (this.page !== 1) {
       this.page = 1;
     }
+    // source?
     this.level = event.target.value.trim().toLowerCase();
     this.getSysLogs();
   }
