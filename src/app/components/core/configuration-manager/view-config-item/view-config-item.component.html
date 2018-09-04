@@ -25,13 +25,16 @@
 
                   <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
                     name="{{configItem.value.key}}" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                    type="text" required>{{configItem?.value?.value}}</textarea>
+                    required>{{configItem?.value?.value}}</textarea>
 
                   <div *ngIf="getConfigAttributeType(configItem.value.type) == 'ENUMERATION'" class="select is-small">
                     <select name='{{configItem.value.key}}' [(ngModel)]="configItem.value.value">
                       <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>{{configOption}}</option>
                     </select>
                   </div>
+                  <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
+                    type="url" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                    required />
                 </div>
               </div>
             </div>
