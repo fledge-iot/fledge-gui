@@ -171,3 +171,12 @@ table.scroll tbody {
 .no-rec {
   color: darkgray;
 }
+
+.tag-syslog {
+  border-radius: 2px !important;
+  font-size: .75rem !important;
+  height: 1.3em !important;
+  line-height: 1.3 !important;
+  padding-left: 0.25em !important;
+  padding-right: .25em !important;
+}
