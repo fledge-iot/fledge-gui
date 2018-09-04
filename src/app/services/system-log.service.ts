@@ -15,10 +15,11 @@ export class SystemLogService {
   /**
    *  GET | foglamp/syslog
    */
-  public getSysLogs(limit: Number = 0, offset: Number = 0, source: String) {
+  public getSysLogs(limit: Number = 0, offset: Number = 0, source: String, level: String) {
     let params = new HttpParams();
     params = params.set('limit', limit.toString());
     params = params.set('offset', offset.toString());
+    params = params.set('level', level);
     if (source) {
       params = params.set('source', source.toUpperCase());
     }

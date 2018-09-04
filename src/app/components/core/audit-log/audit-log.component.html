@@ -39,8 +39,6 @@
               </select>
             </div>
           </div>
-        </div>
-        <div class="columns is-mobile">
           <div class="column">
             <app-number-input-debounce placeholder="limit" (value)="setLimit($event)" [val]="limit"></app-number-input-debounce>
             <p *ngIf='isInvalidLimit' class='help is-danger'>Limit must be in range 1 - {{MAX_RANGE}}</p>
