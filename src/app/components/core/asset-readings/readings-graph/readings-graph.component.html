@@ -5,13 +5,13 @@
       <p class="modal-card-title is-size-5">{{assetCode}}
       </p>
       <div class="close">
-        <button class="delete" aria-label="close" (click)="toggleModal(false); clearField(limit)"></button>
+        <button class="delete" aria-label="close" (click)="toggleModal(false); clearField(limitField)"></button>
       </div>
     </header>
     <section class="modal-card-body">
       <div [hidden]='!showGraph' class="columns is-mobile">
         <div class="column">
-          <app-number-input-debounce placeholder="number of readings" #limit (value)="plotReadingsGraph(assetCode, limit.inputValue, optedTime); showAssetReadingsSummary(assetCode, limit.inputValue,optedTime);"
+          <app-number-input-debounce placeholder="number of readings" #limitField (value)="plotReadingsGraph(assetCode, limitField.inputValue, optedTime); showAssetReadingsSummary(assetCode, limitField.inputValue,optedTime);"
             max="{{MAX_RANGE}}"></app-number-input-debounce>
           <p *ngIf='isInvalidLimit' class='help is-danger'>Number of readings must be in range 1 - {{MAX_RANGE}}</p>
         </div>
@@ -44,6 +44,7 @@
           </div>
         </div>
       </div>
+      <p *ngIf='showGraph'><small> * last {{limit}} records </small></p>
       <p *ngIf='!showGraph'> Not Available </p>
       <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]=""></app-chart>
     </section>

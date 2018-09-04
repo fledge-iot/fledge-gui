@@ -216,6 +216,11 @@ export class ReadingsGraphComponent {
 
   public clearField(limitField) {
     limitField.inputValue = '';
+    this.limit = this.DEFAULT_LIMIT;
+    if (this.graphTimerSubscription) {
+      this.graphTimerSubscription.unsubscribe();
+      this.graphTimerSubscription = null;
+    }
   }
 
   private enableRefreshTimer(): void {
