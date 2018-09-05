@@ -146,7 +146,7 @@ export class SystemLogComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          let logs = [];
+          const logs = [];
           data['logs'].forEach(l => {
             let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
             fl = fl.replace('WARNING:', '<span class="tag is-warning tag-syslog">WARNING:</span>');
