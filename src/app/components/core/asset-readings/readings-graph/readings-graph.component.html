@@ -12,7 +12,8 @@
       <div [hidden]='!showGraph' class="columns is-mobile">
         <div class="column is-two-fifths">
           <div class="select is-small is-pulled-right">
-            <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value)">
+            <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value);clearField(limitField)">
+              <option value="0" [selected]="optedTime == 0">None</option>
               <option value="600" [selected]="optedTime == 600">10 minutes</option>
               <option value="1800" [selected]="optedTime == 1800">30 minutes</option>
               <option value="3600" [selected]="optedTime == 3600">1 hour</option>
@@ -22,7 +23,7 @@
           </div>
         </div>
         <div class="column is-half">
-          <app-number-input-debounce placeholder="number of readings" #limitField (value)="plotReadingsGraph(assetCode, limitField.inputValue, optedTime); showAssetReadingsSummary(assetCode, limitField.inputValue,optedTime);"
+          <app-number-input-debounce placeholder="number of readings" #limitField (value)="getLimitBasedAssetReadingsAndSummary(limitField.inputValue);"
             max="{{MAX_RANGE}}"></app-number-input-debounce>
           <p *ngIf='isInvalidLimit' class='help is-danger'>Number of readings must be in range 1 - {{MAX_RANGE}}</p>
         </div>

@@ -24,6 +24,7 @@ export class ReadingsGraphComponent {
   public graphRefreshInterval = POLLING_INTERVAL;
   private graphTimerSubscription: AnonymousSubscription;
   public limit: number;
+  public DEFAULT_LIMIT = 100;
   public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
 
@@ -55,18 +56,42 @@ export class ReadingsGraphComponent {
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
+    console.log('time', time);
     this.optedTime = time;
-    this.showAssetReadingsSummary(this.assetCode, this.limit, time);
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    console.log('opt time', this.optedTime);
+    if (this.optedTime === 0) {
+      this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
+      this.plotReadingsGraph(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
+    } else {
+      this.limit = 0;
+      this.showAssetReadingsSummary(this.assetCode, this.limit, time);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    }
   }
 
   public getAssetCode(assetCode) {
     this.assetCode = assetCode;
-    this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
-    this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
+    if (this.optedTime !== 0) {
+      this.limit = 0;
+      this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
+      this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
+    }
   }
 
-  public showAssetReadingsSummary(assetCode, limit = null, time = null) {
+  public getLimitBasedAssetReadingsAndSummary(limit: number = 0) {
+    console.log('limit', limit);
+    if (limit == null) {
+      this.optedTime = ASSET_READINGS_TIME_FILTER;
+      this.limit = 0;
+    } else {
+      this.limit = limit;
+      this.optedTime = 0;
+    }
+    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+  }
+
+  public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
@@ -127,8 +152,6 @@ export class ReadingsGraphComponent {
           console.log('error in response', error);
         });
   }
-
-
 
   public getAssetTimeReading(assetChartRecord) {
     let assetTimeLabels = [];
@@ -210,7 +233,6 @@ export class ReadingsGraphComponent {
   public clearField(limitField) {
     limitField.inputValue = '';
     this.limit = 0;
-    this.optedTime = ASSET_READINGS_TIME_FILTER;
     if (this.graphTimerSubscription) {
       this.graphTimerSubscription.unsubscribe();
       this.graphTimerSubscription = null;
@@ -220,8 +242,8 @@ export class ReadingsGraphComponent {
   private enableRefreshTimer(): void {
     this.graphTimerSubscription = Observable.timer(this.graphRefreshInterval)
       .subscribe(() => {
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
       });
   }
 }
