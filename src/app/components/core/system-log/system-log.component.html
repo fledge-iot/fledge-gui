@@ -25,7 +25,7 @@
         <div class="columns is-mobile">
           <div class="column">
             <div class="select is-fullwidth is-small">
-              <select (change)="filterSource($event)">
+              <select (change)="filterData($event, 'source')">
                 <option selected="selected" value="all">All</option>
                 <option value="storage">Storage</option>
               </select>
@@ -33,7 +33,7 @@
           </div>
           <div class="column">
               <div class="select is-fullwidth is-small">
-                <select (change)="filterLevel($event)">
+                <select (change)="filterData($event, 'level')">
                   <option selected="selected" value="">Info</option>
                   <option value="WARNING">Warning</option>
                   <option value="ERROR">Error</option>
