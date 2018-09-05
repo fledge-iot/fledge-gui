@@ -7,6 +7,8 @@ This is a GUI for FogLAMP
 
 [Prerequisite Ubuntu](prerequisite-ubuntu.md)
 
+[Prerequisite Windows](prerequisite-windows.md)
+
 To install dependencies run the following command inside the root directory:
 
 `yarn install`

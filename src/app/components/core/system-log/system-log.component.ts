@@ -119,7 +119,7 @@ export class SystemLogComponent implements OnInit {
     this.getSysLogs();
   }
 
-  public filterSource(event) {
+  public filterData(event, filter) {
     this.limit = 0;
     this.offset = 0;
     this.tempOffset = 0;
@@ -127,24 +127,13 @@ export class SystemLogComponent implements OnInit {
     if (this.page !== 1) {
       this.page = 1;
     }
-    this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
-    // level?
-    this.getSysLogs();
-  }
-
-  public filterLevel(event) {
-    this.limit = 0;
-    this.offset = 0;
-    this.tempOffset = 0;
-    this.recordCount = 0;
-    if (this.page !== 1) {
-      this.page = 1;
+    if (filter === 'source') {
+      this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
+    } else {
+      this.level = event.target.value.trim().toLowerCase();
     }
-    // source?
-    this.level = event.target.value.trim().toLowerCase();
     this.getSysLogs();
   }
-
 
   public getSysLogs() {
     /** request started */
@@ -157,7 +146,7 @@ export class SystemLogComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          let logs = [];
+          const logs = [];
           data['logs'].forEach(l => {
             let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
             fl = fl.replace('WARNING:', '<span class="tag is-warning tag-syslog">WARNING:</span>');
