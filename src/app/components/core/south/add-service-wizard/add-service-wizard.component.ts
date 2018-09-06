@@ -138,6 +138,8 @@ export class AddServiceWizardComponent implements OnInit {
 
         break;
       case 3:
+        nxtButton.style.visibility = 'hidden';
+        previousButton.style.visibility = 'hidden';
         if (this.serviceId.length > 0 && this.isScheduleEnabled) {
           /** request started */
           this.ngProgress.start();
@@ -149,12 +151,13 @@ export class AddServiceWizardComponent implements OnInit {
                 this.isServiceEnabled = true;
                 this.enableServiceMsg = 'Service enabled and started successfully.';
                 this.alertService.success(this.enableServiceMsg);
-                previousButton.disabled = true;
                 this.router.navigate(['/south']);
               },
               error => {
-                previousButton.disabled = false;
+                nxtButton.style.visibility = 'visible';
+                previousButton.style.visibility = 'visible';
                 this.isServiceEnabled = false;
+                previousButton.disabled = false;
                 /** request completed */
                 this.ngProgress.done();
                 if (error.status === 0) {
@@ -172,9 +175,12 @@ export class AddServiceWizardComponent implements OnInit {
         break;
     }
 
+    if (+id >= 3) {
+      return false;
+    }
+
     first.classList.remove('is-active');
     first.classList.add('is-completed');
-
     const sId = +id + 1;
     const next = <HTMLElement>document.getElementById('' + sId);
     if (next != null) {

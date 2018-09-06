@@ -27,9 +27,12 @@ export class AssetsService {
   * @param limit
   *  Return a set of asset readings for the given asset code
   */
-  public getAssetReadings(assetCode, limit: Number = 0) {
+  public getAssetReadings(assetCode, limit: number = 0, time: number = 0) {
     let params = new HttpParams();
-    if (limit) {
+    if (+time !== 0) {
+      params = params.append('seconds', time.toString());
+    }
+    if (+limit !== 0) {
       params = params.set('limit', limit.toString());
     }
     return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
@@ -37,17 +40,24 @@ export class AssetsService {
       catchError((error: Response) => observableThrowError(error)));
   }
 
-  public getAssetSummary(assetObject: any) {
+  /**
+  *  foglamp/{assetCode}/summary
+  *  @param assetCode
+  *  Return a set of readings summary for the given asset code
+  */
+  public getAllAssetSummary(assetCode: string, limit: Number = 0, time: Number = 0) {
     let params = new HttpParams();
-    if (assetObject.time !== undefined) {
-      const keys = Object.keys(assetObject.time);
-      params = params.set(keys[0], assetObject.time[keys[0]]);
+    if (+time !== 0) {
+      params = params.append('seconds', time.toString());
     }
-    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode)
-      + '/' + assetObject.reading + '/summary', { params: params }).pipe(
-        map(response => response),
-        catchError((error: Response) => observableThrowError(error)));
+    if (+limit !== 0) {
+      params = params.set('limit', limit.toString());
+    }
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetCode) + '/summary', { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
+
 
   // TODO: Not in use yet
   public getAssetAverage(assetObject: any) {
