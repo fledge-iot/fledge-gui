@@ -162,6 +162,8 @@ export class AddTaskWizardComponent implements OnInit {
         document.getElementById('vci-proxy').click();
         break;
       case 3:
+        nxtButton.style.visibility = 'hidden';
+        previousButton.style.visibility = 'hidden';
         if (this.taskId.length > 0 && this.isScheduleEnabled) {
           /** request started */
           this.ngProgress.start();
@@ -173,10 +175,11 @@ export class AddTaskWizardComponent implements OnInit {
                 this.isTaskEnabled = true;
                 this.enableTaskMsg = 'Task scheduled and enabled successfully.';
                 this.alertService.success(this.enableTaskMsg);
-                previousButton.disabled = true;
                 this.router.navigate(['/north']);
               },
               error => {
+                nxtButton.style.visibility = 'visible';
+                previousButton.style.visibility = 'visible';
                 previousButton.disabled = false;
                 this.isTaskEnabled = false;
                 /** request completed */
@@ -194,6 +197,10 @@ export class AddTaskWizardComponent implements OnInit {
         break;
       default:
         break;
+    }
+
+    if (+id >= 3) {
+      return false;
     }
 
     first.classList.remove('is-active');
