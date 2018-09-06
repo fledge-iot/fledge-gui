@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { orderBy } from 'lodash';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
 
@@ -40,6 +41,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       subscribe(
         (data: any[]) => {
           this.assets = data;
+          this.assets = orderBy(this.assets, ['assetCode'], ['asc']);
           if (this.selectedAsset) {
             this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
           }
@@ -62,7 +64,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   * Open asset chart modal dialog
   */
   public showAssetChart(assetCode) {
-    this.readingsGraphComponent.plotReadingsGraph(assetCode, 0);
+    this.readingsGraphComponent.getAssetCode(assetCode);
     this.readingsGraphComponent.toggleModal(true);
   }
 
