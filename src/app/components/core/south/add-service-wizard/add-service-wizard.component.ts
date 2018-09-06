@@ -171,9 +171,12 @@ export class AddServiceWizardComponent implements OnInit {
         break;
     }
 
+    if (+id >= 3) {
+      return false;
+    }
+
     first.classList.remove('is-active');
     first.classList.add('is-completed');
-
     const sId = +id + 1;
     const next = <HTMLElement>document.getElementById('' + sId);
     if (next != null) {

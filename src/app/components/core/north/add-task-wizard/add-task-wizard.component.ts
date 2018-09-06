@@ -199,6 +199,10 @@ export class AddTaskWizardComponent implements OnInit {
         break;
     }
 
+    if (+id >= 3) {
+      return false;
+    }
+
     first.classList.remove('is-active');
     first.classList.add('is-completed');
 
