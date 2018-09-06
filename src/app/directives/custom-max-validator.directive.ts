@@ -11,6 +11,6 @@ export class CustomMaxDirective implements Validator {
 
   validate(c: FormControl): { [key: string]: any } {
     const v = c.value;
-    return (v > this.maxValue) ? { 'maxValue': true } : null;
+    return (+v > +this.maxValue) ? { 'maxValue': true } : null;
   }
 }
