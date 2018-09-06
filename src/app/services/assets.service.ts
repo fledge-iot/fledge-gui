@@ -30,7 +30,7 @@ export class AssetsService {
   public getAssetReadings(assetCode, limit: number = 0, time: number = 0) {
     let params = new HttpParams();
     if (+time !== 0) {
-      params = params.append('sss', time.toString());
+      params = params.append('seconds', time.toString());
     }
     if (+limit !== 0) {
       params = params.set('limit', limit.toString());
