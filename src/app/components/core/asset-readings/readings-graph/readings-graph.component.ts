@@ -56,9 +56,7 @@ export class ReadingsGraphComponent {
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
-    console.log('time', time);
     this.optedTime = time;
-    console.log('opt time', this.optedTime);
     if (this.optedTime === 0) {
       this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
       this.plotReadingsGraph(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
@@ -230,6 +228,7 @@ export class ReadingsGraphComponent {
     };
   }
 
+  /*
   public clearField(limitField) {
     limitField.inputValue = '';
     this.limit = 0;
@@ -238,6 +237,7 @@ export class ReadingsGraphComponent {
       this.graphTimerSubscription = null;
     }
   }
+*/
 
   private enableRefreshTimer(): void {
     this.graphTimerSubscription = Observable.timer(this.graphRefreshInterval)

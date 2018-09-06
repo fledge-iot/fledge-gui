@@ -5,15 +5,15 @@
       <p class="modal-card-title is-size-5">{{assetCode}}
       </p>
       <div class="close">
-        <button class="delete" aria-label="close" (click)="toggleModal(false); clearField(limitField)"></button>
+        <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
       </div>
     </header>
     <section class="modal-card-body">
       <div [hidden]='!showGraph' class="columns is-mobile">
         <div class="column is-two-fifths">
           <div class="select is-small is-pulled-right">
-            <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value);clearField(limitField)">
-              <option value="0" [selected]="optedTime == 0">None</option>
+            <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value)">
+              <!-- <option value="0" [selected]="optedTime == 0">None</option> -->
               <option value="600" [selected]="optedTime == 600">10 minutes</option>
               <option value="1800" [selected]="optedTime == 1800">30 minutes</option>
               <option value="3600" [selected]="optedTime == 3600">1 hour</option>
@@ -22,11 +22,11 @@
             </select>
           </div>
         </div>
-        <div class="column is-half">
+        <!-- <div class="column is-half">
           <app-number-input-debounce placeholder="number of readings" #limitField (value)="getLimitBasedAssetReadingsAndSummary(limitField.inputValue);"
             max="{{MAX_RANGE}}"></app-number-input-debounce>
           <p *ngIf='isInvalidLimit' class='help is-danger'>Number of readings must be in range 1 - {{MAX_RANGE}}</p>
-        </div>
+        </div> -->
       </div>
       <div [hidden]='!showGraph' class="field is-grouped is-grouped-multiline" *ngFor="let asset of assetReadingSummary">
         <div class="control">
