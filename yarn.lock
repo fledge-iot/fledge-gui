@@ -2,6 +2,12 @@
 # yarn lockfile v1
 
 
+"@angular-builders/custom-webpack@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@angular-builders/custom-webpack/-/custom-webpack-2.3.0.tgz#94521dc8eb2a1bbae88832d562593ce4e421da5f"
+  dependencies:
+    lodash "^4.17.10"
+
 "@angular-devkit/architect@0.6.8":
   version "0.6.8"
   resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.6.8.tgz#977acc605aba45d21b95ca704cc99492e14299dd"
@@ -9,7 +15,14 @@
     "@angular-devkit/core" "0.6.8"
     rxjs "^6.0.0"
 
-"@angular-devkit/build-angular@~0.6.6":
+"@angular-devkit/architect@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.8.0.tgz#c18e7582b1d6e9646c6ad0186c9a9a443a986d98"
+  dependencies:
+    "@angular-devkit/core" "0.8.0"
+    rxjs "~6.2.0"
+
+"@angular-devkit/build-angular@^0.6.8":
   version "0.6.8"
   resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-0.6.8.tgz#ea108509f970efc9cd9087a47894c0164dd2d0c0"
   dependencies:
@@ -82,6 +95,15 @@
     ajv "~6.4.0"
     chokidar "^2.0.3"
     rxjs "^6.0.0"
+    source-map "^0.5.6"
+
+"@angular-devkit/core@0.8.0", "@angular-devkit/core@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-0.8.0.tgz#d31c26677f7d5302e279946823933bbc95049e56"
+  dependencies:
+    ajv "~6.4.0"
+    chokidar "^2.0.3"
+    rxjs "~6.2.0"
     source-map "^0.5.6"
 
 "@angular-devkit/schematics@0.6.8":
@@ -5138,7 +5160,7 @@ rxjs-compat@^6.2.0:
   version "6.2.2"
   resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.2.2.tgz#3c0fcdb46130cc70aa55412c2b1147905ab4680a"
 
-rxjs@^6.0.0, rxjs@^6.2.0:
+rxjs@^6.0.0, rxjs@^6.2.0, rxjs@~6.2.0:
   version "6.2.2"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.2.2.tgz#eb75fa3c186ff5289907d06483a77884586e1cf9"
   dependencies:
