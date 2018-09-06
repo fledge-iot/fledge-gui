@@ -23,45 +23,28 @@ describe('FogLAMP gui', () => {
   if (environment.AUTH_OPTIONAL === true) {
     it('Should Display Nav Title and App Status', () => {
       skipLogin.navigateToHome();
-      expect(skipLogin.getNavTitle()).toEqual('FogLAMP Management');
-      expect(skipLogin.getAppStatus()).toEqual('running');
+      expect(skipLogin.getNavTitle()).toEqual('FogLAMP');
+      expect(skipLogin.getAppStatus()).toEqual(true);
+      expect(skipLogin.getReceived()).toContain('Received');
+      expect(skipLogin.getSent()).toContain('Sent');
+      expect(skipLogin.getUptime()).toContain('Uptime');
     });
 
-    it('Should Display Default Graphs', () => {
-      expect(skipLogin.getCountOfSelectedGraph()).toEqual(2);
-      expect(skipLogin.getReadingsGraph()).toEqual('READINGS');
-      expect(skipLogin.getPurgedGraph()).toEqual('PURGED');
+    it('Should Display Dashboard', () => {
+      expect(skipLogin.isSelectTagPresent()).toEqual(true);
+      expect(skipLogin.isGraphDropdownPresent()).toEqual(true);
     });
-
-    it('Should Display Assets & Readings', () => {
-      skipLogin.navToAssetReadings();
-      expect(skipLogin.getAssetsTitle()).toEqual('Assets');
-      expect(skipLogin.getAssetsRefreshButton()).toEqual(true);
-      expect(skipLogin.getAssetReadingsTitle()).toEqual('Asset Readings');
 
       // TODO: Test data required to pass below tests.
-      // skipLogin.clickAssetSummary();
-      // expect(skipLogin.getAssetSummarySelectTag()).toEqual(1);
-      // expect(skipLogin.getAssetSummaryInputTag()).toEqual(1);
-      // const ColumnsName = [
-      //   'Reading',
-      //   'Average',
-      //   'Min',
-      //   'Max'
-      // ];
-      // for (const ColumnName in ColumnsName) {
-      //   expect(skipLogin.getAssetSummaryColNames()).toContain(ColumnsName[ColumnName]);
-      // }
-      // expect(skipLogin.isAssetSummaryChartIcon()).toEqual(true);
+      // it('Should Display Assets & Readings', () => {
+      // skipLogin.navToAssetReadings();
+      // expect(skipLogin.getAssetTableHeader()).toEqual('Asset');
+      // expect(skipLogin.getReadingsTableHeader()).toEqual('Readings');
 
       // skipLogin.clickChartIcon();
       // expect(skipLogin.isChartDisplayed()).toEqual(true);
-      // skipLogin.closeSummaryModal();
-
-      // skipLogin.clickAssetChart();
-      // expect(skipLogin.getAssetChartInputTag()).toEqual(2);
       // skipLogin.closeChartModal();
-    });
+      // });
 
     it('Should Display Audits Logs', () => {
       skipLogin.navToAuditLogs();
@@ -77,82 +60,14 @@ describe('FogLAMP gui', () => {
       expect(skipLogin.getSystemLogTitle()).toEqual('SysLog');
       expect(skipLogin.systemLogCount()).toContain('Count');
       expect(skipLogin.getSysLogRefreshButton()).toEqual(true);
-      expect(skipLogin.getSystemtLogSelectTag()).toEqual(1);
+      expect(skipLogin.getSystemtLogSelectTag()).toEqual(2);
       expect(skipLogin.getSystemLogInputTag()).toEqual(2);
     });
-
-    /**
-     *  TODO: Fix timing issue for Configuration page
-     */
-    // it('Should Display Config Titles', () => {
-    //   const ConfigTitles = [
-    //     'OMF North Plugin Configuration',
-    //     'OMF North Statistics Plugin Configuration',
-    //     'HTTP North Plugin Configuration',
-    //     'HTTP_SOUTH Device',
-    //     'OCS North Plugin Configuration',
-    //     'South Plugin polling template',
-    //     'COAP Device',
-    //     'TI SensorTag CC2650 polling South Plugin',
-    //     'TI SensorTag CC2650 async South Plugin',
-    //     'Scheduler configuration',
-    //     'Service Monitor configuration'
-    //   ];
-    //   skipLogin.navigateToConfig();
-    //   for (const ConfigTitle in ConfigTitles) {
-    //     expect(skipLogin.getConfigTitles()).toContain(ConfigTitles[ConfigTitle]);
-    //   }
-    //   expect(skipLogin.isAddButtonPresent()).toEqual(true);
-    //   expect(skipLogin.isSaveButtonPresent()).toEqual(true);
-    //   expect(skipLogin.isCancelButtonPresent()).toEqual(true);
-
-    //   expect(skipLogin.editAndVerifyConfigValue()).toEqual('Value updated successfully');
-
-    //   skipLogin.clickAddButton();
-    //   expect(skipLogin.addConfigInputTagCount()).toEqual(3);
-    //   expect(skipLogin.addConfigSelectTagCount()).toEqual(1);
-    //   expect(skipLogin.addConfigTextareaCount()).toEqual(1);
-    //   expect(skipLogin.isAddConfigSaveButton()).toEqual(true);
-    // });
 
     it('Should Display Scheduled Tasks', () => {
       skipLogin.navToScheduledTasks();
       expect(skipLogin.getSchedulesTitle()).toContain('Schedules');
       expect(skipLogin.getSchedulesRefreshButton()).toEqual(true);
-      expect(skipLogin.getCreateScheduleButton()).toContain('Create');
-      expect(skipLogin.getTasksTitle()).toContain('Tasks');
-      expect(skipLogin.getTasksRefreshButton()).toEqual(true);
-      expect(skipLogin.getTasksSelectTag()).toEqual(1);
-
-      expect(skipLogin.createAndVerifySchedule()).toEqual('Schedule created successfully.');
-      skipLogin.closeAlert();
-      expect(skipLogin.updateAndVerifySchedule()).toEqual('Schedule updated successfully.');
-      skipLogin.closeAlert();
-      expect(skipLogin.isUpdatedSchedulePresent()).toContain('updateSchedule');
-      expect(skipLogin.disableAndVerifySchedule()).toEqual('Schedule successfully disabled');
-      skipLogin.closeAlert();
-      expect(skipLogin.deleteAndVerifySchedule()).toEqual('Schedule deleted successfully.');
-    });
-
-    it('Should Display Service Health', () => {
-      const ColumnsName = [
-        'Name',
-        'Status',
-        'Type',
-        'Protocol',
-        'Address',
-        'Service Port',
-        'Management Port'
-      ];
-      skipLogin.navToServiceHealth();
-      expect(skipLogin.getServiceStatusTitle()).toContain('Services');
-      expect(skipLogin.getAddServiceButton()).toContain('Add');
-      expect(skipLogin.getServiceStatusRefreshButton()).toEqual(true);
-
-      for (const ColumnName in ColumnsName) {
-        expect(skipLogin.getServiceHealthColNames()).toContain(ColumnsName[ColumnName]);
-      }
-      expect(skipLogin.coreServiceStatus()).toContain('running');
     });
 
     it('Should Display Certificate Store', () => {
@@ -184,7 +99,7 @@ describe('FogLAMP gui', () => {
       for (const ColumnName in ColumnsName) {
         expect(skipLogin.getBackupRestoreColNames()).toContain(ColumnsName[ColumnName]);
       }
-      expect(skipLogin.getRequestBackup()).toContain('Request Backup');
+      expect(skipLogin.getRequestBackup()).toContain('Backup');
     });
 
     it('Should Display Support Bundles', () => {
@@ -197,7 +112,7 @@ describe('FogLAMP gui', () => {
 
     it('Should Display Settings', () => {
       skipLogin.navToSettings();
-      expect(skipLogin.getSettingsTitle()).toContain('Settings');
+      expect(skipLogin.getSettingsTitle()).toContain('Connection Setup');
       expect(skipLogin.getSettingsSelectTag()).toEqual(1);
       expect(skipLogin.getSettingsHostInputTag()).toEqual(1);
       expect(skipLogin.getSettingsPortInputTag()).toEqual(1);
@@ -205,13 +120,7 @@ describe('FogLAMP gui', () => {
       expect(skipLogin.getSettingsSetUrlAndRestartButton().count()).toEqual(1);
       expect(skipLogin.getSettingsSetUrlAndRestartButton().get(0).getText()).toEqual('Set the URL & Restart');
 
-      expect(skipLogin.getTestConnectionTextButton().count()).toEqual(1);
-      expect(skipLogin.getTestConnectionTextButton().get(0).getText()).toEqual('Test Connection');
-
-      expect(skipLogin.getDiscoverFoglampButton().count()).toEqual(1);
-      expect(skipLogin.getDiscoverFoglampButton().get(0).getText()).toEqual('Discover FogLAMP Instances');
-
-      expect(skipLogin.getPingDropdown()).toEqual(1);
+      expect(skipLogin.getGUISettingsDropdown().count()).toEqual(2);
     });
   } else {
     it('Should Display User Management for Admin', () => {
