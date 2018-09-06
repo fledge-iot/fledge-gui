@@ -1,9 +1,8 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import _ from 'lodash-es/array';
-import { isEmpty } from 'lodash-es/';
-
-import { NgProgress } from 'ngx-progressbar';
 import { TreeComponent } from 'angular-tree-component';
+import { isEmpty } from 'lodash-es/';
+import _ from 'lodash-es/array';
+import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../services';
 

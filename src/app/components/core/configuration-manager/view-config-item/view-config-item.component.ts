@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { sortBy, find, differenceWith } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
@@ -14,25 +14,21 @@ import ConfigTypeValidation from '../configuration-type-validation';
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
   @Input() useProxy: 'false';
-  @ViewChild(NgForm) configForm;
 
   public categoryConfiguration;
   public selectedValue: string;
-  public isValidJson = true;
   public selectedCategoryId: string;
-  public isEmptyValue = false;
   public configItems = [];
-  public validRange = true;
+  public isValidForm: boolean;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     public ngProgress: NgProgress) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnChanges(changes: SimpleChanges) {
     this.configItems = [];
-    this.validRange = true;
     if (changes.categoryConfigurationData.currentValue !== undefined) {
       let configAttributes = [];
       if (changes.categoryConfigurationData.currentValue.length !== 0) {
@@ -78,6 +74,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
 
   public saveConfiguration(form: NgForm) {
+    this.isValidForm = true;
+    if (!form.valid) {
+      this.isValidForm = false;
+      return false;
+    }
     const formData = [];
     for (const key in form.value) {
       const d = {
@@ -93,15 +94,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
-    if (type.toUpperCase() === 'JSON') {
-      this.isValidJson = ConfigTypeValidation.isValidJsonString(value);
-      if (!this.isValidJson) {
-        return;
-      }
-    } else if (!this.validRange) {
-      return;
-    }
-
     /** request started */
     this.ngProgress.start();
     this.configService.saveConfigItem(categoryName, configItem, value.toString(), type).
@@ -126,17 +118,5 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   public getConfigAttributeType(key) {
     return ConfigTypeValidation.getValueType(key);
-  }
-
-  public inputValidator(event: any) {
-    const max = event.target.max;
-    const min = event.target.min;
-    const value = event.target.value;
-    if (+value < +min || +value > +max) {
-      console.log('this.configForm.invalid', this.configForm.invalid);
-      return this.configForm.invalid;
-    }
-    console.log('this.configForm.valid', this.configForm.valid);
-    return this.configForm.valid;
   }
 }

@@ -25,10 +25,8 @@ export class AddServiceWizardComponent implements OnInit {
   public addServiceMsg = '';
   public enableServiceMsg = '';
   public selectedPlugins = [];
-
   public serviceType = 'South';
-
-  isScheduleEnabled = true;
+  public isScheduleEnabled = true;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -131,12 +129,13 @@ export class AddServiceWizardComponent implements OnInit {
         }
         break;
       case 2:
-        if (!this.viewConfigItemComponent.validRange) {
-          return;
+        document.getElementById('vci-proxy').click();
+        if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
+          return false;
         }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
-        document.getElementById('vci-proxy').click();
+
         break;
       case 3:
         if (this.serviceId.length > 0 && this.isScheduleEnabled) {
