@@ -134,6 +134,8 @@ export class AddServiceWizardComponent implements OnInit {
         document.getElementById('vci-proxy').click();
         break;
       case 3:
+        nxtButton.style.visibility = 'hidden';
+        previousButton.style.visibility = 'hidden';
         if (this.serviceId.length > 0 && this.isScheduleEnabled) {
           /** request started */
           this.ngProgress.start();
@@ -145,12 +147,13 @@ export class AddServiceWizardComponent implements OnInit {
                 this.isServiceEnabled = true;
                 this.enableServiceMsg = 'Service enabled and started successfully.';
                 this.alertService.success(this.enableServiceMsg);
-                previousButton.disabled = true;
                 this.router.navigate(['/south']);
               },
               error => {
-                previousButton.disabled = false;
+                nxtButton.style.visibility = 'visible';
+                previousButton.style.visibility = 'visible';
                 this.isServiceEnabled = false;
+                previousButton.disabled = false;
                 /** request completed */
                 this.ngProgress.done();
                 if (error.status === 0) {
