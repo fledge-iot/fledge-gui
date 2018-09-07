@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import map from 'lodash-es/map';
-import * as moment from 'moment';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
 
 import { AlertService, PingService, StatisticsService } from '../../../services';
 import { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
+import { DateFormatterPipe } from '../../../pipes';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,8 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   DEFAULT_LIMIT = 20;
 
   constructor(private statisticsService: StatisticsService,
-    private alertService: AlertService,
-    private ping: PingService) { }
+    private alertService: AlertService, private dateFormatter: DateFormatterPipe, private ping: PingService) { }
 
   ngOnInit() {
     // To check if data saved in valid format in local storage
@@ -202,9 +201,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           const record = map(data['statistics'], dt.key).reverse();
           let history_ts = map(data['statistics'], 'history_ts');
           history_ts = history_ts.reverse();
-          history_ts.forEach(element => {
-            element = moment(element).format('HH:mm:ss');
-            labels.push(element);
+          history_ts.forEach(ts => {
+            ts =  this.dateFormatter.transform(ts, 'HH:mm:ss');
+            labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
           this.graphsToShow.map(statistics => {
