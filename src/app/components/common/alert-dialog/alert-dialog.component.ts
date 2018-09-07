@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-alert-dialog',
   templateUrl: './alert-dialog.component.html'
 })
-export class AlertDialogComponent implements OnInit {
-  @Input() childData: { id: Number, name: any, key: any, message: any };
+export class AlertDialogComponent implements OnInit, OnChanges {
+  @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any};
   @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string, address: string };
   @Output() enable = new EventEmitter<Number>();
   @Output() disable = new EventEmitter<Number>();
@@ -23,6 +23,24 @@ export class AlertDialogComponent implements OnInit {
 
   ngOnInit() { }
 
+  ngOnChanges() {
+    if (this.childData.key === 'restoreBackup') {
+      this.childData.actionButtonValue = 'Restore';
+    }
+    if (this.childData.key === 'deleteBackup' || this.childData.key === 'deleteCertificate' || this.childData.key === 'deleteUser') {
+      this.childData.actionButtonValue = 'Delete';
+    }
+    if (this.childData.key === 'logout' || this.childData.key === 'clearSessions') {
+      this.childData.actionButtonValue = 'Log Out';
+    }
+    if (this.childData.key === 'clearSessions') {
+      this.childData.actionButtonValue = 'Clear Sessions';
+    }
+    if (this.childData.key === 'createBackup') {
+      this.childData.actionButtonValue = 'Create';
+    }
+  }
+
   public toggleModal(isOpen: Boolean) {
     const schedule_name = <HTMLDivElement>document.getElementById('modal-box');
     if (isOpen) {
@@ -34,14 +52,6 @@ export class AlertDialogComponent implements OnInit {
 
   triggerAction() {
     if (this.childData) {
-      if (this.childData.key === 'enable') {
-        this.enable.emit(this.childData.id);
-        this.toggleModal(false);
-      }
-      if (this.childData.key === 'disable') {
-        this.disable.emit(this.childData.id);
-        this.toggleModal(false);
-      }
       if (this.childData.key === 'delete') {
         this.delete.emit(this.childData.id);
         this.toggleModal(false);

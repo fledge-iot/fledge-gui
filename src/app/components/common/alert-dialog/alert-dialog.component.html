@@ -3,15 +3,15 @@
   <div class="modal-card">
     <section *ngIf="childData" class="modal-card-body">
       {{childData.message}}
-      <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">&nbsp;{{childData.name}}</span>
+      <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">{{childData.name}}</span>
       <span>?</span>
     </section>
     <section *ngIf="shutDownServiceData" class="modal-card-body">
       {{shutDownServiceData.message}}?
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success" (click)="triggerAction()">Yes</button>
-      <button class="button" (click)="toggleModal(false)">No</button>
+      <button class= "button is-small" [ngClass]="childData.key === 'deleteUser' ? 'is-danger' : 'is-info'"  (click)="triggerAction()">{{childData.actionButtonValue}}</button>
+      <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
     </footer>
   </div>
 </div>
