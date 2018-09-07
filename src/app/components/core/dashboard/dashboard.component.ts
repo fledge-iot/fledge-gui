@@ -202,9 +202,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           const record = map(data['statistics'], dt.key).reverse();
           let history_ts = map(data['statistics'], 'history_ts');
           history_ts = history_ts.reverse();
-          history_ts.forEach(element => {
-            element = moment(element).format('HH:mm:ss');
-            labels.push(element);
+          history_ts.forEach(ts => {
+            ts = moment(ts).format('HH:mm:ss');
+            labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
           this.graphsToShow.map(statistics => {
