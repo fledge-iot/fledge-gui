@@ -3,7 +3,7 @@ import { orderBy } from 'lodash';
 import { Observable } from 'rxjs/Rx';
 import { AnonymousSubscription } from 'rxjs/Subscription';
 
-import { MomentDatePipe } from '../../../../pipes/moment-date';
+import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import ReadingsValidator from '../assets/readings-validator';
@@ -153,7 +153,7 @@ export class ReadingsGraphComponent {
 
   public getAssetTimeReading(assetChartRecord) {
     let assetTimeLabels = [];
-    const datePipe = new MomentDatePipe();
+    const datePipe = new DateFormatterPipe();
 
     let assetReading = [];
     if (assetChartRecord.length === 0) {
