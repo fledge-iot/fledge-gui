@@ -31,7 +31,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       this.childData.action = 'Delete';
     }
     if (this.childData.key === 'logout' || this.childData.key === 'clearSessions') {
-      this.childData.action = 'Logout';
+      this.childData.action = 'Log Out';
     }
     if (this.childData.key === 'clearSessions') {
       this.childData.action = 'Clear Sessions';
