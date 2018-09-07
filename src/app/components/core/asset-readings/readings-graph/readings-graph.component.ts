@@ -1,15 +1,12 @@
 import { Component } from '@angular/core';
-import { AnonymousSubscription } from 'rxjs/Subscription';
+import { orderBy } from 'lodash';
 import { Observable } from 'rxjs/Rx';
+import { AnonymousSubscription } from 'rxjs/Subscription';
 
-import { MomentDatePipe } from '../../../../pipes/moment-date';
-
-import { AssetsService, PingService } from '../../../../services';
-import { AssetSummaryService } from './../asset-summary/asset-summary-service';
-
+import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
+import { AlertService, AssetsService, PingService } from '../../../../services';
+import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import ReadingsValidator from '../assets/readings-validator';
-import { MAX_INT_SIZE, POLLING_INTERVAL, COLOR_CODES } from '../../../../utils';
-
 
 @Component({
   selector: 'app-readings-graph',
@@ -24,14 +21,14 @@ export class ReadingsGraphComponent {
   public assetReadingSummary = [];
   public isInvalidLimit = false;
   public MAX_RANGE = MAX_INT_SIZE;
-  public DEFAULT_LIMIT = 100;
   public graphRefreshInterval = POLLING_INTERVAL;
   private graphTimerSubscription: AnonymousSubscription;
   public limit: number;
+  public DEFAULT_LIMIT = 100;
+  public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
 
-  constructor(private assetService: AssetsService,
-    private assetSummaryService: AssetSummaryService,
+  constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
     this.assetChartType = 'line';
     this.assetReadingValues = [];
@@ -58,8 +55,66 @@ export class ReadingsGraphComponent {
     chart_modal.classList.remove('is-active');
   }
 
-  public plotReadingsGraph(assetCode, limit: any) {
-    if (this.assetCode === '') {
+  getTimeBasedAssetReadingsAndSummary(time) {
+    this.optedTime = time;
+    if (this.optedTime === 0) {
+      this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
+      this.plotReadingsGraph(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
+    } else {
+      this.limit = 0;
+      this.showAssetReadingsSummary(this.assetCode, this.limit, time);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    }
+  }
+
+  public getAssetCode(assetCode) {
+    this.assetCode = assetCode;
+    if (this.optedTime !== 0) {
+      this.limit = 0;
+      this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
+      this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
+    }
+  }
+
+  public getLimitBasedAssetReadingsAndSummary(limit: number = 0) {
+    console.log('limit', limit);
+    if (limit == null) {
+      this.optedTime = ASSET_READINGS_TIME_FILTER;
+      this.limit = 0;
+    } else {
+      this.limit = limit;
+      this.optedTime = 0;
+    }
+    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+  }
+
+  public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
+    this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
+      (data: any) => {
+        this.assetReadingSummary = data.map(o => {
+          const k = Object.keys(o)[0];
+          return {
+            name: k,
+            value: [o[k]]
+          };
+        });
+        this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+        if (this.graphRefreshInterval > 0) {
+          this.enableRefreshTimer();
+        }
+      },
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  public plotReadingsGraph(assetCode, limit = null, time = null) {
+    if (assetCode === '') {
       return false;
     }
     if (this.graphTimerSubscription) {
@@ -69,16 +124,14 @@ export class ReadingsGraphComponent {
 
     this.isInvalidLimit = false;
     if (limit === undefined || limit === null || limit === '' || limit === 0) {
-      limit = this.DEFAULT_LIMIT;
+      limit = 0;
     } else if (!Number.isInteger(+limit) || +limit < 0 || +limit > this.MAX_RANGE) { // max limit of int in c++
       this.isInvalidLimit = true;
       return;
     }
 
     this.limit = limit;
-    this.assetCode = assetCode;
-
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit).
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, time).
       subscribe(
         (data: any[]) => {
           this.showGraph = true;
@@ -88,21 +141,9 @@ export class ReadingsGraphComponent {
           }
           const validRecord = ReadingsValidator.validate(data);
           if (validRecord) {
-            this.assetSummaryService.getReadingSummary(
-              {
-                assetCode: assetCode,
-                readings: data[0],
-              });
-            this.assetSummaryService.assetReadingSummary.subscribe(
-              value => {
-                this.assetReadingSummary = value;
-              });
             this.getAssetTimeReading(data);
           } else {
             this.showGraph = false;
-          }
-          if (this.graphRefreshInterval > 0) {
-            this.enableRefreshTimer();
           }
         },
         error => {
@@ -112,7 +153,7 @@ export class ReadingsGraphComponent {
 
   public getAssetTimeReading(assetChartRecord) {
     let assetTimeLabels = [];
-    const datePipe = new MomentDatePipe();
+    const datePipe = new DateFormatterPipe();
 
     let assetReading = [];
     if (assetChartRecord.length === 0) {
@@ -154,7 +195,7 @@ export class ReadingsGraphComponent {
       cc = '#008000';
     }
     if (fill) {
-      this.readKeyColorLabel.push({ [readKey] : cc });
+      this.readKeyColorLabel.push({ [readKey]: cc });
     }
     return cc;
   }
@@ -187,12 +228,22 @@ export class ReadingsGraphComponent {
     };
   }
 
+  /*
   public clearField(limitField) {
     limitField.inputValue = '';
+    this.limit = 0;
+    if (this.graphTimerSubscription) {
+      this.graphTimerSubscription.unsubscribe();
+      this.graphTimerSubscription = null;
+    }
   }
+*/
 
   private enableRefreshTimer(): void {
     this.graphTimerSubscription = Observable.timer(this.graphRefreshInterval)
-      .subscribe(() => this.plotReadingsGraph(this.assetCode, this.limit));
+      .subscribe(() => {
+        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+      });
   }
 }

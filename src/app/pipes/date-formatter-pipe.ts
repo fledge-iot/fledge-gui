@@ -9,7 +9,7 @@ import * as moment from 'moment';
  * Defaults to 'L' - locale ie. '01/24/2017'
 */
 @Pipe({name: 'dateparser'})
-export class MomentDatePipe implements PipeTransform {
+export class DateFormatterPipe implements PipeTransform {
   transform(value: string, arg: string): string {
       if (value !== '') {
         return moment(value).format(arg);

@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NgProgress } from 'ngx-progressbar';
-import Utils from '../../../../utils';
-
 import { Router } from '@angular/router';
+import { NgProgress } from 'ngx-progressbar';
+
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
+import Utils from '../../../../utils';
+import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
   selector: 'app-add-task-wizard',
@@ -40,6 +41,7 @@ export class AddTaskWizardComponent implements OnInit {
   });
 
   @Input() categoryConfigurationData;
+  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
   constructor(private formBuilder: FormBuilder,
     private servicesHealthService: ServicesHealthService,
@@ -157,11 +159,16 @@ export class AddTaskWizardComponent implements OnInit {
         }
         break;
       case 2:
+        document.getElementById('vci-proxy').click();
+        if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
+          return false;
+        }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
-        document.getElementById('vci-proxy').click();
         break;
       case 3:
+        nxtButton.style.visibility = 'hidden';
+        previousButton.style.visibility = 'hidden';
         if (this.taskId.length > 0 && this.isScheduleEnabled) {
           /** request started */
           this.ngProgress.start();
@@ -173,10 +180,11 @@ export class AddTaskWizardComponent implements OnInit {
                 this.isTaskEnabled = true;
                 this.enableTaskMsg = 'Task scheduled and enabled successfully.';
                 this.alertService.success(this.enableTaskMsg);
-                previousButton.disabled = true;
                 this.router.navigate(['/north']);
               },
               error => {
+                nxtButton.style.visibility = 'visible';
+                previousButton.style.visibility = 'visible';
                 previousButton.disabled = false;
                 this.isTaskEnabled = false;
                 /** request completed */
@@ -194,6 +202,10 @@ export class AddTaskWizardComponent implements OnInit {
         break;
       default:
         break;
+    }
+
+    if (+id >= 3) {
+      return false;
     }
 
     first.classList.remove('is-active');

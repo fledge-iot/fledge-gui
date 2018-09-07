@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
 import Utils from '../../../../utils';
+import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -26,6 +27,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   task: { task: any };
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+
 
   constructor(
     private schedulesService: SchedulesService,
@@ -74,12 +77,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           this.category = { key: this.processName, value: categoryValues };
           this.useProxy = 'true';
         }
-         /** request completed */
-         this.ngProgress.done();
+        /** request completed */
+        this.ngProgress.done();
       },
       error => {
-         /** request completed */
-         this.ngProgress.done();
+        /** request completed */
+        this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -131,6 +134,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   proxy() {
     document.getElementById('vci-proxy').click();
+    if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
+      return false;
+    }
     document.getElementById('ss').click();
   }
 
