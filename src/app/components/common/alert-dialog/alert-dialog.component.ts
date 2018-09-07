@@ -5,7 +5,7 @@ import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angu
   templateUrl: './alert-dialog.component.html'
 })
 export class AlertDialogComponent implements OnInit, OnChanges {
-  @Input() childData: { id: Number, name: any, key: any, message: any, action: any};
+  @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any};
   @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string, address: string };
   @Output() enable = new EventEmitter<Number>();
   @Output() disable = new EventEmitter<Number>();
@@ -25,19 +25,19 @@ export class AlertDialogComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     if (this.childData.key === 'restoreBackup') {
-      this.childData.action = 'Restore';
+      this.childData.actionButtonValue = 'Restore';
     }
     if (this.childData.key === 'deleteBackup' || this.childData.key === 'deleteCertificate' || this.childData.key === 'deleteUser') {
-      this.childData.action = 'Delete';
+      this.childData.actionButtonValue = 'Delete';
     }
     if (this.childData.key === 'logout' || this.childData.key === 'clearSessions') {
-      this.childData.action = 'Log Out';
+      this.childData.actionButtonValue = 'Log Out';
     }
     if (this.childData.key === 'clearSessions') {
-      this.childData.action = 'Clear Sessions';
+      this.childData.actionButtonValue = 'Clear Sessions';
     }
     if (this.childData.key === 'createBackup') {
-      this.childData.action = 'Create';
+      this.childData.actionButtonValue = 'Create';
     }
   }
 
