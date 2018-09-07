@@ -6,6 +6,7 @@ import { NumberInputDebounceModule } from '../../common/number-input-debounce/nu
 import { NgProgressModule } from 'ngx-progressbar';
 import { ChartModule } from '../../common/chart';
 import { StatisticsService } from '../../../services';
+import { DateFormatterPipe } from '../../../pipes';
 
 @NgModule({
   declarations: [
@@ -16,9 +17,9 @@ import { StatisticsService } from '../../../services';
     CommonModule,
     NumberInputDebounceModule,
     NgProgressModule,
-    ChartModule
+    ChartModule,
   ],
-  providers: [StatisticsService],
+  providers: [StatisticsService, DateFormatterPipe],
   exports: []
 })
 export class DashboardModule { }
