@@ -52,14 +52,6 @@ export class AlertDialogComponent implements OnInit, OnChanges {
 
   triggerAction() {
     if (this.childData) {
-      if (this.childData.key === 'enable') {
-        this.enable.emit(this.childData.id);
-        this.toggleModal(false);
-      }
-      if (this.childData.key === 'disable') {
-        this.disable.emit(this.childData.id);
-        this.toggleModal(false);
-      }
       if (this.childData.key === 'delete') {
         this.delete.emit(this.childData.id);
         this.toggleModal(false);
