@@ -11,7 +11,7 @@
           <div class="column">
             <div class="field">
               <div class="form-group">
-                <label class="label">Name</label>
+                <label class="label is-small">Name</label>
                 <p class="control is-fullwidth">
                   <input type="text" class="input is-small" formControlName="name" placeholder="name" required trim="blur" />
                 </p>
@@ -21,7 +21,7 @@
           </div>
           <div class="column is-3">
             <div class="field">
-              <label class="label">Exclusive</label>
+              <label class="label is-small">Exclusive</label>
               <div class="control">
                 <input type="checkbox" checked formControlName="exclusive">
               </div>
@@ -29,7 +29,7 @@
           </div>
           <div class="column is-3">
             <div class="field">
-              <label class="label">Enabled</label>
+              <label class="label is-small">Enabled</label>
               <div class="control">
                 <input type="checkbox" checked formControlName="enabled">
               </div>
@@ -39,7 +39,7 @@
         <div class="columns is-mobile">
           <div class="column">
             <div class="field">
-              <label class="label">Process</label>
+              <label class="label is-small">Process</label>
               <div class="control">
                 <div class="select is-fullwidth is-small">
                   <select formControlName="process_name">
@@ -51,7 +51,7 @@
           </div>
           <div class="column">
             <div class="field">
-              <label class="label">Type</label>
+              <label class="label is-small">Type</label>
               <div class="control">
                 <div class="select is-fullwidth is-small">
                   <select [(ngModel)]="selectedTypeValue" (change)="selectedScheduleType = setScheduleTypeKey(selectedTypeValue)" formControlName="type">
@@ -65,7 +65,7 @@
         <div class="columns">
           <div class="column">
             <div class="field">
-              <label class="label">Repeat (Interval)</label>
+              <label class="label is-small">Repeat (Interval)</label>
               <div class="columns">
                 <div class="column is-fullwidth">
                   <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365" placeholder="days" formControlName="repeatDay"
@@ -81,7 +81,7 @@
         <div class="columns is-mobile">
           <div class="column">
             <div *ngIf="selectedScheduleType == 2" class="field">
-              <label class="label">Day &nbsp;
+              <label class="label is-small">Day &nbsp;
                 <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (1-7 Mon-Sun)">
                   <i class="fa fa-info-circle"></i>
                 </span>
@@ -98,7 +98,7 @@
           </div>
           <div class="column">
             <div *ngIf="selectedScheduleType == 2" class="field">
-              <label class="label">Time</label>
+              <label class="label is-small">Time</label>
               <p class="control is-fullwidth">
                 <input class="input is-small" type='text' placeholder="hh:mm:ss" mask="00:00:00" formControlName="time">
               </p>
