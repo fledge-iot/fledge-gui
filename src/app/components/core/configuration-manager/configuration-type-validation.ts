@@ -41,13 +41,4 @@ export default class ConfigTypeValidation {
     }
     return valueType;
   }
-
-  public static isValidJsonString(str) {
-    try {
-      JSON.parse(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  }
 }

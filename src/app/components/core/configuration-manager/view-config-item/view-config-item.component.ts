@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { sortBy, forEach, find, differenceWith } from 'lodash';
+import { sortBy, find, differenceWith } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -17,10 +17,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   public categoryConfiguration;
   public selectedValue: string;
-  public isValidJson = true;
   public selectedCategoryId: string;
-  public isEmptyValue = false;
   public configItems = [];
+  public isValidForm: boolean;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -75,6 +74,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
 
   public saveConfiguration(form: NgForm) {
+    this.isValidForm = true;
+    if (!form.valid) {
+      this.isValidForm = false;
+      return false;
+    }
     const formData = [];
     for (const key in form.value) {
       const d = {
@@ -90,13 +94,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
-    if (type.toUpperCase() === 'JSON') {
-      this.isValidJson = ConfigTypeValidation.isValidJsonString(value);
-      if (!this.isValidJson) {
-        return;
-      }
-    }
-
     /** request started */
     this.ngProgress.start();
     this.configService.saveConfigItem(categoryName, configItem, value.toString(), type).

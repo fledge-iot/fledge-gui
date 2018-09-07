@@ -1,7 +1,7 @@
 <div class="columns">
   <div class="column">
-    <form name="form" id="ngForm" (ngSubmit)="f.form.valid && saveConfiguration(f)" #f="ngForm" novalidate>
-      <div *ngIf="categoryConfiguration != undefined">
+    <form name="form" id="ngForm" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
+      <ng-container *ngIf="categoryConfiguration != undefined">
         <ng-container *ngFor="let configItem of (categoryConfiguration.value | keys)">
           <div class="config-div" *ngIf="!configItem.value.readonly">
             <div class="field is-horizontal">
@@ -17,50 +17,58 @@
                       <input type="checkbox" name='{{configItem.value.key}}' value="{{configItem.value.value}}" [ngModel]="configItem.value.value == 'true'">
                     </label>
                   </ng-container>
-                  <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
-                    type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                    required />
-                  <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" name="{{configItem.value.key}}" type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                    class="input is-fullwidth is-small" [(ngModel)]="configItem.value.value" appNumberOnly required/>
+                  <div class="field">
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
+                      type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                      required [attr.maxLength]="configItem?.value?.length" />
 
-                  <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
-                    name="{{configItem.value.key}}" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                    required>{{configItem?.value?.value}}</textarea>
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" name="{{configItem.value.key}}" type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                      class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
+                      [(ngModel)]="configItem.value.value" appNumberOnly required />
 
-                  <div *ngIf="getConfigAttributeType(configItem.value.type) == 'ENUMERATION'" class="select is-small">
-                    <select name='{{configItem.value.key}}' [(ngModel)]="configItem.value.value">
-                      <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>{{configOption}}</option>
-                    </select>
+                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
+                      name="{{configItem.value.key}}" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                      [attr.maxLength]="configItem?.value?.length" [jsonValue]="configItem?.value?.value" required>{{configItem?.value?.value}}</textarea>
+
+                    <div *ngIf="getConfigAttributeType(configItem.value.type) == 'ENUMERATION'" class="select is-small">
+                      <select name='{{configItem.value.key}}' [(ngModel)]="configItem.value.value">
+                        <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>{{configOption}}</option>
+                      </select>
+                    </div>
                   </div>
                   <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                     type="url" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                     required />
+
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
+                    <sup>*</sup>Field can't be left blank.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">
+                    <sup>*</sup>Value should not be less than {{configItem?.value?.minimum}}.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('maxValue')" class="help is-danger">
+                    <sup>*</sup>Value should not be greater than {{configItem?.value?.maximum}}.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('jsonValue')" class="help is-danger">
+                    Invalid JSON.
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </ng-container>
-        &nbsp;
-        <div class="field">
-          <div *ngIf="!f.valid" class="error">
-            <sup>*</sup> Field can't left blank.
+        <div class="field is-horizontal">
+          <div class="field-label has-text-left">
+            <label class="label"></label>
           </div>
-          <div *ngIf="!isValidJson" class="error">
-            Invalid JSON.
-          </div>
-          <div class="field is-horizontal">
-            <div class="field-label has-text-left">
-              <label class="label"></label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
-                <button *ngIf="useProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
-              </div>
+          <div class="field-body">
+            <div class="column">
+              <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
+              <button *ngIf="useProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
             </div>
           </div>
         </div>
-      </div>
+      </ng-container>
     </form>
   </div>
 </div>

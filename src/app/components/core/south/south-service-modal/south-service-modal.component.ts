@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -19,6 +20,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -148,6 +150,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   proxy() {
     document.getElementById('vci-proxy').click();
+    if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
+      return false;
+    }
     document.getElementById('ss').click();
   }
 }

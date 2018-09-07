@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgProgress } from 'ngx-progressbar';
 
 import { Router } from '@angular/router';
 import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
+import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -24,10 +25,8 @@ export class AddServiceWizardComponent implements OnInit {
   public addServiceMsg = '';
   public enableServiceMsg = '';
   public selectedPlugins = [];
-
   public serviceType = 'South';
-
-  isScheduleEnabled = true;
+  public isScheduleEnabled = true;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -35,6 +34,7 @@ export class AddServiceWizardComponent implements OnInit {
   });
 
   @Input() categoryConfigurationData;
+  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
   constructor(private formBuilder: FormBuilder,
     private servicesHealthService: ServicesHealthService,
@@ -129,9 +129,13 @@ export class AddServiceWizardComponent implements OnInit {
         }
         break;
       case 2:
+        document.getElementById('vci-proxy').click();
+        if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
+          return false;
+        }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
-        document.getElementById('vci-proxy').click();
+
         break;
       case 3:
         nxtButton.style.visibility = 'hidden';
