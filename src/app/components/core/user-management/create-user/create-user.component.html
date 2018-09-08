@@ -11,7 +11,7 @@
           <div class="columns">
             <div class="column">
               <label class="label">Role</label>
-              <div class="select is-fullwidth">
+              <div class="select is-fullwidth is-small">
                 <select name='role_id' (change)="setRole($event.target.value)" [(ngModel)]="model.role_id">
                   <option *ngFor="let role of userRole" [value]='role.id'>{{role.name}}</option>
                 </select>
@@ -21,7 +21,7 @@
           <div class="columns">
             <div class="column">
               <p class="control is-fullwidth">
-                <input type="text" class="input" placeholder="username" name='username' [(ngModel)]="model.username" #username="ngModel"
+                <input type="text" class="input is-small" placeholder="username" name='username' [(ngModel)]="model.username" #username="ngModel"
                   minlength="4" maxlength="8" required/>
               </p>
               <small *ngIf="f.submitted && !username.valid" class="help is-danger level-left"> Username is required (minimum 4 characters)</small>
@@ -30,7 +30,7 @@
           <div class="columns">
             <div class="column">
               <p class="control is-fullwidth">
-                <input type="password" class="input" placeholder="password" name='password' [(ngModel)]="model.password" #password="ngModel"
+                <input type="password" class="input is-small" placeholder="password" name='password' [(ngModel)]="model.password" #password="ngModel"
                   validateEqual="confirmPassword" reverse="true" required />
               </p>
               <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minium 6 character)</small>
@@ -39,7 +39,7 @@
           <div class="columns">
             <div class="column">
               <p class="control is-fullwidth">
-                <input type="password" class="input" placeholder="confirm password" name='confirmPassword' [(ngModel)]="model.confirmPassword"
+                <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword' [(ngModel)]="model.confirmPassword"
                   #confirmPassword="ngModel" validateEqual="password" required />
               </p>
               <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
@@ -49,7 +49,7 @@
       </div>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" type="submit" form="ngForm" class="button is-link">Save</button>
+      <button id="save" type="submit" form="ngForm" class="button is-info is-small">Save</button>
     </footer>
   </div>
 </div>

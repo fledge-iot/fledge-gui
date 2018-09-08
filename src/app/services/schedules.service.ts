@@ -70,20 +70,6 @@ export class SchedulesService {
       catchError((error: Response) => observableThrowError(error)));
   }
 
-
-  /**
-    * Delete schedule
-    *
-    * DELETE | /foglamp/{schedule_id}
-    *
-    */
-  public deleteSchedule(schedule_id: any) {
-    return this.http.delete(this.SCHEDULE_URL + '/' + schedule_id).pipe(
-      map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
-  }
-
-
   /**
    *  GET | /foglamp/schedule/process
    */

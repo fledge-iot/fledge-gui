@@ -35,6 +35,4 @@
     </table>
   </div>
 </div>
-<app-alert-dialog (enable)='enableSchedule($event)' (disable)='disableSchedule($event)' (delete)='deleteSchedule($event)'
-  [childData]='childData'></app-alert-dialog>
 <app-update-schedule (notify)='onNotify()' (process)='setScheduleProcess($event)' (type)='setScheduleType($event)' [childData]='updateScheduleData'></app-update-schedule>

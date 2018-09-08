@@ -24,7 +24,7 @@
               <tbody>
                 <tr *ngFor="let asset of assets">
                   <td>{{asset.assetCode}}</td>
-                  <td>{{asset.count | number}}</td>
+                  <td class="is-pulled-right">{{asset.count | number}}</td>
                   <td>
                     <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
                       <i class="fa fa-line-chart" aria-hidden="true"></i>

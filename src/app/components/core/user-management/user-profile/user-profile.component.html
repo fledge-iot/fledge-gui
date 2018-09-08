@@ -36,7 +36,7 @@
               <div class="column is-3">
                 <div class="control">
                   <span (click)="openModal(userRecord.userId, '', 'clearSessions', 'Are you sure, You want to clear your all active sessions')"
-                    class="button is-warning">Logout Active Sessions</span>
+                    class="button is-warning is-small">Logout Active Sessions</span>
                 </div>
               </div>
             </div>
@@ -57,20 +57,20 @@
       <form name="form" id="ngForm" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userName)" #f="ngForm" novalidate>
         <div class="columns">
           <div class="column is-6">
-            <input type="password" class="input" placeholder="current password" name='currentPassword' [(ngModel)]="userRecord.currentPassword" #currentPassword="ngModel" required/>
+            <input type="password" class="input is-small" placeholder="current password" name='currentPassword' [(ngModel)]="userRecord.currentPassword" #currentPassword="ngModel" required/>
           </div>
           <small *ngIf="f.submitted && !currentPassword.valid" class="help is-danger level-left">Wrong password</small>
         </div>
         <div class="columns">
           <div class="column is-6">
-            <input type="password" class="input" placeholder="new password" name='password' [(ngModel)]="userRecord.password" #password="ngModel"
+            <input type="password" class="input is-small" placeholder="new password" name='password' [(ngModel)]="userRecord.password" #password="ngModel"
               validateEqual="confirmPassword" reverse="true" required />
           </div>
           <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minium 6 character)</small>
         </div>
         <div class="columns">
           <div class="column is-6">
-            <input type="password" class="input" placeholder="confirm password" name='confirmPassword' [(ngModel)]="userRecord.confirmPassword"
+            <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword' [(ngModel)]="userRecord.confirmPassword"
               #confirmPassword="ngModel" validateEqual="password" required />
           </div>
           <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
@@ -78,7 +78,7 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="update" type="submit" form="ngForm" class="button is-link">Save</button>
+      <button id="update" type="submit" form="ngForm" class="button is-info is-small">Save</button>
     </footer>
   </div>
 </div>

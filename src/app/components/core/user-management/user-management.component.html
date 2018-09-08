@@ -55,7 +55,7 @@
                 </a>
               </td>
               <td *ngIf='user.userId != uid && user.userId != 1'>
-                <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, You want to delete the user')" class="button is-text">
+                <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, You want to delete the user ')" class="button is-text">
                   <i class="fa fa-minus-circle" aria-hidden="true"></i>
                 </a>
               </td>

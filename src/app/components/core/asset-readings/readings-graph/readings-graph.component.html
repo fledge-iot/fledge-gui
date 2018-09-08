@@ -11,7 +11,7 @@
     <section class="modal-card-body">
       <div [hidden]='!showGraph' class="columns is-mobile">
         <div class="column is-two-fifths">
-          <div class="select is-small is-pulled-right">
+          <div class="select is-small">
             <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value)">
               <!-- <option value="0" [selected]="optedTime == 0">None</option> -->
               <option value="600" [selected]="optedTime == 600">10 minutes</option>
