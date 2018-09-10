@@ -302,7 +302,7 @@ export class SkipLogin {
 
   getSettingsTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-settings header p.card-header-title')).getText();
+    return element(by.css('app-settings > div > div:nth-child(1) .card-header-title')).getText();
   }
 
   getSettingsSelectTag() {
