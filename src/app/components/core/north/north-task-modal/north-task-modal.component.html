@@ -12,46 +12,53 @@
       <div class="box">
         <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
 
-          <form name="schedule-form" id="scheduleForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
-            <div class="columns">
-              <div class="column">
-                <div class="field is-horizontal">
-                  <div class="field-label has-text-left">
-                    <label class="label">Enabled</label>
-                  </div>
-                  <div class="field-body">
-                    <div class="field">
-                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled" [(ngModel)]="enabled">
-                    </div>
+        <form name="schedule-form" id="scheduleForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
+          <div class="columns">
+            <div class="column">
+              <div class="field is-horizontal">
+                <div class="field-label has-text-left">
+                  <label class="label">Enabled</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled" [(ngModel)]="enabled">
                   </div>
                 </div>
-                <div class="field is-horizontal">
-                  <div class="field-label has-text-left">
-                    <label class="label">Exclusive</label>
-                  </div>
-                  <div class="field-body">
-                    <div class="field">
-                      <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive" [(ngModel)]="exclusive">
-                    </div>
+              </div>
+              <div class="field is-horizontal">
+                <div class="field-label has-text-left">
+                  <label class="label">Exclusive</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive" [(ngModel)]="exclusive">
                   </div>
                 </div>
-                <div class="field is-horizontal">
-                  <div class="field-label has-text-left">
-                    <label class="label">Interval</label>
-                  </div>
-                  <div class="field-body">
-                    <div class="field">
-                      <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' [(ngModel)]="repeat"
-                        required>
-                    </div>
+              </div>
+              <div class="field is-horizontal">
+                <div class="field-label has-text-left">
+                  <label class="label">Interval</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' [(ngModel)]="repeat"
+                      required>
                   </div>
                 </div>
               </div>
             </div>
-            <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="scheduleForm">Save</button>
-          </form>
-          <button class="button is-small is-link is-pulled-right" (click)="proxy()">Save</button>
+          </div>
+          <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="scheduleForm">Save</button>
+        </form>
+        <div class="field is-grouped is-pulled-right">
+          <p class="control">
+            <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+          </p>
+          <p class="control">
+            <button class="button is-small is-link" (click)="proxy()">Save</button>
+          </p>
         </div>
+      </div>
     </section>
   </div>
 </div>
