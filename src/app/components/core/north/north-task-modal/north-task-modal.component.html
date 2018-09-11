@@ -50,14 +50,8 @@
           </div>
           <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="scheduleForm">Save</button>
         </form>
-        <div class="field is-grouped is-pulled-right">
-          <p class="control">
-            <button class="button is-small is-link" (click)="toggleModal(false)">Cancel</button>
-          </p>
-          <p class="control">
-            <button class="button is-small is-link" (click)="proxy()">Save</button>
-          </p>
-        </div>
+        <button class="button is-small is-pulled-left" (click)="toggleModal(false)">Cancel</button>
+        <button class="button is-small is-link is-pulled-right" (click)="proxy()">Save</button>
       </div>
     </section>
   </div>
