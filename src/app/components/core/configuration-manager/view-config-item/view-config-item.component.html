@@ -20,7 +20,7 @@
                   <div class="field">
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                       type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                      required [attr.maxLength]="configItem?.value?.length" />
+                      [required]="configItem.value.key !== 'assetNamePrefix'" [attr.maxLength]="configItem?.value?.length" />
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" name="{{configItem.value.key}}" type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                       class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
