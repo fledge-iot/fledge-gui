@@ -1,8 +1,6 @@
-import 'rxjs/add/operator/takeWhile';
-
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
-import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
+import { interval } from 'rxjs';
 
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService } from '../../../services';
@@ -18,7 +16,7 @@ import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.com
 export class BackupRestoreComponent implements OnInit, OnDestroy {
   public backupData = [];
   private isAlive: boolean; // used to unsubscribe from the IntervalObservable
-                          // when OnDestroy is called.
+                            // when OnDestroy is called.
 
   // Object to hold child data
   public childData = {
@@ -45,7 +43,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getBackup();
-    IntervalObservable.create(this.refreshInterval)
+    interval(this.refreshInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
         this.getBackup();
@@ -68,8 +66,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
 
 
   public getBackup() {
-    this.backupRestoreService.get()
-      .first().
+    this.backupRestoreService.get().
       subscribe(
         (data) => {
           this.backupData = data['backups'];
