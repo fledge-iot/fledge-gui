@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { sortBy } from 'lodash/sortBy';
+import { sortBy } from 'lodash';
 import { SchedulesService, AlertService, PingService } from '../../../../services';
 import { NgProgress } from 'ngx-progressbar';
 import { POLLING_INTERVAL } from '../../../../utils';

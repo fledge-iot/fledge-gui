@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter, Output } from '@angular/core';
-import { sortBy } from 'lodash/sortBy';
+import { sortBy } from 'lodash';
 
 import Utils from '../../../../utils';
 import { NgProgress } from 'ngx-progressbar';
