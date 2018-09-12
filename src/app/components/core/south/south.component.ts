@@ -8,7 +8,7 @@ import { PingService, ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
-import { sortBy } from 'lodash';
+import { sortBy } from 'lodash/sortBy';
 
 @Component({
   selector: 'app-south',
