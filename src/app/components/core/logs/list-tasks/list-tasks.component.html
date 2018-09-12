@@ -3,14 +3,6 @@
     <div class="card-header-title" style="flex-grow: 0;">
       Tasks &nbsp;
     </div>
-    <a class="card-header-icon">
-      <div class="select is-small is-rounded">
-        <select [ngModel]="selectedTaskType" (ngModelChange)="getTasks($event)" id="task-state">
-          <option value='Latest'>Latest</option>
-          <option value='Running'>Running</option>
-        </select>
-      </div>
-    </a>
   </header>
   <div class="card-content">
     <table class="table scroll is-responsive">
@@ -23,7 +15,7 @@
           <th></th>
         </tr>
       </thead>
-      <tr *ngFor="let task of tasksData">
+      <tr *ngFor="let task of tasksData" [ngClass]="{'fade': (task.state == 'Complete')}">
         <td>
           <small>{{task.name}}</small>
         </td>
@@ -37,7 +29,7 @@
           <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
         </td>
         <td>
-          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small" (click)="cancelRunninTask(task.id)">Cancel</button>
+          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small" (click)="cancelRunningTask(task.id)">Cancel</button>
         </td>
       </tr>
     </table>
