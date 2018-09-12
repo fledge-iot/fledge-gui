@@ -1,9 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import 'rxjs/add/operator/takeWhile';
+
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgProgress } from 'ngx-progressbar';
+import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 
 import { DateFormatterPipe } from '../../../pipes';
-import { AlertService } from '../../../services';
+import { AlertService, PingService } from '../../../services';
 import { BackupRestoreService } from '../../../services/backup-restore.service';
+import { POLLING_INTERVAL } from '../../../utils';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 
 @Component({
@@ -11,8 +15,10 @@ import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.com
   templateUrl: './backup-restore.component.html',
   styleUrls: ['./backup-restore.component.css']
 })
-export class BackupRestoreComponent implements OnInit {
+export class BackupRestoreComponent implements OnInit, OnDestroy {
   public backupData = [];
+  private isAlive: boolean; // used to unsubscribe from the IntervalObservable
+                          // when OnDestroy is called.
 
   // Object to hold child data
   public childData = {
@@ -21,15 +27,29 @@ export class BackupRestoreComponent implements OnInit {
     message: '',
     key: ''
   };
+  public showSpinner = false;
+  public refreshInterval = POLLING_INTERVAL;
 
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
   constructor(private backupRestoreService: BackupRestoreService,
+    private alertService: AlertService,
     public ngProgress: NgProgress,
-    private alertService: AlertService, private dateFormatter: DateFormatterPipe) { }
+    private dateFormatter: DateFormatterPipe,
+    private ping: PingService) {
+    this.isAlive = true;
+    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      this.refreshInterval = timeInterval;
+    });
+  }
 
   ngOnInit() {
     this.getBackup();
+    IntervalObservable.create(this.refreshInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.getBackup();
+      });
   }
 
   /**
@@ -48,15 +68,15 @@ export class BackupRestoreComponent implements OnInit {
 
 
   public getBackup() {
-    this.ngProgress.start();
-    this.backupRestoreService.get().
+    this.backupRestoreService.get()
+      .first().
       subscribe(
         (data) => {
-          this.ngProgress.done();
           this.backupData = data['backups'];
+          this.hideLoadingSpinner();
         },
         error => {
-          this.ngProgress.done();
+          this.hideLoadingSpinner();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -67,15 +87,15 @@ export class BackupRestoreComponent implements OnInit {
   }
 
   public requestBackup() {
-    this.ngProgress.start();
+    if (this.backupData.length === 0) {
+      this.showLoadingSpinner();
+    }
     this.backupRestoreService.requestBackup().
       subscribe(
         (data) => {
-          this.ngProgress.done();
           this.alertService.success(data['status']);
         },
         error => {
-          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -90,9 +110,9 @@ export class BackupRestoreComponent implements OnInit {
     this.backupRestoreService.restoreBackup(id).
       subscribe(
         (data) => {
-          this.ngProgress.done();
           this.alertService.success(data['status']);
           this.getBackup();
+          this.ngProgress.done();
         },
         error => {
           this.ngProgress.done();
@@ -136,5 +156,17 @@ export class BackupRestoreComponent implements OnInit {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }
+
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
+  }
+
+  ngOnDestroy() {
+    this.isAlive = false;
   }
 }
