@@ -1,13 +1,11 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
-import { Observable } from 'rxjs/Rx';
-import { AnonymousSubscription } from 'rxjs/Subscription';
+import { interval } from 'rxjs';
 
 import { AlertService, NorthService, PingService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
-
 
 @Component({
   selector: 'app-north',
@@ -20,22 +18,32 @@ export class NorthComponent implements OnInit, OnDestroy {
   public tasks: any;
 
   public refreshInterval = POLLING_INTERVAL;
-  private timerSubscription: AnonymousSubscription;
   public showSpinner = false;
+  private isAlive: boolean;
 
   constructor(private northService: NorthService,
     private ping: PingService,
     private alertService: AlertService,
-    private router: Router) { }
+    private router: Router) {
+    this.isAlive = true;
+    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.isAlive = false;
+      }
+      this.refreshInterval = timeInterval;
+    });
+  }
 
   @ViewChild(NorthTaskModalComponent) northTaskModal: NorthTaskModalComponent;
 
   ngOnInit() {
     this.showLoadingSpinner();
     this.getNorthTasks();
-    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-      this.refreshInterval = timeInterval;
-    });
+    interval(this.refreshInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.getNorthTasks();
+      });
   }
 
   addNorthInstance() {
@@ -43,10 +51,6 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   public getNorthTasks(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
     this.northService.getNorthTasks().
       subscribe(
         (data) => {
@@ -54,9 +58,6 @@ export class NorthComponent implements OnInit, OnDestroy {
           this.tasks = sortBy(this.tasks, function (obj) {
             return !obj.enabled + obj.processName.toLowerCase();
           });
-          if (this.refreshInterval > 0) {
-            this.enableRefreshTimer();
-          }
           this.hideLoadingSpinner();
         },
         error => {
@@ -75,18 +76,6 @@ export class NorthComponent implements OnInit, OnDestroy {
     this.northTaskModal.toggleModal(true);
   }
 
-  public ngOnDestroy(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
-  }
-
-  private enableRefreshTimer(): void {
-    this.timerSubscription = Observable.timer(this.refreshInterval)
-      .subscribe(() => this.getNorthTasks());
-  }
-
   onNotify() {
     this.getNorthTasks();
   }
@@ -98,4 +87,9 @@ export class NorthComponent implements OnInit, OnDestroy {
   public hideLoadingSpinner() {
     this.showSpinner = false;
   }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
+  }
 }
+

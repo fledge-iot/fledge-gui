@@ -37,6 +37,9 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.isAlive = false;
+      }
       this.refreshInterval = timeInterval;
     });
   }

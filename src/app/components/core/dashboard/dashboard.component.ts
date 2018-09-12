@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import map from 'lodash-es/map';
-import { Observable } from 'rxjs/Rx';
-import { AnonymousSubscription } from 'rxjs/Subscription';
+import { interval } from 'rxjs';
 
+import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, StatisticsService } from '../../../services';
 import { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
-import { DateFormatterPipe } from '../../../pipes';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,15 +28,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public chartOptions: object;
 
-  private timerSubscription: AnonymousSubscription;
-
-  public refreshTimer = GRAPH_REFRESH_INTERVAL;
+  public refreshInterval = GRAPH_REFRESH_INTERVAL;
   public optedTime;
 
   DEFAULT_LIMIT = 20;
+  private isAlive: boolean;
 
   constructor(private statisticsService: StatisticsService,
-    private alertService: AlertService, private dateFormatter: DateFormatterPipe, private ping: PingService) { }
+    private alertService: AlertService,
+    private dateFormatter: DateFormatterPipe,
+    private ping: PingService) {
+    this.isAlive = true;
+    this.ping.refreshIntervalChanged.subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.isAlive = false;
+      }
+      this.refreshInterval = timeInterval;
+    });
+  }
 
   ngOnInit() {
     // To check if data saved in valid format in local storage
@@ -46,9 +54,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       localStorage.removeItem('OPTED_GRAPHS');
     }
     this.getStatistics();
-    this.ping.refreshIntervalChanged.subscribe((timeInterval: number) => {
-      this.refreshTimer = timeInterval;
-    });
+    interval(this.refreshInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.getStatisticsHistory(localStorage.getItem('STATS_HISTORY_TIME_FILTER'));
+      });
   }
 
   public showGraph(selectedGraph) {
@@ -184,10 +194,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public getStatisticsHistory(time = null): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
     if (time == null) {
       localStorage.setItem('STATS_HISTORY_TIME_FILTER', STATS_HISTORY_TIME_FILTER);
     } else {
@@ -202,7 +208,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           let history_ts = map(data['statistics'], 'history_ts');
           history_ts = history_ts.reverse();
           history_ts.forEach(ts => {
-            ts =  this.dateFormatter.transform(ts, 'HH:mm:ss');
+            ts = this.dateFormatter.transform(ts, 'HH:mm:ss');
             labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
@@ -214,7 +220,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
           });
         });
-        this.refreshData();
       },
         error => {
           if (error.status === 0) {
@@ -225,35 +230,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public ngOnDestroy(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-    }
-  }
-
-  private refreshData(): void {
-    this.timerSubscription = null;
-    this.timerSubscription = Observable.timer(this.refreshTimer)
-      .subscribe(() => {
-        this.getStatisticsHistory(localStorage.getItem('STATS_HISTORY_TIME_FILTER'));
-        this.refreshGraph();
-      });
-  }
-
   public toggleDropdown() {
     const dropDown = document.querySelector('#graph-key-dropdown');
     dropDown.classList.toggle('is-active');
   }
 
   public checkedGraph(event) {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
     const data = {
       key: event.target.value,
       checked: event.target.checked
     };
     this.showGraph(data);
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
   }
 }
