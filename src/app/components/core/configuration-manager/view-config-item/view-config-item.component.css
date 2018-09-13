@@ -37,3 +37,7 @@ label{
 .error {
   color: red;
 }
+
+.tooltip.is-tooltip-multiline::before {
+  min-width: 16rem !important;
+}
