@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { sortBy } from 'lodash';
-import { SchedulesService, AlertService, PingService } from '../../../../services';
 import { NgProgress } from 'ngx-progressbar';
+import { interval } from 'rxjs';
+
+import { AlertService, PingService, SchedulesService } from '../../../../services';
 import { POLLING_INTERVAL } from '../../../../utils';
-import { AnonymousSubscription } from 'rxjs/Subscription';
-import { Observable } from 'rxjs/Rx';
 
 @Component({
   selector: 'app-list-tasks',
@@ -14,31 +14,37 @@ import { Observable } from 'rxjs/Rx';
 export class ListTasksComponent implements OnInit, OnDestroy {
   public tasksData = [];
   public refreshInterval = POLLING_INTERVAL;
-  private timerSubscription: AnonymousSubscription;
   private REQUEST_TIMEOUT_INTERVAL = 5000;
+  private isAlive: boolean;
 
   constructor(
     private schedulesService: SchedulesService,
     private alertService: AlertService,
     public ngProgress: NgProgress,
     private ping: PingService
-  ) { }
+  ) {
+    this.isAlive = true;
+    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.isAlive = false;
+      }
+      this.refreshInterval = timeInterval;
+    });
+  }
 
   ngOnInit() {
     this.getLatestTasks();
-    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-      this.refreshInterval = timeInterval;
-    });
+    interval(this.refreshInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.getLatestTasks();
+      });
   }
 
   /**
    * Get latest tasks
    */
   public getLatestTasks(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
     this.schedulesService.getLatestTask().subscribe(
       (data) => {
         const taskData = data['tasks'];
@@ -53,10 +59,6 @@ export class ListTasksComponent implements OnInit, OnDestroy {
         const otherTasks = taskData.filter((td => (td.state !== 'Running' && td.state !== 'Complete')));
 
         this.tasksData = runningTasks.reverse().concat(completedTasks.reverse(), otherTasks.reverse());
-
-        if (this.refreshInterval > 0) {
-          this.enableRefreshTimer();
-        }
       },
       (error) => {
         this.tasksData = [];
@@ -64,9 +66,6 @@ export class ListTasksComponent implements OnInit, OnDestroy {
           console.log('service down ', error);
         } else {
           this.alertService.error(error.statusText);
-          if (this.refreshInterval > 0) {
-            this.enableRefreshTimer();
-          }
         }
       });
   }
@@ -102,16 +101,6 @@ export class ListTasksComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
-  }
-  private enableRefreshTimer(): void {
-    this.timerSubscription = Observable.timer(this.refreshInterval)
-      .subscribe(
-        () => {
-          this.getLatestTasks();
-        });
+    this.isAlive = false;
   }
 }

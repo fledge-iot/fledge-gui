@@ -29,7 +29,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
-
   constructor(
     private schedulesService: SchedulesService,
     private configService: ConfigurationService,
@@ -139,5 +138,4 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
     document.getElementById('ss').click();
   }
-
 }

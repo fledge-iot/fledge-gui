@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
-import { Observable } from 'rxjs/Rx';
-import { AnonymousSubscription } from 'rxjs/Subscription';
+import { interval } from 'rxjs';
 
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
@@ -20,20 +19,31 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public assetData: Object;
   public isChart = false;
   public refreshInterval = POLLING_INTERVAL;
-  private timerSubscription: AnonymousSubscription;
   public showSpinner = false;
+  private isAlive: boolean;
+
   @ViewChild(ReadingsGraphComponent) readingsGraphComponent: ReadingsGraphComponent;
 
   constructor(private assetService: AssetsService,
     private alertService: AlertService,
-    private ping: PingService) { }
+    private ping: PingService) {
+    this.isAlive = true;
+    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.isAlive = false;
+      }
+      this.refreshInterval = timeInterval;
+    });
+  }
 
   ngOnInit() {
     this.showLoadingSpinner();
     this.getAsset();
-    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-      this.refreshInterval = timeInterval;
-    });
+    interval(this.refreshInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.getAsset();
+      });
   }
 
   public getAsset(): void {
@@ -44,9 +54,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
           this.assets = orderBy(this.assets, ['assetCode'], ['asc']);
           if (this.selectedAsset) {
             this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
-          }
-          if (this.refreshInterval > 0) {
-            this.enableRefreshTimer();
           }
           this.hideLoadingSpinner();
         },
@@ -68,23 +75,24 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.readingsGraphComponent.toggleModal(true);
   }
 
-  public ngOnDestroy(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
-  }
-
-  private enableRefreshTimer(): void {
-    this.timerSubscription = Observable.timer(this.refreshInterval)
-      .subscribe(() => this.getAsset());
-  }
-
   public showLoadingSpinner() {
     this.showSpinner = true;
   }
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  onNotify(event) {
+    this.isAlive = event;
+    interval(this.refreshInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.getAsset();
+      });
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
   }
 }
