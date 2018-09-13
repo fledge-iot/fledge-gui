@@ -41,11 +41,7 @@
             <div class="field">
               <label class="label is-small">Process</label>
               <div class="control">
-                <div class="select is-fullwidth is-small">
-                  <select formControlName="process_name">
-                    <option [selected]="process == process_name" *ngFor="let process of scheduleProcess">{{process}}</option>
-                  </select>
-                </div>
+                <input formControlName="process_name" disabled="true" type="text" class="input is-small" placeholder="process" />
               </div>
             </div>
           </div>
@@ -70,7 +66,8 @@
                 <div class="column is-fullwidth">
                   <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365" placeholder="days" formControlName="repeatDay"
                     required>
-                  <input id="repeat_time" class="input is-small" type='text' placeholder="hh:mm:ss" formControlName="repeat" mask='00:00:00' required>
+                  <input id="repeat_time" class="input is-small" type='text' placeholder="hh:mm:ss" formControlName="repeat" mask='00:00:00'
+                    required>
                 </div>
               </div>
               <small *ngIf="form.controls.repeatDay.invalid" class="help is-danger level-left">&nbsp; Repeat days must be in range 0 - 365</small>

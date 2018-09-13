@@ -162,7 +162,6 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
     const updatePayload = {
       'name': this.form.get('name').value,
-      'process_name': this.form.get('process_name').value,
       'type': this.selectedScheduleType,
       'repeat': repeatTime,
       'day': dayIndex,
