@@ -92,7 +92,6 @@ export class CertificateStoreComponent implements OnInit {
    * @param cert_name name of the certificate to delete
    */
   deleteCertificate(cert_name) {
-    console.log('Deleting Certificate:', cert_name);
     /** request started */
     this.ngProgress.start();
     this.certService.deleteCertificate(cert_name).

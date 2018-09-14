@@ -85,16 +85,12 @@ export class ListSchedulesComponent implements OnInit {
   }
 
   public filterSouthAndNorth (schedules): void {
-    //  TODO: remove log
-    console.log('Schedules', schedules);
     this.configService.getCategoryWithChildren().
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
           const sn = this.filterCategories(data['categories']);
-          // TODO: Remove log
-          console.log('South and North Schedule (category names)', sn);
           //  filter by South and North categories name
           this.scheduleData = [];
           schedules.forEach(sch => {
@@ -102,8 +98,6 @@ export class ListSchedulesComponent implements OnInit {
               this.scheduleData.push(sch);
             }
           });
-          //  TODO: remove log
-          console.log('Filtered Schedules', this.scheduleData);
 
           this.scheduleData.forEach(element => {
             const repeatTimeObj = Utils.secondsToDhms(element.repeat);

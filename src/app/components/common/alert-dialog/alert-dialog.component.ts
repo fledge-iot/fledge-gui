@@ -7,8 +7,6 @@ import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angu
 export class AlertDialogComponent implements OnInit, OnChanges {
   @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any};
   @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string, address: string };
-  @Output() enable = new EventEmitter<Number>();
-  @Output() disable = new EventEmitter<Number>();
   @Output() delete = new EventEmitter<Number>();
   @Output() shutdownService = new EventEmitter<Object>();
   @Output() deleteUserService = new EventEmitter<Number>();

@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
 
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
-import { ReadingsGraphComponent } from './../readings-graph/readings-graph.component';
+import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
 
 @Component({
   selector: 'app-assets',
@@ -16,8 +17,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   selectedAsset: any; // Selected asset object (assetCode, count)
   MAX_RANGE = MAX_INT_SIZE;
   assets = [];
-  public assetData: Object;
-  public isChart = false;
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
   private isAlive: boolean;
