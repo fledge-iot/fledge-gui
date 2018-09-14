@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
 
@@ -96,7 +96,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public getLimitBasedAssetReadingsAndSummary(limit: number = 0) {
-    console.log('limit', limit);
     if (limit == null) {
       this.optedTime = ASSET_READINGS_TIME_FILTER;
       this.limit = 0;

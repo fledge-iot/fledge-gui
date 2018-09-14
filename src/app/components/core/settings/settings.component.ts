@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+
 import { PingService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
 import { ServiceDiscoveryComponent } from '../service-discovery';
