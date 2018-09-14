@@ -95,7 +95,6 @@ describe('FogLAMP gui', () => {
       ];
       skipLogin.navToBackupRestore();
       expect(skipLogin.getBackupRestoreTitle()).toContain('Backup');
-      expect(skipLogin.getBackupRestoreRefreshButton()).toEqual(true);
       for (const ColumnName in ColumnsName) {
         expect(skipLogin.getBackupRestoreColNames()).toContain(ColumnsName[ColumnName]);
       }

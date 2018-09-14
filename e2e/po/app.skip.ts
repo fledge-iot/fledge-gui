@@ -254,11 +254,6 @@ export class SkipLogin {
     return element(by.css('app-backup-restore header p')).getText();
   }
 
-  getBackupRestoreRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-backup-restore button i')).isDisplayed();
-  }
-
   getBackupRestoreColNames() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-backup-restore table thead tr')).getText();
