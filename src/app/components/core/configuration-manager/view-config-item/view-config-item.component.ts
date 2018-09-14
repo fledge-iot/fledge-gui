@@ -1,7 +1,8 @@
+import { differenceWith, find, sortBy } from 'lodash';
+import { NgProgress } from 'ngx-progressbar';
+
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { sortBy, find, differenceWith } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -16,8 +17,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() useProxy: 'false';
 
   public categoryConfiguration;
-  public selectedValue: string;
-  public selectedCategoryId: string;
   public configItems = [];
   public isValidForm: boolean;
 
