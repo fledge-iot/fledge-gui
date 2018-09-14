@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { sortBy } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 import { interval } from 'rxjs';
 
@@ -7,7 +8,6 @@ import { PingService, ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
-import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-south',

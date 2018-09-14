@@ -2,7 +2,7 @@ import { AbstractControl, FormGroup, FormControl } from '@angular/forms';
 
 export class CustomValidator {
   static nospaceValidator(control: AbstractControl): { [s: string]: boolean } {
-    if (control.value && control.value.trim() == '') {
+    if (control.value && control.value.trim() === '') {
       return { nospace: true };
     }
   }

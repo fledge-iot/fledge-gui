@@ -1,7 +1,6 @@
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
-
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';

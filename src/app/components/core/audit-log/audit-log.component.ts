@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuditService, AlertService } from '../../../services/index';
 import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, AuditService } from '../../../services';
 import { MAX_INT_SIZE } from '../../../utils';
 
 @Component({
@@ -139,7 +140,7 @@ export class AuditLogComponent implements OnInit {
       this.page = 1;
       this.tempOffset = this.offset;
     }
-    if (limit === '' || limit == 0 || limit === null || limit === undefined) {
+    if (limit === '' || limit === 0 || limit === null || limit === undefined) {
       limit = this.DEFAULT_LIMIT;
     }
     this.limit = limit;

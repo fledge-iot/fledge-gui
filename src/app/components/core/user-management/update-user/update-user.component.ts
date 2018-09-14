@@ -44,7 +44,7 @@ export class UpdateUserComponent implements OnInit {
     };
 
     // To handle section on UI
-    if (key == 'role') {
+    if (key === 'role') {
       this.showRoleSection = true;
     }
   }
