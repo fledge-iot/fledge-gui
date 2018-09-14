@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
-import { Observable } from 'rxjs/Rx';
-import { AnonymousSubscription } from 'rxjs/Subscription';
+import { interval } from 'rxjs';
 
 import { PingService, ServicesHealthService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
@@ -18,9 +17,9 @@ import { sortBy } from 'lodash';
 export class SouthComponent implements OnInit, OnDestroy {
   public service;
   public southboundServices = [];
-  private timerSubscription: AnonymousSubscription;
   public refreshSouthboundServiceInterval = POLLING_INTERVAL;
   public showSpinner = false;
+  private isAlive: boolean;
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
 
@@ -28,21 +27,27 @@ export class SouthComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     public ngProgress: NgProgress,
     private router: Router,
-    private ping: PingService) { }
-
-  ngOnInit() {
-    this.showLoadingSpinner();
-    this.getSouthboundServices();
+    private ping: PingService) {
+    this.isAlive = true;
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.isAlive = false;
+      }
       this.refreshSouthboundServiceInterval = timeInterval;
     });
   }
 
+  ngOnInit() {
+    this.showLoadingSpinner();
+    this.getSouthboundServices();
+    interval(this.refreshSouthboundServiceInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.getSouthboundServices();
+      });
+  }
+
   public getSouthboundServices() {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
     this.servicesHealthService.getSouthServices().
       subscribe(
         (data: any) => {
@@ -51,9 +56,6 @@ export class SouthComponent implements OnInit, OnDestroy {
             return svc['status'] === 'down';
           });
           this.hideLoadingSpinner();
-          if (this.refreshSouthboundServiceInterval > 0) {
-            this.refreshSouthboundServices();
-          }
         },
         error => {
           this.hideLoadingSpinner();
@@ -82,23 +84,15 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.getSouthboundServices();
   }
 
-  private refreshSouthboundServices(): void {
-    this.timerSubscription = Observable.timer(this.refreshSouthboundServiceInterval)
-      .subscribe(() => { if (this.refreshSouthboundServiceInterval > 0) { this.getSouthboundServices(); } });
-  }
-
-  public ngOnDestroy(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-      this.timerSubscription = null;
-    }
-  }
-
   public showLoadingSpinner() {
     this.showSpinner = true;
   }
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
   }
 }

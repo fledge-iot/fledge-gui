@@ -125,17 +125,6 @@ export class SchedulesService {
   }
 
   /**
-   *  GET | /foglamp/task
-   */
-  public getTasks(state: string) {
-    let params = new HttpParams();
-    params = params.append('state', state);
-    return this.http.get(this.TASKS_URL, { params: params }).pipe(
-      map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
-  }
-
-  /**
    *  PUT | /foglamp/task/{task_id}/cancel
    */
   public cancelTask(id) {

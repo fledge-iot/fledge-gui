@@ -6,7 +6,7 @@
           <div class="config-div" *ngIf="!configItem.value.readonly">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
-                <label class="label tooltip is-tooltip-right" [attr.data-tooltip]="configItem.value.description">
+                <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.value.description">
                   {{configItem.value.key}}
                 </label>
               </div>
@@ -20,7 +20,7 @@
                   <div class="field">
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                       type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
-                      required [attr.maxLength]="configItem?.value?.length" />
+                      [required]="configItem.value.key !== 'assetNamePrefix'" [attr.maxLength]="configItem?.value?.length" />
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" name="{{configItem.value.key}}" type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                       class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
@@ -62,7 +62,7 @@
             <label class="label"></label>
           </div>
           <div class="field-body">
-            <div class="column">
+            <div style="padding-top: 1rem;">
               <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
               <button *ngIf="useProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
             </div>

@@ -19,7 +19,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   enabled: Boolean;
   exclusive: Boolean;
   repeat: any;
-  processName: any;
+  name: string;
 
   form: FormGroup;
 
@@ -28,7 +28,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
-
 
   constructor(
     private schedulesService: SchedulesService,
@@ -68,13 +67,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.enabled = this.task['enabled'];
     this.exclusive = this.task['exclusive'];
     this.repeat = Utils.secondsToDhms(this.task['repeat']).time;
-    this.processName = this.task['processName'];
+    this.name = this.task['name'];
     const categoryValues = [];
-    this.configService.getCategory(this.processName).subscribe(
+    this.configService.getCategory(this.name).subscribe(
       (data: any) => {
         if (!isEmpty(data)) {
           categoryValues.push(data);
-          this.category = { key: this.processName, value: categoryValues };
+          this.category = { key: this.name, value: categoryValues };
           this.useProxy = 'true';
         }
         /** request completed */
@@ -139,5 +138,4 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
     document.getElementById('ss').click();
   }
-
 }

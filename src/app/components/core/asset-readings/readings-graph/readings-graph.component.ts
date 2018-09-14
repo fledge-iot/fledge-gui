@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { orderBy } from 'lodash';
-import { Observable } from 'rxjs/Rx';
-import { AnonymousSubscription } from 'rxjs/Subscription';
+import { interval } from 'rxjs';
 
 import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
@@ -13,7 +12,7 @@ import ReadingsValidator from '../assets/readings-validator';
   templateUrl: './readings-graph.component.html',
   styleUrls: ['./readings-graph.component.css']
 })
-export class ReadingsGraphComponent {
+export class ReadingsGraphComponent implements OnDestroy {
   public assetCode: string;
   public assetChartType: string;
   public assetReadingValues: any;
@@ -22,16 +21,25 @@ export class ReadingsGraphComponent {
   public isInvalidLimit = false;
   public MAX_RANGE = MAX_INT_SIZE;
   public graphRefreshInterval = POLLING_INTERVAL;
-  private graphTimerSubscription: AnonymousSubscription;
+
   public limit: number;
   public DEFAULT_LIMIT = 100;
   public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
 
+  private isAlive: boolean;
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
     this.assetChartType = 'line';
     this.assetReadingValues = [];
+    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.isAlive = false;
+      }
+      this.graphRefreshInterval = timeInterval;
+    });
   }
 
   public roundTo(num, to) {
@@ -42,16 +50,15 @@ export class ReadingsGraphComponent {
   public toggleModal(shouldOpen: Boolean) {
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
-      this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-        this.graphRefreshInterval = timeInterval;
-      });
       chart_modal.classList.add('is-active');
       return;
     }
-    if (this.graphTimerSubscription) {
-      this.graphTimerSubscription.unsubscribe();
-      this.graphTimerSubscription = null;
+    if (this.graphRefreshInterval === -1) {
+      this.notify.emit(false);
+    } else {
+      this.notify.emit(true);
     }
+    this.isAlive = false;
     chart_modal.classList.remove('is-active');
   }
 
@@ -68,12 +75,24 @@ export class ReadingsGraphComponent {
   }
 
   public getAssetCode(assetCode) {
+    this.notify.emit(false);
+    if (this.graphRefreshInterval === -1) {
+      this.isAlive = false;
+    } else {
+      this.isAlive = true;
+    }
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;
       this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
       this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
     }
+    interval(this.graphRefreshInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+      });
   }
 
   public getLimitBasedAssetReadingsAndSummary(limit: number = 0) {
@@ -100,9 +119,6 @@ export class ReadingsGraphComponent {
           };
         });
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-        if (this.graphRefreshInterval > 0) {
-          this.enableRefreshTimer();
-        }
       },
       error => {
         if (error.status === 0) {
@@ -117,11 +133,6 @@ export class ReadingsGraphComponent {
     if (assetCode === '') {
       return false;
     }
-    if (this.graphTimerSubscription) {
-      this.graphTimerSubscription.unsubscribe();
-      this.graphTimerSubscription = null;
-    }
-
     this.isInvalidLimit = false;
     if (limit === undefined || limit === null || limit === '' || limit === 0) {
       limit = 0;
@@ -228,22 +239,8 @@ export class ReadingsGraphComponent {
     };
   }
 
-  /*
-  public clearField(limitField) {
-    limitField.inputValue = '';
-    this.limit = 0;
-    if (this.graphTimerSubscription) {
-      this.graphTimerSubscription.unsubscribe();
-      this.graphTimerSubscription = null;
-    }
-  }
-*/
-
-  private enableRefreshTimer(): void {
-    this.graphTimerSubscription = Observable.timer(this.graphRefreshInterval)
-      .subscribe(() => {
-        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-      });
+  public ngOnDestroy(): void {
+    this.isAlive = false;
   }
 }
+

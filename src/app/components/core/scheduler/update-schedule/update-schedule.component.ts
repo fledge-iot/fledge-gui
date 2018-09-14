@@ -140,6 +140,10 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   }
 
   public updateSchedule() {
+    if (!this.form.dirty && !this.form.touched) {
+      this.toggleModal(false);
+      return false;
+    }
     const repeatTime = this.form.get('repeat').value != ('None' || undefined) ? Utils.convertTimeToSec(
       this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
 
@@ -158,7 +162,6 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
     const updatePayload = {
       'name': this.form.get('name').value,
-      'process_name': this.form.get('process_name').value,
       'type': this.selectedScheduleType,
       'repeat': repeatTime,
       'day': dayIndex,

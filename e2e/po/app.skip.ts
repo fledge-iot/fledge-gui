@@ -21,7 +21,7 @@ export class SkipLogin {
 
   getNavTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#app .navbar-brand .navbar-item.is-hidden-mobile b')).getText();
+    return element(by.css('#app .navbar-brand .navbar-item > b > a')).getText();
   }
 
   loginPageInputTag() {
@@ -34,79 +34,53 @@ export class SkipLogin {
     return element(by.css('app-login form button.is-info')).getText();
   }
 
-  getCountOfSelectedGraph() {
-    browser.ignoreSynchronization = true;
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('angular2-multiselect .selected-list .c-list'))), 4000);
-    return element.all(by.css('angular2-multiselect .selected-list .c-list div')).count();
-  }
-
-  getReadingsGraph() {
-    browser.ignoreSynchronization = true;
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-dashboard div:nth-child(3) div article h5'))), 2000);
-    return element(by.css('app-dashboard div:nth-child(3) div article h5')).getText();
-  }
-
-  getPurgedGraph() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-dashboard div:nth-child(4) div article h5')).getText();
-  }
-
   getAppStatus() {
     browser.ignoreSynchronization = true;
-    return element(by.css('.navbar-item .tag.is-hidden-mobile')).getText();
+    return element(by.css('#app > app-root > div > app-navbar > nav > div.navbar-menu .icon.has-text-success')).isDisplayed();
+  }
+
+  getReceived() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(2)')).getText();
+  }
+
+  getSent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(3)')).getText();
+  }
+
+  getUptime() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(4)')).getText();
+  }
+
+  isSelectTagPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-dashboard div:nth-child(1) div.select.is-rounded')).isDisplayed();
+  }
+
+  isGraphDropdownPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#graph-key-dropdown')).isDisplayed();
   }
 
   navToAssetReadings() {
     return browser.get('/#/asset');
   }
 
-  getAssetsTitle() {
+  getAssetTableHeader() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-assets > div > div:nth-child(2) #card-title h5')).getText();
+    return element(by.css('app-assets table th:nth-child(1)')).getText();
   }
 
-  getAssetReadingsTitle() {
+  getReadingsTableHeader() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-assets > div > div:nth-child(3) #card-title h5')).getText();
-  }
-
-  getAssetsRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-assets > div > div:nth-child(2) #card-title > h5 > button > i')).isDisplayed();
-  }
-
-  clickAssetSummary() {
-    browser.ignoreSynchronization = true;
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-assets table tbody:nth-child(2) tr:nth-child(1) td:nth-child(3) a'))), 3000);
-    return element(by.css('app-assets table tbody:nth-child(2) tr:nth-child(1) td:nth-child(3) a')).click();
-  }
-
-  getAssetSummarySelectTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('#summary_modal select')).count();
-  }
-
-  getAssetSummaryInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('#summary_modal app-number-input-debounce > input')).count();
-  }
-
-  getAssetSummaryColNames() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#summary_modal table thead tr')).getText();
-  }
-
-  isAssetSummaryChartIcon() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#summary_modal table th:nth-child(5) a')).isDisplayed();
+    return element(by.css('app-assets table th:nth-child(2)')).getText();
   }
 
   clickChartIcon() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#summary_modal table th:nth-child(5) a')).click();
+    return element(by.css('app-assets .table.is-striped > tbody:nth-child(2) > tr:nth-child(1) .fa-line-chart')).click();
   }
 
   isChartDisplayed() {
@@ -114,9 +88,9 @@ export class SkipLogin {
     return element(by.css('.chartjs-render-monitor')).isDisplayed();
   }
 
-  closeSummaryModal() {
+  closeChartModal() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#summary_modal .modal-card header button')).click();
+    return element(by.css('#chart_modal .modal-card > header > div > button')).click();
   }
 
   clickAssetChart() {
@@ -127,11 +101,6 @@ export class SkipLogin {
   getAssetChartInputTag() {
     browser.ignoreSynchronization = true;
     return element.all(by.css('#chart_modal .modal-card app-number-input-debounce input')).count();
-  }
-
-  closeChartModal() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#chart_modal .modal-card header button')).click();
   }
 
   navToAuditLogs() {
@@ -196,65 +165,13 @@ export class SkipLogin {
     return browser.get('/#/configuration');
   }
 
-  getConfigTitles() {
-    browser.ignoreSynchronization = true;
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-root app-configuration-manager > div > div:nth-child(2)'))), 5 * 1000);
-    return element(by.css('#app > app-root > ng-sidebar-container > div > div > app-configuration-manager > div')).getText();
-  }
-
-  isAddButtonPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-configuration-manager > div > div:nth-child(2) > header > div:nth-child(2) > a')).isDisplayed();
-  }
-
-  isSaveButtonPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.id('btn-save-send_pr_1-plugin')).isDisplayed();
-  }
-
-  isCancelButtonPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.id('btn-cancel-send_pr_1-plugin')).isDisplayed();
-  }
-
   clickAddButton() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-configuration-manager > div > div:nth-child(2) > header > div:nth-child(2) > a')).click();
   }
 
-  addConfigInputTagCount() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('#add-config-item .modal-card .modal-card-body form input')).count();
-  }
-
-  addConfigSelectTagCount() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('#add-config-item .modal-card form select')).count();
-  }
-
-  addConfigTextareaCount() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('#add-config-item .modal-card form textarea')).count();
-  }
-
-  isAddConfigSaveButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.id('save')).isDisplayed();
-  }
-
-  editAndVerifyConfigValue() {
-    browser.waitForAngularEnabled(false);
-    element(by.id('send_pr_1-plugin')).clear();
-    element(by.id('send_pr_1-plugin')).sendKeys('test');
-    element(by.id('btn-save-send_pr_1-plugin')).click();
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
-    return element(by.id('alert')).getText();
-  }
-
   navToScheduledTasks() {
-    return browser.get('/#/scheduled-task');
+    return browser.get('/#/schedules');
   }
 
   getSchedulesTitle() {
@@ -272,62 +189,9 @@ export class SkipLogin {
     return element(by.css('app-scheduled-process .card-header .button.is-light')).getText();
   }
 
-  createAndVerifySchedule() {
-    browser.ignoreSynchronization = true;
-    element(by.css('app-scheduled-process .card-header .button.is-light')).click();
-    element(by.css('#create_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).sendKeys('test');
-    element(by.css('#create_schedule_modal .modal-card #repeat_day')).sendKeys('1');
-    element(by.css('#create_schedule_modal .modal-card #repeat_time')).sendKeys('11:11:11');
-    browser.sleep(2000);
-    element(by.css('#create_schedule_modal #save')).click();
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
-    return element(by.id('alert')).getText();
-  }
-
   closeAlert() {
     browser.ignoreSynchronization = true;
     element(by.css('#alert > button.delete')).click();
-  }
-
-  updateAndVerifySchedule() {
-    browser.ignoreSynchronization = true;
-    // Scroll the element (created schedule) to view
-    const lastElement = element(by.xpath('//*[@id="test"]'));
-    browser.executeScript('arguments[0].scrollIntoView()', lastElement.getWebElement());
-
-    element(by.css('#test > td:nth-child(7) > a[name=test]')).click();
-    element(by.css('#update_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).clear();
-    element(by.css('#update_schedule_modal form > div:nth-child(1) > div:nth-child(1) > div > div > p > input')).sendKeys('updateSchedule');
-    browser.sleep(1000);
-    element(by.css('#update_schedule_modal #save')).click();
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
-    return element(by.id('alert')).getText();
-  }
-
-  isUpdatedSchedulePresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(2) .card-content')).getText();
-  }
-
-  disableAndVerifySchedule() {
-    browser.ignoreSynchronization = true;
-    element(by.css('#updateSchedule > td:nth-child(9) > button[name=updateSchedule]')).click();
-    element(by.css('#modal-box > div.modal-card > footer > button.button.is-success')).click();
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
-    return element(by.id('alert')).getText();
-  }
-
-  deleteAndVerifySchedule() {
-    browser.ignoreSynchronization = true;
-    element(by.css
-      ('#updateSchedule > td:nth-child(8) > a[name=updateSchedule]')).click();
-    element(by.css('#modal-box > div.modal-card > footer > button.button.is-success')).click();
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
-    return element(by.id('alert')).getText();
   }
 
   getTasksTitle() {
@@ -343,45 +207,6 @@ export class SkipLogin {
   getTasksSelectTag() {
     browser.ignoreSynchronization = true;
     return element.all(by.id('task-state')).count();
-  }
-
-  navToServiceHealth() {
-    return browser.get('/#/services');
-  }
-
-  getServiceStatusTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-services-health .title.is-5')).getText();
-  }
-
-  getAddServiceButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-services-health #add_service.button')).getText();
-  }
-
-  getServiceStatusRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-services-health header button .fa.fa-refresh')).isDisplayed();
-  }
-
-  getServiceHealthColNames() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-services-health table thead tr')).getText();
-  }
-
-  coreServiceStatus() {
-    browser.ignoreSynchronization = true;
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('#FogLAMP_Core td:nth-child(2) div span'))), 4000);
-    return element(by.css('#FogLAMP_Core td:nth-child(2) div span')).getText();
-  }
-
-  shutdownHttpSouth() {
-    browser.ignoreSynchronization = true;
-    element(by.css('#HTTP_SOUTH > td:nth-child(8) > button')).click();
-    element(by.css('#modal-box footer .button.is-success')).click();
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 8000);
   }
 
   navToCertificateStore() {
@@ -477,7 +302,7 @@ export class SkipLogin {
 
   getSettingsTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-settings header p.card-header-title')).getText();
+    return element(by.css('app-settings > div > div:nth-child(1) .card-header-title')).getText();
   }
 
   getSettingsSelectTag() {
@@ -500,18 +325,8 @@ export class SkipLogin {
     return element.all(by.css('app-settings #set-url-restart-btn'));
   }
 
-  getTestConnectionTextButton() {
+  getGUISettingsDropdown() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings #test-connection-btn'));
-  }
-
-  getDiscoverFoglampButton() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings #discover-foglamp-btn'));
-  }
-
-  getPingDropdown() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings header div.select.is-small')).count();
+    return element.all(by.css('app-settings .columns.is-multiline select'));
   }
 }

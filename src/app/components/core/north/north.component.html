@@ -36,7 +36,7 @@
               <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
                 <td class="align-content">
                   <a class="button is-text" (click)="openNorthTaskModal(t)">
-                    <small>{{t.processName}}</small>
+                    <small>{{t.name}}</small>
                   </a>
                 </td>
                 <td>
