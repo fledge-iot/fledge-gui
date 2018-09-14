@@ -40,7 +40,7 @@ export class UserProfileComponent implements OnInit {
               (roleRecord) => {
                 this.ngProgress.done();
                 roleRecord['roles'].filter(role => {
-                  if (role.id == userData['roleId']) {
+                  if (role.id === userData['roleId']) {
                     userData['roleName'] = role.name;
                   }
                 });
