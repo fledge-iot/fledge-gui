@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CertificateService, AlertService } from '../../../../services/index';
 import { NgProgress } from 'ngx-progressbar';
-import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
+
+import { AlertService, CertificateService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
 
 @Component({
   selector: 'app-cert-store',

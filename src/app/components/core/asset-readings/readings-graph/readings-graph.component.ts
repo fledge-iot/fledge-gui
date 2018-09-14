@@ -1,13 +1,10 @@
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
 
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
-
 import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
-import {
-    ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL
-} from '../../../../utils';
+import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import ReadingsValidator from '../assets/readings-validator';
 
 @Component({
