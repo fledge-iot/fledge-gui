@@ -57,10 +57,10 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   onKeyChange(event) {
-    if (event.target.files.length != 0) {
+    if (event.target.files.length !== 0) {
       const fileName = event.target.files[0].name;
       const ext = fileName.substr(fileName.lastIndexOf('.') + 1);
-      if (ext == 'key') {
+      if (ext === 'key') {
         this.keyExtension = true;
       } else {
         this.keyExtension = false;
@@ -74,10 +74,10 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   onCertChange(event) {
-    if (event.target.files.length != 0) {
+    if (event.target.files.length !== 0) {
       const fileName = event.target.files[0].name;
       const ext = fileName.substr(fileName.lastIndexOf('.') + 1);
-      if (ext == 'cert') {
+      if (ext === 'cert') {
         this.certExtension = true;
       } else {
         this.certExtension = false;

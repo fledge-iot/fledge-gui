@@ -15,7 +15,6 @@ import { ViewConfigItemComponent } from '../../configuration-manager/view-config
 export class AddTaskWizardComponent implements OnInit {
 
   public plugins = [];
-  public scheduleType = [];
   public configurationData;
   public useProxy;
 
