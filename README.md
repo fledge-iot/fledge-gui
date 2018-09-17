@@ -12,6 +12,7 @@ This is a GUI for FogLAMP
 To update yarn, Run `sudo npm i -g yarn`
 
 `git clone https://github.com/foglamp/foglamp-gui.git`
+
 `cd  foglamp-gui`
 
 ## Development Server
