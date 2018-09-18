@@ -15,6 +15,7 @@ import { ShutdownModalComponent } from './components/common/shut-down/shutdown-m
 import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
 import { CertificateModule } from './components/core/certificate/certificate.module';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
+import { ListTasksComponent } from './components/core/logs/list-tasks/list-tasks.component';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support/support.component';
@@ -22,10 +23,9 @@ import { FooterComponent } from './components/layout/footer';
 import { LoginComponent } from './components/layout/login';
 import { NavbarComponent } from './components/layout/navbar/navbar.component';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
+import { DirectivesModule } from './directives/directives.module';
 import { AuthCheckGuard } from './guards';
 import { PipesModule } from './pipes/pipes.module';
-import { ListTasksComponent } from './components/core/logs/list-tasks/list-tasks.component';
-
 import {
   AlertService,
   AuditService,
@@ -46,7 +46,6 @@ import {
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
-import { DirectivesModule } from './directives/directives.module';
 
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
