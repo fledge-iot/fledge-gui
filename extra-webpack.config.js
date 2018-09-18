@@ -4,7 +4,7 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const webpackConfig = {
     resolve: {
       alias: {
-        'lodash-es': 'lodash', // our internal tests showed that lodash is a little bit smaller as lodash-es
+        // 'lodash-es': 'lodash'
       }
     },
     plugins: [
