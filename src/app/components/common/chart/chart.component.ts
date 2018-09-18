@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, OnInit, OnChanges, OnDestroy } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Chart } from 'chart.js';
 
 @Component({

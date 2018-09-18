@@ -1,4 +1,4 @@
-import { AbstractControl, FormGroup, FormControl } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 
 export class CustomValidator {
   static nospaceValidator(control: AbstractControl): { [s: string]: boolean } {
