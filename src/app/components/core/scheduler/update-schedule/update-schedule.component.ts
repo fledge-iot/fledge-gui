@@ -58,8 +58,8 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
    * @param value
    */
   public setScheduleTypeKey(value) {
-    if (value != undefined) {
-      return this.scheduleType.find(object => object.name == value).index;
+    if (value !== undefined) {
+      return this.scheduleType.find(object => object.name === value).index;
     }
   }
 
@@ -88,7 +88,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
    * @param id to get schedule
    */
   public getSchedule(id): void {
-    if (id == undefined) {
+    if (id === undefined) {
       return;
     }
 
@@ -96,7 +96,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     this.schedulesService.getSchedule(id).
       subscribe(
         (data) => {
-          if (data['type'] == 'TIMED') {
+          if (data['type'] === 'TIMED') {
             this.selectedScheduleType = this.setScheduleTypeKey(data['type']);
             scheduleDay = this.getSelectedDay(data['day']);
           } else {
@@ -144,7 +144,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       this.toggleModal(false);
       return false;
     }
-    const repeatTime = this.form.get('repeat').value != ('None' || undefined) ? Utils.convertTimeToSec(
+    const repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
       this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
 
     this.selectedScheduleType = this.setScheduleTypeKey(this.form.get('type').value);

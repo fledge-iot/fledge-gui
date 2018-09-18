@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from 'angular-tree-component';
-import { isEmpty } from 'lodash-es/';
-import _ from 'lodash-es/array';
+import { isEmpty, findIndex } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../services';
@@ -164,7 +163,7 @@ export class ConfigurationManagerComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           categoryValues.push(data);
-          const index = _.findIndex(this.categoryData, ['key', category_name]);
+          const index = findIndex(this.categoryData, ['key', category_name]);
           this.categoryData[index] = { key: category_name, value: categoryValues, description: category_desc };
         },
         error => {

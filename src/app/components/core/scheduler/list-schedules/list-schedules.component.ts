@@ -1,13 +1,11 @@
-import { Component, OnInit, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { sortBy } from 'lodash';
-
-import Utils from '../../../../utils';
 import { NgProgress } from 'ngx-progressbar';
 
-import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
+import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import { SchedulesService, AlertService, ConfigurationService } from '../../../../services/index';
-
+import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
 
 enum weekDays {
   Mon = 1,
@@ -54,7 +52,7 @@ export class ListSchedulesComponent implements OnInit {
     this.getScheduleType();
     this.getSchedulesProcesses();
 
-    this.days = Object.keys(weekDays).map(key => weekDays[key]).filter(value => typeof value == 'string') as string[];
+    this.days = Object.keys(weekDays).map(key => weekDays[key]).filter(value => typeof value === 'string') as string[];
     this.getSchedules();
 
     this.updateScheduleData = {
@@ -87,16 +85,12 @@ export class ListSchedulesComponent implements OnInit {
   }
 
   public filterSouthAndNorth (schedules): void {
-    //  TODO: remove log
-    console.log('Schedules', schedules);
     this.configService.getCategoryWithChildren().
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
           const sn = this.filterCategories(data['categories']);
-          // TODO: Remove log
-          console.log('South and North Schedule (category names)', sn);
           //  filter by South and North categories name
           this.scheduleData = [];
           schedules.forEach(sch => {
@@ -104,12 +98,10 @@ export class ListSchedulesComponent implements OnInit {
               this.scheduleData.push(sch);
             }
           });
-          //  TODO: remove log
-          console.log('Filtered Schedules', this.scheduleData);
 
           this.scheduleData.forEach(element => {
             const repeatTimeObj = Utils.secondsToDhms(element.repeat);
-            if (repeatTimeObj.days == 1) {
+            if (repeatTimeObj.days === 1) {
               element.repeat = repeatTimeObj.days + ' day, ' + repeatTimeObj.time;
             } else if (repeatTimeObj.days > 1) {
               element.repeat = repeatTimeObj.days + ' days, ' + repeatTimeObj.time;

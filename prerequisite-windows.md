@@ -4,18 +4,13 @@
 
 https://nodejs.org/en/download/
 
-### yarn
+### Install yarn
 
 https://yarnpkg.com/en/docs/install#windows-stable
 
 
-### Angular CLI
+### Install angular CLI (globally)
 
 `npm install @angular/cli -g`
 
 https://cli.angular.io/
-
-
-### Clone the source repository
-
-https://github.com/foglamp/foglamp-gui.git
