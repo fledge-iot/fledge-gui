@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import map from 'lodash-es/map';
+import { map } from 'lodash';
 import { interval } from 'rxjs';
 
 import { DateFormatterPipe } from '../../../pipes';

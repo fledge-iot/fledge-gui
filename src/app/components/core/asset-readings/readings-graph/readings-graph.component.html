@@ -9,7 +9,7 @@
       </div>
     </header>
     <section class="modal-card-body">
-      <div [hidden]='!showGraph' class="columns is-mobile">
+      <div *ngIf='showGraph' class="columns is-mobile">
         <div class="column is-two-fifths">
           <div class="select is-small">
             <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value)">
@@ -28,23 +28,26 @@
           <p *ngIf='isInvalidLimit' class='help is-danger'>Number of readings must be in range 1 - {{MAX_RANGE}}</p>
         </div> -->
       </div>
-      <div [hidden]='!showGraph' class="field is-grouped is-grouped-multiline" *ngFor="let asset of assetReadingSummary">
-        <div class="control">
-          <div class="tags has-addons" *ngFor="let reading of asset.value">
-            <span>
-              <b>{{asset.name}} &nbsp;</b>
-            </span>
-            <span class="tag is-light"> Avg </span>
-            <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.average, 5)}}
-            </span> &nbsp;
-            <span class="tag is-light"> Min </span>
-            <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.min, 5)}}</span> &nbsp;
-            <span class="tag is-light"> Max </span>
-            <!-- readKeyColorLabel[i][readings.key]} -->
-            <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.max, 5)}}</span> &nbsp;
+      <ng-container *ngIf="showGraph">
+        <div class="field is-grouped is-grouped-multiline" *ngFor="let asset of assetReadingSummary">
+          <div class="control">
+            <div class="tags has-addons" *ngFor="let reading of asset.value">
+              <span>
+                <b>{{asset.name}} &nbsp;</b>
+              </span>
+              <span class="tag is-light"> Avg </span>
+              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.average, 5)}}
+              </span> &nbsp;
+              <span class="tag is-light"> Min </span>
+              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.min, 5)}}</span>
+              &nbsp;
+              <span class="tag is-light"> Max </span>
+              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.max, 5)}}</span>
+              &nbsp;
+            </div>
           </div>
         </div>
-      </div>
+      </ng-container>
       <p *ngIf='!showGraph'> Not Available </p>
       <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]=""></app-chart>
     </section>

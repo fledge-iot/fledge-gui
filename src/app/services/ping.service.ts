@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { POLLING_INTERVAL, GRAPH_REFRESH_INTERVAL } from '../utils';
+
+import { GRAPH_REFRESH_INTERVAL, POLLING_INTERVAL } from '../utils';
 
 @Injectable()
 export class PingService {

@@ -59,6 +59,8 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.notify.emit(true);
     }
     this.isAlive = false;
+    // reset showGraph variable to default state
+    this.showGraph = true;
     chart_modal.classList.remove('is-active');
   }
 
@@ -144,10 +146,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, time).
       subscribe(
         (data: any[]) => {
-          this.showGraph = true;
           if (data.length === 0) {
             this.getAssetTimeReading(data);
-            return;
+            return false;
           }
           const validRecord = ReadingsValidator.validate(data);
           if (validRecord) {

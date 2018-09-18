@@ -1,9 +1,5 @@
-import {
-    Directive, HostListener, Input
-} from '@angular/core';
-import {
-    DefaultValueAccessor, NG_VALUE_ACCESSOR
-} from '@angular/forms';
+import { Directive, HostListener, Input } from '@angular/core';
+import { DefaultValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
     selector: 'input[trim], textarea[trim]',

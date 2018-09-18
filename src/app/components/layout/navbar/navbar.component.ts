@@ -3,19 +3,20 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  HostListener,
   OnDestroy,
   OnInit,
   Output,
   ViewChild,
-  HostListener
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
-import Utils from '../../../utils';
+
 import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
-import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
+import Utils from '../../../utils';
 import { RestartModalComponent } from '../../common/restart-modal/restart-modal.component';
+import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
 
 @Component({
   selector: 'app-navbar',
