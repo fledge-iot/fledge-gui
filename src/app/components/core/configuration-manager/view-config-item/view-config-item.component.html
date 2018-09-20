@@ -14,15 +14,22 @@
                 <div class="field">
                   <ng-container *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'">
                     <label class="checkbox">
-                      <input type="checkbox" name='{{configItem.value.key}}' value="{{configItem.value.value}}" [ngModel]="configItem.value.value == 'true'">
+                      <input type="checkbox" name='{{configItem.value.key}}' value="{{configItem.value.value}}"
+                        [ngModel]="configItem.value.value == 'true'">
                     </label>
                   </ng-container>
                   <div class="field">
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
-                      type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}"
+                      class="input is-fullwidth is-small" type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                       [required]="configItem.value.key !== 'assetNamePrefix'" [attr.maxLength]="configItem?.value?.length" />
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" name="{{configItem.value.key}}" type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'" name="{{configItem.value.key}}"
+                      type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                      class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
+                      [(ngModel)]="configItem.value.value" appNumberOnly required />
+
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'" name="{{configItem.value.key}}"
+                      type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' step="any" 
                       class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
                       [(ngModel)]="configItem.value.value" appNumberOnly required />
 
@@ -36,8 +43,8 @@
                       </select>
                     </div>
                   </div>
-                  <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
-                    type="url" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                  <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}"
+                    class="input is-fullwidth is-small" type="url" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                     required />
 
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
