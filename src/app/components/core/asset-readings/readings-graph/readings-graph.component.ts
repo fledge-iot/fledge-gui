@@ -195,16 +195,21 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   getColorCode(readKey, cnt, fill) {
     let cc = '';
-    if (!['RED', 'GREEN', 'BLUE'].includes(readKey.toUpperCase())) {
-      cc = COLOR_CODES[cnt];
+    if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
+      if (cnt >= 16) { // 15 is length of Utils' colorCodes array
+        cc = '#ad7ebf';
+      } else {
+        cc = COLOR_CODES[cnt];
+      }
     }
-    if (readKey.toUpperCase() === 'RED') {
+    if (readKey.toUpperCase() === 'RED' || readKey.toUpperCase() === 'R') {
       cc = '#FF334C';
-    } else if (readKey.toUpperCase() === 'BLUE') {
+    } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
       cc = '#339FFF';
-    } else if (readKey.toUpperCase() === 'GREEN') {
+    } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
       cc = '#008000';
     }
+
     if (fill) {
       this.readKeyColorLabel.push({ [readKey]: cc });
     }
