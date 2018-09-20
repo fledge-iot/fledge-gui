@@ -23,7 +23,7 @@
                       class="input is-fullwidth is-small" type="text" [(ngModel)]="configItem.value.value" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                       [required]="configItem.value.key !== 'assetNamePrefix'" [attr.maxLength]="configItem?.value?.length" />
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'NUMBER'" name="{{configItem.value.key}}"
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'" name="{{configItem.value.key}}"
                       type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
                       class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
                       [(ngModel)]="configItem.value.value" appNumberOnly required />

@@ -22,7 +22,7 @@ export default class ConfigTypeValidation {
         valueType = 'TEXT';
         break;
       case 'INTEGER':
-        valueType = 'NUMBER';
+        valueType = 'INTEGER';
         break;
       case 'FLOAT':
         valueType = 'FLOAT';
