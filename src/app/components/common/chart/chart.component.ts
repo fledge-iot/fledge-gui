@@ -24,7 +24,24 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     this.chart = new Chart(this.elementRef.nativeElement.querySelector('canvas'), {
       type: this.type,
       data: this.data,
-      options: this.options
+      options: this.options === undefined ? {
+        legend: {
+          onClick: (e, legendItem) => {
+            console.log('item clicked', e);
+            const index = legendItem.datasetIndex;
+            const ci = this.chart;
+            const meta = ci.getDatasetMeta(index);
+            meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+
+            if (legendItem.hidden === false) {
+              sessionStorage.setItem(legendItem.text, JSON.stringify(true));
+            } else {
+              sessionStorage.setItem(legendItem.text, null);
+            }
+            ci.update();
+          }
+        }
+      } : this.options
     });
     this.chart.update(0);
   }

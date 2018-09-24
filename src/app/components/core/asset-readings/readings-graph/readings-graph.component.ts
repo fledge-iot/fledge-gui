@@ -227,6 +227,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         fill: false,
         lineTension: 0.1,
         spanGaps: true,
+        hidden: JSON.parse(sessionStorage.getItem(element.key)) === true ? true : null,
         backgroundColor: this.getColorCode(element.key.trim(), count, true),
         borderColor: this.getColorCode(element.key, count, false)
       };
