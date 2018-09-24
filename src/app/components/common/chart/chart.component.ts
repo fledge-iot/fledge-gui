@@ -27,18 +27,20 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
       options: this.options === undefined ? {
         legend: {
           onClick: (e, legendItem) => {
-            console.log('item clicked', e);
+            console.log('clicked ', legendItem, e);
             const index = legendItem.datasetIndex;
-            const ci = this.chart;
-            const meta = ci.getDatasetMeta(index);
-            meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
-
+            const chart = this.chart;
+            const meta = chart.getDatasetMeta(index);
+            /**
+            * meta data have hidden property as null by default in chart.js
+            */
+            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
             if (legendItem.hidden === false) {
               sessionStorage.setItem(legendItem.text, JSON.stringify(true));
             } else {
-              sessionStorage.setItem(legendItem.text, null);
+              sessionStorage.setItem(legendItem.text, JSON.stringify(false));
             }
-            ci.update();
+            chart.update();
           }
         }
       } : this.options
