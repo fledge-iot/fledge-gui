@@ -65,6 +65,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     // reset showGraph variable to default state
     this.showGraph = true;
     chart_modal.classList.remove('is-active');
+    sessionStorage.removeItem(this.assetCode);
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
@@ -168,29 +169,32 @@ export class ReadingsGraphComponent implements OnDestroy {
   public getAssetTimeReading(assetChartRecord) {
     let assetTimeLabels = [];
     const datePipe = new DateFormatterPipe();
-
     let assetReading = [];
     if (assetChartRecord.length === 0) {
       assetTimeLabels = [];
       assetReading = [];
     } else {
-      assetChartRecord.reverse().forEach(data => {
-        Object.keys(data.reading).forEach(key => {
-          if (assetReading.length < Object.keys(data.reading).length) {
+      const readings = assetChartRecord.reverse().map(d => d.reading);
+      readings.forEach(data => {
+        for (const k in data) {
+          if (assetReading.length < Object.keys(data).length) {
             const read = {
-              key: key,
-              values: [data.reading[key]],
+              key: k,
+              values: [data[k]],
             };
             assetReading.push(read);
           } else {
             assetReading.map(el => {
-              if (el.key === key) {
-                el.values.push(data.reading[key]);
+              if (el.key === k) {
+                el.values.push(data[k]);
               }
             });
           }
-        });
-        assetTimeLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss'));
+        }
+      });
+      const timestamps = assetChartRecord.reverse().map(t => t.timestamp);
+      timestamps.forEach(timestamp => {
+        assetTimeLabels.push(datePipe.transform(timestamp, 'HH:mm:ss'));
       });
     }
     this.statsAssetReadingsGraph(assetTimeLabels, assetReading);
@@ -230,7 +234,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         fill: false,
         lineTension: 0.1,
         spanGaps: true,
-        hidden: JSON.parse(sessionStorage.getItem(this.assetCode + '-' + element.key)) === true ? true : null,
+        hidden: this.getLegendState(element.key),
         backgroundColor: this.getColorCode(element.key.trim(), count, true),
         borderColor: this.getColorCode(element.key, count, false)
       };
@@ -249,16 +253,34 @@ export class ReadingsGraphComponent implements OnDestroy {
           * meta data have hidden property as null by default in chart.js
           */
           meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
-          if (legendItem.hidden === false) {
-            sessionStorage.setItem(this.assetCode + '-' + legendItem.text, JSON.stringify(true));
+          let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
+          if (savedLegendState !== null) {
+            if (legendItem.hidden === false) {
+              savedLegendState.push({ key: legendItem.text, selected: true });
+            } else {
+              savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
+            }
           } else {
-            sessionStorage.setItem(this.assetCode + '-' + legendItem.text, JSON.stringify(false));
+            savedLegendState = [{ key: legendItem.text, selected: true }];
           }
+          sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
           chart.update();
         }
       }
     };
     this.setAssetReadingValues(labels, ds);
+  }
+
+  public getLegendState(key) {
+    const selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
+    if (selectedLegends == null) {
+      return false;
+    }
+    for (const l of selectedLegends) {
+      if (l.key === key && l.selected === true) {
+        return true;
+      }
+    }
   }
 
   private setAssetReadingValues(labels, ds) {
