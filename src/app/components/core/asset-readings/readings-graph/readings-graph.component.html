@@ -49,7 +49,7 @@
         </div>
       </ng-container>
       <p *ngIf='!showGraph'> Not Available </p>
-      <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]=""></app-chart>
+      <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
     </section>
   </div>
 </div>

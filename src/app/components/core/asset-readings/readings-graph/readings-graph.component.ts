@@ -1,6 +1,7 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
+import { Chart } from 'chart.js';
 
 import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
@@ -16,6 +17,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public assetCode: string;
   public assetChartType: string;
   public assetReadingValues: any;
+  public assetChartOptions: any;
   public showGraph = true;
   public assetReadingSummary = [];
   public isInvalidLimit = false;
@@ -29,6 +31,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   private isAlive: boolean;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+  @ViewChild('assetChart') assetChart: Chart;
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
@@ -227,7 +230,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         fill: false,
         lineTension: 0.1,
         spanGaps: true,
-        hidden: JSON.parse(sessionStorage.getItem(element.key)) === true ? true : null,
+        hidden: JSON.parse(sessionStorage.getItem(this.assetCode + '-' + element.key)) === true ? true : null,
         backgroundColor: this.getColorCode(element.key.trim(), count, true),
         borderColor: this.getColorCode(element.key, count, false)
       };
@@ -235,6 +238,26 @@ export class ReadingsGraphComponent implements OnDestroy {
       ds.push(dt);
     });
     this.assetChartType = 'line';
+    this.assetChartOptions = {
+      legend: {
+        onClick: (e, legendItem) => {
+          console.log('clicked ', legendItem, e);
+          const index = legendItem.datasetIndex;
+          const chart = this.assetChart.chart;
+          const meta = chart.getDatasetMeta(index);
+          /**
+          * meta data have hidden property as null by default in chart.js
+          */
+          meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+          if (legendItem.hidden === false) {
+            sessionStorage.setItem(this.assetCode + '-' + legendItem.text, JSON.stringify(true));
+          } else {
+            sessionStorage.setItem(this.assetCode + '-' + legendItem.text, JSON.stringify(false));
+          }
+          chart.update();
+        }
+      }
+    };
     this.setAssetReadingValues(labels, ds);
   }
 
