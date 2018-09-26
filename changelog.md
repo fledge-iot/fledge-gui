@@ -10,7 +10,7 @@
 #### Changed
 
 * Revamped configuration page
-* Running Task list moved under Logs
+* Latest Task list with status info moved under Logs
 
 #### Removed
 
