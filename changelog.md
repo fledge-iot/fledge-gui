@@ -9,13 +9,13 @@
 
 #### Changed
 
-* Revamped conifguration page
+* Revamped configuration page
 * Running Task list moved under Logs
 
 #### Removed
 
 * Create / Delete schedule ability
-* Service Health Page
+* Services Health Page
 
 #### Fixed
 
