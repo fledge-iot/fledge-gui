@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { differenceWith, find, sortBy } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
@@ -14,10 +14,12 @@ import ConfigTypeValidation from '../configuration-type-validation';
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
   @Input() useProxy: 'false';
+  @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration;
   public configItems = [];
   public isValidForm: boolean;
+  public isWizardCall: boolean;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -47,7 +49,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         configAttributes.forEach(el => {
           this.configItems.push({
             key: el.key,
-            value: el.value,
+            value: el.value !== undefined ? el.value : el.default,
             type: el.type
           });
         });
@@ -86,9 +88,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       formData.push(d);
     }
     const diff = this.difference(formData, this.configItems);
-    diff.forEach(changedItem => {
-      this.saveConfigValue(this.categoryConfiguration.key, changedItem.key, changedItem.value, changedItem.type);
-    });
+
+    // condition to check if called from add service wizard
+    if (this.isWizardCall) {
+      this.onConfigChanged.emit(diff);
+    } else {
+      diff.forEach(changedItem => {
+        this.saveConfigValue(this.categoryConfiguration.key, changedItem.key, changedItem.value, changedItem.type);
+      });
+    }
   }
 
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
@@ -116,5 +124,25 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   public getConfigAttributeType(key) {
     return ConfigTypeValidation.getValueType(key);
+  }
+
+  /**
+   * Method to set ngModal value
+   * @param configVal Config value to pass in ngModel
+   */
+  public setConfigValue(configVal) {
+    if (configVal.value !== undefined && configVal.value !== '') {
+      return configVal.value;
+    } else {
+      return configVal.default;
+    }
+  }
+
+  /**
+   * Method to set isWizardCall = true if called from
+   * Add south wizard.
+   */
+  public callFromWizard() {
+    this.isWizardCall = true;
   }
 }
