@@ -50,7 +50,7 @@
               <label class="label is-small">Type</label>
               <div class="control">
                 <div class="select is-fullwidth is-small">
-                  <select [(ngModel)]="selectedTypeValue" (change)="selectedScheduleType = setScheduleTypeKey(selectedTypeValue)" formControlName="type">
+                  <select #selectedTypeValue (change)="selectedScheduleType = setScheduleTypeKey(selectedTypeValue.value)" formControlName="type">
                     <option [selected]="type.name == type" *ngFor="let type of scheduleType">{{type.name}}</option>
                   </select>
                 </div>
@@ -85,7 +85,7 @@
               </label>
               <div class="control">
                 <div class="select is-fullwidth is-small">
-                  <select [(ngModel)]="selectedDay" (change)="selectedDayIndex = getSelectedDayIndex(selectedDay)" formControlName="day">
+                  <select #selectedDay (change)="selectedDayIndex = getSelectedDayIndex(selectedDay.value)" formControlName="day">
                     <option *ngIf="None == day">None</option>
                     <option [selected]="d == day" *ngFor="let d of days">{{d}}</option>
                   </select>
