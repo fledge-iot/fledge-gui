@@ -59,14 +59,14 @@ export class ServiceDiscoveryComponent implements OnInit {
 
   setServiceDiscoveryURL() {
     this.isLoading = true;
-    const protocolField = <HTMLSelectElement>document.getElementById('discovery_protocol');
-    const hostField = <HTMLInputElement>document.getElementById('discovery_host');
-    const servicePortField = <HTMLInputElement>document.getElementById('discovery_port');
-    const discoveryURL = protocolField.value.trim() + '://' + hostField.value.trim()
-      + ':' + servicePortField.value.trim() + '/foglamp/discover';
-    localStorage.setItem('DISCOVERY_PROTOCOL', protocolField.value);
-    localStorage.setItem('DISCOVERY_HOST', hostField.value);
-    localStorage.setItem('DISCOVERY_PORT', servicePortField.value);
+    const protocolField = this.form.get('discoveryProtocol').value;
+    const hostField = this.form.get('discoveryHostControl').value;
+    const servicePortField = this.form.get('discoveryPortControl').value;
+    const discoveryURL = protocolField + '://' + hostField.trim()
+      + ':' + servicePortField + '/foglamp/discover';
+    localStorage.setItem('DISCOVERY_PROTOCOL', protocolField);
+    localStorage.setItem('DISCOVERY_HOST', hostField);
+    localStorage.setItem('DISCOVERY_PORT', servicePortField);
     this.discoverService(discoveryURL);
   }
 
