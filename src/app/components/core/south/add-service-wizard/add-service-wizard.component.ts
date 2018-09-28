@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ServicesHealthService } from '../../../../services';
+import { AlertService, SchedulesService, ServicesHealthService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -23,7 +23,7 @@ export class AddServiceWizardComponent implements OnInit {
   public serviceType = 'South';
   public isScheduleEnabled = true;
   public payload: any;
-  public southboundServices = [];
+  public schedulesName = [];
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -37,9 +37,11 @@ export class AddServiceWizardComponent implements OnInit {
     private servicesHealthService: ServicesHealthService,
     private alertService: AlertService,
     private router: Router,
+    private schedulesService: SchedulesService,
     private ngProgress: NgProgress) { }
 
   ngOnInit() {
+    this.getSchedules();
     this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
       plugin: ['', Validators.required]
@@ -112,6 +114,15 @@ export class AddServiceWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
+
+        // To verify if service with given name already exist
+        const isServiceNameExist = this.schedulesName.some(item => {
+          return formValues['name'].trim() === item.name;
+        });
+        if (isServiceNameExist) {
+          this.alertService.error('A south service or north task instance already exists with this name.');
+          return false;
+        }
 
         // create payload to pass in add service
         if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
@@ -237,7 +248,7 @@ export class AddServiceWizardComponent implements OnInit {
           this.router.navigate(['/south']);
         },
         (error) => {
-           /** request done */
+          /** request done */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -281,4 +292,26 @@ export class AddServiceWizardComponent implements OnInit {
     }
     this.payload.enabled = this.isScheduleEnabled;
   }
+
+  public getSchedules(): void {
+    this.schedulesName = [];
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data) => {
+          // To filter
+          this.schedulesName = data['schedules'];
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
 }
