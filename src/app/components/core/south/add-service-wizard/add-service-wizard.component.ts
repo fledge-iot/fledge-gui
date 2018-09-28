@@ -23,7 +23,6 @@ export class AddServiceWizardComponent implements OnInit {
   public serviceType = 'South';
   public isScheduleEnabled = true;
   public payload: any;
-  public showSpinner = false;
   public southboundServices = [];
 
   serviceForm = new FormGroup({
@@ -227,18 +226,19 @@ export class AddServiceWizardComponent implements OnInit {
    * @param previousButton button to go previous
    */
   public addService(payload) {
-    this.showLoadingSpinner();
+    /** request started */
+    this.ngProgress.start();
     this.servicesHealthService.addService(payload)
       .subscribe(
         () => {
-          /** request completed */
-          this.hideLoadingSpinner();
+          /** request done */
           this.ngProgress.done();
           this.alertService.success('Service added successfully.', true);
           this.router.navigate(['/south']);
         },
         (error) => {
-          this.hideLoadingSpinner();
+           /** request done */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -280,13 +280,5 @@ export class AddServiceWizardComponent implements OnInit {
       this.isScheduleEnabled = false;
     }
     this.payload.enabled = this.isScheduleEnabled;
-  }
-
-  public showLoadingSpinner() {
-    this.showSpinner = true;
-  }
-
-  public hideLoadingSpinner() {
-    this.showSpinner = false;
   }
 }
