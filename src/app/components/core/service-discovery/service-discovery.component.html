@@ -21,13 +21,13 @@
             <label class="label is-fullwidth">Host</label>
             <input id="discovery_host" class="input" formControlName="discoveryHostControl" type="text" placeholder="localhost"
               #discoveryHost required>
-            <span class="help is-danger" *ngIf="form.controls.discoveryHostControl.invalid">Host can't left blank</span>
+            <span class="help is-danger" *ngIf="f.touched && form.controls.discoveryHostControl.invalid">Host can't left blank</span>
           </div>
           <div class="column">
             <label class="label is-fullwidth">Port</label>
             <input id='discovery_port' class="input" type="number" maxlength="4" placeholder="3000" formControlName="discoveryPortControl"
               #discoveryPort required>
-            <span class="help is-danger" *ngIf="form.controls.discoveryPortControl.invalid">Port can't left blank</span>
+            <span class="help is-danger" *ngIf="f.touched && form.controls.discoveryPortControl.invalid">Port can't left blank</span>
           </div>
         </div>
         <div class="columns">
