@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { assign, reduce, cloneDeep } from 'lodash';
+import { assign, cloneDeep, reduce } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, SchedulesService, ServicesHealthService } from '../../../../services';
+import { AlertService, ServicesHealthService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -17,12 +17,9 @@ export class AddServiceWizardComponent implements OnInit {
   public plugins = [];
   public configurationData;
   public useProxy;
-  public serviceId;
-  public isServiceAdded = false;
   public isValidPlugin = true;
   public isSinglePlugin = true;
   public isValidName = true;
-  public addServiceErrorMsg = '';
   public serviceType = 'South';
   public isScheduleEnabled = true;
   public payload: any;
@@ -40,7 +37,6 @@ export class AddServiceWizardComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
     private servicesHealthService: ServicesHealthService,
     private alertService: AlertService,
-    private schedulesService: SchedulesService,
     private router: Router,
     private ngProgress: NgProgress) { }
 
@@ -123,7 +119,8 @@ export class AddServiceWizardComponent implements OnInit {
           this.payload = {
             name: formValues['name'],
             type: this.serviceType,
-            plugin: formValues['plugin'][0]
+            plugin: formValues['plugin'][0],
+            enabled: this.isScheduleEnabled
           };
         }
         this.getConfiguration();
@@ -134,33 +131,11 @@ export class AddServiceWizardComponent implements OnInit {
         if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
           return false;
         }
-        this.addService(this.payload, nxtButton, previousButton);
+        nxtButton.textContent = 'Done';
+        previousButton.textContent = 'Previous';
         break;
       case 3:
-        if (this.serviceId != null && this.isScheduleEnabled) {
-          /** request started */
-          this.ngProgress.start();
-          this.schedulesService.enableSchedule(this.serviceId).
-            subscribe(
-              () => {
-                /** request completed */
-                this.ngProgress.done();
-                this.alertService.success('Service enabled and started successfully.');
-                this.router.navigate(['/south']);
-              },
-              error => {
-                previousButton.disabled = false;
-                /** request completed */
-                this.ngProgress.done();
-                if (error.status === 0) {
-                  console.log('service down ', error);
-                } else {
-                  this.alertService.error(error.statusText);
-                }
-              });
-        } else {
-          this.router.navigate(['/south']);
-        }
+        this.addService(this.payload);
         break;
       default:
         break;
@@ -216,11 +191,13 @@ export class AddServiceWizardComponent implements OnInit {
       });
     });
 
+    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
+    const matchedConfigCopy = cloneDeep(matchedConfig);
     /**
      * merge new configuration with old configuration,
      * where value key hold changed data in config object
     */
-    matchedConfig.forEach(e => {
+    matchedConfigCopy.forEach(e => {
       changedConfig.forEach(c => {
         if (e.key === c.key) {
           e.default = c.value.toString();
@@ -230,8 +207,6 @@ export class AddServiceWizardComponent implements OnInit {
 
     // final array to hold changed configuration
     let finalConfig = [];
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
     matchedConfigCopy.forEach(item => {
       finalConfig.push({
         [item.key]: item
@@ -251,30 +226,22 @@ export class AddServiceWizardComponent implements OnInit {
    * @param nxtButton button to go next
    * @param previousButton button to go previous
    */
-  public addService(payload, nxtButton, previousButton) {
-    this.addServiceErrorMsg = '';
+  public addService(payload) {
     this.showLoadingSpinner();
     this.servicesHealthService.addService(payload)
       .subscribe(
-        (data) => {
+        () => {
           /** request completed */
           this.hideLoadingSpinner();
           this.ngProgress.done();
           this.alertService.success('Service added successfully.', true);
-          this.serviceId = data['id'];
-          this.isServiceAdded = true;
-          nxtButton.textContent = 'Done';
-          previousButton.textContent = 'Previous';
+          this.router.navigate(['/south']);
         },
         (error) => {
           this.hideLoadingSpinner();
-          nxtButton.textContent = 'Done';
-          previousButton.textContent = 'Previous';
-          this.isServiceAdded = false;
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.addServiceErrorMsg = error.statusText;
             this.alertService.error(error.statusText);
           }
         });
@@ -312,6 +279,7 @@ export class AddServiceWizardComponent implements OnInit {
     } else {
       this.isScheduleEnabled = false;
     }
+    this.payload.enabled = this.isScheduleEnabled;
   }
 
   public showLoadingSpinner() {

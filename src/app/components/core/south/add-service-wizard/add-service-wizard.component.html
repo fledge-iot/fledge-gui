@@ -58,33 +58,19 @@
       <div class="box step-content" id="c-2">
         <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"></app-view-config-item>
       </div>
-
       <div class="box step-content" id="c-3">
-        <div *ngIf="showSpinner" class="app-loading">
-          &nbsp;
-          <svg class="spinner" viewBox="0 0 100 100">
-            <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
-          </svg>
-        </div>
-        <ng-container *ngIf="!showSpinner">
-          <p *ngIf="addServiceErrorMsg != ''" [ngClass]="{'has-text-centered': '!isServiceAdded'}">
-            <span class="icon has-text-danger">
-              <i class="fa fa-ban"></i>
-            </span> {{addServiceErrorMsg}}
-          </p>
-          <div *ngIf="isServiceAdded" class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Enabled</label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
-                </div>
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Enabled</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
               </div>
             </div>
           </div>
-        </ng-container>
+        </div>
       </div>
     </form>
   </div>

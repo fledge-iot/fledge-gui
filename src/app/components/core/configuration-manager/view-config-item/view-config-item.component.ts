@@ -19,7 +19,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public categoryConfiguration;
   public configItems = [];
   public isValidForm: boolean;
-  public isWizardCall: boolean;
+  public isWizardCall = false;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -92,11 +92,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     // condition to check if called from add service wizard
     if (this.isWizardCall) {
       this.onConfigChanged.emit(diff);
-    } else {
-      diff.forEach(changedItem => {
-        this.saveConfigValue(this.categoryConfiguration.key, changedItem.key, changedItem.value, changedItem.type);
-      });
+      return;
     }
+    diff.forEach(changedItem => {
+      this.saveConfigValue(this.categoryConfiguration.key, changedItem.key, changedItem.value, changedItem.type);
+    });
   }
 
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
@@ -140,7 +140,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   /**
    * Method to set isWizardCall = true if called from
-   * Add south wizard.
+   * add south or north wizard.
    */
   public callFromWizard() {
     this.isWizardCall = true;
