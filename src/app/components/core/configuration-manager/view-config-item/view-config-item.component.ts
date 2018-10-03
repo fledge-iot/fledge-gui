@@ -35,6 +35,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
           if (currentConfigValue[0].hasOwnProperty(key)) {
             const element = currentConfigValue[0][key];
             element.key = key;
+            // element.displayName = key.toUpperCase();
             configAttributes.push(element);
           }
         }
@@ -116,5 +117,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   public getConfigAttributeType(key) {
     return ConfigTypeValidation.getValueType(key);
+  }
+
+  /**
+   * Check if object has a specific key
+   * @param o Object
+   * @param name key name
+   */
+  public hasProperty(o, name) {
+    return o.hasOwnProperty(name);
   }
 }

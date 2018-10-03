@@ -80,7 +80,21 @@ export class ConfigurationManagerComponent implements OnInit {
           }
           this.isChild = true;
           data['categories'].forEach(element => {
-            this.nodes.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
+            if (element.hasOwnProperty('displayName')) {
+              this.nodes.push({
+                id: element.key,
+                name: element.displayName,
+                description: element.description,
+                hasChildren: true, children: []
+              });
+            } else {
+              this.nodes.push({
+                id: element.key,
+                name: element.description,
+                description: element.description,
+                hasChildren: true, children: []
+              });
+            }
           });
 
           this.tree.treeModel.update();
@@ -106,7 +120,23 @@ export class ConfigurationManagerComponent implements OnInit {
         subscribe(
           (data) => {
             data['categories'].forEach(element => {
-              event.node.data.children.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
+              if (element.hasOwnProperty('displayName')) {
+                event.node.data.children.push({
+                  id: element.key,
+                  name: element.displayName,
+                  description: element.description,
+                  hasChildren: true,
+                  children: []
+                });
+              } else {
+                event.node.data.children.push({
+                  id: element.key,
+                  name: element.description,
+                  description: element.description,
+                  hasChildren: true,
+                  children: []
+                });
+              }
               this.tree.treeModel.update();
             });
           }, error => {
@@ -120,7 +150,7 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public onNodeActive(event) {
-    this.getCategory(event.node.data.id, event.node.data.name);
+    this.getCategory(event.node.data.id, event.node.data.description);
   }
 
   public resetAllFilters() {
@@ -128,18 +158,18 @@ export class ConfigurationManagerComponent implements OnInit {
     this.getRootCategories(true);
   }
 
-  private getCategory(category_name: string, category_desc: string): void {
+  private getCategory(categoryKey: string, categoryDesc: string): void {
     /** request started */
     this.ngProgress.start();
     const categoryValues = [];
-    this.configService.getCategory(category_name).
+    this.configService.getCategory(categoryKey).
       subscribe(
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
           if (!isEmpty(data)) {
             categoryValues.push(data);
-            this.categoryData = [{ key: category_name, value: categoryValues, description: category_desc }];
+            this.categoryData = [{ key: categoryKey, value: categoryValues, description: categoryDesc }];
           }
         },
         error => {
@@ -153,18 +183,18 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  public refreshCategory(category_name: string, category_desc: string): void {
+  public refreshCategory(categoryKey: string, categoryDesc: string): void {
     /** request started */
     this.ngProgress.start();
     const categoryValues = [];
-    this.configService.getCategory(category_name).
+    this.configService.getCategory(categoryKey).
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
           categoryValues.push(data);
-          const index = findIndex(this.categoryData, ['key', category_name]);
-          this.categoryData[index] = { key: category_name, value: categoryValues, description: category_desc };
+          const index = findIndex(this.categoryData, ['key', categoryKey]);
+          this.categoryData[index] = { key: categoryKey, value: categoryValues, description: categoryDesc };
         },
         error => {
           /** request completed */
@@ -175,15 +205,5 @@ export class ConfigurationManagerComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  /**
-  * @param notify
-  * To reload categories after adding a new config item for a category
-  */
-  onNotify(categoryData) {
-    this.selectedRootCategory = categoryData.rootCategory;
-    this.getRootCategories();
-    this.refreshCategory(categoryData.categoryKey, categoryData.categoryDescription);
   }
 }

@@ -7,7 +7,8 @@
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.value.description">
-                  {{configItem.value.key}}
+                  {{ hasProperty(configItem.value, 'displayName') === true ?
+                  configItem.value.displayName:configItem.value.key}}
                 </label>
               </div>
               <div class="field-body">
@@ -29,8 +30,8 @@
                       [(ngModel)]="configItem.value.value" appNumberOnly required />
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'" name="{{configItem.value.key}}"
-                      type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""' step="any" 
-                      class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
+                      type="number" [value]='configItem?.value?.value != undefined ? configItem?.value?.value : ""'
+                      step="any" class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
                       [(ngModel)]="configItem.value.value" appNumberOnly required />
 
                     <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
