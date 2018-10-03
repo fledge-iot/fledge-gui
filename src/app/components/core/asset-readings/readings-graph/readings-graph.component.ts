@@ -1,6 +1,7 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
+import { Chart } from 'chart.js';
 
 import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
@@ -16,6 +17,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public assetCode: string;
   public assetChartType: string;
   public assetReadingValues: any;
+  public assetChartOptions: any;
   public showGraph = true;
   public assetReadingSummary = [];
   public isInvalidLimit = false;
@@ -29,6 +31,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   private isAlive: boolean;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+  @ViewChild('assetChart') assetChart: Chart;
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
@@ -62,6 +65,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     // reset showGraph variable to default state
     this.showGraph = true;
     chart_modal.classList.remove('is-active');
+    sessionStorage.removeItem(this.assetCode);
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
@@ -165,29 +169,32 @@ export class ReadingsGraphComponent implements OnDestroy {
   public getAssetTimeReading(assetChartRecord) {
     let assetTimeLabels = [];
     const datePipe = new DateFormatterPipe();
-
     let assetReading = [];
     if (assetChartRecord.length === 0) {
       assetTimeLabels = [];
       assetReading = [];
     } else {
-      assetChartRecord.reverse().forEach(data => {
-        Object.keys(data.reading).forEach(key => {
-          if (assetReading.length < Object.keys(data.reading).length) {
+      const readings = assetChartRecord.reverse().map(d => d.reading);
+      readings.forEach(data => {
+        for (const k in data) {
+          if (assetReading.length < Object.keys(data).length) {
             const read = {
-              key: key,
-              values: [data.reading[key]],
+              key: k,
+              values: [data[k]],
             };
             assetReading.push(read);
           } else {
             assetReading.map(el => {
-              if (el.key === key) {
-                el.values.push(data.reading[key]);
+              if (el.key === k) {
+                el.values.push(data[k]);
               }
             });
           }
-        });
-        assetTimeLabels.push(datePipe.transform(data.timestamp, 'HH:mm:ss'));
+        }
+      });
+      const timestamps = assetChartRecord.reverse().map(t => t.timestamp);
+      timestamps.forEach(timestamp => {
+        assetTimeLabels.push(datePipe.transform(timestamp, 'HH:mm:ss'));
       });
     }
     this.statsAssetReadingsGraph(assetTimeLabels, assetReading);
@@ -227,6 +234,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         fill: false,
         lineTension: 0.1,
         spanGaps: true,
+        hidden: this.getLegendState(element.key),
         backgroundColor: this.getColorCode(element.key.trim(), count, true),
         borderColor: this.getColorCode(element.key, count, false)
       };
@@ -234,7 +242,45 @@ export class ReadingsGraphComponent implements OnDestroy {
       ds.push(dt);
     });
     this.assetChartType = 'line';
+    this.assetChartOptions = {
+      legend: {
+        onClick: (e, legendItem) => {
+          console.log('clicked ', legendItem, e);
+          const index = legendItem.datasetIndex;
+          const chart = this.assetChart.chart;
+          const meta = chart.getDatasetMeta(index);
+          /**
+          * meta data have hidden property as null by default in chart.js
+          */
+          meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+          let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
+          if (savedLegendState !== null) {
+            if (legendItem.hidden === false) {
+              savedLegendState.push({ key: legendItem.text, selected: true });
+            } else {
+              savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
+            }
+          } else {
+            savedLegendState = [{ key: legendItem.text, selected: true }];
+          }
+          sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
+          chart.update();
+        }
+      }
+    };
     this.setAssetReadingValues(labels, ds);
+  }
+
+  public getLegendState(key) {
+    const selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
+    if (selectedLegends == null) {
+      return false;
+    }
+    for (const l of selectedLegends) {
+      if (l.key === key && l.selected === true) {
+        return true;
+      }
+    }
   }
 
   private setAssetReadingValues(labels, ds) {

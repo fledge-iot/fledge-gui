@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     interval(this.refreshInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
-        this.getStatisticsHistory(localStorage.getItem('STATS_HISTORY_TIME_FILTER'));
+        this.refreshGraph();
       });
   }
 
@@ -93,20 +93,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.statisticsKeys.push({ key: stats.key, checked: false });
         }
 
-        // Rename 'key' to 'itemName' and add a new key as named 'id'
-        for (let i = 0; i < this.statistics.length; i++) {
-          this.statistics[i].id = i;
-          this.statistics[i].itemName = this.statistics[i]['key'];
-          delete this.statistics[i].key;
-        }
-
         if (localStorage.getItem('OPTED_GRAPHS')) {
           this.selectedGraphsList = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
         }
-
         this.graphsToShow = [];
         for (const graph of this.selectedGraphsList) {
-          const selectedGraph = this.statistics.filter(value => value['itemName'] === graph.key);
+          const selectedGraph = this.statistics.filter(value => value['key'] === graph.key);
           this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
           this.graphsToShow.push(selectedGraph[0]);
         }
@@ -159,30 +151,41 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.statisticsService.getStatistics().
       subscribe((data: any[]) => {
         this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
-
-        this.statisticsKeys = [];
         for (const stats of this.statistics) {
-          this.statisticsKeys.push({ key: stats.key, checked: false });
+          this.graphsToShow.map((item) => item.key === stats.key ? item.value = stats.value : item.value);
         }
+        this.refreshStatisticsHistory();
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
 
-        if (localStorage.getItem('OPTED_GRAPHS')) {
-          this.selectedGraphsList = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
-        }
-
-        // Rename 'key' to 'itemName' and add a new key as named 'id'
-        for (let i = 0; i < this.statistics.length; i++) {
-          this.statistics[i].id = i;
-          this.statistics[i].itemName = this.statistics[i]['key'];
-          delete this.statistics[i].key;
-        }
-
-        for (const stats of this.statistics) {
-          this.graphsToShow.map((item) => item.itemName === stats.itemName ? item.value = stats.value : item.value);
-        }
-
-        for (const graph of this.selectedGraphsList) {
-          this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
-        }
+  public refreshStatisticsHistory(): void {
+    this.statisticsService.getStatisticsHistory(this.optedTime).
+      subscribe((data: any[]) => {
+        this.statisticsKeys.forEach(dt => {
+          const labels = [];
+          const record = map(data['statistics'], dt.key).reverse();
+          let history_ts = map(data['statistics'], 'history_ts');
+          history_ts = history_ts.reverse();
+          history_ts.forEach(ts => {
+            ts = this.dateFormatter.transform(ts, 'HH:mm:ss');
+            labels.push(ts);
+          });
+          this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
+          this.graphsToShow.map(statistics => {
+            if (statistics.key === dt.key) {
+              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
+              statistics.chartType = 'line';
+              statistics.limit = this.DEFAULT_LIMIT;
+            }
+          });
+        });
       },
         error => {
           if (error.status === 0) {
@@ -213,7 +216,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
           this.graphsToShow.map(statistics => {
-            if (statistics.itemName === dt.key) {
+            if (statistics.key === dt.key) {
               statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
