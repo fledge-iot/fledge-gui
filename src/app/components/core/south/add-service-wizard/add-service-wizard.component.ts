@@ -210,7 +210,7 @@ export class AddServiceWizardComponent implements OnInit {
     matchedConfigCopy.forEach(e => {
       changedConfig.forEach(c => {
         if (e.key === c.key) {
-          e.default = c.value.toString();
+          e.value = c.value.toString();
         }
       });
     });
@@ -219,10 +219,8 @@ export class AddServiceWizardComponent implements OnInit {
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
       finalConfig.push({
-        [item.key]: item
+        [item.key]: { value: item.value }
       });
-      delete item.key;
-      delete item.value;
     });
 
     // convert finalConfig array in object of objects to to pass in add service
