@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { DiscoveryService } from '../../../services';
@@ -24,19 +24,21 @@ export class ServiceDiscoveryComponent implements OnInit {
   connectedProtocol;
   connectedHost;
   connectedPort;
-  discoveryHostControl;
-  discoveryPortControl;
+  form: FormGroup;
   constructor(private discoveryService: DiscoveryService, private router: Router,
-    private status: ConnectedServiceStatus) {
+    public fb: FormBuilder, private status: ConnectedServiceStatus) {
     this.JSON = JSON;
-    this.discoveryProtocol = localStorage.getItem('DISCOVERY_PROTOCOL') != null ? localStorage.getItem('DISCOVERY_PROTOCOL') : 'http';
     this.discoveryHost = localStorage.getItem('DISCOVERY_HOST') != null ? localStorage.getItem('DISCOVERY_HOST') : 'localhost';
     this.discoveryPort = localStorage.getItem('DISCOVERY_PORT') != null ? localStorage.getItem('DISCOVERY_PORT') : '3000';
-    this.discoveryHostControl = new FormControl('', [Validators.required]);
-    this.discoveryPortControl = new FormControl('', [Validators.required]);
   }
 
   ngOnInit() {
+    this.form = this.fb.group({
+      discoveryHostControl: ['', Validators.required],
+      discoveryPortControl: ['', Validators.required],
+      discoveryProtocol: [localStorage.getItem('DISCOVERY_PROTOCOL') != null ?
+                         localStorage.getItem('DISCOVERY_PROTOCOL') : 'http', Validators.required]
+    });
     this.connectedProtocol = localStorage.getItem('CONNECTED_PROTOCOL');
     this.connectedHost = localStorage.getItem('CONNECTED_HOST');
     this.connectedPort = localStorage.getItem('CONNECTED_PORT');
@@ -57,14 +59,14 @@ export class ServiceDiscoveryComponent implements OnInit {
 
   setServiceDiscoveryURL() {
     this.isLoading = true;
-    const protocolField = <HTMLSelectElement>document.getElementById('discovery_protocol');
-    const hostField = <HTMLInputElement>document.getElementById('discovery_host');
-    const servicePortField = <HTMLInputElement>document.getElementById('discovery_port');
-    const discoveryURL = protocolField.value.trim() + '://' + hostField.value.trim()
-      + ':' + servicePortField.value.trim() + '/foglamp/discover';
-    localStorage.setItem('DISCOVERY_PROTOCOL', protocolField.value);
-    localStorage.setItem('DISCOVERY_HOST', hostField.value);
-    localStorage.setItem('DISCOVERY_PORT', servicePortField.value);
+    const protocolField = this.form.get('discoveryProtocol').value;
+    const hostField = this.form.get('discoveryHostControl').value;
+    const servicePortField = this.form.get('discoveryPortControl').value;
+    const discoveryURL = protocolField + '://' + hostField.trim()
+      + ':' + servicePortField + '/foglamp/discover';
+    localStorage.setItem('DISCOVERY_PROTOCOL', protocolField);
+    localStorage.setItem('DISCOVERY_HOST', hostField);
+    localStorage.setItem('DISCOVERY_PORT', servicePortField);
     this.discoverService(discoveryURL);
   }
 
