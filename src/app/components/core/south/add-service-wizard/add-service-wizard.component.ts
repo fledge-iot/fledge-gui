@@ -219,11 +219,11 @@ export class AddServiceWizardComponent implements OnInit {
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
       finalConfig.push({
-        [item.key]: { value: item.value }
+        [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
       });
     });
 
-    // convert finalConfig array in object of objects to to pass in add service
+    // convert finalConfig array in object of objects to pass in add service
     finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     this.payload.config = finalConfig;
   }
