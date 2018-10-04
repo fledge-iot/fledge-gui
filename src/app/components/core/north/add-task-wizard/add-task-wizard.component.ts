@@ -154,7 +154,7 @@ export class AddTaskWizardComponent implements OnInit {
           return formValues['name'].trim() === item.name;
         });
         if (isTaskNameExist) {
-          this.alertService.error('A south service or north task instance already exists with this name.');
+          this.alertService.error('A north task instance or south service already exists with this name.');
           return false;
         }
 
@@ -254,7 +254,7 @@ export class AddTaskWizardComponent implements OnInit {
         () => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success('Task added successfully.');
+          this.alertService.success('North instance added successfully.', true);
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -303,7 +303,7 @@ export class AddTaskWizardComponent implements OnInit {
       });
     });
 
-    // convert finalConfig array in object of objects to to pass in add service
+    // convert finalConfig array in object of objects to to pass in add task
     finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     this.payload.config = finalConfig;
   }
