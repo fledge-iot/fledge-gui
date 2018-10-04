@@ -7,8 +7,7 @@
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.value.description">
-                  {{ hasProperty(configItem.value, 'displayName') === true ?
-                  configItem.value.displayName:configItem.value.key}}
+                  {{setDisplayName(configItem.value)}}
                 </label>
               </div>
               <div class="field-body">

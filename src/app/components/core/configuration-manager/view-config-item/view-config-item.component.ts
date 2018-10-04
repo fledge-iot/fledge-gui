@@ -154,4 +154,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public hasProperty(o, name) {
     return o.hasOwnProperty(name);
   }
+
+  /**
+   * display config item name on gui
+   * @param configItem config item object
+   */
+  public setDisplayName(configItem) {
+    if (this.hasProperty(configItem, 'displayName')) {
+      return configItem.displayName.trim().length > 0 ? configItem.displayName : configItem.key;
+    }
+    return configItem.key;
+  }
 }
