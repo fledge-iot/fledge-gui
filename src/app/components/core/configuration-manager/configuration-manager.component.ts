@@ -40,7 +40,18 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data) => {
           data['categories'].forEach(element => {
-            this.rootCategories.push({ key: element.key, description: element.description });
+            if (element.hasOwnProperty('displayName')) {
+              this.rootCategories.push({
+                key: element.key,
+                displayName: element.displayName,
+                description: element.description
+              });
+            } else {
+              this.rootCategories.push({
+                key: element.key,
+                description: element.description
+              });
+            }
             this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'SOUTH');
             this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'NORTH');
           });
@@ -205,5 +216,14 @@ export class ConfigurationManagerComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  /**
+   * Check if object has a specific key
+   * @param o Object
+   * @param name key name
+   */
+  public hasProperty(o, name) {
+    return o.hasOwnProperty(name);
   }
 }

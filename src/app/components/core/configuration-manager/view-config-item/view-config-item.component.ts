@@ -37,7 +37,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
           if (currentConfigValue[0].hasOwnProperty(key)) {
             const element = currentConfigValue[0][key];
             element.key = key;
-            // element.displayName = key.toUpperCase();
             configAttributes.push(element);
           }
         }
