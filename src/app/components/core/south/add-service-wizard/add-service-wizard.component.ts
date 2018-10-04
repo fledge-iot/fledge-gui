@@ -223,7 +223,7 @@ export class AddServiceWizardComponent implements OnInit {
       });
     });
 
-    // convert finalConfig array in object of objects to to pass in add service
+    // convert finalConfig array in object of objects to pass in add service
     finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     this.payload.config = finalConfig;
   }
