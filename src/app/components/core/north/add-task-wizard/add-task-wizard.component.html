@@ -1,5 +1,5 @@
-<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true"
+  [direction]="'leftToRightIncreased'" [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
 </ng-progress>
 <div class="steps">
   <div class="step-item is-active is-success" id="1">
@@ -63,14 +63,17 @@
               <div class="control">
                 <div class="columns is-mobile">
                   <div class="column">
-                    <input id="repeat_day" class="input" type='number' appNumberOnly min="0" max="365" placeholder="days" formControlName="repeat_day"
-                      (input)="validateRepeatDay()">
-                    <small *ngIf="!isValidDay" class="help is-danger level-left">&nbsp; Repeat days must be in range 0 -
+                    <input id="repeat_day" class="input" type='number' appNumberOnly min="0" max="365" placeholder="days"
+                      formControlName="repeat_day" (input)="validateRepeatDay()">
+                    <small *ngIf="!isValidDay" class="help is-danger level-left">&nbsp; Repeat days must be in range 0
+                      -
                       365.</small>
                   </div>
                   <div class="column">
-                    <input id="repeat_time" class="input" type='text' placeholder="hh:mm:ss" formControlName="repeat_time" mask='00:00:00' (input)="validateRepeatTime($event)">
-                    <small *ngIf="!isValidTime" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:01
+                    <input id="repeat_time" class="input" type='text' placeholder="hh:mm:ss" formControlName="repeat_time"
+                      mask='00:00:00' (input)="validateRepeatTime($event)">
+                    <small *ngIf="!isValidTime" class="help is-danger level-left">&nbsp; Repeat hours must be in range
+                      00:00:01
                       - 23:59:59 </small>
                   </div>
                 </div>
@@ -81,28 +84,21 @@
       </div>
 
       <div class="box step-content" id="c-2">
-        <div *ngIf="isTaskAdded">
-          <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy" ></app-view-config-item>
-        </div>
-        <p *ngIf="!isTaskAdded" [ngClass]="{'has-text-centered': '!isTaskAdded'}">
-          <span class="icon has-text-danger">
-            <i class="fa fa-ban"></i>
-          </span> {{ addTaskMsg }}
-        </p>
+        <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"></app-view-config-item>
       </div>
 
       <div class="box step-content" id="c-3">
         <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Enabled</label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
-                </div>
+          <div class="field-label">
+            <label class="label">Enabled</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
               </div>
             </div>
+          </div>
         </div>
       </div>
     </form>

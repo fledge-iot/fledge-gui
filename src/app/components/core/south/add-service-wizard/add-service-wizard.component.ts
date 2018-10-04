@@ -219,7 +219,7 @@ export class AddServiceWizardComponent implements OnInit {
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
       finalConfig.push({
-        [item.key]: { value: item.value }
+        [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
       });
     });
 
