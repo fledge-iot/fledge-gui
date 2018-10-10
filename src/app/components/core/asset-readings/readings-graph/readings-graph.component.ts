@@ -192,7 +192,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           }
         }
       });
-      const timestamps = assetChartRecord.reverse().map(t => t.timestamp);
+      const timestamps = assetChartRecord.map(t => t.timestamp);
       timestamps.forEach(timestamp => {
         assetTimeLabels.push(datePipe.transform(timestamp, 'HH:mm:ss'));
       });
