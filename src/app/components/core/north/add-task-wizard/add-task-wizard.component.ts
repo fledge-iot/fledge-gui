@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
@@ -29,19 +29,17 @@ export class AddTaskWizardComponent implements OnInit {
   public schedulesName = [];
 
   taskForm = new FormGroup({
-    name: new FormControl(),
-    type: new FormControl(),
-    plugin: new FormControl(),
-    schedule_type: new FormControl(),
-    repeat_day: new FormControl(),
-    repeat_time: new FormControl()
+    name: new FormControl('', Validators.required),
+    plugin: new FormControl('', Validators.required),
+    repeatDays: new FormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
+    repeatTime: new FormControl('', [Validators.required])
   });
 
+  regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
   @Input() categoryConfigurationData;
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
-  constructor(private formBuilder: FormBuilder,
-    private servicesHealthService: ServicesHealthService,
+  constructor(private servicesHealthService: ServicesHealthService,
     private alertService: AlertService,
     private schedulesService: SchedulesService,
     private router: Router,
@@ -49,17 +47,7 @@ export class AddTaskWizardComponent implements OnInit {
 
   ngOnInit() {
     this.getSchedules();
-    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
-    this.taskForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      type: ['', Validators.required],
-      plugin: ['', Validators.required],
-      schedule_type: ['', Validators.required],
-      repeat_day: [Validators.min(0), Validators.max(365)],
-      repeat_time: ['', [Validators.required, Validators.pattern(regExp)]],
-    });
-    this.taskForm.get('type').setValue('north');
-    this.taskForm.get('repeat_time').setValue('00:00:30');
+    this.taskForm.get('repeatTime').setValue('00:00:30');
     this.getInstalledNorthPlugins();
   }
 
@@ -132,21 +120,25 @@ export class AddTaskWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.disabled = false;
-        if (formValues['repeat_day'] === '') {
+        if (formValues['repeatDays'] === '') {
           this.isValidDay = false;
           return;
         }
-        if (formValues['repeat_time'] === '' || formValues['repeat_time'] === 0) {
+        if (formValues['repeatTime'] === '' || formValues['repeatTime'] === 0) {
           this.isValidTime = false;
           return;
         }
 
-        const repeatTime = formValues['repeat_time'] !== ('' || undefined) ? Utils.convertTimeToSec(
-          formValues['repeat_time'], formValues['repeat_day']) : 0;
+        const repeatTime = formValues['repeatTime'] !== ('' || undefined) ? Utils.convertTimeToSec(
+          formValues['repeatTime'], formValues['repeatDays']) : 0;
 
         if (repeatTime === 0) {
           this.isValidTime = false;
           return;
+        }
+
+        if (this.taskForm.invalid) {
+          return false;
         }
 
         // To verify if task with given name already exist
@@ -158,7 +150,7 @@ export class AddTaskWizardComponent implements OnInit {
           return false;
         }
 
-        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['repeat_time'].length > 0) {
+        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['repeatTime'].length > 0) {
           this.payload = {
             'name': formValues['name'],
             'plugin': formValues['plugin'][0],
@@ -247,6 +239,7 @@ export class AddTaskWizardComponent implements OnInit {
 
 
   private addScheduledTask(payload) {
+    this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
     this.schedulesService.createScheduledTask(payload)
@@ -314,16 +307,19 @@ export class AddTaskWizardComponent implements OnInit {
     }
   }
 
-  validateRepeatDay() {
-    if (!this.taskForm.controls.repeat_day.invalid) {
+  validateRepeatDays() {
+    if (!this.taskForm.controls.repeatDays.invalid) {
       this.isValidDay = true;
     }
   }
 
   validateRepeatTime(event) {
-    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeat_time.invalid) {
+    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeatTime.invalid) {
       this.isValidTime = true;
     }
+  }
+  setRepeatIntervalValue(event) {
+    this.taskForm.controls['repeatTime'].setValue(event.target.value.trim());
   }
 
   changedSelectedPlugin() {
@@ -359,5 +355,17 @@ export class AddTaskWizardComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  get repeatTime() {
+    return this.taskForm.get('repeatTime');
+  }
+
+  get repeatDays() {
+    return this.taskForm.get('repeatDays');
+  }
+
+  get name() {
+    return this.taskForm.get('name');
   }
 }
