@@ -74,6 +74,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
 
   public saveConfiguration(form: NgForm) {
+    console.log('form', form);
     this.isValidForm = true;
     if (!form.valid) {
       this.isValidForm = false;

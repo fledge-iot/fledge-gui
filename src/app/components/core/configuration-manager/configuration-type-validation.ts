@@ -9,6 +9,7 @@ export const CONFIG_ITEM_TYPES = [
   { 'key': 'X509 certificate', 'value': 'X509 certificate' },
   { 'key': 'enumeration', 'value': 'ENUMERATION' },
   { 'key': 'url', 'value': 'URL' },
+  { 'key': 'script', 'value': 'SCRIPT' },
   { 'key': 'JSON', 'value': 'JSON' }];
 
 export default class ConfigTypeValidation {
@@ -39,6 +40,9 @@ export default class ConfigTypeValidation {
         break;
       case 'URL':
         valueType = 'URL';
+        break;
+      case 'SCRIPT':
+        valueType = 'SCRIPT';
         break;
       default:
         break;
