@@ -126,7 +126,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Schedule updated successfully.');
-          // this.notify.emit();
+          this.notify.emit();
           this.toggleModal(false);
           form.reset();
         },
