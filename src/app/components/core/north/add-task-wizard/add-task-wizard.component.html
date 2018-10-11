@@ -67,7 +67,7 @@
                 <div class="columns is-mobile">
                   <div class="column">
                     <input class="input" type='number' appNumberOnly min="0" max="365" placeholder="days"
-                      formControlName="repeatDays" (change)="validateRepeatDays()">
+                      formControlName="repeatDays" (change)="validateRepeatDays($event)">
                     <span *ngIf="!isValidDay || (repeatDays.errors?.min || repeatDays.errors?.max)" class="help is-danger">
                       <sup>*</sup>Repeat days must be in range 0 - 365.
                     </span>

@@ -47,6 +47,7 @@ export class AddTaskWizardComponent implements OnInit {
 
   ngOnInit() {
     this.getSchedules();
+    this.taskForm.get('repeatDays').setValue('0');
     this.taskForm.get('repeatTime').setValue('00:00:30');
     this.getInstalledNorthPlugins();
   }
@@ -97,6 +98,7 @@ export class AddTaskWizardComponent implements OnInit {
     this.isValidDay = true;
     this.isValidTime = true;
     const formValues = this.taskForm.value;
+    console.log('formValues', formValues);
     const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
@@ -120,7 +122,7 @@ export class AddTaskWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.disabled = false;
-        if (formValues['repeatDays'] === '') {
+        if (formValues['repeatDays'] === null || formValues['repeatDays'] === '') {
           this.isValidDay = false;
           return;
         }
@@ -307,8 +309,8 @@ export class AddTaskWizardComponent implements OnInit {
     }
   }
 
-  validateRepeatDays() {
-    if (!this.taskForm.controls.repeatDays.invalid) {
+  validateRepeatDays(event) {
+    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeatDays.invalid) {
       this.isValidDay = true;
     }
   }
