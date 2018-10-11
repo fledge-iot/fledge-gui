@@ -56,9 +56,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public toggleModal(isOpen: Boolean) {
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
+      this.notify.emit(false);
       modal.classList.add('is-active');
       return;
     }
+    this.notify.emit(true);
     modal.classList.remove('is-active');
   }
 
@@ -70,7 +72,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     const repeatInterval = Utils.secondsToDhms(this.task['repeat']);
     this.repeatTime = repeatInterval.time;
     this.repeatDays = repeatInterval.days;
-
     this.name = this.task['name'];
     const categoryValues = [];
     this.configService.getCategory(this.name).subscribe(
@@ -146,5 +147,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       return false;
     }
     document.getElementById('ss').click();
+  }
+
+  getTimeIntervalValue(event) {
+    this.repeatTime = event.target.value;
   }
 }
