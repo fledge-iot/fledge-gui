@@ -39,27 +39,31 @@
                       [attr.maxLength]="configItem?.value?.length" [jsonValue]="setConfigValue(configItem.value)"
                       required>{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
+                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'" class="textarea is-fullwidth is-small"
+                      name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                      [attr.maxLength]="configItem?.value?.length" required>{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
+
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'ENUMERATION'" class="select is-small">
                       <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)">
                         <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>{{configOption}}</option>
                       </select>
                     </div>
-                    <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'" class="file has-name is-small">
-                      <label class="file-label">
-                        <input class="file-input" type="file" name="{{configItem.value.key}}">
-                        <span class="file-cta">
-                          <span class="file-icon">
-                            <i class="fa fa-upload"></i>
+                    <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'" class="file has-name is-small columns">
+                      <div class="column">
+                        <label class="file-label">
+                          <span class="file-cta">
+                            <span class="file-icon">
+                              <i class="fa fa-upload"></i>
+                            </span>
                           </span>
-                          <span class="file-label">
-                            Upload a script
-                          </span>
-                        </span>
-                        <input class="input is-fullwidth file-name" name="{{configItem.value.key}}" [value]='setConfigValue(configItem.value)'
-                          [ngModel]="setConfigValue(configItem.value)" type="text" />
-                      </label>
+                          <input class="input is-fullwidth file-name" name="{{configItem.value.key}}" type="file"
+                            #fileInput />
+                        </label>
+                      </div>
+                      <div class="column">
+                        <button type="submit" class="button is-small is-link is-pulled-right" (click)="uploadScript(configItem.value.key)">Upload</button>
+                      </div>
                     </div>
-
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}"
                       class="input is-fullwidth is-small" type="url" [ngModel]="setConfigValue(configItem.value)"
                       [value]='setConfigValue(configItem.value)' required />

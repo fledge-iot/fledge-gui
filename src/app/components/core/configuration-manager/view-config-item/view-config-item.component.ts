@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { differenceWith, find, sortBy } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
@@ -20,6 +20,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public configItems = [];
   public isValidForm: boolean;
   public isWizardCall = false;
+
+  @ViewChild('fileInput') fileInput: ElementRef;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -74,7 +76,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
 
   public saveConfiguration(form: NgForm) {
-    console.log('form', form);
     this.isValidForm = true;
     if (!form.valid) {
       this.isValidForm = false;
@@ -145,5 +146,49 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
    */
   public callFromWizard() {
     this.isWizardCall = true;
+  }
+
+  public uploadScript(configItem) {
+    const fi = this.fileInput.nativeElement;
+    if (fi.files && fi.files[0]) {
+      const fileToUpload = fi.files[0];
+      const formData = new FormData();
+      formData.append('script', fileToUpload);
+      this.ngProgress.start();
+      this.configService.uploadFile(this.categoryConfiguration.key, configItem, formData)
+        .subscribe(() => {
+          this.ngProgress.done();
+          this.alertService.success('File uploaded Successfully');
+          this.getConfigItem(configItem);
+        },
+          error => {
+            this.ngProgress.done();
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    }
+  }
+
+  public getConfigItem(configItem) {
+    this.configService.getConfigItem(this.categoryConfiguration.key, configItem)
+      .subscribe(data => {
+        this.categoryConfiguration.value.forEach(item => {
+          if (item.key === configItem) {
+            item.value = data['value'];
+            item.description = data['description'];
+            item.key = configItem;
+          }
+        });
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }
