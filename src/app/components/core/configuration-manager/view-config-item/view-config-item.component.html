@@ -48,20 +48,12 @@
                         <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>{{configOption}}</option>
                       </select>
                     </div>
-                    <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'" class="file has-name is-small columns">
-                      <div class="column">
-                        <label class="file-label">
-                          <span class="file-cta">
-                            <span class="file-icon">
-                              <i class="fa fa-upload"></i>
-                            </span>
-                          </span>
-                          <input class="input is-fullwidth file-name" name="{{configItem.value.key}}" type="file"
-                            #fileInput />
-                        </label>
-                      </div>
-                      <div class="column">
-                        <button type="submit" class="button is-small is-link is-pulled-right" (click)="uploadScript(configItem.value.key)">Upload</button>
+
+                    <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
+                      <div class="config-div is-fullwidth">
+                        <input class="input is-small is-fullwidth" name="{{configItem.value.key}}" type="file"
+                          #fileInput />
+                        <a class="button is-small is-text is-pulled-right" (click)="uploadScript(configItem.value.key)">upload</a>
                       </div>
                     </div>
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}"
