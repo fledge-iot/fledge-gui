@@ -98,7 +98,6 @@ export class AddTaskWizardComponent implements OnInit {
     this.isValidDay = true;
     this.isValidTime = true;
     const formValues = this.taskForm.value;
-    console.log('formValues', formValues);
     const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
