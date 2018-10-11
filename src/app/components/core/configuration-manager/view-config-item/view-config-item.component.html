@@ -7,7 +7,7 @@
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.value.description">
-                  {{configItem.value.key}}
+                  {{setDisplayName(configItem.value)}}
                 </label>
               </div>
               <div class="field-body">
@@ -26,8 +26,7 @@
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'" name="{{configItem.value.key}}"
                       type="number" [value]='setConfigValue(configItem.value)' class="input is-fullwidth is-small"
-                      [minValue]="configItem?.value?.minimum"
-                      [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
+                      [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
                       appNumberOnly required />
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'" name="{{configItem.value.key}}"
@@ -47,8 +46,8 @@
                     </div>
                   </div>
                   <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}"
-                    class="input is-fullwidth is-small" type="url" [ngModel]="setConfigValue(configItem.value)"
-                    [value]='setConfigValue(configItem.value)' required />
+                    class="input is-fullwidth is-small" type="url" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                    required />
 
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
                     <sup>*</sup>Field can't be left blank.

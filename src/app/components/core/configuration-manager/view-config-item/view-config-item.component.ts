@@ -145,4 +145,24 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public callFromWizard() {
     this.isWizardCall = true;
   }
+
+  /**
+   * Check if object has a specific key
+   * @param o Object
+   * @param name key name
+   */
+  public hasProperty(o, name) {
+    return o.hasOwnProperty(name);
+  }
+
+  /**
+   * display config item name on gui
+   * @param configItem config item object
+   */
+  public setDisplayName(configItem) {
+    if (this.hasProperty(configItem, 'displayName')) {
+      return configItem.displayName.trim().length > 0 ? configItem.displayName : configItem.key;
+    }
+    return configItem.key;
+  }
 }
