@@ -23,7 +23,10 @@
   <div class="steps-content">
     <form [formGroup]="serviceForm" validate>
       <div class="box step-content  is-active" id="c-1">
-        <div class="field is-horizontal form-group">
+        <div *ngIf="!plugins || plugins.length === 0" class="has-text-centered">
+          <small class="no-rec">No south plugin found</small>
+        </div>
+        <div *ngIf="plugins.length > 0" class="field is-horizontal form-group">
           <div class="field-label is-normal">
             <label class="label">South Plugin</label>
           </div>
@@ -41,7 +44,7 @@
             </div>
           </div>
         </div>
-        <div class="field is-horizontal form-group">
+        <div *ngIf="plugins.length > 0" class="field is-horizontal form-group">
           <div class="field-label is-normal">
             <label class="label">Name</label>
           </div>
@@ -79,7 +82,7 @@
       <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
     </div>
     <div class="steps-action">
-      <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+      <button (click)="moveNext()" data-nav="next" class="button is-link" id="next" [disabled]="plugins.length === 0">Next</button>
     </div>
   </div>
 </div>
