@@ -2,7 +2,7 @@
   <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
     [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
   </ng-progress>
-  
+
   <!-- cards to be rendered as config.categories.count-->
 
   <div class="columns is-multiline">
@@ -11,7 +11,8 @@
         <div class="panel-heading">
           <div class="select is-rounded is-fullwidth is-small">
             <select (change)="getChildren($event.target.value)">
-              <option *ngFor="let rootCategory of rootCategories" [selected]='rootCategory.key === selectedRootCategory' [value]='rootCategory.key'>{{ rootCategory.description }}</option>
+              <option *ngFor="let rootCategory of rootCategories" [selected]='rootCategory.key === selectedRootCategory' [value]='rootCategory.key'> {{ hasProperty(rootCategory, 'displayName') === true ?
+                  rootCategory.displayName:rootCategory.description}}</option>
             </select>
           </div>
         </div>

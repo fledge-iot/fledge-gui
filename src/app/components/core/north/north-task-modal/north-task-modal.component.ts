@@ -18,11 +18,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   enabled: Boolean;
   exclusive: Boolean;
-  repeat: any;
+  repeatTime: any;
+  repeatDays: any;
   name: string;
 
   form: FormGroup;
-
+  regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
   @Input()
   task: { task: any };
 
@@ -44,9 +45,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.getCategory();
     }
 
-    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to varify time format 00:00:00
     this.form = this.fb.group({
-      repeat: ['', [Validators.required, Validators.pattern(regExp)]],
+      repeatDays: [''],
+      repeatTime: ['', Validators.required],
       exclusive: [Validators.required],
       enabled: [Validators.required]
     });
@@ -55,9 +56,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public toggleModal(isOpen: Boolean) {
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
+      this.notify.emit(false);
       modal.classList.add('is-active');
       return;
     }
+    this.notify.emit(true);
     modal.classList.remove('is-active');
   }
 
@@ -66,7 +69,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.ngProgress.start();
     this.enabled = this.task['enabled'];
     this.exclusive = this.task['exclusive'];
-    this.repeat = Utils.secondsToDhms(this.task['repeat']).time;
+    const repeatInterval = Utils.secondsToDhms(this.task['repeat']);
+    this.repeatTime = repeatInterval.time;
+    this.repeatDays = repeatInterval.days;
     this.name = this.task['name'];
     const categoryValues = [];
     this.configService.getCategory(this.name).subscribe(
@@ -102,9 +107,14 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.toggleModal(false);
       return false;
     }
-    const repeatTime = Utils.convertTimeToSec(form.controls['repeat'].value);
+
+    if (!form.valid) {
+      return false;
+    }
+    const repeatInterval = form.controls['repeatTime'].value !== ('None' || undefined) ? Utils.convertTimeToSec(
+      form.controls['repeatTime'].value, form.controls['repeatDays'].value) : 0;
     const updatePayload = {
-      'repeat': repeatTime,
+      'repeat': repeatInterval,
       'exclusive': form.controls['exclusive'].value,
       'enabled': form.controls['enabled'].value
     };
@@ -137,5 +147,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       return false;
     }
     document.getElementById('ss').click();
+  }
+
+  getTimeIntervalValue(event) {
+    this.repeatTime = event.target.value;
   }
 }

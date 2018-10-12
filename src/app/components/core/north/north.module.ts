@@ -39,9 +39,9 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     NgProgressModule,
     AlertDialogModule,
-    SharedModule,
     PipesModule,
-    DirectivesModule
+    DirectivesModule,
+    SharedModule
   ],
   providers: [],
 })
