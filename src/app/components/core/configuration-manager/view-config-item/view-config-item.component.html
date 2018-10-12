@@ -41,7 +41,7 @@
 
                     <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'" class="textarea is-fullwidth is-small"
                       name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      [attr.maxLength]="configItem?.value?.length" required>{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
+                      [attr.maxLength]="configItem?.value?.length">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'ENUMERATION'" class="select is-small">
                       <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)">
