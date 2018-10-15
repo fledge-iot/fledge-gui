@@ -1,3 +1,28 @@
+## v1.4.0 [2018-09-25]
+
+#### Added
+
+* Dedicated South and North menu options to see existing instances, with the ability to change configuration, enable or disable them and corresponding ingress / egress stats
+* Ability to create a South plugin service or North plugin task instance via Wizard 
+* Ping based statistics info in top navigation bar
+* Log level filter option in syslog
+
+#### Changed
+
+* Revamped configuration page
+* Latest Task list with status info moved under Logs
+
+#### Removed
+
+* Create / Delete schedule ability
+* Services Health Page
+
+#### Fixed
+
+* Improved Graph with time based filters and auto refresh functionality
+* Misc performance improvements and visual changes
+
+
 ## v1.3.0 [2018-07-09]
  
 #### Added

@@ -2,6 +2,7 @@ export const CONFIG_ITEM_TYPES = [
   { 'key': 'boolean', 'value': 'Boolean' },
   { 'key': 'string', 'value': 'String' },
   { 'key': 'integer', 'value': 'Integer' },
+  { 'key': 'float', 'value': 'Float' },
   { 'key': 'password', 'value': 'Password' },
   { 'key': 'IPv4', 'value': 'IPv4' },
   { 'key': 'IPv6', 'value': 'IPv6' },
@@ -21,7 +22,10 @@ export default class ConfigTypeValidation {
         valueType = 'TEXT';
         break;
       case 'INTEGER':
-        valueType = 'NUMBER';
+        valueType = 'INTEGER';
+        break;
+      case 'FLOAT':
+        valueType = 'FLOAT';
         break;
       case 'BOOLEAN':
         valueType = 'BOOLEAN';

@@ -1,5 +1,5 @@
-<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true"
+  [direction]="'leftToRightIncreased'" [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
 </ng-progress>
 <div id="north-task-modal" class="modal">
   <div class="modal-background"></div>
@@ -21,7 +21,8 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled" [(ngModel)]="enabled">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
+                      [(ngModel)]="enabled">
                   </div>
                 </div>
               </div>
@@ -31,7 +32,8 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive" [(ngModel)]="exclusive">
+                    <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive"
+                      [(ngModel)]="exclusive">
                   </div>
                 </div>
               </div>
@@ -41,8 +43,15 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input class="input is-small" name="repeat" type="text" placeholder="00:00:00" [value]="repeat" mask='00:00:00' [(ngModel)]="repeat"
-                      required>
+                    <input name="repeatDays" class="input is-small" type='number' appNumberOnly min="0" max="365"
+                      placeholder="days" [(ngModel)]="repeatDays">
+                  </div>
+                  <div class="field">
+                    <input class="input is-small" name="repeatTime" type="text" [pattern]='regExp'  placeholder="hh:mm:ss" mask="00:00:00"
+                      [(ngModel)]="repeatTime" required (change)="getTimeIntervalValue($event)">
+                    <span *ngIf="fg?.controls['repeatTime']?.invalid" class="help is-danger">
+                      <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
+                    </span>
                   </div>
                 </div>
               </div>
