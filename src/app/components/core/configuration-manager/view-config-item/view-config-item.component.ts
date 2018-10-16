@@ -185,25 +185,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     });
   }
 
-  public getConfigItem(configItem) {
-    this.configService.getConfigItem(this.categoryConfiguration.key, configItem)
-      .subscribe(data => {
-        this.categoryConfiguration.value.forEach(item => {
-          if (item.key === configItem) {
-            item.value = data['value'];
-            item.description = data['description'];
-            item.key = configItem;
-          }
-        });
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
   /**
    * Check if object has a specific key
    * @param o Object
