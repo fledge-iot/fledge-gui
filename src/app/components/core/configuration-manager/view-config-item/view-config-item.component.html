@@ -51,9 +51,8 @@
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
                       <div class="config-div is-fullwidth">
-                        <input class="input is-small is-fullwidth" name="{{configItem.value.key}}" type="file"
+                        <input class="input is-small is-fullwidth" [multiple]="multiple" name="{{configItem.value.key}}" type="file" (change)="fileChange(configItem.value.key)"
                           #fileInput />
-                        <a class="button is-small is-text is-pulled-right" (click)="uploadScript(configItem.value.key)">upload</a>
                       </div>
                     </div>
 

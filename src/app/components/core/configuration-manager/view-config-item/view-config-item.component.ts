@@ -20,6 +20,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public configItems = [];
   public isValidForm: boolean;
   public isWizardCall = false;
+  public filesToUpload = [];
 
   @ViewChild('fileInput') fileInput: ElementRef;
 
@@ -30,6 +31,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges(changes: SimpleChanges) {
+    this.filesToUpload = [];
     this.configItems = [];
     if (changes.categoryConfigurationData.currentValue !== undefined) {
       let configAttributes = [];
@@ -99,6 +101,17 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     diff.forEach(changedItem => {
       this.saveConfigValue(this.categoryConfiguration.key, changedItem.key, changedItem.value, changedItem.type);
     });
+    if (this.filesToUpload !== []) {
+      this.uploadScript();
+    }
+  }
+
+  public fileChange(configItem) {
+    const fi = this.fileInput.nativeElement;
+    if (fi.files && fi.files[0]) {
+      const file = fi.files[0];
+      this.filesToUpload.push({ [configItem]: file });
+    }
   }
 
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
@@ -148,28 +161,28 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     this.isWizardCall = true;
   }
 
-  public uploadScript(configItem) {
-    const fi = this.fileInput.nativeElement;
-    if (fi.files && fi.files[0]) {
-      const fileToUpload = fi.files[0];
+  public uploadScript() {
+    this.filesToUpload.forEach(data => {
+      let configItem: any;
+      configItem = Object.keys(data);
+      const file = data[configItem];
       const formData = new FormData();
-      formData.append('script', fileToUpload);
-      this.ngProgress.start();
+      formData.append('script', file);
+      // this.ngProgress.start();
       this.configService.uploadFile(this.categoryConfiguration.key, configItem, formData)
         .subscribe(() => {
-          this.ngProgress.done();
-          this.alertService.success('File uploaded Successfully');
-          this.getConfigItem(configItem);
+          console.log('File uploaded Successfully');
+          this.filesToUpload = [];
         },
           error => {
-            this.ngProgress.done();
+            // this.ngProgress.done();
             if (error.status === 0) {
               console.log('service down ', error);
             } else {
               this.alertService.error(error.statusText);
             }
           });
-    }
+    });
   }
 
   public getConfigItem(configItem) {
