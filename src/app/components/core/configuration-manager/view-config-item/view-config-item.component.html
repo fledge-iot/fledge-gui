@@ -39,15 +39,28 @@
                       [attr.maxLength]="configItem?.value?.length" [jsonValue]="setConfigValue(configItem.value)"
                       required>{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
+                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'" class="textarea is-fullwidth is-small"
+                      name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                      [attr.maxLength]="configItem?.value?.length">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
+
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'ENUMERATION'" class="select is-small">
                       <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)">
                         <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>{{configOption}}</option>
                       </select>
                     </div>
+
+                    <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
+                      <div class="config-div is-fullwidth">
+                        <input class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}" type="file"
+                          (change)="fileChange($event, configItem.value.key)" />
+                      </div>
+                    </div>
+
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}"
+                      class="input is-fullwidth is-small" type="url" [ngModel]="setConfigValue(configItem.value)"
+                      [value]='setConfigValue(configItem.value)' required />
                   </div>
-                  <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}"
-                    class="input is-fullwidth is-small" type="url" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                    required />
+
 
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
                     <sup>*</sup>Field can't be left blank.
