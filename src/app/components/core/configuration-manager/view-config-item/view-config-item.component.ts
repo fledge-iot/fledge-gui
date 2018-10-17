@@ -22,8 +22,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isWizardCall = false;
   public filesToUpload = [];
 
-  @ViewChild('fileInput') fileInput: ElementRef;
-
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     public ngProgress: NgProgress) { }
@@ -101,13 +99,17 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     diff.forEach(changedItem => {
       this.saveConfigValue(this.categoryConfiguration.key, changedItem.key, changedItem.value, changedItem.type);
     });
+    let isConfigChanged = false;
+    if (diff.length > 0) {
+      isConfigChanged = true;
+    }
     if (this.filesToUpload !== []) {
-      this.uploadScript();
+      this.uploadScript(isConfigChanged);
     }
   }
 
-  public fileChange(configItem) {
-    const fi = this.fileInput.nativeElement;
+  public fileChange(event, configItem) {
+    const fi = event.target;
     if (fi.files && fi.files[0]) {
       const file = fi.files[0];
       this.filesToUpload.push({ [configItem]: file });
@@ -161,21 +163,28 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     this.isWizardCall = true;
   }
 
-  public uploadScript() {
+  public uploadScript(isConfigChanged) {
     this.filesToUpload.forEach(data => {
       let configItem: any;
       configItem = Object.keys(data);
       const file = data[configItem];
       const formData = new FormData();
       formData.append('script', file);
-      // this.ngProgress.start();
+      if (!isConfigChanged) {
+        this.ngProgress.start();
+      }
       this.configService.uploadFile(this.categoryConfiguration.key, configItem, formData)
         .subscribe(() => {
-          console.log('File uploaded Successfully');
           this.filesToUpload = [];
+          if (!isConfigChanged) {
+            this.ngProgress.done();
+            this.alertService.success('Configuration updated successfully.');
+          }
         },
           error => {
-            // this.ngProgress.done();
+            if (!isConfigChanged) {
+              this.ngProgress.done();
+            }
             if (error.status === 0) {
               console.log('service down ', error);
             } else {

@@ -51,8 +51,8 @@
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
                       <div class="config-div is-fullwidth">
-                        <input class="input is-small is-fullwidth" [multiple]="multiple" name="{{configItem.value.key}}" type="file" (change)="fileChange(configItem.value.key)"
-                          #fileInput />
+                        <input class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}" type="file"
+                          (change)="fileChange($event, configItem.value.key)" />
                       </div>
                     </div>
 
@@ -61,36 +61,36 @@
                       [value]='setConfigValue(configItem.value)' required />
                   </div>
 
-                
-                <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
-                  <sup>*</sup>Field can't be left blank.
-                </span>
-                <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">
-                  <sup>*</sup>Value should not be less than {{configItem?.value?.minimum}}.
-                </span>
-                <span *ngIf="f?.controls[configItem.value.key]?.hasError('maxValue')" class="help is-danger">
-                  <sup>*</sup>Value should not be greater than {{configItem?.value?.maximum}}.
-                </span>
-                <span *ngIf="f?.controls[configItem.value.key]?.hasError('jsonValue')" class="help is-danger">
-                  Invalid JSON.
-                </span>
+
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
+                    <sup>*</sup>Field can't be left blank.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">
+                    <sup>*</sup>Value should not be less than {{configItem?.value?.minimum}}.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('maxValue')" class="help is-danger">
+                    <sup>*</sup>Value should not be greater than {{configItem?.value?.maximum}}.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('jsonValue')" class="help is-danger">
+                    Invalid JSON.
+                  </span>
+                </div>
               </div>
             </div>
           </div>
+        </ng-container>
+        <div class="field is-horizontal">
+          <div class="field-label has-text-left">
+            <label class="label"></label>
+          </div>
+          <div class="field-body">
+            <div style="padding-top: 1rem;">
+              <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
+              <button *ngIf="useProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </form>
   </div>
-  </ng-container>
-  <div class="field is-horizontal">
-    <div class="field-label has-text-left">
-      <label class="label"></label>
-    </div>
-    <div class="field-body">
-      <div style="padding-top: 1rem;">
-        <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
-        <button *ngIf="useProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
-      </div>
-    </div>
-  </div>
-  </ng-container>
-  </form>
-</div>
 </div>
