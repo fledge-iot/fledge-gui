@@ -82,4 +82,13 @@ export class ConfigurationService {
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
+
+  /**
+  *  GET  | /foglamp/category/{categoryName}/{config_item}
+  */
+  getConfigItem(categoryName: string, configItem: string) {
+    return this.http.get(this.CATEGORY_URL + '/' + categoryName + '/' + configItem).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
 }

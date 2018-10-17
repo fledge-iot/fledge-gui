@@ -143,6 +143,26 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     return ConfigTypeValidation.getValueType(key);
   }
 
+  public getConfigItem(configItem) {
+    this.configService.getConfigItem(this.categoryConfiguration.key, configItem)
+      .subscribe(data => {
+        this.categoryConfiguration.value.forEach(item => {
+          if (item.key === configItem) {
+            item.value = data['value'];
+            item.description = data['description'];
+            item.key = configItem;
+          }
+        });
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   /**
    * Method to set ngModal value
    * @param configVal Config value to pass in ngModel
@@ -166,7 +186,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public uploadScript(isConfigChanged) {
     this.filesToUpload.forEach(data => {
       let configItem: any;
-      configItem = Object.keys(data);
+      configItem = Object.keys(data)[0];
       const file = data[configItem];
       const formData = new FormData();
       formData.append('script', file);
@@ -180,8 +200,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
             this.ngProgress.done();
             this.alertService.success('Configuration updated successfully.');
           }
+          this.getConfigItem(configItem);
         },
           error => {
+            this.filesToUpload = [];
             if (!isConfigChanged) {
               this.ngProgress.done();
             }
