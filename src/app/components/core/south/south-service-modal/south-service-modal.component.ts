@@ -171,11 +171,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (!this.isAdvanceConfig) {
       this.isAdvanceConfig = true;
       this.advanceConfigButtonText = 'Hide Advanced Config';
+      this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
     } else {
       this.isAdvanceConfig = false;
       this.advanceConfigButtonText = 'Show Advanced Config';
     }
-    this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
   }
 
   /**

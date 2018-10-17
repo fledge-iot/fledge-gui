@@ -11,6 +11,14 @@
 }
 
 label{
-  width: 12vw !important;
+  width: 15vw !important;
   margin-right: 2vw;
+}
+
+.columns:not(:last-child) {
+  margin-bottom: 0% !important;
+}
+
+[hidden] {
+  display: none !important;
 }

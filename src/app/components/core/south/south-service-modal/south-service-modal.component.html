@@ -20,7 +20,7 @@
             </div>
           </div>
         </div>
-        <div class="columns">
+        <div class="columns" [hidden]="!isAdvanceConfig">
           <div class="column">
             <div class="field is-horizontal">
               <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
