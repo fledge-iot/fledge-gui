@@ -74,6 +74,27 @@ export class ConfigurationService {
       catchError((error: Response) => observableThrowError(error)));
   }
 
+  /**
+  *  POST  | /foglamp/category/{categoryName}/{config_item}/upload
+  */
+  uploadFile(categoryName: string, configItem: string, fileToUpload) {
+    return this.http.post(this.CATEGORY_URL + '/' + categoryName + '/' + configItem + '/upload', fileToUpload).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+  *  GET  | /foglamp/category/{categoryName}/{config_item}
+  */
+  getConfigItem(categoryName: string, configItem: string) {
+    return this.http.get(this.CATEGORY_URL + '/' + categoryName + '/' + configItem).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+  *  GET  | /foglamp/category/{categoryName}/children
+  */
   getCategoryConfigChildren(categoryName: string) {
     categoryName = encodeURIComponent(categoryName);
     return this.http.get(this.CATEGORY_URL + '/' + categoryName + '/' + 'children').pipe(
