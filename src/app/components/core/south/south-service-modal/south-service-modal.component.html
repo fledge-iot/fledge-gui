@@ -1,5 +1,5 @@
-<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true"
+  [direction]="'leftToRightIncreased'" [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
 </ng-progress>
 <div id="south-service-modal" class="modal">
   <div class="modal-background"></div>
@@ -10,7 +10,23 @@
     </header>
     <section class="modal-card-body">
       <div class="box">
-        <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+        <div class="columns">
+          <div class="column">
+            <div class="field is-horizontal">
+              <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+            </div>
+            <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right">
+              <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
+            </div>
+          </div>
+        </div>
+        <div class="columns" [hidden]="!isAdvanceConfig">
+          <div class="column">
+            <div class="field is-horizontal">
+              <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
+            </div>
+          </div>
+        </div>
         <div *ngIf="service != undefined" class="columns">
           <div class="column">
             <div class="field is-horizontal">

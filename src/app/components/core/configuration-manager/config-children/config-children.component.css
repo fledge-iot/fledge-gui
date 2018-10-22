@@ -1,0 +1,12 @@
+label{
+  width: 15vw !important;
+  margin-right: 2vw;
+}
+
+.config-div {
+  margin-top: 1vw;
+}
+
+.tooltip.is-tooltip-multiline::before {
+  min-width: 16rem !important;
+}

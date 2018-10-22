@@ -1,0 +1,66 @@
+<div class="columns">
+  <div class="column">
+    <form name="form" id="ngForm" #f="ngForm" novalidate>
+      <ng-container *ngIf="configuration != undefined">
+        <ng-container *ngFor="let configItem of configAttributes">
+          <div class="config-div" *ngIf="!configItem.readonly">
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.description">
+                  {{setDisplayName(configItem)}}
+                </label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <ng-container *ngIf="getConfigAttributeType(configItem.type) == 'BOOLEAN'">
+                    <label class="checkbox">
+                      <input type="checkbox" name='{{configItem.key}}' value="setConfigValue(configItem)" [ngModel]="setConfigValue(configItem) == 'true'">
+                    </label>
+                  </ng-container>
+                  <div class="field">
+                    <input *ngIf="getConfigAttributeType(configItem.type) === 'TEXT'" name="{{configItem.key}}" class="input is-fullwidth is-small"
+                      type="text" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)'
+                      [required]="configItem.key !== 'assetNamePrefix'" [attr.maxLength]="configItem?.length" />
+
+                    <input *ngIf="getConfigAttributeType(configItem.type) === 'INTEGER'" name="{{configItem.key}}" type="number"
+                      [value]='setConfigValue(configItem)' class="input is-fullwidth is-small" [minValue]="configItem?.minimum"
+                      [maxValue]="configItem?.maximum" [ngModel]="setConfigValue(configItem)" appNumberOnly required />
+
+                    <input *ngIf="getConfigAttributeType(configItem.type) === 'FLOAT'" name="{{configItem.key}}" type="number"
+                      [value]='setConfigValue(configItem)' step="any" class="input is-fullwidth is-small" [minValue]="configItem?.minimum"
+                      [maxValue]="configItem?.maximum" [ngModel]="setConfigValue(configItem)" appNumberOnly required />
+
+                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
+                      name="{{configItem.key}}" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)'
+                      [attr.maxLength]="configItem?.length" [jsonValue]="setConfigValue(configItem)" required>{{configItem?.value != undefined ? configItem?.value : configItem?.default}}</textarea>
+
+                    <div *ngIf="getConfigAttributeType(configItem.type) == 'ENUMERATION'" class="select is-small">
+                      <select name='{{configItem.key}}' [ngModel]="setConfigValue(configItem)">
+                        <option *ngFor="let configOption of configItem.options" [value]='configOption'>{{configOption}}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <input *ngIf="getConfigAttributeType(configItem.type) === 'URL'" name="{{configItem.key}}" class="input is-fullwidth is-small"
+                    type="url" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)' required />
+
+                  <span *ngIf="f?.controls[configItem.key]?.hasError('required')" class="help is-danger">
+                    <sup>*</sup>Field can't be left blank.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.key]?.hasError('minValue')" class="help is-danger">
+                    <sup>*</sup>Value should not be less than {{configItem?.minimum}}.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.key]?.hasError('maxValue')" class="help is-danger">
+                    <sup>*</sup>Value should not be greater than {{configItem?.maximum}}.
+                  </span>
+                  <span *ngIf="f?.controls[configItem.key]?.hasError('jsonValue')" class="help is-danger">
+                    Invalid JSON.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </form>
+  </div>
+</div>

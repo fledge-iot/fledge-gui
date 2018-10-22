@@ -4,6 +4,7 @@ import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -16,11 +17,17 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public category: any;
   public useProxy: 'true';
   public isEnabled = false;
+  public isAdvanceConfig = false;
+  public advanceConfigButtonText = 'Show Advanced Config';
   svcCheckbox: FormControl = new FormControl();
+
+  public childConfiguration;
+  public changedChildConfig = [];
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -36,6 +43,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (this.service !== undefined) {
       this.getCategory();
+      this.checkIfAdvanceConfig(this.service['name']);
     }
   }
   public toggleModal(isOpen: Boolean) {
@@ -45,6 +53,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       modalWindow.classList.add('is-active');
       return;
     }
+    this.isAdvanceConfig = true;
+    this.getAdvanceConfig(null);
     modalWindow.classList.remove('is-active');
   }
 
@@ -97,7 +107,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           this.ngProgress.done();
           this.notify.emit();
           this.alertService.success(data['message'], true);
-          // this.toggleModal(false);
         },
         error => {
           /** request completed */
@@ -119,7 +128,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           /** request completed */
           this.ngProgress.done();
           this.notify.emit();
-          // this.toggleModal(false);
           this.alertService.success(data['message'], true);
         },
         error => {
@@ -138,7 +146,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
       return false;
     }
-    console.log('Action on service schedule, enable: ', this.isEnabled);
     if (this.isEnabled) {
       this.enableSchedule(serviceName);
       this.svcCheckbox.reset(true);
@@ -148,11 +155,74 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
   }
 
+  checkIfAdvanceConfig(categoryName) {
+    this.configService.getCategoryConfigChildren(categoryName).
+      subscribe(
+        (data: any) => {
+          this.childConfiguration = data.categories[0];
+        },
+        error => {
+          console.log('error ', error);
+        }
+      );
+  }
+
+  getAdvanceConfig(childConfig) {
+    if (!this.isAdvanceConfig) {
+      this.isAdvanceConfig = true;
+      this.advanceConfigButtonText = 'Hide Advanced Config';
+      this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
+    } else {
+      this.isAdvanceConfig = false;
+      this.advanceConfigButtonText = 'Show Advanced Config';
+    }
+  }
+
+  /**
+   * Get edited configuration from child config page
+   * @param changedConfig changed configuration of a selected plugin
+   */
+  getChangedConfig(changedConfig) {
+    changedConfig = changedConfig.filter(e => {
+      return e.value !== null;
+    });
+    this.changedChildConfig = changedConfig;
+  }
+
   proxy() {
     document.getElementById('vci-proxy').click();
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
       return false;
+    } else {
+      this.changedChildConfig.forEach(changedItem => {
+        this.saveConfigValue(changedItem.key, changedItem.value, changedItem.type);
+      });
     }
     document.getElementById('ss').click();
   }
+
+
+
+  public saveConfigValue(configItem: string, value: string, type: string) {
+    /** request started */
+    this.ngProgress.start();
+    this.configService.saveConfigItem(this.childConfiguration.key, configItem, value.toString(), type).
+      subscribe(
+        () => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success('Configuration updated successfully.');
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
 }
+
+

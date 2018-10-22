@@ -91,4 +91,14 @@ export class ConfigurationService {
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
+
+  /**
+  *  GET  | /foglamp/category/{categoryName}/children
+  */
+  getCategoryConfigChildren(categoryName: string) {
+    categoryName = encodeURIComponent(categoryName);
+    return this.http.get(this.CATEGORY_URL + '/' + categoryName + '/' + 'children').pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
 }
