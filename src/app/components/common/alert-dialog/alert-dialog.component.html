@@ -10,7 +10,8 @@
       {{shutDownServiceData.message}}?
     </section>
     <footer class="modal-card-foot">
-      <button class= "button is-small" [ngClass]="childData.key === 'deleteUser' ? 'is-danger' : 'is-info'"  (click)="triggerAction()">{{childData.actionButtonValue}}</button>
+      <button *ngIf="childData" class= "button is-small" [ngClass]="childData.key === 'deleteUser' ? 'is-danger' : 'is-info'"  (click)="triggerAction()">{{childData.actionButtonValue}}</button>
+      <button *ngIf="shutDownServiceData" class= "button is-small is-danger" (click)="triggerAction()">Delete</button>
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
     </footer>
   </div>

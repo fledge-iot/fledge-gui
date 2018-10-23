@@ -51,16 +51,30 @@
             </div>
           </div>
         </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field is-grouped is-pulled-right">
+              <p class="control">
+                <button class="button is-small is-link" (click)="proxy()">Save</button>
+              </p>
+              <p class="control">
+                <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+              </p>
+            </div>
+          </div>
+        </div>
         <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
-        <div class="field is-grouped is-pulled-right">
+        <div class="field is-pulled-right">
           <p class="control">
-            <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-          </p>
-          <p class="control">
-            <button class="button is-small is-link" (click)="proxy()">Save</button>
+            <a (click)="openDeleteModal(service.management_port, service.protocol, 'Warning: Deleting this service can not be undone. Continue', 'shutdownService')"
+              class="button is-text">
+              delete
+            </a>
+            <!-- <button class="button is-small" (click)="toggleModal(false)">Delete</button> -->
           </p>
         </div>
       </div>
     </section>
   </div>
+  <app-alert-dialog (shutdownService)='shutdownService($event)' [shutDownServiceData]='shutDownServiceData'></app-alert-dialog>
 </div>

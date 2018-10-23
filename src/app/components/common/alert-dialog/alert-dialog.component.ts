@@ -5,8 +5,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
   templateUrl: './alert-dialog.component.html'
 })
 export class AlertDialogComponent implements OnInit, OnChanges {
-  @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any};
-  @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string, address: string };
+  @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any };
+  @Input() shutDownServiceData: { port: Number, key: any, message: any, protocol: string };
   @Output() delete = new EventEmitter<Number>();
   @Output() shutdownService = new EventEmitter<Object>();
   @Output() deleteUserService = new EventEmitter<Number>();
@@ -22,20 +22,22 @@ export class AlertDialogComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges() {
-    if (this.childData.key === 'restoreBackup') {
-      this.childData.actionButtonValue = 'Restore';
-    }
-    if (this.childData.key === 'deleteBackup' || this.childData.key === 'deleteCertificate' || this.childData.key === 'deleteUser') {
-      this.childData.actionButtonValue = 'Delete';
-    }
-    if (this.childData.key === 'logout' || this.childData.key === 'clearSessions') {
-      this.childData.actionButtonValue = 'Log Out';
-    }
-    if (this.childData.key === 'clearSessions') {
-      this.childData.actionButtonValue = 'Clear Sessions';
-    }
-    if (this.childData.key === 'createBackup') {
-      this.childData.actionButtonValue = 'Create';
+    if (this.childData) {
+      if (this.childData.key === 'restoreBackup') {
+        this.childData.actionButtonValue = 'Restore';
+      }
+      if (this.childData.key === 'deleteBackup' || this.childData.key === 'deleteCertificate' || this.childData.key === 'deleteUser') {
+        this.childData.actionButtonValue = 'Delete';
+      }
+      if (this.childData.key === 'logout' || this.childData.key === 'clearSessions') {
+        this.childData.actionButtonValue = 'Log Out';
+      }
+      if (this.childData.key === 'clearSessions') {
+        this.childData.actionButtonValue = 'Clear Sessions';
+      }
+      if (this.childData.key === 'createBackup') {
+        this.childData.actionButtonValue = 'Create';
+      }
     }
   }
 
@@ -88,7 +90,6 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         const serviceInfo = {
           port: this.shutDownServiceData.port,
           protocol: this.shutDownServiceData.protocol,
-          address: this.shutDownServiceData.address
         };
         this.shutdownService.emit(serviceInfo);
         this.toggleModal(false);
