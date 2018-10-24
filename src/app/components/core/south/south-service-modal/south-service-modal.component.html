@@ -69,9 +69,9 @@
           <div class="field-label has-text-left">
             <label class="label">Delete Service</label>
           </div>
-          <div class="field-body">
+          <div class="field has-text-right">
             <button *ngIf="service != undefined" (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'shutdownService')"
-              class="button is-small">Delete</button>
+              class="button is-small is-text">Delete</button>
           </div>
         </div>
       </div>
