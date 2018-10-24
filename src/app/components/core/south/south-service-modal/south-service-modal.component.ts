@@ -252,15 +252,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   shutdownService(svcInfo) {
-    this.ngProgress.start();
     this.servicesHealthService.shutDownService(svcInfo)
       .subscribe(
         () => {
-          this.ngProgress.done();
           this.deleteService(svcInfo.name);
         },
         (error) => {
-          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -270,14 +267,19 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   deleteService(svc) {
+    this.ngProgress.start();
     this.servicesHealthService.deleteService(svc)
       .subscribe(
         (data) => {
+          this.ngProgress.done();
           this.alertService.success(data['result'], true);
           this.toggleModal(false);
-          this.notify.emit();
+          setTimeout(() => {
+            this.notify.emit();
+          }, 6000);
         },
         (error) => {
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
