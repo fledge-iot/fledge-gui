@@ -252,6 +252,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   shutdownService(svcInfo) {
+    if (this.isEnabled === false) {
+      this.deleteService(svcInfo.name);
+    } else {
     this.servicesHealthService.shutDownService(svcInfo)
       .subscribe(
         () => {
@@ -264,6 +267,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+      }
   }
 
   deleteService(svc) {
