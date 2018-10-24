@@ -29,6 +29,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public shutDownServiceData = {
     port: '',
     protocol: '',
+    name: '',
     message: '',
     key: ''
   };
@@ -238,10 +239,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    * @param message   message to show on alert
    * @param action here action is 'shutdownService'
    */
-  openDeleteModal(port, protocol, message, action) {
+  openDeleteModal(port, protocol, name, message, action) {
     this.shutDownServiceData = {
       port: port,
       protocol: protocol,
+      name: name,
       message: message,
       key: action
     };
@@ -253,13 +255,29 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.ngProgress.start();
     this.servicesHealthService.shutDownService(svcInfo)
       .subscribe(
-        (data) => {
+        () => {
           this.ngProgress.done();
-          this.alertService.success(data['message']);
-          this.getCategory();
+          this.deleteService(svcInfo.name);
         },
         (error) => {
           this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  deleteService(svc) {
+    this.servicesHealthService.deleteService(svc)
+      .subscribe(
+        (data) => {
+          this.alertService.success(data['result'], true);
+          this.toggleModal(false);
+          this.notify.emit();
+        },
+        (error) => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

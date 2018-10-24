@@ -63,15 +63,16 @@
             </div>
           </div>
         </div>
+        <hr>
         <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
-        <div class="field is-pulled-right">
-          <p class="control">
-            <a (click)="openDeleteModal(service.management_port, service.protocol, 'Warning: Deleting this service can not be undone. Continue', 'shutdownService')"
-              class="button is-text">
-              delete
-            </a>
-            <!-- <button class="button is-small" (click)="toggleModal(false)">Delete</button> -->
-          </p>
+        <div class="field is-horizontal">
+          <div class="field-label has-text-left">
+            <label class="label">Delete Service</label>
+          </div>
+          <div class="field-body">
+            <button (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'shutdownService')"
+              class="button is-small">Delete</button>
+          </div>
         </div>
       </div>
     </section>
