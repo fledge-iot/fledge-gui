@@ -48,7 +48,6 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   public getSouthboundServices() {
-    console.log('getSouthboundServices');
     this.servicesHealthService.getSouthServices().
       subscribe(
         (data: any) => {
@@ -82,7 +81,6 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   onNotify() {
-    console.log('onNotify');
     this.getSouthboundServices();
   }
 
