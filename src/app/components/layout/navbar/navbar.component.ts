@@ -293,7 +293,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       return 'has-text-warning';
     }
     if (serviceStatus === 'down') {
-      return 'has-text-danger';
+      return 'has-text-grey-lighter';
     }
   }
 
