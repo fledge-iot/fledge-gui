@@ -23,7 +23,7 @@
       </div>
     </div>
     <div *ngIf="!pingInfo.isAlive" class="navbar-item">
-      <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+      <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
         <i class="fa fa-circle"> </i>
       </span>
       <b style="color:gray;">&nbsp;DOWN</b>
@@ -32,8 +32,8 @@
       <!-- tablet -->
       <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
-          <a class="navbar-link">
-            <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+          <a id="hover-link">
+            <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
             <b *ngIf="pingData['hostName'] && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
@@ -47,7 +47,7 @@
             <div class="dropdown-item">
               <table>
                 <tr>
-                  <td class="has-text-left">Received: </td>
+                  <td class="has-text-left">Received:&nbsp;</td>
                   <td>
                     <b>{{pingData['dataRead'] | number}}</b>
                   </td>
@@ -66,6 +66,22 @@
                 </tr>
               </table>
             </div>
+            <hr class="dropdown-divider">
+            <div class="dropdown-item">
+              <table>
+                <tr *ngFor="let s of servicesRecord">
+                  <td class="has-text-left">
+                    <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                      <i class="fa fa-circle"></i>
+                    </span>
+                    {{s.name}}&nbsp;
+                  </td>
+                  <td>
+                    <b>{{s.status}}</b>
+                  </td>
+                </tr>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -74,11 +90,12 @@
       <!-- mobile -->
       <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
-          <a>
-            <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+          <a id="hover-link">
+            <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
-            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0, 8)}}/{{pingData['serviceName'].substr(0, 8)}}</b>
+            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0,
+              8)}}/{{pingData['serviceName'].substr(0, 8)}}</b>
             <span class="icon is-small">
               <i class="fa fa-angle-down" aria-hidden="true"></i>
             </span>
@@ -90,7 +107,7 @@
               <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
               <table>
                 <tr>
-                  <td class="has-text-left">Received: </td>
+                  <td class="has-text-left">Received:&nbsp;</td>
                   <td>
                     <b>{{pingData['dataRead'] | number}}</b>
                   </td>
@@ -105,6 +122,22 @@
                   <td class="has-text-left">Uptime: </td>
                   <td>
                     <b>{{uptime}}</b>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <hr class="dropdown-divider">
+            <div class="dropdown-item">
+              <table>
+                <tr *ngFor="let s of servicesRecord">
+                  <td class="has-text-left">
+                    <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                      <i class="fa fa-circle"></i>
+                    </span>
+                    {{s.name}}&nbsp;
+                  </td>
+                  <td>
+                    <b>{{s.status}}</b>
                   </td>
                 </tr>
               </table>
@@ -120,10 +153,35 @@
       <div class="navbar-item">
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
-              <i class="fa fa-circle"> </i>
-            </span>
-            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+            <div class="dropdown is-hoverable" id="foglamp-info">
+              <div class="dropdown-trigger">
+                <a id="hover-link">
+                  <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                    <i class="fa fa-circle"> </i>
+                  </span>
+                  <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+                </a>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <div class="dropdown-item">
+                    <table>
+                      <tr *ngFor="let s of servicesRecord">
+                        <td class="has-text-left">
+                          <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                            <i class="fa fa-circle"></i>
+                          </span>
+                          {{s.name}}&nbsp;
+                        </td>
+                        <td>
+                          <b>{{s.status}}</b>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           &nbsp;&nbsp;&nbsp;&nbsp;
           <div *ngIf='pingInfo.isAlive' class="control">

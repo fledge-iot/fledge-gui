@@ -27,6 +27,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public pingData = {};
+  public servicesRecord = [];
   public pingInfo = { isAlive: false, isAuth: false, hostName: '' };
   public shutDownData = {
     key: '',
@@ -66,6 +67,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.getAllServices();
     this.pingService();
     this.ping.pingIntervalChanged.subscribe((pingTime: number) => {
       if (pingTime === -1) {
@@ -108,6 +110,17 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.userName = sessionStorage.getItem('userName');
     }
     this.changeDetectorRef.detectChanges();
+  }
+
+  public getAllServices() {
+    this.servicesHealthService.getAllServices()
+      .subscribe(
+        (data: any) => {
+          this.servicesRecord = data.services;
+        },
+        (error) => {
+          console.log('service down ', error);
+        });
   }
 
   public pingService(pingManually = false) {
@@ -240,6 +253,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stop();
     this.timer = setInterval(function () {
       this.pingService();
+      this.getAllServices();
     }.bind(this), pingInterval);
   }
 
@@ -255,7 +269,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.toggle.next('toggleSidebar');
   }
 
-  applyServiceStatusCustomCss(ping_info) {
+  applyPingStatusCustomCss(ping_info) {
     if (this.pingData) {
       if (this.pingData['health'] === 'green') {
         return 'has-text-success';
@@ -267,6 +281,21 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         return 'has-text-danger';
       }
     } else {
+      return 'has-text-danger';
+    }
+  }
+
+  applyServiceStatusCustomCss(serviceStatus: string) {
+    if (serviceStatus.toLowerCase() === 'running') {
+      return 'has-text-success';
+    }
+    if (serviceStatus.toLowerCase() === 'unresponsive') {
+      return 'has-text-warning';
+    }
+    if (serviceStatus.toLowerCase() === 'down') {
+      return 'has-text-grey-lighter';
+    }
+    if (serviceStatus.toLowerCase() === 'failed') {
       return 'has-text-danger';
     }
   }

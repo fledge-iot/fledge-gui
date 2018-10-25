@@ -45,3 +45,7 @@
 #restart i {
           color: rgb(178, 34, 34);
 }
+
+#hover-link {
+  color: #4a4a4a !important;
+}
