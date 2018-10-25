@@ -285,15 +285,18 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  applyServiceStatusCustomCss(serviceStatus) {
-    if (serviceStatus === 'running') {
+  applyServiceStatusCustomCss(serviceStatus: string) {
+    if (serviceStatus.toLowerCase() === 'running') {
       return 'has-text-success';
     }
-    if (serviceStatus === 'unresponsive') {
+    if (serviceStatus.toLowerCase() === 'unresponsive') {
       return 'has-text-warning';
     }
-    if (serviceStatus === 'down') {
+    if (serviceStatus.toLowerCase() === 'down') {
       return 'has-text-grey-lighter';
+    }
+    if (serviceStatus.toLowerCase() === 'failed') {
+      return 'has-text-danger';
     }
   }
 
