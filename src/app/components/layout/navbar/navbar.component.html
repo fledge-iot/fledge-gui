@@ -32,7 +32,7 @@
       <!-- tablet -->
       <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
-          <a class="navbar-link">
+          <a id="hover-link">
             <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
@@ -90,7 +90,7 @@
       <!-- mobile -->
       <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
-          <a>
+          <a id="hover-link">
             <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
@@ -153,9 +153,9 @@
       <div class="navbar-item">
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <div class="dropdown  is-hoverable" id="foglamp-info" (click)="toggleInfoDropdown()">
+            <div class="dropdown is-hoverable" id="foglamp-info">
               <div class="dropdown-trigger">
-                <a>
+                <a id="hover-link">
                   <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                     <i class="fa fa-circle"> </i>
                   </span>
