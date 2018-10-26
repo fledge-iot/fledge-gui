@@ -255,19 +255,21 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (this.isEnabled === false) {
       this.deleteService(svcInfo.name);
     } else {
-    this.servicesHealthService.shutDownService(svcInfo)
-      .subscribe(
-        () => {
-          this.deleteService(svcInfo.name);
-        },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-      }
+      this.servicesHealthService.shutDownService(svcInfo)
+        .subscribe(
+          () => {
+            setTimeout(() => {
+              this.deleteService(svcInfo.name);
+            }, 500);
+          },
+          (error) => {
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    }
   }
 
   deleteService(svc) {
