@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -140,8 +140,7 @@ export class SchedulesService {
    *
    */
   public createScheduledTask(payload: any) {
-    const myheader = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
-    return this.http.post(this.CREATE_TASK, JSON.stringify(payload), { headers: myheader }).pipe(
+    return this.http.post(this.CREATE_TASK, JSON.stringify(payload)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
