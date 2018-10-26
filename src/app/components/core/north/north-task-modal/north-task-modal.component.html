@@ -77,7 +77,7 @@
             <label class="label">Delete Task</label>
           </div>
           <div class="field has-text-right">
-            <button (click)="openDeleteModal(task.name,'Warning: Deleting this task can not be undone. Continue', 'deleteTask')"
+            <button *ngIf="task != undefined" (click)="openDeleteModal(task.name,'Warning: Deleting this task can not be undone. Continue', 'deleteTask')"
               class="button is-small is-text">Delete</button>
           </div>
         </div>
