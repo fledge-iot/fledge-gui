@@ -60,6 +60,7 @@ export class ServicesHealthService {
   *  POST  | /foglamp/service
   */
   addService(payload) {
+    payload.name = encodeURIComponent(payload.name);
     return this.http.post(this.GET_SERVICES_URL, payload).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
@@ -85,7 +86,7 @@ export class ServicesHealthService {
    *  DELETE | /foglamp/service/{svc_name}
    */
   public deleteService(svc) {
-    return this.http.delete(this.GET_SERVICES_URL + '/' + svc).pipe(
+    return this.http.delete(this.GET_SERVICES_URL + '/' + encodeURIComponent(svc)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
