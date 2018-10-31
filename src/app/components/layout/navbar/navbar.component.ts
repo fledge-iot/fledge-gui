@@ -43,6 +43,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   isAuthOptional = true;  // Default to true for authorized access
   uptime: any = '';
   viewPort: any = '';
+  public showSpinner = false;
 
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
@@ -67,7 +68,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.getAllServices();
+    this.getServiceStatus();
     this.pingService();
     this.ping.pingIntervalChanged.subscribe((pingTime: number) => {
       if (pingTime === -1) {
@@ -112,13 +113,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.changeDetectorRef.detectChanges();
   }
 
-  public getAllServices() {
+  public getServiceStatus() {
+    this.showLoadingSpinner();
     this.servicesHealthService.getAllServices()
       .subscribe(
         (data: any) => {
           this.servicesRecord = data.services;
+          this.hideLoadingSpinner();
         },
         (error) => {
+          this.hideLoadingSpinner();
           console.log('service down ', error);
         });
   }
@@ -253,7 +257,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stop();
     this.timer = setInterval(function () {
       this.pingService();
-      this.getAllServices();
     }.bind(this), pingInterval);
   }
 
@@ -321,6 +324,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
   }
 }
 
