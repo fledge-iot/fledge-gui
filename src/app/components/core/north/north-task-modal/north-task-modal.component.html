@@ -72,13 +72,10 @@
           </div>
         </div>
         <hr>
-        <div class="field is-horizontal">
-          <div class="field-label has-text-left">
-            <label class="label">Delete Instance</label>
-          </div>
+        <div class="field">
           <div class="field has-text-right">
             <button *ngIf="task != undefined" (click)="openDeleteModal(task.name,'Warning: Deleting this instance can not be undone. Continue', 'deleteTask')"
-              class="button is-small is-text">Delete</button>
+              class="button is-small">Delete Instance</button>
           </div>
         </div>
       </div>
