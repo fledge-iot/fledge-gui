@@ -32,7 +32,7 @@
       <!-- tablet -->
       <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
-          <a id="hover-link">
+          <a id="hover-link" (click)="getServiceStatus()">
             <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
@@ -67,21 +67,29 @@
               </table>
             </div>
             <hr class="dropdown-divider">
-            <div class="dropdown-item">
-              <table>
-                <tr *ngFor="let s of servicesRecord">
-                  <td class="has-text-left">
-                    <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                      <i class="fa fa-circle"></i>
-                    </span>
-                    {{s.name}}&nbsp;
-                  </td>
-                  <td>
-                    <b>{{s.status}}</b>
-                  </td>
-                </tr>
-              </table>
+            <div *ngIf="showSpinner" class="app-loading">
+              &nbsp;
+              <svg class="spinner" viewBox="0 0 10 100">
+                <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
+              </svg>
             </div>
+            <ng-container *ngIf="!showSpinner">
+              <div class="dropdown-item">
+                <table>
+                  <tr *ngFor="let s of servicesRecord">
+                    <td class="has-text-left">
+                      <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                        <i class="fa fa-circle"></i>
+                      </span>
+                      {{s.name}}&nbsp;
+                    </td>
+                    <td>
+                      <b>{{s.status}}</b>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>
@@ -90,7 +98,7 @@
       <!-- mobile -->
       <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
-          <a id="hover-link">
+          <a id="hover-link" (click)="getServiceStatus()">
             <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
@@ -127,21 +135,29 @@
               </table>
             </div>
             <hr class="dropdown-divider">
-            <div class="dropdown-item">
-              <table>
-                <tr *ngFor="let s of servicesRecord">
-                  <td class="has-text-left">
-                    <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                      <i class="fa fa-circle"></i>
-                    </span>
-                    {{s.name}}&nbsp;
-                  </td>
-                  <td>
-                    <b>{{s.status}}</b>
-                  </td>
-                </tr>
-              </table>
+            <div *ngIf="showSpinner" class="app-loading">
+              &nbsp;
+              <svg class="spinner" viewBox="0 0 10 100">
+                <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
+              </svg>
             </div>
+            <ng-container *ngIf="!showSpinner">
+              <div class="dropdown-item">
+                <table>
+                  <tr *ngFor="let s of servicesRecord">
+                    <td class="has-text-left">
+                      <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                        <i class="fa fa-circle"></i>
+                      </span>
+                      {{s.name}}&nbsp;
+                    </td>
+                    <td>
+                      <b>{{s.status}}</b>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>
@@ -155,7 +171,7 @@
           <div class="control">
             <div class="dropdown is-hoverable" id="foglamp-info">
               <div class="dropdown-trigger">
-                <a id="hover-link">
+                <a id="hover-link" (mouseover)="getServiceStatus()">
                   <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                     <i class="fa fa-circle"> </i>
                   </span>
@@ -164,21 +180,30 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                  <div class="dropdown-item">
-                    <table>
-                      <tr *ngFor="let s of servicesRecord">
-                        <td class="has-text-left">
-                          <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                            <i class="fa fa-circle"></i>
-                          </span>
-                          {{s.name}}&nbsp;
-                        </td>
-                        <td>
-                          <b>{{s.status}}</b>
-                        </td>
-                      </tr>
-                    </table>
+                  <div *ngIf="showSpinner" class="app-loading">
+                    &nbsp;
+                    <svg class="spinner" viewBox="0 0 10 100">
+                      <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
+                    </svg>
                   </div>
+                  <ng-container *ngIf="!showSpinner">
+                    <div class="dropdown-item">
+                      <table>
+                        <tr *ngFor="let s of servicesRecord">
+                          <td class="has-text-left">
+                            <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                              <i class="fa fa-circle"></i>
+                            </span>
+                            {{s.name}}&nbsp;
+                          </td>
+                          <td>
+                            <b>{{s.status}}</b>
+                          </td>
+                        </tr>
+                      </table>
+
+                    </div>
+                  </ng-container>
                 </div>
               </div>
             </div>
