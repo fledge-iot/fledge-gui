@@ -3,9 +3,10 @@ import { FormControl } from '@angular/forms';
 import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -24,14 +25,25 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public childConfiguration;
   public changedChildConfig = [];
 
+  // Object to hold data of south service to delete
+  public shutDownServiceData = {
+    port: '',
+    protocol: '',
+    name: '',
+    message: '',
+    key: ''
+  };
+
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     public ngProgress: NgProgress,
+    private servicesHealthService: ServicesHealthService,
     private schedulesService: SchedulesService) { }
 
   ngOnInit() {
@@ -201,8 +213,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     document.getElementById('ss').click();
   }
 
-
-
   public saveConfigValue(configItem: string, value: string, type: string) {
     /** request started */
     this.ngProgress.start();
@@ -215,6 +225,66 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         },
         error => {
           /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  /**
+   * Open delete modal
+   * @param message   message to show on alert
+   * @param action here action is 'shutdownService'
+   */
+  openDeleteModal(port, protocol, name, message, action) {
+    this.shutDownServiceData = {
+      port: port,
+      protocol: protocol,
+      name: name,
+      message: message,
+      key: action
+    };
+    // call child component method to toggle modal
+    this.child.toggleModal(true);
+  }
+
+  shutdownService(svcInfo) {
+    if (this.isEnabled === false) {
+      this.deleteService(svcInfo.name);
+    } else {
+      this.servicesHealthService.shutDownService(svcInfo)
+        .subscribe(
+          () => {
+            setTimeout(() => {
+              this.deleteService(svcInfo.name);
+            }, 500);
+          },
+          (error) => {
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    }
+  }
+
+  deleteService(svc) {
+    this.ngProgress.start();
+    this.servicesHealthService.deleteService(svc)
+      .subscribe(
+        (data) => {
+          this.ngProgress.done();
+          this.alertService.success(data['result'], true);
+          this.toggleModal(false);
+          setTimeout(() => {
+            this.notify.emit();
+          }, 6000);
+        },
+        (error) => {
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);

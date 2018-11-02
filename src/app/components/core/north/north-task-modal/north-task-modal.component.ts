@@ -3,9 +3,10 @@ import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import { AlertService, ConfigurationService, SchedulesService, NorthService } from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -24,16 +25,22 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   form: FormGroup;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
-  @Input()
-  task: { task: any };
-
+  @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
+  // Object to hold data of north task to delete
+  public deleteTaskData = {
+    name: '',
+    message: '',
+    key: ''
+  };
   constructor(
     private schedulesService: SchedulesService,
     private configService: ConfigurationService,
     private alertService: AlertService,
+    private northService: NorthService,
     public fb: FormBuilder,
     public ngProgress: NgProgress,
   ) { }
@@ -151,5 +158,40 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   getTimeIntervalValue(event) {
     this.repeatTime = event.target.value;
+  }
+
+  /**
+  * Open delete modal
+  * @param message   message to show on alert
+  * @param action here action is 'deleteTask'
+  */
+  openDeleteModal(name, message, action) {
+    this.deleteTaskData = {
+      name: name,
+      message: message,
+      key: action
+    };
+    // call child component method to toggle modal
+    this.child.toggleModal(true);
+  }
+
+  public deleteTask(task) {
+    this.ngProgress.start();
+    this.northService.deleteTask(task.name)
+      .subscribe(
+        (data) => {
+          this.ngProgress.done();
+          this.alertService.success(data['result'], true);
+          this.toggleModal(false);
+          this.notify.emit();
+        },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }
