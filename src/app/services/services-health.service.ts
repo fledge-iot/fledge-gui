@@ -60,7 +60,6 @@ export class ServicesHealthService {
   *  POST  | /foglamp/service
   */
   addService(payload) {
-    payload.name = encodeURIComponent(payload.name);
     return this.http.post(this.GET_SERVICES_URL, payload).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));

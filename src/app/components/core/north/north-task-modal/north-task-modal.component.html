@@ -47,8 +47,8 @@
                       placeholder="days" [(ngModel)]="repeatDays">
                   </div>
                   <div class="field">
-                    <input class="input is-small" name="repeatTime" type="text" [pattern]='regExp'  placeholder="hh:mm:ss" mask="00:00:00"
-                      [(ngModel)]="repeatTime" required (change)="getTimeIntervalValue($event)">
+                    <input class="input is-small" name="repeatTime" type="text" [pattern]='regExp' placeholder="hh:mm:ss"
+                      mask="00:00:00" [(ngModel)]="repeatTime" required (change)="getTimeIntervalValue($event)">
                     <span *ngIf="fg?.controls['repeatTime']?.invalid" class="help is-danger">
                       <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
                     </span>
@@ -59,15 +59,27 @@
           </div>
           <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="scheduleForm">Save</button>
         </form>
-        <div class="field is-grouped is-pulled-right">
-          <p class="control">
-            <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-          </p>
-          <p class="control">
-            <button class="button is-small is-link" (click)="proxy()">Save</button>
-          </p>
+        <div class="columns">
+          <div class="column">
+            <div class="field is-grouped is-pulled-right">
+              <p class="control">
+                <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+              </p>
+              <p class="control">
+                <button class="button is-small is-link" (click)="proxy()">Save</button>
+              </p>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="field">
+          <div class="field has-text-right">
+            <button *ngIf="task != undefined" (click)="openDeleteModal(task.name,'Warning: Deleting this instance can not be undone. Continue', 'deleteTask')"
+              class="button is-small">Delete Instance</button>
+          </div>
         </div>
       </div>
     </section>
   </div>
+  <app-alert-dialog (deleteTask)='deleteTask($event)' [deleteTaskData]='deleteTaskData'></app-alert-dialog>
 </div>

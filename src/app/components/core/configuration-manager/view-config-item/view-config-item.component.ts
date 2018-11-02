@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { differenceWith, find, sortBy } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';

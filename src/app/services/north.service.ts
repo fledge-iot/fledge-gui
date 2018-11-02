@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 export class NorthService {
 
   private GET_NORTH_TASKS = environment.BASE_URL + 'north';
+  private DELETE_TASK = environment.BASE_URL + 'scheduled/task';
 
   constructor(private http: HttpClient) { }
 
@@ -17,6 +18,15 @@ export class NorthService {
    */
   public getNorthTasks() {
     return this.http.get(this.GET_NORTH_TASKS).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+   *  DELETE | /foglamp/scheduled/task/{taskName}
+   */
+  public deleteTask(taskName) {
+    return this.http.delete(this.DELETE_TASK + '/' + encodeURIComponent(taskName)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
