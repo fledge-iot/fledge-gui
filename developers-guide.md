@@ -32,10 +32,10 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core:
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 6.0.9         |        6.1.7          | MIT 
- Angular CLI  | 6.0.8         |        6.2.1          | MIT 
- TypeScript   | 2.7.2         |        3.0.3          | Apache 2.0
- rxjs         | 6.2.0         |        6.3.2          | Apache 2.0
+ Angular      | 6.1.10        |        7.0.2          | MIT 
+ Angular CLI  | 6.2.6         |        7.0.2          | MIT 
+ TypeScript   | 2.9.2         |        3.1.6          | Apache 2.0
+ rxjs         | 6.3.3         |        6.3.3          | Apache 2.0
  Bulma css    | 0.7.1         |        0.7.1          | MIT
 
 #### Dev:
