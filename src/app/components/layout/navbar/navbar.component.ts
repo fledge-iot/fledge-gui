@@ -9,6 +9,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { sortBy } from 'lodash';
 import { Router } from '@angular/router';
 import { NgProgress } from 'ngx-progressbar';
 
@@ -118,7 +119,18 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.servicesHealthService.getAllServices()
       .subscribe(
         (data: any) => {
-          this.servicesRecord = data.services;
+          this.servicesRecord = [];
+          const servicesData = data.services;
+          const coreService = servicesData.filter((el => (el.type === 'Core')));
+          const storageService = servicesData.filter((el => (el.type === 'Storage')));
+          let southboundServices = servicesData.filter((el => (el.type === 'Southbound')));
+          southboundServices = sortBy(southboundServices, function (obj) {
+            return obj.name;
+          });
+          this.servicesRecord.push(coreService[0], storageService[0]);
+          southboundServices.forEach(service => {
+            this.servicesRecord.push(service);
+          });
           this.hideLoadingSpinner();
         },
         (error) => {
@@ -295,7 +307,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     if (serviceStatus.toLowerCase() === 'unresponsive') {
       return 'has-text-warning';
     }
-    if (serviceStatus.toLowerCase() === 'down') {
+    if (serviceStatus.toLowerCase() === 'shutdown') {
       return 'has-text-grey-lighter';
     }
     if (serviceStatus.toLowerCase() === 'failed') {
