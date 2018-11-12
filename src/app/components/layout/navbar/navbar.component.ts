@@ -125,7 +125,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           const storageService = servicesData.filter((el => (el.type === 'Storage')));
           let southboundServices = servicesData.filter((el => (el.type === 'Southbound')));
           southboundServices = sortBy(southboundServices, function (obj) {
-            return obj.name;
+            return obj.name.toLowerCase();
           });
           this.servicesRecord.push(coreService[0], storageService[0]);
           southboundServices.forEach(service => {
