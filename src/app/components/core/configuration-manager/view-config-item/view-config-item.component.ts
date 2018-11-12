@@ -61,7 +61,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   public difference(obj, bs) {
     const changedValues = differenceWith(obj, bs, (oldData: any, newData: any) => {
-      return oldData.key === newData.key && oldData.value.toString() === newData.value.toString();
+      oldData.value = oldData.value === null ? 0 : oldData.value.toString();
+      newData.value = newData.key === 'integer' && newData.value === null ? 0 : newData.value.toString();
+      return oldData.key === newData.key && oldData.value === newData.value;
     });
 
     changedValues.forEach(element => {
@@ -119,7 +121,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
     /** request started */
     this.ngProgress.start();
-    this.configService.saveConfigItem(categoryName, configItem, value.toString(), type).
+    if (type === 'integer' && value === null) {
+      value = value;
+    } else {
+      value = value.trim().toString();
+    }
+    this.configService.saveConfigItem(categoryName, configItem, value, type).
       subscribe(
         (data: any) => {
           // fill configItems with changed data
@@ -168,7 +175,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
    * @param configVal Config value to pass in ngModel
    */
   public setConfigValue(configVal) {
-    if (configVal.value !== undefined && configVal.value !== '') {
+    if (configVal.value !== undefined) {
       return configVal.value;
     } else {
       return configVal.default;
