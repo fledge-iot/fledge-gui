@@ -53,7 +53,7 @@ export class SouthComponent implements OnInit, OnDestroy {
         (data: any) => {
           this.southboundServices = data['services'];
           this.southboundServices = sortBy(this.southboundServices, function (svc) {
-            return svc['status'] === 'down';
+            return svc['status'] === 'shutdown';
           });
           this.hideLoadingSpinner();
         },
