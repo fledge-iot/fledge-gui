@@ -252,7 +252,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   shutdownService(svcInfo) {
-    if (this.isEnabled === false) {
+    if (this.service['status'] === '' || this.service['status'] === 'shutdown') {
       this.deleteService(svcInfo.name);
     } else {
       this.servicesHealthService.shutDownService(svcInfo)
