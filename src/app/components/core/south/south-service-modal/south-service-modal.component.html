@@ -35,11 +35,11 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'down' && service.status !== '' ">
+                  <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'shutdown' && service.status !== '' ">
                 </div>
               </div>
             </div>
-            <div *ngIf="service.status !== 'down' && service.status !== ''" class="field is-horizontal">
+            <div *ngIf="service.status !== 'shutdown' && service.status !== ''" class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label class="label">Service Info</label>
               </div>
