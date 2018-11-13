@@ -21,23 +21,21 @@
                   <div class="field">
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}"
                       class="input is-fullwidth is-small" type="text" [ngModel]="setConfigValue(configItem.value)"
-                      [value]='setConfigValue(configItem.value)' [required]="configItem.value.key !== 'assetNamePrefix'"
-                      [attr.maxLength]="configItem?.value?.length" />
+                      [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length" />
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'" name="{{configItem.value.key}}"
                       type="number" [value]='setConfigValue(configItem.value)' class="input is-fullwidth is-small"
                       [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
-                      appNumberOnly required />
+                      appNumberOnly />
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'" name="{{configItem.value.key}}"
                       type="number" [value]='setConfigValue(configItem.value)' step="any" class="input is-fullwidth is-small"
                       [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
-                      appNumberOnly required />
+                      appNumberOnly />
 
                     <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
                       name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      [attr.maxLength]="configItem?.value?.length" [jsonValue]="setConfigValue(configItem.value)"
-                      required>{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
+                      [attr.maxLength]="configItem?.value?.length" [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
                     <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'" class="textarea is-fullwidth is-small"
                       name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
@@ -58,13 +56,9 @@
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}"
                       class="input is-fullwidth is-small" type="url" [ngModel]="setConfigValue(configItem.value)"
-                      [value]='setConfigValue(configItem.value)' required />
+                      [value]='setConfigValue(configItem.value)' />
                   </div>
 
-
-                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
-                    <sup>*</sup>Field can't be left blank.
-                  </span>
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">
                     <sup>*</sup>Value should not be less than {{configItem?.value?.minimum}}.
                   </span>

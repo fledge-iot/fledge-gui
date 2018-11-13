@@ -38,8 +38,9 @@ export class ConfigChildrenComponent implements AfterViewInit {
 
   public difference(obj, bs) {
     const changedValues = differenceWith(obj, bs, (oldData: any, newData: any) => {
-      return oldData.key === newData.key && (oldData.value !== null && newData.value !== null)
-        && (oldData.value.toString() === newData.value.toString());
+      oldData.value = oldData.value === null ? 0 : oldData.value.toString();
+      newData.value = newData.key === 'integer' && newData.value === null ? 0 : newData.value.toString();
+      return oldData.key === newData.key && oldData.value === newData.value;
     });
 
     changedValues.forEach(element => {
