@@ -216,7 +216,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public saveConfigValue(configItem: string, value: string, type: string) {
     /** request started */
     this.ngProgress.start();
-    this.configService.saveConfigItem(this.childConfiguration.key, configItem, value.toString(), type).
+    this.configService.saveConfigItem(this.childConfiguration.key, configItem, value.trim().toString(), type).
       subscribe(
         () => {
           /** request completed */
