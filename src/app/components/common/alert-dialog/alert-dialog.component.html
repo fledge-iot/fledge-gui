@@ -6,8 +6,8 @@
       <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">{{childData.name}}</span>
       <span>?</span>
     </section>
-    <section *ngIf="shutDownServiceData" class="modal-card-body">
-      {{shutDownServiceData.message}}?
+    <section *ngIf="serviceRecord" class="modal-card-body">
+      {{serviceRecord.message}}?
     </section>
     <section *ngIf="deleteTaskData" class="modal-card-body">
       {{deleteTaskData.message}}?
@@ -15,8 +15,8 @@
     <footer class="modal-card-foot">
       <button *ngIf="childData" class="button is-small" [ngClass]="childData.key === 'deleteUser' ? 'is-danger' : 'is-info'"
         (click)="triggerAction()">{{childData.actionButtonValue}}</button>
-      <button *ngIf="shutDownServiceData" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+      <button *ngIf="serviceRecord" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
       <button *ngIf="deleteTaskData" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
     </footer>
   </div>

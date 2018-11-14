@@ -67,12 +67,12 @@
         <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
         <div class="field">
           <div class="field has-text-right">
-            <button *ngIf="service != undefined" (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'shutdownService')"
+            <button *ngIf="service != undefined" (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
               class="button is-small">Delete Service</button>
           </div>
         </div>
       </div>
     </section>
   </div>
-  <app-alert-dialog (shutdownService)='shutdownService($event)' [shutDownServiceData]='shutDownServiceData'></app-alert-dialog>
+  <app-alert-dialog (deleteService)='deleteService($event)' [serviceRecord]='serviceRecord'></app-alert-dialog>
 </div>

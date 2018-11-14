@@ -6,10 +6,10 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 })
 export class AlertDialogComponent implements OnInit, OnChanges {
   @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any };
-  @Input() shutDownServiceData: { port: Number, key: any, name: any, message: any, protocol: string };
+  @Input() serviceRecord: { port: Number, key: any, name: any, message: any, protocol: string };
   @Input() deleteTaskData: { name: any, message: any, key: any };
   @Output() delete = new EventEmitter<Number>();
-  @Output() shutdownService = new EventEmitter<Object>();
+  @Output() deleteService = new EventEmitter<Object>();
   @Output() deleteTask = new EventEmitter<Object>();
   @Output() deleteUserService = new EventEmitter<Number>();
   @Output() deleteCertificate = new EventEmitter<Number>();
@@ -87,14 +87,14 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.toggleModal(false);
       }
     }
-    if (this.shutDownServiceData) {
-      if (this.shutDownServiceData.key === 'shutdownService') {
+    if (this.serviceRecord) {
+      if (this.serviceRecord.key === 'deleteService') {
         const serviceInfo = {
-          port: this.shutDownServiceData.port,
-          protocol: this.shutDownServiceData.protocol,
-          name: this.shutDownServiceData.name
+          port: this.serviceRecord.port,
+          protocol: this.serviceRecord.protocol,
+          name: this.serviceRecord.name
         };
-        this.shutdownService.emit(serviceInfo);
+        this.deleteService.emit(serviceInfo);
         this.toggleModal(false);
       }
     }
