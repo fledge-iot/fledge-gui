@@ -237,7 +237,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   /**
    * Open delete modal
    * @param message   message to show on alert
-   * @param action here action is 'shutdownService'
+   * @param action here action is 'deleteService'
    */
   openDeleteModal(port, protocol, name, message, action) {
     this.serviceRecord = {
@@ -251,30 +251,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.child.toggleModal(true);
   }
 
-  shutdownService(svcInfo) {
-    if (this.service['status'] === '' || this.service['status'] === 'shutdown') {
-      this.deleteService(svcInfo.name);
-    } else {
-      this.servicesHealthService.shutDownService(svcInfo)
-        .subscribe(
-          () => {
-            setTimeout(() => {
-              this.deleteService(svcInfo.name);
-            }, 500);
-          },
-          (error) => {
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
-    }
-  }
-
   deleteService(svc) {
     this.ngProgress.start();
-    this.servicesHealthService.deleteService(svc)
+    this.servicesHealthService.deleteService(svc.name)
       .subscribe(
         (data) => {
           this.ngProgress.done();
