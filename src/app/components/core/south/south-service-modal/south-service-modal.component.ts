@@ -26,7 +26,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public changedChildConfig = [];
 
   // Object to hold data of south service to delete
-  public shutDownServiceData = {
+  public serviceRecord = {
     port: '',
     protocol: '',
     name: '',
@@ -240,7 +240,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    * @param action here action is 'shutdownService'
    */
   openDeleteModal(port, protocol, name, message, action) {
-    this.shutDownServiceData = {
+    this.serviceRecord = {
       port: port,
       protocol: protocol,
       name: name,
