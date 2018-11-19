@@ -171,7 +171,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
-          this.childConfiguration = data.categories[0];
+          this.childConfiguration = data.categories.find(d =>  d.key.toString().includes('Advanced') );
         },
         error => {
           console.log('error ', error);
