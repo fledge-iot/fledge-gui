@@ -171,7 +171,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
-          this.childConfiguration = data.categories.find(d =>  d.key.toString().includes('Advanced') );
+          this.childConfiguration = data.categories.find(d => d.key.toString().includes('Advanced'));
         },
         error => {
           console.log('error ', error);
@@ -195,9 +195,20 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
-    changedConfig = changedConfig.filter(e => {
-      return e.value !== null;
+    changedConfig = changedConfig.map(el => {
+      if (el.type.toUpperCase() === 'JSON') {
+        el.value = JSON.parse(el.value);
+      }
+      return {
+        [el.key]: el.value !== undefined ? el.value : el.default,
+      };
     });
+
+    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
+
+    if (isEmpty(changedConfig)) {
+      return;
+    }
     this.changedChildConfig = changedConfig;
   }
 
@@ -206,17 +217,15 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
       return false;
     } else {
-      this.changedChildConfig.forEach(changedItem => {
-        this.saveConfigValue(changedItem.key, changedItem.value, changedItem.type);
-      });
+      this.updateConfigConfiguration(this.changedChildConfig);
     }
     document.getElementById('ss').click();
   }
 
-  public saveConfigValue(configItem: string, value: string, type: string) {
+  public updateConfigConfiguration(configItems) {
     /** request started */
     this.ngProgress.start();
-    this.configService.saveConfigItem(this.childConfiguration.key, configItem, value.trim().toString(), type).
+    this.configService.updateBulkConfiguration(this.childConfiguration.key, configItems).
       subscribe(
         () => {
           /** request completed */
