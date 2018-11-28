@@ -101,4 +101,14 @@ export class ConfigurationService {
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
+
+  /**
+  *  PUT  | /foglamp/category/{categoryName}
+  */
+  updateBulkConfiguration(categoryName, configItems) {
+    categoryName = encodeURIComponent(categoryName);
+    return this.http.put(this.CATEGORY_URL + '/' + categoryName, configItems).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
 }

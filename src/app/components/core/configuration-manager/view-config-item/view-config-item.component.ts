@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, find, sortBy } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -34,75 +34,63 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     if (changes.categoryConfigurationData.currentValue !== undefined) {
       let configAttributes = [];
       if (changes.categoryConfigurationData.currentValue.length !== 0) {
-        const currentConfigValue = changes.categoryConfigurationData.currentValue.value;
-        for (const key in currentConfigValue[0]) {
-          if (currentConfigValue[0].hasOwnProperty(key)) {
-            const element = currentConfigValue[0][key];
-            element.key = key;
-            configAttributes.push(element);
-          }
-        }
+        const currentConfigValues = changes.categoryConfigurationData.currentValue.value[0];
+        configAttributes = Object.keys(currentConfigValues).map(key => {
+          const element = currentConfigValues[key];
+          element.key = key;
+          return element;
+        });
+
         configAttributes = sortBy(configAttributes, function (ca) {
           return parseInt(ca.order, 10);
         });
 
         changes.categoryConfigurationData.currentValue.value = configAttributes;
         this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
-        configAttributes.forEach(el => {
-          this.configItems.push({
+        this.configItems = configAttributes.map(el => {
+          return {
             key: el.key,
             value: el.value !== undefined ? el.value : el.default,
             type: el.type
-          });
+          };
         });
       }
     }
   }
 
-  public difference(obj, bs) {
-    const changedValues = differenceWith(obj, bs, (oldData: any, newData: any) => {
-      oldData.value = oldData.value === null ? 0 : oldData.value.toString();
-      newData.value = newData.key === 'integer' && newData.value === null ? 0 : newData.value.toString();
-      return oldData.key === newData.key && oldData.value === newData.value;
-    });
-
-    changedValues.forEach(element => {
-      const f = find(bs, { key: element.key });
-      if (f !== undefined) {
-        element.type = f['type'];
-      }
-    });
-    console.log('changed values', changedValues);
-    return changedValues;
-  }
-
-
   public saveConfiguration(form: NgForm) {
     this.isValidForm = true;
     if (!form.valid) {
       this.isValidForm = false;
-      return false;
-    }
-    const formData = [];
-    for (const key in form.value) {
-      const d = {
-        key: key,
-        value: form.value[key]
-      };
-      formData.push(d);
-    }
-    const diff = this.difference(formData, this.configItems);
-
-    // condition to check if called from add service wizard
-    if (this.isWizardCall) {
-      this.onConfigChanged.emit(diff);
       return;
     }
-    diff.forEach(changedItem => {
-      this.saveConfigValue(this.categoryConfiguration.key, changedItem.key, changedItem.value, changedItem.type);
+
+    const formData = Object.keys(form.value).map(key => {
+      return {
+        key: key,
+        value: form.value[key] === null ? '0' : form.value[key].toString()
+      };
     });
+
+    formData.map(d => {
+      return this.configItems.map(conf => {
+        if (conf.key === d.key) {
+          d['type'] = conf.type;
+        }
+        return d;
+      });
+    });
+
+    const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
+    // condition to check if called from add service wizard
+    if (this.isWizardCall) {
+      this.onConfigChanged.emit(changedConfigValues);
+      return;
+    }
+
+    this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
     let isConfigChanged = false;
-    if (diff.length > 0) {
+    if (changedConfigValues.length > 0) {
       isConfigChanged = true;
     }
     if (this.filesToUpload !== []) {
@@ -118,22 +106,39 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     }
   }
 
-  public saveConfigValue(categoryName: string, configItem: string, value: string, type: string) {
+  updateConfiguration(categoryName, changedConfig) {
+    changedConfig = changedConfig.map(el => {
+      if (el.type.toUpperCase() === 'JSON') {
+        el.value = JSON.parse(el.value);
+      }
+      return {
+        [el.key]: el.value !== undefined ? el.value : el.default,
+      };
+    });
+
+    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
+
+    if (isEmpty(changedConfig)) {
+      return;
+    }
+
     /** request started */
     this.ngProgress.start();
-    if (type === 'integer' && value === null) {
-      value = value;
-    } else {
-      value = value.trim().toString();
-    }
-    this.configService.saveConfigItem(categoryName, configItem, value, type).
+    this.configService.updateBulkConfiguration(categoryName, changedConfig).
       subscribe(
         (data: any) => {
-          // fill configItems with changed data
-          this.configItems.map(item => item.key === configItem ? item.value = data.value.toString() : item.value);
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.');
+
+          // fill configItems with changed data
+          this.configItems = Object.keys(data).map(key => {
+            return {
+              key: key,
+              value: data[key].value,
+              type: data[key].type
+            };
+          });
         },
         error => {
           /** request completed */
