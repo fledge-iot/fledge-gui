@@ -1,12 +1,19 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Parser } from 'json2csv';
 import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
+import {
+  AlertService,
+  AssetsService,
+  ConfigurationService,
+  SchedulesService,
+  ServicesHealthService,
+} from '../../../../services';
+import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
-import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -21,6 +28,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public isAdvanceConfig = false;
   public advanceConfigButtonText = 'Show Advanced Config';
   svcCheckbox: FormControl = new FormControl();
+  public assetCode;
+  public assetCount;
 
   public childConfiguration;
   public changedChildConfig = [];
@@ -42,6 +51,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
+    private assetService: AssetsService,
     public ngProgress: NgProgress,
     private servicesHealthService: ServicesHealthService,
     private schedulesService: SchedulesService) { }
@@ -55,6 +65,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (this.service !== undefined) {
       this.getCategory();
+      this.assetCode = this.service['assets'][0] !== undefined ? this.service['assets'][0].asset : '';
+      this.assetCount = this.service['assets'][0] !== undefined ? this.service['assets'][0].count : 0;
       this.checkIfAdvanceConfig(this.service['name']);
     }
   }
@@ -171,7 +183,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
-          this.childConfiguration = data.categories.find(d =>  d.key.toString().includes('Advanced') );
+          this.childConfiguration = data.categories.find(d => d.key.toString().includes('Advanced'));
         },
         error => {
           console.log('error ', error);
@@ -249,6 +261,29 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
+  }
+
+  getAssetReadings(assetCode, recordCount) {
+    const fields = ['timestamp', 'reading'];
+    const opts = { fields };
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), recordCount).
+      subscribe(
+        (data: any[]) => {
+          const parser = new Parser(opts);
+          const csv = parser.parse(data);
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          // create a custom anchor tag
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = assetCode + '_readings.csv';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        },
+        error => {
+          console.log('error in response', error);
+        });
   }
 
   deleteService(svc) {

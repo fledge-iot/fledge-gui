@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Parser } from 'json2csv';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
 
@@ -62,6 +63,29 @@ export class AssetsComponent implements OnInit, OnDestroy {
           } else {
             this.alertService.error(error.statusText);
           }
+        });
+  }
+
+  getAssetReadings(assetCode, recordCount) {
+    const fields = ['timestamp', 'reading'];
+    const opts = { fields };
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), recordCount).
+      subscribe(
+        (data: any[]) => {
+          const parser = new Parser(opts);
+          const csv = parser.parse(data);
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          // create a custom anchor tag
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = assetCode + '_readings.csv';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        },
+        error => {
+          console.log('error in response', error);
         });
   }
 
