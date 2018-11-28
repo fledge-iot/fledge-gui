@@ -216,20 +216,21 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
       return;
     } else {
-      if (isEmpty(this.changedChildConfig)) {
-        return;
-      }
       this.updateConfigConfiguration(this.changedChildConfig);
     }
     document.getElementById('ss').click();
   }
 
   public updateConfigConfiguration(configItems) {
+    if (isEmpty(configItems)) {
+      return;
+    }
     /** request started */
     this.ngProgress.start();
     this.configService.updateBulkConfiguration(this.childConfiguration.key, configItems).
       subscribe(
         () => {
+          this.changedChildConfig = [];  // clear the array
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.');

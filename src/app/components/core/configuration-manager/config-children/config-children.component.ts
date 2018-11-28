@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { differenceWith, find, isEqual } from 'lodash';
+import { differenceWith, isEqual, isEmpty } from 'lodash';
 
 import { ConfigurationService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -36,7 +36,9 @@ export class ConfigChildrenComponent implements AfterViewInit {
         }
 
         const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
-        this.onConfigChanged.emit(changedConfigValues);
+        if (!isEmpty(changedConfigValues)) {
+          this.onConfigChanged.emit(changedConfigValues);
+        }
       });
   }
 
@@ -101,6 +103,8 @@ export class ConfigChildrenComponent implements AfterViewInit {
               type: el.type
             });
           });
+          console.log('config item', this.configItems);
+
         },
         error => {
           console.log('error ', error);
