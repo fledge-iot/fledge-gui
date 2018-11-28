@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { differenceWith, find } from 'lodash';
+import { differenceWith, find, isEqual } from 'lodash';
 
 import { ConfigurationService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -27,29 +27,17 @@ export class ConfigChildrenComponent implements AfterViewInit {
         for (const key in values) {
           const d = {
             key: key,
-            value: values[key]
+            value: values[key] === null ? '0' : values[key].toString(),
+            type: this.configItems.find(conf => {
+              return conf.key === key;
+            }).type
           };
           formData.push(d);
         }
-        const diff = this.difference(formData, this.configItems);
-        this.onConfigChanged.emit(diff);
+
+        const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
+        this.onConfigChanged.emit(changedConfigValues);
       });
-  }
-
-  public difference(obj, bs) {
-    const changedValues = differenceWith(obj, bs, (oldData: any, newData: any) => {
-      oldData.value = oldData.value === null ? 0 : oldData.value.toString();
-      newData.value = newData.key === 'integer' && newData.value === null ? 0 : newData.value.toString();
-      return oldData.key === newData.key && oldData.value === newData.value;
-    });
-
-    changedValues.forEach(element => {
-      const f = find(bs, { key: element.key });
-      if (f !== undefined) {
-        element.type = f['type'];
-      }
-    });
-    return changedValues;
   }
 
   public getConfigAttributeType(key) {
@@ -94,10 +82,10 @@ export class ConfigChildrenComponent implements AfterViewInit {
       return;
     }
     this.configAttributes = [];
-    this.configItems = [];
     this.configService.getCategory(categoryConfig.key).
       subscribe(
         (data: any) => {
+          this.configItems = [];
           this.configuration = data;
           for (const key in this.configuration) {
             if (this.configuration.hasOwnProperty(key)) {

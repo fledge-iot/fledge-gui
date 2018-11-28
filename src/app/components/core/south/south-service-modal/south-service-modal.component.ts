@@ -195,6 +195,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
+    if (isEmpty(changedConfig)) {
+      return;
+    }
     changedConfig = changedConfig.map(el => {
       if (el.type.toUpperCase() === 'JSON') {
         el.value = JSON.parse(el.value);
@@ -205,18 +208,17 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     });
 
     changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
-
-    if (isEmpty(changedConfig)) {
-      return;
-    }
     this.changedChildConfig = changedConfig;
   }
 
   proxy() {
     document.getElementById('vci-proxy').click();
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-      return false;
+      return;
     } else {
+      if (isEmpty(this.changedChildConfig)) {
+        return;
+      }
       this.updateConfigConfiguration(this.changedChildConfig);
     }
     document.getElementById('ss').click();
