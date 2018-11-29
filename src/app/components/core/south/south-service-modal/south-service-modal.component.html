@@ -68,10 +68,7 @@
         <div class="field">
             <p class="buttons is-pulled-right">
               <button *ngIf="assetCode" (click)="getAssetReadings(assetCode, assetCount)" class="button is-small">
-                <span>Export data</span>
-                <span class="icon">
-                  <i class="fa fa-download" aria-hidden="true"></i>
-                </span>
+                <span>Export Readings</span>
               </button>
               <button *ngIf="service != undefined" (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
                 class="button is-small">Delete Service</button>
