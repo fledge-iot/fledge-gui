@@ -66,10 +66,13 @@
         <hr>
         <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
         <div class="field">
-          <div class="field has-text-right">
-            <button *ngIf="service != undefined" (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
-              class="button is-small">Delete Service</button>
-          </div>
+            <p class="buttons is-pulled-right">
+              <button *ngIf="service != undefined" (click)="getAssetReadings(service)" class="button is-small">
+                <span>Export Readings</span>
+              </button>
+              <button *ngIf="service != undefined" (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
+                class="button is-small">Delete Service</button>
+            </p>
         </div>
       </div>
     </section>

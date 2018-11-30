@@ -19,6 +19,7 @@
                   <th>Asset</th>
                   <th>Readings</th>
                   <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -30,8 +31,15 @@
                       <i class="fa fa-line-chart" aria-hidden="true"></i>
                     </a>
                   </td>
+                  <td>
+                    <a (click)="getAssetReadings(asset.assetCode, asset.count)" class="is-pulled-right">
+                      <span class="icon">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                      </span>
+                    </a>
+                  </td>
                 </tr>
-                <tbody>
+              <tbody>
             </table>
           </ng-container>
         </ng-container>

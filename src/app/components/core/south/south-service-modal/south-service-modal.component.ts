@@ -1,12 +1,20 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Parser } from 'json2csv';
 import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
+import {
+  AlertService,
+  AssetsService,
+  ConfigurationService,
+  SchedulesService,
+  ServicesHealthService,
+} from '../../../../services';
+import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
-import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+
 
 @Component({
   selector: 'app-south-service-modal',
@@ -21,7 +29,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public isAdvanceConfig = false;
   public advanceConfigButtonText = 'Show Advanced Config';
   svcCheckbox: FormControl = new FormControl();
-
   public childConfiguration;
   public changedChildConfig = [];
 
@@ -42,6 +49,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
+    private assetService: AssetsService,
     public ngProgress: NgProgress,
     private servicesHealthService: ServicesHealthService,
     private schedulesService: SchedulesService) { }
@@ -261,6 +269,42 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
+  }
+
+  getAssetReadings(service) {
+    console.log('download start time', performance.now());
+    const fields = ['assetName', 'reading', 'timestamp'];
+    const opts = { fields };
+    const assets = service.assets;
+    let assetReadings = [];
+    assets.forEach((ast, i) => {
+      this.assetService.getAssetReadings(encodeURIComponent(ast.asset), ast.count).
+        subscribe(
+          (result: any[]) => {
+            result = result.map(r => {
+              r['assetName'] = ast.asset;
+              return r;
+            });
+            assetReadings = assetReadings.concat(result);
+            if (i === assets.length - 1) {
+              const parser = new Parser(opts);
+              const csv = parser.parse(assetReadings);
+              const blob = new Blob([csv], { type: 'text/csv' });
+              const url = window.URL.createObjectURL(blob);
+              // create a custom anchor tag
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = service['name'] + '-readings.csv';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              console.log('download end time', performance.now());
+            }
+          },
+          error => {
+            console.log('error in response', error);
+          });
+    });
   }
 
   deleteService(svc) {

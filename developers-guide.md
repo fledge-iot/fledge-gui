@@ -46,6 +46,8 @@ core-js          |  2.5.7        |        2.5.7          | MIT
 ng-sidebar       |  6.0.5        |        8.0.0          | MIT 
 moment           |  2.22.2       |        2.22.2         | MIT
 ngx-progressbar  |  2.1.1        |        2.1.1          | MIT
+json2csv         |  4.3.1        |        4.3.1          | MIT
+
 protractor-beautiful-reporter |  1.2.5       |  1.2.5                | MIT
 
 
