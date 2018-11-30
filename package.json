@@ -25,7 +25,7 @@
     "angular-tree-component": "~7.2.1",
     "chart.js": "~2.7.2",
     "core-js": "~2.5.7",
-    "json2csv": "^4.3.1",
+    "json2csv": "~4.3.1",
     "moment": "~2.22.2",
     "ng-sidebar": "~6.0.5",
     "ngx-progressbar": "~2.1.1",

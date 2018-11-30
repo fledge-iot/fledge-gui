@@ -275,6 +275,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   getAssetReadings(service) {
+    console.log('download start time', performance.now());
     const fields = ['assetName', 'reading', 'timestamp'];
     const opts = { fields };
     const assets = service.assets;
@@ -300,6 +301,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
               document.body.appendChild(a);
               a.click();
               document.body.removeChild(a);
+              console.log('download end time', performance.now());
             }
           },
           error => {
