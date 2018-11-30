@@ -61,7 +61,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public toggleModal(isOpen: Boolean) {
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
-      this.svcCheckbox.setValue((this.service['status'] === 'shutdown' || this.service['status'] === '') ? false : true);
+      this.svcCheckbox.setValue(this.service['schedule_enabled']);
       modalWindow.classList.add('is-active');
       return;
     }
