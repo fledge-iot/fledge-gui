@@ -53,8 +53,8 @@
                 <td class="align-content">
                   <div class="tags has-addons">
                     <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
-                    <span *ngIf="svc.status == 'shutdown' || svc.status == '' " class="tag">disabled</span>
-                    <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
+                    <span *ngIf="svc.status == 'shutdown' || svc.status == '' || (svc.status == 'failed' && !svc.schedule_enabled)" class="tag">disabled</span>
+                    <span *ngIf="svc.status == 'failed' && svc.schedule_enabled" class="tag is-danger">{{svc.status}}</span>
                     <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
                   </div>
                 </td>
