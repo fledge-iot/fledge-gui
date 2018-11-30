@@ -29,9 +29,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public isAdvanceConfig = false;
   public advanceConfigButtonText = 'Show Advanced Config';
   svcCheckbox: FormControl = new FormControl();
-  public assetCode;
-  public assetCount;
-
   public childConfiguration;
   public changedChildConfig = [];
 
@@ -297,7 +294,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
               // create a custom anchor tag
               const a = document.createElement('a');
               a.href = url;
-              a.download = 'readings.csv';
+              a.download = service['name'] + '-readings.csv';
               document.body.appendChild(a);
               a.click();
               document.body.removeChild(a);
