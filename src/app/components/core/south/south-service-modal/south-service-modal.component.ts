@@ -206,30 +206,42 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
-    changedConfig = changedConfig.filter(e => {
-      return e.value !== null;
+    if (isEmpty(changedConfig)) {
+      return;
+    }
+    changedConfig = changedConfig.map(el => {
+      if (el.type.toUpperCase() === 'JSON') {
+        el.value = JSON.parse(el.value);
+      }
+      return {
+        [el.key]: el.value !== undefined ? el.value : el.default,
+      };
     });
+
+    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
     this.changedChildConfig = changedConfig;
   }
 
   proxy() {
     document.getElementById('vci-proxy').click();
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-      return false;
+      return;
     } else {
-      this.changedChildConfig.forEach(changedItem => {
-        this.saveConfigValue(changedItem.key, changedItem.value, changedItem.type);
-      });
+      this.updateConfigConfiguration(this.changedChildConfig);
     }
     document.getElementById('ss').click();
   }
 
-  public saveConfigValue(configItem: string, value: string, type: string) {
+  public updateConfigConfiguration(configItems) {
+    if (isEmpty(configItems)) {
+      return;
+    }
     /** request started */
     this.ngProgress.start();
-    this.configService.saveConfigItem(this.childConfiguration.key, configItem, value.trim().toString(), type).
+    this.configService.updateBulkConfiguration(this.childConfiguration.key, configItems).
       subscribe(
         () => {
+          this.changedChildConfig = [];  // clear the array
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.');
