@@ -15,6 +15,7 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
+
 @Component({
   selector: 'app-south-service-modal',
   templateUrl: './south-service-modal.component.html',
@@ -65,8 +66,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (this.service !== undefined) {
       this.getCategory();
-      this.assetCode = this.service['assets'][0] !== undefined ? this.service['assets'][0].asset : '';
-      this.assetCount = this.service['assets'][0] !== undefined ? this.service['assets'][0].count : 0;
       this.checkIfAdvanceConfig(this.service['name']);
     }
   }
@@ -263,27 +262,38 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.child.toggleModal(true);
   }
 
-  getAssetReadings(assetCode, recordCount) {
-    const fields = ['timestamp', 'reading'];
+  getAssetReadings(service) {
+    const fields = ['assetName', 'reading', 'timestamp'];
     const opts = { fields };
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), recordCount).
-      subscribe(
-        (data: any[]) => {
-          const parser = new Parser(opts);
-          const csv = parser.parse(data);
-          const blob = new Blob([csv], { type: 'text/csv' });
-          const url = window.URL.createObjectURL(blob);
-          // create a custom anchor tag
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = assetCode + '_readings.csv';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        },
-        error => {
-          console.log('error in response', error);
-        });
+    const assets = service.assets;
+    let assetReadings = [];
+    assets.forEach((ast, i) => {
+      this.assetService.getAssetReadings(encodeURIComponent(ast.asset), ast.count).
+        subscribe(
+          (result: any[]) => {
+            result = result.map(r => {
+              r['assetName'] = ast.asset;
+              return r;
+            });
+            assetReadings = assetReadings.concat(result);
+            if (i === assets.length - 1) {
+              const parser = new Parser(opts);
+              const csv = parser.parse(assetReadings);
+              const blob = new Blob([csv], { type: 'text/csv' });
+              const url = window.URL.createObjectURL(blob);
+              // create a custom anchor tag
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'readings.csv';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }
+          },
+          error => {
+            console.log('error in response', error);
+          });
+    });
   }
 
   deleteService(svc) {
