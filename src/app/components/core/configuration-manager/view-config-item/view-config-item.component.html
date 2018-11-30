@@ -38,9 +38,9 @@
                       [attr.maxLength]="configItem?.value?.length" [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
-                      <textarea rows="3" class="textarea is-fullwidth is-small"
-                        name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                        [attr.maxLength]="configItem?.value?.length" disabled>
+                      <textarea rows="3" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
+                        [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                        disabled>
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </textarea>
                       <p class="help">{{configItem?.value?.file | slice:configItem?.value?.file?.lastIndexOf('/')+1}}</p>
