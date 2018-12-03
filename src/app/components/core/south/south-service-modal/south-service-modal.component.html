@@ -39,16 +39,6 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="service.status !== 'shutdown' && service.status !== ''" class="field is-horizontal">
-              <div class="field-label has-text-left">
-                <label class="label">Service Info</label>
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
         <div class="columns">
@@ -65,15 +55,25 @@
         </div>
         <hr>
         <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
-        <div class="field">
-            <p class="buttons is-pulled-right">
-              <button *ngIf="service != undefined" (click)="getAssetReadings(service)" class="button is-small">
-                <span>Export Readings</span>
-              </button>
-              <button *ngIf="service != undefined" (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
-                class="button is-small">Delete Service</button>
-            </p>
-        </div>
+        <ng-container *ngIf="service != undefined">
+          <div *ngIf="service.schedule_enabled" class="field is-horizontal">
+            <div class="field-label has-text-left">
+              <label class="label">Service Info</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+              </div>
+            </div>
+          </div>
+          <p class="buttons is-pulled-right">
+            <button (click)="getAssetReadings(service)" class="button is-small">
+              <span>Export Readings</span>
+            </button>
+            <button (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
+              class="button is-small">Delete Service</button>
+          </p>
+        </ng-container>
       </div>
     </section>
   </div>
