@@ -10,22 +10,13 @@
     </header>
     <section class="modal-card-body">
       <div class="box">
-        <div class="columns">
-          <div class="column">
-            <div class="field is-horizontal">
-              <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
-            </div>
-            <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right">
-              <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
-            </div>
-          </div>
+        <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+        <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
+          <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
         </div>
-        <div class="columns" [hidden]="!isAdvanceConfig">
-          <div class="column">
-            <div class="field is-horizontal">
-              <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
-            </div>
-          </div>
+        <br/>
+        <div [hidden]="!isAdvanceConfig">
+          <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
         </div>
         <div *ngIf="service != undefined" class="columns">
           <div class="column">
@@ -45,10 +36,10 @@
           <div class="column">
             <div class="field is-grouped is-pulled-right">
               <p class="control">
-                <button class="button is-small is-link" (click)="proxy()">Save</button>
+                <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
               </p>
               <p class="control">
-                <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+                <button class="button is-small is-link" (click)="proxy()">Save</button>
               </p>
             </div>
           </div>
