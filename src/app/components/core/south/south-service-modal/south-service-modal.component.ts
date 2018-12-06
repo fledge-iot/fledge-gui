@@ -15,7 +15,6 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
-
 @Component({
   selector: 'app-south-service-modal',
   templateUrl: './south-service-modal.component.html',
@@ -31,7 +30,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   svcCheckbox: FormControl = new FormControl();
   public childConfiguration;
   public changedChildConfig = [];
+  public filterConfiguration;
 
+  public isWizard;
   // Object to hold data of south service to delete
   public serviceRecord = {
     port: '',
@@ -66,8 +67,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.checkIfAdvanceConfig(this.service['name']);
     }
   }
+
   public toggleModal(isOpen: Boolean) {
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
+
+    if (this.isWizard) {
+      this.getCategory();
+      this.isWizard = false;
+    }
     if (isOpen) {
       this.svcCheckbox.setValue((this.service['status'] === 'shutdown' || this.service['status'] === '') ? false : true);
       modalWindow.classList.add('is-active');
@@ -327,6 +334,20 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  openAddFilterModal(isWizard) {
+    this.isWizard = isWizard;
+    this.category = '';
+  }
+
+  onNotify(data) {
+    if (data !== undefined) {
+      this.filterConfiguration = data.value;
+    }
+    console.log('filter data', data);
+    this.getCategory();
+    this.isWizard = false;
   }
 }
 

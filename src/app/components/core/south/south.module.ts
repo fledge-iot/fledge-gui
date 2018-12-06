@@ -5,13 +5,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgProgressModule } from 'ngx-progressbar';
 
 import { AuthCheckGuard } from '../../../guards';
-import { ServicesHealthService, AssetsService, SchedulesService } from '../../../services';
+import { PipesModule } from '../../../pipes/pipes.module';
+import { AssetsService, SchedulesService, ServicesHealthService, PluginsService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
-import { SouthComponent } from './south.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
-import { PipesModule } from '../../../pipes/pipes.module';
+import { SouthComponent } from './south.component';
+import { FilterModule } from '../filter/filter.module';
 
 const routes: Routes = [
 
@@ -24,14 +25,14 @@ const routes: Routes = [
     path: 'add',
     component: AddServiceWizardComponent,
     canActivate: [AuthCheckGuard]
-  }
+  },
 ];
 
 @NgModule({
   declarations: [
     SouthComponent,
     AddServiceWizardComponent,
-    SouthServiceModalComponent
+    SouthServiceModalComponent,
   ],
   imports: [
     FormsModule,
@@ -41,8 +42,9 @@ const routes: Routes = [
     NgProgressModule,
     AlertDialogModule,
     SharedModule,
+    FilterModule,
     PipesModule
   ],
-  providers: [ServicesHealthService, AssetsService, SchedulesService],
+  providers: [ServicesHealthService, AssetsService, SchedulesService, PluginsService],
 })
 export class SouthModule { }

@@ -9,63 +9,83 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="box">
-        <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
-        <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
-          <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
-        </div>
-        <br/>
-        <div [hidden]="!isAdvanceConfig">
-          <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
-        </div>
-        <div *ngIf="service != undefined" class="columns">
-          <div class="column">
-            <div class="field is-horizontal">
-              <div class="field-label has-text-left">
-                <label class="label">Enabled</label>
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'shutdown' && service.status !== '' ">
+      <ng-container *ngIf="!isWizard">
+        <div class="box" [ngClass]="{'animated slideOutLeft': isWizard}">
+          <app-view-config-item *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+          <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
+            <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
+          </div>
+          <br />
+          <div [hidden]="!isAdvanceConfig">
+            <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
+          </div>
+          <div *ngIf="service != undefined" class="columns">
+            <div class="column">
+              <div class="field is-horizontal">
+                <div class="field-label has-text-left">
+                  <label class="label">Enabled</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'shutdown' && service.status !== '' ">
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="columns">
-          <div class="column">
-            <div class="field is-grouped is-pulled-right">
-              <p class="control">
-                <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-              </p>
-              <p class="control">
-                <button class="button is-small is-link" (click)="proxy()">Save</button>
-              </p>
+          <hr>
+          <div class="columns">
+            <div class="column has-text-centered">
+              <span class="label is-size-6">Applications <i class="fa fa-plus-circle" aria-hidden="true" (click)="openAddFilterModal(true)"></i></span>
             </div>
           </div>
-        </div>
-        <hr>
-        <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
-        <ng-container *ngIf="service != undefined">
-          <div *ngIf="service.schedule_enabled" class="field is-horizontal">
-            <div class="field-label has-text-left">
-              <label class="label">Service Info</label>
+          <div *ngIf="filterConfiguration != undefined" class="columns">
+            <div class="column">
+              <app-view-filter-config [filterConfig]="filterConfiguration"></app-view-filter-config>
             </div>
-            <div class="field-body">
-              <div class="field">
-                <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+          </div>
+          <hr>
+          <div class="columns">
+            <div class="column">
+              <div class="field is-grouped is-pulled-right">
+                <p class="control">
+                  <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+                </p>
+                <p class="control">
+                  <button class="button is-small is-link" (click)="proxy()">Save</button>
+                </p>
               </div>
             </div>
           </div>
-          <p class="buttons is-pulled-right">
-            <button (click)="getAssetReadings(service)" class="button is-small">
-              <span>Export Readings</span>
-            </button>
-            <button (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
-              class="button is-small">Delete Service</button>
-          </p>
-        </ng-container>
-      </div>
+          <hr>
+          <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right"
+            (click)="changeServiceStatus(service.name)">Save</button>
+          <ng-container *ngIf="service != undefined">
+            <div *ngIf="service.schedule_enabled" class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label">Service Info</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                </div>
+              </div>
+            </div>
+            <p class="buttons is-pulled-right">
+              <button (click)="getAssetReadings(service)" class="button is-small">
+                <span>Export Readings</span>
+              </button>
+              <button (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
+                class="button is-small">Delete Service</button>
+            </p>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="isWizard">
+        <div class="box animated slideInRight">
+          <app-add-filter-wizard (notify)="onNotify($event)"></app-add-filter-wizard>
+        </div>
+      </ng-container>
     </section>
   </div>
   <app-alert-dialog (deleteService)='deleteService($event)' [serviceRecord]='serviceRecord'></app-alert-dialog>
