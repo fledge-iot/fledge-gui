@@ -5,12 +5,12 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service</p>
+      <p *ngIf="service != undefined " class="modal-card-title is-size-5">{{service.name}} South Service</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
-        <div class="box" [ngClass]="{'animated slideOutLeft': isWizard}">
+        <div class="box animated slideInLeft">
           <app-view-config-item *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
           <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
             <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
@@ -41,7 +41,7 @@
           </div>
           <div *ngIf="filterConfiguration != undefined" class="columns">
             <div class="column">
-              <app-view-filter-config [filterConfig]="filterConfiguration"></app-view-filter-config>
+              <app-view-filter-config [filterConfig]="filterConfiguration" [useProxy]="useProxy" ></app-view-filter-config>
             </div>
           </div>
           <hr>

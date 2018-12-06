@@ -156,7 +156,7 @@ export class AddFilterWizardComponent implements OnInit {
       if (p.name === this.payload.plugin) {
         return p.config;
       }
-    });
+    }).filter(value => value !== undefined);
 
     // array to hold data to display on configuration page
     this.configurationData = config[0];
@@ -232,16 +232,16 @@ export class AddFilterWizardComponent implements OnInit {
 
   public getInstalledFilterPlugins() {
     /** request started */
-    this.ngProgress.start();
+    // this.ngProgress.start();
     this.pluginService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
         /** request completed */
-        this.ngProgress.done();
+        // this.ngProgress.done();
         this.plugins = data.plugins;
       },
       (error) => {
         /** request completed */
-        this.ngProgress.done();
+        // this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {

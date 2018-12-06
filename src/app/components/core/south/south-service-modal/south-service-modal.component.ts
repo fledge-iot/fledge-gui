@@ -345,7 +345,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (data !== undefined) {
       this.filterConfiguration = data.value;
     }
-    console.log('filter data', data);
+    this.useProxy = 'true';
     this.getCategory();
     this.isWizard = false;
   }
