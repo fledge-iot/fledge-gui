@@ -3,7 +3,7 @@
     <form name="form" id="ngForm" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
       <ng-container *ngIf="categoryConfiguration != undefined">
         <ng-container *ngFor="let configItem of (categoryConfiguration.value | keys)">
-          <div class="config-div" *ngIf="!configItem.value.readonly">
+          <div class="config-div" *ngIf="configItem.value.readonly != 'true'">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.value.description">
