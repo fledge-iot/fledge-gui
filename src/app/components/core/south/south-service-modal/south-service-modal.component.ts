@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, ElementRef, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Parser } from 'json2csv';
 import { isEmpty } from 'lodash';
@@ -8,6 +8,7 @@ import {
   AlertService,
   AssetsService,
   ConfigurationService,
+  FilterService,
   SchedulesService,
   ServicesHealthService,
 } from '../../../../services';
@@ -30,6 +31,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   svcCheckbox: FormControl = new FormControl();
   public childConfiguration;
   public changedChildConfig = [];
+  public filterPipeline;
   public filterConfiguration;
 
   public isWizard;
@@ -47,10 +49,13 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
+  @ViewChild('item') el: ElementRef;
+
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     private assetService: AssetsService,
+    private filterService: FilterService,
     public ngProgress: NgProgress,
     private servicesHealthService: ServicesHealthService,
     private schedulesService: SchedulesService) { }
@@ -65,6 +70,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (this.service !== undefined) {
       this.getCategory();
       this.checkIfAdvanceConfig(this.service['name']);
+      this.getFilterPipeline();
     }
   }
 
@@ -341,13 +347,45 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.category = '';
   }
 
-  onNotify(data) {
-    if (data !== undefined) {
-      this.filterConfiguration = data.value;
-    }
+  onNotify() {
     this.useProxy = 'true';
     this.getCategory();
     this.isWizard = false;
+  }
+
+  getFilterPipeline() {
+    this.filterService.getFilterPipeline(this.service['name'])
+      .subscribe((data: any) => {
+        this.filterPipeline = data.result.pipeline;
+      });
+  }
+
+  activeAccordion(id, filterName) {
+    const last = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
+    if (last !== undefined) {
+      const activeId = last.getAttribute('id');
+      if (id !== +activeId) {
+        last.classList.remove('is-active');
+        const next = <HTMLElement>document.getElementById(id);
+        next.setAttribute('class', 'is-light accordion is-active');
+        this.getFilterConfiguration(filterName);
+      } else {
+        last.classList.remove('is-active');
+      }
+    } else {
+      const element = <HTMLElement>document.getElementById(id);
+      element.setAttribute('class', 'is-light accordion is-active');
+      this.getFilterConfiguration(filterName);
+    }
+  }
+
+  getFilterConfiguration(filterName) {
+    this.filterConfiguration = [];
+    const catName = this.service['name'] + '_' + filterName;
+    this.filterService.getFilterConfiguration(catName)
+      .subscribe((data: any) => {
+        this.filterConfiguration = { 'value': [data] };
+      });
   }
 }
 

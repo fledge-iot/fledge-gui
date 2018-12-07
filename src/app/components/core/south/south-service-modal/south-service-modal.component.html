@@ -39,9 +39,22 @@
               <span class="label is-size-6">Applications <i class="fa fa-plus-circle" aria-hidden="true" (click)="openAddFilterModal(true)"></i></span>
             </div>
           </div>
-          <div *ngIf="filterConfiguration != undefined" class="columns">
+          <div *ngIf="filterPipeline != undefined" class="columns">
             <div class="column">
-              <app-view-filter-config [filterConfig]="filterConfiguration" [useProxy]="useProxy" ></app-view-filter-config>
+              <section class="accordions">
+                <article *ngFor="let item of filterPipeline; let i = index" class="is-light accordion" [attr.id]="i">
+                  <div class="accordion-header" (click)="activeAccordion(i, item)">
+                    <p>{{item}}</p>
+                    <button class="is-dark toggle" aria-label="toggle"></button>
+                  </div>
+                  <div class="accordion-body">
+                    <div class="accordion-content">
+                      <app-view-config-item [hidden]="!filterConfiguration" [categoryConfigurationData]="filterConfiguration"
+                        [useProxy]="useProxy"></app-view-config-item>
+                    </div>
+                  </div>
+                </article>
+              </section>
             </div>
           </div>
           <hr>
@@ -83,7 +96,7 @@
       </ng-container>
       <ng-container *ngIf="isWizard">
         <div class="box animated slideInRight">
-          <app-add-filter-wizard (notify)="onNotify($event)"></app-add-filter-wizard>
+          <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="service['name']"></app-add-filter-wizard>
         </div>
       </ng-container>
     </section>

@@ -1,10 +1,9 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { assign, cloneDeep, reduce } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, PluginsService } from '../../../../services';
-import { ViewFilterConfigComponent } from '../view-filter-config/view-filter-config.component';
+import { AlertService, FilterService } from '../../../../services';
+import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -27,12 +26,13 @@ export class AddFilterWizardComponent implements OnInit {
   });
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild(ViewFilterConfigComponent) viewFilterConfig: ViewFilterConfigComponent;
+  @Input() serviceName: any;
+
+  @ViewChild(ViewConfigItemComponent) viewConfigItem: ViewConfigItemComponent;
 
   constructor(private formBuilder: FormBuilder,
-    private pluginService: PluginsService,
-    private alertService: AlertService,
-    private ngProgress: NgProgress) { }
+    private pluginService: FilterService,
+    private alertService: AlertService) { }
 
   ngOnInit() {
     this.serviceForm = this.formBuilder.group({
@@ -114,9 +114,9 @@ export class AddFilterWizardComponent implements OnInit {
         previousButton.textContent = 'Previous';
         break;
       case 2:
-        this.viewFilterConfig.callFromWizard();
+        this.viewConfigItem.callFromWizard();
         document.getElementById('vci-proxy').click();
-        if (this.viewFilterConfig !== undefined && !this.viewFilterConfig.isValidForm) {
+        if (this.viewConfigItem !== undefined && !this.viewConfigItem.isValidForm) {
           return false;
         }
         this.addFilter(this.payload);
@@ -159,7 +159,7 @@ export class AddFilterWizardComponent implements OnInit {
     }).filter(value => value !== undefined);
 
     // array to hold data to display on configuration page
-    this.configurationData = config[0];
+    this.configurationData = { 'value': config };
     this.useProxy = 'true';
   }
 
@@ -213,7 +213,7 @@ export class AddFilterWizardComponent implements OnInit {
       .subscribe(
         (data: any) => {
           this.alertService.success(data.filter + ' filter added successfully.', true);
-          this.notify.emit(data);
+          this.addFilterPipeline({ 'pipeline': [payload.name] });
         },
         (error) => {
           if (error.status === 0) {
@@ -222,6 +222,13 @@ export class AddFilterWizardComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public addFilterPipeline(payload) {
+    this.pluginService.addFilterPipeline(payload, this.serviceName)
+      .subscribe((data: any) => {
+        this.notify.emit(data);
+      });
   }
 
   validateServiceName(event) {

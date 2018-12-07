@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -31,10 +31,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
     this.configItems = [];
-    if (changes.categoryConfigurationData.currentValue !== undefined) {
+    const catConfigData = cloneDeep(changes.categoryConfigurationData.currentValue);
+    if (catConfigData !== undefined) {
       let configAttributes = [];
-      if (changes.categoryConfigurationData.currentValue.length !== 0) {
-        const currentConfigValues = changes.categoryConfigurationData.currentValue.value[0];
+      if (catConfigData.length !== 0) {
+        const currentConfigValues = catConfigData.value[0];
         configAttributes = Object.keys(currentConfigValues).map(key => {
           const element = currentConfigValues[key];
           element.key = key;
@@ -45,8 +46,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
           return parseInt(ca.order, 10);
         });
 
-        changes.categoryConfigurationData.currentValue.value = configAttributes;
-        this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
+        catConfigData.value = configAttributes;
+        this.categoryConfiguration = catConfigData;
         this.configItems = configAttributes.map(el => {
           return {
             key: el.key,

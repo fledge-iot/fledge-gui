@@ -6,7 +6,7 @@ import { NgProgressModule } from 'ngx-progressbar';
 
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
-import { AssetsService, SchedulesService, ServicesHealthService, PluginsService } from '../../../services';
+import { AssetsService, SchedulesService, ServicesHealthService, FilterService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
@@ -45,6 +45,6 @@ const routes: Routes = [
     FilterModule,
     PipesModule
   ],
-  providers: [ServicesHealthService, AssetsService, SchedulesService, PluginsService],
+  providers: [ServicesHealthService, AssetsService, SchedulesService, FilterService],
 })
 export class SouthModule { }

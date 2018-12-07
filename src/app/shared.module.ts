@@ -8,11 +8,10 @@ import {
 import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ConfigChildrenComponent } from './components/core/configuration-manager/config-children/config-children.component';
-import { ViewFilterConfigComponent } from './components/core/filter/view-filter-config/view-filter-config.component';
 
 @NgModule({
   imports: [CommonModule, PipesModule, FormsModule, DirectivesModule],
-  declarations: [ViewConfigItemComponent, ConfigChildrenComponent, ViewFilterConfigComponent],
-  exports: [ViewConfigItemComponent, ConfigChildrenComponent, ViewFilterConfigComponent]
+  declarations: [ViewConfigItemComponent, ConfigChildrenComponent],
+  exports: [ViewConfigItemComponent, ConfigChildrenComponent]
 })
 export class SharedModule { }

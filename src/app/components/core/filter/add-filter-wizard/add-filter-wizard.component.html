@@ -1,6 +1,3 @@
-<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true"
-  [direction]="'leftToRightIncreased'" [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
-</ng-progress>
 <div class="steps">
   <div class="step-item is-active is-success" id="1">
     <div class="step-marker">1</div>
@@ -11,7 +8,7 @@
   <div class="step-item" id="2">
     <div class="step-marker">2</div>
     <div class="step-details">
-      <p>Review Configuration & Done</p>
+      <p>Review Configuration</p>
     </div>
   </div>
   <div class="steps-content">
@@ -53,7 +50,9 @@
         </div>
       </div>
       <div class="box step-content" id="c-2">
-        <app-view-filter-config [filterConfig]="configurationData" [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"></app-view-filter-config>
+        <!-- <app-view-filter-config [filterConfig]="configurationData" [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"></app-view-filter-config> -->
+        <app-view-config-item [hidden]="!configurationData" [categoryConfigurationData]="configurationData"
+        [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"></app-view-config-item>
       </div>
     </form>
   </div>

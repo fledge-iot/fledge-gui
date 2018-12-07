@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgProgressModule } from 'ngx-progressbar';
 
 import { PipesModule } from '../../../pipes/pipes.module';
-import { AssetsService, PluginsService, SchedulesService, ServicesHealthService } from '../../../services';
+import { AssetsService, FilterService, SchedulesService, ServicesHealthService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddFilterWizardComponent } from './add-filter-wizard/add-filter-wizard.component';
@@ -23,6 +23,6 @@ import { AddFilterWizardComponent } from './add-filter-wizard/add-filter-wizard.
     PipesModule
   ],
   exports: [AddFilterWizardComponent],
-  providers: [ServicesHealthService, AssetsService, SchedulesService, PluginsService],
+  providers: [ServicesHealthService, AssetsService, SchedulesService, FilterService],
 })
 export class FilterModule { }

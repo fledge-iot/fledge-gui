@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PluginsService } from './plugins.service';
+import { FilterService } from './filter.service';
 
-describe('PluginsService', () => {
+describe('FilterService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: PluginsService = TestBed.get(PluginsService);
+    const service: FilterService = TestBed.get(FilterService);
     expect(service).toBeTruthy();
   });
 });
