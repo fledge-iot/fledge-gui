@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { assign, cloneDeep, reduce } from 'lodash';
+import { assign, cloneDeep, reduce, map} from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, SchedulesService, ServicesHealthService } from '../../../../services';
@@ -194,8 +194,9 @@ export class AddServiceWizardComponent implements OnInit {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
+    const defaultConfig = map(this.configurationData.value[0], (v, key) => ({ key, ...v }));
     // make a copy of matched config items having changed values
-    const matchedConfig = this.configurationData.value.filter(e1 => {
+    const matchedConfig = defaultConfig.filter(e1 => {
       return changedConfig.some(e2 => {
         return e1.key === e2.key;
       });
@@ -225,6 +226,7 @@ export class AddServiceWizardComponent implements OnInit {
 
     // convert finalConfig array in object of objects to pass in add service
     finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
+    console.log('final', finalConfig);
     this.payload.config = finalConfig;
   }
 

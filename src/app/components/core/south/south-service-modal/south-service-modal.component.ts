@@ -82,7 +82,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.isWizard = false;
     }
     if (isOpen) {
-      this.svcCheckbox.setValue((this.service['status'] === 'shutdown' || this.service['status'] === '') ? false : true);
+      this.svcCheckbox.setValue(this.service['schedule_enabled']);
       modalWindow.classList.add('is-active');
       return;
     }
@@ -351,13 +351,21 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.useProxy = 'true';
     this.getCategory();
     this.isWizard = false;
+    this.getFilterPipeline();
   }
 
   getFilterPipeline() {
     this.filterService.getFilterPipeline(this.service['name'])
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline;
-      });
+      },
+        error => {
+          if (error.status === 404) {
+            this.filterPipeline = '';
+          } else {
+            console.log('Error ', error);
+          }
+        });
   }
 
   activeAccordion(id, filterName) {

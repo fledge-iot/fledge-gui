@@ -83,6 +83,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     });
 
     const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
+    console.log('view changedConfigValues', changedConfigValues);
     // condition to check if called from add service wizard
     if (this.isWizardCall) {
       this.onConfigChanged.emit(changedConfigValues);

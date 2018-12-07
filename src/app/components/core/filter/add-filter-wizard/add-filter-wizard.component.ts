@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { assign, cloneDeep, reduce } from 'lodash';
+import { assign, cloneDeep, reduce, map } from 'lodash';
 
 import { AlertService, FilterService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
@@ -168,8 +168,10 @@ export class AddFilterWizardComponent implements OnInit {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
+    const defaultConfig = map(this.configurationData.value[0], (v, key) => ({ key, ...v }));
+
     // make a copy of matched config items having changed values
-    const matchedConfig = this.configurationData.value.filter(e1 => {
+    const matchedConfig = defaultConfig.filter(e1 => {
       return changedConfig.some(e2 => {
         return e1.key === e2.key;
       });
@@ -199,7 +201,7 @@ export class AddFilterWizardComponent implements OnInit {
 
     // convert finalConfig array in object of objects to pass in add service
     finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    this.payload.config = finalConfig;
+    this.payload.filter_config = finalConfig;
   }
 
   /**
