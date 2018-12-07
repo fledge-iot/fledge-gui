@@ -1,0 +1,50 @@
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
+</ng-progress>
+<div id="south-service-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="box">
+        <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+        <div *ngIf="service != undefined" class="columns">
+          <div class="column">
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label">Enabled</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'down' && service.status !== '' ">
+                </div>
+              </div>
+            </div>
+            <div *ngIf="service.status !== 'down' && service.status !== ''" class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label">Service Info</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right" (click)="changeServiceStatus(service.name)">Save</button>
+        <div class="field is-grouped is-pulled-right">
+          <p class="control">
+            <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+          </p>
+          <p class="control">
+            <button class="button is-small is-link" (click)="proxy()">Save</button>
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

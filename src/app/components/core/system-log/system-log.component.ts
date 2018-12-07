@@ -10,6 +10,7 @@ import { NgProgress } from 'ngx-progressbar';
 export class SystemLogComponent implements OnInit {
   public logs: any;
   public source: String = '';
+  public level: String = '';
   public totalCount: any;
   DEFAULT_LIMIT = 50;
   limit = this.DEFAULT_LIMIT;
@@ -118,7 +119,7 @@ export class SystemLogComponent implements OnInit {
     this.getSysLogs();
   }
 
-  public filterSource(event) {
+  public filterData(event, filter) {
     this.limit = 0;
     this.offset = 0;
     this.tempOffset = 0;
@@ -126,7 +127,11 @@ export class SystemLogComponent implements OnInit {
     if (this.page !== 1) {
       this.page = 1;
     }
-    this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
+    if (filter === 'source') {
+      this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
+    } else {
+      this.level = event.target.value.trim().toLowerCase();
+    }
     this.getSysLogs();
   }
 
@@ -136,13 +141,21 @@ export class SystemLogComponent implements OnInit {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.limit, this.tempOffset, this.source).
+    this.systemLogService.getSysLogs(this.limit, this.tempOffset, this.source, this.level).
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.logs = data['logs'];
-          this.logs = this.logs.reverse();
+          const logs = [];
+          data['logs'].forEach(l => {
+            let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
+            fl = fl.replace('WARNING:', '<span class="tag is-warning tag-syslog">WARNING:</span>');
+            fl = fl.replace('ERROR:', '<span class="tag is-danger tag-syslog">ERROR:</span>');
+            fl = fl.replace('EXCEPTION:', '<span class="tag is-danger tag-syslog">EXCEPTION:</span>');
+            logs.push(fl);
+          });
+
+          this.logs = logs.reverse();
           this.totalCount = data['count'];
           // console.log('System Logs', this.logs, 'Total count', this.totalCount);
           if (this.offset !== 0) {

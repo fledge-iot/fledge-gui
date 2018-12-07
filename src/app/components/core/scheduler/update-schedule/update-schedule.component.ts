@@ -12,13 +12,14 @@ import Utils from '../../../../utils';
 })
 export class UpdateScheduleComponent implements OnInit, OnChanges {
   // Default selected schedule type is STARTUP = 1
-  public selected_schedule_type: Number = 1;
-
+  public selectedScheduleType: Number = 1;
   // Default selected day index is MONDAY = 1
-  public selected_day_index: Number = 1;
+  public selectedDayIndex: Number = 1;
+
   public scheduleProcess = [];
   public scheduleType = [];
   public days = [];
+  public scheduleName: string;
 
   @Input() childData: { id: Number, schedule_process: any, schedule_type: any, day: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -30,7 +31,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges(changes: SimpleChanges) {
-    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to varify time format 00:00:00
+    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to verify time format 00:00:00
     this.form = this.fb.group({
       name: ['', [CustomValidator.nospaceValidator]],
       repeatDay: ['', [Validators.min(0), Validators.max(365)]],
@@ -40,6 +41,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       type: [Validators.required],
       day: [Validators.required],
       time: [Validators.required, Validators.pattern(regExp)],
+      enabled: [Validators.required]
     });
 
     if (changes['childData']) {
@@ -78,8 +80,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
    * getSelectedDay
    */
   public getSelectedDayIndex(day) {
-    const day_index = this.days.indexOf(day) + 1;
-    return day_index;
+    return this.days.indexOf(day) + 1;
   }
 
   /**
@@ -91,30 +92,33 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       return;
     }
 
-    let schedule_day;
+    let scheduleDay;
     this.schedulesService.getSchedule(id).
       subscribe(
         (data) => {
           if (data['type'] == 'TIMED') {
-            this.selected_schedule_type = this.setScheduleTypeKey(data['type']);
-            schedule_day = this.getSelectedDay(data['day']);
+            this.selectedScheduleType = this.setScheduleTypeKey(data['type']);
+            scheduleDay = this.getSelectedDay(data['day']);
           } else {
-            this.selected_schedule_type = this.setScheduleTypeKey(data['type']);
+            this.selectedScheduleType = this.setScheduleTypeKey(data['type']);
           }
 
-          const repeatTimeObj = Utils.secondsToDhms(data['repeat']);
-          const timeObj = Utils.secondsToDhms(data['time']);
+          const repeatTime = Utils.secondsToDhms(data['repeat']);
+          const time = Utils.secondsToDhms(data['time']);
 
+          // used for enable / disable switch only
+          this.scheduleName = data['name'].replace(' ', '');
           // Fill form field values
           this.form.patchValue({
             name: data['name'],
-            repeatDay: repeatTimeObj.days,
-            repeat: repeatTimeObj.time,
+            repeatDay: repeatTime.days,
+            repeat: repeatTime.time,
             exclusive: data['exclusive'],
             process_name: data['processName'],
             type: data['type'],
-            day: schedule_day,
-            time: timeObj.time
+            day: scheduleDay,
+            time: time.time,
+            enabled: data['enabled']
           });
         },
         error => {
@@ -136,14 +140,18 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   }
 
   public updateSchedule() {
-    const RepeatTime = this.form.get('repeat').value != ('None' || undefined) ? Utils.convertTimeToSec(
+    if (!this.form.dirty && !this.form.touched) {
+      this.toggleModal(false);
+      return false;
+    }
+    const repeatTime = this.form.get('repeat').value != ('None' || undefined) ? Utils.convertTimeToSec(
       this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
 
-    this.selected_schedule_type = this.setScheduleTypeKey(this.form.get('type').value);
+    this.selectedScheduleType = this.setScheduleTypeKey(this.form.get('type').value);
 
     let time;
     let dayIndex;
-    if (this.selected_schedule_type === 2) {   // If Type is TIMED == 2
+    if (this.selectedScheduleType === 2) {   // If Type is TIMED == 2
       time = Utils.convertTimeToSec(this.form.get('time').value);
       const dayValue = this.form.get('day').value;
       dayIndex = dayValue !== undefined && dayValue !== 'None' ? (this.days.indexOf(this.form.get('day').value) + 1) : '';
@@ -154,12 +162,12 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
     const updatePayload = {
       'name': this.form.get('name').value,
-      'process_name': this.form.get('process_name').value,
-      'type': this.selected_schedule_type,
-      'repeat': RepeatTime,
+      'type': this.selectedScheduleType,
+      'repeat': repeatTime,
       'day': dayIndex,
       'time': time,
       'exclusive': this.form.get('exclusive').value,
+      'enabled': this.form.get('enabled').value
     };
 
     this.schedulesService.updateSchedule(this.childData.id, updatePayload).

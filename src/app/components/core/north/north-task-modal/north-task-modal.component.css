@@ -1,0 +1,12 @@
+.box {
+  box-shadow: 0 0 0 0 !important;
+}
+
+.is-hidden {
+  display: none;
+}
+
+label{
+  width: 12vw !important;
+  margin-right: 2vw;
+}

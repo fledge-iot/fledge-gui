@@ -11,7 +11,7 @@
         </button>
       </p>
       <div>
-        <a class="button is-light" (click)="requestNewBundle()">Request New &nbsp;
+        <a class="button is-light fix-pad" (click)="requestNewBundle()">Request New &nbsp;
           <i class="fa fa-file-archive-o" aria-hidden="true"></i>
         </a>
       </div>
@@ -20,7 +20,7 @@
       <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
         <tbody>
           <tr *ngFor="let bundle of bundlesData">
-            <td>{{ bundle }}</td>
+            <td style="vertical-align: middle;">{{ bundle }}</td>
             <td>
               <a (click)="downloadBundle(bundle)" class="button is-text">
                 download

@@ -1,0 +1,12 @@
+<div id="restartModal-box" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+      <section class="modal-card-body">
+         <b> {{ restartData.message }} </b>
+      </section>
+      <footer class="modal-card-foot">
+          <button class="button is-warning is-small" (click)="triggerAction()">Restart</button>
+          <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+      </footer>
+  </div>
+</div>

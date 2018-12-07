@@ -1,0 +1,43 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.columns-fields {
+    margin-top: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.panel {
+    background-color: #fff;
+    margin-top: 10px;
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+label{
+  width: 12vw !important;
+  margin-right: 2vw;
+}
+
+.config-div {
+  margin-top: 1vw;
+}
+
+.error {
+  color: red;
+}
+
+.tooltip.is-tooltip-multiline::before {
+  min-width: 16rem !important;
+}

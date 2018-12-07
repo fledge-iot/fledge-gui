@@ -1,13 +1,15 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
+import { TreeModule } from 'angular-tree-component';
 import { NgProgressModule } from 'ngx-progressbar';
-import { PipesModule } from '../../../pipes/pipes.module';
-import { ConfigurationService } from '../../../services';
+
 import { ConfigurationManagerComponent } from '.';
-import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
-import { Routes, RouterModule } from '@angular/router';
+import { DirectivesModule } from '../../../directives/directives.module';
 import { AuthCheckGuard } from '../../../guards';
+import { ConfigurationService } from '../../../services';
+import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
   {
@@ -19,16 +21,17 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    ConfigurationManagerComponent,
-    AddConfigItemComponent
+    ConfigurationManagerComponent
   ],
   imports: [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
     NgProgressModule,
-    PipesModule
+    SharedModule,
+    DirectivesModule,
+    TreeModule
   ],
-  providers: [ConfigurationService]
+  providers: [ConfigurationService],
 })
 export class ConfigurationModule { }

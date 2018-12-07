@@ -1,7 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ConfigurationService, AlertService } from '../../../services/index';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { TreeComponent } from 'angular-tree-component';
+import { isEmpty } from 'lodash-es/';
+import _ from 'lodash-es/array';
 import { NgProgress } from 'ngx-progressbar';
-import { AddConfigItemComponent } from './add-config-item/add-config-item.component';
+
+import { AlertService, ConfigurationService } from '../../../services';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -10,11 +13,17 @@ import { AddConfigItemComponent } from './add-config-item/add-config-item.compon
 })
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
+  public rootCategories = [];
   public JSON;
-  public addConfigItem: any;
-  public isCategoryData = false;
+  public selectedRootCategory = 'General';
+  public isChild = true;
 
-  @ViewChild(AddConfigItemComponent) addConfigItemModal: AddConfigItemComponent;
+  @Input() categoryConfigurationData;
+  nodes: any[] = [];
+  options = {};
+
+  @ViewChild(TreeComponent)
+  private tree: TreeComponent;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -23,24 +32,62 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getCategories();
-    this.isCategoryData = true;
+    this.getRootCategories(true);
   }
 
-  public getCategories(): void {
-    if (this.isCategoryData === true) {
-      this.categoryData = [];
-    }
+  public getRootCategories(onLoadingPage = false) {
+    this.rootCategories = [];
+    this.configService.getRootCategories().
+      subscribe(
+        (data) => {
+          data['categories'].forEach(element => {
+            this.rootCategories.push({ key: element.key, description: element.description });
+            this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'SOUTH');
+            this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'NORTH');
+          });
+          if (onLoadingPage === true) {
+            this.getChildren(this.selectedRootCategory);
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public getChildren(categoryName) {
     /** request started */
     this.ngProgress.start();
-    this.configService.getCategories().
+    this.selectedRootCategory = categoryName;
+    this.tree.treeModel.nodes = [];
+
+    this.nodes = [];
+    this.configService.getChildren(categoryName).
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
+
+          // Check if there is any category
+          if (rootCategories.length > 0 && data['categories'].length === 0) {
+            this.isChild = false;
+            this.getCategory(rootCategories[0].key, rootCategories[0].description);
+            this.categoryData = [];
+            return;
+          }
+          this.isChild = true;
           data['categories'].forEach(element => {
-            this.getCategory(element.key, element.description);
+            this.nodes.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
           });
+
+          this.tree.treeModel.update();
+          if (this.tree.treeModel.getFirstRoot()) {
+            this.tree.treeModel.getFirstRoot().setIsActive(true);
+          }
         },
         error => {
           /** request completed */
@@ -53,53 +100,72 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
+  public onNodeToggleExpanded(event) {
+    event.node.data.children = [];
+    if (event.node.isExpanded) {
+      this.configService.getChildren(event.node.data.id).
+        subscribe(
+          (data) => {
+            data['categories'].forEach(element => {
+              event.node.data.children.push({ id: element.key, name: element.description, hasChildren: true, children: [] });
+              this.tree.treeModel.update();
+            });
+          }, error => {
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    }
+  }
+
+  public onNodeActive(event) {
+    this.getCategory(event.node.data.id, event.node.data.name);
+  }
+
+  public resetAllFilters() {
+    this.selectedRootCategory = 'General';
+    this.getRootCategories(true);
+  }
+
   private getCategory(category_name: string, category_desc: string): void {
+    /** request started */
+    this.ngProgress.start();
+    const categoryValues = [];
+    this.configService.getCategory(category_name).
+      subscribe(
+        (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
+          if (!isEmpty(data)) {
+            categoryValues.push(data);
+            this.categoryData = [{ key: category_name, value: categoryValues, description: category_desc }];
+          }
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public refreshCategory(category_name: string, category_desc: string): void {
+    /** request started */
+    this.ngProgress.start();
     const categoryValues = [];
     this.configService.getCategory(category_name).
       subscribe(
         (data) => {
-          categoryValues.push(data);
-          this.categoryData.push({ key: category_name, value: categoryValues, description: category_desc });
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  public restoreConfigFieldValue(config_item_key: string) {
-    const inputField = <HTMLInputElement>document.getElementById(config_item_key.toLowerCase());
-    inputField.value = inputField.textContent;
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
-    cancelButton.classList.add('hidden');
-  }
-
-  public saveConfigValue(category_name: string, config_item: string, type: string) {
-    const cat_item_id = (category_name.trim() + '-' + config_item.trim()).toLowerCase();
-    const inputField = <HTMLInputElement>document.getElementById(cat_item_id);
-    const value = inputField.value.trim();
-    const id = inputField.id.trim();
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + id);
-    cancelButton.classList.add('hidden');
-
-    /** request started */
-    this.ngProgress.start();
-    this.configService.saveConfigItem(category_name, config_item, value, type).
-      subscribe(
-        (data) => {
           /** request completed */
           this.ngProgress.done();
-          if (data['value'] !== undefined) {
-            if (type.toUpperCase() === 'JSON') {
-              inputField.textContent = inputField.value = JSON.stringify(data['value']);
-            } else {
-              inputField.textContent = inputField.value = data['value'];
-            }
-            this.alertService.success('Value updated successfully');
-          }
+          categoryValues.push(data);
+          const index = _.findIndex(this.categoryData, ['key', category_name]);
+          this.categoryData[index] = { key: category_name, value: categoryValues, description: category_desc };
         },
         error => {
           /** request completed */
@@ -116,23 +182,9 @@ export class ConfigurationManagerComponent implements OnInit {
   * @param notify
   * To reload categories after adding a new config item for a category
   */
-  onNotify() {
-    this.getCategories();
+  onNotify(categoryData) {
+    this.selectedRootCategory = categoryData.rootCategory;
+    this.getRootCategories();
+    this.refreshCategory(categoryData.categoryKey, categoryData.categoryDescription);
   }
-
-  /**
-  * Open add Config Item modal dialog
-  */
-  openAddConfigItemModal(description, key) {
-    this.addConfigItemModal.setConfigName(description, key);
-    // call child component method to toggle modal
-    this.addConfigItemModal.toggleModal(true);
-  }
-
-  public onTextChange(config_item_key: string) {
-    const cancelButton = <HTMLButtonElement>document.getElementById('btn-cancel-' + config_item_key.toLowerCase());
-    cancelButton.classList.remove('hidden');
-  }
-
-  isObject(val) { return typeof val === 'object'; }
 }

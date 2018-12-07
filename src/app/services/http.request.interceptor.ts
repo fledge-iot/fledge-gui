@@ -4,16 +4,12 @@ import { Router } from '@angular/router';
 import { Observable, throwError as observableThrowError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { PingService } from './ping.service';
-import { SharedService } from './shared.service';
-
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 
 @Injectable()
 export class HttpsRequestInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router,
-    private pingService: PingService, private sharedService: SharedService) { }
+  constructor(private router: Router) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (req.headers.has(InterceptorSkipHeader)) {
@@ -23,7 +19,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
       if (sessionStorage.getItem('token') != null) {
         req = req.clone({
           setHeaders: {
-            authorization: sessionStorage.getItem('token')
+            authorization: sessionStorage.getItem('token'),
+            'Content-Type': 'application/x-www-form-urlencoded'
           }
         });
       }
@@ -37,7 +34,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
           }
           return observableThrowError(err);
         }
-      }), );
+      }));
     }
   }
 }

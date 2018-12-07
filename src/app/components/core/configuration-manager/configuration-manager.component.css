@@ -1,14 +1,9 @@
-.columns-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+.panel {
+    background-color: #fff;
+    margin-top: 10px;
 }
-.columns-fields {
-    margin-top: auto;
-}
-.hidden {
-    display: none;
-}
-.input {
-    width: auto;
+
+#root-children {
+  border-left: 1px solid #dbdbdb;
+  border-right: 1px solid #dbdbdb;
 }

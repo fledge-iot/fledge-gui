@@ -3,6 +3,7 @@ set -e
 
 yes Y |  sudo apt-get update
 yes Y |  sudo apt-get upgrade
+yes Y |  sudo apt-get dist-upgrade
 
 yes Y |  sudo apt-get install curl
 
@@ -16,5 +17,5 @@ yes Y |  sudo apt-get install uuid-dev
 yes Y |  sudo apt-get install sqlite3 libsqlite3-dev
 
 # Required, until postgres depdendecies are plugged out
-yes Y |  sudo apt-get install postgresql
-sudo -u postgres createuser -d pi
+# yes Y |  sudo apt-get install postgresql
+# sudo -u postgres createuser -d pi

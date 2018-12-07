@@ -1,40 +1,55 @@
-<div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
-  </ng-progress>
-
-  <angular2-multiselect (ngModelChange)="showGraph($event)" [data]="statistics" [(ngModel)]="selectedItems" [settings]="dropdownSettings"></angular2-multiselect>
-
-  <div class="tile" *ngFor="let statistic of graphsToShow">
-    <div class="tile is-parent">
-      <article class="tile is-child box">
-        <h5 class="title is-5">
-          <div class="columns">
-            <div class="column is-9">
-              {{ statistic.itemName }}
-            </div>
-            <div class="column is-2">
-              <app-number-input-debounce placeholder="limit" (value)="getLimitBasedGraph(limit = $event, key = statistic.itemName)" [val]='statistic.limit'></app-number-input-debounce>
-              <p *ngIf='invalidLimitSize' class='help is-danger'>Limit must be in range 1 - {{MAX_RANGE}}</p>
-            </div>
-            <div class="column">
-              <button (click)="refreshGraph(limit = statistic.limit, key = statistic.itemName)" class="button is-small is-pulled-right">
-                <i class="fa fa-refresh" aria-hidden="true"></i>
-              </button>
+<div class="columns is-mobile">
+  <div class="column">
+    <div class="field-body is-pulled-right">
+      <div class="select is-rounded">
+        <select #selectedTime (change)="getStatisticsHistory(selectedTime.value)">
+          <option value="10" [selected]="optedTime == 10">10 minutes</option>
+          <option value="30" [selected]="optedTime == 30">30 minutes</option>
+          <option value="60" [selected]="optedTime == 60">1 hour</option>
+          <!-- TODO:  FOGL-1787 -->
+          <!-- <option value="480" [selected]="optedTime == 480">8 hours</option>
+          <option value="1440" [selected]="optedTime == 1440">1 day</option>
+          <option value="10080" [selected]="optedTime == 10080">1 week</option> -->
+        </select>
+      </div>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <div id="graph-key-dropdown" class="dropdown is-right">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
+            <span>Select Graphs</span>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div *ngFor="let data of statisticsKeys" class="dropdown-item">
+              <div class="field is-grouped">
+                <div class="control checkbox">
+                  <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph($event)"> {{data.key}}
+                </div>
+              </div>
             </div>
           </div>
-        </h5>
-
-        <h6 class="subtitle is-6">{{ statistic.description }}</h6>
-        <br/>
-        <app-chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></app-chart>
-        <br/>
-        <h6>Total since startup:
-          <b> {{ statistic.value }} </b>
-        </h6>
-        <small>
-          <i class="has-text-weight-light has-text-grey">* latest {{statistic.limit}} records</i>
-        </small>
-      </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="columns is-mobile">
+  <div class="column">
+    <div class="columns is-multiline">
+      <div class="column columns-content is-half" *ngFor="let statistic of graphsToShow">
+        <div *ngIf="statistic != undefined" class="box">
+          <h6 class="subtitle is-6">{{ statistic.description }}</h6>
+          <br/>
+          <app-chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></app-chart>
+          <br/>
+          <h6>Total since startup:
+            <b> {{ statistic.value | number }} </b>
+          </h6>
+        </div>
+      </div>
     </div>
   </div>

@@ -1,6 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { PingService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
 import { ServiceDiscoveryComponent } from '../service-discovery';
@@ -18,9 +16,11 @@ export class SettingsComponent implements OnInit {
   protocol = 'http'; // default protocol
   host;
   servicePort;
-  pingInterval;
+  pingInterval: string;
+  refreshInterval: string;
   serviceUrl = '';
-  constructor(private router: Router, private pingService: PingService) {
+
+  constructor(private pingService: PingService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
       localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
     this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
@@ -31,6 +31,7 @@ export class SettingsComponent implements OnInit {
     this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
     // get last selected time interval
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
+    this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
   }
 
   public testServiceConnection(): void {
@@ -72,5 +73,11 @@ export class SettingsComponent implements OnInit {
     const time = event.target.value;
     localStorage.setItem('PING_INTERVAL', time);
     this.pingService.pingIntervalChanged.next(+time);
+  }
+
+  setDashboardRefreshTime(event) {
+    const time = event.target.value;
+    localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
+    this.pingService.refreshIntervalChanged.next(+time);
   }
 }

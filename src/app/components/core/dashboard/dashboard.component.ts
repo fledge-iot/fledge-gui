@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import map from 'lodash-es/map';
-import * as moment from 'moment';
-import { NgProgress } from 'ngx-progressbar';
+import { interval } from 'rxjs';
 
-import { AlertService, StatisticsService } from '../../../services';
-import { MAX_INT_SIZE } from '../../../utils';
+import { DateFormatterPipe } from '../../../pipes';
+import { AlertService, PingService, StatisticsService } from '../../../services';
+import { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,93 +12,85 @@ import { MAX_INT_SIZE } from '../../../utils';
   styleUrls: ['./dashboard.component.css']
 })
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   // Filtered array of received statistics data (having objects except key @FOGBENCH).
   statistics = [];
 
   // Array of Statistics Keys (["BUFFERED", "DISCARDED", "PURGED", ....])
   statisticsKeys = [];
 
-  selectedKeys = [];
-
-  // Object of dropdown setting
-  dropdownSettings = {};
-
-  selectedItems = [];
+  selectedGraphsList = [] =
+    [{ key: 'READINGS', checked: true },
+    { key: 'Readings Sent', checked: true }];
 
   // Array of the graphs to show
   graphsToShow = [];
 
-  // Array of default graphs to show ('READINGS', 'SENT_1', 'PURGED')
-  showDefaultGraphs = [];
-
   public chartOptions: object;
 
-  public DEFAULT_LIMIT = 20;
-  public MAX_RANGE = MAX_INT_SIZE;
-  public limit = this.DEFAULT_LIMIT;
-  public invalidLimitSize = false;
+  public refreshInterval = GRAPH_REFRESH_INTERVAL;
+  public optedTime;
 
-  constructor(private statisticsService: StatisticsService, private alertService: AlertService, public ngProgress: NgProgress) { }
+  DEFAULT_LIMIT = 20;
+  private isAlive: boolean;
+
+  constructor(private statisticsService: StatisticsService,
+    private alertService: AlertService,
+    private dateFormatter: DateFormatterPipe,
+    private ping: PingService) {
+    this.isAlive = true;
+    this.ping.refreshIntervalChanged.subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.isAlive = false;
+      }
+      this.refreshInterval = timeInterval;
+    });
+  }
 
   ngOnInit() {
-    this.getStatistics();
-  }
-
-  public showGraph(graphs) {
-    this.selectedKeys = [];
-    // get keys selected from dropdown
-    for (const k of graphs) {
-      this.selectedKeys.push(k.itemName);
-    }
-    // save keys in local storage
-    localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
-
-    this.graphsToShow = [];
-    for (const k of this.selectedKeys) {
-      const selectedKeyData = [];
-      selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
-      this.graphsToShow.push(selectedKeyData[0][0]);
+    // To check if data saved in valid format in local storage
+    const optedGraphStorage = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
+    if (optedGraphStorage != null && typeof (optedGraphStorage[0]) !== 'object') {
+      localStorage.removeItem('OPTED_GRAPHS');
     }
     this.getStatistics();
+    interval(this.refreshInterval)
+      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .subscribe(() => {
+        this.getStatisticsHistory(localStorage.getItem('STATS_HISTORY_TIME_FILTER'));
+      });
   }
 
-  getLimitBasedGraph(limit, key) {
-    this.invalidLimitSize = false;
-    if (limit === null || limit === undefined) {
-      limit = this.DEFAULT_LIMIT;
+  public showGraph(selectedGraph) {
+    // get keys selected from drop down
+    this.statisticsKeys.map((item) => (item.key === selectedGraph.key && selectedGraph.checked === false) ? item.checked = false : true);
+
+    if (selectedGraph.checked === false && this.selectedGraphsList.length > 0) {
+      this.selectedGraphsList = this.selectedGraphsList.filter((dt => (dt !== undefined && dt.key !== selectedGraph.key)));
+    } else {
+      this.selectedGraphsList.push(selectedGraph);
     }
 
-    if (limit > this.MAX_RANGE) {
-      this.invalidLimitSize = true; // limit range validation
-      return;
+    // if there is no graph selected, set default to "READINGS" and "North Readings to PI"
+    if (this.selectedGraphsList.length === 0) {
+      this.selectedGraphsList = [
+        { key: 'READINGS', checked: true },
+        { key: 'Readings Sent', checked: true }];
     }
-    this.refreshGraph(limit, key);
+
+    localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedGraphsList));
+    this.getStatistics();
   }
 
   public getStatistics(): void {
-    /** request started */
-    this.ngProgress.start();
-
     this.statisticsService.getStatistics().
       subscribe((data: any[]) => {
-        /** request completed */
-        this.ngProgress.done();
-        console.log('received statisticsData ', data);
         // filter received data for FOGBENCH data
         this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
-        console.log('statisticsData ', this.statistics);
 
         this.statisticsKeys = [];
-        for (const d of this.statistics) {
-          this.statisticsKeys.push(d.key);
-        }
-        console.log('keys array', this.statisticsKeys);
-
-        // If graphs are not selected yet, then show graphs of 'READINGS', 'SENT_1' and 'PURGED' and save in local storage
-        if (!localStorage.getItem('OPTED_GRAPHS')) {
-          this.selectedKeys = ['READINGS', 'SENT_1', 'PURGED'];
-          localStorage.setItem('OPTED_GRAPHS', JSON.stringify(this.selectedKeys));
+        for (const stats of this.statistics) {
+          this.statisticsKeys.push({ key: stats.key, checked: false });
         }
 
         // Rename 'key' to 'itemName' and add a new key as named 'id'
@@ -108,34 +100,19 @@ export class DashboardComponent implements OnInit {
           delete this.statistics[i].key;
         }
 
-        // Set the options for drop down setting
-        this.dropdownSettings = {
-          singleSelection: false,
-          text: 'Select Graphs',
-          selectAllText: 'Select All',
-          unSelectAllText: 'UnSelect All',
-          enableSearchFilter: true
-        };
-
         if (localStorage.getItem('OPTED_GRAPHS')) {
-          this.selectedKeys = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
-          this.graphsToShow = [];
-          for (const k of this.selectedKeys) {
-            const selectedKeyData = [];
-            selectedKeyData.push(this.statistics.filter(value => value['itemName'] === k));
-            this.graphsToShow.push(selectedKeyData[0][0]);
-          }
-          console.log('graphsToShow', this.graphsToShow);
+          this.selectedGraphsList = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
         }
 
-        // Selected Items are the items, to show in the drop down (having keys- 'READINGS', 'SENT_1', 'PURGED')
-        this.selectedItems = this.graphsToShow;
-
-        this.getStatisticsHistory();
+        this.graphsToShow = [];
+        for (const graph of this.selectedGraphsList) {
+          const selectedGraph = this.statistics.filter(value => value['itemName'] === graph.key);
+          this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
+          this.graphsToShow.push(selectedGraph[0]);
+        }
+        this.getStatisticsHistory(localStorage.getItem('STATS_HISTORY_TIME_FILTER'));
       },
         error => {
-          /** request completed */
-          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -178,41 +155,34 @@ export class DashboardComponent implements OnInit {
   /**
    *  Refresh graphs
    */
-  public refreshGraph(limit, keyToRefresh) {
-    let updatedValue = '';
+  public refreshGraph() {
     this.statisticsService.getStatistics().
       subscribe((data: any[]) => {
-        const keyData = data.filter(value => value['key'] === keyToRefresh);
-        updatedValue = keyData[0]['value'];
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-    this.statisticsService.getStatisticsHistory(limit, keyToRefresh).
-      subscribe((data: any[]) => {
-        this.graphsToShow.forEach(key => {
-          if (key.itemName === keyToRefresh) {
-            const labels = [];
-            const record = map(data['statistics'], keyToRefresh);
-            const history_ts = map(data['statistics'], 'history_ts');
-            history_ts.forEach(element => {
-              element = moment(element).format('HH:mm:ss');
-              labels.push(element);
-            });
-            this.graphsToShow.map(statistics => {
-              if (statistics.itemName === keyToRefresh) {
-                statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
-                statistics.chartType = 'line';
-                statistics.value = updatedValue;
-                statistics.limit = limit;
-              }
-            });
-          }
-        });
+        this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
+
+        this.statisticsKeys = [];
+        for (const stats of this.statistics) {
+          this.statisticsKeys.push({ key: stats.key, checked: false });
+        }
+
+        if (localStorage.getItem('OPTED_GRAPHS')) {
+          this.selectedGraphsList = JSON.parse(localStorage.getItem('OPTED_GRAPHS'));
+        }
+
+        // Rename 'key' to 'itemName' and add a new key as named 'id'
+        for (let i = 0; i < this.statistics.length; i++) {
+          this.statistics[i].id = i;
+          this.statistics[i].itemName = this.statistics[i]['key'];
+          delete this.statistics[i].key;
+        }
+
+        for (const stats of this.statistics) {
+          this.graphsToShow.map((item) => item.itemName === stats.itemName ? item.value = stats.value : item.value);
+        }
+
+        for (const graph of this.selectedGraphsList) {
+          this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
+        }
       },
         error => {
           if (error.status === 0) {
@@ -223,19 +193,27 @@ export class DashboardComponent implements OnInit {
         });
   }
 
-  public getStatisticsHistory(): void {
-    this.statisticsService.getStatisticsHistory(this.DEFAULT_LIMIT, null).
+  public getStatisticsHistory(time = null): void {
+    if (time == null) {
+      localStorage.setItem('STATS_HISTORY_TIME_FILTER', STATS_HISTORY_TIME_FILTER);
+    } else {
+      localStorage.setItem('STATS_HISTORY_TIME_FILTER', time);
+    }
+    this.optedTime = localStorage.getItem('STATS_HISTORY_TIME_FILTER');
+    this.statisticsService.getStatisticsHistory(this.optedTime, null, null).
       subscribe((data: any[]) => {
-        this.statisticsKeys.forEach(key => {
+        this.statisticsKeys.forEach(dt => {
           const labels = [];
-          const record = map(data['statistics'], key);
-          const history_ts = map(data['statistics'], 'history_ts');
-          history_ts.forEach(element => {
-            element = moment(element).format('HH:mm:ss');
-            labels.push(element);
+          const record = map(data['statistics'], dt.key).reverse();
+          let history_ts = map(data['statistics'], 'history_ts');
+          history_ts = history_ts.reverse();
+          history_ts.forEach(ts => {
+            ts = this.dateFormatter.transform(ts, 'HH:mm:ss');
+            labels.push(ts);
           });
+          this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
           this.graphsToShow.map(statistics => {
-            if (statistics.itemName == key) {
+            if (statistics.itemName === dt.key) {
               statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
@@ -250,5 +228,22 @@ export class DashboardComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public toggleDropdown() {
+    const dropDown = document.querySelector('#graph-key-dropdown');
+    dropDown.classList.toggle('is-active');
+  }
+
+  public checkedGraph(event) {
+    const data = {
+      key: event.target.value,
+      checked: event.target.checked
+    };
+    this.showGraph(data);
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
   }
 }

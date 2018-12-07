@@ -39,8 +39,6 @@
               </select>
             </div>
           </div>
-        </div>
-        <div class="columns is-mobile">
           <div class="column">
             <app-number-input-debounce placeholder="limit" (value)="setLimit($event)" [val]="limit"></app-number-input-debounce>
             <p *ngIf='isInvalidLimit' class='help is-danger'>Limit must be in range 1 - {{MAX_RANGE}}</p>
@@ -54,30 +52,20 @@
       <table class="table is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
         <thead>
           <tr>
-            <th>Source</th>
+            <th>Timestamp</th>
             <th>Severity</th>
-            <th>Timestamp&nbsp;&nbsp;
-              <span class="tooltip is-tooltip-right" data-tooltip="DD-MM-YYYY HH:mm:ss">
-                <i class="fa fa-info-circle"></i>
-              </span>
-            </th>
+            <th>Source</th>
             <th>Details</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let log of audit">
-            <td>{{log.source}}</td>
             <td>
-              <small> {{log.severity}}</small>
+              <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
             </td>
-            <td>
-              <span class="tag is-rounded"> {{log.timestamp | dateparser: 'DD-MM-YYYY HH:mm:ss'}}</span>
-            </td>
-            <td>
-              <small>
-                <pre>{{log.details | json}}</pre>
-              </small>
-            </td>
+            <td><small>{{log.severity}}</small></td>
+            <td><small>{{log.source}}</small></td>
+            <td><small>{{log.details | json}}</small></td>
           </tr>
         </tbody>
       </table>

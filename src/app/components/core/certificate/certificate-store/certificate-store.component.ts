@@ -47,7 +47,6 @@ export class CertificateStoreComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           this.certificatesData = data['certificates'];
-          console.log('certificatesData', this.certificatesData);
         },
         error => {
           /** request completed */

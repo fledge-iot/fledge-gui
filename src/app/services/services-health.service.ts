@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError as observableThrowError } from 'rxjs';
 import { catchError, map, timeout } from 'rxjs/operators';
@@ -10,16 +10,19 @@ import { InterceptorSkipHeader } from '../services/http.request.interceptor';
 export class ServicesHealthService {
   private GET_PING_URL = environment.BASE_URL + 'ping';
   private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
+  private FOGLAMP_RESTART_URL = environment.BASE_URL + 'restart';
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
+  private GET_INSTALLED_PLUGINS_URL = environment.BASE_URL + 'plugins/installed';
+  private TRACK_SERVICE_URL = environment.BASE_URL + 'track';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
-  private _pingData: any;
+  private SOUTH_URL = environment.BASE_URL + 'south';
+
   constructor(private http: HttpClient) { }
 
   /**
      *  GET  | /foglamp/ping
      */
   pingService(): Promise<any> {
-    this._pingData = null;
     return this.http.get(this.GET_PING_URL)
       .pipe(timeout(this.REQUEST_TIMEOUT_INTERVAL))
       .toPromise()
@@ -31,6 +34,15 @@ export class ServicesHealthService {
    */
   shutdown() {
     return this.http.put(this.FOGLAMP_SHUTDOWN_URL, null).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+   *  PUT  | /foglamp/restart
+   */
+  restart() {
+    return this.http.put(this.FOGLAMP_RESTART_URL, null).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
@@ -65,6 +77,32 @@ export class ServicesHealthService {
     const url = new URL(serviceUrl);
     url.port = port;
     return this.http.post(String(url) + '/shutdown', { headers: headers }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+   *  GET  | /foglamp/plugin/installed
+   */
+  getInstalledPlugins(direction) {
+    const params = new HttpParams().set('type', direction);
+    return this.http.get(this.GET_INSTALLED_PLUGINS_URL, { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+   *  GET  | /foglamp/track?service=<serviceName>
+   */
+  getInstalledPluginAsset(serviceName) {
+    const params = new HttpParams().set('service', serviceName);
+    return this.http.get(this.TRACK_SERVICE_URL, { params: params }).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  getSouthServices() {
+    return this.http.get(this.SOUTH_URL).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }

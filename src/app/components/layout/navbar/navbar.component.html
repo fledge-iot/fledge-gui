@@ -1,41 +1,160 @@
 <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+
   <div class="navbar-brand">
     <div class="navbar-burger" (click)="toggleClick()">
       <span></span>
       <span></span>
       <span></span>
     </div>
-    <a class="navbar-item is-flex-mobile is-hidden-tablet" href="/">
-      <b>FogLAMP</b>
-    </a>
-    <a class="navbar-item is-hidden-mobile is-flex-tablet" href="/">
-      <b>FogLAMP Management</b>
-    </a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-start">
-      <a class="navbar-item">
-        <div class="tooltip-inner tags has-addons tooltip is-tooltip-right" [attr.data-tooltip]='ping_info.stats'>
-          <span class="tag" [ngClass]="applyServiceStatusCustomCss(ping_info)">
-            <i [ngClass]="applyServiceStatusIconCss(ping_info)" aria-hidden="true"></i>
-          </span>
-          <span class="tag is-hidden-mobile">{{ping_info.service_status}}</span>
-          <button (click)="pingService(true)" class="tag button is-small">
-            <i class="fa fa-refresh" aria-hidden="true"></i>
-          </button>
-        </div>
-      </a>
+    <div *ngIf="viewPort !== 'mobile'">
+      <div class="navbar-item">
+        <div class="foglamp-logo"></div>
+        &nbsp;&nbsp;
+        <b>
+          <a href="/" style="color: #363636;">FogLAMP</a>
+        </b>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+      </div>
     </div>
-    <div class="navbar-end">
-      <div *ngIf='isUserLoggedIn' class="dropdown is-right" id="dropdown-box" (click)="toggleDropdown()">
+    <div *ngIf="pingInfo.isAuth || !pingInfo.isAlive">
+      <div *ngIf="viewPort == 'mobile'" class="navbar-item">
+        <b>FogLAMP
+        </b>
+      </div>
+    </div>
+    <div *ngIf="!pingInfo.isAlive" class="navbar-item">
+      <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+        <i class="fa fa-circle"> </i>
+      </span>
+      <b style="color:gray;">&nbsp;DOWN</b>
+    </div>
+    <div *ngIf="viewPort == 'tablet'" class="navbar-item">
+      <!-- tablet -->
+      <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
           <a class="navbar-link">
-            <b class="has-text-grey"> &nbsp;{{userName}}&nbsp; </b>
+            <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+              <i class="fa fa-circle"> </i>
+            </span>
+            <b *ngIf="pingData['hostName'] && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
             <span class="icon is-small">
-              <i class="fa fa-angle-down is-hidden-desktop" aria-hidden="true"></i>
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
             </span>
           </a>
         </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div class="dropdown-item">
+              <table>
+                <tr>
+                  <td class="has-text-left">Received: </td>
+                  <td>
+                    <b>{{pingData['dataRead'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Sent: </td>
+                  <td>
+                    <b>{{pingData['dataSent'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Uptime: </td>
+                  <td>
+                    <b>{{uptime}}</b>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="viewPort == 'mobile'" class="navbar-item">
+      <!-- mobile -->
+      <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
+        <div class="dropdown-trigger">
+          <a>
+            <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+              <i class="fa fa-circle"> </i>
+            </span>
+            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0, 8)}}/{{pingData['serviceName'].substr(0, 8)}}</b>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </a>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div class="dropdown-item">
+              <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+              <table>
+                <tr>
+                  <td class="has-text-left">Received: </td>
+                  <td>
+                    <b>{{pingData['dataRead'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Sent: </td>
+                  <td>
+                    <b>{{pingData['dataSent'] | number}}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="has-text-left">Uptime: </td>
+                  <td>
+                    <b>{{uptime}}</b>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="viewPort == 'desktop'" class="navbar-menu">
+    <!-- desktop (show in navbar-menu, not in navbar-brand) -->
+    <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="navbar-start">
+      <div class="navbar-item">
+        <div class="field is-grouped is-grouped-multiline">
+          <div class="control">
+            <span class="icon" [ngClass]="applyServiceStatusCustomCss(pingInfo)">
+              <i class="fa fa-circle"> </i>
+            </span>
+            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+          </div>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <div *ngIf='pingInfo.isAlive' class="control">
+            Received:
+            <b>{{pingData['dataRead'] | number}}</b>
+          </div>
+          <div *ngIf='pingInfo.isAlive' class="control">
+            Sent:
+            <b>{{pingData['dataSent'] | number}}</b>
+          </div>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <div *ngIf='pingInfo.isAlive' class="control">
+            Uptime:
+            <b>{{uptime}}</b>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="navbar-end">
+    <div *ngIf='isUserLoggedIn' class="navbar-item">
+      <div class="dropdown is-right" id="dropdown-box" (click)="toggleDropdown()">
+        <div class="dropdown-trigger">
+          <a class="navbar-link">
+            <b class="has-text-grey">{{userName}}</b>
+            <span class="icon is-small is-hidden-desktop">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </a>
+        </div>
+
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item">
@@ -44,18 +163,35 @@
             <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item">
               <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp; Log Out
             </a>
-            <a *ngIf="ping_info.is_alive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
+            <a *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
               <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp; Shut Down
+            </a>
+            <a id="restart" *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openRestartModal()" class="dropdown-item">
+              <i class="fa fa-refresh" aria-hidden="true"></i>&nbsp; Restart
             </a>
           </div>
         </div>
       </div>
-      <div *ngIf="ping_info.is_alive && isAuthOptional" class="icon has-text-danger is-large">
-        <a class=" tooltip is-tooltip-left" data-tooltip="Shut Down" (click)="openModal()">
-          <i class="fa fa-power-off" aria-hidden="true"></i>
-        </a>
+    </div>
+    <div class="navbar-item">
+      <div *ngIf="pingInfo.isAlive && isAuthOptional">
+        <span class="icon has-text-danger is-small">
+          <a class="tooltip is-tooltip-left" data-tooltip="Shut Down FogLAMP" (click)="openModal()">
+            <i class="fa fa-power-off" aria-hidden="true"></i>
+          </a>
+        </span>
+      </div>
+    </div>
+    <div class="navbar-item">
+      <div *ngIf="pingInfo.isAlive && isAuthOptional">
+        <span class="icon has-text-danger is-small">
+          <a id="restart" class="tooltip is-tooltip-left" data-tooltip="Restart FogLAMP" (click)="openRestartModal()">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+          </a>
+        </span>
       </div>
     </div>
   </div>
   <app-shutdown-modal (shutdown)='shutdown()' [shutDownData]='shutDownData'></app-shutdown-modal>
+  <app-restart-modal (restart)='restart()' [restartData]='restartData'></app-restart-modal>
 </nav>

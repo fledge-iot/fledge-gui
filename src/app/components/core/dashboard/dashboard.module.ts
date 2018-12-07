@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from '.';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { NgProgressModule } from 'ngx-progressbar';
-import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/multiselect.component';
 import { ChartModule } from '../../common/chart';
 import { StatisticsService } from '../../../services';
+import { DateFormatterPipe } from '../../../pipes';
 
 @NgModule({
   declarations: [
@@ -17,10 +17,9 @@ import { StatisticsService } from '../../../services';
     CommonModule,
     NumberInputDebounceModule,
     NgProgressModule,
-    AngularMultiSelectModule,
-    ChartModule
+    ChartModule,
   ],
-  providers: [StatisticsService],
+  providers: [StatisticsService, DateFormatterPipe],
   exports: []
 })
 export class DashboardModule { }
