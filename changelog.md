@@ -1,3 +1,27 @@
+## v1.4.5 [2018-12-xx]
+
+#### Added
+
+* Functionality to delete South service and North instance
+* Functionality to export readings to csv file, for South service and Asset
+* Service health status on mouse hover on the green/yellow/grey/red traffic light in the navbar
+* Advanced Configuration in South service modal
+* Support for `script` type configuration item
+* Support for the usage of `displayName` for configuration categories and items
+
+#### Changed
+
+* Improved save functionality for configuration items to use category bulk update api
+
+#### Removed
+
+* Empty validation check on save configuration items
+
+#### Fixed
+
+* Improved South service and North instance setup wizard
+
+
 ## v1.4.0 [2018-09-25]
 
 #### Added
