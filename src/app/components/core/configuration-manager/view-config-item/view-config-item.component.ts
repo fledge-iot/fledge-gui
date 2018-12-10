@@ -14,6 +14,8 @@ import ConfigTypeValidation from '../configuration-type-validation';
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
   @Input() useProxy: 'false';
+  @Input() useFilterProxy: 'false';
+  @Input() formId: '';
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration;
@@ -26,12 +28,13 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     public ngProgress: NgProgress) { }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
     this.configItems = [];
     const catConfigData = cloneDeep(changes.categoryConfigurationData.currentValue);
+
     if (catConfigData !== undefined) {
       let configAttributes = [];
       if (catConfigData.length !== 0) {
@@ -81,15 +84,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         return d;
       });
     });
-
     const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
-    console.log('view changedConfigValues', changedConfigValues);
     // condition to check if called from add service wizard
     if (this.isWizardCall) {
       this.onConfigChanged.emit(changedConfigValues);
       return;
     }
-
     this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
     let isConfigChanged = false;
     if (changedConfigValues.length > 0) {

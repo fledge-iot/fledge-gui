@@ -25,13 +25,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public category: any;
   public useProxy: 'true';
+  public useFilterProxy: 'true';
   public isEnabled = false;
   public isAdvanceConfig = false;
   public advanceConfigButtonText = 'Show Advanced Config';
   svcCheckbox: FormControl = new FormControl();
   public childConfiguration;
   public changedChildConfig = [];
-  public filterPipeline;
+  public filterPipeline = [];
   public filterConfiguration;
 
   public isWizard;
@@ -46,11 +47,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('serviceConfigView') viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('filterConfigView') filterConfigViewComponent: ViewConfigItemComponent;
   @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
-  @ViewChild('item') el: ElementRef;
-
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -233,16 +233,25 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    document.getElementById('vci-proxy').click();
+    if (this.useProxy) {
+      document.getElementById('vci-proxy').click();
+    }
+    const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
+    for (const e of <any>el) {
+      e.click();
+    }
+    if (this.filterConfigViewComponent !== undefined && !this.filterConfigViewComponent.isValidForm) {
+      return;
+    }
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
       return;
-    } else {
-      this.updateConfigConfiguration(this.changedChildConfig);
     }
+    this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
 
   public updateConfigConfiguration(configItems) {
+    console.log('update configItems', configItems);
     if (isEmpty(configItems)) {
       return;
     }
@@ -348,7 +357,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   onNotify() {
-    this.useProxy = 'true';
     this.getCategory();
     this.isWizard = false;
     this.getFilterPipeline();
@@ -361,7 +369,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       },
         error => {
           if (error.status === 404) {
-            this.filterPipeline = '';
+            this.filterPipeline = [];
           } else {
             console.log('Error ', error);
           }
@@ -369,6 +377,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   activeAccordion(id, filterName) {
+    this.useFilterProxy = 'true';
     const last = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
     if (last !== undefined) {
       const activeId = last.getAttribute('id');
@@ -392,8 +401,15 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     const catName = this.service['name'] + '_' + filterName;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
-        this.filterConfiguration = { 'value': [data] };
-      });
+        this.filterConfiguration = { key: catName, 'value': [data] };
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }
 

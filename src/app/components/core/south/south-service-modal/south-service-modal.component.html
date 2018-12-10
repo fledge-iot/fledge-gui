@@ -11,7 +11,7 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box animated slideInLeft">
-          <app-view-config-item *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+          <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
           <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
             <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
           </div>
@@ -49,8 +49,8 @@
                   </div>
                   <div class="accordion-body">
                     <div class="accordion-content">
-                      <app-view-config-item [hidden]="!filterConfiguration" [categoryConfigurationData]="filterConfiguration"
-                        [useProxy]="useProxy"></app-view-config-item>
+                      <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
+                        [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
                     </div>
                   </div>
                 </article>

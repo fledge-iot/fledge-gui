@@ -30,21 +30,20 @@ export class FilterService {
   }
 
   public addFilterPipeline(payload, serviceName) {
-    console.log('pay', payload);
-    return this.http.put(this.FILTER_URL + '/' + serviceName + '/pipeline?allow_duplicates=true&append_filter=true', payload).pipe(
-      map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+    return this.http.put(this.FILTER_URL + '/' + encodeURIComponent(serviceName)
+      + '/pipeline?allow_duplicates=true&append_filter=true', payload).pipe(
+        map(response => response),
+        catchError((error: Response) => observableThrowError(error)));
   }
 
   public getFilterPipeline(serviceName) {
-    return this.http.get(this.FILTER_URL + '/' + serviceName + '/pipeline').pipe(
+    return this.http.get(this.FILTER_URL + '/' + encodeURIComponent(serviceName) + '/pipeline').pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
 
   public getFilterConfiguration(categoryName) {
-    categoryName = encodeURIComponent(categoryName);
-    return this.http.get(this.CATEGORY_URL + '/' + categoryName).pipe(
+    return this.http.get(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
