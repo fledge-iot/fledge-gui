@@ -14,7 +14,7 @@
         <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
           <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
         </div>
-        <br/>
+        <br />
         <div [hidden]="!isAdvanceConfig">
           <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
         </div>
@@ -53,7 +53,9 @@
             </div>
             <div class="field-body">
               <div class="field">
-                <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                <ng-container *ngIf="service.protocol && service.address && service.management_port">
+                  <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                </ng-container>
               </div>
             </div>
           </div>
