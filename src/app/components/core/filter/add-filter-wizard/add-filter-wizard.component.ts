@@ -31,7 +31,7 @@ export class AddFilterWizardComponent implements OnInit {
   @ViewChild(ViewConfigItemComponent) viewConfigItem: ViewConfigItemComponent;
 
   constructor(private formBuilder: FormBuilder,
-    private pluginService: FilterService,
+    private filterService: FilterService,
     private alertService: AlertService) { }
 
   ngOnInit() {
@@ -211,7 +211,7 @@ export class AddFilterWizardComponent implements OnInit {
    * @param previousButton button to go previous
    */
   public addFilter(payload) {
-    this.pluginService.saveFilter(payload)
+    this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
           this.alertService.success(data.filter + ' filter added successfully.', true);
@@ -227,10 +227,17 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   public addFilterPipeline(payload) {
-    this.pluginService.addFilterPipeline(payload, this.serviceName)
+    this.filterService.addFilterPipeline(payload, this.serviceName)
       .subscribe((data: any) => {
         this.notify.emit(data);
-      });
+      },
+        (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   validateServiceName(event) {
@@ -242,7 +249,7 @@ export class AddFilterWizardComponent implements OnInit {
   public getInstalledFilterPlugins() {
     /** request started */
     // this.ngProgress.start();
-    this.pluginService.getInstalledFilterPlugins().subscribe(
+    this.filterService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
         /** request completed */
         // this.ngProgress.done();

@@ -19,6 +19,8 @@ export class AlertDialogComponent implements OnInit, OnChanges {
   @Output() deleteBackup = new EventEmitter<Number>();
   @Output() logoutAllUserSessionsService = new EventEmitter<Number>();
 
+  @Output() discardChanges = new EventEmitter<Boolean>();
+
   constructor() { }
 
   ngOnInit() { }
@@ -40,16 +42,22 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       if (this.childData.key === 'createBackup') {
         this.childData.actionButtonValue = 'Create';
       }
+      if (this.childData.key === 'unsavedConfirmation') {
+        this.childData.actionButtonValue = 'Discard';
+      }
     }
   }
 
   public toggleModal(isOpen: Boolean) {
-    const schedule_name = <HTMLDivElement>document.getElementById('modal-box');
+    if (this.childData !== undefined && this.childData.key === 'unsavedConfirmation') {
+      this.discardChanges.emit(false);
+    }
+    const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (isOpen) {
-      schedule_name.classList.add('is-active');
+      alertModal.classList.add('is-active');
       return;
     }
-    schedule_name.classList.remove('is-active');
+    alertModal.classList.remove('is-active');
   }
 
   triggerAction() {
@@ -84,6 +92,11 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       }
       if (this.childData.key === 'deleteBackup') {
         this.deleteBackup.emit(this.childData.id);
+        this.toggleModal(false);
+      }
+
+      if (this.childData.key === 'unsavedConfirmation') {
+        this.discardChanges.emit(true);
         this.toggleModal(false);
       }
     }

@@ -8,10 +8,12 @@ import { AssetsService, FilterService, SchedulesService, ServicesHealthService }
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddFilterWizardComponent } from './add-filter-wizard/add-filter-wizard.component';
+import { FilterAlertComponent } from './filter-alert/filter-alert.component';
 
 @NgModule({
   declarations: [
-   AddFilterWizardComponent
+   AddFilterWizardComponent,
+   FilterAlertComponent
   ],
   imports: [
     FormsModule,
@@ -22,7 +24,7 @@ import { AddFilterWizardComponent } from './add-filter-wizard/add-filter-wizard.
     SharedModule,
     PipesModule
   ],
-  exports: [AddFilterWizardComponent],
+  exports: [AddFilterWizardComponent, FilterAlertComponent],
   providers: [ServicesHealthService, AssetsService, SchedulesService, FilterService],
 })
 export class FilterModule { }

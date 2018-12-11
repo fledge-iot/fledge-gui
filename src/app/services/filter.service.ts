@@ -47,4 +47,11 @@ export class FilterService {
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
+
+  public updateFilterPipeline(payload, serviceName) {
+    return this.http.put(this.FILTER_URL + '/' + encodeURIComponent(serviceName)
+      + '/pipeline?allow_duplicates=true&append_filter=false', payload).pipe(
+        map(response => response),
+        catchError((error: Response) => observableThrowError(error)));
+  }
 }

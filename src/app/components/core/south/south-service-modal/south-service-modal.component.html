@@ -42,15 +42,18 @@
           <div *ngIf="filterPipeline != undefined" class="columns">
             <div class="column">
               <section class="accordions">
-                <article *ngFor="let item of filterPipeline; let i = index" class="is-light accordion" [attr.id]="i">
-                  <div class="accordion-header" (click)="activeAccordion(i, item)">
-                    <p>{{item}}</p>
+                <article *ngFor="let filter of filterPipeline; let i = index" class="is-light accordion" [attr.id]="i">
+                  <div class="accordion-header" (click)="activeAccordion(i, filter)">
+                    <p>{{filter}}</p>
                     <button class="is-dark toggle" aria-label="toggle"></button>
                   </div>
                   <div class="accordion-body">
                     <div class="accordion-content">
                       <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
                         [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
+                      <div class="field is-pulled-right">
+                          <button class="button is-small" (click)="deleteFilter(i)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                      </div>
                     </div>
                   </div>
                 </article>
@@ -72,7 +75,7 @@
           </div>
           <hr>
           <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right"
-            (click)="changeServiceStatus(service.name)">Save</button>
+            (click)="saveChanges(service.name)">Save</button>
           <ng-container *ngIf="service != undefined">
             <div *ngIf="service.schedule_enabled" class="field is-horizontal">
               <div class="field-label has-text-left">
@@ -102,4 +105,5 @@
     </section>
   </div>
   <app-alert-dialog (deleteService)='deleteService($event)' [serviceRecord]='serviceRecord'></app-alert-dialog>
+  <app-filter-alert *ngIf="filterChangeDetected" (discardChanges)="discardChanges($event)" [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>

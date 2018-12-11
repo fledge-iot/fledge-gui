@@ -1,7 +1,9 @@
-import { Component, EventEmitter, ElementRef, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Parser } from 'json2csv';
-import { isEmpty } from 'lodash';
+import { isEmpty, differenceWith, isEqual } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import {
@@ -15,6 +17,7 @@ import {
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -33,17 +36,16 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public childConfiguration;
   public changedChildConfig = [];
   public filterPipeline = [];
+  public newFilterPipeline = [];
   public filterConfiguration;
+
+  public filterChangeDetected = false;
 
   public isWizard;
   // Object to hold data of south service to delete
-  public serviceRecord = {
-    port: '',
-    protocol: '',
-    name: '',
-    message: '',
-    key: ''
-  };
+  public serviceRecord;
+
+  confirmationDialogData = {};
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -51,14 +53,15 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @ViewChild('filterConfigView') filterConfigViewComponent: ViewConfigItemComponent;
   @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
-
+  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
+  iterableDiffer;
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     private assetService: AssetsService,
     private filterService: FilterService,
     public ngProgress: NgProgress,
     private servicesHealthService: ServicesHealthService,
-    private schedulesService: SchedulesService) { }
+    private schedulesService: SchedulesService) {}
 
   ngOnInit() {
     this.svcCheckbox.valueChanges.subscribe(val => {
@@ -75,6 +78,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public toggleModal(isOpen: Boolean) {
+    if (this.filterChangeDetected) {
+      this.openConfirmationDialog();
+      return;
+    }
+
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
 
     if (this.isWizard) {
@@ -174,6 +182,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
+  saveChanges(serviceName) {
+    if (this.filterChangeDetected) {
+      console.log('filterChangeDetected', this.filterChangeDetected);
+      this.updateFilterPipeline(this.filterPipeline);
+    }
+    this.changeServiceStatus(serviceName);
+  }
+
   changeServiceStatus(serviceName) {
     this.toggleModal(false);
     if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
@@ -251,7 +267,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public updateConfigConfiguration(configItems) {
-    console.log('update configItems', configItems);
     if (isEmpty(configItems)) {
       return;
     }
@@ -291,6 +306,21 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
+  }
+
+
+  /**
+  * Open confirmation modal
+  * @param message   message to show on alert
+  */
+  openConfirmationDialog() {
+    this.confirmationDialogData = {
+      id: '',
+      name: '',
+      message: 'Do you want to discard unsaved changes',
+      key: 'unsavedConfirmation'
+    };
+    this.filterAlert.toggleModal(true);
   }
 
   getAssetReadings(service) {
@@ -410,6 +440,38 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  deleteFilter(filterIndex) {
+    this.newFilterPipeline = this.filterPipeline.splice(filterIndex, 1);
+    this.newFilterPipeline = this.filterPipeline.filter(f1 => this.newFilterPipeline.some(f2 => f1.id === f2.id));
+    console.log('changed filter', this.newFilterPipeline);
+    this.filterChangeDetected = true;
+  }
+
+  public updateFilterPipeline(filterPipeline) {
+    this.filterChangeDetected = false;
+    this.ngProgress.start();
+    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service['name'])
+      .subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Filter deleted successfully.', true);
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  discardChanges(event) {
+    if (event) {
+      this.filterChangeDetected = false;
+      this.toggleModal(false);
+    }
   }
 }
 
