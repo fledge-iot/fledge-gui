@@ -53,7 +53,9 @@
             </div>
             <div class="field-body">
               <div class="field">
-                <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                <ng-container *ngIf="service.protocol && service.address && service.management_port">
+                  <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                </ng-container>
               </div>
             </div>
           </div>
