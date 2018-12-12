@@ -34,7 +34,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     this.filesToUpload = [];
     this.configItems = [];
     const catConfigData = cloneDeep(changes.categoryConfigurationData.currentValue);
-
     if (catConfigData !== undefined) {
       let configAttributes = [];
       if (catConfigData.length !== 0) {
