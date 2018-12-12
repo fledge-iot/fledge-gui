@@ -13,6 +13,7 @@ import { AddServiceWizardComponent } from './add-service-wizard/add-service-wiza
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
 import { FilterModule } from '../filter/filter.module';
+import { DndModule } from 'ngx-drag-drop';
 
 const routes: Routes = [
 
@@ -43,7 +44,8 @@ const routes: Routes = [
     AlertDialogModule,
     SharedModule,
     FilterModule,
-    PipesModule
+    PipesModule,
+    DndModule
   ],
   providers: [ServicesHealthService, AssetsService, SchedulesService, FilterService],
 })

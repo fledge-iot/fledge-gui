@@ -18,3 +18,14 @@ label{
 [hidden] {
   display: none !important;
 }
+
+.dndPlaceholder {
+  min-height: 72px;
+  border: 1px dashed green;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.hide-text {
+  display: none !important;
+  visibility: hidden;
+}

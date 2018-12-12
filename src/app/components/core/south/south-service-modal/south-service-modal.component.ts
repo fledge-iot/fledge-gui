@@ -3,8 +3,9 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Parser } from 'json2csv';
-import { isEmpty, differenceWith, isEqual } from 'lodash';
+import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
+import { DndDropEvent } from 'ngx-drag-drop';
 
 import {
   AlertService,
@@ -41,6 +42,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public filterChangeDetected = false;
 
+  public filterItemIndex;
+
+
   public isWizard;
   // Object to hold data of south service to delete
   public serviceRecord;
@@ -54,14 +58,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
-  iterableDiffer;
+
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     private assetService: AssetsService,
     private filterService: FilterService,
     public ngProgress: NgProgress,
     private servicesHealthService: ServicesHealthService,
-    private schedulesService: SchedulesService) {}
+    private schedulesService: SchedulesService) { }
 
   ngOnInit() {
     this.svcCheckbox.valueChanges.subscribe(val => {
@@ -74,6 +78,26 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.getCategory();
       this.checkIfAdvanceConfig(this.service['name']);
       this.getFilterPipeline();
+    }
+  }
+
+  onDragStart(itemIndex) {
+    this.filterItemIndex = itemIndex;
+  }
+
+  onDrop(event: DndDropEvent, list?: any[]) {
+    const oldIndex = this.filterItemIndex;
+    if (list
+      && (event.dropEffect === 'copy'
+        || event.dropEffect === 'move')) {
+
+      let newIndex = event.index;
+
+      if (typeof newIndex === 'undefined') {
+        newIndex = list.length;
+      }
+      list.splice(newIndex, 0, list.splice(oldIndex, 1)[0]);
+      this.filterChangeDetected = true;
     }
   }
 
@@ -184,7 +208,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   saveChanges(serviceName) {
     if (this.filterChangeDetected) {
-      console.log('filterChangeDetected', this.filterChangeDetected);
       this.updateFilterPipeline(this.filterPipeline);
     }
     this.changeServiceStatus(serviceName);
@@ -410,17 +433,22 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.useFilterProxy = 'true';
     const last = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
     if (last !== undefined) {
+      const body = <HTMLElement>last.getElementsByClassName('accordion-content')[0];
       const activeId = last.getAttribute('id');
       if (id !== +activeId) {
+        body.hidden = true;
         last.classList.remove('is-active');
         const next = <HTMLElement>document.getElementById(id);
         next.setAttribute('class', 'is-light accordion is-active');
         this.getFilterConfiguration(filterName);
       } else {
         last.classList.remove('is-active');
+        body.hidden = true;
       }
     } else {
       const element = <HTMLElement>document.getElementById(id);
+      const body = <HTMLElement>element.getElementsByClassName('accordion-content')[0];
+      body.hidden = false;
       element.setAttribute('class', 'is-light accordion is-active');
       this.getFilterConfiguration(filterName);
     }
@@ -445,7 +473,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   deleteFilter(filterIndex) {
     this.newFilterPipeline = this.filterPipeline.splice(filterIndex, 1);
     this.newFilterPipeline = this.filterPipeline.filter(f1 => this.newFilterPipeline.some(f2 => f1.id === f2.id));
-    console.log('changed filter', this.newFilterPipeline);
     this.filterChangeDetected = true;
   }
 
@@ -455,7 +482,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service['name'])
       .subscribe(() => {
         this.ngProgress.done();
-        this.alertService.success('Filter deleted successfully.', true);
+        this.alertService.success('Filter pipeline updated successfully.', true);
       },
         (error) => {
           this.ngProgress.done();

@@ -41,22 +41,32 @@
           </div>
           <div *ngIf="filterPipeline != undefined" class="columns">
             <div class="column">
-              <section class="accordions">
-                <article *ngFor="let filter of filterPipeline; let i = index" class="is-light accordion" [attr.id]="i">
-                  <div class="accordion-header" (click)="activeAccordion(i, filter)">
-                    <p>{{filter}}</p>
-                    <button class="is-dark toggle" aria-label="toggle"></button>
-                  </div>
-                  <div class="accordion-body">
-                    <div class="accordion-content">
-                      <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
-                        [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
-                      <div class="field is-pulled-right">
-                          <button class="button is-small" (click)="deleteFilter(i)"><i class="fa fa-trash" aria-hidden="true"></i></button>
-                      </div>
+              <section class="accordions"
+              dndDropzone
+              dndEffectAllowed="copyMove"
+              (dndDrop)="onDrop($event, filterPipeline)">
+
+              <article dndPlaceholderRef class="is-light accordion dndPlaceholder" >
+              </article>
+              <article *ngFor="let filter of filterPipeline; let i = index"
+              [dndDraggable]="filter"
+              (dndStart)="onDragStart(i)"
+              class="is-light accordion" [attr.id]="i">
+
+              <div class="accordion-header" (click)="activeAccordion(i, filter)">
+                  <p>{{filter}}</p>
+                  <button class="is-dark toggle" aria-label="toggle"></button>
+                </div>
+                <div class="accordion-body">
+                  <div class="accordion-content" hidden>
+                    <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
+                      [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
+                    <div class="field is-pulled-right">
+                      <button class="button is-small" (click)="deleteFilter(i)"><i class="fa fa-trash" aria-hidden="true"></i></button>
                     </div>
                   </div>
-                </article>
+                </div>
+              </article>
               </section>
             </div>
           </div>

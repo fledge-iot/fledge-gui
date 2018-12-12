@@ -5465,6 +5465,11 @@ ng-sidebar@~6.0.5:
   resolved "https://registry.yarnpkg.com/ng-sidebar/-/ng-sidebar-6.0.5.tgz#0fe40e1d9fc2e06f7a750a9628d9977a6718baba"
   integrity sha512-/YBRLNkvrOBDuEQAlS75TG4FxJVVZMVzosiPudWUZMB6gulSsxarEs4q5o3q3zTMdlCe9WXNGxkrQUL+YrXf8A==
 
+ngx-drag-drop@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ngx-drag-drop/-/ngx-drag-drop-1.1.0.tgz#3918c5da6819f1ca43dc44bc31a9fd08d517a337"
+  integrity sha512-n4ZZbLsqj7vnSlX9qJ48BlI/KJwHU9YnpeFXGgY9TOxGrfGzJsPK7ZYvStBwEJ3K8NL4QGAEcBtEuMxO86nU2A==
+
 ngx-progressbar@~2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ngx-progressbar/-/ngx-progressbar-2.1.1.tgz#cecd88435ac660be445caeaded19b85f4a1e47be"
