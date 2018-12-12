@@ -69,6 +69,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
   getAssetReadings(assetCode, recordCount) {
     const fields = ['timestamp', 'reading'];
     const opts = { fields };
+    if (recordCount === 0) {
+      this.alertService.error('No reading to export.');
+    }
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), recordCount).
       subscribe(
         (data: any[]) => {

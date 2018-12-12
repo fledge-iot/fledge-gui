@@ -27,13 +27,16 @@ export class AssetsService {
   * @param limit
   *  Return a set of asset readings for the given asset code
   */
-  public getAssetReadings(assetCode, limit: number = 0, time: number = 0) {
+  public getAssetReadings(assetCode, limit: number = 0, offset: number = 0, time: number = 0) {
     let params = new HttpParams();
     if (+time !== 0) {
       params = params.append('seconds', time.toString());
     }
     if (+limit !== 0) {
       params = params.set('limit', limit.toString());
+    }
+    if (+offset !== 0) {
+      params = params.set('offset', offset.toString());
     }
     return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
       map(response => response),

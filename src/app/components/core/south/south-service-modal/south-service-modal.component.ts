@@ -4,6 +4,8 @@ import { Parser } from 'json2csv';
 import { isEmpty } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
+import { MAX_INT_SIZE } from '../../../../utils';
+
 import {
   AlertService,
   AssetsService,
@@ -31,6 +33,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   svcCheckbox: FormControl = new FormControl();
   public childConfiguration;
   public changedChildConfig = [];
+  private REQUEST_TIMEOUT_INTERVAL = 2000;
+  assetReadings = [];
 
   // Object to hold data of south service to delete
   public serviceRecord = {
@@ -272,39 +276,76 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   getAssetReadings(service) {
-    console.log('download start time', performance.now());
+    const assets = service.assets;
+    this.assetReadings = [];
+    if (assets.length === 0) {
+      this.alertService.error('No reading to export.');
+    }
+    assets.forEach((ast, i) => {
+      let limit = ast.count;
+      let offset = 0;
+      let isLastRequest = false;
+      if (ast.count > MAX_INT_SIZE) {
+        let chunkCount;
+        let lastRequestLimit;
+        limit = MAX_INT_SIZE;
+        chunkCount = Math.ceil(ast.count / MAX_INT_SIZE);
+        lastRequestLimit = (ast.count % MAX_INT_SIZE);
+        if (lastRequestLimit === 0) {
+          lastRequestLimit = MAX_INT_SIZE;
+        }
+        for (let j = 0; j < chunkCount; j++) {
+          if (j !== 0) {
+            offset = (MAX_INT_SIZE * j);
+          }
+          if (j === (chunkCount - 1)) {
+            limit = lastRequestLimit;
+          }
+          if (i === assets.length - 1 && j === (chunkCount - 1)) {
+            isLastRequest = true;
+          }
+          this.exportReadings(ast.asset, limit, offset, isLastRequest, service['name']);
+        }
+      } else {
+        if (i === assets.length - 1) {
+          isLastRequest = true;
+        }
+        this.exportReadings(ast.asset, limit, offset, isLastRequest, service['name']);
+      }
+    });
+  }
+
+  exportReadings(asset, limit, offset, lastRequest, serviceName) {
     const fields = ['assetName', 'reading', 'timestamp'];
     const opts = { fields };
-    const assets = service.assets;
-    let assetReadings = [];
-    assets.forEach((ast, i) => {
-      this.assetService.getAssetReadings(encodeURIComponent(ast.asset), ast.count).
+    this.assetService.getAssetReadings(encodeURIComponent(asset), limit, offset).
         subscribe(
           (result: any[]) => {
             result = result.map(r => {
-              r['assetName'] = ast.asset;
+              r['assetName'] = asset;
               return r;
             });
-            assetReadings = assetReadings.concat(result);
-            if (i === assets.length - 1) {
-              const parser = new Parser(opts);
-              const csv = parser.parse(assetReadings);
-              const blob = new Blob([csv], { type: 'text/csv' });
-              const url = window.URL.createObjectURL(blob);
-              // create a custom anchor tag
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = service['name'] + '-readings.csv';
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              console.log('download end time', performance.now());
+            this.assetReadings = this.assetReadings.concat(result);
+            this.alertService.success('Downloading..');
+            if (lastRequest === true) {
+              setTimeout(() => {
+                const parser = new Parser(opts);
+                const csv = parser.parse(this.assetReadings);
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                // create a custom anchor tag
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = serviceName + '-readings.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }, this.REQUEST_TIMEOUT_INTERVAL);
             }
           },
           error => {
             console.log('error in response', error);
           });
-    });
   }
 
   deleteService(svc) {
@@ -329,5 +370,3 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 }
-
-
