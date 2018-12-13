@@ -20,6 +20,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
   private isAlive: boolean;
+  private REQUEST_TIMEOUT_INTERVAL = 1000;
+  MAX_INT_SIZE = 3000;
+  assetReadings = [];
 
   @ViewChild(ReadingsGraphComponent) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -67,25 +70,64 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   getAssetReadings(assetCode, recordCount) {
-    const fields = ['timestamp', 'reading'];
-    const opts = { fields };
     if (recordCount === 0) {
       this.alertService.error('No reading to export.');
     }
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), recordCount).
+    let limit = recordCount;
+    let offset = 0;
+    let isLastRequest = false;
+    if (recordCount > this.MAX_INT_SIZE) {
+      let chunkCount;
+      let lastRequestLimit;
+      limit = this.MAX_INT_SIZE;
+      chunkCount = Math.ceil(recordCount / this.MAX_INT_SIZE);
+      lastRequestLimit = (recordCount % this.MAX_INT_SIZE);
+      if (lastRequestLimit === 0) {
+        lastRequestLimit = this.MAX_INT_SIZE;
+      }
+      for (let j = 0; j < chunkCount; j++) {
+        if (j !== 0) {
+          offset = (this.MAX_INT_SIZE * j);
+        }
+        if (j === (chunkCount - 1)) {
+          limit = lastRequestLimit;
+          isLastRequest = true;
+        }
+        this.alertService.activityMessage('Downloading..');
+        this.exportReadings(assetCode, limit, offset, isLastRequest);
+      }
+    } else {
+      this.alertService.activityMessage('Downloading..');
+      this.exportReadings(assetCode, limit, offset, true);
+    }
+  }
+
+  exportReadings(assetCode, limit, offset, lastRequest) {
+    const fields = ['timestamp', 'reading'];
+    const opts = { fields };
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), limit, offset).
       subscribe(
         (data: any[]) => {
-          const parser = new Parser(opts);
-          const csv = parser.parse(data);
-          const blob = new Blob([csv], { type: 'text/csv' });
-          const url = window.URL.createObjectURL(blob);
-          // create a custom anchor tag
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = assetCode + '_readings.csv';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+          data = data.map(r => {
+            return r;
+          });
+          this.assetReadings = this.assetReadings.concat(data);
+          if (lastRequest === true) {
+            setTimeout(() => {
+            const parser = new Parser(opts);
+            const csv = parser.parse(this.assetReadings);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            // create a custom anchor tag
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = assetCode + '-readings.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            this.alertService.closeMessage();
+            }, this.REQUEST_TIMEOUT_INTERVAL);
+          }
         },
         error => {
           console.log('error in response', error);

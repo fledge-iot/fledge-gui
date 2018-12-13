@@ -33,7 +33,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   svcCheckbox: FormControl = new FormControl();
   public childConfiguration;
   public changedChildConfig = [];
-  private REQUEST_TIMEOUT_INTERVAL = 2000;
+  private REQUEST_TIMEOUT_INTERVAL = 1000;
   assetReadings = [];
 
   // Object to hold data of south service to delete
@@ -304,12 +304,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           if (i === assets.length - 1 && j === (chunkCount - 1)) {
             isLastRequest = true;
           }
+          this.alertService.activityMessage('Downloading..');
           this.exportReadings(ast.asset, limit, offset, isLastRequest, service['name']);
         }
       } else {
         if (i === assets.length - 1) {
           isLastRequest = true;
         }
+        this.alertService.activityMessage('Downloading..');
         this.exportReadings(ast.asset, limit, offset, isLastRequest, service['name']);
       }
     });
@@ -326,7 +328,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
               return r;
             });
             this.assetReadings = this.assetReadings.concat(result);
-            this.alertService.success('Downloading..');
             if (lastRequest === true) {
               setTimeout(() => {
                 const parser = new Parser(opts);
@@ -340,6 +341,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
+                this.alertService.closeMessage();
               }, this.REQUEST_TIMEOUT_INTERVAL);
             }
           },
