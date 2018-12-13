@@ -21,7 +21,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   private isAlive: boolean;
   private REQUEST_TIMEOUT_INTERVAL = 1000;
-  MAX_INT_SIZE = 3000;
   assetReadings = [];
 
   @ViewChild(ReadingsGraphComponent) readingsGraphComponent: ReadingsGraphComponent;
@@ -76,18 +75,18 @@ export class AssetsComponent implements OnInit, OnDestroy {
     let limit = recordCount;
     let offset = 0;
     let isLastRequest = false;
-    if (recordCount > this.MAX_INT_SIZE) {
+    if (recordCount > MAX_INT_SIZE) {
       let chunkCount;
       let lastRequestLimit;
-      limit = this.MAX_INT_SIZE;
-      chunkCount = Math.ceil(recordCount / this.MAX_INT_SIZE);
-      lastRequestLimit = (recordCount % this.MAX_INT_SIZE);
+      limit = MAX_INT_SIZE;
+      chunkCount = Math.ceil(recordCount / MAX_INT_SIZE);
+      lastRequestLimit = (recordCount % MAX_INT_SIZE);
       if (lastRequestLimit === 0) {
-        lastRequestLimit = this.MAX_INT_SIZE;
+        lastRequestLimit = MAX_INT_SIZE;
       }
       for (let j = 0; j < chunkCount; j++) {
         if (j !== 0) {
-          offset = (this.MAX_INT_SIZE * j);
+          offset = (MAX_INT_SIZE * j);
         }
         if (j === (chunkCount - 1)) {
           limit = lastRequestLimit;
