@@ -28,7 +28,7 @@
                       [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
                       appNumberOnly />
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'" name="{{configItem.value.key}}"
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'"  step="0.01" name="{{configItem.value.key}}"
                       type="number" [value]='setConfigValue(configItem.value)' step="any" class="input is-fullwidth is-small"
                       [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
                       appNumberOnly />

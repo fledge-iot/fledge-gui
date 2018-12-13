@@ -54,4 +54,10 @@ export class FilterService {
         map(response => response),
         catchError((error: Response) => observableThrowError(error)));
   }
+
+  public deleteFilter(filterName) {
+    return this.http.delete(this.FILTER_URL + '/' + encodeURIComponent(filterName)).pipe(
+        map(response => response),
+        catchError((error: Response) => observableThrowError(error)));
+  }
 }

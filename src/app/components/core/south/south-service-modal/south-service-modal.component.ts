@@ -37,10 +37,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public childConfiguration;
   public changedChildConfig = [];
   public filterPipeline = [];
-  public newFilterPipeline = [];
+  public deletedFilterPipeline = [];
   public filterConfiguration;
 
-  public filterChangeDetected = false;
+  public isFilterOrderChanged = false;
+  public isFilterDeleted = false;
 
   public filterItemIndex;
 
@@ -97,14 +98,18 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         newIndex = list.length;
       }
       list.splice(newIndex, 0, list.splice(oldIndex, 1)[0]);
-      this.filterChangeDetected = true;
     }
+    this.isFilterOrderChanged = true;
   }
 
   public toggleModal(isOpen: Boolean) {
-    if (this.filterChangeDetected) {
-      this.openConfirmationDialog();
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.showConfirmationDialog();
       return;
+    }
+    const activeFilterTab = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
+    if (activeFilterTab !== undefined) {
+      activeFilterTab.classList.remove('is-active');
     }
 
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
@@ -207,14 +212,17 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   saveChanges(serviceName) {
-    if (this.filterChangeDetected) {
+    if (this.isFilterDeleted) {
+      this.deleteFilter();
+    }
+    if (this.isFilterOrderChanged) {
       this.updateFilterPipeline(this.filterPipeline);
     }
     this.changeServiceStatus(serviceName);
+    this.toggleModal(false);
   }
 
   changeServiceStatus(serviceName) {
-    this.toggleModal(false);
     if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
       return false;
     }
@@ -336,7 +344,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   * Open confirmation modal
   * @param message   message to show on alert
   */
-  openConfirmationDialog() {
+  showConfirmationDialog() {
     this.confirmationDialogData = {
       id: '',
       name: '',
@@ -470,14 +478,46 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  deleteFilter(filterIndex) {
-    this.newFilterPipeline = this.filterPipeline.splice(filterIndex, 1);
-    this.newFilterPipeline = this.filterPipeline.filter(f1 => this.newFilterPipeline.some(f2 => f1.id === f2.id));
-    this.filterChangeDetected = true;
+  deleteFilterReference(filter) {
+    this.deletedFilterPipeline.push(filter);
+    this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
+    this.isFilterDeleted = true;
+    this.isFilterOrderChanged = false;
+  }
+
+
+  deleteFilter() {
+    this.isFilterDeleted = false;
+    this.ngProgress.start();
+    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service['name'])
+      .subscribe(() => {
+        this.deletedFilterPipeline.forEach(filter => {
+          this.filterService.deleteFilter(filter).subscribe((data: any) => {
+            this.ngProgress.done();
+            this.alertService.success(data.result, true);
+          },
+            (error) => {
+              this.ngProgress.done();
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.alertService.error(error.statusText);
+              }
+            });
+        });
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   public updateFilterPipeline(filterPipeline) {
-    this.filterChangeDetected = false;
+    this.isFilterOrderChanged = false;
     this.ngProgress.start();
     this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service['name'])
       .subscribe(() => {
@@ -496,7 +536,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   discardChanges(event) {
     if (event) {
-      this.filterChangeDetected = false;
+      this.isFilterOrderChanged = false;
+      this.isFilterDeleted = false;
+      this.deletedFilterPipeline = [];
       this.toggleModal(false);
     }
   }

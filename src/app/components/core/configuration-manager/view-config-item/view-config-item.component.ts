@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, round } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -28,7 +28,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     public ngProgress: NgProgress) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
@@ -79,10 +79,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       return this.configItems.map(conf => {
         if (conf.key === d.key) {
           d['type'] = conf.type;
+          d.value = conf.type === 'float' ? round(d.value).toFixed(1).toString() : d.value.toString();
         }
         return d;
       });
     });
+
     const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
     // condition to check if called from add service wizard
     if (this.isWizardCall) {
@@ -118,7 +120,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     });
 
     changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
-
     if (isEmpty(changedConfig)) {
       return;
     }
