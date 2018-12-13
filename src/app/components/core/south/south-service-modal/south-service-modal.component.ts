@@ -491,9 +491,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.ngProgress.start();
     this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service['name'])
       .subscribe(() => {
-        this.deletedFilterPipeline.forEach(filter => {
+        this.deletedFilterPipeline.forEach((filter, index) => {
           this.filterService.deleteFilter(filter).subscribe((data: any) => {
             this.ngProgress.done();
+            if (this.deletedFilterPipeline.length === index + 1) {
+              this.deletedFilterPipeline = []; // clear deleted filter reference
+            }
             this.alertService.success(data.result, true);
           },
             (error) => {
