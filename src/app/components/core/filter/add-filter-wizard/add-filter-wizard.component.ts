@@ -205,10 +205,8 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   /**
-   * Method to add service
+   * Method to add filter
    * @param payload  to pass in request
-   * @param nxtButton button to go next
-   * @param previousButton button to go previous
    */
   public addFilter(payload) {
     this.filterService.saveFilter(payload)
