@@ -75,28 +75,29 @@ export class AssetsComponent implements OnInit, OnDestroy {
     let limit = recordCount;
     let offset = 0;
     let isLastRequest = false;
+    const fileName = assetCode + '-readings.csv';
     if (recordCount > MAX_INT_SIZE) {
       let chunkCount;
-      let lastRequestLimit;
+      let lastChunkLimit;
       limit = MAX_INT_SIZE;
       chunkCount = Math.ceil(recordCount / MAX_INT_SIZE);
-      lastRequestLimit = (recordCount % MAX_INT_SIZE);
-      if (lastRequestLimit === 0) {
-        lastRequestLimit = MAX_INT_SIZE;
+      lastChunkLimit = (recordCount % MAX_INT_SIZE);
+      if (lastChunkLimit === 0) {
+        lastChunkLimit = MAX_INT_SIZE;
       }
       for (let j = 0; j < chunkCount; j++) {
         if (j !== 0) {
           offset = (MAX_INT_SIZE * j);
         }
         if (j === (chunkCount - 1)) {
-          limit = lastRequestLimit;
+          limit = lastChunkLimit;
           isLastRequest = true;
         }
-        this.alertService.activityMessage('Downloading..');
+        this.alertService.activityMessage('Exporting readings to ' + fileName);
         this.exportReadings(assetCode, limit, offset, isLastRequest);
       }
     } else {
-      this.alertService.activityMessage('Downloading..');
+      this.alertService.activityMessage('Exporting readings to ' + fileName);
       this.exportReadings(assetCode, limit, offset, true);
     }
   }
@@ -124,7 +125,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            this.alertService.closeMessage();
+            setTimeout(() => {
+              this.alertService.closeMessage();
+            }, this.REQUEST_TIMEOUT_INTERVAL);
             }, this.REQUEST_TIMEOUT_INTERVAL);
           }
         },

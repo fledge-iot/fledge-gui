@@ -285,69 +285,72 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       let limit = ast.count;
       let offset = 0;
       let isLastRequest = false;
+      const fileName = service['name'] + '-readings.csv';
       if (ast.count > MAX_INT_SIZE) {
         let chunkCount;
-        let lastRequestLimit;
+        let lastChunkLimit;
         limit = MAX_INT_SIZE;
         chunkCount = Math.ceil(ast.count / MAX_INT_SIZE);
-        lastRequestLimit = (ast.count % MAX_INT_SIZE);
-        if (lastRequestLimit === 0) {
-          lastRequestLimit = MAX_INT_SIZE;
+        lastChunkLimit = (ast.count % MAX_INT_SIZE);
+        if (lastChunkLimit === 0) {
+          lastChunkLimit = MAX_INT_SIZE;
         }
         for (let j = 0; j < chunkCount; j++) {
           if (j !== 0) {
             offset = (MAX_INT_SIZE * j);
           }
           if (j === (chunkCount - 1)) {
-            limit = lastRequestLimit;
+            limit = lastChunkLimit;
           }
           if (i === assets.length - 1 && j === (chunkCount - 1)) {
             isLastRequest = true;
           }
-          this.alertService.activityMessage('Downloading..');
-          this.exportReadings(ast.asset, limit, offset, isLastRequest, service['name']);
+          this.alertService.activityMessage('Exporting readings to ' + fileName);
+          this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName);
         }
       } else {
         if (i === assets.length - 1) {
           isLastRequest = true;
         }
-        this.alertService.activityMessage('Downloading..');
-        this.exportReadings(ast.asset, limit, offset, isLastRequest, service['name']);
+        this.alertService.activityMessage('Exporting readings to ' + fileName);
+        this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName);
       }
     });
   }
 
-  exportReadings(asset, limit, offset, lastRequest, serviceName) {
+  exportReadings(asset, limit, offset, lastRequest, fileName) {
     const fields = ['assetName', 'reading', 'timestamp'];
     const opts = { fields };
     this.assetService.getAssetReadings(encodeURIComponent(asset), limit, offset).
-        subscribe(
-          (result: any[]) => {
-            result = result.map(r => {
-              r['assetName'] = asset;
-              return r;
-            });
-            this.assetReadings = this.assetReadings.concat(result);
-            if (lastRequest === true) {
+      subscribe(
+        (result: any[]) => {
+          result = result.map(r => {
+            r['assetName'] = asset;
+            return r;
+          });
+          this.assetReadings = this.assetReadings.concat(result);
+          if (lastRequest === true) {
+            setTimeout(() => {
+              const parser = new Parser(opts);
+              const csv = parser.parse(this.assetReadings);
+              const blob = new Blob([csv], { type: 'text/csv' });
+              const url = window.URL.createObjectURL(blob);
+              // create a custom anchor tag
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = fileName;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
               setTimeout(() => {
-                const parser = new Parser(opts);
-                const csv = parser.parse(this.assetReadings);
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                // create a custom anchor tag
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = serviceName + '-readings.csv';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
                 this.alertService.closeMessage();
               }, this.REQUEST_TIMEOUT_INTERVAL);
-            }
-          },
-          error => {
-            console.log('error in response', error);
-          });
+            }, this.REQUEST_TIMEOUT_INTERVAL);
+          }
+        },
+        error => {
+          console.log('error in response', error);
+        });
   }
 
   deleteService(svc) {
