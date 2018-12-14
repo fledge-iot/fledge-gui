@@ -31,3 +31,11 @@ label{
 }
 
 a { color: black; }
+
+.toggle::before {
+  top: 0.2em !important;
+}
+
+.btnDelete {
+  margin: 2px;
+}
