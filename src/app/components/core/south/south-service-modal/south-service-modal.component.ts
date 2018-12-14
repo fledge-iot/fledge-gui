@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Parser } from 'json2csv';
-import { isEmpty } from 'lodash';
+import { isEmpty, cloneDeep, isEqualWith } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 import { DndDropEvent } from 'ngx-drag-drop';
 
@@ -88,18 +88,20 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   onDrop(event: DndDropEvent, list?: any[]) {
     const oldIndex = this.filterItemIndex;
+    const listCopy = cloneDeep(list);
     if (list
       && (event.dropEffect === 'copy'
         || event.dropEffect === 'move')) {
-
       let newIndex = event.index;
-
       if (typeof newIndex === 'undefined') {
         newIndex = list.length;
       }
       list.splice(newIndex, 0, list.splice(oldIndex, 1)[0]);
+      if (isEqualWith(listCopy, list)) {
+        return;
+      }
+      this.isFilterOrderChanged = true;
     }
-    this.isFilterOrderChanged = true;
   }
 
   public toggleModal(isOpen: Boolean) {
