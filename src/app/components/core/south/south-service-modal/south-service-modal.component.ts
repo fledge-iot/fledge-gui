@@ -489,17 +489,19 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.useFilterProxy = 'true';
     const last = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
     if (last !== undefined) {
-      const body = <HTMLElement>last.getElementsByClassName('accordion-content')[0];
+      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('accordion-content')[0];
       const activeId = last.getAttribute('id');
+      lastActiveContentBody.hidden = true;
+      last.classList.remove('is-active');
       if (id !== +activeId) {
-        body.hidden = true;
-        last.classList.remove('is-active');
         const next = <HTMLElement>document.getElementById(id);
+        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('accordion-content')[0];
+        nextActiveContentBody.hidden = false;
         next.setAttribute('class', 'is-light accordion is-active');
         this.getFilterConfiguration(filterName);
       } else {
         last.classList.remove('is-active');
-        body.hidden = true;
+        lastActiveContentBody.hidden = true;
       }
     } else {
       const element = <HTMLElement>document.getElementById(id);
