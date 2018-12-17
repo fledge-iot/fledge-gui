@@ -62,6 +62,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public saveConfiguration(form: NgForm) {
+
     this.isValidForm = true;
     if (!form.valid) {
       this.isValidForm = false;
@@ -79,7 +80,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       return this.configItems.map(conf => {
         if (conf.key === d.key) {
           d['type'] = conf.type;
-          d.value = conf.type === 'float' ? round(d.value).toFixed(1).toString() : d.value.toString();
+          d.value = d.value.toString();
         }
         return d;
       });
