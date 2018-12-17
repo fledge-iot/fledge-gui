@@ -15,7 +15,8 @@ export class FilterService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | plugins/installed?type=filter
+   * Get installed filter plugins
+   * GET | plugins/installed?type=filter
    */
   public getInstalledFilterPlugins() {
     return this.http.get(this.GET_INSTALLED_FILTER_PLUGINS).pipe(
@@ -23,12 +24,27 @@ export class FilterService {
       catchError((error: Response) => observableThrowError(error)));
   }
 
+  /**
+   *  Create filter
+   *  POST |  foglamp/filter
+   *
+   *  @param payload  {"name":"S3","plugin":"scale","filter_config":{}}
+   */
   public saveFilter(payload) {
     return this.http.post(this.FILTER_URL, payload).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
 
+
+  /**
+   * Add filter pipeline
+   *
+   * POST |  foglamp/filter/{serviceName}/pipeline?allow_duplicates=true&append_filter=true
+   *
+   * @param payload  {"pipeline":["S3"]}
+   * @param serviceName service name
+   */
   public addFilterPipeline(payload, serviceName) {
     return this.http.put(this.FILTER_URL + '/' + encodeURIComponent(serviceName)
       + '/pipeline?allow_duplicates=true&append_filter=true', payload).pipe(
@@ -36,18 +52,38 @@ export class FilterService {
         catchError((error: Response) => observableThrowError(error)));
   }
 
+  /**
+   * Get filter pipeline
+   *
+   * GET | filter/{serviceName}/pipeline
+   * @param serviceName
+   */
   public getFilterPipeline(serviceName) {
     return this.http.get(this.FILTER_URL + '/' + encodeURIComponent(serviceName) + '/pipeline').pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
 
+  /**
+   * Get filter configuration
+   * GET | category/{categoryName}
+   *
+   * @param categoryName category name
+   */
   public getFilterConfiguration(categoryName) {
     return this.http.get(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName)).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
 
+  /**
+   * Update filter pipeline
+   *
+   * PUT | filter/{serviceName}/pipeline?allow_duplicates=true&append_filter=false
+   *
+   * @param payload  {"pipeline":["S3"]}
+   * @param serviceName  service name
+   */
   public updateFilterPipeline(payload, serviceName) {
     return this.http.put(this.FILTER_URL + '/' + encodeURIComponent(serviceName)
       + '/pipeline?allow_duplicates=true&append_filter=false', payload).pipe(
@@ -55,9 +91,15 @@ export class FilterService {
         catchError((error: Response) => observableThrowError(error)));
   }
 
+  /**
+   * Delete filter
+   * DELETE | filter/{filterName}
+   *
+   * @param filterName filter Name
+   */
   public deleteFilter(filterName) {
     return this.http.delete(this.FILTER_URL + '/' + encodeURIComponent(filterName)).pipe(
-        map(response => response),
-        catchError((error: Response) => observableThrowError(error)));
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
   }
 }

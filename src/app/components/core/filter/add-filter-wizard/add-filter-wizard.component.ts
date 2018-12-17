@@ -245,17 +245,11 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   public getInstalledFilterPlugins() {
-    /** request started */
-    // this.ngProgress.start();
     this.filterService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
-        /** request completed */
-        // this.ngProgress.done();
         this.plugins = data.plugins;
       },
       (error) => {
-        /** request completed */
-        // this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {

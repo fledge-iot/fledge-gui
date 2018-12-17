@@ -226,7 +226,6 @@ export class AddServiceWizardComponent implements OnInit {
 
     // convert finalConfig array in object of objects to pass in add service
     finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    console.log('final', finalConfig);
     this.payload.config = finalConfig;
   }
 
