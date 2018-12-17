@@ -5,7 +5,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="service != undefined " class="modal-card-title is-size-5">{{service.name}} South Service</p>
+      <p *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -27,7 +27,7 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input [formControl]="svcCheckbox" class="checkbox" type="checkbox" [checked]="service.status !== 'shutdown' && service.status !== '' ">
+                    <input [formControl]="svcCheckbox" class="checkbox" type="checkbox">
                   </div>
                 </div>
               </div>

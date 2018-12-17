@@ -16,6 +16,7 @@ export class FilterService {
 
   /**
    * Get installed filter plugins
+   *
    * GET | plugins/installed?type=filter
    */
   public getInstalledFilterPlugins() {
@@ -26,8 +27,8 @@ export class FilterService {
 
   /**
    *  Create filter
-   *  POST |  foglamp/filter
    *
+   *  POST |  foglamp/filter
    *  @param payload  {"name":"S3","plugin":"scale","filter_config":{}}
    */
   public saveFilter(payload) {
@@ -40,8 +41,7 @@ export class FilterService {
   /**
    * Add filter pipeline
    *
-   * POST |  foglamp/filter/{serviceName}/pipeline?allow_duplicates=true&append_filter=true
-   *
+   * PUT |  foglamp/filter/{serviceName}/pipeline?allow_duplicates=true&append_filter=true
    * @param payload  {"pipeline":["S3"]}
    * @param serviceName service name
    */
@@ -66,8 +66,8 @@ export class FilterService {
 
   /**
    * Get filter configuration
-   * GET | category/{categoryName}
    *
+   * GET | category/{categoryName}
    * @param categoryName category name
    */
   public getFilterConfiguration(categoryName) {
@@ -80,7 +80,6 @@ export class FilterService {
    * Update filter pipeline
    *
    * PUT | filter/{serviceName}/pipeline?allow_duplicates=true&append_filter=false
-   *
    * @param payload  {"pipeline":["S3"]}
    * @param serviceName  service name
    */
@@ -93,8 +92,8 @@ export class FilterService {
 
   /**
    * Delete filter
-   * DELETE | filter/{filterName}
    *
+   * DELETE | filter/{filterName}
    * @param filterName filter Name
    */
   public deleteFilter(filterName) {

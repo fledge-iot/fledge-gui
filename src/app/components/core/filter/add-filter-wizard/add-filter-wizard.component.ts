@@ -212,6 +212,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
+          console.log('data.filter', data);
           this.alertService.success(data.filter + ' filter added successfully.', true);
           this.addFilterPipeline({ 'pipeline': [payload.name] });
         },

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, round } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -33,11 +33,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
     this.configItems = [];
-    const catConfigData = cloneDeep(changes.categoryConfigurationData.currentValue);
-    if (catConfigData !== undefined) {
+    const categoryConfigurationCurrentData = cloneDeep(changes.categoryConfigurationData.currentValue);
+    if (categoryConfigurationCurrentData !== undefined) {
       let configAttributes = [];
-      if (catConfigData.length !== 0) {
-        const currentConfigValues = catConfigData.value[0];
+      if (categoryConfigurationCurrentData.length !== 0) {
+        const currentConfigValues = categoryConfigurationCurrentData.value[0];
         configAttributes = Object.keys(currentConfigValues).map(key => {
           const element = currentConfigValues[key];
           element.key = key;
@@ -48,8 +48,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
           return parseInt(ca.order, 10);
         });
 
-        catConfigData.value = configAttributes;
-        this.categoryConfiguration = catConfigData;
+        categoryConfigurationCurrentData.value = configAttributes;
+        this.categoryConfiguration = categoryConfigurationCurrentData;
         this.configItems = configAttributes.map(el => {
           return {
             key: el.key,
@@ -79,7 +79,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     formData.map(d => {
       return this.configItems.map(conf => {
         if (conf.key === d.key) {
-          d['type'] = conf.type;
+          d['type'] = conf.type;  // there is no key 'type' in the object
           d.value = d.value.toString();
         }
         return d;
