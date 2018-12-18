@@ -348,7 +348,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   /**
   * Open confirmation modal
-  * @param message   message to show on alert
   */
   showConfirmationDialog() {
     this.confirmationDialogData = {
