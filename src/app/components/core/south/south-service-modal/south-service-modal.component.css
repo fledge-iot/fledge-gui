@@ -28,8 +28,13 @@ label{
 a { color: black; }
 
 .toggle::before{
-  top:.3em !important;
   content:'\25BC' !important;
+  padding: 4px 3px 0 3px !important;
+  text-align: center !important;
+}
+
+.accordions .accordion.is-active .accordion-header .toggle::before{
+  content:'\25B2' !important;
 }
 
 .btnDelete {
