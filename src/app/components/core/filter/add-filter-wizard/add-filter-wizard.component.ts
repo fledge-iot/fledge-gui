@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, Output, ViewChild, Input } from '@angu
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { assign, cloneDeep, reduce, map } from 'lodash';
 
-import { AlertService, FilterService } from '../../../../services';
+import { AlertService, FilterService, ConfigurationService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -13,6 +13,7 @@ import { ViewConfigItemComponent } from '../../configuration-manager/view-config
 export class AddFilterWizardComponent implements OnInit {
 
   public plugins = [];
+  public categories = [];
   public configurationData;
   public useProxy;
   public isValidPlugin = true;
@@ -32,9 +33,11 @@ export class AddFilterWizardComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
     private filterService: FilterService,
+    private configurationService: ConfigurationService,
     private alertService: AlertService) { }
 
   ngOnInit() {
+    this.getCategories();
     this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
       plugin: ['', Validators.required]
@@ -101,6 +104,15 @@ export class AddFilterWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
+
+         // To verify if filter with given name already exist
+         const isFilterExist = this.categories.some(item => {
+          return formValues['name'].trim() === item.key;
+        });
+        if (isFilterExist) {
+          this.alertService.error('A filter (or category) with this name already exists.');
+          return;
+        }
 
         // create payload
         if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
@@ -256,5 +268,21 @@ export class AddFilterWizardComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  public getCategories(): void {
+    this.configurationService.getCategories().
+      subscribe(
+        (data: any) => {
+          this.categories = data.categories;
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText, true);
+          }
+        }
+      );
   }
 }
