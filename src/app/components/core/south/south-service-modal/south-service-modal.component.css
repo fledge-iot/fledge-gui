@@ -27,10 +27,20 @@ label{
 
 a { color: black; }
 
-.toggle::before {
-  top: 0.2em !important;
+.toggle::before{
+  top:.3em !important;
+  content:'\25BC' !important;
 }
 
 .btnDelete {
   margin: 2px;
+}
+
+.switch-icon > .fa + .fa,
+.switch-icon:hover > .fa {
+  display: none;
+}
+
+.switch-icon:hover > .fa + .fa {
+  display: inherit;
 }

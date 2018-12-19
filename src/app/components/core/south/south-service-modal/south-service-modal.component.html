@@ -10,7 +10,7 @@
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
-        <div class="box animated slideInLeft">
+        <div class="box">
           <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
           <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
             <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
@@ -49,16 +49,17 @@
                 <article *ngFor="let filter of filterPipeline; let i = index" [dndDraggable]="filter" (dndStart)="onDragStart(i)"
                   class="is-light accordion" [attr.id]="i">
 
-                  <div class="accordion-header" (click)="activeAccordion(i, filter)">
-                    <p>{{filter}}</p>
-                    <button class="is-dark toggle" aria-label="toggle"></button>
+                  <div class="accordion-header">
+                    <span><span class="switch-icon"><i class="fa fa-bars"></i><i class="fa fa-hand-rock-o"></i></span>&nbsp;{{filter}}</span>
+                    <button class="is-dark toggle" aria-label="toggle" (click)="activeAccordion(i, filter)"></button>
                   </div>
                   <div class="accordion-body">
                     <div class="accordion-content" hidden>
                       <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
                         [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
                       <div class="field is-pulled-right">
-                        <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span class="icon is-medium"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></span></button>
+                        <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span class="icon is-medium"><i
+                              class="fa fa-trash fa-lg" aria-hidden="true"></i></span></button>
                       </div>
                     </div>
                   </div>
@@ -113,5 +114,6 @@
     </section>
   </div>
   <app-alert-dialog (deleteService)='deleteService($event)' [serviceRecord]='serviceRecord'></app-alert-dialog>
-  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges($event)" [filerDialogData]='confirmationDialogData'></app-filter-alert>
+  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges($event)"
+    [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
