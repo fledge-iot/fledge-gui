@@ -98,70 +98,77 @@
     </div>
     <div *ngIf="viewPort == 'mobile'" class="navbar-item">
       <!-- mobile -->
-      <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
-        <div class="dropdown-trigger">
-          <a id="hover-link" (click)="getServiceStatus()">
-            <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-              <i class="fa fa-circle"> </i>
-            </span>
-            <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0,
-              8)}}/{{pingData['serviceName'].substr(0, 8)}}</b>
-            <span class="icon is-small">
-              <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </span>
-          </a>
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-          <div class="dropdown-content">
-            <div class="dropdown-item">
-              <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
-              <hr class="dropdown-divider">
-              <table>
-                <tr>
-                  <td class="has-text-left">Received:&nbsp;</td>
-                  <td>
-                    <b>{{pingData['dataRead'] | number}}</b>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="has-text-left">Sent: </td>
-                  <td>
-                    <b>{{pingData['dataSent'] | number}}</b>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="has-text-left">Uptime: </td>
-                  <td>
-                    <b>{{uptime}}</b>
-                  </td>
-                </tr>
-              </table>
+      <div class="columns">
+        <div class="column">
+          <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
+            <div class="dropdown-trigger">
+              <a id="hover-link" (click)="getServiceStatus()">
+                <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                  <i class="fa fa-circle"> </i>
+                </span>
+                <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0,
+                  8)}}/{{pingData['serviceName'].substr(0, 8)}}</b>
+                <span class="icon is-small">
+                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </a>
             </div>
-            <hr class="dropdown-divider">
-            <div *ngIf="showSpinner" class="app-loading">
-              &nbsp;
-              <svg class="spinner" viewBox="0 0 10 100">
-                <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
-              </svg>
-            </div>
-            <ng-container *ngIf="!showSpinner">
-              <div class="dropdown-item">
-                <table>
-                  <tr *ngFor="let s of servicesRecord">
-                    <td class="has-text-left">
-                      <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                        <i class="fa fa-circle"></i>
-                      </span>
-                      {{s.name}}&nbsp;
-                    </td>
-                    <td>
-                      <b>{{s.status}}</b>
-                    </td>
-                  </tr>
-                </table>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <div class="dropdown-item">
+                  <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+                  <hr class="dropdown-divider">
+                  <table>
+                    <tr>
+                      <td class="has-text-left">Received:&nbsp;</td>
+                      <td>
+                        <b>{{pingData['dataRead'] | number}}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="has-text-left">Sent: </td>
+                      <td>
+                        <b>{{pingData['dataSent'] | number}}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="has-text-left">Uptime: </td>
+                      <td>
+                        <b>{{uptime}}</b>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <hr class="dropdown-divider">
+                <div *ngIf="showSpinner" class="app-loading">
+                  &nbsp;
+                  <svg class="spinner" viewBox="0 0 10 100">
+                    <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
+                  </svg>
+                </div>
+                <ng-container *ngIf="!showSpinner">
+                  <div class="dropdown-item">
+                    <table>
+                      <tr *ngFor="let s of servicesRecord">
+                        <td class="has-text-left">
+                          <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                            <i class="fa fa-circle"></i>
+                          </span>
+                          {{s.name}}&nbsp;
+                        </td>
+                        <td>
+                          <b>{{s.status}}</b>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </ng-container>
               </div>
-            </ng-container>
+            </div>
           </div>
+        </div>
+        <div class="column">
+          <small *ngIf="pingInfo.isSafeMode">SAFE MODE</small>
         </div>
       </div>
     </div>

@@ -49,3 +49,11 @@
 #hover-link {
   color: #4a4a4a !important;
 }
+
+.column {
+  padding: 0 !important;
+}
+
+small {
+  padding-left: 24px;
+}
