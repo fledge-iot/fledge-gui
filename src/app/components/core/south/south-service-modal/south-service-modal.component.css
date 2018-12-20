@@ -48,4 +48,17 @@ a { color: black; }
 
 .switch-icon:hover > .fa + .fa {
   display: inherit;
+  opacity: 0.5;
+}
+
+.fa-bars {
+  opacity: 0.5;
+}
+
+.fa-trash.fa-lg {
+  opacity: 0.8;
+}
+
+.add-application{
+  opacity: 0.7;
 }

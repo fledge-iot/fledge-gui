@@ -105,7 +105,8 @@ export class AddFilterWizardComponent implements OnInit {
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
 
-         // To verify if filter with given name already exist
+         // To verify if category (or filter itself) with this name already exists
+         // hence filter can not be created with that name
          const isFilterExist = this.categories.some(item => {
           return formValues['name'].trim() === item.key;
         });
