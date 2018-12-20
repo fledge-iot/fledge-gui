@@ -22,6 +22,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   repeatTime: any;
   repeatDays: any;
   name: string;
+  isWizard = false;
 
   form: FormGroup;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
@@ -29,6 +30,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
+  @ViewChild('filterConfigView') filterConfigViewComponent: ViewConfigItemComponent;
 
   // Object to hold data of north task to delete
   public deleteTaskData = {
@@ -194,4 +196,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           }
         });
   }
+
+  openAddFilterModal(isWizard) {
+    this.isWizard = isWizard;
+    this.category = '';
+  }
+
 }

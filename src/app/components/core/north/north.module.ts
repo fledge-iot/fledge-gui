@@ -12,6 +12,7 @@ import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module
 import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.component';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
 import { NorthComponent } from './north.component';
+import { FilterModule } from '../filter/filter.module';
 
 const routes: Routes = [
   {
@@ -41,6 +42,7 @@ const routes: Routes = [
     AlertDialogModule,
     PipesModule,
     DirectivesModule,
+    FilterModule,
     SharedModule
   ],
   providers: [],
