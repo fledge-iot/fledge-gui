@@ -13,6 +13,7 @@ import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.compon
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
 import { NorthComponent } from './north.component';
 import { FilterModule } from '../filter/filter.module';
+import { DndModule } from 'ngx-drag-drop';
 
 const routes: Routes = [
   {
@@ -43,7 +44,8 @@ const routes: Routes = [
     PipesModule,
     DirectivesModule,
     FilterModule,
-    SharedModule
+    SharedModule,
+    DndModule
   ],
   providers: [],
 })

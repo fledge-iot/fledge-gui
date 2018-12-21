@@ -11,8 +11,8 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
-          <form name="schedule-form" id="scheduleForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
+          <app-view-config-item #taskConfigView *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+          <form name="task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
             <div class="columns">
               <div class="column">
                 <div class="field is-horizontal">
@@ -57,7 +57,7 @@
                 </div>
               </div>
             </div>
-            <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="scheduleForm">Save</button>
+            <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="taskForm">Save</button>
           </form>
           <hr>
           <div class="columns">
@@ -67,6 +67,33 @@
             </div>
           </div>
           <hr>
+          <div *ngIf="filterPipeline != undefined" class="columns">
+            <div class="column">
+              <section class="accordions" dndDropzone dndEffectAllowed="copyMove" (dndDrop)="onDrop($event, filterPipeline)">
+
+                <article dndPlaceholderRef class="is-light accordion dndPlaceholder">
+                </article>
+                <article *ngFor="let filter of filterPipeline; let i = index" [dndDraggable]="filter" (dndStart)="onDragStart(i)"
+                  class="is-light accordion" [attr.id]="i">
+
+                  <div class="accordion-header">
+                    <span><span class="switch-icon"><i class="fa fa-bars"></i><i class="fa fa-hand-rock-o"></i></span>&nbsp;{{filter}}</span>
+                    <button class="is-dark toggle" aria-label="toggle" (click)="toggleAccordion(i, filter)"></button>
+                  </div>
+                  <div class="accordion-body">
+                    <div class="accordion-content" hidden>
+                      <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
+                        [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
+                      <div class="field is-pulled-right">
+                        <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span class="icon is-medium"><i
+                              class="fa fa-trash fa-lg" aria-hidden="true"></i></span></button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </section>
+            </div>
+          </div>
           <div class="columns">
             <div class="column">
               <div class="field is-grouped is-pulled-right">
@@ -90,10 +117,12 @@
       </ng-container>
       <ng-container *ngIf="isWizard">
         <div class="box animated slideInRight">
-          <app-add-filter-wizard (notify)="onNotify($event)" ></app-add-filter-wizard>
+          <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="task.name"></app-add-filter-wizard>
         </div>
       </ng-container>
     </section>
   </div>
   <app-alert-dialog (deleteTask)='deleteTask($event)' [deleteTaskData]='deleteTaskData'></app-alert-dialog>
+  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges($event)"
+  [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
