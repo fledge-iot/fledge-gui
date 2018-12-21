@@ -1,8 +1,8 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { assign, cloneDeep, reduce, map } from 'lodash';
+import { assign, cloneDeep, map, reduce, sortBy } from 'lodash';
 
-import { AlertService, FilterService, ConfigurationService } from '../../../../services';
+import { AlertService, ConfigurationService, FilterService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -105,9 +105,9 @@ export class AddFilterWizardComponent implements OnInit {
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
 
-         // To verify if category (or filter itself) with this name already exists
-         // hence filter can not be created with that name
-         const isFilterExist = this.categories.some(item => {
+        // To verify if category (or filter itself) with this name already exists
+        // hence filter can not be created with that name
+        const isFilterExist = this.categories.some(item => {
           return formValues['name'].trim() === item.key;
         });
         if (isFilterExist) {
@@ -260,7 +260,10 @@ export class AddFilterWizardComponent implements OnInit {
   public getInstalledFilterPlugins() {
     this.filterService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
-        this.plugins = data.plugins;
+        console.log('data.plugins', data.plugins);
+        this.plugins = sortBy(data.plugins, p => {
+          return p.name;
+        });
       },
       (error) => {
         if (error.status === 0) {
