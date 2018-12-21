@@ -260,7 +260,6 @@ export class AddFilterWizardComponent implements OnInit {
   public getInstalledFilterPlugins() {
     this.filterService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
-        console.log('data.plugins', data.plugins);
         this.plugins = sortBy(data.plugins, p => {
           return p.name;
         });
