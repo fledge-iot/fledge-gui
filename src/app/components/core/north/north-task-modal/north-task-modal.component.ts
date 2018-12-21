@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { isEmpty } from 'lodash';
+import { isEmpty, cloneDeep, isEqualWith } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
+import { DndDropEvent } from 'ngx-drag-drop';
 
-import { AlertService, ConfigurationService, SchedulesService, NorthService } from '../../../../services';
+import { AlertService, ConfigurationService, SchedulesService, NorthService, FilterService } from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -16,19 +18,32 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 export class NorthTaskModalComponent implements OnInit, OnChanges {
   category: any;
   useProxy: 'true';
+  useFilterProxy: 'true';
 
   enabled: Boolean;
   exclusive: Boolean;
   repeatTime: any;
   repeatDays: any;
   name: string;
+  isWizard = false;
+
+  public filterItemIndex;
+  public isFilterOrderChanged = false;
+  public filterPipeline = [];
+  public deletedFilterPipeline = [];
+  public filterConfiguration;
+  public isFilterDeleted = false;
+  public confirmationDialogData = {};
 
   form: FormGroup;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
+
   @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('taskConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
+  @ViewChild('filterConfigView') filterConfigViewComponent: ViewConfigItemComponent;
+  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   // Object to hold data of north task to delete
   public deleteTaskData = {
@@ -41,6 +56,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private configService: ConfigurationService,
     private alertService: AlertService,
     private northService: NorthService,
+    private filterService: FilterService,
     public fb: FormBuilder,
     public ngProgress: NgProgress,
   ) { }
@@ -50,6 +66,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (this.task !== undefined) {
       this.getCategory();
+      this.getFilterPipeline();
     }
 
     this.form = this.fb.group({
@@ -60,7 +77,63 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     });
   }
 
+  onDragStart(itemIndex) {
+    this.filterItemIndex = itemIndex;
+  }
+
+  onDrop(event: DndDropEvent, list?: any[]) {
+    const oldIndex = this.filterItemIndex;
+    const listCopy = cloneDeep(list);
+    if (list
+      && (event.dropEffect === 'copy'
+        || event.dropEffect === 'move')) {
+      let newIndex = event.index;
+      if (typeof newIndex === 'undefined') {
+        newIndex = list.length;
+      }
+      list.splice(newIndex, 0, list.splice(oldIndex, 1)[0]);
+      if (isEqualWith(listCopy, list)) {
+        return;
+      }
+      this.isFilterOrderChanged = true;
+    }
+  }
+
+
+  public updateFilterPipeline(filterPipeline) {
+    this.isFilterOrderChanged = false;
+    this.ngProgress.start();
+    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.task['name'])
+      .subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Filter pipeline updated successfully.', true);
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   public toggleModal(isOpen: Boolean) {
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.showConfirmationDialog();
+      return;
+    }
+
+    const activeFilterTab = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
+    if (activeFilterTab !== undefined) {
+      activeFilterTab.classList.remove('is-active');
+    }
+
+    if (this.isWizard) {
+      this.getCategory();
+      this.isWizard = false;
+    }
+
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
       this.notify.emit(false);
@@ -103,6 +176,46 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     );
   }
 
+  /**
+  * Open confirmation modal
+  */
+  showConfirmationDialog() {
+    this.confirmationDialogData = {
+      id: '',
+      name: '',
+      message: 'Do you want to discard unsaved changes',
+      key: 'unsavedConfirmation'
+    };
+    this.filterAlert.toggleModal(true);
+  }
+
+  toggleAccordion(id, filterName) {
+    this.useFilterProxy = 'true';
+    const last = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
+    if (last !== undefined) {
+      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('accordion-content')[0];
+      const activeId = last.getAttribute('id');
+      lastActiveContentBody.hidden = true;
+      last.classList.remove('is-active');
+      if (id !== +activeId) {
+        const next = <HTMLElement>document.getElementById(id);
+        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('accordion-content')[0];
+        nextActiveContentBody.hidden = false;
+        next.setAttribute('class', 'is-light accordion is-active');
+        this.getFilterConfiguration(filterName);
+      } else {
+        last.classList.remove('is-active');
+        lastActiveContentBody.hidden = true;
+      }
+    } else {
+      const element = <HTMLElement>document.getElementById(id);
+      const body = <HTMLElement>element.getElementsByClassName('accordion-content')[0];
+      body.hidden = false;
+      element.setAttribute('class', 'is-light accordion is-active');
+      this.getFilterConfiguration(filterName);
+    }
+  }
+
   public hideNotification() {
     const deleteBtn = <HTMLDivElement>document.getElementById('delete');
     deleteBtn.parentElement.classList.add('is-hidden');
@@ -110,6 +223,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public saveScheduleFields(form: NgForm) {
+    if (this.isFilterDeleted) {
+      this.deleteFilter();
+    }
+    if (this.isFilterOrderChanged) {
+      this.updateFilterPipeline(this.filterPipeline);
+    }
     if (!form.dirty && !form.touched) {
       this.toggleModal(false);
       return false;
@@ -149,9 +268,18 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    document.getElementById('vci-proxy').click();
+    if (this.useProxy) {
+      document.getElementById('vci-proxy').click();
+    }
+    const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
+    for (const e of <any>el) {
+      e.click();
+    }
+    if (this.filterConfigViewComponent !== undefined && !this.filterConfigViewComponent.isValidForm) {
+      return;
+    }
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-      return false;
+      return;
     }
     document.getElementById('ss').click();
   }
@@ -194,4 +322,96 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           }
         });
   }
+
+  getFilterConfiguration(filterName) {
+    const catName = this.task['name'] + '_' + filterName;
+    this.filterService.getFilterConfiguration(catName)
+      .subscribe((data: any) => {
+        this.filterConfiguration = { key: catName, 'value': [data] };
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+
+  openAddFilterModal(isWizard) {
+    this.isWizard = isWizard;
+    this.category = '';
+  }
+
+  onNotify() {
+    this.getCategory();
+    this.isWizard = false;
+    this.getFilterPipeline();
+  }
+
+  getFilterPipeline() {
+    this.filterService.getFilterPipeline(this.task['name'])
+      .subscribe((data: any) => {
+        this.filterPipeline = data.result.pipeline;
+      },
+        error => {
+          if (error.status === 404) {
+            this.filterPipeline = [];
+          } else {
+            console.log('Error ', error);
+          }
+        });
+  }
+
+  deleteFilterReference(filter) {
+    this.deletedFilterPipeline.push(filter);
+    this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
+    this.isFilterDeleted = true;
+    this.isFilterOrderChanged = false;
+  }
+
+
+  deleteFilter() {
+    this.isFilterDeleted = false;
+    this.ngProgress.start();
+    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.task['name'])
+      .subscribe(() => {
+        this.deletedFilterPipeline.forEach((filter, index) => {
+          this.filterService.deleteFilter(filter).subscribe((data: any) => {
+            this.ngProgress.done();
+            if (this.deletedFilterPipeline.length === index + 1) {
+              this.deletedFilterPipeline = []; // clear deleted filter reference
+            }
+            this.alertService.success(data.result, true);
+          },
+            (error) => {
+              this.ngProgress.done();
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.alertService.error(error.statusText);
+              }
+            });
+        });
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  discardChanges(event) {
+    if (event) {
+      this.isFilterOrderChanged = false;
+      this.isFilterDeleted = false;
+      this.deletedFilterPipeline = [];
+      this.toggleModal(false);
+    }
+  }
+
 }
