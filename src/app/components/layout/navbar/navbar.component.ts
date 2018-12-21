@@ -29,7 +29,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public timer: any = '';
   public pingData = {};
   public servicesRecord = [];
-  public pingInfo = { isAlive: false, isAuth: false, hostName: '' };
+  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '' };
   public shutDownData = {
     key: '',
     message: ''
@@ -150,7 +150,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.status.changeMessage(true);
       this.pingData = data;
       this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
-      this.pingInfo = { isAlive: true, isAuth: false, hostName: this.pingData['hostName'] };
+      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'] , hostName: this.pingData['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -168,9 +168,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.pingInfo = { isAlive: true, isAuth: true, hostName: this.pingData['hostName'] };
+          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'] , hostName: this.pingData['hostName'] };
         } else {
-          this.pingInfo = { isAlive: false, isAuth: false, hostName: '' };
+          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false , hostName: '' };
         }
       });
   }
