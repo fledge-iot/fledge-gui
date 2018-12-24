@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { assign, cloneDeep, reduce } from 'lodash';
+import { assign, cloneDeep, reduce, sortBy } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, SchedulesService, ServicesHealthService } from '../../../../services';
@@ -27,6 +27,7 @@ export class AddTaskWizardComponent implements OnInit {
   public isScheduleEnabled = true;
   public payload: any;
   public schedulesName = [];
+  public description = '';
 
   taskForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -210,7 +211,9 @@ export class AddTaskWizardComponent implements OnInit {
       (data: any) => {
         /** request completed */
         this.ngProgress.done();
-        this.plugins = data.plugins;
+        this.plugins = sortBy(data.plugins, p => {
+          return p.name.toLowerCase();
+        });
       },
       (error) => {
         /** request completed */
@@ -323,9 +326,11 @@ export class AddTaskWizardComponent implements OnInit {
     this.taskForm.controls['repeatTime'].setValue(event.target.value.trim());
   }
 
-  changedSelectedPlugin() {
+  changedSelectedPlugin(p) {
     this.isValidPlugin = true;
     this.isSinglePlugin = true;
+    const plugin = (p.slice(3).trim()).replace(/'/g, '');
+    this.description = this.plugins.find(pl => pl.name === plugin).description;
   }
 
   onCheckboxClicked(event) {

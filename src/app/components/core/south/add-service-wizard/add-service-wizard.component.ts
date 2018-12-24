@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { assign, cloneDeep, reduce } from 'lodash';
+import { assign, cloneDeep, reduce, sortBy } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, SchedulesService, ServicesHealthService } from '../../../../services';
@@ -19,6 +19,7 @@ export class AddServiceWizardComponent implements OnInit {
   public useProxy;
   public isValidPlugin = true;
   public isSinglePlugin = true;
+  public description = '';
   public isValidName = true;
   public serviceType = 'South';
   public isScheduleEnabled = true;
@@ -86,6 +87,12 @@ export class AddServiceWizardComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  getDescription(p) {
+    this.isSinglePlugin = true;
+    const plugin = (p.slice(3).trim()).replace(/'/g, '');
+    this.description = this.plugins.find(pl => pl.name === plugin).description;
   }
 
   moveNext() {
@@ -269,7 +276,9 @@ export class AddServiceWizardComponent implements OnInit {
       (data: any) => {
         /** request completed */
         this.ngProgress.done();
-        this.plugins = data.plugins;
+        this.plugins = sortBy(data.plugins, p => {
+          return p.name.toLowerCase();
+        });
       },
       (error) => {
         /** request completed */
