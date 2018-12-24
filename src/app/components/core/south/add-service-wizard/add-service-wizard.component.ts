@@ -89,10 +89,10 @@ export class AddServiceWizardComponent implements OnInit {
     }
   }
 
-  getDescription(p) {
+  getDescription(selectedPlugin) {
     this.isSinglePlugin = true;
-    const plugin = (p.slice(3).trim()).replace(/'/g, '');
-    this.description = this.plugins.find(pl => pl.name === plugin).description;
+    const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    this.description = this.plugins.find(p => p.name === plugin).description;
   }
 
   moveNext() {

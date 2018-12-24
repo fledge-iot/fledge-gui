@@ -326,11 +326,11 @@ export class AddTaskWizardComponent implements OnInit {
     this.taskForm.controls['repeatTime'].setValue(event.target.value.trim());
   }
 
-  changedSelectedPlugin(p) {
+  changedSelectedPlugin(selectedPlugin) {
     this.isValidPlugin = true;
     this.isSinglePlugin = true;
-    const plugin = (p.slice(3).trim()).replace(/'/g, '');
-    this.description = this.plugins.find(pl => pl.name === plugin).description;
+    const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    this.description = this.plugins.find(p => p.name === plugin).description;
   }
 
   onCheckboxClicked(event) {
