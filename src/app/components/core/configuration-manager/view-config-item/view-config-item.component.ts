@@ -87,13 +87,16 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     });
 
     const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
-    // condition to check if called from add service wizard
+    let isConfigChanged = false;
+    // condition to check if called from wizard
     if (this.isWizardCall) {
+      if (this.filesToUpload !== []) {
+        changedConfigValues.push({ 'value': this.filesToUpload, 'type': 'script' });
+      }
       this.onConfigChanged.emit(changedConfigValues);
       return;
     }
     this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
-    let isConfigChanged = false;
     if (changedConfigValues.length > 0) {
       isConfigChanged = true;
     }
