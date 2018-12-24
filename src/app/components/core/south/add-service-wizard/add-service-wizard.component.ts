@@ -19,7 +19,7 @@ export class AddServiceWizardComponent implements OnInit {
   public useProxy;
   public isValidPlugin = true;
   public isSinglePlugin = true;
-  public description = '';
+  public selectedPluginDescription = '';
   public isValidName = true;
   public serviceType = 'South';
   public isScheduleEnabled = true;
@@ -90,9 +90,8 @@ export class AddServiceWizardComponent implements OnInit {
   }
 
   getDescription(selectedPlugin) {
-    this.isSinglePlugin = true;
     const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-    this.description = this.plugins.find(p => p.name === plugin).description;
+    this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
   }
 
   moveNext() {

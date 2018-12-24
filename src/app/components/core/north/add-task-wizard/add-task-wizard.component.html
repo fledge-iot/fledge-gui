@@ -35,7 +35,7 @@
                     <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
                   </select>
                 </div>
-                <small *ngIf="description" class="help level-left">* {{ description }}</small>
+                <small *ngIf="selectedPluginDescription" class="help level-left">* {{ selectedPluginDescription }}</small>
                 <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
                 <small *ngIf="!isSinglePlugin" class="help is-danger level-left">Please select a single plugin</small>
               </div>

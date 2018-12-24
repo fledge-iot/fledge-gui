@@ -27,7 +27,7 @@ export class AddTaskWizardComponent implements OnInit {
   public isScheduleEnabled = true;
   public payload: any;
   public schedulesName = [];
-  public description = '';
+  public selectedPluginDescription = '';
 
   taskForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -326,11 +326,9 @@ export class AddTaskWizardComponent implements OnInit {
     this.taskForm.controls['repeatTime'].setValue(event.target.value.trim());
   }
 
-  changedSelectedPlugin(selectedPlugin) {
-    this.isValidPlugin = true;
-    this.isSinglePlugin = true;
+  getDescription(selectedPlugin) {
     const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-    this.description = this.plugins.find(p => p.name === plugin).description;
+    this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
   }
 
   onCheckboxClicked(event) {
