@@ -31,7 +31,7 @@
             <div class="field">
               <div class="control">
                 <div class="select is-multiple">
-                  <select multiple #selectedPlugin name="plugin" formControlName="plugin" (change)="changedSelectedPlugin(selectedPlugin.value)" required>
+                  <select multiple #selectedPlugin name="plugin" formControlName="plugin" (change)="getDescription(selectedPlugin.value)" required>
                     <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
                   </select>
                 </div>

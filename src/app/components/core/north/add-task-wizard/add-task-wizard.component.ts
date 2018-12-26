@@ -327,6 +327,8 @@ export class AddTaskWizardComponent implements OnInit {
   }
 
   getDescription(selectedPlugin) {
+    this.isValidPlugin = true;
+    this.isSinglePlugin = true;
     const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
   }
