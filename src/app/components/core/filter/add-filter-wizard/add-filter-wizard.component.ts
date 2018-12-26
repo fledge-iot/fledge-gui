@@ -20,6 +20,7 @@ export class AddFilterWizardComponent implements OnInit {
   public isSinglePlugin = true;
   public isValidName = true;
   public payload: any;
+
   public filesToUpload = [];
 
   serviceForm = new FormGroup({
@@ -124,6 +125,7 @@ export class AddFilterWizardComponent implements OnInit {
             plugin: formValues['plugin'][0]
           };
         }
+
         this.getConfiguration(formValues['name'].trim());
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
@@ -242,6 +244,7 @@ export class AddFilterWizardComponent implements OnInit {
           });
     });
   }
+
 
   public addFilterPipeline(payload) {
     this.filterService.addFilterPipeline(payload, this.serviceName)
