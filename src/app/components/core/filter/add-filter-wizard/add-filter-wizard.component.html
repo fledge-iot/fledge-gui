@@ -25,10 +25,11 @@
             <div class="field">
               <div class="control">
                 <div class="select is-multiple">
-                  <select multiple name="type" formControlName="plugin" (change)="isSinglePlugin = true" required>
+                  <select #selectedPlugin multiple name="type" formControlName="plugin" (change)="getDescription(selectedPlugin.value)" required>
                     <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
                   </select>
                 </div>
+                <small *ngIf="selectedPluginDescription" class="help level-left">* {{ selectedPluginDescription }}</small>
                 <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
                 <small *ngIf="!isSinglePlugin" class="help is-danger level-left">Please select a single plugin</small>
               </div>

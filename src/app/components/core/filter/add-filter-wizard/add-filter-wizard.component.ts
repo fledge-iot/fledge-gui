@@ -20,6 +20,7 @@ export class AddFilterWizardComponent implements OnInit {
   public isSinglePlugin = true;
   public isValidName = true;
   public payload: any;
+  public selectedPluginDescription = '';
 
   public filesToUpload = [];
 
@@ -165,6 +166,12 @@ export class AddFilterWizardComponent implements OnInit {
     }
   }
 
+  getDescription(selectedPlugin) {
+    this.isSinglePlugin = true;
+    const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+  }
+
   /**
    *  Get default configuration of a selected plugin
    */
@@ -273,7 +280,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.filterService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
         this.plugins = sortBy(data.plugins, p => {
-          return p.name;
+          return p.name.toLowerCase();
         });
       },
       (error) => {
