@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { assign, cloneDeep, map, reduce, sortBy } from 'lodash';
+import { assign, reduce, sortBy } from 'lodash';
 
 import { AlertService, ConfigurationService, FilterService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
@@ -20,6 +20,9 @@ export class AddFilterWizardComponent implements OnInit {
   public isSinglePlugin = true;
   public isValidName = true;
   public payload: any;
+  public selectedPluginDescription = '';
+
+  public filesToUpload = [];
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -34,6 +37,7 @@ export class AddFilterWizardComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
     private filterService: FilterService,
     private configurationService: ConfigurationService,
+    private configService: ConfigurationService,
     private alertService: AlertService) { }
 
   ngOnInit() {
@@ -122,7 +126,8 @@ export class AddFilterWizardComponent implements OnInit {
             plugin: formValues['plugin'][0]
           };
         }
-        this.getConfiguration();
+
+        this.getConfiguration(formValues['name'].trim());
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -161,10 +166,16 @@ export class AddFilterWizardComponent implements OnInit {
     }
   }
 
+  getDescription(selectedPlugin) {
+    this.isSinglePlugin = true;
+    const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+  }
+
   /**
    *  Get default configuration of a selected plugin
    */
-  private getConfiguration(): void {
+  private getConfiguration(filterName: string): void {
     const config = this.plugins.map(p => {
       if (p.name === this.payload.plugin) {
         return p.config;
@@ -172,7 +183,7 @@ export class AddFilterWizardComponent implements OnInit {
     }).filter(value => value !== undefined);
 
     // array to hold data to display on configuration page
-    this.configurationData = { 'value': config };
+    this.configurationData = { key: this.serviceName + '_' + filterName, 'value': config };
     this.useProxy = 'true';
   }
 
@@ -181,35 +192,16 @@ export class AddFilterWizardComponent implements OnInit {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
-    const defaultConfig = map(this.configurationData.value[0], (v, key) => ({ key, ...v }));
-
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.some(e2 => {
-        return e1.key === e2.key;
-      });
-    });
-
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => {
-      changedConfig.forEach(c => {
-        if (e.key === c.key) {
-          e.value = c.value.toString();
-        }
-      });
-    });
-
     // final array to hold changed configuration
     let finalConfig = [];
-    matchedConfigCopy.forEach(item => {
-      finalConfig.push({
-        [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-      });
+    changedConfig.forEach(item => {
+      if (item.type === 'script') {
+        this.filesToUpload = item.value;
+      } else {
+        finalConfig.push({
+          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
+        });
+      }
     });
 
     // convert finalConfig array in object of objects to pass in add service
@@ -237,10 +229,37 @@ export class AddFilterWizardComponent implements OnInit {
         });
   }
 
+  public uploadScript() {
+    this.filesToUpload.forEach(data => {
+      let configItem: any;
+      configItem = Object.keys(data)[0];
+      const file = data[configItem];
+      const formData = new FormData();
+      formData.append('script', file);
+      this.configService.uploadFile(this.configurationData.key, configItem, formData)
+        .subscribe(() => {
+          this.filesToUpload = [];
+          this.alertService.success('configuration updated successfully.');
+        },
+          error => {
+            this.filesToUpload = [];
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    });
+  }
+
+
   public addFilterPipeline(payload) {
     this.filterService.addFilterPipeline(payload, this.serviceName)
       .subscribe((data: any) => {
         this.notify.emit(data);
+        if (this.filesToUpload !== []) {
+          this.uploadScript();
+        }
       },
         (error) => {
           if (error.status === 0) {
@@ -261,7 +280,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.filterService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
         this.plugins = sortBy(data.plugins, p => {
-          return p.name;
+          return p.name.toLowerCase();
         });
       },
       (error) => {

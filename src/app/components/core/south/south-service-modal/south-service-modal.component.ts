@@ -468,6 +468,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.getCategory();
     this.isWizard = false;
     this.getFilterPipeline();
+    this.isAdvanceConfig = false;
+    this.advanceConfigButtonText = 'Show Advanced Config';
   }
 
   getFilterPipeline() {
