@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { assign, cloneDeep, map, reduce, sortBy } from 'lodash';
+import { assign, reduce, sortBy } from 'lodash';
 
 import { AlertService, ConfigurationService, FilterService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
