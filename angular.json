@@ -13,7 +13,7 @@
           "options": {
             "customWebpackConfig": {
               "path": "./extra-webpack.config.js"
-            }, 
+            },
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -24,10 +24,12 @@
             ],
             "styles": [
               "./node_modules/angular-tree-component/dist/angular-tree-component.css",
+              "./node_modules/animate.css/animate.css",
               "src/assets/css/bulma.min.css",
               "src/assets/css/font-awesome.min.css",
               "src/assets/css/bulma-tooltip.min.css",
               "src/assets/css/bulma-steps.min.css",
+              "src/assets/css/bulma-accordion.min.css",
               "src/styles.css"
             ],
             "scripts": []

@@ -1,8 +1,11 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Parser } from 'json2csv';
-import { isEmpty } from 'lodash';
+import { isEmpty, cloneDeep, isEqualWith } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
+import { DndDropEvent } from 'ngx-drag-drop';
 
 import { MAX_INT_SIZE } from '../../../../utils';
 
@@ -10,13 +13,14 @@ import {
   AlertService,
   AssetsService,
   ConfigurationService,
+  FilterService,
   SchedulesService,
   ServicesHealthService,
 } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
-
+import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -27,33 +31,43 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public category: any;
   public useProxy: 'true';
+  public useFilterProxy: 'true';
   public isEnabled = false;
   public isAdvanceConfig = false;
   public advanceConfigButtonText = 'Show Advanced Config';
   svcCheckbox: FormControl = new FormControl();
   public childConfiguration;
   public changedChildConfig = [];
+  public filterPipeline = [];
+  public deletedFilterPipeline = [];
+  public filterConfiguration;
+
+  public isFilterOrderChanged = false;
+  public isFilterDeleted = false;
   private REQUEST_TIMEOUT_INTERVAL = 1000;
   assetReadings = [];
 
+  public filterItemIndex;
+
+
+  public isWizard;
   // Object to hold data of south service to delete
-  public serviceRecord = {
-    port: '',
-    protocol: '',
-    name: '',
-    message: '',
-    key: ''
-  };
+  public serviceRecord;
+
+  confirmationDialogData = {};
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('serviceConfigView') viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('filterConfigView') filterConfigViewComponent: ViewConfigItemComponent;
   @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
+  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     private assetService: AssetsService,
+    private filterService: FilterService,
     public ngProgress: NgProgress,
     private servicesHealthService: ServicesHealthService,
     private schedulesService: SchedulesService) { }
@@ -68,10 +82,48 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (this.service !== undefined) {
       this.getCategory();
       this.checkIfAdvanceConfig(this.service['name']);
+      this.getFilterPipeline();
     }
   }
+
+  onDragStart(itemIndex) {
+    this.filterItemIndex = itemIndex;
+  }
+
+  onDrop(event: DndDropEvent, list?: any[]) {
+    const oldIndex = this.filterItemIndex;
+    const listCopy = cloneDeep(list);
+    if (list
+      && (event.dropEffect === 'copy'
+        || event.dropEffect === 'move')) {
+      let newIndex = event.index;
+      if (typeof newIndex === 'undefined') {
+        newIndex = list.length;
+      }
+      list.splice(newIndex, 0, list.splice(oldIndex, 1)[0]);
+      if (isEqualWith(listCopy, list)) {
+        return;
+      }
+      this.isFilterOrderChanged = true;
+    }
+  }
+
   public toggleModal(isOpen: Boolean) {
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.showConfirmationDialog();
+      return;
+    }
+    const activeFilterTab = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
+    if (activeFilterTab !== undefined) {
+      activeFilterTab.classList.remove('is-active');
+    }
+
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
+
+    if (this.isWizard) {
+      this.getCategory();
+      this.isWizard = false;
+    }
     if (isOpen) {
       this.svcCheckbox.setValue(this.service['schedule_enabled']);
       modalWindow.classList.add('is-active');
@@ -165,8 +217,18 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  changeServiceStatus(serviceName) {
+  saveChanges(serviceName) {
+    if (this.isFilterDeleted) {
+      this.deleteFilter();
+    }
+    if (this.isFilterOrderChanged) {
+      this.updateFilterPipeline(this.filterPipeline);
+    }
+    this.changeServiceStatus(serviceName);
     this.toggleModal(false);
+  }
+
+  changeServiceStatus(serviceName) {
     if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
       return false;
     }
@@ -224,12 +286,20 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    document.getElementById('vci-proxy').click();
+    if (this.useProxy) {
+      document.getElementById('vci-proxy').click();
+    }
+    const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
+    for (const e of <any>el) {
+      e.click();
+    }
+    if (this.filterConfigViewComponent !== undefined && !this.filterConfigViewComponent.isValidForm) {
+      return;
+    }
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
       return;
-    } else {
-      this.updateConfigConfiguration(this.changedChildConfig);
     }
+    this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
 
@@ -273,6 +343,20 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
+  }
+
+
+  /**
+  * Open confirmation modal
+  */
+  showConfirmationDialog() {
+    this.confirmationDialogData = {
+      id: '',
+      name: '',
+      message: 'Do you want to discard unsaved changes',
+      key: 'unsavedConfirmation'
+    };
+    this.filterAlert.toggleModal(true);
   }
 
   getAssetReadings(service) {
@@ -373,5 +457,141 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  openAddFilterModal(isWizard) {
+    this.isWizard = isWizard;
+    this.category = '';
+  }
+
+  onNotify() {
+    this.getCategory();
+    this.isWizard = false;
+    this.getFilterPipeline();
+  }
+
+  getFilterPipeline() {
+    this.filterService.getFilterPipeline(this.service['name'])
+      .subscribe((data: any) => {
+        this.filterPipeline = data.result.pipeline;
+      },
+        error => {
+          if (error.status === 404) {
+            this.filterPipeline = [];
+          } else {
+            console.log('Error ', error);
+          }
+        });
+  }
+
+  activeAccordion(id, filterName) {
+    this.useFilterProxy = 'true';
+    const last = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
+    if (last !== undefined) {
+      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('accordion-content')[0];
+      const activeId = last.getAttribute('id');
+      lastActiveContentBody.hidden = true;
+      last.classList.remove('is-active');
+      if (id !== +activeId) {
+        const next = <HTMLElement>document.getElementById(id);
+        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('accordion-content')[0];
+        nextActiveContentBody.hidden = false;
+        next.setAttribute('class', 'is-light accordion is-active');
+        this.getFilterConfiguration(filterName);
+      } else {
+        last.classList.remove('is-active');
+        lastActiveContentBody.hidden = true;
+      }
+    } else {
+      const element = <HTMLElement>document.getElementById(id);
+      const body = <HTMLElement>element.getElementsByClassName('accordion-content')[0];
+      body.hidden = false;
+      element.setAttribute('class', 'is-light accordion is-active');
+      this.getFilterConfiguration(filterName);
+    }
+  }
+
+  getFilterConfiguration(filterName) {
+    this.filterConfiguration = [];
+    const catName = this.service['name'] + '_' + filterName;
+    this.filterService.getFilterConfiguration(catName)
+      .subscribe((data: any) => {
+        this.filterConfiguration = { key: catName, 'value': [data] };
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  deleteFilterReference(filter) {
+    this.deletedFilterPipeline.push(filter);
+    this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
+    this.isFilterDeleted = true;
+    this.isFilterOrderChanged = false;
+  }
+
+
+  deleteFilter() {
+    this.isFilterDeleted = false;
+    this.ngProgress.start();
+    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service['name'])
+      .subscribe(() => {
+        this.deletedFilterPipeline.forEach((filter, index) => {
+          this.filterService.deleteFilter(filter).subscribe((data: any) => {
+            this.ngProgress.done();
+            if (this.deletedFilterPipeline.length === index + 1) {
+              this.deletedFilterPipeline = []; // clear deleted filter reference
+            }
+            this.alertService.success(data.result, true);
+          },
+            (error) => {
+              this.ngProgress.done();
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.alertService.error(error.statusText);
+              }
+            });
+        });
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public updateFilterPipeline(filterPipeline) {
+    this.isFilterOrderChanged = false;
+    this.ngProgress.start();
+    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service['name'])
+      .subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Filter pipeline updated successfully.', true);
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  discardChanges(event) {
+    if (event) {
+      this.isFilterOrderChanged = false;
+      this.isFilterDeleted = false;
+      this.deletedFilterPipeline = [];
+      this.toggleModal(false);
+    }
   }
 }
