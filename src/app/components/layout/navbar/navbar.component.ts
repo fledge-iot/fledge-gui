@@ -123,11 +123,15 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           const servicesData = data.services;
           const coreService = servicesData.filter((el => (el.type === 'Core')));
           const storageService = servicesData.filter((el => (el.type === 'Storage')));
+          const notificationService = servicesData.filter((el => (el.type === 'Notification')));
           let southboundServices = servicesData.filter((el => (el.type === 'Southbound')));
           southboundServices = sortBy(southboundServices, function (obj) {
             return obj.name.toLowerCase();
           });
           this.servicesRecord.push(coreService[0], storageService[0]);
+          if (notificationService.length) {
+            this.servicesRecord.push(notificationService[0]);
+          }
           southboundServices.forEach(service => {
             this.servicesRecord.push(service);
           });
@@ -150,7 +154,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.status.changeMessage(true);
       this.pingData = data;
       this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
-      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'] , hostName: this.pingData['hostName'] };
+      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -168,9 +172,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'] , hostName: this.pingData['hostName'] };
+          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
         } else {
-          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false , hostName: '' };
+          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '' };
         }
       });
   }
