@@ -78,7 +78,8 @@ export class ConfigurationService {
   *  POST  | /foglamp/category/{categoryName}/{config_item}/upload
   */
   uploadFile(categoryName: string, configItem: string, fileToUpload) {
-    return this.http.post(this.CATEGORY_URL + '/' + categoryName + '/' + configItem + '/upload', fileToUpload).pipe(
+    return this.http.post(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName) + '/'
+    + encodeURIComponent(configItem) + '/upload', fileToUpload).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
   }
