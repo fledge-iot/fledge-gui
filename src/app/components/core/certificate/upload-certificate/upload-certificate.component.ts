@@ -103,8 +103,8 @@ export class UploadCertificateComponent implements OnInit {
     if (this.cert && this.key) {
       if (this.certExtension && this.keyExtension) {
         const formData = new FormData();
-        formData.append('key', this.cert, this.cert.name);
-        formData.append('cert', this.key, this.key.name);
+        formData.append('cert', this.cert, this.cert.name);
+        formData.append('key', this.key, this.key.name);
         formData.append('overwrite', this.overwrite);
 
         /** request started */
