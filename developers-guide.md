@@ -36,7 +36,7 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
  Angular CLI  | 6.2.6         |        7.1.4          | MIT 
  TypeScript   | 2.9.2         |        3.2.2          | Apache 2.0
  rxjs         | 6.3.3         |        6.3.3          | Apache 2.0
- Bulma css    | 0.7.1         |        0.7.2          | MIT
+ Bulma css    | 0.7.2         |        0.7.2          | MIT
 
 #### Dev:
  Library         |   Version     | Latest Stable (? Y/n) | License
