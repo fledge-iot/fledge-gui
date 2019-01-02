@@ -50,7 +50,7 @@
                   class="is-light accordion" [attr.id]="i">
 
                   <div class="accordion-header">
-                    <span><span class="switch-icon"><i class="fa fa-bars"></i><i class="fa fa-hand-rock-o"></i></span>&nbsp;{{filter}}</span>
+                    <span><span class="switch-icon"><i class="fa fa-bars"></i><i class="fa fa-hand-rock"></i></span>&nbsp;{{filter}}</span>
                     <button class="is-dark toggle" aria-label="toggle" (click)="activeAccordion(i, filter)"></button>
                   </div>
                   <div class="accordion-body">
@@ -59,7 +59,7 @@
                         [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
                       <div class="field is-pulled-right">
                         <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span class="icon is-medium"><i
-                              class="fa fa-trash fa-lg" aria-hidden="true"></i></span></button>
+                              class="fa fa-trash-alt fa-lg" aria-hidden="true"></i></span></button>
                       </div>
                     </div>
                   </div>
