@@ -113,22 +113,25 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.showConfirmationDialog();
       return;
     }
+
     const activeFilterTab = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
     if (activeFilterTab !== undefined) {
       activeFilterTab.classList.remove('is-active');
     }
 
-    const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
-
     if (this.isWizard) {
       this.getCategory();
       this.isWizard = false;
     }
+
+    const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
+      this.notify.emit(false);
       this.svcCheckbox.setValue(this.service['schedule_enabled']);
       modalWindow.classList.add('is-active');
       return;
     }
+    this.notify.emit(false);
     this.isAdvanceConfig = true;
     this.getAdvanceConfig(null);
     modalWindow.classList.remove('is-active');
