@@ -80,7 +80,7 @@ export class SkipLogin {
 
   clickChartIcon() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-assets .table.is-striped > tbody:nth-child(2) > tr:nth-child(1) .fa-line-chart')).click();
+    return element(by.css('app-assets .table.is-striped > tbody:nth-child(2) > tr:nth-child(1) .fa-chart-line')).click();
   }
 
   isChartDisplayed() {
