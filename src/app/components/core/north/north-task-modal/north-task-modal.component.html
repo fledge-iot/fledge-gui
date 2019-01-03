@@ -9,77 +9,120 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="box">
-        <app-view-config-item [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+      <ng-container *ngIf="!isWizard">
+        <div class="box">
+          <app-view-config-item #taskConfigView *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+          <form name="task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
+            <div class="columns">
+              <div class="column">
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Enabled</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
+                        [(ngModel)]="enabled">
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Exclusive</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive"
+                        [(ngModel)]="exclusive">
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal">
+                  <div class="field-label has-text-left">
+                    <label class="label">Interval</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <input name="repeatDays" class="input is-small" type='number' appNumberOnly min="0" max="365"
+                        placeholder="days" [(ngModel)]="repeatDays">
+                    </div>
+                    <div class="field">
+                      <input class="input is-small" name="repeatTime" type="text" [pattern]='regExp' placeholder="hh:mm:ss"
+                        mask="00:00:00" [(ngModel)]="repeatTime" required (change)="getTimeIntervalValue($event)">
+                      <span *ngIf="fg?.controls['repeatTime']?.invalid" class="help is-danger">
+                        <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="taskForm">Save</button>
+          </form>
+          <hr>
+          <div class="columns">
+            <div class="column has-text-centered">
+              <span class="label is-size-6 add-application"><a (click)="openAddFilterModal(true)">Applications <i class="fa fa-plus-circle"
+                    aria-hidden="true"></i></a></span>
+            </div>
+          </div>
+          <hr>
+          <div *ngIf="filterPipeline != undefined" class="columns">
+            <div class="column">
+              <section class="accordions" dndDropzone dndEffectAllowed="copyMove" (dndDrop)="onDrop($event, filterPipeline)">
 
-        <form name="schedule-form" id="scheduleForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
+                <article dndPlaceholderRef class="is-light accordion dndPlaceholder">
+                </article>
+                <article *ngFor="let filter of filterPipeline; let i = index" [dndDraggable]="filter" (dndStart)="onDragStart(i)"
+                  class="is-light accordion" [attr.id]="i">
+
+                  <div class="accordion-header">
+                    <span><span class="switch-icon"><i class="fa fa-bars"></i><i class="fa fa-hand-rock-o"></i></span>&nbsp;{{filter}}</span>
+                    <button class="is-dark toggle" aria-label="toggle" (click)="toggleAccordion(i, filter)"></button>
+                  </div>
+                  <div class="accordion-body">
+                    <div class="accordion-content" hidden>
+                      <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
+                        [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
+                      <div class="field is-pulled-right">
+                        <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span class="icon is-medium"><i
+                              class="fa fa-trash fa-lg" aria-hidden="true"></i></span></button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </section>
+            </div>
+          </div>
           <div class="columns">
             <div class="column">
-              <div class="field is-horizontal">
-                <div class="field-label has-text-left">
-                  <label class="label">Enabled</label>
-                </div>
-                <div class="field-body">
-                  <div class="field">
-                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
-                      [(ngModel)]="enabled">
-                  </div>
-                </div>
-              </div>
-              <div class="field is-horizontal">
-                <div class="field-label has-text-left">
-                  <label class="label">Exclusive</label>
-                </div>
-                <div class="field-body">
-                  <div class="field">
-                    <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive" [value]="exclusive"
-                      [(ngModel)]="exclusive">
-                  </div>
-                </div>
-              </div>
-              <div class="field is-horizontal">
-                <div class="field-label has-text-left">
-                  <label class="label">Interval</label>
-                </div>
-                <div class="field-body">
-                  <div class="field">
-                    <input name="repeatDays" class="input is-small" type='number' appNumberOnly min="0" max="365"
-                      placeholder="days" [(ngModel)]="repeatDays">
-                  </div>
-                  <div class="field">
-                    <input class="input is-small" name="repeatTime" type="text" [pattern]='regExp' placeholder="hh:mm:ss"
-                      mask="00:00:00" [(ngModel)]="repeatTime" required (change)="getTimeIntervalValue($event)">
-                    <span *ngIf="fg?.controls['repeatTime']?.invalid" class="help is-danger">
-                      <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
-                    </span>
-                  </div>
-                </div>
+              <div class="field is-grouped is-pulled-right">
+                <p class="control">
+                  <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+                </p>
+                <p class="control">
+                  <button class="button is-small is-link" (click)="proxy()">Save</button>
+                </p>
               </div>
             </div>
           </div>
-          <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="scheduleForm">Save</button>
-        </form>
-        <div class="columns">
-          <div class="column">
-            <div class="field is-grouped is-pulled-right">
-              <p class="control">
-                <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-              </p>
-              <p class="control">
-                <button class="button is-small is-link" (click)="proxy()">Save</button>
-              </p>
+          <hr>
+          <div class="field">
+            <div class="field has-text-right">
+              <button *ngIf="task != undefined" (click)="openDeleteModal(task.name,'Warning: Deleting this instance can not be undone. Continue', 'deleteTask')"
+                class="button is-small">Delete Instance</button>
             </div>
           </div>
         </div>
-        <hr>
-        <div class="field">
-          <div class="field has-text-right">
-            <button *ngIf="task != undefined" (click)="openDeleteModal(task.name,'Warning: Deleting this instance can not be undone. Continue', 'deleteTask')"
-              class="button is-small">Delete Instance</button>
-          </div>
+      </ng-container>
+      <ng-container *ngIf="isWizard">
+        <div class="box animated slideInRight">
+          <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="task.name"></app-add-filter-wizard>
         </div>
-      </div>
+      </ng-container>
     </section>
   </div>
   <app-alert-dialog (deleteTask)='deleteTask($event)' [deleteTaskData]='deleteTaskData'></app-alert-dialog>
+  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges($event)"
+  [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>

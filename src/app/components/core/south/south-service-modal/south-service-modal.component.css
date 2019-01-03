@@ -18,3 +18,47 @@ label{
 [hidden] {
   display: none !important;
 }
+
+.dndPlaceholder {
+  min-height: 72px;
+  border: 1px dashed green;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+a { color: black; }
+
+.toggle::before{
+  content:'\25BC' !important;
+  padding: 4px 3px 0 3px !important;
+  text-align: center !important;
+}
+
+.accordions .accordion.is-active .accordion-header .toggle::before{
+  content:'\25B2' !important;
+}
+
+.btnDelete {
+  margin: 2px;
+}
+
+.switch-icon > .fa + .fa,
+.switch-icon:hover > .fa {
+  display: none;
+}
+
+.switch-icon:hover > .fa + .fa {
+  display: inherit;
+  opacity: 0.5;
+}
+
+.fa-bars {
+  opacity: 0.5;
+}
+
+.fa-trash.fa-lg {
+  opacity: 0.8;
+}
+
+.add-application{
+  opacity: 0.7;
+}
