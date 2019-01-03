@@ -29,12 +29,15 @@ a { color: black; }
 
 .toggle::before{
   content:'\25BC' !important;
-  padding: 4px 3px 0 3px !important;
-  text-align: center !important;
+  transform: rotate(180deg);
+  transform-origin: 50% 45%;
 }
+
 
 .accordions .accordion.is-active .accordion-header .toggle::before{
   content:'\25B2' !important;
+  transform: rotate(180deg);
+  transform-origin: 50% 50%;
 }
 
 .filter-header:hover{

@@ -44,7 +44,7 @@
             <div class="column">
               <section class="accordions" dndDropzone dndEffectAllowed="copyMove" (dndDrop)="onDrop($event, filterPipeline)">
 
-                <article dndPlaceholderRef class="is-light" [ngClass]="{'accordion dndPlaceholder': filterPipeline?.length > 1}">
+                <article dndPlaceholderRef class="is-light accordion dndPlaceholder">
                 </article>
                 <article *ngFor="let filter of filterPipeline; let i = index" [dndDraggable]="filter" (dndStart)="onDragStart(i)"
                   class="is-light accordion" [attr.id]="i">
