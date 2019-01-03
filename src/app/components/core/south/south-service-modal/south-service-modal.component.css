@@ -37,18 +37,12 @@ a { color: black; }
   content:'\25B2' !important;
 }
 
+.filter-header:hover{
+  cursor: move;
+}
+
 .btnDelete {
   margin: 2px;
-}
-
-.switch-icon > .fa + .fa,
-.switch-icon:hover > .fa {
-  display: none;
-}
-
-.switch-icon:hover > .fa + .fa {
-  display: inherit;
-  opacity: 0.5;
 }
 
 .fa-bars {
