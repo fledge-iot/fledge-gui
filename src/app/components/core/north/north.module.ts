@@ -13,7 +13,7 @@ import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.compon
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
 import { NorthComponent } from './north.component';
 import { FilterModule } from '../filter/filter.module';
-import { DndModule } from 'ngx-drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 const routes: Routes = [
   {
@@ -40,12 +40,12 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     NgProgressModule,
+    DragDropModule,
     AlertDialogModule,
     PipesModule,
     DirectivesModule,
     FilterModule,
-    SharedModule,
-    DndModule
+    SharedModule
   ],
   providers: [],
 })

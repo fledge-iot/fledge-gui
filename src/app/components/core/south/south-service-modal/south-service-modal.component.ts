@@ -2,24 +2,24 @@ import {
   Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Parser } from 'json2csv';
-import { isEmpty, cloneDeep, isEqualWith } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
-import { DndDropEvent } from 'ngx-drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
-import { MAX_INT_SIZE } from '../../../../utils';
+import { Parser } from 'json2csv';
+import { isEmpty } from 'lodash';
+import { NgProgress } from 'ngx-progressbar';
 
 import {
-  AlertService,
-  AssetsService,
-  ConfigurationService,
-  FilterService,
-  SchedulesService,
-  ServicesHealthService,
+  AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
+  ServicesHealthService
 } from '../../../../services';
+import { MAX_INT_SIZE } from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import {
+  ConfigChildrenComponent
+} from '../../configuration-manager/config-children/config-children.component';
+import {
+  ViewConfigItemComponent
+} from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 
 @Component({
@@ -46,10 +46,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public isFilterDeleted = false;
   private REQUEST_TIMEOUT_INTERVAL = 1000;
   assetReadings = [];
-
   public filterItemIndex;
-
-
   public isWizard;
   // Object to hold data of south service to delete
   public serviceRecord;
@@ -86,26 +83,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
   }
 
-  onDragStart(itemIndex) {
-    this.filterItemIndex = itemIndex;
-  }
-
-  onDrop(event: DndDropEvent, list?: any[]) {
-    const oldIndex = this.filterItemIndex;
-    const listCopy = cloneDeep(list);
-    if (list
-      && (event.dropEffect === 'copy'
-        || event.dropEffect === 'move')) {
-      let newIndex = event.index;
-      if (typeof newIndex === 'undefined') {
-        newIndex = list.length;
-      }
-      list.splice(newIndex, 0, list.splice(oldIndex, 1)[0]);
-      if (isEqualWith(listCopy, list)) {
-        return;
-      }
-      this.isFilterOrderChanged = true;
+  onDrop(event: CdkDragDrop<string[]>) {
+    if (event.previousIndex === event.currentIndex) {
+      return;
     }
+    moveItemInArray(this.filterPipeline, event.previousIndex, event.currentIndex);
+    this.isFilterOrderChanged = true;
   }
 
   public toggleModal(isOpen: Boolean) {
@@ -489,19 +472,19 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  activeAccordion(id, filterName) {
+  activeAccordion(id, filterName: string) {
     this.useFilterProxy = 'true';
-    const last = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
+    const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
-      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('accordion-content')[0];
+      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
       const activeId = last.getAttribute('id');
       lastActiveContentBody.hidden = true;
       last.classList.remove('is-active');
       if (id !== +activeId) {
         const next = <HTMLElement>document.getElementById(id);
-        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('accordion-content')[0];
+        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
         nextActiveContentBody.hidden = false;
-        next.setAttribute('class', 'is-light accordion is-active');
+        next.setAttribute('class', 'accordion card is-active');
         this.getFilterConfiguration(filterName);
       } else {
         last.classList.remove('is-active');
@@ -509,9 +492,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       }
     } else {
       const element = <HTMLElement>document.getElementById(id);
-      const body = <HTMLElement>element.getElementsByClassName('accordion-content')[0];
+      const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
       body.hidden = false;
-      element.setAttribute('class', 'is-light accordion is-active');
+      element.setAttribute('class', 'accordion card is-active');
       this.getFilterConfiguration(filterName);
     }
   }

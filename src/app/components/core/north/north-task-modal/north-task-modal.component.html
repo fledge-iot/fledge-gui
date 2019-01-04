@@ -69,19 +69,20 @@
           <hr>
           <div *ngIf="filterPipeline != undefined" class="columns">
             <div class="column">
-              <section class="accordions" dndDropzone dndEffectAllowed="copyMove" (dndDrop)="onDrop($event, filterPipeline)">
-
-                <article dndPlaceholderRef class="is-light accordion dndPlaceholder">
-                </article>
-                <article *ngFor="let filter of filterPipeline; let i = index" [dndDraggable]="filter" (dndStart)="onDragStart(i)"
-                  class="is-light accordion" [attr.id]="i">
-
-                  <div class="accordion-header">
-                    <span><span class="switch-icon"><i class="fa fa-bars"></i><i class="fa fa-hand-rock-o"></i></span>&nbsp;{{filter}}</span>
-                    <button class="is-dark toggle" aria-label="toggle" (click)="toggleAccordion(i, filter)"></button>
-                  </div>
-                  <div class="accordion-body">
-                    <div class="accordion-content" hidden>
+              <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
+                <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag>
+                  <header class="card-header">
+                    <p class="card-header-title">
+                      <i class="fa fa-bars"></i>&nbsp;{{filter}}
+                    </p>
+                    <a (click)="toggleAccordion(i, filter)" class="card-header-icon">
+                      <span class="icon">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </a>
+                  </header>
+                  <div class="card-content" hidden>
+                    <div class="content">
                       <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
                         [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
                       <div class="field is-pulled-right">
@@ -90,8 +91,8 @@
                       </div>
                     </div>
                   </div>
-                </article>
-              </section>
+                </div>
+              </div>
             </div>
           </div>
           <div class="columns">
@@ -124,5 +125,5 @@
   </div>
   <app-alert-dialog (deleteTask)='deleteTask($event)' [deleteTaskData]='deleteTaskData'></app-alert-dialog>
   <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges($event)"
-  [filerDialogData]='confirmationDialogData'></app-filter-alert>
+    [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
