@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -14,6 +14,8 @@ import ConfigTypeValidation from '../configuration-type-validation';
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
   @Input() useProxy: 'false';
+  @Input() useFilterProxy: 'false';
+  @Input() formId: '';
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration;
@@ -31,10 +33,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
     this.configItems = [];
-    if (changes.categoryConfigurationData.currentValue !== undefined) {
+    const categoryConfigurationCurrentData = cloneDeep(changes.categoryConfigurationData.currentValue);
+    if (categoryConfigurationCurrentData !== undefined) {
       let configAttributes = [];
-      if (changes.categoryConfigurationData.currentValue.length !== 0) {
-        const currentConfigValues = changes.categoryConfigurationData.currentValue.value[0];
+      if (categoryConfigurationCurrentData.length !== 0) {
+        const currentConfigValues = categoryConfigurationCurrentData.value[0];
         configAttributes = Object.keys(currentConfigValues).map(key => {
           const element = currentConfigValues[key];
           element.key = key;
@@ -45,8 +48,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
           return parseInt(ca.order, 10);
         });
 
-        changes.categoryConfigurationData.currentValue.value = configAttributes;
-        this.categoryConfiguration = changes.categoryConfigurationData.currentValue;
+        categoryConfigurationCurrentData.value = configAttributes;
+        this.categoryConfiguration = categoryConfigurationCurrentData;
         this.configItems = configAttributes.map(el => {
           return {
             key: el.key,
@@ -59,6 +62,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public saveConfiguration(form: NgForm) {
+
     this.isValidForm = true;
     if (!form.valid) {
       this.isValidForm = false;
@@ -75,21 +79,24 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     formData.map(d => {
       return this.configItems.map(conf => {
         if (conf.key === d.key) {
-          d['type'] = conf.type;
+          d['type'] = conf.type;  // there is no key 'type' in the object
+          d.value = d.value.toString();
         }
         return d;
       });
     });
 
     const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
-    // condition to check if called from add service wizard
+    let isConfigChanged = false;
+    // condition to check if called from wizard
     if (this.isWizardCall) {
+      if (this.filesToUpload !== []) {
+        changedConfigValues.push({ 'value': this.filesToUpload, 'type': 'script' });
+      }
       this.onConfigChanged.emit(changedConfigValues);
       return;
     }
-
     this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
-    let isConfigChanged = false;
     if (changedConfigValues.length > 0) {
       isConfigChanged = true;
     }
@@ -117,7 +124,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     });
 
     changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
-
     if (isEmpty(changedConfig)) {
       return;
     }

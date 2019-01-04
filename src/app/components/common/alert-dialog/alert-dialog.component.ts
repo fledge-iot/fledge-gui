@@ -44,12 +44,12 @@ export class AlertDialogComponent implements OnInit, OnChanges {
   }
 
   public toggleModal(isOpen: Boolean) {
-    const schedule_name = <HTMLDivElement>document.getElementById('modal-box');
+    const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (isOpen) {
-      schedule_name.classList.add('is-active');
+      alertModal.classList.add('is-active');
       return;
     }
-    schedule_name.classList.remove('is-active');
+    alertModal.classList.remove('is-active');
   }
 
   triggerAction() {

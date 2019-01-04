@@ -30,7 +30,7 @@ const routes: Routes = [
     NgProgressModule,
     SharedModule,
     DirectivesModule,
-    TreeModule
+    TreeModule.forRoot()
   ],
   providers: [ConfigurationService],
 })
