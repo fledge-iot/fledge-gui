@@ -6,9 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
-import {
-    AssetsService, FilterService, SchedulesService, ServicesHealthService
-} from '../../../services';
+import { AssetsService, SchedulesService, ServicesHealthService, FilterService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { FilterModule } from '../filter/filter.module';
