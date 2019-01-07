@@ -1,5 +1,3 @@
-import { NgProgressModule } from 'ngx-progressbar';
-
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -44,7 +42,6 @@ const routes: Routes = [
     CommonModule,
     DragDropModule,
     RouterModule.forChild(routes),
-    NgProgressModule,
     AlertDialogModule,
     SharedModule,
     FilterModule,

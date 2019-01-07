@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NgProgress } from 'ngx-progressbar';
 import { interval } from 'rxjs';
 
 import { DateFormatterPipe } from '../../../pipes';
-import { AlertService, PingService } from '../../../services';
+import { AlertService, PingService, ProgressBarService } from '../../../services';
 import { BackupRestoreService } from '../../../services/backup-restore.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
@@ -32,7 +31,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
 
   constructor(private backupRestoreService: BackupRestoreService,
     private alertService: AlertService,
-    public ngProgress: NgProgress,
+    public ngProgress: ProgressBarService,
     private dateFormatter: DateFormatterPipe,
     private ping: PingService) {
     this.isAlive = true;

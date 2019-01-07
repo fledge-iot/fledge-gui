@@ -23,6 +23,7 @@
     "@angular/platform-browser": "~7.1.4",
     "@angular/platform-browser-dynamic": "~7.1.4",
     "@angular/router": "~7.1.4",
+    "@ngx-progressbar/core": "^5.3.1",
     "angular-tree-component": "~8.1.0",
     "animate.css": "^3.7.0",
     "chart.js": "~2.7.2",
@@ -30,7 +31,6 @@
     "json2csv": "~4.3.1",
     "moment": "~2.23.0",
     "ng-sidebar": "~8.0.0",
-    "ngx-progressbar": "^2.1.1",
     "rxjs": "~6.3.3",
     "rxjs-compat": "~6.3.3",
     "zone.js": "~0.8.26"

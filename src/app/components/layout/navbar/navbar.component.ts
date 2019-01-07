@@ -11,9 +11,8 @@ import {
 } from '@angular/core';
 import { sortBy } from 'lodash';
 import { Router } from '@angular/router';
-import { NgProgress } from 'ngx-progressbar';
-
-import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService } from '../../../services';
+import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService,
+  ProgressBarService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';
 import { RestartModalComponent } from '../../common/restart-modal/restart-modal.component';
@@ -49,10 +48,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
 
+
   constructor(private servicesHealthService: ServicesHealthService,
     private status: ConnectedServiceStatus,
     private alertService: AlertService,
-    public ngProgress: NgProgress,
+    private ngProgress: ProgressBarService,
     private sharedService: SharedService,
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,

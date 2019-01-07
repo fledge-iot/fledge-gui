@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { SystemLogComponent } from '.';
 import { AuthCheckGuard } from '../../../guards';
@@ -24,7 +23,6 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     NumberInputDebounceModule,
-    NgProgressModule,
     PaginationModule
   ],
   providers: [],

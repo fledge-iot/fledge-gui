@@ -3,7 +3,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { SidebarModule } from 'ng-sidebar';
-import { NgProgressModule } from 'ngx-progressbar';
+import { NgProgressModule } from '@ngx-progressbar/core';
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
@@ -46,6 +46,8 @@ import {
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
+import { ProgressBarComponent } from './components/common/progress-bar/progress-bar.component';
+import { ProgressBarService } from './services/progress-bar.service';
 
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
@@ -84,6 +86,7 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     AppComponent,
     LoginComponent,
     AlertComponent,
+    ProgressBarComponent,
     FooterComponent,
     SideMenuComponent,
     NavbarComponent,
@@ -118,6 +121,7 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     PingService,
     NorthService,
     SchedulesService,
+    ProgressBarService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

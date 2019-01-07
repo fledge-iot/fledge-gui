@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { TreeModule } from 'angular-tree-component';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { ConfigurationManagerComponent } from '.';
 import { DirectivesModule } from '../../../directives/directives.module';
@@ -27,7 +26,6 @@ const routes: Routes = [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
-    NgProgressModule,
     SharedModule,
     DirectivesModule,
     TreeModule.forRoot()

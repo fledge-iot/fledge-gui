@@ -6,11 +6,11 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 import { Parser } from 'json2csv';
 import { isEmpty } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 
 import {
   AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
-  ServicesHealthService
+  ServicesHealthService,
+  ProgressBarService
 } from '../../../../services';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
@@ -65,7 +65,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private assetService: AssetsService,
     private filterService: FilterService,
-    public ngProgress: NgProgress,
+    public ngProgress: ProgressBarService,
     private servicesHealthService: ServicesHealthService,
     private schedulesService: SchedulesService) { }
 

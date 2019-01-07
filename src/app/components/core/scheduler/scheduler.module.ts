@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { DirectivesModule } from '../../../directives/directives.module';
 import { AuthCheckGuard } from '../../../guards';
@@ -32,7 +31,6 @@ const routes: Routes = [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
-    NgProgressModule,
     PipesModule,
     AlertDialogModule,
     DirectivesModule,

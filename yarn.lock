@@ -324,6 +324,13 @@
     tree-kill "1.2.0"
     webpack-sources "1.2.0"
 
+"@ngx-progressbar/core@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@ngx-progressbar/core/-/core-5.3.1.tgz#ddbc6e1f0f4c5bcf3077d1c82cbb9a7e088600b5"
+  integrity sha512-IAbpPbv0RHwnLTqr8JpEOR2mDbia8jTyZdG0yWmyiGoVfIisSs/NkzMDph43pLvWl2aaJ+Bd2BJTdM2olYK4MQ==
+  dependencies:
+    tslib "^1.9.0"
+
 "@schematics/angular@7.1.4":
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-7.1.4.tgz#cec4a5b793e54bd624018b6b5b4b917c467d22a5"
@@ -5655,11 +5662,6 @@ ng-sidebar@~8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/ng-sidebar/-/ng-sidebar-8.0.0.tgz#c9d170aea9831116f807e557aa32f2eb063163bb"
   integrity sha512-+uCduUkcsOerb8MjecrPcP1KY8gKyd8XVBB+8jRao/JCz/qBwD9E2GPRGLL+NzwU72coYhL8L4UvhZwwIpl1rA==
-
-ngx-progressbar@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/ngx-progressbar/-/ngx-progressbar-2.1.1.tgz#cecd88435ac660be445caeaded19b85f4a1e47be"
-  integrity sha512-RyfW1Dhp9G+QZRhp0SsVZJOxvfXHq335aea9rAwVOORSzch6NFBuE+XYx3etlEh2avOYfigyWUX8vAlEXrHXKQ==
 
 nice-try@^1.0.4:
   version "1.0.5"

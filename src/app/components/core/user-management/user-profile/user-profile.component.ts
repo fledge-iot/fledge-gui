@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, AuthService, UserService } from '../../../../services';
+import { AlertService, AuthService, UserService, ProgressBarService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 
 @Component({
@@ -20,7 +19,7 @@ export class UserProfileComponent implements OnInit {
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
-    public ngProgress: NgProgress,
+    public ngProgress: ProgressBarService,
     private router: Router) { }
 
   ngOnInit() {
@@ -29,7 +28,6 @@ export class UserProfileComponent implements OnInit {
 
   getUser() {
     this.userRecord = {};
-    this.ngProgress.start();
     const id = sessionStorage.getItem('uid');
     // Get SignedIn user details
     this.userService.getUser(id)

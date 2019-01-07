@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { sortBy } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 import { interval } from 'rxjs';
 
-import { AlertService, PingService, SchedulesService } from '../../../../services';
+import { AlertService, PingService, SchedulesService, ProgressBarService } from '../../../../services';
 import { POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
@@ -20,7 +19,7 @@ export class ListTasksComponent implements OnInit, OnDestroy {
   constructor(
     private schedulesService: SchedulesService,
     private alertService: AlertService,
-    public ngProgress: NgProgress,
+    public ngProgress: ProgressBarService,
     private ping: PingService
   ) {
     this.isAlive = true;

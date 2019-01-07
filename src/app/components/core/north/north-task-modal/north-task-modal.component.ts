@@ -2,13 +2,12 @@ import {
     Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
 } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 
 import {
-    AlertService, ConfigurationService, FilterService, NorthService, SchedulesService
+    AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService
 } from '../../../../services';
 import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
@@ -65,7 +64,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private northService: NorthService,
     private filterService: FilterService,
     public fb: FormBuilder,
-    public ngProgress: NgProgress,
+    public ngProgress: ProgressBarService,
   ) { }
 
   ngOnInit() { }
@@ -84,27 +83,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     });
   }
 
-  // onDragStart(itemIndex) {
-  //   this.filterItemIndex = itemIndex;
-  // }
-
-  // onDrop(event: DndDropEvent, list?: any[]) {
-  //   const oldIndex = this.filterItemIndex;
-  //   const listCopy = cloneDeep(list);
-  //   if (list
-  //     && (event.dropEffect === 'copy'
-  //       || event.dropEffect === 'move')) {
-  //     let newIndex = event.index;
-  //     if (typeof newIndex === 'undefined') {
-  //       newIndex = list.length;
-  //     }
-  //     list.splice(newIndex, 0, list.splice(oldIndex, 1)[0]);
-  //     if (isEqualWith(listCopy, list)) {
-  //       return;
-  //     }
-  //     this.isFilterOrderChanged = true;
-  //   }
-  // }
   onDrop(event: CdkDragDrop<string[]>) {
     if (event.previousIndex === event.currentIndex) {
       return;
