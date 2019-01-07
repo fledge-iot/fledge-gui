@@ -40,7 +40,8 @@
           <div *ngIf="filterPipeline != undefined" class="columns">
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
-                <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag>
+                <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
+                  [cdkDragDisabled]="filterPipeline.length < 2" [ngClass]="{'cursor-pointer': filterPipeline.length < 2}">
                   <header class="card-header">
                     <p class="card-header-title">
                       <i class="fa fa-bars"></i>&nbsp;{{filter}}

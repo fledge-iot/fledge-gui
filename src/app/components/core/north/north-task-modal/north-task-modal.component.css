@@ -67,3 +67,8 @@ a { color: black; }
   opacity: 0.7;
 }
 
+.cursor-pointer {
+  cursor: default !important;
+}
+
+
