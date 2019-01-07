@@ -27,14 +27,19 @@ label{
 
 a { color: black; }
 
-.toggle::before{
+.toggle::before {
   content:'\25BC' !important;
   transform: rotate(180deg);
   transform-origin: 50% 45%;
 }
 
+@media screen and (min-width: 769px) {
+  .view-content {
+    display: block !important;
+  }
+}
 
-.accordions .accordion.is-active .accordion-header .toggle::before{
+.accordions .accordion.is-active .accordion-header .toggle::before {
   content:'\25B2' !important;
   transform: rotate(180deg);
   transform-origin: 50% 50%;
