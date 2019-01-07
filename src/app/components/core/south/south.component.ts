@@ -77,11 +77,10 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.service = service;
     this.southServiceModal.service = service;
     this.southServiceModal.toggleModal(true);
-    this.isAlive = false;
   }
 
   onNotify() {
-    this.isAlive = true;
+    this.getSouthboundServices();
   }
 
   public showLoadingSpinner() {
