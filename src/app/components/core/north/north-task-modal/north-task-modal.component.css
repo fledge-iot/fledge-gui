@@ -68,3 +68,7 @@ a { color: black; }
     display: block !important;
   }
 }
+
+.filter-header:hover{
+  cursor: move;
+}
