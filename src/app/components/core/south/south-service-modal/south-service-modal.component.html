@@ -37,7 +37,7 @@
                     aria-hidden="true"></i></a></span>
             </div>
           </div>
-          <div *ngIf="filterPipeline != undefined" class="columns">
+          <div *ngIf="filterPipeline != undefined" class="view-content columns">
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag

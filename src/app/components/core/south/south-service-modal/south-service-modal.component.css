@@ -50,6 +50,12 @@ a { color: black; }
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
+@media screen and (min-width: 769px) {
+  .view-content {
+    display: block !important;
+  }
+}
+
 .btnDelete {
   margin: 2px;
 }

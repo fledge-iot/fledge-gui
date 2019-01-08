@@ -71,4 +71,8 @@ a { color: black; }
   cursor: default !important;
 }
 
-
+@media screen and (min-width: 769px) {
+  .view-content {
+    display: block !important;
+  }
+}
