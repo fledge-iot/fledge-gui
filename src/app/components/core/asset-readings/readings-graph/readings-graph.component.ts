@@ -28,7 +28,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   public DEFAULT_LIMIT = 100;
   public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
-
   private isAlive: boolean;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
@@ -147,7 +146,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     this.limit = limit;
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, time).
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
           if (data.length === 0) {
