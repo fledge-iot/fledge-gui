@@ -50,7 +50,6 @@
       </ng-container>
       <p *ngIf='!showGraph'> Not Available </p>
       <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
-      <p><b>Total readings:</b> {{totalReadings}} </p>
     </section>
   </div>
 </div>
