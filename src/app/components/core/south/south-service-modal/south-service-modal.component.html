@@ -40,17 +40,15 @@
                     aria-hidden="true"></i></a></span>
             </div>
           </div>
-          <div *ngIf="filterPipeline != undefined" class="columns">
+          <div *ngIf="filterPipeline != undefined" class="view-content columns">
             <div class="column">
               <section class="accordions" dndDropzone dndEffectAllowed="copyMove" (dndDrop)="onDrop($event, filterPipeline)">
 
                 <article dndPlaceholderRef class="is-light accordion dndPlaceholder">
                 </article>
-                <article *ngFor="let filter of filterPipeline; let i = index" [dndDraggable]="filter" (dndStart)="onDragStart(i)"
-                  class="is-light accordion" [attr.id]="i">
-
-                  <div class="accordion-header">
-                    <span><span class="switch-icon"><i class="fa fa-bars"></i><i class="fa fa-hand-rock-o"></i></span>&nbsp;{{filter}}</span>
+                <article *ngFor="let filter of filterPipeline; let i = index" class="is-light accordion" [attr.id]="i">
+                  <div class="accordion-header" [dndDraggable]="filter" (dndStart)="onDragStart(i)" [ngClass]="{'filter-header': filterPipeline?.length > 1}">
+                    <span><span class="switch-icon"><i class="fa fa-bars"></i></span>&nbsp;{{filter}}</span>
                     <button class="is-dark toggle" aria-label="toggle" (click)="activeAccordion(i, filter)"></button>
                   </div>
                   <div class="accordion-body">
