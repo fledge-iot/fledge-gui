@@ -29,6 +29,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
 
+  public totalReadings: string;
+
   private isAlive: boolean;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
@@ -147,7 +149,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     this.limit = limit;
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, time).
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
           if (data.length === 0) {
@@ -175,6 +177,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       assetReading = [];
     } else {
       const readings = assetChartRecord.reverse().map(d => d.reading);
+      this.totalReadings = readings.length;
       readings.forEach(data => {
         for (const k in data) {
           if (assetReading.length < Object.keys(data).length) {
