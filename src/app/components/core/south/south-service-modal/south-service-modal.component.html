@@ -46,10 +46,8 @@
 
                 <article dndPlaceholderRef class="is-light accordion dndPlaceholder">
                 </article>
-                <article *ngFor="let filter of filterPipeline; let i = index" [dndDraggable]="filter" (dndStart)="onDragStart(i)"
-                  class="is-light accordion" [attr.id]="i">
-
-                  <div class="accordion-header" [ngClass]="{'filter-header': filterPipeline?.length > 1}">
+                <article *ngFor="let filter of filterPipeline; let i = index" class="is-light accordion" [attr.id]="i">
+                  <div class="accordion-header" [dndDraggable]="filter" (dndStart)="onDragStart(i)" [ngClass]="{'filter-header': filterPipeline?.length > 1}">
                     <span><span class="switch-icon"><i class="fa fa-bars"></i></span>&nbsp;{{filter}}</span>
                     <button class="is-dark toggle" aria-label="toggle" (click)="activeAccordion(i, filter)"></button>
                   </div>
