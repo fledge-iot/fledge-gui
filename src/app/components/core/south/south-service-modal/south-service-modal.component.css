@@ -27,28 +27,36 @@ label{
 
 a { color: black; }
 
-.toggle::before{
+.toggle::before {
   content:'\25BC' !important;
-  padding: 4px 3px 0 3px !important;
-  text-align: center !important;
+  transform: rotate(180deg);
+  transform-origin: 50% 45%;
 }
 
-.accordions .accordion.is-active .accordion-header .toggle::before{
+@media screen and (min-width: 769px) {
+  .view-content {
+    display: block !important;
+  }
+}
+
+.accordions .accordion.is-active .accordion-header .toggle::before {
   content:'\25B2' !important;
+  transform: rotate(180deg);
+  transform-origin: 50% 50%;
+}
+
+.accordion-body {
+  border: none !important;
+  border-bottom: 1px solid #dbdbdb !important;
+  border-radius: 2px !important;
+}
+
+.filter-header:hover{
+  cursor: move;
 }
 
 .btnDelete {
   margin: 2px;
-}
-
-.switch-icon > .fa + .fa,
-.switch-icon:hover > .fa {
-  display: none;
-}
-
-.switch-icon:hover > .fa + .fa {
-  display: inherit;
-  opacity: 0.5;
 }
 
 .fa-bars {
