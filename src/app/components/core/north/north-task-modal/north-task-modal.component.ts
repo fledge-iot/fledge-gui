@@ -1,5 +1,5 @@
 import {
-    Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
 } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 
@@ -7,12 +7,12 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
 
 import {
-    AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService
+  AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService
 } from '../../../../services';
 import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import {
-    ViewConfigItemComponent
+  ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 
@@ -117,7 +117,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
     const activeFilterTab = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
     if (activeFilterTab !== undefined) {
+      const activeContentBody = <HTMLElement>activeFilterTab.getElementsByClassName('card-content')[0];
       activeFilterTab.classList.remove('is-active');
+      activeContentBody.hidden = true;
     }
 
     if (this.isWizard) {
@@ -294,7 +296,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.child.toggleModal(true);
   }
 
-  public deleteTask(task) {
+  public deleteTask(task: any) {
+    // check if user deleting instance without saving previous changes in filters
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.isFilterOrderChanged = false;
+      this.isFilterDeleted = false;
+    }
     this.ngProgress.start();
     this.northService.deleteTask(task.name)
       .subscribe(
@@ -396,13 +403,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
   }
 
-  discardChanges(event) {
-    if (event) {
-      this.isFilterOrderChanged = false;
-      this.isFilterDeleted = false;
-      this.deletedFilterPipeline = [];
-      this.toggleModal(false);
-    }
+  discardChanges() {
+    this.isFilterOrderChanged = false;
+    this.isFilterDeleted = false;
+    this.deletedFilterPipeline = [];
+    this.toggleModal(false);
   }
-
 }

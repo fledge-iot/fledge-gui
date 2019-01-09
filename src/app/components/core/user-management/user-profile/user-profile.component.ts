@@ -28,6 +28,7 @@ export class UserProfileComponent implements OnInit {
 
   getUser() {
     this.userRecord = {};
+    this.ngProgress.start();
     const id = sessionStorage.getItem('uid');
     // Get SignedIn user details
     this.userService.getUser(id)

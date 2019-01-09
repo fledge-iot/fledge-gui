@@ -41,8 +41,8 @@
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
-                  [cdkDragDisabled]="filterPipeline.length < 2" [ngClass]="{'cursor-pointer': filterPipeline.length < 2}">
-                  <header class="card-header">
+                  [cdkDragDisabled]="filterPipeline.length == 1">
+                  <header class="card-header" cdkDragHandle [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 }">
                     <p class="card-header-title">
                       <i class="fa fa-bars"></i>&nbsp;{{filter}}
                     </p>
@@ -113,6 +113,6 @@
     </section>
   </div>
   <app-alert-dialog (deleteService)='deleteService($event)' [serviceRecord]='serviceRecord'></app-alert-dialog>
-  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges($event)"
+  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>

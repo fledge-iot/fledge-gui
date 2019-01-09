@@ -99,7 +99,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
     const activeFilterTab = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
     if (activeFilterTab !== undefined) {
+      const activeContentBody = <HTMLElement>activeFilterTab.getElementsByClassName('card-content')[0];
       activeFilterTab.classList.remove('is-active');
+      activeContentBody.hidden = true;
     }
 
     if (this.isWizard) {
@@ -423,7 +425,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  deleteService(svc) {
+  deleteService(svc: any) {
+    // check if user deleting service without saving previous changes in filters
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.isFilterOrderChanged = false;
+      this.isFilterDeleted = false;
+    }
     this.ngProgress.start();
     this.servicesHealthService.deleteService(svc.name)
       .subscribe(
@@ -574,12 +581,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  discardChanges(event) {
-    if (event) {
+  discardChanges() {
       this.isFilterOrderChanged = false;
       this.isFilterDeleted = false;
       this.deletedFilterPipeline = [];
       this.toggleModal(false);
-    }
   }
 }
