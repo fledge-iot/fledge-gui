@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { map } from 'lodash';
-import { interval, Operator } from 'rxjs';
+import { interval } from 'rxjs';
 import 'rxjs/add/operator/takeWhile';
 
 import { DateFormatterPipe } from '../../../pipes';
