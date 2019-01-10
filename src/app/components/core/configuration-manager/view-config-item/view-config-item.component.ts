@@ -13,10 +13,10 @@ import ConfigTypeValidation from '../configuration-type-validation';
 })
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
-  @Input() useProxy: 'false';
-  @Input() useFilterProxy: 'false';
-  @Input() formId: '';
-  @Input() pageId: 'page';
+  @Input() useProxy: string =  'false';
+  @Input() useFilterProxy: string = 'false';
+  @Input() formId: string = '';
+  @Input() pageId: string = 'page';
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration;
@@ -24,7 +24,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isValidForm: boolean;
   public isWizardCall = false;
   public filesToUpload = [];
-  public hasEditableConfigItems = false;
+  public hasEditableConfigItems: boolean = true;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
