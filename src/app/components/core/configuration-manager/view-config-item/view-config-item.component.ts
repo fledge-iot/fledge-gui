@@ -59,7 +59,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
             type: el.type
           };
         });
-        // Verify if all config object have a readonly key
+        // check if editable config item found, based on readonly property
         for (const el of this.categoryConfiguration.value) {
           if (!has(el, 'readonly')) {
             this.hasEditableConfigItems = true;
