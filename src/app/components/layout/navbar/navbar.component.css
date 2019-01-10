@@ -57,3 +57,7 @@
 .safe-mode {
   padding-left: 24px;
 }
+
+.dropdown-item{
+  width: max-content;
+}
