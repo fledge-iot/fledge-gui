@@ -1,7 +1,7 @@
 <div class="view-content columns">
   <div class="column">
     <form name="form" id="ngForm" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
-      <ng-container *ngIf="categoryConfiguration != undefined">
+      <ng-container *ngIf="categoryConfiguration != undefined && hasConfiguration">
         <ng-container *ngFor="let configItem of (categoryConfiguration.value | keys)">
           <div class="config-div" *ngIf="configItem.value.readonly != 'true'">
             <div class="field is-horizontal">
@@ -90,6 +90,11 @@
             </div>
           </div>
         </div>
+      </ng-container>
+      <ng-container *ngIf="!hasConfiguration">
+          <div class="has-text-centered">
+              <small class="no-rec">No configurable item found.</small>
+            </div>
       </ng-container>
     </form>
   </div>

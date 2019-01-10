@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash';
 import { NgProgress } from 'ngx-progressbar';
 
 import { AlertService, ConfigurationService } from '../../../../services';
@@ -23,6 +23,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isValidForm: boolean;
   public isWizardCall = false;
   public filesToUpload = [];
+  public hasConfiguration = false;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -57,6 +58,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
             type: el.type
           };
         });
+        // Verify if all config object have a readonly key
+        for (const el of this.categoryConfiguration.value) {
+          if (!has(el, 'readonly')) {
+            this.hasConfiguration = true;
+            break;
+          } else {
+            this.hasConfiguration = false;
+          }
+        }
       }
     }
   }
