@@ -16,6 +16,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() useProxy: 'false';
   @Input() useFilterProxy: 'false';
   @Input() formId: '';
+  @Input() pageId: 'page';
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration;

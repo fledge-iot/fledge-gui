@@ -11,7 +11,8 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+          <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
+          [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
           <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
             <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
           </div>

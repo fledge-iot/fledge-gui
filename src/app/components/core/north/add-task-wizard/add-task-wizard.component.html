@@ -88,7 +88,8 @@
       </div>
 
       <div class="box step-content" id="c-2">
-        <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"></app-view-config-item>
+        <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
+        (onConfigChanged)="getChangedConfig($event)" [pageId]="wizard"></app-view-config-item>
       </div>
 
       <div class="box step-content" id="c-3">

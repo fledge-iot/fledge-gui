@@ -50,7 +50,7 @@
       </div>
       <div class="box step-content" id="c-2">
         <app-view-config-item [hidden]="!configurationData" [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
-          (onConfigChanged)="getChangedConfig($event)"></app-view-config-item>
+          (onConfigChanged)="getChangedConfig($event)" [pageId]="'wizard'"></app-view-config-item>
       </div>
     </form>
   </div>
