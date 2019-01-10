@@ -23,7 +23,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isValidForm: boolean;
   public isWizardCall = false;
   public filesToUpload = [];
-  public hasConfiguration = false;
+  public hasEditableConfigItems = false;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -61,10 +61,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         // Verify if all config object have a readonly key
         for (const el of this.categoryConfiguration.value) {
           if (!has(el, 'readonly')) {
-            this.hasConfiguration = true;
+            this.hasEditableConfigItems = true;
             break;
           } else {
-            this.hasConfiguration = false;
+            this.hasEditableConfigItems = false;
           }
         }
       }
