@@ -29,7 +29,7 @@
               </select>
             </div>
             &nbsp;
-            <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin" class="help level-left">* {{ selectedPluginDescription }}</small>
+            <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin" class="help level-left">{{ selectedPluginDescription }}</small>
             <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
             <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
           </div>
