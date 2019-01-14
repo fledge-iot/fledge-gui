@@ -8,7 +8,8 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-view-config-item #taskConfigView *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+          <app-view-config-item #taskConfigView *ngIf="category" [categoryConfigurationData]="category"
+          [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
           <form name="task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
             <div class="columns">
               <div class="column">
