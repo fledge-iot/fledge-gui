@@ -6,7 +6,6 @@ import { Chart } from 'chart.js';
 import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
-import ReadingsValidator from '../assets/readings-validator';
 
 @Component({
   selector: 'app-readings-graph',
@@ -150,61 +149,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       subscribe(
         (data: any[]) => {
           this.statsAssetReadingsGraph(data);
-          // if (data.length === 0) {
-          //   this.getAssetTimeReading(data);
-          //   return false;
-          // }
-          // const validRecord = ReadingsValidator.validate(data);
-          // if (validRecord) {
-          //   this.getAssetTimeReading(data);
-          // } else {
-          //   this.showGraph = false;
-          // }
         },
         error => {
           console.log('error in response', error);
         });
   }
 
-  public getAssetTimeReading(assetChartRecord) {
-    let assetTimeLabels = [];
-    const datePipe = new DateFormatterPipe();
-    let assetReading = [];
-    if (assetChartRecord.length === 0) {
-      assetTimeLabels = [];
-      assetReading = [];
-    } else {
-     // const readings = assetChartRecord.reverse().map(d => {
-        // forOwn(d.reading, (value, key) => {
-        //   console.log('readings key', key);
-        // });
-     // });
-
-      // readings.forEach(data => {
-      //   for (const k in data) {
-      //     if (assetReading.length < Object.keys(data).length) {
-      //       const read = {
-      //         key: k,
-      //         values: [Number(data[k]).toFixed(17)],
-      //       };
-      //       console.log('readings', read);
-      //       assetReading.push(read);
-      //     } else {
-      //       assetReading.map(el => {
-      //         if (el.key === k) {
-      //           el.values.push(Number(data[k]).toFixed(17));
-      //         }
-      //       });
-      //     }
-      //   }
-      // });
-      const timestamps = assetChartRecord.map(t => t.timestamp);
-      timestamps.forEach(timestamp => {
-        assetTimeLabels.push(datePipe.transform(timestamp, 'HH:mm:ss'));
-      });
-    }
-    // this.statsAssetReadingsGraph(assetTimeLabels, assetReading);
-  }
 
   getColorCode(readKey, cnt, fill) {
     let cc = '';
@@ -229,21 +179,25 @@ export class ReadingsGraphComponent implements OnDestroy {
     return cc;
   }
 
-  private statsAssetReadingsGraph(data): void {
+  private statsAssetReadingsGraph(data: any): void {
     const assetReading = [];
     const datePipe = new DateFormatterPipe();
     const timestamps = data.reverse().map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss'));
     const readings = data.reverse().map((r: any) => r.reading);
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
-    uniqueKeys.forEach(k => {
-            const read = {
-              key: k,
-              values: [map(readings, k)],
-            };
-            assetReading.push(read);
-    });
-    // const d = readings.map(read => map(read, (value, key) => ({ key, value })));
-    console.log('readings asset', assetReading);
+    for (const k of uniqueKeys) {
+      const assetReads = map(readings, k);
+      const invalidRecord = assetReads.some(isNaN);
+      if (invalidRecord) {
+        this.showGraph = false;
+        return;
+      }
+      const read = {
+        key: k,
+        values: assetReads
+      };
+      assetReading.push(read);
+    }
     this.readKeyColorLabel = [];
     const ds = [];
     let count = 0;
