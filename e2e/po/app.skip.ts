@@ -181,7 +181,7 @@ export class SkipLogin {
 
   getSchedulesRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#scheduled-process .fa.fa-refresh')).isDisplayed();
   }
 
   getCreateScheduleButton() {
