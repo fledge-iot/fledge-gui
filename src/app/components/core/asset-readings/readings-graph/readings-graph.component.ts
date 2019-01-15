@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { orderBy } from 'lodash';
+import { orderBy, chain, keys, map } from 'lodash';
 import { interval } from 'rxjs';
 import { Chart } from 'chart.js';
 
@@ -149,16 +149,17 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
-          if (data.length === 0) {
-            this.getAssetTimeReading(data);
-            return false;
-          }
-          const validRecord = ReadingsValidator.validate(data);
-          if (validRecord) {
-            this.getAssetTimeReading(data);
-          } else {
-            this.showGraph = false;
-          }
+          this.statsAssetReadingsGraph(data);
+          // if (data.length === 0) {
+          //   this.getAssetTimeReading(data);
+          //   return false;
+          // }
+          // const validRecord = ReadingsValidator.validate(data);
+          // if (validRecord) {
+          //   this.getAssetTimeReading(data);
+          // } else {
+          //   this.showGraph = false;
+          // }
         },
         error => {
           console.log('error in response', error);
@@ -173,30 +174,36 @@ export class ReadingsGraphComponent implements OnDestroy {
       assetTimeLabels = [];
       assetReading = [];
     } else {
-      const readings = assetChartRecord.reverse().map(d => d.reading);
-      readings.forEach(data => {
-        for (const k in data) {
-          if (assetReading.length < Object.keys(data).length) {
-            const read = {
-              key: k,
-              values: [data[k]],
-            };
-            assetReading.push(read);
-          } else {
-            assetReading.map(el => {
-              if (el.key === k) {
-                el.values.push(data[k]);
-              }
-            });
-          }
-        }
-      });
+     // const readings = assetChartRecord.reverse().map(d => {
+        // forOwn(d.reading, (value, key) => {
+        //   console.log('readings key', key);
+        // });
+     // });
+
+      // readings.forEach(data => {
+      //   for (const k in data) {
+      //     if (assetReading.length < Object.keys(data).length) {
+      //       const read = {
+      //         key: k,
+      //         values: [Number(data[k]).toFixed(17)],
+      //       };
+      //       console.log('readings', read);
+      //       assetReading.push(read);
+      //     } else {
+      //       assetReading.map(el => {
+      //         if (el.key === k) {
+      //           el.values.push(Number(data[k]).toFixed(17));
+      //         }
+      //       });
+      //     }
+      //   }
+      // });
       const timestamps = assetChartRecord.map(t => t.timestamp);
       timestamps.forEach(timestamp => {
         assetTimeLabels.push(datePipe.transform(timestamp, 'HH:mm:ss'));
       });
     }
-    this.statsAssetReadingsGraph(assetTimeLabels, assetReading);
+    // this.statsAssetReadingsGraph(assetTimeLabels, assetReading);
   }
 
   getColorCode(readKey, cnt, fill) {
@@ -222,7 +229,21 @@ export class ReadingsGraphComponent implements OnDestroy {
     return cc;
   }
 
-  private statsAssetReadingsGraph(labels, assetReading): void {
+  private statsAssetReadingsGraph(data): void {
+    const assetReading = [];
+    const datePipe = new DateFormatterPipe();
+    const timestamps = data.reverse().map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss'));
+    const readings = data.reverse().map((r: any) => r.reading);
+    const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
+    uniqueKeys.forEach(k => {
+            const read = {
+              key: k,
+              values: [map(readings, k)],
+            };
+            assetReading.push(read);
+    });
+    // const d = readings.map(read => map(read, (value, key) => ({ key, value })));
+    console.log('readings asset', assetReading);
     this.readKeyColorLabel = [];
     const ds = [];
     let count = 0;
@@ -267,7 +288,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
-    this.setAssetReadingValues(labels, ds);
+    this.setAssetReadingValues(timestamps, ds);
   }
 
   public getLegendState(key) {
