@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, AuthService, UserService } from '../../../services';
+import { AlertService, AuthService, UserService, ProgressBarService } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
@@ -27,7 +26,8 @@ export class UserManagementComponent implements OnInit {
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
-    public ngProgress: NgProgress) { }
+    public ngProgress: ProgressBarService
+    ) { }
 
   ngOnInit() {
     this.uid = sessionStorage.getItem('uid');

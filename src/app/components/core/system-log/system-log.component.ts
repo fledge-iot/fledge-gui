@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, SystemLogService } from '../../../services';
+import { AlertService, SystemLogService, ProgressBarService } from '../../../services';
 
 @Component({
   selector: 'app-system-log',
@@ -22,7 +21,10 @@ export class SystemLogComponent implements OnInit {
   tempOffset = 0;
   totalPagesCount = 0;
 
-  constructor(private systemLogService: SystemLogService, private alertService: AlertService, public ngProgress: NgProgress) { }
+  constructor(private systemLogService: SystemLogService,
+    private alertService: AlertService,
+    public ngProgress: ProgressBarService
+    ) { }
 
   ngOnInit() {
     this.getSysLogs();

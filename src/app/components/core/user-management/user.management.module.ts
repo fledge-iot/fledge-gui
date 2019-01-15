@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { UserManagementComponent } from '.';
 import { DirectivesModule } from '../../../directives/directives.module';
@@ -42,7 +41,6 @@ const routes: Routes = [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
-    NgProgressModule,
     AlertDialogModule,
     DirectivesModule
   ],

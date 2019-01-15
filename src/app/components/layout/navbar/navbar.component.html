@@ -1,5 +1,4 @@
 <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
-
   <div class="navbar-brand">
     <div class="navbar-burger" (click)="toggleClick()">
       <span></span>
@@ -154,7 +153,7 @@
                           <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
                             <i class="fa fa-circle"></i>
                           </span>
-                          {{s.name}}&nbsp;
+                          {{s.name.length <= 18 ? s.name :  s.name.substr(0,18) + '..'}}&nbsp;
                         </td>
                         <td>
                           <b>{{s.status}}</b>

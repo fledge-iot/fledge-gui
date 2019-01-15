@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { DashboardComponent } from '.';
 import { DateFormatterPipe } from '../../../pipes';
@@ -17,7 +16,6 @@ import { NumberInputDebounceModule } from '../../common/number-input-debounce/nu
     FormsModule,
     CommonModule,
     NumberInputDebounceModule,
-    NgProgressModule,
     ChartModule,
   ],
   providers: [StatisticsService, DateFormatterPipe],

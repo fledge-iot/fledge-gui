@@ -1,8 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { sortBy } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ConfigurationService, SchedulesService } from '../../../../services';
+import { AlertService, ConfigurationService, SchedulesService, ProgressBarService } from '../../../../services';
 import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
@@ -44,8 +43,11 @@ export class ListSchedulesComponent implements OnInit {
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(UpdateScheduleComponent) updateScheduleModal: UpdateScheduleComponent;
 
-  constructor(private schedulesService: SchedulesService, private alertService: AlertService,
-    private configService: ConfigurationService, public ngProgress: NgProgress) {}
+  constructor(private schedulesService: SchedulesService,
+    private alertService: AlertService,
+    private configService: ConfigurationService,
+    public ngProgress: ProgressBarService
+  ) { }
 
   ngOnInit() {
 
@@ -63,7 +65,7 @@ export class ListSchedulesComponent implements OnInit {
   }
 
   private filterCategories(categories) {
-    const allCats  = [];
+    const allCats = [];
     categories.forEach(element => {
       allCats.push({ key: element.key, children: element.children });
     });
@@ -71,20 +73,20 @@ export class ListSchedulesComponent implements OnInit {
     const sn = [];
     const south = allCats.filter(el => el.key.toUpperCase() === 'SOUTH');
     south.forEach(s => {
-      s.children.forEach( el => {
+      s.children.forEach(el => {
         sn.push(el.key);
       });
     });
     const north = allCats.filter(el => el.key.toUpperCase() === 'NORTH');
     north.forEach(n => {
-      n.children.forEach( el => {
+      n.children.forEach(el => {
         sn.push(el.key);
       });
     });
     return sn;
   }
 
-  public filterSouthAndNorth (schedules): void {
+  public filterSouthAndNorth(schedules): void {
     this.configService.getCategoryWithChildren().
       subscribe(
         (data) => {
@@ -94,7 +96,7 @@ export class ListSchedulesComponent implements OnInit {
           //  filter by South and North categories name
           this.scheduleData = [];
           schedules.forEach(sch => {
-            if (! sn.includes(sch.name)) {
+            if (!sn.includes(sch.name)) {
               this.scheduleData.push(sch);
             }
           });
@@ -110,7 +112,7 @@ export class ListSchedulesComponent implements OnInit {
             }
             element.time = Utils.secondsToDhms(element.time).time;
           });
-          this.scheduleData = sortBy(this.scheduleData, function(obj) {
+          this.scheduleData = sortBy(this.scheduleData, function (obj) {
             return !obj.enabled + obj.name.toLowerCase();
           });
 
@@ -157,7 +159,7 @@ export class ListSchedulesComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-}
+  }
 
   public getSchedules(): void {
     this.scheduleData = [];

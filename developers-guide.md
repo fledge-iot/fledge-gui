@@ -1,4 +1,4 @@
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.7
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4
 
 ## Code scaffolding
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
@@ -32,9 +32,9 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core:
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 6.1.10        |        7.1.4          | MIT 
- Angular CLI  | 6.2.6         |        7.1.4          | MIT 
- TypeScript   | 2.9.2         |        3.2.2          | Apache 2.0
+ Angular      | 7.1.4         |        7.2.0          | MIT 
+ Angular CLI  | 7.1.4         |        7.2.1          | MIT 
+ TypeScript   | 3.1.6         |        3.2.2          | Apache 2.0
  rxjs         | 6.3.3         |        6.3.3          | Apache 2.0
  Bulma css    | 0.7.2         |        0.7.2          | MIT
 
@@ -42,12 +42,11 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
 chart.js         |  2.7.2        |        2.7.3          | MIT 
-core-js          |  2.5.7        |        2.6.1          | MIT 
-ng-sidebar       |  6.0.5        |        8.0.0          | MIT 
-moment           |  2.22.2       |        2.23.0         | MIT
-ngx-progressbar  |  2.1.1        |        2.1.1          | MIT
+core-js          |  2.6.1        |        2.6.1          | MIT 
+ng-sidebar       |  8.0.0        |        8.0.0          | MIT 
+moment           |  2.23.0       |        2.23.0         | MIT
+ngx-progressbar  |  5.3.1        |        5.3.1          | MIT
 json2csv         |  4.3.1        |        4.3.2          | MIT
-ngx-drag-drop    |  1.1.0        |        1.1.0          | MIT
 protractor-beautiful-reporter |  1.2.5       |  1.2.7                | MIT
 
 

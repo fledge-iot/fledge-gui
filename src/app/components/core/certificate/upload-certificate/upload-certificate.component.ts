@@ -1,8 +1,7 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, CertificateService } from '../../../../services';
+import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
 
 @Component({
   selector: 'app-upload-cert',
@@ -21,8 +20,10 @@ export class UploadCertificateComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private certificateService: CertificateService, public ngProgress: NgProgress,
-    private alertService: AlertService, public formBuilder: FormBuilder) { }
+  constructor(private certificateService: CertificateService,
+    public ngProgress: ProgressBarService,
+    private alertService: AlertService,
+    public formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({

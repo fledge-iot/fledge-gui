@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, AuditService } from '../../../services';
+import { AlertService, AuditService, ProgressBarService } from '../../../services';
 import { MAX_INT_SIZE } from '../../../utils';
 
 @Component({
@@ -29,7 +28,9 @@ export class AuditLogComponent implements OnInit {
   isInvalidLimit = false;
   isInvalidOffset = false;
 
-  constructor(private auditService: AuditService, private alertService: AlertService, public ngProgress: NgProgress) { }
+  constructor(private auditService: AuditService,
+    private progress: ProgressBarService,
+    private alertService: AlertService) { }
 
   ngOnInit() {
     this.getLogSource();
@@ -199,12 +200,12 @@ export class AuditLogComponent implements OnInit {
 
   auditLogSubscriber() {
     /** request started */
-    this.ngProgress.start();
+    this.progress.start();
     this.auditService.getAuditLogs(this.limit, this.tempOffset, this.source, this.severity).
       subscribe(
         (data) => {
           /** request completed */
-          this.ngProgress.done();
+          this.progress.done();
           this.audit = data['audit'];
           this.totalCount = data['totalCount'];
           if (this.offset !== 0) {
@@ -216,7 +217,7 @@ export class AuditLogComponent implements OnInit {
         },
         error => {
           /** request completed */
-          this.ngProgress.done();
+          this.progress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

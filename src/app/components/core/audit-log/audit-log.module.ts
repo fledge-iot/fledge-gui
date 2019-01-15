@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { AuditLogComponent } from '.';
 import { AuthCheckGuard } from '../../../guards';
@@ -26,7 +25,6 @@ const routes: Routes = [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
-    NgProgressModule,
     PipesModule,
     NumberInputDebounceModule,
     PaginationModule

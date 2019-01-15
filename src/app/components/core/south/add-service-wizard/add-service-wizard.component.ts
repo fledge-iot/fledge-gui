@@ -2,9 +2,8 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, SchedulesService, ServicesHealthService } from '../../../../services';
+import { AlertService, SchedulesService, ServicesHealthService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -39,7 +38,8 @@ export class AddServiceWizardComponent implements OnInit {
     private alertService: AlertService,
     private router: Router,
     private schedulesService: SchedulesService,
-    private ngProgress: NgProgress) { }
+    private ngProgress: ProgressBarService
+  ) { }
 
   ngOnInit() {
     this.getSchedules();
@@ -91,6 +91,7 @@ export class AddServiceWizardComponent implements OnInit {
 
   getDescription(selectedPlugin) {
     this.isSinglePlugin = true;
+    this.isValidPlugin = true;
     const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
   }
@@ -308,6 +309,8 @@ export class AddServiceWizardComponent implements OnInit {
     this.schedulesService.getSchedules().
       subscribe(
         (data) => {
+          /** request completed */
+          this.ngProgress.done();
           // To filter
           this.schedulesName = data['schedules'];
         },
@@ -321,5 +324,4 @@ export class AddServiceWizardComponent implements OnInit {
           }
         });
   }
-
 }

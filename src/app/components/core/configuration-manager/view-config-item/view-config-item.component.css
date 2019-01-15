@@ -3,6 +3,7 @@
   flex-direction: column;
   align-items: flex-start;
   height: 100%;
+  width: 100%;
 }
 
 .columns-fields {
@@ -18,11 +19,10 @@
     margin-top: 10px;
 }
 
-.box {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
+@media screen and (min-width: 769px) {
+  .view-content {
+    display: block !important;
+  }
 }
 
 label{

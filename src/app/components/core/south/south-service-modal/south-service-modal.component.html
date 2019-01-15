@@ -1,6 +1,3 @@
-<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true"
-  [direction]="'leftToRightIncreased'" [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
-</ng-progress>
 <div id="south-service-modal" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
@@ -11,7 +8,8 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"></app-view-config-item>
+          <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
+          [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
           <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
             <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
           </div>
@@ -40,21 +38,23 @@
                     aria-hidden="true"></i></a></span>
             </div>
           </div>
-          <div *ngIf="filterPipeline != undefined" class="columns">
+          <div *ngIf="filterPipeline != undefined" class="view-content columns">
             <div class="column">
-              <section class="accordions" dndDropzone dndEffectAllowed="copyMove" (dndDrop)="onDrop($event, filterPipeline)">
-
-                <article dndPlaceholderRef class="is-light accordion dndPlaceholder">
-                </article>
-                <article *ngFor="let filter of filterPipeline; let i = index" [dndDraggable]="filter" (dndStart)="onDragStart(i)"
-                  class="is-light accordion" [attr.id]="i">
-
-                  <div class="accordion-header">
-                    <span><span class="switch-icon"><i class="fa fa-bars"></i><i class="fa fa-hand-rock"></i></span>&nbsp;{{filter}}</span>
-                    <button class="is-dark toggle" aria-label="toggle" (click)="activeAccordion(i, filter)"></button>
-                  </div>
-                  <div class="accordion-body">
-                    <div class="accordion-content" hidden>
+              <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
+                <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
+                  [cdkDragDisabled]="filterPipeline.length == 1">
+                  <header class="card-header" cdkDragHandle [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 }">
+                    <p class="card-header-title">
+                      <i class="fa fa-bars"></i>&nbsp;{{filter}}
+                    </p>
+                    <a (click)="activeAccordion(i, filter)" class="card-header-icon">
+                      <span class="icon">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </a>
+                  </header>
+                  <div class="card-content" hidden>
+                    <div class="content">
                       <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
                         [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
                       <div class="field is-pulled-right">
@@ -63,8 +63,8 @@
                       </div>
                     </div>
                   </div>
-                </article>
-              </section>
+                </div>
+              </div>
             </div>
           </div>
           <hr>
@@ -114,6 +114,6 @@
     </section>
   </div>
   <app-alert-dialog (deleteService)='deleteService($event)' [serviceRecord]='serviceRecord'></app-alert-dialog>
-  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges($event)"
+  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>

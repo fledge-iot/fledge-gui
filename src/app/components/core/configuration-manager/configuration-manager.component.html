@@ -1,10 +1,5 @@
 <div class="container is-fluid">
-  <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-    [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
-  </ng-progress>
-
   <!-- cards to be rendered as config.categories.count-->
-
   <div class="columns is-multiline">
     <div class="column is-one-quarter">
       <nav class="panel">
@@ -45,7 +40,7 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <app-view-config-item [categoryConfigurationData]="category"></app-view-config-item>
+            <app-view-config-item [categoryConfigurationData]="category" [pageId]="'page'"></app-view-config-item>
           </div>
         </div>
       </div>

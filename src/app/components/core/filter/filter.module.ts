@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AssetsService, FilterService, SchedulesService, ServicesHealthService } from '../../../services';
@@ -19,7 +18,6 @@ import { FilterAlertComponent } from './filter-alert/filter-alert.component';
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    NgProgressModule,
     AlertDialogModule,
     SharedModule,
     PipesModule

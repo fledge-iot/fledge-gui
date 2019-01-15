@@ -1,7 +1,7 @@
-<div class="columns">
+<div class="view-content columns">
   <div class="column">
     <form name="form" id="ngForm" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
-      <ng-container *ngIf="categoryConfiguration != undefined">
+      <ng-container *ngIf="categoryConfiguration != undefined && hasEditableConfigItems">
         <ng-container *ngFor="let configItem of (categoryConfiguration.value | keys)">
           <div class="config-div" *ngIf="configItem.value.readonly != 'true'">
             <div class="field is-horizontal">
@@ -78,19 +78,24 @@
             </div>
           </div>
         </ng-container>
-        <div class="field is-horizontal">
-          <div class="field-label has-text-left">
-            <label class="label"></label>
-          </div>
-          <div class="field-body">
-            <div style="padding-top: 1rem;">
-              <button *ngIf="useFilterProxy == 'true'" [attr.id]="formId" type="submit" class="hidden button is-small is-link is-pulled-right vci-proxy-filter">Save</button>
-              <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
-              <button *ngIf="useProxy != 'true' && useFilterProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
-            </div>
-          </div>
+      </ng-container>
+      <ng-container *ngIf="!hasEditableConfigItems && pageId == 'wizard'">
+        <div class="has-text-centered">
+          <small class="no-rec">No configurable item found, Please click Next</small>
         </div>
       </ng-container>
+      <div class="field is-horizontal">
+        <div class="field-label has-text-left">
+          <label class="label"></label>
+        </div>
+        <div class="field-body">
+          <div style="padding-top: 1rem;">
+            <button *ngIf="useFilterProxy == 'true'" [attr.id]="formId" type="submit" class="hidden button is-small is-link is-pulled-right vci-proxy-filter">Save</button>
+            <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
+            <button *ngIf="useProxy != 'true' && useFilterProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
+          </div>
+        </div>
+      </div>
     </form>
   </div>
 </div>

@@ -1,9 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash';
 
-import { AlertService, ConfigurationService } from '../../../../services';
+import { AlertService, ConfigurationService, ProgressBarService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
 
 @Component({
@@ -13,9 +12,10 @@ import ConfigTypeValidation from '../configuration-type-validation';
 })
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
-  @Input() useProxy: 'false';
-  @Input() useFilterProxy: 'false';
-  @Input() formId: '';
+  @Input() useProxy: string =  'false';
+  @Input() useFilterProxy: string = 'false';
+  @Input() formId: string = '';
+  @Input() pageId: string = 'page';
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration;
@@ -23,10 +23,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isValidForm: boolean;
   public isWizardCall = false;
   public filesToUpload = [];
+  public hasEditableConfigItems: boolean = true;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
-    public ngProgress: NgProgress) { }
+    public ngProgress: ProgressBarService
+  ) { }
 
   ngOnInit() { }
 
@@ -57,6 +59,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
             type: el.type
           };
         });
+        // check if editable config item found, based on readonly property
+        for (const el of this.categoryConfiguration.value) {
+          if (!has(el, 'readonly')) {
+            this.hasEditableConfigItems = true;
+            break;
+          } else {
+            this.hasEditableConfigItems = false;
+          }
+        }
       }
     }
   }
