@@ -5,3 +5,8 @@
 .hidden {
   display: none;
 }
+
+.description {
+  flex-shrink:initial !important;
+}
+

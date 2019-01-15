@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, AuthService, PingService, UserService } from '../../../services';
+import { AlertService, AuthService, PingService, UserService, ProgressBarService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 
 @Component({
@@ -14,7 +13,6 @@ import { SharedService } from '../../../services/shared.service';
 export class LoginComponent implements OnInit {
   model: any = {};
   returnUrl: string;
-
   constructor(
     private router: Router,
     private authService: AuthService,
@@ -22,7 +20,7 @@ export class LoginComponent implements OnInit {
     private sharedService: SharedService,
     private userService: UserService,
     private ping: PingService,
-    public ngProgress: NgProgress) {
+    public ngProgress: ProgressBarService) {
     this.sharedService.isUserLoggedIn.next({
       'loggedIn': false,
       'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))

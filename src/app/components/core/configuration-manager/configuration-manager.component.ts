@@ -1,9 +1,8 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from 'angular-tree-component';
 import { isEmpty, findIndex } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ConfigurationService } from '../../../services';
+import { AlertService, ConfigurationService, ProgressBarService } from '../../../services';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -26,7 +25,8 @@ export class ConfigurationManagerComponent implements OnInit {
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
-    public ngProgress: NgProgress) {
+    public ngProgress: ProgressBarService
+    ) {
     this.JSON = JSON;
   }
 

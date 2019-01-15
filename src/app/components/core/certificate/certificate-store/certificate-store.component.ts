@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, CertificateService } from '../../../../services';
+import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
 
@@ -25,7 +24,9 @@ export class CertificateStoreComponent implements OnInit {
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(UploadCertificateComponent) uploadModal: UploadCertificateComponent;
 
-  constructor(private certService: CertificateService, public ngProgress: NgProgress, private alertService: AlertService) { }
+  constructor(private certService: CertificateService,
+    public ngProgress: ProgressBarService,
+    private alertService: AlertService) { }
 
   ngOnInit() {
     this.getCertificates();

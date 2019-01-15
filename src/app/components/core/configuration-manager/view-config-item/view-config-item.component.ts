@@ -1,9 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, ConfigurationService } from '../../../../services';
+import { AlertService, ConfigurationService, ProgressBarService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
 
 @Component({
@@ -28,7 +27,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
-    public ngProgress: NgProgress) { }
+    public ngProgress: ProgressBarService
+  ) { }
 
   ngOnInit() { }
 

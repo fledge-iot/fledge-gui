@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { DirectivesModule } from '../../../directives/directives.module';
 import { AuthCheckGuard } from '../../../guards';
@@ -13,7 +12,7 @@ import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.compon
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
 import { NorthComponent } from './north.component';
 import { FilterModule } from '../filter/filter.module';
-import { DndModule } from 'ngx-drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 const routes: Routes = [
   {
@@ -39,13 +38,12 @@ const routes: Routes = [
     ReactiveFormsModule,
     CommonModule,
     RouterModule.forChild(routes),
-    NgProgressModule,
+    DragDropModule,
     AlertDialogModule,
     PipesModule,
     DirectivesModule,
     FilterModule,
-    SharedModule,
-    DndModule
+    SharedModule
   ],
   providers: [],
 })
