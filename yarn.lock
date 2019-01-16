@@ -1916,7 +1916,7 @@ chardet@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
 
-chart.js@~2.7.2:
+chart.js@~2.7.3:
   version "2.7.3"
   resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.7.3.tgz#cdb61618830bf216dc887e2f7b1b3c228b73c57e"
   dependencies:
@@ -4218,7 +4218,7 @@ json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
-json2csv@~4.3.1:
+json2csv@~4.3.3:
   version "4.3.3"
   resolved "https://registry.yarnpkg.com/json2csv/-/json2csv-4.3.3.tgz#56fcd75f8dde4a8fa2ea82e6314cd55f2c1fe68c"
   dependencies:
@@ -5653,7 +5653,7 @@ protoduck@^5.0.1:
   dependencies:
     genfun "^5.0.0"
 
-protractor-beautiful-reporter@~1.2.5:
+protractor-beautiful-reporter@~1.2.7:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/protractor-beautiful-reporter/-/protractor-beautiful-reporter-1.2.7.tgz#95278e26e4204c344725dfb47132e5eab22bee9e"
   dependencies:
