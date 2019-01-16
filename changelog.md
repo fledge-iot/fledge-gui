@@ -8,15 +8,13 @@
 * Advanced Configuration in South service modal
 * Support for `script` type configuration item
 * Support for the usage of `displayName` for configuration categories and items
-* Support to add data processing plugin (filter)
+* Support to add Data Processing Applications (filter)
 * Show `SAFE MODE` label in navbar if FogLAMP is running in safe mode
-* Show `Notification service` (if added) by hovering on green/yellow/red ‘light’ in the navbar
 
 #### Changed
 
 * Improved save functionality for configuration items to use category bulk update api
 * Upgraded to Angular v7 (including compatible TypeScript / CLI versions)
-* Support latest node v10.x
 
 #### Removed
 
@@ -25,7 +23,6 @@
 #### Fixed
 
 * Improved South service and North instance setup wizard
-* Fixed e2e tests
 
 ## v1.4.0 [2018-09-25]
 
