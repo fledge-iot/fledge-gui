@@ -182,8 +182,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   private statsAssetReadingsGraph(data: any): void {
     const assetReading = [];
     const datePipe = new DateFormatterPipe();
-    const timestamps = data.reverse().map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss'));
-    const readings = data.reverse().map((r: any) => r.reading);
+    const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss'));
+    const readings = data.map((r: any) => r.reading);
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
     for (const k of uniqueKeys) {
       const assetReads = map(readings, k);
@@ -215,8 +215,46 @@ export class ReadingsGraphComponent implements OnDestroy {
       count++;
       ds.push(dt);
     });
+    this.setAssetReadingValues(timestamps, ds);
+  }
+
+  public getLegendState(key) {
+    const selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
+    if (selectedLegends == null) {
+      return false;
+    }
+    for (const l of selectedLegends) {
+      if (l.key === key && l.selected === true) {
+        return true;
+      }
+    }
+  }
+
+  private setAssetReadingValues(labels, ds) {
+    this.assetReadingValues = {
+      labels: labels,
+      datasets: ds
+    };
     this.assetChartType = 'line';
     this.assetChartOptions = {
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            parser: 'HH:mm:ss',
+            unit: 'second',
+            displayFormats: {
+              unit: 'second',
+              second: 'HH:mm:ss'
+            }
+          },
+          ticks: {
+            source: labels,
+            autoSkip: true,
+            maxTicksLimit: 40
+          }
+        }]
+      },
       legend: {
         onClick: (e, legendItem) => {
           console.log('clicked ', legendItem, e);
@@ -241,26 +279,6 @@ export class ReadingsGraphComponent implements OnDestroy {
           chart.update();
         }
       }
-    };
-    this.setAssetReadingValues(timestamps, ds);
-  }
-
-  public getLegendState(key) {
-    const selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
-    if (selectedLegends == null) {
-      return false;
-    }
-    for (const l of selectedLegends) {
-      if (l.key === key && l.selected === true) {
-        return true;
-      }
-    }
-  }
-
-  private setAssetReadingValues(labels, ds) {
-    this.assetReadingValues = {
-      labels: labels,
-      datasets: ds
     };
   }
 
