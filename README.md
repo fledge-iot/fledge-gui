@@ -23,7 +23,7 @@ Run `yarn install && yarn start` or `yarn install && yarn start --host [ip_addre
 
 ## Production Build & Deployment
 
-Run `./build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `./build --clean-start` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 ### Deploy with nginx
 
@@ -49,6 +49,8 @@ start: `nginx -c nginx.conf -p $(pwd)`
 > You should be able to access it on 0.0.0.0:8080
 
 stop: `nginx -s stop`
+
+> nginx `-s stop` terminates the nginx process immediately while `-s quit` does a graceful shutdown.
 
 #### windows
 
@@ -76,4 +78,4 @@ Firefox | 64.x (64-bit) | latest 2
 [Developer's Guide](developers-guide.md)
 
 
-> &copy; 2017-18 DIANOMIC SYSTEMS. All Rights Reserved.
+> &copy; 2017-19 DIANOMIC SYSTEMS. All Rights Reserved.
