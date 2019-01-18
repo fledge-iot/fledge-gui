@@ -41,13 +41,13 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Dev:
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
-chart.js         |  2.7.2        |        2.7.3          | MIT 
-core-js          |  2.6.1        |        2.6.1          | MIT 
+chart.js         |  2.7.3        |        2.7.3          | MIT
+core-js          |  2.6.1        |        2.6.2          | MIT 
 ng-sidebar       |  8.0.0        |        8.0.0          | MIT 
 moment           |  2.23.0       |        2.23.0         | MIT
-ngx-progressbar  |  5.3.1        |        5.3.1          | MIT
-json2csv         |  4.3.1        |        4.3.2          | MIT
-protractor-beautiful-reporter |  1.2.5       |  1.2.7                | MIT
+@ngx-progressbar/core  |  5.3.1        |        5.3.1          | MIT
+json2csv         |  4.3.3        |        4.3.3          | MIT
+protractor-beautiful-reporter |  1.2.7       |  1.2.7                | MIT
 
 
 #### Why Yarn?

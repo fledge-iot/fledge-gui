@@ -1,12 +1,11 @@
 import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { orderBy } from 'lodash';
+import { orderBy, chain, keys, map } from 'lodash';
 import { interval } from 'rxjs';
 import { Chart } from 'chart.js';
 
 import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
-import ReadingsValidator from '../assets/readings-validator';
 
 @Component({
   selector: 'app-readings-graph',
@@ -149,55 +148,13 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
-          if (data.length === 0) {
-            this.getAssetTimeReading(data);
-            return false;
-          }
-          const validRecord = ReadingsValidator.validate(data);
-          if (validRecord) {
-            this.getAssetTimeReading(data);
-          } else {
-            this.showGraph = false;
-          }
+          this.statsAssetReadingsGraph(data);
         },
         error => {
           console.log('error in response', error);
         });
   }
 
-  public getAssetTimeReading(assetChartRecord) {
-    let assetTimeLabels = [];
-    const datePipe = new DateFormatterPipe();
-    let assetReading = [];
-    if (assetChartRecord.length === 0) {
-      assetTimeLabels = [];
-      assetReading = [];
-    } else {
-      const readings = assetChartRecord.reverse().map(d => d.reading);
-      readings.forEach(data => {
-        for (const k in data) {
-          if (assetReading.length < Object.keys(data).length) {
-            const read = {
-              key: k,
-              values: [data[k]],
-            };
-            assetReading.push(read);
-          } else {
-            assetReading.map(el => {
-              if (el.key === k) {
-                el.values.push(data[k]);
-              }
-            });
-          }
-        }
-      });
-      const timestamps = assetChartRecord.map(t => t.timestamp);
-      timestamps.forEach(timestamp => {
-        assetTimeLabels.push(datePipe.transform(timestamp, 'HH:mm:ss'));
-      });
-    }
-    this.statsAssetReadingsGraph(assetTimeLabels, assetReading);
-  }
 
   getColorCode(readKey, cnt, fill) {
     let cc = '';
@@ -222,7 +179,25 @@ export class ReadingsGraphComponent implements OnDestroy {
     return cc;
   }
 
-  private statsAssetReadingsGraph(labels, assetReading): void {
+  private statsAssetReadingsGraph(data: any): void {
+    const assetReading = [];
+    const datePipe = new DateFormatterPipe();
+    const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss'));
+    const readings = data.map((r: any) => r.reading);
+    const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
+    for (const k of uniqueKeys) {
+      const assetReads = map(readings, k);
+      const invalidRecord = assetReads.some(isNaN);
+      if (invalidRecord) {
+        this.showGraph = false;
+        return;
+      }
+      const read = {
+        key: k,
+        values: assetReads
+      };
+      assetReading.push(read);
+    }
     this.readKeyColorLabel = [];
     const ds = [];
     let count = 0;
@@ -240,8 +215,46 @@ export class ReadingsGraphComponent implements OnDestroy {
       count++;
       ds.push(dt);
     });
+    this.setAssetReadingValues(timestamps, ds);
+  }
+
+  public getLegendState(key) {
+    const selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
+    if (selectedLegends == null) {
+      return false;
+    }
+    for (const l of selectedLegends) {
+      if (l.key === key && l.selected === true) {
+        return true;
+      }
+    }
+  }
+
+  private setAssetReadingValues(labels, ds) {
+    this.assetReadingValues = {
+      labels: labels,
+      datasets: ds
+    };
     this.assetChartType = 'line';
     this.assetChartOptions = {
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            parser: 'HH:mm:ss',
+            unit: 'second',
+            displayFormats: {
+              unit: 'second',
+              second: 'HH:mm:ss'
+            }
+          },
+          ticks: {
+            source: labels,
+            autoSkip: true
+          },
+          bounds: 'ticks'
+        }]
+      },
       legend: {
         onClick: (e, legendItem) => {
           console.log('clicked ', legendItem, e);
@@ -266,26 +279,6 @@ export class ReadingsGraphComponent implements OnDestroy {
           chart.update();
         }
       }
-    };
-    this.setAssetReadingValues(labels, ds);
-  }
-
-  public getLegendState(key) {
-    const selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
-    if (selectedLegends == null) {
-      return false;
-    }
-    for (const l of selectedLegends) {
-      if (l.key === key && l.selected === true) {
-        return true;
-      }
-    }
-  }
-
-  private setAssetReadingValues(labels, ds) {
-    this.assetReadingValues = {
-      labels: labels,
-      datasets: ds
     };
   }
 
