@@ -72,7 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.selectedGraphsList.push(selectedGraph);
     }
 
-    // if there is no graph selected, set default to "READINGS" and "READINGS SENT"
+    // if there is no graph selected, set default to "READINGS" and "Readings Sent"
     if (this.selectedGraphsList.length === 0) {
       this.selectedGraphsList = [
         { key: 'READINGS', checked: true },
