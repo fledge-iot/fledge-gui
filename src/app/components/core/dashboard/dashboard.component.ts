@@ -72,7 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.selectedGraphsList.push(selectedGraph);
     }
 
-    // if there is no graph selected, set default to "READINGS" and "North Readings to PI"
+    // if there is no graph selected, set default to "READINGS" and "Readings Sent"
     if (this.selectedGraphsList.length === 0) {
       this.selectedGraphsList = [
         { key: 'READINGS', checked: true },
@@ -99,9 +99,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
         this.graphsToShow = [];
         for (const graph of this.selectedGraphsList) {
-          const selectedGraph = this.statistics.filter(value => value['key'] === graph.key);
+          const selectedGraph = this.statistics.find(value => value['key'] === graph.key);
           this.statisticsKeys.map((item) => item.key === graph.key ? item.checked = true : false);
-          this.graphsToShow.push(selectedGraph[0]);
+          if (selectedGraph !== undefined) {
+            this.graphsToShow.push(selectedGraph);
+          }
         }
         this.getStatisticsHistory(localStorage.getItem('STATS_HISTORY_TIME_FILTER'));
       },
