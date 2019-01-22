@@ -3,9 +3,8 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-
-import { Parser } from 'json2csv';
 import { isEmpty } from 'lodash';
+import * as moment from 'moment';
 
 import {
   AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
@@ -349,36 +348,56 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.filterAlert.toggleModal(true);
   }
 
-  getAssetReadings(service) {
-    const startTime = +new Date();
-    console.log('download start at', startTime);
-    const assets = service.assets;
-    let assetReadings = [];
+  getAssetReadings(service: any) {
     const fileName = service['name'] + '-readings';
+    const startTime = moment().format('HH:mm:ss');
+    console.log('Exporting readings in ' + fileName + ' file, download start at', startTime);
+    const assets = service.assets;
+    if (assets.length === 0) {
+      this.alertService.error('No readings to export.', true);
+      return;
+    }
     this.alertService.activityMessage('Exporting readings to ' + fileName);
-    assets.forEach((ast, i) => {
-      this.assetService.getAssetReadings(encodeURIComponent(ast.asset), ast.count).
-        subscribe(
-          (result: any[]) => {
-            result = result.map(r => {
-              r['assetName'] = ast.asset;
-              return r;
-            });
-            assetReadings = assetReadings.concat(result);
-            if (i === assets.length - 1) {
-              this.generateCsv.download(assetReadings, fileName, startTime);
-            }
-          },
-          error => {
-            console.log('error in response', error);
-          });
+    assets.forEach((ast: any, i: number) => {
+      let limit = ast.count;
+      let offset = 0;
+      let isLastRequest = false;
+      if (ast.count > MAX_INT_SIZE) {
+        limit = MAX_INT_SIZE;
+        const chunkCount = Math.ceil(ast.count / MAX_INT_SIZE);
+        console.log('chunkCount', chunkCount);
+
+        let lastChunkLimit = (ast.count % MAX_INT_SIZE);
+        console.log('lastChunkLimit', lastChunkLimit);
+        if (lastChunkLimit === 0) {
+          lastChunkLimit = MAX_INT_SIZE;
+        }
+        for (let j = 0; j < chunkCount; j++) {
+          if (j !== 0) {
+            offset = (MAX_INT_SIZE * j);
+          }
+          if (j === (chunkCount - 1)) {
+            limit = lastChunkLimit;
+          }
+          if (i === assets.length - 1 && j === (chunkCount - 1)) {
+            isLastRequest = true;
+          }
+          this.alertService.activityMessage('Exporting readings to ' + fileName);
+          this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName, startTime);
+        }
+      } else {
+        if (i === assets.length - 1) {
+          isLastRequest = true;
+        }
+        this.alertService.activityMessage('Exporting readings to ' + fileName);
+        this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName, startTime);
+      }
     });
   }
 
 
-  exportReadings(asset, limit, offset, lastRequest, fileName) {
-    const fields = ['assetName', 'reading', 'timestamp'];
-    const opts = { fields };
+  exportReadings(asset: any, limit: number, offset: number, lastRequest: boolean,
+    fileName: string, startTime: any) {
     this.assetService.getAssetReadings(encodeURIComponent(asset), limit, offset).
       subscribe(
         (result: any[]) => {
@@ -388,22 +407,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           });
           this.assetReadings = this.assetReadings.concat(result);
           if (lastRequest === true) {
-            setTimeout(() => {
-              const parser = new Parser(opts);
-              const csv = parser.parse(this.assetReadings);
-              const blob = new Blob([csv], { type: 'text/csv' });
-              const url = window.URL.createObjectURL(blob);
-              // create a custom anchor tag
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = fileName;
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              setTimeout(() => {
-                this.alertService.closeMessage();
-              }, this.REQUEST_TIMEOUT_INTERVAL);
-            }, this.REQUEST_TIMEOUT_INTERVAL);
+            this.generateCsv.download(this.assetReadings, fileName, startTime);
           }
         },
         error => {

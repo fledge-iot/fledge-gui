@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Parser } from 'json2csv';
+import * as moment from 'moment';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
 
-import { AlertService, AssetsService, PingService } from '../../../../services';
+
+import { AlertService, AssetsService, PingService, GenerateCsvService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
 
@@ -20,13 +21,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
   private isAlive: boolean;
-  private REQUEST_TIMEOUT_INTERVAL = 1000;
   assetReadings = [];
 
   @ViewChild(ReadingsGraphComponent) readingsGraphComponent: ReadingsGraphComponent;
 
   constructor(private assetService: AssetsService,
     private alertService: AlertService,
+    private generateCsvService: GenerateCsvService,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
@@ -69,13 +70,15 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   getAssetReadings(assetCode, recordCount) {
+    const fileName = assetCode + '-readings.csv';
+    const startTime = moment().format('HH:mm:ss');
+    console.log('Exporting readings in ' + fileName + ' file, download start at ', startTime);
     if (recordCount === 0) {
       this.alertService.error('No reading to export.');
     }
     let limit = recordCount;
     let offset = 0;
     let isLastRequest = false;
-    const fileName = assetCode + '-readings.csv';
     if (recordCount > MAX_INT_SIZE) {
       let chunkCount;
       let lastChunkLimit;
@@ -94,17 +97,16 @@ export class AssetsComponent implements OnInit, OnDestroy {
           isLastRequest = true;
         }
         this.alertService.activityMessage('Exporting readings to ' + fileName);
-        this.exportReadings(assetCode, limit, offset, isLastRequest);
+        this.exportReadings(assetCode, limit, offset, isLastRequest, startTime);
       }
     } else {
       this.alertService.activityMessage('Exporting readings to ' + fileName);
-      this.exportReadings(assetCode, limit, offset, true);
+      this.exportReadings(assetCode, limit, offset, true, startTime);
     }
   }
 
-  exportReadings(assetCode, limit, offset, lastRequest) {
-    const fields = ['timestamp', 'reading'];
-    const opts = { fields };
+  exportReadings(assetCode: any, limit: number, offset: number, lastRequest: boolean, startTime: any) {
+    const fileName = assetCode + '-readings';
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), limit, offset).
       subscribe(
         (data: any[]) => {
@@ -113,22 +115,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           });
           this.assetReadings = this.assetReadings.concat(data);
           if (lastRequest === true) {
-            setTimeout(() => {
-            const parser = new Parser(opts);
-            const csv = parser.parse(this.assetReadings);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            // create a custom anchor tag
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = assetCode + '-readings.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => {
-              this.alertService.closeMessage();
-            }, this.REQUEST_TIMEOUT_INTERVAL);
-            }, this.REQUEST_TIMEOUT_INTERVAL);
+            this.generateCsvService.download(this.assetReadings, fileName, startTime);
           }
         },
         error => {

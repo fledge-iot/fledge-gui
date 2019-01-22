@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
+import { AlertService } from './alert.service';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GenerateCsvService {
-  constructor() { }
+  private REQUEST_TIMEOUT_INTERVAL = 1000;
+
+  constructor(private alertService: AlertService) { }
 
   download(data: any, filename: string, startTime: number) {
     const csvData = this.ConvertToCSV(data);
@@ -16,23 +20,24 @@ export class GenerateCsvService {
     a.href = url;
     a.download = filename + '.csv';
     a.click();
-    const endTime = +new Date();
+    setTimeout(() => {
+      this.alertService.closeMessage();
+    }, this.REQUEST_TIMEOUT_INTERVAL);
 
-    console.log('download end time', this.millisToMinutesAndSeconds(endTime - startTime));
+    const endTime = moment().format('HH:mm:ss');
+    const seconds = moment.utc(moment(endTime, 'HH:mm:ss').diff(moment(startTime, 'HH:mm:ss'))).format('ss');
+    console.log('Readings download completed at ', endTime);
+    console.log('Time taken to complete the download: ', seconds + ' seconds') ;
   }
 
-  millisToMinutesAndSeconds(millis) {
-    const minutes = Math.floor(millis / 60000);
-    const seconds = ((millis % 60000) / 1000).toFixed(0);
-    return minutes + ':' + (+seconds < 10 ? '0' : '') + seconds;
-  }
+
 
   // convert Json to CSV data
   ConvertToCSV(assetData: any) {
     let str = '';
     let row = '';
     for (const header in assetData[0]) {
-      row += header + ';';
+      row += header + ',';
     }
     row = row.slice(0, -1);
     // append Label row with line break
@@ -41,9 +46,13 @@ export class GenerateCsvService {
       let line = '';
       for (const key in assetData[i]) {
         if (line !== '') {
-          line += ';';
+          line += ',';
         }
-        line += JSON.stringify(assetData[i][key]);
+        if (typeof assetData[i][key] === 'object') {
+          line += JSON.stringify(assetData[i][key]).split(',').join('; ');
+        } else {
+          line += JSON.stringify(assetData[i][key]);
+        }
       }
       str += line + '\r\n';
     }
