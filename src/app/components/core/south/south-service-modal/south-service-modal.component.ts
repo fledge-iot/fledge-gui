@@ -44,7 +44,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public isFilterOrderChanged = false;
   public isFilterDeleted = false;
-  private REQUEST_TIMEOUT_INTERVAL = 1000;
   assetReadings = [];
   public filterItemIndex;
   public isWizard;
@@ -394,7 +393,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       }
     });
   }
-
 
   exportReadings(asset: any, limit: number, offset: number, lastRequest: boolean,
     fileName: string, startTime: any) {

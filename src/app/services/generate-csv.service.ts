@@ -30,8 +30,6 @@ export class GenerateCsvService {
     console.log('Time taken to complete the download: ', seconds + ' seconds') ;
   }
 
-
-
   // convert Json to CSV data
   ConvertToCSV(assetData: any) {
     let str = '';
