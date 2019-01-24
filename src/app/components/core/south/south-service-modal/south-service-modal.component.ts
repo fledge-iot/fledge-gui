@@ -348,6 +348,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   getAssetReadings(service: any) {
+    this.assetReadings = [];
     const fileName = service['name'] + '-readings';
     const assets = service.assets;
     if (assets.length === 0) {

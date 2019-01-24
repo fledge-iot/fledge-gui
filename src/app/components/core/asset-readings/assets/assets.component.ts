@@ -69,6 +69,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   getAssetReadings(assetCode, recordCount) {
+    this.assetReadings = [];
     const fileName = assetCode + '-readings.csv';
     if (recordCount === 0) {
       this.alertService.error('No reading to export.', true);
