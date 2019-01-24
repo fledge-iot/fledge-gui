@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AlertService } from './alert.service';
-import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +9,7 @@ export class GenerateCsvService {
 
   constructor(private alertService: AlertService) { }
 
-  download(data: any, filename: string, startTime: number) {
+  download(data: any, filename: string) {
     const csvData = this.ConvertToCSV(data);
     const a: any = document.createElement('a');
     a.setAttribute('style', 'display:none;');
@@ -23,11 +22,6 @@ export class GenerateCsvService {
     setTimeout(() => {
       this.alertService.closeMessage();
     }, this.REQUEST_TIMEOUT_INTERVAL);
-
-    const endTime = moment().format('HH:mm:ss');
-    const seconds = moment.utc(moment(endTime, 'HH:mm:ss').diff(moment(startTime, 'HH:mm:ss'))).format('ss');
-    console.log('Readings download completed at ', endTime);
-    console.log('Time taken to complete the download: ', seconds + ' seconds') ;
   }
 
   // convert Json to CSV data

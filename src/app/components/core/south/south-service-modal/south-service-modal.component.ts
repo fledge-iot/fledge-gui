@@ -4,7 +4,6 @@ import {
 import { FormControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
-import * as moment from 'moment';
 
 import {
   AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
@@ -51,6 +50,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public serviceRecord;
 
   confirmationDialogData = {};
+  MAX_RANGE = MAX_INT_SIZE / 2;
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -349,31 +349,26 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   getAssetReadings(service: any) {
     const fileName = service['name'] + '-readings';
-    const startTime = moment().format('HH:mm:ss');
-    console.log('Exporting readings in ' + fileName + ' file, download start at', startTime);
     const assets = service.assets;
     if (assets.length === 0) {
       this.alertService.error('No readings to export.', true);
       return;
     }
-    this.alertService.activityMessage('Exporting readings to ' + fileName);
+    this.alertService.activityMessage('Exporting readings to ' + fileName, true);
     assets.forEach((ast: any, i: number) => {
       let limit = ast.count;
       let offset = 0;
       let isLastRequest = false;
-      if (ast.count > MAX_INT_SIZE) {
-        limit = MAX_INT_SIZE;
-        const chunkCount = Math.ceil(ast.count / MAX_INT_SIZE);
-        console.log('chunkCount', chunkCount);
-
-        let lastChunkLimit = (ast.count % MAX_INT_SIZE);
-        console.log('lastChunkLimit', lastChunkLimit);
+      if (ast.count > this.MAX_RANGE) {
+        limit = this.MAX_RANGE;
+        const chunkCount = Math.ceil(ast.count / this.MAX_RANGE);
+        let lastChunkLimit = (ast.count % this.MAX_RANGE);
         if (lastChunkLimit === 0) {
-          lastChunkLimit = MAX_INT_SIZE;
+          lastChunkLimit = this.MAX_RANGE;
         }
         for (let j = 0; j < chunkCount; j++) {
           if (j !== 0) {
-            offset = (MAX_INT_SIZE * j);
+            offset = (this.MAX_RANGE * j);
           }
           if (j === (chunkCount - 1)) {
             limit = lastChunkLimit;
@@ -381,21 +376,19 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           if (i === assets.length - 1 && j === (chunkCount - 1)) {
             isLastRequest = true;
           }
-          this.alertService.activityMessage('Exporting readings to ' + fileName);
-          this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName, startTime);
+          this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName);
         }
       } else {
         if (i === assets.length - 1) {
           isLastRequest = true;
         }
-        this.alertService.activityMessage('Exporting readings to ' + fileName);
-        this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName, startTime);
+        this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName);
       }
     });
   }
 
   exportReadings(asset: any, limit: number, offset: number, lastRequest: boolean,
-    fileName: string, startTime: any) {
+    fileName: string) {
     this.assetService.getAssetReadings(encodeURIComponent(asset), limit, offset).
       subscribe(
         (result: any[]) => {
@@ -405,7 +398,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           });
           this.assetReadings = this.assetReadings.concat(result);
           if (lastRequest === true) {
-            this.generateCsv.download(this.assetReadings, fileName, startTime);
+            this.generateCsv.download(this.assetReadings, fileName);
           }
         },
         error => {

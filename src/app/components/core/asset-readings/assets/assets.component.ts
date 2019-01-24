@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import * as moment from 'moment';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
 
@@ -16,7 +15,7 @@ import { ReadingsGraphComponent } from '../readings-graph/readings-graph.compone
 export class AssetsComponent implements OnInit, OnDestroy {
 
   selectedAsset: any; // Selected asset object (assetCode, count)
-  MAX_RANGE = MAX_INT_SIZE;
+  MAX_RANGE = MAX_INT_SIZE / 2;
   assets = [];
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
@@ -71,41 +70,39 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   getAssetReadings(assetCode, recordCount) {
     const fileName = assetCode + '-readings.csv';
-    const startTime = moment().format('HH:mm:ss');
-    console.log('Exporting readings in ' + fileName + ' file, download start at ', startTime);
     if (recordCount === 0) {
-      this.alertService.error('No reading to export.');
+      this.alertService.error('No reading to export.', true);
+      return;
     }
+    this.alertService.activityMessage('Exporting readings to ' + fileName, true);
     let limit = recordCount;
     let offset = 0;
     let isLastRequest = false;
-    if (recordCount > MAX_INT_SIZE) {
+    if (recordCount > this.MAX_RANGE) {
       let chunkCount;
       let lastChunkLimit;
-      limit = MAX_INT_SIZE;
-      chunkCount = Math.ceil(recordCount / MAX_INT_SIZE);
-      lastChunkLimit = (recordCount % MAX_INT_SIZE);
+      limit = this.MAX_RANGE;
+      chunkCount = Math.ceil(recordCount / this.MAX_RANGE);
+      lastChunkLimit = (recordCount % this.MAX_RANGE);
       if (lastChunkLimit === 0) {
-        lastChunkLimit = MAX_INT_SIZE;
+        lastChunkLimit = this.MAX_RANGE;
       }
       for (let j = 0; j < chunkCount; j++) {
         if (j !== 0) {
-          offset = (MAX_INT_SIZE * j);
+          offset = (this.MAX_RANGE * j);
         }
         if (j === (chunkCount - 1)) {
           limit = lastChunkLimit;
           isLastRequest = true;
         }
-        this.alertService.activityMessage('Exporting readings to ' + fileName);
-        this.exportReadings(assetCode, limit, offset, isLastRequest, startTime);
+        this.exportReadings(assetCode, limit, offset, isLastRequest);
       }
     } else {
-      this.alertService.activityMessage('Exporting readings to ' + fileName);
-      this.exportReadings(assetCode, limit, offset, true, startTime);
+      this.exportReadings(assetCode, limit, offset, true);
     }
   }
 
-  exportReadings(assetCode: any, limit: number, offset: number, lastRequest: boolean, startTime: any) {
+  exportReadings(assetCode: any, limit: number, offset: number, lastRequest: boolean) {
     const fileName = assetCode + '-readings';
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), limit, offset).
       subscribe(
@@ -115,7 +112,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           });
           this.assetReadings = this.assetReadings.concat(data);
           if (lastRequest === true) {
-            this.generateCsvService.download(this.assetReadings, fileName, startTime);
+            this.generateCsvService.download(this.assetReadings, fileName);
           }
         },
         error => {
