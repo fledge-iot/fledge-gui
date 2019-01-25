@@ -351,15 +351,15 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.assetReadings = [];
     const fileName = service['name'] + '-readings';
     const assets = service.assets;
+    const assetRecord: any = [];
     if (assets.length === 0) {
       this.alertService.error('No readings to export.', true);
       return;
     }
     this.alertService.activityMessage('Exporting readings to ' + fileName, true);
-    assets.forEach((ast: any, i: number) => {
+    assets.forEach((ast: any) => {
       let limit = ast.count;
       let offset = 0;
-      let isLastRequest = false;
       if (ast.count > this.MAX_RANGE) {
         limit = this.MAX_RANGE;
         const chunkCount = Math.ceil(ast.count / this.MAX_RANGE);
@@ -374,33 +374,22 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           if (j === (chunkCount - 1)) {
             limit = lastChunkLimit;
           }
-          if (i === assets.length - 1 && j === (chunkCount - 1)) {
-            isLastRequest = true;
-          }
-          this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName);
+          assetRecord.push({ asset: ast.asset, limit: limit, offset: offset });
         }
       } else {
-        if (i === assets.length - 1) {
-          isLastRequest = true;
-        }
-        this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName);
+        assetRecord.push({ asset: ast.asset, limit: limit, offset: offset });
       }
     });
+    this.exportReadings(assetRecord, fileName);
   }
 
-  exportReadings(asset: any, limit: number, offset: number, lastRequest: boolean,
-    fileName: string) {
-    this.assetService.getAssetReadings(encodeURIComponent(asset), limit, offset).
+  exportReadings(assets: [], fileName: string) {
+    let assetReadings = [];
+    this.assetService.getMultiAssetsReadings(assets).
       subscribe(
-        (result: any[]) => {
-          result = result.map(r => {
-            r['assetName'] = asset;
-            return r;
-          });
-          this.assetReadings = this.assetReadings.concat(result);
-          if (lastRequest === true) {
-            this.generateCsv.download(this.assetReadings, fileName);
-          }
+        (result: any) => {
+          assetReadings = [].concat.apply([], result);
+          this.generateCsv.download(assetReadings, fileName);
         },
         error => {
           console.log('error in response', error);
