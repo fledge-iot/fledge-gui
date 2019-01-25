@@ -70,7 +70,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   getAssetReadings(assetCode, recordCount) {
     this.assetReadings = [];
-    const fileName = assetCode + '-readings.csv';
+    const fileName = assetCode + '-readings';
     if (recordCount === 0) {
       this.alertService.error('No reading to export.', true);
       return;
@@ -96,15 +96,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
           limit = lastChunkLimit;
           isLastRequest = true;
         }
-        this.exportReadings(assetCode, limit, offset, isLastRequest);
+        this.exportReadings(assetCode, limit, offset, isLastRequest, fileName);
       }
     } else {
-      this.exportReadings(assetCode, limit, offset, true);
+      this.exportReadings(assetCode, limit, offset, true, fileName);
     }
   }
 
-  exportReadings(assetCode: any, limit: number, offset: number, lastRequest: boolean) {
-    const fileName = assetCode + '-readings';
+  exportReadings(assetCode: any, limit: number, offset: number, lastRequest: boolean, fileName: string) {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), limit, offset).
       subscribe(
         (data: any[]) => {
