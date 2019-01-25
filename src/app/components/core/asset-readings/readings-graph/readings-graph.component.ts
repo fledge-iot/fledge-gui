@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { orderBy, chain, keys, map } from 'lodash';
+import { orderBy, chain, keys, map, union } from 'lodash';
 import { interval } from 'rxjs';
 import { Chart } from 'chart.js';
 
@@ -30,6 +30,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   private isAlive: boolean;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
+
+  public excludedReadingsList = [];
+  public assetReading = [];
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
@@ -180,28 +183,33 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   private statsAssetReadingsGraph(data: any): void {
-    const assetReading = [];
+    this.showGraph = true;
+    this.assetReading = [];
+    this.excludedReadingsList = [];
     const datePipe = new DateFormatterPipe();
     const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss'));
     const readings = data.map((r: any) => r.reading);
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
     for (const k of uniqueKeys) {
       const assetReads = map(readings, k);
-      const invalidRecord = assetReads.some(isNaN);
-      if (invalidRecord) {
-        this.showGraph = false;
-        return;
+      if (!assetReads.some(isNaN)) {
+        const read = {
+          key: k,
+          values: assetReads
+        };
+        this.assetReading.push(read);
+      } else {
+        const unique = union(assetReads);
+        this.excludedReadingsList.push({
+          key: k,
+          values: unique
+        });
       }
-      const read = {
-        key: k,
-        values: assetReads
-      };
-      assetReading.push(read);
     }
     this.readKeyColorLabel = [];
     const ds = [];
     let count = 0;
-    assetReading.forEach(element => {
+    this.assetReading.forEach(element => {
       const dt = {
         label: element.key,
         data: element.values,
@@ -280,6 +288,10 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
+  }
+
+  public isNumber(val) {
+    return typeof val === 'number';
   }
 
   public ngOnDestroy(): void {

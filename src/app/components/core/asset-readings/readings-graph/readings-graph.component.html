@@ -36,20 +36,39 @@
                 <b>{{asset.name}} &nbsp;</b>
               </span>
               <span class="tag is-light"> Avg </span>
-              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.average, 5)}}
+              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.average) ?
+                roundTo(reading.average,
+                5) : reading.average }}
               </span> &nbsp;
               <span class="tag is-light"> Min </span>
-              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.min, 5)}}</span>
+              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.min) ?
+                roundTo(reading.min, 5) : reading.min}}</span>
               &nbsp;
               <span class="tag is-light"> Max </span>
-              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.max, 5)}}</span>
+              <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.max) ?
+                roundTo(reading.max, 5): reading.max}}</span>
               &nbsp;
             </div>
           </div>
         </div>
       </ng-container>
       <p *ngIf='!showGraph'> Not Available </p>
-      <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+      <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions"
+        #assetChart></app-chart>
+      <ng-container *ngIf="assetReading.length > 0 && excludedReadingsList.length > 0">
+        <div class="field is-grouped is-grouped-multiline" *ngFor="let asset of excludedReadingsList">
+          <div class="control">
+            <div class="tags has-addons" *ngFor="let reading of asset.values">
+              <span class="is-light">
+                <b>{{asset.key}} &nbsp;</b>
+              </span>
+              <span>
+                {{reading}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </section>
   </div>
 </div>
