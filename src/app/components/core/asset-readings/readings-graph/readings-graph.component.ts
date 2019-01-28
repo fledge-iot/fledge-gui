@@ -119,11 +119,14 @@ export class ReadingsGraphComponent implements OnDestroy {
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
           const k = Object.keys(o)[0];
+          if (isNaN(o[k]['max']) || isNaN(o[k]['min'])) {
+            return;
+          }
           return {
             name: k,
             value: [o[k]]
           };
-        });
+        }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
       },
       error => {
@@ -203,7 +206,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
 
-    if (this.assetReading.length === 0) {
+    if (this.assetReading.length === 0 && this.excludedReadingsList.length >= 1) {
       this.showGraph = false;
       return;
     }
