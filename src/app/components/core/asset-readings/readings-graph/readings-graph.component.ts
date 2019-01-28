@@ -187,7 +187,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetReading = [];
     this.excludedReadingsList = [];
     const datePipe = new DateFormatterPipe();
-    const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss'));
+    const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss:SSS'));
     const readings = data.map((r: any) => r.reading);
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
     for (const k of uniqueKeys) {
