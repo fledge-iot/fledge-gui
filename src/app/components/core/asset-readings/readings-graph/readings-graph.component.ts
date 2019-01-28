@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { orderBy, chain, keys, map, union } from 'lodash';
+import { orderBy, chain, keys, map } from 'lodash';
 import { interval } from 'rxjs';
 import { Chart } from 'chart.js';
 
@@ -199,12 +199,13 @@ export class ReadingsGraphComponent implements OnDestroy {
         };
         this.assetReading.push(read);
       } else {
-        const unique = union(assetReads);
-        this.excludedReadingsList.push({
-          key: k,
-          values: unique
-        });
+        this.excludedReadingsList.push(k);
       }
+    }
+
+    if (this.assetReading.length === 0) {
+      this.showGraph = false;
+      return;
     }
     this.readKeyColorLabel = [];
     const ds = [];
