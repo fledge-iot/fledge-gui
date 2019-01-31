@@ -17,8 +17,6 @@ describe('FogLAMP gui', () => {
       skipLogin.navigateToHome();
       skipLogin.setUpInstance();
       isSetupInstance = true;
-      skipLogin.navToBackupRestore();
-      skipLogin.clickRequestBackup();
     }
   });
 
@@ -96,6 +94,7 @@ describe('FogLAMP gui', () => {
         'Status'
       ];
       skipLogin.navToBackupRestore();
+      skipLogin.clickRequestBackup();
       expect(skipLogin.getBackupRestoreTitle()).toContain('Backup');
       for (const ColumnName in ColumnsName) {
         expect(skipLogin.getBackupRestoreColNames()).toContain(ColumnsName[ColumnName]);
