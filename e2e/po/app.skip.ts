@@ -249,6 +249,11 @@ export class SkipLogin {
     return browser.get('/#/backup-restore');
   }
 
+  clickRequestBackup() {
+    browser.ignoreSynchronization = true;
+    element(by.css('app-backup-restore .fix-pad')).click();
+  }
+
   getBackupRestoreTitle() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-backup-restore header p')).getText();

@@ -17,6 +17,8 @@ describe('FogLAMP gui', () => {
       skipLogin.navigateToHome();
       skipLogin.setUpInstance();
       isSetupInstance = true;
+      skipLogin.navToBackupRestore();
+      skipLogin.clickRequestBackup();
     }
   });
 
