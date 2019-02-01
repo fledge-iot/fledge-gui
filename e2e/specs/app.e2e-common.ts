@@ -12,7 +12,7 @@ describe('FogLAMP gui', () => {
   adminLogin = new AdminLogin();
   nonAdminLogin = new NonAdminLogin();
 
-  beforeEach(() => {
+  beforeAll(() => {
     if (!isSetupInstance) {
       skipLogin.navigateToHome();
       skipLogin.setUpInstance();
@@ -100,6 +100,9 @@ describe('FogLAMP gui', () => {
         expect(skipLogin.getBackupRestoreColNames()).toContain(ColumnsName[ColumnName]);
       }
       expect(skipLogin.getRequestBackup()).toContain('Backup');
+      // Delete backup
+      skipLogin.deleteBackup();
+      expect(skipLogin.noBackupRecord()).toContain('No Record');
     });
 
     it('Should Display Support Bundles', () => {
