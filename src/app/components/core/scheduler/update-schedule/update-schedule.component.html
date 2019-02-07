@@ -41,7 +41,8 @@
             <div class="field">
               <label class="label is-small">Process</label>
               <div class="control">
-                <input formControlName="process_name" [attr.disabled]="true" type="text" class="input is-small" placeholder="process" />
+                <input formControlName="process_name" [attr.disabled]="true" type="text" class="input is-small"
+                  placeholder="process" />
               </div>
             </div>
           </div>
@@ -50,7 +51,8 @@
               <label class="label is-small">Type</label>
               <div class="control">
                 <div class="select is-fullwidth is-small">
-                  <select #selectedTypeValue (change)="selectedScheduleType = setScheduleTypeKey(selectedTypeValue.value)" formControlName="type">
+                  <select #selectedTypeValue (change)="selectedScheduleType = setScheduleTypeKey(selectedTypeValue.value)"
+                    formControlName="type">
                     <option [selected]="type.name == type" *ngFor="let type of scheduleType">{{type.name}}</option>
                   </select>
                 </div>
@@ -64,14 +66,16 @@
               <label class="label is-small">Repeat (Interval)</label>
               <div class="columns">
                 <div class="column is-fullwidth">
-                  <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365" placeholder="days" formControlName="repeatDay"
-                    required>
-                  <input id="repeat_time" class="input is-small" type='text' placeholder="hh:mm:ss" formControlName="repeat" mask='00:00:00'
-                    required>
+                  <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365"
+                    placeholder="days" formControlName="repeatDay" required>
+                  <input id="repeat_time" class="input is-small" type='text' placeholder="hh:mm:ss" formControlName="repeat"
+                    mask='00:00:00' (input)="getChangedRepeatInterval($event)" required>
                 </div>
               </div>
-              <small *ngIf="form.controls.repeatDay.invalid" class="help is-danger level-left">&nbsp; Repeat days must be in range 0 - 365</small>
-              <small *ngIf="form.controls.repeat.invalid" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:00 - 23:59:59</small>
+              <small *ngIf="form.controls.repeatDay.invalid" class="help is-danger level-left">&nbsp; Repeat days must
+                be in range 0 - 365</small>
+              <small *ngIf="form.controls.repeat.invalid" class="help is-danger level-left">&nbsp; Repeat hours must be
+                in range 00:00:00 - 23:59:59</small>
             </div>
           </div>
         </div>
@@ -85,7 +89,8 @@
               </label>
               <div class="control">
                 <div class="select is-fullwidth is-small">
-                  <select #selectedDay (change)="selectedDayIndex = getSelectedDayIndex(selectedDay.value)" formControlName="day">
+                  <select #selectedDay (change)="selectedDayIndex = getSelectedDayIndex(selectedDay.value)"
+                    formControlName="day">
                     <option *ngIf="None == day">None</option>
                     <option [selected]="d == day" *ngFor="let d of days">{{d}}</option>
                   </select>
@@ -99,7 +104,8 @@
               <p class="control is-fullwidth">
                 <input class="input is-small" type='text' placeholder="hh:mm:ss" mask="00:00:00" formControlName="time">
               </p>
-              <small *ngIf="!form.controls.time.valid" class="help is-danger level-left">&nbsp; Time must be in range 00:00:01 - 23:59:59</small>
+              <small *ngIf="!form.controls.time.valid" class="help is-danger level-left">&nbsp; Time must be in range
+                00:00:01 - 23:59:59</small>
             </div>
           </div>
         </div>
