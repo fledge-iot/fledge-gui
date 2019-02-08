@@ -194,7 +194,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     const readings = data.map((r: any) => r.reading);
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
     for (const k of uniqueKeys) {
-      const assetReads = map(readings, k);
+      let assetReads = map(readings, k);
+      assetReads = assetReads.filter(function( el ) {
+        return el !== undefined;
+      });
       if (!assetReads.some(isNaN)) {
         const read = {
           key: k,
