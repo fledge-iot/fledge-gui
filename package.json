@@ -1,6 +1,6 @@
 {
   "name": "foglamp",
-  "version": "1.5.0RC",
+  "version": "1.5.0",
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
