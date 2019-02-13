@@ -31,6 +31,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
 
+  public excludedReadingsList = [];
+  public assetReading = [];
+
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
     this.assetChartType = 'line';
@@ -116,11 +119,14 @@ export class ReadingsGraphComponent implements OnDestroy {
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
           const k = Object.keys(o)[0];
+          if (isNaN(o[k]['max']) || isNaN(o[k]['min'])) {
+            return;
+          }
           return {
             name: k,
             value: [o[k]]
           };
-        });
+        }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
       },
       error => {
@@ -180,28 +186,37 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   private statsAssetReadingsGraph(data: any): void {
-    const assetReading = [];
+    this.showGraph = true;
+    this.assetReading = [];
+    this.excludedReadingsList = [];
     const datePipe = new DateFormatterPipe();
-    const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss'));
+    const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss:SSS'));
     const readings = data.map((r: any) => r.reading);
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
     for (const k of uniqueKeys) {
-      const assetReads = map(readings, k);
-      const invalidRecord = assetReads.some(isNaN);
-      if (invalidRecord) {
-        this.showGraph = false;
-        return;
+      let assetReads = map(readings, k);
+      assetReads = assetReads.filter(function( el ) {
+        return el !== undefined;
+      });
+      if (!assetReads.some(isNaN)) {
+        const read = {
+          key: k,
+          values: assetReads
+        };
+        this.assetReading.push(read);
+      } else {
+        this.excludedReadingsList.push(k);
       }
-      const read = {
-        key: k,
-        values: assetReads
-      };
-      assetReading.push(read);
+    }
+
+    if (this.assetReading.length === 0 && this.excludedReadingsList.length >= 1) {
+      this.showGraph = false;
+      return;
     }
     this.readKeyColorLabel = [];
     const ds = [];
     let count = 0;
-    assetReading.forEach(element => {
+    this.assetReading.forEach(element => {
       const dt = {
         label: element.key,
         data: element.values,
@@ -280,6 +295,10 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
+  }
+
+  public isNumber(val) {
+    return typeof val === 'number';
   }
 
   public ngOnDestroy(): void {

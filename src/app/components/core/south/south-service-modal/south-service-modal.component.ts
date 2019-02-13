@@ -3,14 +3,13 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-
-import { Parser } from 'json2csv';
 import { isEmpty } from 'lodash';
 
 import {
   AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
   ServicesHealthService,
-  ProgressBarService
+  ProgressBarService,
+  GenerateCsvService
 } from '../../../../services';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
@@ -44,7 +43,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public isFilterOrderChanged = false;
   public isFilterDeleted = false;
-  private REQUEST_TIMEOUT_INTERVAL = 1000;
   assetReadings = [];
   public filterItemIndex;
   public isWizard;
@@ -52,6 +50,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public serviceRecord;
 
   confirmationDialogData = {};
+  MAX_RANGE = MAX_INT_SIZE / 2;
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -66,6 +65,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private assetService: AssetsService,
     private filterService: FilterService,
     public ngProgress: ProgressBarService,
+    public generateCsv: GenerateCsvService,
     private servicesHealthService: ServicesHealthService,
     private schedulesService: SchedulesService) { }
 
@@ -347,78 +347,49 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.filterAlert.toggleModal(true);
   }
 
-  getAssetReadings(service) {
-    const assets = service.assets;
+  getAssetReadings(service: any) {
     this.assetReadings = [];
+    const fileName = service['name'] + '-readings';
+    const assets = service.assets;
+    const assetRecord: any = [];
     if (assets.length === 0) {
-      this.alertService.error('No reading to export.');
+      this.alertService.error('No readings to export.', true);
+      return;
     }
-    assets.forEach((ast, i) => {
+    this.alertService.activityMessage('Exporting readings to ' + fileName, true);
+    assets.forEach((ast: any) => {
       let limit = ast.count;
       let offset = 0;
-      let isLastRequest = false;
-      const fileName = service['name'] + '-readings.csv';
-      if (ast.count > MAX_INT_SIZE) {
-        let chunkCount;
-        let lastChunkLimit;
-        limit = MAX_INT_SIZE;
-        chunkCount = Math.ceil(ast.count / MAX_INT_SIZE);
-        lastChunkLimit = (ast.count % MAX_INT_SIZE);
+      if (ast.count > this.MAX_RANGE) {
+        limit = this.MAX_RANGE;
+        const chunkCount = Math.ceil(ast.count / this.MAX_RANGE);
+        let lastChunkLimit = (ast.count % this.MAX_RANGE);
         if (lastChunkLimit === 0) {
-          lastChunkLimit = MAX_INT_SIZE;
+          lastChunkLimit = this.MAX_RANGE;
         }
         for (let j = 0; j < chunkCount; j++) {
           if (j !== 0) {
-            offset = (MAX_INT_SIZE * j);
+            offset = (this.MAX_RANGE * j);
           }
           if (j === (chunkCount - 1)) {
             limit = lastChunkLimit;
           }
-          if (i === assets.length - 1 && j === (chunkCount - 1)) {
-            isLastRequest = true;
-          }
-          this.alertService.activityMessage('Exporting readings to ' + fileName);
-          this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName);
+          assetRecord.push({ asset: ast.asset, limit: limit, offset: offset });
         }
       } else {
-        if (i === assets.length - 1) {
-          isLastRequest = true;
-        }
-        this.alertService.activityMessage('Exporting readings to ' + fileName);
-        this.exportReadings(ast.asset, limit, offset, isLastRequest, fileName);
+        assetRecord.push({ asset: ast.asset, limit: limit, offset: offset });
       }
     });
+    this.exportReadings(assetRecord, fileName);
   }
 
-  exportReadings(asset, limit, offset, lastRequest, fileName) {
-    const fields = ['assetName', 'reading', 'timestamp'];
-    const opts = { fields };
-    this.assetService.getAssetReadings(encodeURIComponent(asset), limit, offset).
+  exportReadings(assets: [], fileName: string) {
+    let assetReadings = [];
+    this.assetService.getMultiAssetsReadings(assets).
       subscribe(
-        (result: any[]) => {
-          result = result.map(r => {
-            r['assetName'] = asset;
-            return r;
-          });
-          this.assetReadings = this.assetReadings.concat(result);
-          if (lastRequest === true) {
-            setTimeout(() => {
-              const parser = new Parser(opts);
-              const csv = parser.parse(this.assetReadings);
-              const blob = new Blob([csv], { type: 'text/csv' });
-              const url = window.URL.createObjectURL(blob);
-              // create a custom anchor tag
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = fileName;
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              setTimeout(() => {
-                this.alertService.closeMessage();
-              }, this.REQUEST_TIMEOUT_INTERVAL);
-            }, this.REQUEST_TIMEOUT_INTERVAL);
-          }
+        (result: any) => {
+          assetReadings = [].concat.apply([], result);
+          this.generateCsv.download(assetReadings, fileName);
         },
         error => {
           console.log('error in response', error);
@@ -582,9 +553,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   discardChanges() {
-      this.isFilterOrderChanged = false;
-      this.isFilterDeleted = false;
-      this.deletedFilterPipeline = [];
-      this.toggleModal(false);
+    this.isFilterOrderChanged = false;
+    this.isFilterDeleted = false;
+    this.deletedFilterPipeline = [];
+    this.toggleModal(false);
   }
 }

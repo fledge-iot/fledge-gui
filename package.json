@@ -1,6 +1,6 @@
 {
   "name": "foglamp",
-  "version": "1.4.5rc",
+  "version": "1.5.0RC",
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
@@ -28,7 +28,6 @@
     "animate.css": "^3.7.0",
     "chart.js": "~2.7.3",
     "core-js": "~2.6.1",
-    "json2csv": "~4.3.3",
     "moment": "~2.23.0",
     "ng-sidebar": "~8.0.0",
     "rxjs": "~6.3.3",
@@ -45,7 +44,6 @@
     "@angular/language-service": "~7.1.4",
     "@types/jasmine": "~3.3.5",
     "@types/jasminewd2": "~2.0.3",
-    "@types/json2csv": "^4.2.0",
     "@types/node": "~10.12.18",
     "babel-cli": "^7.0.0-beta.3",
     "babel-core": "^7.0.0-bridge.0",
