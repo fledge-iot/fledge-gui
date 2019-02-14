@@ -1,6 +1,6 @@
 {
   "name": "foglamp",
-  "version": "1.5.0RC",
+  "version": "1.6.0dev",
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
@@ -30,7 +30,7 @@
     "core-js": "^2.6.4",
     "moment": "~2.23.0",
     "ng-sidebar": "~8.0.0",
-    "rxjs": "~6.4.0",
+    "rxjs": "~6.3.3",
     "rxjs-compat": "~6.3.3",
     "zone.js": "~0.8.29"
   },
