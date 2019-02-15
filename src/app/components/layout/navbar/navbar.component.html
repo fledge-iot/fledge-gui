@@ -255,13 +255,13 @@
               <i class="fa fa-user" aria-hidden="true"></i>&nbsp; Profile
             </a>
             <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item">
-              <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp; Log Out
+              <i class="fa fa-sign-out-alt" aria-hidden="true"></i>&nbsp; Log Out
             </a>
             <a *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
               <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp; Shut Down
             </a>
             <a id="restart" *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openRestartModal()" class="dropdown-item">
-              <i class="fa fa-refresh" aria-hidden="true"></i>&nbsp; Restart
+              <i class="fa fa-sync" aria-hidden="true"></i>&nbsp; Restart
             </a>
           </div>
         </div>
@@ -280,7 +280,7 @@
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
           <a id="restart" class="tooltip is-tooltip-left" data-tooltip="Restart FogLAMP" (click)="openRestartModal()">
-            <i class="fa fa-refresh" aria-hidden="true"></i>
+            <i class="fa fa-sync" aria-hidden="true"></i>
           </a>
         </span>
       </div>

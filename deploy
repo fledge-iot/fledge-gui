@@ -32,7 +32,7 @@ CWARN="${CPFX}0;33m"
 echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
 # Variables
-__version__="1.5.0RC"
+__version__="1.6.0dev"
 if [ -f "package.json" ]
   then
 	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`

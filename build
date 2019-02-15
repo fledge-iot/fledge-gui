@@ -58,9 +58,9 @@ EXAMPLE
 
 remove_unwanted_files () {
     find dist/assets/* | grep -v "favicon.ico" | xargs rm -rf
-    rm dist/*.eot 
+    rm dist/*.eot
     rm dist/*.svg
-    rm dist/*.woff2
+    rm dist/*.ttf
     rm dist/*.woff
     # if built on mac
     rm -rf .DS_Store

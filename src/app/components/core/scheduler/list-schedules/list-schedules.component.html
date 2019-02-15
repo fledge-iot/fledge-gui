@@ -3,7 +3,7 @@
     <p id="scheduled-process" class="card-header-title">
       Schedules &nbsp;
       <button (click)="getSchedules()" class="button is-small">
-        <i class="fa fa-refresh" aria-hidden="true"></i>
+        <i class="fa fa-sync" aria-hidden="true"></i>
       </button>
     </p>
   </header>
@@ -28,7 +28,7 @@
         </td>
         <td>
           <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
-            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+            <i class="fa fa-edit" aria-hidden="true"></i>
           </a>
         </td>
       </tr>
