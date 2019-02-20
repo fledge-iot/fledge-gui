@@ -47,6 +47,7 @@ ng-sidebar       |  8.0.0        |        8.0.0          | MIT
 moment           |  2.23.0       |        2.23.0         | MIT
 @ngx-progressbar/core  |  5.3.2        |        5.3.2          | MIT
 protractor-beautiful-reporter |  1.2.7       |  1.2.7                | MIT
+node-git-describe | 4.0.4     | 4.0.4        | MIT
 
 
 #### Why Yarn?

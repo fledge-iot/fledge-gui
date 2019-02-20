@@ -4,8 +4,8 @@
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build --prod --build-optimizer",
+    "start": "node grab-git-info && ng serve",
+    "build": "node grab-git-info && ng build --prod --build-optimizer",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
@@ -52,6 +52,7 @@
     "babel-polyfill": "^7.0.0-beta.3",
     "babel-preset-env": "^7.0.0-beta.3",
     "codelyzer": "~4.5.0",
+    "git-describe": "^4.0.4",
     "jasmine-core": "~3.3.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~3.1.4",
