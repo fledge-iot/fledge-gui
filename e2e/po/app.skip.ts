@@ -114,7 +114,7 @@ export class SkipLogin {
 
   isAuditLogRefreshIcon() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#card-title .fa.fa-sync')).isDisplayed();
   }
 
   auditLogCount() {
@@ -143,7 +143,7 @@ export class SkipLogin {
 
   getSysLogRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#card-title .fa.fa-sync')).isDisplayed();
   }
 
   systemLogCount() {
@@ -181,7 +181,7 @@ export class SkipLogin {
 
   getSchedulesRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#scheduled-process .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#scheduled-process .fa.fa-sync')).isDisplayed();
   }
 
   getCreateScheduleButton() {
@@ -201,7 +201,7 @@ export class SkipLogin {
 
   getTasksRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-refresh')).isDisplayed();
+    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-sync')).isDisplayed();
   }
 
   getTasksSelectTag() {
