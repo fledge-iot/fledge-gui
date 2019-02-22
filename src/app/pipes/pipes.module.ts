@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { DateFormatterPipe, KeysPipe, FilterPipe } from '.';
+
+import { DateFormatterPipe, FilterPipe, KeysPipe } from '.';
 
 @NgModule({
   declarations: [DateFormatterPipe, KeysPipe, FilterPipe],

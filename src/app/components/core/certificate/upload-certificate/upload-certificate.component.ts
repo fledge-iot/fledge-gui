@@ -1,8 +1,7 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, CertificateService } from '../../../../services';
+import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
 
 @Component({
   selector: 'app-upload-cert',
@@ -21,8 +20,10 @@ export class UploadCertificateComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private certificateService: CertificateService, public ngProgress: NgProgress,
-    private alertService: AlertService, public formBuilder: FormBuilder) { }
+  constructor(private certificateService: CertificateService,
+    public ngProgress: ProgressBarService,
+    private alertService: AlertService,
+    public formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -57,10 +58,10 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   onKeyChange(event) {
-    if (event.target.files.length != 0) {
+    if (event.target.files.length !== 0) {
       const fileName = event.target.files[0].name;
       const ext = fileName.substr(fileName.lastIndexOf('.') + 1);
-      if (ext == 'key') {
+      if (ext === 'key') {
         this.keyExtension = true;
       } else {
         this.keyExtension = false;
@@ -74,10 +75,10 @@ export class UploadCertificateComponent implements OnInit {
   }
 
   onCertChange(event) {
-    if (event.target.files.length != 0) {
+    if (event.target.files.length !== 0) {
       const fileName = event.target.files[0].name;
       const ext = fileName.substr(fileName.lastIndexOf('.') + 1);
-      if (ext == 'cert') {
+      if (ext === 'cert') {
         this.certExtension = true;
       } else {
         this.certExtension = false;
@@ -103,8 +104,8 @@ export class UploadCertificateComponent implements OnInit {
     if (this.cert && this.key) {
       if (this.certExtension && this.keyExtension) {
         const formData = new FormData();
-        formData.append('key', this.cert, this.cert.name);
-        formData.append('cert', this.key, this.key.name);
+        formData.append('cert', this.cert, this.cert.name);
+        formData.append('key', this.key, this.key.name);
         formData.append('overwrite', this.overwrite);
 
         /** request started */

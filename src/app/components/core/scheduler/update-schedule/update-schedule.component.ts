@@ -23,24 +23,24 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
   @Input() childData: { id: Number, schedule_process: any, schedule_type: any, day: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-
+  regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to verify time format 00:00:00
   form: FormGroup;
   public selectedTypeValue: string;
   constructor(private schedulesService: SchedulesService, public fb: FormBuilder, private alertService: AlertService) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
 
   ngOnChanges(changes: SimpleChanges) {
-    const regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to verify time format 00:00:00
     this.form = this.fb.group({
       name: ['', [CustomValidator.nospaceValidator]],
       repeatDay: ['', [Validators.min(0), Validators.max(365)]],
-      repeat: ['', [Validators.required, Validators.pattern(regExp)]],
+      repeat: ['', Validators.required],
       exclusive: [Validators.required],
       process_name: [Validators.required],
       type: [Validators.required],
       day: [Validators.required],
-      time: [Validators.required, Validators.pattern(regExp)],
+      time: [Validators.required, Validators.pattern(this.regExp)],
       enabled: [Validators.required]
     });
 
@@ -58,8 +58,18 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
    * @param value
    */
   public setScheduleTypeKey(value) {
-    if (value != undefined) {
-      return this.scheduleType.find(object => object.name == value).index;
+    if (value !== undefined) {
+      return this.scheduleType.find(object => object.name === value).index;
+    }
+  }
+
+  getChangedRepeatInterval(event: any) {
+    const repeatValue: string = event.target.value;
+    if (repeatValue.trim().match(this.regExp)) {
+      this.form.controls['repeat'].setErrors(null);
+      this.form.patchValue({repeat: repeatValue});
+    } else {
+      this.form.controls['repeat'].setErrors({ 'invalid': true });
     }
   }
 
@@ -88,7 +98,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
    * @param id to get schedule
    */
   public getSchedule(id): void {
-    if (id == undefined) {
+    if (id === undefined) {
       return;
     }
 
@@ -96,7 +106,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     this.schedulesService.getSchedule(id).
       subscribe(
         (data) => {
-          if (data['type'] == 'TIMED') {
+          if (data['type'] === 'TIMED') {
             this.selectedScheduleType = this.setScheduleTypeKey(data['type']);
             scheduleDay = this.getSelectedDay(data['day']);
           } else {
@@ -144,7 +154,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       this.toggleModal(false);
       return false;
     }
-    const repeatTime = this.form.get('repeat').value != ('None' || undefined) ? Utils.convertTimeToSec(
+    const repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
       this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
 
     this.selectedScheduleType = this.setScheduleTypeKey(this.form.get('type').value);

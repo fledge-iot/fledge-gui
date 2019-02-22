@@ -1,4 +1,4 @@
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.7
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4
 
 ## Code scaffolding
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
@@ -32,29 +32,28 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core:
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 6.0.3         |        6.0.3          | MIT 
- Angular CLI  | 6.0.7         |        6.0.7          | MIT 
- TypeScript   | 2.7.2         |        2.9            | Apache 2.0
- rxjs         | 6.2.0         |        6.2.0          | Apache 2.0
- Bulma css    | 0.7.1         |        0.7.1          | MIT
+ Angular      | 7.1.4         |        7.2.0          | MIT 
+ Angular CLI  | 7.1.4         |        7.2.1          | MIT 
+ TypeScript   | 3.1.6         |        3.2.2          | Apache 2.0
+ rxjs         | 6.3.3         |        6.3.3          | Apache 2.0
+ Bulma css    | 0.7.1         |        0.7.2          | MIT
 
 #### Dev:
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
-chart.js         |  2.7.2        |        2.7.2          | MIT 
-core-js          |  2.5.6        |        2.5.6          | MIT 
-lodash-es        |  4.17.10      |        4.17.10        | MIT
-ng-sidebar       |  6.0.4        |        7.1.0          | MIT 
-moment           |  2.22.1       |        2.22.1         | MIT
-ngx-progressbar  |  2.1.1        |        2.1.1          | MIT
-protractor-beautiful-reporter |  1.2.1       |  1.2.1                | MIT
+chart.js         |  2.7.3        |        2.7.3          | MIT
+core-js          |  2.6.1        |        2.6.2          | MIT 
+ng-sidebar       |  8.0.0        |        8.0.0          | MIT 
+moment           |  2.23.0       |        2.23.0         | MIT
+@ngx-progressbar/core  |  5.3.1        |        5.3.1          | MIT
+protractor-beautiful-reporter |  1.2.7       |  1.2.7                | MIT
 
 
 #### Why Yarn?
 
-* Yarn parallelizes operations to maximize resource utilization so install times are faster than ever.
+* Yarn parallelize operations to maximize resource utilization so install times are faster than ever.
 * Offline cache: package installation using Yarn, it places the package on your disk. During the next install, this package will be used instead of sending an HTTP request to get the tarball from the registry.
-* Deterministic Installs: Yarn uses lockfiles (yarn.lock) and a deterministic install algorithm. We can say goodbye to the "but it works on my machine" bugs.
+* Deterministic Installs: Yarn uses lock-files (yarn.lock) and a deterministic install algorithm. We can say goodbye to the "but it works on my machine" bugs.
 
 #### Yarn commands
 * `yarn`                    # Install all dependencies from package.json

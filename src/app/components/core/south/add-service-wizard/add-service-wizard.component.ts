@@ -1,9 +1,9 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NgProgress } from 'ngx-progressbar';
-
 import { Router } from '@angular/router';
-import { AlertService, ConfigurationService, SchedulesService, ServicesHealthService } from '../../../../services';
+import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
+
+import { AlertService, SchedulesService, ServicesHealthService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -16,17 +16,14 @@ export class AddServiceWizardComponent implements OnInit {
   public plugins = [];
   public configurationData;
   public useProxy;
-  public serviceId;
-  public isServiceEnabled = false;
-  public isServiceAdded = false;
   public isValidPlugin = true;
   public isSinglePlugin = true;
+  public selectedPluginDescription = '';
   public isValidName = true;
-  public addServiceMsg = '';
-  public enableServiceMsg = '';
-  public selectedPlugins = [];
   public serviceType = 'South';
   public isScheduleEnabled = true;
+  public payload: any;
+  public schedulesName = [];
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -39,12 +36,13 @@ export class AddServiceWizardComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
     private servicesHealthService: ServicesHealthService,
     private alertService: AlertService,
-    private configService: ConfigurationService,
-    private schedulesService: SchedulesService,
     private router: Router,
-    private ngProgress: NgProgress) { }
+    private schedulesService: SchedulesService,
+    private ngProgress: ProgressBarService
+  ) { }
 
   ngOnInit() {
+    this.getSchedules();
     this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
       plugin: ['', Validators.required]
@@ -76,7 +74,6 @@ export class AddServiceWizardComponent implements OnInit {
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
-
     switch (+id) {
       case 2:
         nxtButton.textContent = 'Next';
@@ -90,6 +87,13 @@ export class AddServiceWizardComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  getDescription(selectedPlugin) {
+    this.isSinglePlugin = true;
+    this.isValidPlugin = true;
+    const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
   }
 
   moveNext() {
@@ -118,58 +122,38 @@ export class AddServiceWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
+
+        // To verify if service with given name already exist
+        const isServiceNameExist = this.schedulesName.some(item => {
+          return formValues['name'].trim() === item.name;
+        });
+        if (isServiceNameExist) {
+          this.alertService.error('A south service or north task instance already exists with this name.');
+          return false;
+        }
+
+        // create payload to pass in add service
         if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
-          const payload = {
+          this.payload = {
             name: formValues['name'],
             type: this.serviceType,
-            plugin: formValues['plugin'][0]
+            plugin: formValues['plugin'][0],
+            enabled: this.isScheduleEnabled
           };
-          this.isServiceAdded = true;
-          this.addService(payload, nxtButton);
         }
+        this.getConfiguration();
         break;
       case 2:
+        this.viewConfigItemComponent.callFromWizard();
         document.getElementById('vci-proxy').click();
         if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
           return false;
         }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
-
         break;
       case 3:
-        nxtButton.style.visibility = 'hidden';
-        previousButton.style.visibility = 'hidden';
-        if (this.serviceId.length > 0 && this.isScheduleEnabled) {
-          /** request started */
-          this.ngProgress.start();
-          this.schedulesService.enableSchedule(this.serviceId).
-            subscribe(
-              () => {
-                /** request completed */
-                this.ngProgress.done();
-                this.isServiceEnabled = true;
-                this.enableServiceMsg = 'Service enabled and started successfully.';
-                this.alertService.success(this.enableServiceMsg);
-                this.router.navigate(['/south']);
-              },
-              error => {
-                nxtButton.style.visibility = 'visible';
-                previousButton.style.visibility = 'visible';
-                this.isServiceEnabled = false;
-                previousButton.disabled = false;
-                /** request completed */
-                this.ngProgress.done();
-                if (error.status === 0) {
-                  console.log('service down ', error);
-                } else {
-                  this.enableServiceMsg = error.statusText;
-                  this.alertService.error(error.statusText);
-                }
-              });
-        } else {
-          this.router.navigate(['/south']);
-        }
+        this.addService(this.payload);
         break;
       default:
         break;
@@ -198,51 +182,80 @@ export class AddServiceWizardComponent implements OnInit {
     }
   }
 
-  addService(payload, nxtButton) {
+  /**
+   *  Get default configuration of a selected plugin
+   */
+  private getConfiguration(): void {
+    const config = this.plugins.map(p => {
+      if (p.name === this.payload.plugin) {
+        return p.config;
+      }
+    }).filter(value => value !== undefined);
+
+    // array to hold data to display on configuration page
+    this.configurationData = { value: config };
+    this.useProxy = 'true';
+  }
+
+  /**
+   * Get edited configuration from view config child page
+   * @param changedConfig changed configuration of a selected plugin
+   */
+  getChangedConfig(changedConfig) {
+    const defaultConfig = map(this.configurationData.value[0], (v, key) => ({ key, ...v }));
+    // make a copy of matched config items having changed values
+    const matchedConfig = defaultConfig.filter(e1 => {
+      return changedConfig.some(e2 => {
+        return e1.key === e2.key;
+      });
+    });
+
+    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
+    const matchedConfigCopy = cloneDeep(matchedConfig);
+    /**
+     * merge new configuration with old configuration,
+     * where value key hold changed data in config object
+    */
+    matchedConfigCopy.forEach(e => {
+      changedConfig.forEach(c => {
+        if (e.key === c.key) {
+          e.value = c.value.toString();
+        }
+      });
+    });
+
+    // final array to hold changed configuration
+    let finalConfig = [];
+    matchedConfigCopy.forEach(item => {
+      finalConfig.push({
+        [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
+      });
+    });
+
+    // convert finalConfig array in object of objects to pass in add service
+    finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
+    this.payload.config = finalConfig;
+  }
+
+  /**
+   * Method to add service
+   * @param payload  to pass in request
+   * @param nxtButton button to go next
+   * @param previousButton button to go previous
+   */
+  public addService(payload) {
     /** request started */
     this.ngProgress.start();
     this.servicesHealthService.addService(payload)
       .subscribe(
-        (data) => {
-          /** request completed */
+        () => {
+          /** request done */
           this.ngProgress.done();
           this.alertService.success('Service added successfully.', true);
-          this.getCategory(data['name']);
-          this.serviceId = data['id'];
-          this.isServiceAdded = true;
-          nxtButton.disabled = false;
+          this.router.navigate(['/south']);
         },
         (error) => {
-          /** request completed */
-          this.ngProgress.done();
-          nxtButton.disabled = true;
-          this.isServiceAdded = false;
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.addServiceMsg = error.statusText;
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  private getCategory(categoryName: string): void {
-    this.configurationData = [];
-    /** request started */
-    this.ngProgress.start();
-    this.configService.getCategory(categoryName).
-      subscribe(
-        (data: any) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.configurationData = {
-            value: [data],
-            key: categoryName
-          };
-          this.useProxy = 'true';
-        },
-        error => {
-          /** request completed */
+          /** request done */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -265,7 +278,9 @@ export class AddServiceWizardComponent implements OnInit {
       (data: any) => {
         /** request completed */
         this.ngProgress.done();
-        this.plugins = data.plugins;
+        this.plugins = sortBy(data.plugins, p => {
+          return p.name.toLowerCase();
+        });
       },
       (error) => {
         /** request completed */
@@ -284,6 +299,29 @@ export class AddServiceWizardComponent implements OnInit {
     } else {
       this.isScheduleEnabled = false;
     }
+    this.payload.enabled = this.isScheduleEnabled;
   }
 
+  public getSchedules(): void {
+    this.schedulesName = [];
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          // To filter
+          this.schedulesName = data['schedules'];
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
 }

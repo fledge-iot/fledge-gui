@@ -16,4 +16,7 @@ export * from './backup-restore.service';
 export * from './connected-service-status.service';
 export * from './ping.service';
 export * from './north.service';
+export * from './filter.service';
+export * from './progress-bar.service';
+export * from './generate-csv.service';
 

@@ -19,19 +19,27 @@
                   <th>Asset</th>
                   <th>Readings</th>
                   <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let asset of assets">
                   <td>{{asset.assetCode}}</td>
-                  <td class="is-pulled-right">{{asset.count | number}}</td>
+                  <td><span class="is-pulled-right">{{asset.count | number}}</span></td>
                   <td>
                     <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
                       <i class="fa fa-line-chart" aria-hidden="true"></i>
                     </a>
                   </td>
+                  <td>
+                    <a (click)="getAssetReadings(asset.assetCode, asset.count)" class="is-pulled-right">
+                      <span class="icon">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                      </span>
+                    </a>
+                  </td>
                 </tr>
-                <tbody>
+              <tbody>
             </table>
           </ng-container>
         </ng-container>

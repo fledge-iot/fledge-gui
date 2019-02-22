@@ -181,7 +181,7 @@ export class SkipLogin {
 
   getSchedulesRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#scheduled-process .fa.fa-refresh')).isDisplayed();
   }
 
   getCreateScheduleButton() {
@@ -249,14 +249,16 @@ export class SkipLogin {
     return browser.get('/#/backup-restore');
   }
 
+  clickRequestBackup() {
+    browser.ignoreSynchronization = true;
+    element(by.css('app-backup-restore .fix-pad')).click();
+    // wait
+    browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore table thead tr'))), 6000);
+  }
+
   getBackupRestoreTitle() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-backup-restore header p')).getText();
-  }
-
-  getBackupRestoreRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-backup-restore button i')).isDisplayed();
   }
 
   getBackupRestoreColNames() {
@@ -267,6 +269,19 @@ export class SkipLogin {
   getRequestBackup() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-backup-restore header a')).getText();
+  }
+
+  deleteBackup() {
+    browser.ignoreSynchronization = true;
+    element(by.css('app-backup-restore .button.is-text')).click();
+    browser.wait(this.EC.visibilityOf(element(by.css('.modal-card footer button.is-info'))), 2000);
+    element(by.css('.modal-card footer button.is-info')).click();
+    browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore .no-rec'))), 3000);
+  }
+
+  noBackupRecord() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-backup-restore .no-rec')).getText();
   }
 
   navToSupportBundles() {

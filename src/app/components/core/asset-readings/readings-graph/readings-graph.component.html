@@ -9,44 +9,58 @@
       </div>
     </header>
     <section class="modal-card-body">
-      <div [hidden]='!showGraph' class="columns is-mobile">
-        <div class="column is-two-fifths">
-          <div class="select is-small">
-            <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value)">
-              <!-- <option value="0" [selected]="optedTime == 0">None</option> -->
-              <option value="600" [selected]="optedTime == 600">10 minutes</option>
-              <option value="1800" [selected]="optedTime == 1800">30 minutes</option>
-              <option value="3600" [selected]="optedTime == 3600">1 hour</option>
-              <option value="28800" [selected]="optedTime == 28800">8 hours</option>
-              <option value="86400" [selected]="optedTime == 86400">1 day</option>
-            </select>
+      <ng-container *ngIf='showGraph'>
+        <div class="columns is-mobile">
+          <div class="column is-two-fifths">
+            <div class="select is-small">
+              <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value)">
+                <!-- <option value="0" [selected]="optedTime == 0">None</option> -->
+                <option value="600" [selected]="optedTime == 600">10 minutes</option>
+                <option value="1800" [selected]="optedTime == 1800">30 minutes</option>
+                <option value="3600" [selected]="optedTime == 3600">1 hour</option>
+                <option value="28800" [selected]="optedTime == 28800">8 hours</option>
+                <option value="86400" [selected]="optedTime == 86400">1 day</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <!-- <div class="column is-half">
+          <!-- <div class="column is-half">
           <app-number-input-debounce placeholder="number of readings" #limitField (value)="getLimitBasedAssetReadingsAndSummary(limitField.inputValue);"
             max="{{MAX_RANGE}}"></app-number-input-debounce>
           <p *ngIf='isInvalidLimit' class='help is-danger'>Number of readings must be in range 1 - {{MAX_RANGE}}</p>
         </div> -->
-      </div>
-      <div [hidden]='!showGraph' class="field is-grouped is-grouped-multiline" *ngFor="let asset of assetReadingSummary">
-        <div class="control">
-          <div class="tags has-addons" *ngFor="let reading of asset.value">
-            <span>
-              <b>{{asset.name}} &nbsp;</b>
-            </span>
-            <span class="tag is-light"> Avg </span>
-            <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.average, 5)}}
-            </span> &nbsp;
-            <span class="tag is-light"> Min </span>
-            <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.min, 5)}}</span> &nbsp;
-            <span class="tag is-light"> Max </span>
-            <!-- readKeyColorLabel[i][readings.key]} -->
-            <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{roundTo(reading.max, 5)}}</span> &nbsp;
-          </div>
         </div>
-      </div>
-      <p *ngIf='!showGraph'> Not Available </p>
-      <app-chart *ngIf='showGraph' [type]="assetChartType" [data]="assetReadingValues" [options]=""></app-chart>
+        <ng-container>
+          <div class="field is-grouped is-grouped-multiline" *ngFor="let asset of assetReadingSummary">
+            <div class="control">
+              <div class="tags has-addons" *ngFor="let reading of asset.value">
+                <span>
+                  <b>{{asset.name}} &nbsp;</b>
+                </span>
+                <span class="tag is-light"> Avg </span>
+                <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.average) ?
+                  roundTo(reading.average,
+                  5) : reading.average }}
+                </span> &nbsp;
+                <span class="tag is-light"> Min </span>
+                <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.min) ?
+                  roundTo(reading.min, 5) : reading.min}}</span>
+                &nbsp;
+                <span class="tag is-light"> Max </span>
+                <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.max) ?
+                  roundTo(reading.max, 5): reading.max}}</span>
+                &nbsp;
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <app-chart [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions"
+          #assetChart></app-chart>
+        <ng-container *ngIf="excludedReadingsList.length > 0">
+          <p class="help"> * Excluded <u>{{excludedReadingsList.toString().replace(',' , ', ')}}</u> having non-numeric
+            readings </p>
+        </ng-container>
+      </ng-container>
+      <p *ngIf='!showGraph' class="help"> Graph Not Available </p>
     </section>
   </div>
 </div>

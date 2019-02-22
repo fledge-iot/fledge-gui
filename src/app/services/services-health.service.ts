@@ -82,10 +82,21 @@ export class ServicesHealthService {
   }
 
   /**
+   *  DELETE | /foglamp/service/{svc_name}
+   */
+  public deleteService(svc) {
+    return this.http.delete(this.GET_SERVICES_URL + '/' + encodeURIComponent(svc)).pipe(
+      map(response => response),
+      catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
    *  GET  | /foglamp/plugin/installed
    */
   getInstalledPlugins(direction) {
-    const params = new HttpParams().set('type', direction);
+    let params = new HttpParams();
+    params = params.append('type', direction);
+    params = params.append('config', JSON.stringify(true));
     return this.http.get(this.GET_INSTALLED_PLUGINS_URL, { params: params }).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));

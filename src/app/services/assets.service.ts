@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError as observableThrowError, forkJoin, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -8,7 +8,6 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class AssetsService {
   private GET_ASSET = environment.BASE_URL + 'asset';
-
   constructor(private http: HttpClient) { }
 
   /**
@@ -27,7 +26,7 @@ export class AssetsService {
   * @param limit
   *  Return a set of asset readings for the given asset code
   */
-  public getAssetReadings(assetCode, limit: number = 0, time: number = 0) {
+  public getAssetReadings(assetCode, limit: number = 0, offset: number = 0, time: number = 0) {
     let params = new HttpParams();
     if (+time !== 0) {
       params = params.append('seconds', time.toString());
@@ -35,9 +34,42 @@ export class AssetsService {
     if (+limit !== 0) {
       params = params.set('limit', limit.toString());
     }
+    if (+offset !== 0) {
+      params = params.set('offset', offset.toString());
+    }
     return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
       map(response => response),
       catchError((error: Response) => observableThrowError(error)));
+  }
+
+  /**
+  *  GET | /foglamp/asset/{assetCode}
+  * @param assets Array of asset names with limits to pass
+  *  Return a set of All asset readings for the given assets array
+  */
+  public getMultiAssetsReadings(assets: any): Observable<any[]> {
+    const assetResponse = [];
+    assets
+      .map(assetCode => {
+        let params = new HttpParams();
+        if (assetCode.limit !== 0) {
+          params = params.set('limit', assetCode.limit.toString());
+        }
+        if (assetCode.offset !== 0) {
+          params = params.set('offset', assetCode.offset.toString());
+        }
+        let resp = this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetCode.asset), { params: params });
+        resp = resp.pipe(map((response: any) => {
+          const assetReadings = response.map(r => {
+            r['assetName'] = assetCode['asset'];
+            return r;
+          });
+          return assetReadings;
+        })
+        );
+        return assetResponse.push(resp);
+      });
+    return forkJoin(assetResponse);
   }
 
   /**

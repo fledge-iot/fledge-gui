@@ -1,17 +1,18 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { NgProgressModule } from 'ngx-progressbar';
 
 import { AuthCheckGuard } from '../../../guards';
-import { ServicesHealthService, AssetsService, SchedulesService } from '../../../services';
+import { PipesModule } from '../../../pipes/pipes.module';
+import { AssetsService, SchedulesService, ServicesHealthService, FilterService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
+import { FilterModule } from '../filter/filter.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
-import { SouthComponent } from './south.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
-import { PipesModule } from '../../../pipes/pipes.module';
+import { SouthComponent } from './south.component';
 
 const routes: Routes = [
 
@@ -24,25 +25,26 @@ const routes: Routes = [
     path: 'add',
     component: AddServiceWizardComponent,
     canActivate: [AuthCheckGuard]
-  }
+  },
 ];
 
 @NgModule({
   declarations: [
     SouthComponent,
     AddServiceWizardComponent,
-    SouthServiceModalComponent
+    SouthServiceModalComponent,
   ],
   imports: [
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
+    DragDropModule,
     RouterModule.forChild(routes),
-    NgProgressModule,
     AlertDialogModule,
     SharedModule,
+    FilterModule,
     PipesModule
   ],
-  providers: [ServicesHealthService, AssetsService, SchedulesService],
+  providers: [ServicesHealthService, AssetsService, SchedulesService, FilterService],
 })
 export class SouthModule { }

@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgProgress } from 'ngx-progressbar';
-
-import { AlertService, SupportService } from '../../../services';
+import { AlertService, SupportService, ProgressBarService } from '../../../services';
 
 @Component({
   selector: 'app-support',
@@ -11,7 +9,7 @@ import { AlertService, SupportService } from '../../../services';
 export class SupportComponent implements OnInit {
   public bundlesData = [];
   constructor(private supportBundleService: SupportService,
-    public ngProgress: NgProgress,
+    public ngProgress: ProgressBarService,
     private alertService: AlertService) { }
 
   ngOnInit() {

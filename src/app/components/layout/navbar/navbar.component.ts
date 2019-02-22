@@ -3,19 +3,20 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  HostListener,
   OnDestroy,
   OnInit,
   Output,
   ViewChild,
-  HostListener
 } from '@angular/core';
+import { sortBy } from 'lodash';
 import { Router } from '@angular/router';
-import { NgProgress } from 'ngx-progressbar';
-import Utils from '../../../utils';
-import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService } from '../../../services';
+import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService,
+  ProgressBarService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
-import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
+import Utils from '../../../utils';
 import { RestartModalComponent } from '../../common/restart-modal/restart-modal.component';
+import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -26,7 +27,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
   public pingData = {};
-  public pingInfo = { isAlive: false, isAuth: false, hostName: '' };
+  public servicesRecord = [];
+  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '' };
   public shutDownData = {
     key: '',
     message: ''
@@ -41,14 +43,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   isAuthOptional = true;  // Default to true for authorized access
   uptime: any = '';
   viewPort: any = '';
+  public showSpinner = false;
 
   @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
 
+
   constructor(private servicesHealthService: ServicesHealthService,
     private status: ConnectedServiceStatus,
     private alertService: AlertService,
-    public ngProgress: NgProgress,
+    private ngProgress: ProgressBarService,
     private sharedService: SharedService,
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -65,6 +69,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.getServiceStatus();
     this.pingService();
     this.ping.pingIntervalChanged.subscribe((pingTime: number) => {
       if (pingTime === -1) {
@@ -109,6 +114,35 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.changeDetectorRef.detectChanges();
   }
 
+  public getServiceStatus() {
+    this.showLoadingSpinner();
+    this.servicesHealthService.getAllServices()
+      .subscribe(
+        (data: any) => {
+          this.servicesRecord = [];
+          const servicesData = data.services;
+          const coreService = servicesData.filter((el => (el.type === 'Core')));
+          const storageService = servicesData.filter((el => (el.type === 'Storage')));
+          const notificationService = servicesData.filter((el => (el.type === 'Notification')));
+          let southboundServices = servicesData.filter((el => (el.type === 'Southbound')));
+          southboundServices = sortBy(southboundServices, function (obj) {
+            return obj.name.toLowerCase();
+          });
+          this.servicesRecord.push(coreService[0], storageService[0]);
+          if (notificationService.length) {
+            this.servicesRecord.push(notificationService[0]);
+          }
+          southboundServices.forEach(service => {
+            this.servicesRecord.push(service);
+          });
+          this.hideLoadingSpinner();
+        },
+        (error) => {
+          this.hideLoadingSpinner();
+          console.log('service down ', error);
+        });
+  }
+
   public pingService(pingManually = false) {
     if (pingManually === true) {
       this.ngProgress.start();
@@ -120,7 +154,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.status.changeMessage(true);
       this.pingData = data;
       this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
-      this.pingInfo = { isAlive: true, isAuth: false, hostName: this.pingData['hostName'] };
+      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -138,9 +172,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.pingInfo = { isAlive: true, isAuth: true, hostName: this.pingData['hostName'] };
+          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
         } else {
-          this.pingInfo = { isAlive: false, isAuth: false, hostName: '' };
+          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '' };
         }
       });
   }
@@ -254,7 +288,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.toggle.next('toggleSidebar');
   }
 
-  applyServiceStatusCustomCss(ping_info) {
+  applyPingStatusCustomCss(ping_info) {
     if (this.pingData) {
       if (this.pingData['health'] === 'green') {
         return 'has-text-success';
@@ -266,6 +300,21 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         return 'has-text-danger';
       }
     } else {
+      return 'has-text-danger';
+    }
+  }
+
+  applyServiceStatusCustomCss(serviceStatus: string) {
+    if (serviceStatus.toLowerCase() === 'running') {
+      return 'has-text-success';
+    }
+    if (serviceStatus.toLowerCase() === 'unresponsive') {
+      return 'has-text-warning';
+    }
+    if (serviceStatus.toLowerCase() === 'shutdown') {
+      return 'has-text-grey-lighter';
+    }
+    if (serviceStatus.toLowerCase() === 'failed') {
       return 'has-text-danger';
     }
   }
@@ -291,6 +340,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
   }
 }
 

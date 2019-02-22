@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SystemLogService, AlertService } from '../../../services/index';
-import { NgProgress } from 'ngx-progressbar';
+
+import { AlertService, SystemLogService, ProgressBarService } from '../../../services';
 
 @Component({
   selector: 'app-system-log',
@@ -21,7 +21,10 @@ export class SystemLogComponent implements OnInit {
   tempOffset = 0;
   totalPagesCount = 0;
 
-  constructor(private systemLogService: SystemLogService, private alertService: AlertService, public ngProgress: NgProgress) { }
+  constructor(private systemLogService: SystemLogService,
+    private alertService: AlertService,
+    public ngProgress: ProgressBarService
+    ) { }
 
   ngOnInit() {
     this.getSysLogs();
@@ -64,7 +67,7 @@ export class SystemLogComponent implements OnInit {
       this.page = 1;
       this.tempOffset = this.offset;
     }
-    if (limit === '' || limit == 0 || limit === null || limit === undefined) {
+    if (limit === '' || limit === 0 || limit === null || limit === undefined) {
       limit = this.DEFAULT_LIMIT;
     }
     this.limit = limit;

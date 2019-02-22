@@ -1,17 +1,16 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgProgressModule } from 'ngx-progressbar';
-import { AssetsComponent } from './assets/assets.component';
-import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
-import { PipesModule } from '../../../pipes/pipes.module';
-import { ChartModule } from '../../common/chart/index';
-import { AssetsService } from '../../../services';
+import { RouterModule, Routes } from '@angular/router';
 
-import { Routes, RouterModule } from '@angular/router';
+import { AuthCheckGuard } from '../../../guards';
+import { PipesModule } from '../../../pipes/pipes.module';
+import { AssetsService } from '../../../services';
+import { ChartModule } from '../../common/chart';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
-import { AuthCheckGuard } from '../../../guards';
+import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
+import { AssetsComponent } from './assets/assets.component';
 
 const routes: Routes = [
   {
@@ -30,7 +29,6 @@ const routes: Routes = [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
-    NgProgressModule,
     PipesModule,
     ChartModule,
     NumberInputDebounceModule,

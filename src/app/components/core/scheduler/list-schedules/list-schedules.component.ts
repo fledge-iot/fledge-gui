@@ -1,13 +1,10 @@
-import { Component, OnInit, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { sortBy } from 'lodash';
 
+import { AlertService, ConfigurationService, SchedulesService, ProgressBarService } from '../../../../services';
 import Utils from '../../../../utils';
-import { NgProgress } from 'ngx-progressbar';
-
-import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import { SchedulesService, AlertService, ConfigurationService } from '../../../../services/index';
-
+import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
 
 enum weekDays {
   Mon = 1,
@@ -46,15 +43,18 @@ export class ListSchedulesComponent implements OnInit {
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(UpdateScheduleComponent) updateScheduleModal: UpdateScheduleComponent;
 
-  constructor(private schedulesService: SchedulesService, private alertService: AlertService,
-    private configService: ConfigurationService, public ngProgress: NgProgress) {}
+  constructor(private schedulesService: SchedulesService,
+    private alertService: AlertService,
+    private configService: ConfigurationService,
+    public ngProgress: ProgressBarService
+  ) { }
 
   ngOnInit() {
 
     this.getScheduleType();
     this.getSchedulesProcesses();
 
-    this.days = Object.keys(weekDays).map(key => weekDays[key]).filter(value => typeof value == 'string') as string[];
+    this.days = Object.keys(weekDays).map(key => weekDays[key]).filter(value => typeof value === 'string') as string[];
     this.getSchedules();
 
     this.updateScheduleData = {
@@ -65,7 +65,7 @@ export class ListSchedulesComponent implements OnInit {
   }
 
   private filterCategories(categories) {
-    const allCats  = [];
+    const allCats = [];
     categories.forEach(element => {
       allCats.push({ key: element.key, children: element.children });
     });
@@ -73,43 +73,37 @@ export class ListSchedulesComponent implements OnInit {
     const sn = [];
     const south = allCats.filter(el => el.key.toUpperCase() === 'SOUTH');
     south.forEach(s => {
-      s.children.forEach( el => {
+      s.children.forEach(el => {
         sn.push(el.key);
       });
     });
     const north = allCats.filter(el => el.key.toUpperCase() === 'NORTH');
     north.forEach(n => {
-      n.children.forEach( el => {
+      n.children.forEach(el => {
         sn.push(el.key);
       });
     });
     return sn;
   }
 
-  public filterSouthAndNorth (schedules): void {
-    //  TODO: remove log
-    console.log('Schedules', schedules);
+  public filterSouthAndNorth(schedules): void {
     this.configService.getCategoryWithChildren().
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
           const sn = this.filterCategories(data['categories']);
-          // TODO: Remove log
-          console.log('South and North Schedule (category names)', sn);
           //  filter by South and North categories name
           this.scheduleData = [];
           schedules.forEach(sch => {
-            if (! sn.includes(sch.name)) {
+            if (!sn.includes(sch.name)) {
               this.scheduleData.push(sch);
             }
           });
-          //  TODO: remove log
-          console.log('Filtered Schedules', this.scheduleData);
 
           this.scheduleData.forEach(element => {
             const repeatTimeObj = Utils.secondsToDhms(element.repeat);
-            if (repeatTimeObj.days == 1) {
+            if (repeatTimeObj.days === 1) {
               element.repeat = repeatTimeObj.days + ' day, ' + repeatTimeObj.time;
             } else if (repeatTimeObj.days > 1) {
               element.repeat = repeatTimeObj.days + ' days, ' + repeatTimeObj.time;
@@ -118,7 +112,7 @@ export class ListSchedulesComponent implements OnInit {
             }
             element.time = Utils.secondsToDhms(element.time).time;
           });
-          this.scheduleData = sortBy(this.scheduleData, function(obj) {
+          this.scheduleData = sortBy(this.scheduleData, function (obj) {
             return !obj.enabled + obj.name.toLowerCase();
           });
 
@@ -165,7 +159,7 @@ export class ListSchedulesComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-}
+  }
 
   public getSchedules(): void {
     this.scheduleData = [];

@@ -1,6 +1,3 @@
-<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
-</ng-progress>
 <div class="steps">
   <div class="step-item is-active is-success" id="1">
     <div class="step-marker">1</div>
@@ -28,17 +25,17 @@
             <label class="label">North Plugin</label>
           </div>
           <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <div class="select is-multiple">
-                  <select multiple name="plugin" formControlName="plugin" (change)="changedSelectedPlugin()" required>
-                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
-                  </select>
-                </div>
-                <small *ngIf="!isValidPlugin" class="help is-danger level-left">Please select a valid plugin</small>
-                <small *ngIf="!isSinglePlugin" class="help is-danger level-left">Please select a single plugin</small>
-              </div>
+            <div class="select is-multiple">
+              <select multiple #selectedPlugin name="plugin" formControlName="plugin" (change)="getDescription(selectedPlugin.value)"
+                required>
+                <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
+              </select>
             </div>
+            &nbsp;
+            <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin" class="help description level-left">{{
+              selectedPluginDescription }}</small>
+            <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
+            <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
           </div>
         </div>
         <div class="field is-horizontal form-group">
@@ -48,8 +45,11 @@
           <div class="field-body">
             <div class="field">
               <div class="control">
-                <input class="input" id="name" type="text" placeholder="name" formControlName="name" required (input)="validateTaskName($event)">
-                <small *ngIf="!isValidName" class="help is-danger level-left">North instance name is required</small>
+                <input class="input" type="text" placeholder="name" formControlName="name" (change)="validateTaskName($event)"
+                  required>
+                <span *ngIf="!isValidName || (name.errors?.required && name.touched)" class="help is-danger">
+                  <sup>*</sup>North instance name is required.
+                </span>
               </div>
             </div>
           </div>
@@ -63,15 +63,19 @@
               <div class="control">
                 <div class="columns is-mobile">
                   <div class="column">
-                    <input id="repeat_day" class="input" type='number' appNumberOnly min="0" max="365" placeholder="days" formControlName="repeat_day"
-                      (input)="validateRepeatDay()">
-                    <small *ngIf="!isValidDay" class="help is-danger level-left">&nbsp; Repeat days must be in range 0 -
-                      365.</small>
+                    <input class="input" type='number' appNumberOnly min="0" max="365" placeholder="days"
+                      formControlName="repeatDays" (change)="validateRepeatDays($event)">
+                    <span *ngIf="!isValidDay || (repeatDays.errors?.min || repeatDays.errors?.max)" class="help is-danger">
+                      <sup>*</sup>Repeat days must be in range 0 - 365.
+                    </span>
                   </div>
                   <div class="column">
-                    <input id="repeat_time" class="input" type='text' placeholder="hh:mm:ss" formControlName="repeat_time" mask='00:00:00' (input)="validateRepeatTime($event)">
-                    <small *ngIf="!isValidTime" class="help is-danger level-left">&nbsp; Repeat hours must be in range 00:00:01
-                      - 23:59:59 </small>
+                    <input class="input" type='text' placeholder="hh:mm:ss" formControlName="repeatTime" mask='00:00:00'
+                      (input)="setRepeatIntervalValue($event)" [pattern]='regExp' (change)="validateRepeatTime($event)">
+
+                    <span *ngIf="!isValidTime || repeatTime.errors?.pattern" class="help is-danger">
+                      <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
+                    </span>
                   </div>
                 </div>
               </div>
@@ -81,28 +85,22 @@
       </div>
 
       <div class="box step-content" id="c-2">
-        <div *ngIf="isTaskAdded">
-          <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy" ></app-view-config-item>
-        </div>
-        <p *ngIf="!isTaskAdded" [ngClass]="{'has-text-centered': '!isTaskAdded'}">
-          <span class="icon has-text-danger">
-            <i class="fa fa-ban"></i>
-          </span> {{ addTaskMsg }}
-        </p>
+        <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"
+          [pageId]="'wizard'"></app-view-config-item>
       </div>
 
       <div class="box step-content" id="c-3">
         <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Enabled</label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
-                </div>
+          <div class="field-label">
+            <label class="label">Enabled</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
               </div>
             </div>
+          </div>
         </div>
       </div>
     </form>

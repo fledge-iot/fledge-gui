@@ -9,21 +9,21 @@ This is a GUI for FogLAMP
 
 [Prerequisite Windows](prerequisite-windows.md)
 
-To install dependencies run the following command inside the root directory:
+To update yarn, Run `sudo npm i -g yarn`
 
-`yarn install`
+`git clone https://github.com/foglamp/foglamp-gui.git`
+
+`cd  foglamp-gui`
 
 ## Development Server
 
-Run `yarn start` or `yarn start --host [ip_address of host machine]` (to allow access on same network but another machine) for a dev server. Navigate to `http://localhost:4200/` or `http://<ip_address>:4200/`. 
+Run `yarn install && yarn start` or `yarn install && yarn start --host [ip_address of host machine]` (to allow access on same network but another machine) for a dev server. Navigate to `http://localhost:4200/` or `http://<ip_address>:4200/`. 
 
 > The app will automatically reload if you change any of the source files.
 
-
 ## Production Build & Deployment
-Run `./build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-> It uses the `-prod` flag with `ng` for a production build.
+Run `./build --clean-start` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 ### Deploy with nginx
 
@@ -50,6 +50,8 @@ start: `nginx -c nginx.conf -p $(pwd)`
 
 stop: `nginx -s stop`
 
+> nginx `-s stop` terminates the nginx process immediately while `-s quit` does a graceful shutdown.
+
 #### windows
 
 See details [here](windows-nginx-deployment-guide.md)
@@ -65,9 +67,9 @@ See details [here](windows-nginx-deployment-guide.md)
 ## Supported/Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
-Safari (mac)  | 11.x   | latest 1
-Chrome  |67.0.x (64-bit) | latest 2 
-Firefox |60.x (64-bit) | latest 2
+Safari (mac)  | 12.0.x   | latest 1
+Chrome  | 72.0.x (64-bit) | latest 2
+Firefox | 65.x (64-bit) | latest 2
 
 
 ## Other 
@@ -76,4 +78,4 @@ Firefox |60.x (64-bit) | latest 2
 [Developer's Guide](developers-guide.md)
 
 
-> &copy; 2017-18 DIANOMIC SYSTEMS. All Rights Reserved.
+> &copy; 2017-19 DIANOMIC SYSTEMS. All Rights Reserved.

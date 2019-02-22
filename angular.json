@@ -9,8 +9,11 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "customWebpackConfig": {
+              "path": "./extra-webpack.config.js"
+            },
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -21,6 +24,7 @@
             ],
             "styles": [
               "./node_modules/angular-tree-component/dist/angular-tree-component.css",
+              "./node_modules/animate.css/animate.css",
               "src/assets/css/bulma.min.css",
               "src/assets/css/font-awesome.min.css",
               "src/assets/css/bulma-tooltip.min.css",

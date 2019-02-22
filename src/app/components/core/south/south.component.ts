@@ -1,13 +1,12 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgProgress } from 'ngx-progressbar';
+import { sortBy } from 'lodash';
 import { interval } from 'rxjs';
 
-import { PingService, ServicesHealthService } from '../../../services';
+import { PingService, ServicesHealthService, ProgressBarService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
-import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-south',
@@ -25,7 +24,7 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   constructor(private servicesHealthService: ServicesHealthService,
     private alertService: AlertService,
-    public ngProgress: NgProgress,
+    public ngProgress: ProgressBarService,
     private router: Router,
     private ping: PingService) {
     this.isAlive = true;
@@ -53,7 +52,7 @@ export class SouthComponent implements OnInit, OnDestroy {
         (data: any) => {
           this.southboundServices = data['services'];
           this.southboundServices = sortBy(this.southboundServices, function (svc) {
-            return svc['status'] === 'down';
+            return svc['status'] === 'shutdown';
           });
           this.hideLoadingSpinner();
         },

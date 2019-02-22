@@ -2,12 +2,14 @@ export const CONFIG_ITEM_TYPES = [
   { 'key': 'boolean', 'value': 'Boolean' },
   { 'key': 'string', 'value': 'String' },
   { 'key': 'integer', 'value': 'Integer' },
+  { 'key': 'float', 'value': 'Float' },
   { 'key': 'password', 'value': 'Password' },
   { 'key': 'IPv4', 'value': 'IPv4' },
   { 'key': 'IPv6', 'value': 'IPv6' },
   { 'key': 'X509 certificate', 'value': 'X509 certificate' },
   { 'key': 'enumeration', 'value': 'ENUMERATION' },
   { 'key': 'url', 'value': 'URL' },
+  { 'key': 'script', 'value': 'SCRIPT' },
   { 'key': 'JSON', 'value': 'JSON' }];
 
 export default class ConfigTypeValidation {
@@ -21,7 +23,10 @@ export default class ConfigTypeValidation {
         valueType = 'TEXT';
         break;
       case 'INTEGER':
-        valueType = 'NUMBER';
+        valueType = 'INTEGER';
+        break;
+      case 'FLOAT':
+        valueType = 'FLOAT';
         break;
       case 'BOOLEAN':
         valueType = 'BOOLEAN';
@@ -35,6 +40,9 @@ export default class ConfigTypeValidation {
         break;
       case 'URL':
         valueType = 'URL';
+        break;
+      case 'SCRIPT':
+        valueType = 'SCRIPT';
         break;
       default:
         break;

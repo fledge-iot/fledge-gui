@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 
 @Component({
     selector: 'app-pagination',

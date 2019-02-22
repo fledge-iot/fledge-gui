@@ -3,7 +3,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { SidebarModule } from 'ng-sidebar';
-import { NgProgressModule } from 'ngx-progressbar';
+import { NgProgressModule } from '@ngx-progressbar/core';
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
@@ -15,6 +15,7 @@ import { ShutdownModalComponent } from './components/common/shut-down/shutdown-m
 import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
 import { CertificateModule } from './components/core/certificate/certificate.module';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
+import { ListTasksComponent } from './components/core/logs/list-tasks/list-tasks.component';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support/support.component';
@@ -22,10 +23,9 @@ import { FooterComponent } from './components/layout/footer';
 import { LoginComponent } from './components/layout/login';
 import { NavbarComponent } from './components/layout/navbar/navbar.component';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
+import { DirectivesModule } from './directives/directives.module';
 import { AuthCheckGuard } from './guards';
 import { PipesModule } from './pipes/pipes.module';
-import { ListTasksComponent } from './components/core/logs/list-tasks/list-tasks.component';
-
 import {
   AlertService,
   AuditService,
@@ -46,7 +46,8 @@ import {
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
-import { DirectivesModule } from './directives/directives.module';
+import { ProgressBarComponent } from './components/common/progress-bar/progress-bar.component';
+import { ProgressBarService } from './services/progress-bar.service';
 
 export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
   return () => healthService.pingService()
@@ -85,6 +86,7 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     AppComponent,
     LoginComponent,
     AlertComponent,
+    ProgressBarComponent,
     FooterComponent,
     SideMenuComponent,
     NavbarComponent,
@@ -119,6 +121,7 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     PingService,
     NorthService,
     SchedulesService,
+    ProgressBarService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

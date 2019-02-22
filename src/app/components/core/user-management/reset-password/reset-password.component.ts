@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgProgress } from 'ngx-progressbar';
 
-import { AlertService, UserService } from '../../../../services';
+import { AlertService, UserService, ProgressBarService } from '../../../../services';
 
 @Component({
   selector: 'app-reset-password',
@@ -16,7 +15,7 @@ export class ResetPasswordComponent implements OnInit {
 
   constructor(private alertService: AlertService,
     private userService: UserService,
-    public ngProgress: NgProgress,
+    public ngProgress: ProgressBarService,
     private activatedRoute: ActivatedRoute,
     private router: Router) {
     // get username from url

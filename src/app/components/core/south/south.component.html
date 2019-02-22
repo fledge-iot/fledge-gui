@@ -1,6 +1,3 @@
-<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
-  [color]="'#1B95E0'" [trickleSpeed]="300" [thick]="true" [ease]="'linear'">
-</ng-progress>
 <div class="card">
   <header class="card-header">
     <div id="scheduled-process" class="card-header-title">
@@ -52,10 +49,14 @@
                 </td>
                 <td class="align-content">
                   <div class="tags has-addons">
-                    <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
-                    <span *ngIf="svc.status == 'down' || svc.status == '' " class="tag">disabled</span>
-                    <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
-                    <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
+                    <ng-container *ngIf="!svc.schedule_enabled">
+                      <span class="tag">disabled</span> <!-- This also take care of shutdown status-->
+                    </ng-container>
+                    <ng-container *ngIf="svc.schedule_enabled">
+                      <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
+                      <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
+                      <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
+                    </ng-container>
                   </div>
                 </td>
                 <td class="align-content">

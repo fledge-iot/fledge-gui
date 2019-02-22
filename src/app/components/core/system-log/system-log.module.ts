@@ -1,11 +1,11 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
 import { SystemLogComponent } from '.';
-import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
-import { NgProgressModule } from 'ngx-progressbar';
-import { PaginationModule } from '../../common/pagination/pagination.module';
 import { AuthCheckGuard } from '../../../guards';
+import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
+import { PaginationModule } from '../../common/pagination/pagination.module';
 
 const routes: Routes = [
   {
@@ -23,7 +23,6 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     NumberInputDebounceModule,
-    NgProgressModule,
     PaginationModule
   ],
   providers: [],

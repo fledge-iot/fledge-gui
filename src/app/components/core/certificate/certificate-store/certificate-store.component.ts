@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CertificateService, AlertService } from '../../../../services/index';
-import { NgProgress } from 'ngx-progressbar';
-import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
+
+import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
 
 @Component({
   selector: 'app-cert-store',
@@ -24,7 +24,9 @@ export class CertificateStoreComponent implements OnInit {
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(UploadCertificateComponent) uploadModal: UploadCertificateComponent;
 
-  constructor(private certService: CertificateService, public ngProgress: NgProgress, private alertService: AlertService) { }
+  constructor(private certService: CertificateService,
+    public ngProgress: ProgressBarService,
+    private alertService: AlertService) { }
 
   ngOnInit() {
     this.getCertificates();
@@ -92,7 +94,6 @@ export class CertificateStoreComponent implements OnInit {
    * @param cert_name name of the certificate to delete
    */
   deleteCertificate(cert_name) {
-    console.log('Deleting Certificate:', cert_name);
     /** request started */
     this.ngProgress.start();
     this.certService.deleteCertificate(cert_name).

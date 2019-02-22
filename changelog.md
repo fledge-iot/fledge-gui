@@ -1,3 +1,29 @@
+## v1.5.0 [2019-02-07]
+
+#### Added
+
+* Functionality to delete South service and North instance
+* Functionality to export readings to csv file, for South service and Asset
+* Service health status on mouse hover on the green/yellow/grey/red traffic light in the navbar
+* Advanced Configuration in South service modal
+* Support for `script` type configuration item
+* Support for the usage of `displayName` for configuration categories and items
+* Support to add Data Processing Applications (filter)
+* Show `SAFE MODE` label in navbar if FogLAMP is running in safe mode
+
+#### Changed
+
+* Improved save functionality for configuration items to use category bulk update api
+* Upgraded to Angular 7 (including compatible TypeScript / CLI versions)
+
+#### Removed
+
+* Empty validation check on save configuration items
+
+#### Fixed
+
+* Improved South service and North instance setup wizard
+
 ## v1.4.0 [2018-09-25]
 
 #### Added
@@ -33,7 +59,7 @@
 
 #### Changed
 
-* Upgraded to Angular v6 (including compatible TypeScript / CLI versions)
+* Upgraded to Angular 6 (including compatible TypeScript / CLI versions)
 * No login window with skip option will appear, If authentication is not mandatory
 * FogLAMP instance status label will show the lock icon, If authentication is mandatory and allowPing is false, until you are logged in
 * Auto-configuration of IP / host address, so you should be able to have instant access of FogLAMP instance with https://rasperrypi.local (whatever the host address is) and you shall not need to go to settings and "Set the URL & Restart"
