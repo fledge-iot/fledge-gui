@@ -1,6 +1,6 @@
 <footer class="footer">
     <div class="content has-text-centered has-text-grey-dark">
-      <div class="help" *ngIf="router.url == '/setting'">v{{appVersion}}-{{git.hash}}</div>
+      <div class="help" *ngIf="router.url.includes('/setting')">v{{appVersion}}-{{git.hash}}</div>
       <small>
           &copy; 2019 DIANOMIC SYSTEMS. All Rights Reserved.
       </small>
