@@ -236,13 +236,14 @@ export class SkipLogin {
   isKeyPresent() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
+    browser.wait(this.EC.
+      visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg'))), 2000);
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg')).isDisplayed();
   }
 
   isCertificatePresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .far.fa-check-circle.fa-lg')).isDisplayed();
   }
 
   navToBackupRestore() {

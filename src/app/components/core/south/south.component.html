@@ -1,9 +1,9 @@
 <div class="card">
   <header class="card-header">
-    <div id="scheduled-process" class="card-header-title">
+    <div id="south-service" class="card-header-title">
       <div class="media-content">
         <p class="title is-5">
-          South Services &nbsp;
+          South Services
           <!-- <button (click)="getSouthboundServices()" class="button is-small">
             <i class="fa fa-sync" aria-hidden="true"></i>
           </button> -->
@@ -27,7 +27,7 @@
           <small class="no-rec">No Record</small>
         </div>
         <ng-container *ngIf="southboundServices!= undefined && southboundServices.length > 0">
-          <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
+          <table id="south-service-list" class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
             <thead>
               <tr>
                 <th class="align-content">Name</th>
