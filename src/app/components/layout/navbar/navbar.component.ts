@@ -153,7 +153,12 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.status.changeMessage(true);
       this.pingData = data;
-      this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
+      const dayCount = Utils.secondsToDhms(data['uptime']).days;
+      let dayLabel = 'days';
+      if (dayCount === 0 || dayCount === 1) {
+        dayLabel = 'day';
+      }
+      this.uptime = dayCount + ' ' + dayLabel + ' ' + Utils.secondsToDhms(data['uptime']).roundOffTime;
       this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
