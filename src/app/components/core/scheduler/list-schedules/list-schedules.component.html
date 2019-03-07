@@ -1,38 +1,41 @@
-<div class="card">
-  <header class="card-header">
-    <p id="scheduled-process" class="card-header-title">
-      Schedules &nbsp;
-      <button (click)="getSchedules()" class="button is-small">
-        <i class="fa fa-sync" aria-hidden="true"></i>
-      </button>
-    </p>
-  </header>
-  <div class="card-content">
-    <table class="table scroll is-responsive">
-      <thead id="head">
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Interval</th>
-          <th></th>
-          <th></th>
+<div class="container is-fluid">
+  <div class="card">
+    <header class="card-header">
+      <p id="scheduled-process" class="card-header-title">
+        Schedules &nbsp;
+        <button (click)="getSchedules()" class="button is-small">
+          <i class="fa fa-sync" aria-hidden="true"></i>
+        </button>
+      </p>
+    </header>
+    <div class="card-content">
+      <table class="table scroll is-responsive">
+        <thead id="head">
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Interval</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tr *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}" id={{schedule.name}}>
+          <td>
+            {{schedule.name}}
+          </td>
+          <td><small>{{schedule.type}}</small></td>
+          <td>
+            <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
+          </td>
+          <td>
+            <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
+              <i class="fa fa-edit" aria-hidden="true"></i>
+            </a>
+          </td>
         </tr>
-      </thead>
-      <tr *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}" id={{schedule.name}}>
-        <td>
-          {{schedule.name}} 
-        </td>
-        <td><small>{{schedule.type}}</small></td>
-        <td>
-          <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
-        </td>
-        <td>
-          <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
-            <i class="fa fa-edit" aria-hidden="true"></i>
-          </a>
-        </td>
-      </tr>
-    </table>
+      </table>
+    </div>
   </div>
 </div>
-<app-update-schedule (notify)='onNotify()' (process)='setScheduleProcess($event)' (type)='setScheduleType($event)' [childData]='updateScheduleData'></app-update-schedule>
+<app-update-schedule (notify)='onNotify()' (process)='setScheduleProcess($event)' (type)='setScheduleType($event)'
+  [childData]='updateScheduleData'></app-update-schedule>

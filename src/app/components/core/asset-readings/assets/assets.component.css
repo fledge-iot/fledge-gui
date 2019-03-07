@@ -1,3 +1,27 @@
 .pagination-section {
   padding: 1rem;
 }
+
+@media screen and (min-height: 955px) {
+  table.scroll {
+    max-height: 75vh;
+  }
+}
+
+@media screen and (min-height: 800px) and (max-height: 955px) {
+  table.scroll {
+    max-height: 72vh;
+  }
+}
+
+@media screen and (min-height: 600px) and (max-height: 800px) {
+  table.scroll {
+    max-height: 67vh;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  table.scroll {
+    max-height: 55vh;
+  }
+}

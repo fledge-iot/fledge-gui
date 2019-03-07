@@ -1,37 +1,40 @@
-<div class="card">
-  <header class="card-header">
-    <div class="card-header-title" style="flex-grow: 0;">
-      Tasks &nbsp;
-    </div>
-  </header>
-  <div class="card-content">
-    <table class="table scroll is-responsive">
-      <thead>
-        <tr>
-          <th>Process</th>
-          <th>State</th>
-          <th>Start Time</th>
-          <th>End Time</th>
-          <th></th>
+<div class="container is-fluid">
+  <div class="card">
+    <header class="card-header">
+      <div class="card-header-title" style="flex-grow: 0;">
+        Tasks &nbsp;
+      </div>
+    </header>
+    <div class="card-content">
+      <table class="table scroll is-responsive">
+        <thead>
+          <tr>
+            <th>Process</th>
+            <th>State</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tr *ngFor="let task of tasksData" [ngClass]="{'fade': (task.state == 'Complete')}">
+          <td>
+            <small>{{task.name}}</small>
+          </td>
+          <td>
+            <small>{{task.state}}</small>
+          </td>
+          <td>
+            <small>{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
+          </td>
+          <td>
+            <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss')
+              : task.endTime}}</small>
+          </td>
+          <td>
+            <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small" (click)="cancelRunningTask(task.id)">Cancel</button>
+          </td>
         </tr>
-      </thead>
-      <tr *ngFor="let task of tasksData" [ngClass]="{'fade': (task.state == 'Complete')}">
-        <td>
-          <small>{{task.name}}</small>
-        </td>
-        <td>
-          <small>{{task.state}}</small>
-        </td>
-        <td>
-          <small>{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
-        </td>
-        <td>
-          <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.endTime}}</small>
-        </td>
-        <td>
-          <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small" (click)="cancelRunningTask(task.id)">Cancel</button>
-        </td>
-      </tr>
-    </table>
+      </table>
+    </div>
   </div>
 </div>

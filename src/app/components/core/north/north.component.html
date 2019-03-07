@@ -1,56 +1,58 @@
-<div class="card">
-  <header class="card-header">
-    <div id="north-tasks" class="card-header-title">
-      <div class="media-content">
-        <p class="title is-5">
-          North Plugins
-        </p>
-      </div>
-    </div>
-    <a id="add_task" class="fix-pad button is-light" (click)="addNorthInstance()">Create North Instance &nbsp;
-      <i class="fa fa-plus" aria-hidden="true"></i>
-    </a>
-  </header>
-  <div class="card-content">
-    <div class="content">
-      <div *ngIf="showSpinner" class="app-loading">
-        &nbsp;
-        <svg class="spinner" viewBox="0 0 100 100">
-          <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
-        </svg>
-      </div>
-      <ng-container *ngIf="!showSpinner">
-        <div class="has-text-centered" *ngIf="tasks != undefined && tasks.length === 0">
-          <small class="no-rec">No Record</small>
+<div class="container is-fluid">
+  <div class="card">
+    <header class="card-header">
+      <div id="north-tasks" class="card-header-title">
+        <div class="media-content">
+          <p class="title is-5">
+            North Instances
+          </p>
         </div>
-        <ng-container *ngIf="tasks!= undefined && tasks.length > 0">
-          <table class="table is-fullwidth scroll is-responsive">
-            <thead>
-              <tr>
-                <th>Process</th>
-                <th>Status</th>
-                <th>Sent</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
-                <td class="align-content">
-                  <a class="button is-text" (click)="openNorthTaskModal(t)">
-                    <small>{{t.name}}</small>
-                  </a>
-                </td>
-                <td>
-                  <span *ngIf="t.enabled == true" class="tag is-success">enabled</span>
-                  <span *ngIf="t.enabled == false" class="tag">disabled</span>
-                </td>
-                <td>
-                  <small *ngIf="t.sent >= '0'" class="level-right">{{t.sent | number}}</small>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      </div>
+      <a id="add_task" class="fix-pad button is-light" (click)="addNorthInstance()">Create North Instance &nbsp;
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </a>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <div *ngIf="showSpinner" class="app-loading">
+          &nbsp;
+          <svg class="spinner" viewBox="0 0 100 100">
+            <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+          </svg>
+        </div>
+        <ng-container *ngIf="!showSpinner">
+          <div class="has-text-centered" *ngIf="tasks != undefined && tasks.length === 0">
+            <small class="no-rec">No Record</small>
+          </div>
+          <ng-container *ngIf="tasks!= undefined && tasks.length > 0">
+            <table class="table is-fullwidth scroll is-responsive">
+              <thead>
+                <tr>
+                  <th>Process</th>
+                  <th>Status</th>
+                  <th>Sent</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
+                  <td class="align-content">
+                    <a class="button is-text" (click)="openNorthTaskModal(t)">
+                      <small>{{t.name}}</small>
+                    </a>
+                  </td>
+                  <td>
+                    <span *ngIf="t.enabled == true" class="tag is-success">enabled</span>
+                    <span *ngIf="t.enabled == false" class="tag">disabled</span>
+                  </td>
+                  <td>
+                    <small *ngIf="t.sent >= '0'" class="level-right">{{t.sent | number}}</small>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
         </ng-container>
-      </ng-container>
+      </div>
     </div>
   </div>
 </div>

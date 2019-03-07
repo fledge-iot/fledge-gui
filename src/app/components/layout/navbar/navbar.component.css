@@ -4,6 +4,7 @@
 
 .navbar-item {
           display: flex;
+          padding: 0.25rem .75rem;
 }
 
 .navbar,
