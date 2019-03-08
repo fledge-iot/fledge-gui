@@ -10,6 +10,13 @@
         <div class="box">
           <app-view-config-item #taskConfigView *ngIf="category" [categoryConfigurationData]="category"
           [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
+          <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
+            <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
+          </div>
+          <br />
+          <div [hidden]="!isAdvanceConfig">
+            <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
+          </div>
           <form name="task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
             <div class="columns">
               <div class="column">
