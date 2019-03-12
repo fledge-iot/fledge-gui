@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -19,7 +19,7 @@ export class StatisticsService {
   public getStatistics() {
     return this.http.get(this.GET_STATISTICS).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -36,6 +36,6 @@ export class StatisticsService {
     }
     return this.http.get(this.GET_STATISTICS_HISTORY, { params: params }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }
