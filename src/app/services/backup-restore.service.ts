@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -17,7 +17,7 @@ export class BackupRestoreService {
   public get() {
     return this.http.get(this.BACKUP_URL).pipe(
       map(response => response),
-    catchError((error: Response) => observableThrowError(error)));
+    catchError(error => throwError(error)));
   }
 
   /**
@@ -26,7 +26,7 @@ export class BackupRestoreService {
   public requestBackup() {
     return this.http.post(this.BACKUP_URL, null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -35,7 +35,7 @@ export class BackupRestoreService {
   public restoreBackup(id) {
     return this.http.put(this.BACKUP_URL + '/' + id + '/restore', null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -44,7 +44,7 @@ export class BackupRestoreService {
   public deleteBackup(id) {
     return this.http.delete(this.BACKUP_URL + '/' + id).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
 

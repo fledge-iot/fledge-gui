@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -22,7 +22,7 @@ export class FilterService {
   public getInstalledFilterPlugins() {
     return this.http.get(this.GET_INSTALLED_FILTER_PLUGINS).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -34,7 +34,7 @@ export class FilterService {
   public saveFilter(payload) {
     return this.http.post(this.FILTER_URL, payload).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
 
@@ -49,7 +49,7 @@ export class FilterService {
     return this.http.put(this.FILTER_URL + '/' + encodeURIComponent(serviceName)
       + '/pipeline?allow_duplicates=true&append_filter=true', payload).pipe(
         map(response => response),
-        catchError((error: Response) => observableThrowError(error)));
+        catchError(error => throwError(error)));
   }
 
   /**
@@ -61,7 +61,7 @@ export class FilterService {
   public getFilterPipeline(serviceName) {
     return this.http.get(this.FILTER_URL + '/' + encodeURIComponent(serviceName) + '/pipeline').pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -73,7 +73,7 @@ export class FilterService {
   public getFilterConfiguration(categoryName) {
     return this.http.get(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName)).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -87,7 +87,7 @@ export class FilterService {
     return this.http.put(this.FILTER_URL + '/' + encodeURIComponent(serviceName)
       + '/pipeline?allow_duplicates=true&append_filter=false', payload).pipe(
         map(response => response),
-        catchError((error: Response) => observableThrowError(error)));
+        catchError(error => throwError(error)));
   }
 
   /**
@@ -99,6 +99,6 @@ export class FilterService {
   public deleteFilter(filterName) {
     return this.http.delete(this.FILTER_URL + '/' + encodeURIComponent(filterName)).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }

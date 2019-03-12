@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -24,7 +24,7 @@ export class SchedulesService {
   public getScheduleType() {
     return this.http.get(this.GET_SCHEDULE_TYPE).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
 
@@ -34,7 +34,7 @@ export class SchedulesService {
   public getSchedules() {
     return this.http.get(this.SCHEDULE_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -43,7 +43,7 @@ export class SchedulesService {
   public getSchedule(schedule_id) {
     return this.http.get(this.SCHEDULE_URL + '/' + schedule_id).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -55,7 +55,7 @@ export class SchedulesService {
   public createSchedule(payload: any) {
     return this.http.post(this.SCHEDULE_URL, JSON.stringify(payload)).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -67,7 +67,7 @@ export class SchedulesService {
   public updateSchedule(schedule_id, payload: any) {
     return this.http.put(this.SCHEDULE_URL + '/' + schedule_id, JSON.stringify(payload)).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -76,7 +76,7 @@ export class SchedulesService {
   public getScheduledProcess() {
     return this.http.get(this.GET_SCHEDULE_PROCESS).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -85,7 +85,7 @@ export class SchedulesService {
   public enableSchedule(id) {
     return this.http.put(this.SCHEDULE_URL + '/' + id + '/' + 'enable', null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -94,7 +94,7 @@ export class SchedulesService {
   public disableSchedule(id) {
     return this.http.put(this.SCHEDULE_URL + '/' + id + '/' + 'disable', null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -103,7 +103,7 @@ export class SchedulesService {
   public enableScheduleByName(scheduleName) {
     return this.http.put(this.SCHEDULE_URL + '/enable', { 'schedule_name': scheduleName }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -112,7 +112,7 @@ export class SchedulesService {
   public disableScheduleByName(scheduleName) {
     return this.http.put(this.SCHEDULE_URL + '/disable', { 'schedule_name': scheduleName }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -121,7 +121,7 @@ export class SchedulesService {
   public getLatestTask() {
     return this.http.get(this.LATEST_TASK_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -130,7 +130,7 @@ export class SchedulesService {
   public cancelTask(id) {
     return this.http.put(this.TASKS_URL + '/' + id + '/cancel', null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -142,6 +142,6 @@ export class SchedulesService {
   public createScheduledTask(payload: any) {
     return this.http.post(this.CREATE_TASK, JSON.stringify(payload)).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }
