@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -19,7 +19,7 @@ export class NorthService {
   public getNorthTasks() {
     return this.http.get(this.GET_NORTH_TASKS).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -28,7 +28,7 @@ export class NorthService {
   public deleteTask(taskName) {
     return this.http.delete(this.DELETE_TASK + '/' + encodeURIComponent(taskName)).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }
 

@@ -80,7 +80,7 @@ export class SkipLogin {
 
   clickChartIcon() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-assets .table.is-striped > tbody:nth-child(2) > tr:nth-child(1) .fa-line-chart')).click();
+    return element(by.css('app-assets .table.is-striped > tbody:nth-child(2) > tr:nth-child(1) .fa-chart-line')).click();
   }
 
   isChartDisplayed() {
@@ -114,7 +114,7 @@ export class SkipLogin {
 
   isAuditLogRefreshIcon() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#card-title .fa.fa-sync')).isDisplayed();
   }
 
   auditLogCount() {
@@ -143,7 +143,7 @@ export class SkipLogin {
 
   getSysLogRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#card-title .fa.fa-sync')).isDisplayed();
   }
 
   systemLogCount() {
@@ -181,7 +181,7 @@ export class SkipLogin {
 
   getSchedulesRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#scheduled-process .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#scheduled-process .fa.fa-sync')).isDisplayed();
   }
 
   getCreateScheduleButton() {
@@ -201,7 +201,7 @@ export class SkipLogin {
 
   getTasksRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-refresh')).isDisplayed();
+    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-sync')).isDisplayed();
   }
 
   getTasksSelectTag() {
@@ -236,13 +236,14 @@ export class SkipLogin {
   isKeyPresent() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
+    browser.wait(this.EC.
+      visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg'))), 2000);
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg')).isDisplayed();
   }
 
   isCertificatePresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .far.fa-check-circle.fa-lg')).isDisplayed();
   }
 
   navToBackupRestore() {

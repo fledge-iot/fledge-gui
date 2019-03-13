@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -18,7 +18,7 @@ export class CertificateService {
   public getCertificates() {
     return this.http.get(this.CERTIFICATE_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -27,7 +27,7 @@ export class CertificateService {
   public deleteCertificate(cert_name) {
     return this.http.delete(this.CERTIFICATE_URL + '/' + cert_name).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -36,6 +36,6 @@ export class CertificateService {
   public uploadCertificate(payload) {
     return this.http.post(this.CERTIFICATE_URL, payload).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }

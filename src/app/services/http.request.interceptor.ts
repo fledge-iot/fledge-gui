@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, throwError as observableThrowError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
@@ -19,8 +19,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
       if (sessionStorage.getItem('token') != null) {
         req = req.clone({
           setHeaders: {
-            authorization: sessionStorage.getItem('token'),
-            'Content-Type': 'application/x-www-form-urlencoded'
+            authorization: sessionStorage.getItem('token')
           }
         });
       }
@@ -32,8 +31,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             sessionStorage.clear();
             this.router.navigate(['/login']);
           }
-          return observableThrowError(err);
         }
+        return throwError(err);
       }));
     }
   }

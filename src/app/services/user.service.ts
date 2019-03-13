@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -22,7 +22,7 @@ export class UserService {
   getAllUsers() {
     return this.http.get(this.USER_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -37,7 +37,7 @@ export class UserService {
     params = params.set('id', uid);
     return this.http.get(this.USER_URL, { params: params }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -49,7 +49,7 @@ export class UserService {
   getRole() {
     return this.http.get(this.ROLE_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -62,7 +62,7 @@ export class UserService {
   deleteUser(id) {
     return this.http.delete(this.ADMIN_URL + '/' + id + '/delete').pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -75,7 +75,7 @@ export class UserService {
   createUser(user) {
     return this.http.post(this.ADMIN_URL + '/user', user).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
 
@@ -90,7 +90,7 @@ export class UserService {
     };
     return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -102,7 +102,7 @@ export class UserService {
   changePassword(payload, userName) {
     return this.http.put(this.USER_URL + '/' + userName + '/password', payload).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -117,7 +117,7 @@ export class UserService {
     };
     return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }
 

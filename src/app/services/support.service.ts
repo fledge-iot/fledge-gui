@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -17,7 +17,7 @@ export class SupportService {
   public get() {
     return this.http.get(this.SUPPORT_BUNDLE_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -26,7 +26,7 @@ export class SupportService {
   public post() {
     return this.http.post(this.SUPPORT_BUNDLE_URL, null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
 
