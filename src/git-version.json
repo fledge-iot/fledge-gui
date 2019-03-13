@@ -1,8 +1,8 @@
 {
   "dirty": true,
-  "raw": "v1.5.0-42-gce5fdfa-dirty",
-  "hash": "gce5fdfa",
-  "distance": 42,
+  "raw": "v1.5.0-45-gd777201-dirty",
+  "hash": "gd777201",
+  "distance": 45,
   "tag": "v1.5.0",
   "semver": {
     "options": {
@@ -18,6 +18,6 @@
     "build": [],
     "version": "1.5.0"
   },
-  "suffix": "42-gce5fdfa-dirty",
-  "semverString": "1.5.0+42.gce5fdfa"
+  "suffix": "45-gd777201-dirty",
+  "semverString": "1.5.0+45.gd777201"
 }

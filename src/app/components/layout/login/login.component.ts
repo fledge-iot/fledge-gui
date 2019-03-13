@@ -1,18 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AlertService, AuthService, PingService, UserService, ProgressBarService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
+import { CertificateBaseLoginComponent } from '../certificate-base-login';
 
 @Component({
   moduleId: module.id.toString(),
   selector: 'app-login',
-  templateUrl: 'login.component.html'
+  templateUrl: 'login.component.html',
+  styleUrls: ['./login.component.css']
 })
 
 export class LoginComponent implements OnInit {
   model: any = {};
   returnUrl: string;
+
+  @ViewChild(CertificateBaseLoginComponent) certificateBaseLogin: CertificateBaseLoginComponent;
   constructor(
     private router: Router,
     private authService: AuthService,
@@ -39,6 +43,14 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['']);
     }
   }
+
+  /**
+  * Open certificate login modal dialog
+  */
+ openLoginWithCertificateModal() {
+  // call child component method to toggle modal
+  this.certificateBaseLogin.toggleModal(true);
+}
 
   /**
    *  login user into system
