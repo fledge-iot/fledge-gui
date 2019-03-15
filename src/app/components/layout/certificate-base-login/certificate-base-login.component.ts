@@ -50,10 +50,6 @@ export class CertificateBaseLoginComponent implements OnInit {
   }
 
   LoginWithCertificate() {
-
-    console.log('this.certificateContent', this.certificateContent);
-    console.log('this.form.value.certificateText', this.form.value.certificateText);
-
     if (this.certificateContent.length <= 0
       && this.form.value.certificateText.length <= 0) {
       this.alertService.error('Certificate is required');
@@ -128,6 +124,7 @@ export class CertificateBaseLoginComponent implements OnInit {
 
   protected resetForm() {
     this.form.get('certificate').setValue('');
+    this.form.get('certificateText').setValue('');
     this.isCertificateExt = true;
   }
 }
