@@ -14,6 +14,7 @@ export class CertificateBaseLoginComponent implements OnInit {
   isCertificateExt = true;
   certificateFile: any;
   certificateContent: any = '';
+  public loginCertButtonText = 'Manually put the certificate content';
   constructor(public ngProgress: ProgressBarService,
     private authService: AuthService,
     private alertService: AlertService,
@@ -40,6 +41,13 @@ export class CertificateBaseLoginComponent implements OnInit {
     certificate_modal.classList.remove('is-active');
   }
 
+  selectOptionOfCertificateLogin() {
+    if (this.loginCertButtonText === 'Browse certificate') {
+      this.loginCertButtonText = 'Manually put the certificate content';
+    } else {
+      this.loginCertButtonText = 'Browse certificate';
+    }
+  }
 
   readCertificateFileContent(file: any) {
     const fileReader = new FileReader();
