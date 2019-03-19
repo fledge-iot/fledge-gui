@@ -46,9 +46,11 @@ export class CertificateBaseLoginComponent implements OnInit {
     if (this.showBrowseCertificate) {
       this.showBrowseCertificate = false;
       this.loginCertButtonText = 'Browse Certificate';
+      this.form.controls.certificate.disable();
     } else {
       this.showBrowseCertificate = true;
       this.loginCertButtonText = 'Manually put the certificate content';
+      this.form.controls.certificate.enable();
     }
   }
 

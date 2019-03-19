@@ -28,7 +28,7 @@
                           <i *ngIf="showBrowseCertificate" class="fa fa-upload"></i>
                           <i *ngIf="!showBrowseCertificate" class="fa fa-upload disabled"></i>
                         </span>
-                        <input type="file" disabled="!showBrowseCertificate" required id="certificate" (change)="onCertificateChange($event)"
+                        <input type="file" required id="certificate" (change)="onCertificateChange($event)"
                           formControlName="certificate" #fileInput>
                         <small *ngIf="!isCertificateExt" class="help is-danger level-left">Not a 'certificate'
                           file.</small>
