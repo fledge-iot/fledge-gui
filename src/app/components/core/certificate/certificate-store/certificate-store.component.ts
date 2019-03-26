@@ -85,7 +85,6 @@ export class CertificateStoreComponent implements OnInit {
       message: message,
       key: action
     };
-    console.log('action', action);
     // call child component method to toggle modal
     this.child.toggleModal(true);
   }

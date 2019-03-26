@@ -319,7 +319,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   /**
    * Open delete modal
    * @param message   message to show on alert
-   * @param action here action is 'Delete Service'
+   * @param action here action is 'deleteService'
    */
   openDeleteModal(port, protocol, name, message, action) {
     this.serviceRecord = {

@@ -5,9 +5,9 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
   templateUrl: './alert-dialog.component.html'
 })
 export class AlertDialogComponent implements OnInit, OnChanges {
-  @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any };
-  @Input() serviceRecord: { port: Number, key: any, name: any, message: any, protocol: string };
-  @Input() deleteTaskData: { name: any, message: any, key: any };
+  @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any, headerTextValue: any};
+  @Input() serviceRecord: { port: Number, key: any, name: any, message: any, protocol: string, headerTextValue: any };
+  @Input() deleteTaskData: { name: any, message: any, key: any, headerTextValue: any };
   @Output() delete = new EventEmitter<Number>();
   @Output() deleteService = new EventEmitter<Object>();
   @Output() deleteTask = new EventEmitter<Object>();
@@ -25,17 +25,28 @@ export class AlertDialogComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     if (this.childData) {
-      if (this.childData.key === 'Restore Backup') {
+      if (this.childData.key === 'restoreBackup') {
         this.childData.actionButtonValue = 'Restore';
+        this.childData.headerTextValue = 'Restore Backup';
       }
-      if (this.childData.key === 'Delete Backup' || this.childData.key === 'Delete Certificate' || this.childData.key === 'Delete User') {
+      if (this.childData.key === 'deleteBackup') {
         this.childData.actionButtonValue = 'Delete';
+        this.childData.headerTextValue = 'Delete Backup';
+      }
+      if (this.childData.key === 'deleteCertificate') {
+        this.childData.actionButtonValue = 'Delete';
+        this.childData.headerTextValue = 'Delete Certificate';
+      }
+      if (this.childData.key === 'deleteUser') {
+        this.childData.actionButtonValue = 'Delete';
+        this.childData.headerTextValue = 'Delete User';
       }
       if (this.childData.key === 'logout') {
         this.childData.actionButtonValue = 'Log Out';
       }
-      if (this.childData.key === 'Clear Sessions') {
+      if (this.childData.key === 'clearSessions') {
         this.childData.actionButtonValue = 'Clear Sessions';
+        this.childData.headerTextValue = 'Clear Sessions';
       }
       if (this.childData.key === 'createBackup') {
         this.childData.actionButtonValue = 'Create';
@@ -58,15 +69,15 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.delete.emit(this.childData.id);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'Delete User') {
+      if (this.childData.key === 'deleteUser') {
         this.deleteUserService.emit(this.childData.id);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'Delete Certificate') {
+      if (this.childData.key === 'deleteCertificate') {
         this.deleteCertificate.emit(this.childData.name);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'Clear Sessions') {
+      if (this.childData.key === 'clearSessions') {
         this.logoutAllUserSessionsService.emit(this.childData.id);
         this.toggleModal(false);
       }
@@ -78,17 +89,18 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.createBackup.emit();
         this.toggleModal(false);
       }
-      if (this.childData.key === 'Restore Backup') {
+      if (this.childData.key === 'restoreBackup') {
         this.restoreBackup.emit(this.childData.id);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'Delete Backup') {
+      if (this.childData.key === 'deleteBackup') {
         this.deleteBackup.emit(this.childData.id);
         this.toggleModal(false);
       }
     }
     if (this.serviceRecord) {
-      if (this.serviceRecord.key === 'Delete Service') {
+      if (this.serviceRecord.key === 'deleteService') {
+        this.serviceRecord.headerTextValue = 'Delete Service';
         const serviceInfo = {
           port: this.serviceRecord.port,
           protocol: this.serviceRecord.protocol,
@@ -99,7 +111,8 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       }
     }
     if (this.deleteTaskData) {
-      if (this.deleteTaskData.key === 'Delete Task') {
+      if (this.deleteTaskData.key === 'deleteTask') {
+        this.deleteTaskData.headerTextValue = 'Delete Task';
         this.deleteTask.emit({
           name: this.deleteTaskData.name
         });

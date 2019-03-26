@@ -295,7 +295,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   /**
   * Open delete modal
   * @param message   message to show on alert
-  * @param action here action is 'Delete Task'
+  * @param action here action is 'deleteTask'
   */
   openDeleteModal(name, message, action) {
     this.deleteTaskData = {
