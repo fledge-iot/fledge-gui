@@ -25,16 +25,16 @@ export class AlertDialogComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     if (this.childData) {
-      if (this.childData.key === 'restoreBackup') {
+      if (this.childData.key === 'Restore Backup') {
         this.childData.actionButtonValue = 'Restore';
       }
-      if (this.childData.key === 'deleteBackup' || this.childData.key === 'deleteCertificate' || this.childData.key === 'deleteUser') {
+      if (this.childData.key === 'Delete Backup' || this.childData.key === 'Delete Certificate' || this.childData.key === 'Delete User') {
         this.childData.actionButtonValue = 'Delete';
       }
-      if (this.childData.key === 'logout' || this.childData.key === 'clearSessions') {
+      if (this.childData.key === 'logout') {
         this.childData.actionButtonValue = 'Log Out';
       }
-      if (this.childData.key === 'clearSessions') {
+      if (this.childData.key === 'Clear Sessions') {
         this.childData.actionButtonValue = 'Clear Sessions';
       }
       if (this.childData.key === 'createBackup') {
@@ -58,15 +58,15 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.delete.emit(this.childData.id);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'deleteUser') {
+      if (this.childData.key === 'Delete User') {
         this.deleteUserService.emit(this.childData.id);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'deleteCertificate') {
+      if (this.childData.key === 'Delete Certificate') {
         this.deleteCertificate.emit(this.childData.name);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'clearSessions') {
+      if (this.childData.key === 'Clear Sessions') {
         this.logoutAllUserSessionsService.emit(this.childData.id);
         this.toggleModal(false);
       }
@@ -78,17 +78,17 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.createBackup.emit();
         this.toggleModal(false);
       }
-      if (this.childData.key === 'restoreBackup') {
+      if (this.childData.key === 'Restore Backup') {
         this.restoreBackup.emit(this.childData.id);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'deleteBackup') {
+      if (this.childData.key === 'Delete Backup') {
         this.deleteBackup.emit(this.childData.id);
         this.toggleModal(false);
       }
     }
     if (this.serviceRecord) {
-      if (this.serviceRecord.key === 'deleteService') {
+      if (this.serviceRecord.key === 'Delete Service') {
         const serviceInfo = {
           port: this.serviceRecord.port,
           protocol: this.serviceRecord.protocol,
@@ -99,7 +99,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       }
     }
     if (this.deleteTaskData) {
-      if (this.deleteTaskData.key === 'deleteTask') {
+      if (this.deleteTaskData.key === 'Delete Task') {
         this.deleteTask.emit({
           name: this.deleteTaskData.name
         });

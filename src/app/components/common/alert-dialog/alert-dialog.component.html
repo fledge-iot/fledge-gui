@@ -1,23 +1,29 @@
 <div id="modal-box" class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-card">
-    <section *ngIf="childData" class="modal-card-body">
-      {{childData.message}}
-      <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">{{childData.name}}</span>
-      <span>?</span>
-    </section>
-    <section *ngIf="serviceRecord" class="modal-card-body">
-      {{serviceRecord.message}}?
-    </section>
-    <section *ngIf="deleteTaskData" class="modal-card-body">
-      {{deleteTaskData.message}}?
-    </section>
-    <footer class="modal-card-foot">
-      <button *ngIf="childData" class="button is-small" [ngClass]="childData.key === 'deleteUser' ? 'is-danger' : 'is-info'"
-        (click)="triggerAction()">{{childData.actionButtonValue}}</button>
-      <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-      <button *ngIf="serviceRecord" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
-      <button *ngIf="deleteTaskData" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
-    </footer>
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p *ngIf="childData" class="modal-card-title is-size-6">{{childData.key}}</p>
+            <p *ngIf="serviceRecord" class="modal-card-title is-size-6">{{serviceRecord.key}}</p>
+            <p *ngIf="deleteTaskData" class="modal-card-title is-size-6">{{deleteTaskData.key}}</p>
+        </header>
+      <section *ngIf="childData" class="modal-card-body">
+        {{childData.message}}
+        <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">{{childData.name}}</span>
+        <span>?</span>
+      </section>
+      <section *ngIf="serviceRecord" class="modal-card-body">
+        {{serviceRecord.message}}?
+      </section>
+      <section *ngIf="deleteTaskData" class="modal-card-body">
+        {{deleteTaskData.message}}?
+      </section>
+      <footer class="modal-card-foot">
+        <button *ngIf="childData" class="button is-small" [ngClass]="childData.key === 'Delete User' ? 'is-danger' : 'is-info'"
+          (click)="triggerAction()">{{childData.actionButtonValue}}</button>
+        <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+        <button *ngIf="serviceRecord" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
+        <button *ngIf="deleteTaskData" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
+      </footer>
+    </div>
   </div>
-</div>
+  
