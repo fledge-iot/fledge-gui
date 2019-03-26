@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -20,7 +20,7 @@ export class AuditService {
   public getLogSource() {
     return this.http.get(this.GET_LOG_SOURCE).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -29,7 +29,7 @@ export class AuditService {
   public getLogSeverity() {
     return this.http.get(this.GET_LOG_SEVERITY).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -47,6 +47,6 @@ export class AuditService {
     params = params.set('source', source.toUpperCase());
     params = params.set('severity', severity.toUpperCase());
     return this.http.get(this.GET_AUDIT_LOGS, { params: params }).pipe(map(response => response),
-    catchError((error: Response) => observableThrowError(error)));
+    catchError(error => throwError(error)));
   }
 }

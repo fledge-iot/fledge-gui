@@ -29,14 +29,14 @@
             </div>
           </div>
           <div class="column">
-              <div class="select is-fullwidth is-small">
-                <select (change)="filterData($event, 'level')">
-                  <option selected="selected" value="">Info</option>
-                  <option value="WARNING">Warning</option>
-                  <option value="ERROR">Error</option>
-                </select>
-              </div>
+            <div class="select is-fullwidth is-small">
+              <select (change)="filterData($event, 'level')">
+                <option selected="selected" value="">Info</option>
+                <option value="WARNING">Warning</option>
+                <option value="ERROR">Error</option>
+              </select>
             </div>
+          </div>
           <div class="column">
             <app-number-input-debounce placeholder="limit" (value)="setLimit($event)" [val]="limit"></app-number-input-debounce>
           </div>
@@ -48,11 +48,11 @@
       <ng-container *ngFor="let log of logs">
         <p class="s-log" [innerHTML]="log"> </p>
       </ng-container>
-      <div *ngIf='totalPagesCount > 1' class="pagination-section">
-        <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount' (goPrev)="onPrev()" (goNext)="onNext()"
-          (goFirst)="onFirst()" (goLast)="onLast()" (goPage)="goToPage($event)">
-        </app-pagination>
-      </div>
+    </div>
+    <div *ngIf='totalPagesCount > 1' class="pagination-section">
+      <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount' (goPrev)="onPrev()"
+        (goNext)="onNext()" (goFirst)="onFirst()" (goLast)="onLast()" (goPage)="goToPage($event)">
+      </app-pagination>
     </div>
   </div>
 </div>

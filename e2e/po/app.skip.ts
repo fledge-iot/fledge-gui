@@ -114,7 +114,7 @@ export class SkipLogin {
 
   isAuditLogRefreshIcon() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#card-title .fa.fa-sync')).isDisplayed();
   }
 
   auditLogCount() {
@@ -143,7 +143,7 @@ export class SkipLogin {
 
   getSysLogRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#card-title .fa.fa-sync')).isDisplayed();
   }
 
   systemLogCount() {
@@ -176,17 +176,17 @@ export class SkipLogin {
 
   getSchedulesTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process .card-header p.card-header-title')).getText();
+    return element(by.css('app-list-schedules .card-header p.card-header-title')).getText();
   }
 
   getSchedulesRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#scheduled-process .fa.fa-refresh')).isDisplayed();
+    return element(by.css('#scheduled-process .fa.fa-sync')).isDisplayed();
   }
 
   getCreateScheduleButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process .card-header .button.is-light')).getText();
+    return element(by.css('app-list-schedules .card-header .button.is-light')).getText();
   }
 
   closeAlert() {
@@ -196,12 +196,12 @@ export class SkipLogin {
 
   getTasksTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process app-list-tasks header > div')).getText();
+    return element(by.css('app-list-schedules app-list-tasks header > div')).getText();
   }
 
   getTasksRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-refresh')).isDisplayed();
+    return element(by.css('app-list-schedules > div:nth-child(2) .fa.fa-sync')).isDisplayed();
   }
 
   getTasksSelectTag() {
@@ -236,13 +236,14 @@ export class SkipLogin {
   isKeyPresent() {
     browser.ignoreSynchronization = true;
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o'))), 2000);
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .fa.fa-check-circle-o')).isDisplayed();
+    browser.wait(this.EC.
+      visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg'))), 2000);
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg')).isDisplayed();
   }
 
   isCertificatePresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .fa.fa-check-circle-o')).isDisplayed();
+    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .far.fa-check-circle.fa-lg')).isDisplayed();
   }
 
   navToBackupRestore() {

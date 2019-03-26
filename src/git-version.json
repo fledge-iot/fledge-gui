@@ -1,0 +1,23 @@
+{
+  "dirty": true,
+  "raw": "v1.5.0-42-gce5fdfa-dirty",
+  "hash": "gce5fdfa",
+  "distance": 42,
+  "tag": "v1.5.0",
+  "semver": {
+    "options": {
+      "loose": false,
+      "includePrerelease": false
+    },
+    "loose": false,
+    "raw": "v1.5.0",
+    "major": 1,
+    "minor": 5,
+    "patch": 0,
+    "prerelease": [],
+    "build": [],
+    "version": "1.5.0"
+  },
+  "suffix": "42-gce5fdfa-dirty",
+  "semverString": "1.5.0+42.gce5fdfa"
+}

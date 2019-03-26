@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map, timeout } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -35,7 +35,7 @@ export class ServicesHealthService {
   shutdown() {
     return this.http.put(this.FOGLAMP_SHUTDOWN_URL, null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -44,7 +44,7 @@ export class ServicesHealthService {
   restart() {
     return this.http.put(this.FOGLAMP_RESTART_URL, null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -53,7 +53,7 @@ export class ServicesHealthService {
   getAllServices() {
     return this.http.get(this.GET_SERVICES_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -62,7 +62,7 @@ export class ServicesHealthService {
   addService(payload) {
     return this.http.post(this.GET_SERVICES_URL, payload).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -78,7 +78,7 @@ export class ServicesHealthService {
     url.port = port;
     return this.http.post(String(url) + '/shutdown', { headers: headers }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -87,7 +87,7 @@ export class ServicesHealthService {
   public deleteService(svc) {
     return this.http.delete(this.GET_SERVICES_URL + '/' + encodeURIComponent(svc)).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -99,7 +99,7 @@ export class ServicesHealthService {
     params = params.append('config', JSON.stringify(true));
     return this.http.get(this.GET_INSTALLED_PLUGINS_URL, { params: params }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -109,12 +109,12 @@ export class ServicesHealthService {
     const params = new HttpParams().set('service', serviceName);
     return this.http.get(this.TRACK_SERVICE_URL, { params: params }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   getSouthServices() {
     return this.http.get(this.SOUTH_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }

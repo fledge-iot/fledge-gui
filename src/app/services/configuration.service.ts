@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -17,7 +17,7 @@ export class ConfigurationService {
   getCategories() {
     return this.http.get(this.CATEGORY_URL).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -26,7 +26,7 @@ export class ConfigurationService {
   getCategoryWithChildren() {
     return this.http.get(this.CATEGORY_URL + '?root=true&children=true').pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
   /**
    *   GET  | /foglamp/category/{categoryName}
@@ -35,7 +35,7 @@ export class ConfigurationService {
     categoryName = encodeURIComponent(categoryName);
     return this.http.get(this.CATEGORY_URL + '/' + categoryName).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -45,7 +45,7 @@ export class ConfigurationService {
     categoryName = encodeURIComponent(categoryName);
     return this.http.get(this.CATEGORY_URL + '/' + categoryName + '/children').pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -57,7 +57,7 @@ export class ConfigurationService {
     params = params.set('root', 'true');
     return this.http.get(this.CATEGORY_URL, { params: params }).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -70,7 +70,7 @@ export class ConfigurationService {
     }
     return this.http.put(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName) + '/' + encodeURIComponent(configItem), body).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -80,7 +80,7 @@ export class ConfigurationService {
     return this.http.post(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName) + '/'
     + encodeURIComponent(configItem) + '/upload', fileToUpload).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -89,7 +89,7 @@ export class ConfigurationService {
   getConfigItem(categoryName: string, configItem: string) {
     return this.http.get(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName) + '/' + encodeURIComponent(configItem)).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -99,7 +99,7 @@ export class ConfigurationService {
     categoryName = encodeURIComponent(categoryName);
     return this.http.get(this.CATEGORY_URL + '/' + categoryName + '/' + 'children').pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -109,6 +109,6 @@ export class ConfigurationService {
     categoryName = encodeURIComponent(categoryName);
     return this.http.put(this.CATEGORY_URL + '/' + categoryName, configItems).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }

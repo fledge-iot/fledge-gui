@@ -11,8 +11,10 @@ import {
 } from '@angular/core';
 import { sortBy } from 'lodash';
 import { Router } from '@angular/router';
-import { AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService,
-  ProgressBarService } from '../../../services';
+import {
+  AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService,
+  ProgressBarService
+} from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';
 import { RestartModalComponent } from '../../common/restart-modal/restart-modal.component';
@@ -153,7 +155,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.status.changeMessage(true);
       this.pingData = data;
-      this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
+      const dayCount = Utils.secondsToDhms(data['uptime']).days;
+      let dayLabel = 'day';
+      if (dayCount > 1) {
+        dayLabel = dayLabel + 's';
+      }
+      if (dayCount > 0) {
+        this.uptime = dayCount + ' ' + dayLabel + ', ' + Utils.secondsToDhms(data['uptime']).roundOffTime;
+      } else {
+        this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
+      }
       this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;

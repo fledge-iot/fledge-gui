@@ -1,81 +1,83 @@
-<div class="card">
-  <header class="card-header">
-    <div id="scheduled-process" class="card-header-title">
-      <div class="media-content">
-        <p class="title is-5">
-          South Services &nbsp;
-          <!-- <button (click)="getSouthboundServices()" class="button is-small">
+<div class="container is-fluid">
+  <div class="card">
+    <header class="card-header">
+      <div id="south-service" class="card-header-title">
+        <div class="media-content">
+          <p class="title is-5">
+            South Services
+            <!-- <button (click)="getSouthboundServices()" class="button is-small">
             <i class="fa fa-sync" aria-hidden="true"></i>
           </button> -->
-        </p>
-      </div>
-    </div>
-    <a id="add_south_service" class="fix-pad button is-light" (click)="addSouthService()">Add &nbsp;
-      <i class="fa fa-plus" aria-hidden="true"></i>
-    </a>
-  </header>
-  <div class="card-content">
-    <div class="content">
-      <div *ngIf="showSpinner" class="app-loading">
-        &nbsp;
-        <svg class="spinner" viewBox="0 0 100 100">
-          <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
-        </svg>
-      </div>
-      <ng-container *ngIf="!showSpinner">
-        <div class="has-text-centered" *ngIf="southboundServices != undefined && southboundServices.length === 0">
-          <small class="no-rec">No Record</small>
+          </p>
         </div>
-        <ng-container *ngIf="southboundServices!= undefined && southboundServices.length > 0">
-          <table class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
-            <thead>
-              <tr>
-                <th class="align-content">Name</th>
-                <th class="align-content">Status</th>
-                <th class="align-content">
-                  <table class="table is-responsive">
-                    <tr>
-                      <td>Assets</td>
-                      <td>Readings</td>
-                    </tr>
-                  </table>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let svc of southboundServices">
-                <td class="align-content">
-                  <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
-                </td>
-                <td class="align-content">
-                  <div class="tags has-addons">
-                    <ng-container *ngIf="!svc.schedule_enabled">
-                      <span class="tag">disabled</span> <!-- This also take care of shutdown status-->
-                    </ng-container>
-                    <ng-container *ngIf="svc.schedule_enabled">
-                      <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
-                      <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
-                      <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
-                    </ng-container>
-                  </div>
-                </td>
-                <td class="align-content">
-                  <table class="table is-narrow is-responsive">
-                    <tr *ngFor='let data of svc.assets'>
-                      <td>
-                        <small>{{data.asset}}</small>
-                      </td>
-                      <td class="is-pulled-right">
-                        <small>{{data.count | number}}</small>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      </div>
+      <a id="add_south_service" class="fix-pad button is-light" (click)="addSouthService()">Add &nbsp;
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </a>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <div *ngIf="showSpinner" class="app-loading">
+          &nbsp;
+          <svg class="spinner" viewBox="0 0 100 100">
+            <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+          </svg>
+        </div>
+        <ng-container *ngIf="!showSpinner">
+          <div class="has-text-centered" *ngIf="southboundServices != undefined && southboundServices.length === 0">
+            <small class="no-rec">No Record</small>
+          </div>
+          <ng-container *ngIf="southboundServices!= undefined && southboundServices.length > 0">
+            <table id="south-service-list" class="table is-fullwidth scroll is-responsive" cellpadding="0" cellspacing="0">
+              <thead>
+                <tr>
+                  <th class="align-content">Name</th>
+                  <th class="align-content">Status</th>
+                  <th class="align-content">
+                    <table class="table is-responsive">
+                      <tr>
+                        <td>Assets</td>
+                        <td>Readings</td>
+                      </tr>
+                    </table>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let svc of southboundServices">
+                  <td class="align-content">
+                    <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                  </td>
+                  <td class="align-content">
+                    <div class="tags has-addons">
+                      <ng-container *ngIf="!svc.schedule_enabled">
+                        <span class="tag">disabled</span> <!-- This also take care of shutdown status-->
+                      </ng-container>
+                      <ng-container *ngIf="svc.schedule_enabled">
+                        <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
+                        <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
+                        <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
+                      </ng-container>
+                    </div>
+                  </td>
+                  <td class="align-content">
+                    <table class="table is-narrow is-responsive">
+                      <tr *ngFor='let data of svc.assets'>
+                        <td>
+                          <small>{{data.asset}}</small>
+                        </td>
+                        <td class="is-pulled-right">
+                          <small>{{data.count | number}}</small>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
         </ng-container>
-      </ng-container>
+      </div>
     </div>
   </div>
 </div>

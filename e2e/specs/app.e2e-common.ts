@@ -8,6 +8,7 @@ describe('FogLAMP gui', () => {
   let adminLogin: AdminLogin;
   let nonAdminLogin: NonAdminLogin;
   let isSetupInstance = false;
+
   skipLogin = new SkipLogin();
   adminLogin = new AdminLogin();
   nonAdminLogin = new NonAdminLogin();
@@ -35,16 +36,16 @@ describe('FogLAMP gui', () => {
       expect(skipLogin.isGraphDropdownPresent()).toEqual(true);
     });
 
-      // TODO: Test data required to pass below tests.
-      // it('Should Display Assets & Readings', () => {
-      // skipLogin.navToAssetReadings();
-      // expect(skipLogin.getAssetTableHeader()).toEqual('Asset');
-      // expect(skipLogin.getReadingsTableHeader()).toEqual('Readings');
+    // TODO: Test data required to pass below tests.
+    // it('Should Display Assets & Readings', () => {
+    // skipLogin.navToAssetReadings();
+    // expect(skipLogin.getAssetTableHeader()).toEqual('Asset');
+    // expect(skipLogin.getReadingsTableHeader()).toEqual('Readings');
 
-      // skipLogin.clickChartIcon();
-      // expect(skipLogin.isChartDisplayed()).toEqual(true);
-      // skipLogin.closeChartModal();
-      // });
+    // skipLogin.clickChartIcon();
+    // expect(skipLogin.isChartDisplayed()).toEqual(true);
+    // skipLogin.closeChartModal();
+    // });
 
     it('Should Display Audits Logs', () => {
       skipLogin.navToAuditLogs();

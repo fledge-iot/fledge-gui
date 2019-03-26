@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError as observableThrowError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -21,7 +21,7 @@ export class AuthService {
   login(username: string, password: string) {
     return this.http.post(this.LOGIN_URL, JSON.stringify({ username: username, password: password })).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -31,7 +31,7 @@ export class AuthService {
   clearAllSessions(id) {
     return this.http.put(this.LOGOUT_URL + id + '/logout', null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -40,6 +40,6 @@ export class AuthService {
   logout() {
     return this.http.put(this.LOGOUT_URL + 'logout', null).pipe(
       map(response => response),
-      catchError((error: Response) => observableThrowError(error)));
+      catchError(error => throwError(error)));
   }
 }

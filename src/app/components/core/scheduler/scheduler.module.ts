@@ -9,20 +9,18 @@ import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
-import { ScheduledProcessComponent } from './scheduled-process/scheduled-process.component';
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ScheduledProcessComponent,
+    component: ListSchedulesComponent,
     canActivate: [AuthCheckGuard]
   }
 ];
 
 @NgModule({
   declarations: [
-    ScheduledProcessComponent,
     UpdateScheduleComponent,
     ListSchedulesComponent
   ],

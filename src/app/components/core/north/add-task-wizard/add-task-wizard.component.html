@@ -1,116 +1,118 @@
-<div class="steps">
-  <div class="step-item is-active is-success" id="1">
-    <div class="step-marker">1</div>
-    <div class="step-details">
-      <p>Plugin &amp; Name</p>
+<div class="container is-fluid">
+  <div class="steps">
+    <div class="step-item is-active is-success" id="1">
+      <div class="step-marker">1</div>
+      <div class="step-details">
+        <p>Plugin &amp; Name</p>
+      </div>
     </div>
-  </div>
-  <div class="step-item" id="2">
-    <div class="step-marker">2</div>
-    <div class="step-details">
-      <p>Review Configuration</p>
+    <div class="step-item" id="2">
+      <div class="step-marker">2</div>
+      <div class="step-details">
+        <p>Review Configuration</p>
+      </div>
     </div>
-  </div>
-  <div class="step-item" id="3">
-    <div class="step-marker">3</div>
-    <div class="step-details">
-      <p>Done</p>
+    <div class="step-item" id="3">
+      <div class="step-marker">3</div>
+      <div class="step-details">
+        <p>Done</p>
+      </div>
     </div>
-  </div>
-  <div class="steps-content">
-    <form [formGroup]="taskForm" validate>
-      <div class="box step-content has-text-centered is-active" id="c-1">
-        <div class="field is-horizontal form-group">
-          <div class="field-label is-normal">
-            <label class="label">North Plugin</label>
-          </div>
-          <div class="field-body">
-            <div class="select is-multiple">
-              <select multiple #selectedPlugin name="plugin" formControlName="plugin" (change)="getDescription(selectedPlugin.value)"
-                required>
-                <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
-              </select>
+    <div class="steps-content">
+      <form [formGroup]="taskForm" validate>
+        <div class="box step-content has-text-centered is-active" id="c-1">
+          <div class="field is-horizontal form-group">
+            <div class="field-label is-normal">
+              <label class="label">North Plugin</label>
             </div>
-            &nbsp;
-            <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin" class="help description level-left">{{
-              selectedPluginDescription }}</small>
-            <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
-            <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
-          </div>
-        </div>
-        <div class="field is-horizontal form-group">
-          <div class="field-label is-normal">
-            <label class="label">Name</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <input class="input" type="text" placeholder="name" formControlName="name" (change)="validateTaskName($event)"
+            <div class="field-body">
+              <div class="select is-multiple">
+                <select multiple #selectedPlugin name="plugin" formControlName="plugin" (change)="getDescription(selectedPlugin.value)"
                   required>
-                <span *ngIf="!isValidName || (name.errors?.required && name.touched)" class="help is-danger">
-                  <sup>*</sup>North instance name is required.
-                </span>
+                  <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
+                </select>
+              </div>
+              &nbsp;
+              <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin" class="help description level-left">{{
+                selectedPluginDescription }}</small>
+              <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
+              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+            </div>
+          </div>
+          <div class="field is-horizontal form-group">
+            <div class="field-label is-normal">
+              <label class="label">Name</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="input" type="text" placeholder="name" formControlName="name" (change)="validateTaskName($event)"
+                    required>
+                  <span *ngIf="!isValidName || (name.errors?.required && name.touched)" class="help is-danger">
+                    <sup>*</sup>North instance name is required.
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="field is-horizontal form-group">
-          <div class="field-label is-normal">
-            <label class="label">Repeat (Interval)</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <div class="columns is-mobile">
-                  <div class="column">
-                    <input class="input" type='number' appNumberOnly min="0" max="365" placeholder="days"
-                      formControlName="repeatDays" (change)="validateRepeatDays($event)">
-                    <span *ngIf="!isValidDay || (repeatDays.errors?.min || repeatDays.errors?.max)" class="help is-danger">
-                      <sup>*</sup>Repeat days must be in range 0 - 365.
-                    </span>
-                  </div>
-                  <div class="column">
-                    <input class="input" type='text' placeholder="hh:mm:ss" formControlName="repeatTime" mask='00:00:00'
-                      (input)="setRepeatIntervalValue($event)" [pattern]='regExp' (change)="validateRepeatTime($event)">
+          <div class="field is-horizontal form-group">
+            <div class="field-label is-normal">
+              <label class="label">Repeat (Interval)</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <div class="columns is-mobile">
+                    <div class="column">
+                      <input class="input" type='number' appNumberOnly min="0" max="365" placeholder="days"
+                        formControlName="repeatDays" (change)="validateRepeatDays($event)">
+                      <span *ngIf="!isValidDay || (repeatDays.errors?.min || repeatDays.errors?.max)" class="help is-danger">
+                        <sup>*</sup>Repeat days must be in range 0 - 365.
+                      </span>
+                    </div>
+                    <div class="column">
+                      <input class="input" type='text' placeholder="hh:mm:ss" formControlName="repeatTime" mask='00:00:00'
+                        (input)="setRepeatIntervalValue($event)" [pattern]='regExp' (change)="validateRepeatTime($event)">
 
-                    <span *ngIf="!isValidTime || repeatTime.errors?.pattern" class="help is-danger">
-                      <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
-                    </span>
+                      <span *ngIf="!isValidTime || repeatTime.errors?.pattern" class="help is-danger">
+                        <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="box step-content" id="c-2">
-        <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"
-          [pageId]="'wizard'"></app-view-config-item>
-      </div>
+        <div class="box step-content" id="c-2">
+          <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)"
+            [pageId]="'wizard'"></app-view-config-item>
+        </div>
 
-      <div class="box step-content" id="c-3">
-        <div class="field is-horizontal">
-          <div class="field-label">
-            <label class="label">Enabled</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+        <div class="box step-content" id="c-3">
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Enabled</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </form>
-  </div>
-  <div class="steps-actions">
-    <div class="steps-action">
-      <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
+      </form>
     </div>
-    <div class="steps-action">
-      <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+    <div class="steps-actions">
+      <div class="steps-action">
+        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
+      </div>
+      <div class="steps-action">
+        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+      </div>
     </div>
   </div>
 </div>

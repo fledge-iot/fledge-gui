@@ -15,6 +15,7 @@ import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -40,6 +41,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public filterConfiguration;
   public isFilterDeleted = false;
   public confirmationDialogData = {};
+  public childConfiguration: any;
+  public changedChildConfig = [];
+
+  public advanceConfigButtonText = 'Show Advanced Config';
+  public isAdvanceConfig = false;
 
   form: FormGroup;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
@@ -50,6 +56,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild('filterConfigView') filterConfigViewComponent: ViewConfigItemComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
+  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
 
   // Object to hold data of north task to delete
   public deleteTaskData = {
@@ -72,6 +79,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (this.task !== undefined) {
       this.getCategory();
+      this.checkIfAdvanceConfig(this.task['name']);
       this.getFilterPipeline();
     }
 
@@ -134,6 +142,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       return;
     }
     this.notify.emit(true);
+    this.isAdvanceConfig = true;
+    this.getAdvanceConfig(null);
     modal.classList.remove('is-active');
   }
 
@@ -274,6 +284,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
       return;
     }
+    this.updateAdvanceConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
 
@@ -336,7 +347,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
   }
 
-
   openAddFilterModal(isWizard) {
     this.isWizard = isWizard;
     this.category = '';
@@ -346,6 +356,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.getCategory();
     this.isWizard = false;
     this.getFilterPipeline();
+    this.isAdvanceConfig = false;
+    this.advanceConfigButtonText = 'Show Advanced Config';
   }
 
   getFilterPipeline() {
@@ -394,6 +406,75 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
       },
         (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  checkIfAdvanceConfig(categoryName: string) {
+    this.configService.getCategoryConfigChildren(categoryName).
+      subscribe(
+        (data: any) => {
+          this.childConfiguration = data.categories.find(d => d.key.toString().includes('Advanced'));
+        },
+        error => {
+          console.log('error ', error);
+        }
+      );
+  }
+
+  getAdvanceConfig(childConfig) {
+    if (!this.isAdvanceConfig) {
+      this.isAdvanceConfig = true;
+      this.advanceConfigButtonText = 'Hide Advanced Config';
+      this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
+    } else {
+      this.isAdvanceConfig = false;
+      this.advanceConfigButtonText = 'Show Advanced Config';
+    }
+  }
+
+   /**
+   * Get edited configuration from child config page
+   * @param changedConfig changed configuration of a selected plugin
+   */
+  getChangedConfig(changedConfig) {
+    if (isEmpty(changedConfig)) {
+      return;
+    }
+    changedConfig = changedConfig.map(el => {
+      if (el.type.toUpperCase() === 'JSON') {
+        el.value = JSON.parse(el.value);
+      }
+      return {
+        [el.key]: el.value !== undefined ? el.value : el.default,
+      };
+    });
+
+    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
+    this.changedChildConfig = changedConfig;
+  }
+
+  public updateAdvanceConfigConfiguration(configItems: any) {
+    if (isEmpty(configItems)) {
+      return;
+    }
+    /** request started */
+    this.ngProgress.start();
+    this.configService.updateBulkConfiguration(this.childConfiguration.key, configItems).
+      subscribe(
+        () => {
+          this.changedChildConfig = [];  // clear the array
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success('Configuration updated successfully.');
+        },
+        error => {
+          /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);

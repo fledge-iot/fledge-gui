@@ -10,7 +10,7 @@
           <div class="columns">
             <div class="column">
               <div class="field is-horizontal">
-                <div class="field-label">
+                <div class="field-label has-text-left">
                   <label class="label">Key</label>
                 </div>
                 <div class="field-body">
@@ -27,14 +27,14 @@
                     </div>
                   </div>
                 </div>
-                <small *ngIf="!keyExtension" class="help is-danger level-left">Not a 'key' file.</small>
               </div>
+              <small *ngIf="!keyExtension" class="help is-danger level-left">Not a 'key' file.</small>
             </div>
           </div>
           <div class="columns">
             <div class="column">
               <div class="field is-horizontal">
-                <div class="field-label">
+                <div class="field-label has-text-left">
                   <label class="label">Certificate</label>
                 </div>
                 <div class="field-body">
@@ -51,8 +51,8 @@
                     </div>
                   </div>
                 </div>
-                <small *ngIf="!certExtension" class="help is-danger level-left">Not a 'cert' file.</small>
               </div>
+              <small *ngIf="!certExtension" class="help is-danger level-left">Not a 'cert' file.</small>
             </div>
           </div>
           <div class="columns">
