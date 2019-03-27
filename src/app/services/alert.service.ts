@@ -33,7 +33,7 @@ export class AlertService {
 
   activityMessage(message: string, keepAfterNavigationChange = false) {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
-    this.subject.next({ type: 'success', text: message });
+    this.subject.next({ type: 'info', text: message });
   }
 
   error(message: string, keepAfterNavigationChange = false) {
@@ -47,6 +47,14 @@ export class AlertService {
   warning(message: string, keepAfterNavigationChange = false) {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({ type: 'warning', text: message });
+    setTimeout(function () {
+      this.closeMessage();
+    }.bind(this), 10000);
+  }
+
+  info(message: string, keepAfterNavigationChange = false) {
+    this.keepAfterNavigationChange = keepAfterNavigationChange;
+    this.subject.next({ type: 'info', text: message });
     setTimeout(function () {
       this.closeMessage();
     }.bind(this), 10000);

@@ -92,7 +92,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     this.backupRestoreService.requestBackup().
       subscribe(
         (data) => {
-          this.alertService.success(data['status']);
+          this.alertService.info(data['status']);
         },
         error => {
           if (error.status === 0) {

@@ -52,6 +52,16 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.childData.actionButtonValue = 'Create';
       }
     }
+    if (this.serviceRecord) {
+      if (this.serviceRecord.key === 'deleteService') {
+        this.serviceRecord.headerTextValue = 'Delete Service';
+      }
+    }
+    if (this.deleteTaskData) {
+      if (this.deleteTaskData.key === 'deleteTask') {
+        this.deleteTaskData.headerTextValue = 'Delete Task';
+      }
+    }
   }
 
   public toggleModal(isOpen: Boolean) {
@@ -100,7 +110,6 @@ export class AlertDialogComponent implements OnInit, OnChanges {
     }
     if (this.serviceRecord) {
       if (this.serviceRecord.key === 'deleteService') {
-        this.serviceRecord.headerTextValue = 'Delete Service';
         const serviceInfo = {
           port: this.serviceRecord.port,
           protocol: this.serviceRecord.protocol,
@@ -112,7 +121,6 @@ export class AlertDialogComponent implements OnInit, OnChanges {
     }
     if (this.deleteTaskData) {
       if (this.deleteTaskData.key === 'deleteTask') {
-        this.deleteTaskData.headerTextValue = 'Delete Task';
         this.deleteTask.emit({
           name: this.deleteTaskData.name
         });
