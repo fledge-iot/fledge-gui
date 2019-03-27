@@ -59,7 +59,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
     }
     if (this.deleteTaskData) {
       if (this.deleteTaskData.key === 'deleteTask') {
-        this.deleteTaskData.headerTextValue = 'Delete Task';
+        this.deleteTaskData.headerTextValue = 'Delete Instance';
       }
     }
   }
