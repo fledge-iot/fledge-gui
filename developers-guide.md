@@ -32,19 +32,19 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core:
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 7.1.4         |        7.2.0          | MIT 
- Angular CLI  | 7.3.1         |        7.3.1          | MIT 
- TypeScript   | 3.2.4         |        3.3.3          | Apache 2.0
- rxjs         | 6.3.3         |        6.4.0          | Apache 2.0
- Bulma css    | 0.7.2         |        0.7.2          | MIT
+ Angular      | 7.2.10         |        7.2.10          | MIT 
+ Angular CLI  | 7.3.6         |        7.3.6          | MIT 
+ TypeScript   | 3.2.4         |        3.3.4000          | Apache 2.0
+ rxjs         | 6.4.0         |        6.4.0          | Apache 2.0
+ Bulma css    | 0.7.4         |        0.7.4          | MIT
 
 #### Dev:
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
-chart.js         |  2.7.3        |        2.7.3          | MIT
-core-js          |  2.6.1        |        2.6.2          | MIT 
+chart.js         |  2.8.0        |        2.8.0          | MIT
+core-js          |  2.6.4        |        3.0.0          | MIT 
 ng-sidebar       |  8.0.0        |        8.0.0          | MIT 
-moment           |  2.23.0       |        2.23.0         | MIT
+moment           |  2.23.0       |        2.24.0         | MIT
 @ngx-progressbar/core  |  5.3.2        |        5.3.2          | MIT
 protractor-beautiful-reporter |  1.2.7       |  1.2.7                | MIT
 node-git-describe | 4.0.4     | 4.0.4        | MIT
