@@ -1,6 +1,8 @@
-label{
-  width: 12vw !important;
-  margin-right: 2vw;
+@media screen and (min-width: 769px) {
+  label{
+    width: 12vw !important;
+    margin-right: 2vw;
+  }
 }
 
 .config-div {

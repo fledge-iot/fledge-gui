@@ -22,13 +22,15 @@
         </div>
         <div class="column">
           <label class="label is-fullwidth">Port</label>
-          <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081" [ngModel]="servicePort">
+          <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081"
+            [ngModel]="servicePort">
         </div>
       </div>
       <div class="columns">
         <div class="column">
           <div class="field">
-            <button id="set-url-restart-btn" class="button is-info is-pulled-left is-small" (click)="resetEndPoint()">Set the URL &amp; Restart</button>
+            <button id="set-url-restart-btn" class="button is-info is-pulled-left is-small" (click)="resetEndPoint()">Set
+              the URL &amp; Restart</button>
             <!-- <button id="test-connection-btn" class="button is-text is-small" (click)="testServiceConnection()">Test Connection</button> -->
             <!-- <button id="discover-foglamp-btn" class="button is-text is-small" (click)="openServiceDiscoveryModal()">Discover FogLAMP Instances</button> -->
           </div>
@@ -43,37 +45,29 @@
       </p>
     </header>
     <div class="card-content">
-      <div class="columns is-multiline">
+      <div class="columns">
         <div class="column">
-          <div class="field is-grouped">
-            <div class="control">
-              <label class="label"> Refresh Dashboard Graph</label>
-            </div>
-            <div class="control">
-              <div class="select is-small" (change)="setDashboardRefreshTime($event)">
-                <select>
-                  <option value="5000" [selected]="refreshInterval == '5000'">Every 5 Seconds</option>
-                  <option value="10000" [selected]="refreshInterval == '10000'">Every 10 Seconds</option>
-                  <option value="15000" [selected]="refreshInterval == '15000'">Every 15 Seconds</option>
-                </select>
-              </div>
+          <label class="label"> Refresh Dashboard Graph</label>
+          <div class="control">
+            <div class="select is-small" (change)="setDashboardRefreshTime($event)">
+              <select>
+                <option value="5000" [selected]="refreshInterval == '5000'">Every 5 Seconds</option>
+                <option value="10000" [selected]="refreshInterval == '10000'">Every 10 Seconds</option>
+                <option value="15000" [selected]="refreshInterval == '15000'">Every 15 Seconds</option>
+              </select>
             </div>
           </div>
         </div>
         <div class="column">
-          <div class="field is-grouped">
-            <div class="control">
-              <label class="label">Ping Interval</label>
-            </div>
-            <div class="control">
-              <div class="select is-small" (change)="ping($event)">
-                <select>
-                  <option value="-1" [selected]="pingInterval == '-1'">Manual</option>
-                  <option value="5000" [selected]="pingInterval == '5000'">Every 5 Seconds</option>
-                  <option value="10000" [selected]="pingInterval == '10000'">Every 10 Seconds</option>
-                  <option value="15000" [selected]="pingInterval == '15000'">Every 15 Seconds</option>
-                </select>
-              </div>
+          <label class="label">Ping Interval</label>
+          <div class="control">
+            <div class="select is-small" (change)="ping($event)">
+              <select>
+                <option value="-1" [selected]="pingInterval == '-1'">Manual</option>
+                <option value="5000" [selected]="pingInterval == '5000'">Every 5 Seconds</option>
+                <option value="10000" [selected]="pingInterval == '10000'">Every 10 Seconds</option>
+                <option value="15000" [selected]="pingInterval == '15000'">Every 15 Seconds</option>
+              </select>
             </div>
           </div>
         </div>
