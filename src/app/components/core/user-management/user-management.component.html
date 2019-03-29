@@ -30,6 +30,10 @@
                 <th>ID</th>
                 <th>Username</th>
                 <th>Role</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
               </tr>
             </thead>
             <tr *ngFor="let user of userRecord">
@@ -40,18 +44,18 @@
               <td style="vertical-align: middle;">
                 {{user.roleName}}
               </td>
-              <td *ngIf='user.userId != uid && user.userId != 1'>
-                <a (click)="openUpdateUserModal(user, 'role')" class="button is-text">
+              <td>
+                <a *ngIf='user.userId != uid && user.userId != 1' (click)="openUpdateUserModal(user, 'role')" class="button is-text">
                   change role
                 </a>
               </td>
-              <td *ngIf='user.userId != uid && user.userId != 1'>
-                <a (click)="openUpdateUserModal(user, 'password')" class="button is-text">
+              <td>
+                <a *ngIf='user.userId != uid && user.userId != 1' (click)="openUpdateUserModal(user, 'password')" class="button is-text">
                   reset password
                 </a>
               </td>
-              <td *ngIf='user.userId != uid && user.userId != 1'>
-                <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')" class="button is-text">
+              <td>
+                <a *ngIf='user.userId != uid && user.userId != 1' (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')" class="button is-text">
                   <i class="fa fa-minus-circle" aria-hidden="true"></i>
                 </a>
               </td>
