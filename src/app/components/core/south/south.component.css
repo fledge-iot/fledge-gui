@@ -1,3 +1,7 @@
 .align-content {
   vertical-align: middle;
 }
+
+.is-text {
+  padding-left: 0;
+}
