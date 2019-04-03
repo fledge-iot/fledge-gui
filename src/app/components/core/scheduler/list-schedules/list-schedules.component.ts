@@ -103,6 +103,8 @@ export class ListSchedulesComponent implements OnInit {
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
           data.schedules.forEach(sch => {
             if (!['south_c', 'north_c', 'south', 'north'].includes(sch.processName)) {
               this.scheduleData.push(sch);
