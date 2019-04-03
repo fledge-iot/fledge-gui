@@ -1,6 +1,6 @@
 {
-  "dirty": true,
-  "raw": "v1.5.1-11-g6cdce13-dirty",
+  "dirty": false,
+  "raw": "v1.5.1-11-g6cdce13",
   "hash": "g6cdce13",
   "distance": 11,
   "tag": "v1.5.1",
@@ -18,6 +18,6 @@
     "build": [],
     "version": "1.5.1"
   },
-  "suffix": "11-g6cdce13-dirty",
+  "suffix": "11-g6cdce13",
   "semverString": "1.5.1+11.g6cdce13"
 }
