@@ -1,7 +1,7 @@
 .fa-minus-circle {
-    color: rgb(178, 34, 34)
+    color: #CD7171;
 }
 
 .fa::before {
     display: inline-block;
-  }
+}
