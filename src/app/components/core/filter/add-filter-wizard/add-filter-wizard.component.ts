@@ -97,7 +97,7 @@ export class AddFilterWizardComponent implements OnInit {
           return;
         }
 
-        if (formValues['plugin'].length > 1) {
+        if (formValues['plugin'].length !== 1) {
           this.isSinglePlugin = false;
           return;
         }
@@ -167,10 +167,16 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   getDescription(selectedPlugin) {
-    this.isSinglePlugin = true;
-    this.isValidPlugin = true;
-    const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-    this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+    if (selectedPlugin === '') {
+      this.isValidPlugin = false;
+      this.selectedPluginDescription = '';
+      this.serviceForm.value['plugin'] = '';
+    } else {
+      this.isSinglePlugin = true;
+      this.isValidPlugin = true;
+      const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+      this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+    }
   }
 
   /**
