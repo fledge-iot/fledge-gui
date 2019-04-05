@@ -2,7 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 @Component({
   selector: 'app-alert-dialog',
-  templateUrl: './alert-dialog.component.html'
+  templateUrl: './alert-dialog.component.html',
+  styleUrls: ['./alert-dialog.component.css']
 })
 export class AlertDialogComponent implements OnInit, OnChanges {
   @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any, headerTextValue: any};

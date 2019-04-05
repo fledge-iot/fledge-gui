@@ -2,7 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 @Component({
   selector: 'app-filter-alert',
-  templateUrl: './filter-alert.component.html'
+  templateUrl: './filter-alert.component.html',
+  styleUrls: ['./filter-alert.component.css']
 })
 export class FilterAlertComponent implements OnInit, OnChanges {
   @Input() filerDialogData: { id: Number, name: any, key: any, message: any, actionButtonValue: any, headerTextValue: any };
