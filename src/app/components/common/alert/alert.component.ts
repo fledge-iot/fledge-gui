@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { AlertService } from '../../../services';
+import { DARK_ALERTS, AlertService } from '../../../services';
 
 @Component({
     moduleId: module.id.toString(),
@@ -11,6 +11,8 @@ import { AlertService } from '../../../services';
 
 export class AlertComponent implements OnInit {
     message: any;
+    public darkAlerts = DARK_ALERTS;
+
     constructor(private alertService: AlertService) { }
     ngOnInit() {
         this.alertService.getMessage().subscribe(message => { this.message = message; });

@@ -4,13 +4,8 @@
         <header class="modal-card-head">
             <p class="modal-card-title is-size-6">Restart FogLAMP</p>
         </header>
-        <section class="modal-card-body">
-            <article class="message is-warning">
-                <div class="message-body">
-                    {{ restartData.message }}
-                </div>
-            </article>
-
+        <section class="modal-card-body">   
+            {{ restartData.message }}                
         </section>
         <footer class="modal-card-foot">  
             <button class="button is-small" (click)="toggleModal(false)">Cancel</button>

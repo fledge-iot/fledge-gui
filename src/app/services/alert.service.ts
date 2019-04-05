@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 
+export const DARK_ALERTS = 0;
+
 @Injectable()
 export class AlertService {
   private subject = new Subject<any>();

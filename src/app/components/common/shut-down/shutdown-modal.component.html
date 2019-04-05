@@ -5,11 +5,7 @@
             <p class="modal-card-title is-size-6">Shut Down FogLAMP</p>
         </header>
         <section class="modal-card-body">
-            <article class="message is-danger">
-                <div class="message-body">
-                    {{ shutDownData.message }}
-                </div>
-            </article>
+            {{ shutDownData.message }}
         </section>
         <footer class="modal-card-foot">
             <button class="button is-small" (click)="toggleModal(false)">Cancel</button>

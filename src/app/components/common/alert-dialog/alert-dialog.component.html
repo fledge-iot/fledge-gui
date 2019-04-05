@@ -8,29 +8,15 @@
     </header>
 
     <section *ngIf="childData" class="modal-card-body">
-      <article class="message" [ngClass]="{'is-danger': childData.actionButtonValue === 'Delete', 'is-warning': childData.actionButtonValue === 'Restore' || 'Clear Sessions' }">
-        <div class="message-body">
-          {{childData.message}}
-          <span *ngIf="childData.name != ''" class="has-text-weight-semibold">{{childData.name}}</span>
-          <span>?</span>
-        </div>
-      </article>
+      {{childData.message}}
+      <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">{{childData.name}}</span>
+      <span>?</span>
     </section>
-
     <section *ngIf="serviceRecord" class="modal-card-body">
-        <article class="message is-danger">
-            <div class="message-body">
-                {{ serviceRecord.message }}
-            </div>
-        </article>
+      {{serviceRecord.message}}
     </section>
-
     <section *ngIf="deleteTaskData" class="modal-card-body">
-      <article class="message is-danger">
-          <div class="message-body">
-              {{ deleteTaskData.message }}
-          </div>
-      </article>
+      {{deleteTaskData.message}}
     </section>
 
     <footer class="modal-card-foot">
