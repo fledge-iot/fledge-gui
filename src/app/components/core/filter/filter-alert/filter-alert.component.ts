@@ -2,10 +2,11 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 @Component({
   selector: 'app-filter-alert',
-  templateUrl: './filter-alert.component.html'
+  templateUrl: './filter-alert.component.html',
+  styleUrls: ['./filter-alert.component.css']
 })
 export class FilterAlertComponent implements OnInit, OnChanges {
-  @Input() filerDialogData: { id: Number, name: any, key: any, message: any, actionButtonValue: any };
+  @Input() filerDialogData: { id: Number, name: any, key: any, message: any, actionButtonValue: any, headerTextValue: any };
   @Output() discardChanges = new EventEmitter<Boolean>();
 
   constructor() { }
@@ -16,6 +17,7 @@ export class FilterAlertComponent implements OnInit, OnChanges {
     if (this.filerDialogData) {
       if (this.filerDialogData.key === 'unsavedConfirmation') {
         this.filerDialogData.actionButtonValue = 'Discard';
+        this.filerDialogData.headerTextValue = 'Discard Changes';
       }
     }
   }

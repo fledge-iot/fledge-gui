@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 
+export const DARK_ALERTS = 1;
+
 @Injectable()
 export class AlertService {
   private subject = new Subject<any>();
@@ -33,7 +35,7 @@ export class AlertService {
 
   activityMessage(message: string, keepAfterNavigationChange = false) {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
-    this.subject.next({ type: 'success', text: message });
+    this.subject.next({ type: 'info', text: message });
   }
 
   error(message: string, keepAfterNavigationChange = false) {
@@ -47,6 +49,14 @@ export class AlertService {
   warning(message: string, keepAfterNavigationChange = false) {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({ type: 'warning', text: message });
+    setTimeout(function () {
+      this.closeMessage();
+    }.bind(this), 10000);
+  }
+
+  info(message: string, keepAfterNavigationChange = false) {
+    this.keepAfterNavigationChange = keepAfterNavigationChange;
+    this.subject.next({ type: 'info', text: message });
     setTimeout(function () {
       this.closeMessage();
     }.bind(this), 10000);

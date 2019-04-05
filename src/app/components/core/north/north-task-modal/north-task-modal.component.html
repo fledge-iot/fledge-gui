@@ -116,7 +116,7 @@
           <hr>
           <div class="field">
             <div class="field has-text-right">
-              <button *ngIf="task != undefined" (click)="openDeleteModal(task.name,'Warning: Deleting this instance can not be undone. Continue', 'deleteTask')"
+              <button *ngIf="task != undefined" (click)="openDeleteModal(task.name,'Deleting this instance can not be undone. Continue?', 'deleteTask')"
                 class="button is-small">Delete Instance</button>
             </div>
           </div>
