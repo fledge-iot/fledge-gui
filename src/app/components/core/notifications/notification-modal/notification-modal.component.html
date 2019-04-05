@@ -1,0 +1,57 @@
+<div id="notification-instance-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p *ngIf="notification != undefined" class="modal-card-title is-size-5">{{notification.name}}</p>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="box">
+        <app-view-config-item *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"
+          #notificationConfigView>
+        </app-view-config-item>
+        <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Rule - ' + notification.rule">
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <app-view-config-item *ngIf="ruleConfiguration" [categoryConfigurationData]="ruleConfiguration" [formId]="rule"
+                [useRuleProxy]="useRuleProxy" #ruleConfigView>
+              </app-view-config-item>
+            </div>
+          </div>
+        </div>
+        <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Delivery Channel - ' + notification.channel">
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <app-view-config-item *ngIf="deliveryConfiguration" #deliveryConfigView
+                [categoryConfigurationData]="deliveryConfiguration" [useDeliveryProxy]="useDeliveryProxy" [formId]="delivery">
+              </app-view-config-item>
+            </div>
+          </div>
+        </div>
+        <hr class="hr-text" data-content="">
+        <div class="columns">
+          <div class="column">
+            <div class="field is-grouped is-pulled-right">
+              <p class="control">
+                <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+              </p>
+              <p class="control">
+                <button class="button is-small is-link" (click)="proxy()">Save</button>
+              </p>
+            </div>
+          </div>
+        </div>
+        <hr class="hr-text" data-content="">
+        <ng-container *ngIf="notification != undefined">
+          <p class="buttons is-pulled-right">
+            <button (click)="openDeleteModal(notification.name)" class="button is-small" [disabled]="!notification.notificationEnabled ? 'disabled' : null">Delete Instance</button>
+          </p>
+        </ng-container>
+      </div>
+    </section>
+  </div>
+  <app-alert-dialog (deleteNotification)='deleteNotification($event)' [notificationRecord]='notificationRecord'>
+  </app-alert-dialog>
+</div>

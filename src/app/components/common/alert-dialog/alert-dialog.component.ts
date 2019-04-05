@@ -6,11 +6,15 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
   styleUrls: ['./alert-dialog.component.css']
 })
 export class AlertDialogComponent implements OnInit, OnChanges {
+  @Input() notificationRecord: { name: string, message: string, key: string, headerTextValue: any };
+  @Input() notificationServiceRecord: { name: string, message: string, key: string, headerTextValue: any };
   @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any, headerTextValue: any};
   @Input() serviceRecord: { port: Number, key: any, name: any, message: any, protocol: string, headerTextValue: any };
   @Input() deleteTaskData: { name: any, message: any, key: any, headerTextValue: any };
   @Output() delete = new EventEmitter<Number>();
   @Output() deleteService = new EventEmitter<Object>();
+  @Output() deleteNotification = new EventEmitter<Object>();
+  @Output() disableNotificationService = new EventEmitter<Object>();
   @Output() deleteTask = new EventEmitter<Object>();
   @Output() deleteUserService = new EventEmitter<Number>();
   @Output() deleteCertificate = new EventEmitter<Number>();
@@ -61,6 +65,16 @@ export class AlertDialogComponent implements OnInit, OnChanges {
     if (this.deleteTaskData) {
       if (this.deleteTaskData.key === 'deleteTask') {
         this.deleteTaskData.headerTextValue = 'Delete Instance';
+      }
+    }
+    if (this.notificationRecord) {
+      if (this.notificationRecord.key === 'deleteNotification') {
+        this.notificationRecord.headerTextValue = 'Delete Instance';
+      }
+    }
+    if (this.notificationServiceRecord) {
+      if (this.notificationServiceRecord.key === 'disableNotification') {
+       this.notificationServiceRecord.headerTextValue = 'Disable Service';
       }
     }
   }
@@ -117,6 +131,18 @@ export class AlertDialogComponent implements OnInit, OnChanges {
           name: this.serviceRecord.name
         };
         this.deleteService.emit(serviceInfo);
+        this.toggleModal(false);
+      }
+    }
+    if (this.notificationRecord) {
+      if (this.notificationRecord.key === 'deleteNotification') {
+        this.deleteNotification.emit(this.notificationRecord.name);
+        this.toggleModal(false);
+      }
+    }
+    if (this.notificationServiceRecord) {
+      if (this.notificationServiceRecord.key === 'disableNotification') {
+        this.disableNotificationService.emit();
         this.toggleModal(false);
       }
     }
