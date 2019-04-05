@@ -66,7 +66,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
 
   public getRuleConfiguration(): void {
     const categoryValues = [];
-    const notificationName = this.notification['name'].substr(this.notification['name'].indexOf(' ') + 1);
+    const notificationName = this.notification['name'];
     this.configService.getCategory(`rule${notificationName}`).
       subscribe(
         (data) => {
@@ -89,7 +89,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     /** request started */
     this.ngProgress.start();
     const categoryValues = [];
-    const notificationName = this.notification['name'].substr(this.notification['name'].indexOf(' ') + 1);
+    const notificationName = this.notification['name'];
     this.configService.getCategory(`delivery${notificationName}`).
       subscribe(
         (data) => {
@@ -112,13 +112,11 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     /** request started */
     this.ngProgress.start();
     const categoryValues = [];
-    const notificationName = this.notification['name'].substr(this.notification['name'].indexOf(' ') + 1);
+    const notificationName = this.notification['name'];
     this.configService.getCategory(notificationName).
       subscribe(
         (data: any) => {
           if (!isEmpty(data)) {
-            // TODO FOGL- 2645 displayName and order
-            // We need to hide rule and channel input fields locally
             data.channel['readonly'] = 'true';
             data.rule['readonly'] = 'true';
 
@@ -156,7 +154,6 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   }
 
   deleteNotification(notificationName: string) {
-    notificationName = notificationName.substr(notificationName.indexOf(' ') + 1);
     this.ngProgress.start();
     this.notificationService.deleteNotification(notificationName)
       .subscribe(
