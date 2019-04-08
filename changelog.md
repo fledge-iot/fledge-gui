@@ -1,3 +1,13 @@
+## v1.5.2 [2019-04-08]
+
+#### Added
+
+* Notifications UI
+
+#### Fixed
+
+* Backup creation time format
+
 ## v1.5.1 [2019-03-12]
 
 #### Added
