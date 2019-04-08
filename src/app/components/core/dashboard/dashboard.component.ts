@@ -236,8 +236,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public toggleDropdown() {
+  public togglegGraphDropdown() {
     const dropDown = document.querySelector('#graph-key-dropdown');
+    dropDown.classList.toggle('is-active');
+  }
+
+  public toggleTimeDropdown() {
+    const dropDown = document.querySelector('#time-dropdown');
     dropDown.classList.toggle('is-active');
   }
 
@@ -247,6 +252,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       checked: event.target.checked
     };
     this.showGraph(data);
+    this.togglegGraphDropdown();
   }
 
   public ngOnDestroy(): void {

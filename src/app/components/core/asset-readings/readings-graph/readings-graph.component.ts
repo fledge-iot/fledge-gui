@@ -79,6 +79,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.showAssetReadingsSummary(this.assetCode, this.limit, time);
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     }
+    this.toggleDropdown();
   }
 
   public getAssetCode(assetCode) {
@@ -295,6 +296,11 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
+  }
+
+  public toggleDropdown() {
+    const dropDown = document.querySelector('#time-dropdown');
+    dropDown.classList.toggle('is-active');
   }
 
   public isNumber(val) {

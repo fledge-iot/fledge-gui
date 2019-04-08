@@ -264,4 +264,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     }
     return configItem.key;
   }
+
+  public toggleDropdown(key) {
+    console.log('kkkkk', key);
+    const dropDown = document.querySelector('#' + key + '-dropdown');
+    dropDown.classList.toggle('is-active');
+  }
 }
