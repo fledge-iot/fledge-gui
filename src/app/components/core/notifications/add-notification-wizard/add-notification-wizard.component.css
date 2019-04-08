@@ -1,0 +1,7 @@
+[hidden] {
+  display: none !important;
+}
+
+.description {
+  flex-shrink:initial !important;
+}

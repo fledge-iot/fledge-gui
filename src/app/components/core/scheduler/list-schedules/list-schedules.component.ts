@@ -106,7 +106,7 @@ export class ListSchedulesComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           data.schedules.forEach(sch => {
-            if (!['south_c', 'north_c', 'south', 'north'].includes(sch.processName)) {
+            if (!['south_c', 'north_c', 'south', 'north', 'notification_c'].includes(sch.processName)) {
               this.scheduleData.push(sch);
             }
           });

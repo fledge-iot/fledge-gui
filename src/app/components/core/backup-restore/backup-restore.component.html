@@ -27,25 +27,28 @@
               <tr>
                 <th>Date &amp; Time</th>
                 <th>Status</th>
+                <th></th>
+                <th></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let backup of backupData">
-                <td style="vertical-align: middle;">
-                  <small>{{ backup.date | dateparser:"YYYY-MM-DD HH:mm:ss"}}</small>
+                <td class="align-content">
+                  <small>{{ backup.date | dateparser:"YYYY-MM-DD hh:mm:ss"}}</small>
                 </td>
-                <td style="vertical-align: middle;">
+                <td class="align-content">
                   <small>{{ backup.status }}</small>
                 </td>
-                <td>
+                <td class="align-content">
                   <a *ngIf="backup.status != 'RUNNING'" class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
                   </a>
                 </td>
-                <td>
+                <td class="align-content">
                   <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
                   </a>
                 </td>
-                <td>
+                <td class="align-content">
                   <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" (click)="downloadBackup(backup)"
                     class="button is-text">
                     download

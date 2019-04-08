@@ -40,6 +40,11 @@
     </a>
   </li>
   <li>
+    <a id="notification" [ngClass]="{'is-active': step==='/notification'}" (click)="onToggle('/notification')">
+      Notifications
+    </a>
+  </li>
+  <li>
     <a>Logs</a>
     <ul>
       <li>

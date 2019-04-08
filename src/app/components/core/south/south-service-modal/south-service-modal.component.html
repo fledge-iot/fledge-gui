@@ -100,7 +100,7 @@
               <button (click)="getAssetReadings(service)" class="button is-small">
                 <span>Export Readings</span>
               </button>
-              <button (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Warning: Deleting this service can not be undone. Continue', 'deleteService')"
+              <button (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Deleting this service can not be undone. Continue?', 'deleteService')"
                 class="button is-small">Delete Service</button>
             </p>
           </ng-container>

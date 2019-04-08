@@ -36,9 +36,7 @@
               <tbody>
                 <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
                   <td class="align-content">
-                    <a class="button is-text" (click)="openNorthTaskModal(t)">
-                      <small>{{t.name}}</small>
-                    </a>
+                    <a class="button is-text" (click)="openNorthTaskModal(t)">{{t.name}}</a>
                   </td>
                   <td>
                     <span *ngIf="t.enabled == true" class="tag is-success">enabled</span>
