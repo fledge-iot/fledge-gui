@@ -20,6 +20,7 @@
             <th>Name</th>
             <th>Key</th>
             <th>Certificate</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -37,8 +38,8 @@
             <td class="showInCenter" *ngIf="!certificate.cert">
               <i class="far fa-times-circle fa-lg" style="color:rgb(204, 62, 19)" aria-hidden="true"></i>
             </td>
-            <td *ngIf="getCertificateName(certificate.key, certificate.cert) != 'foglamp'">
-              <a (click)="openDeleteModal(certificate.key, certificate.cert, 'Are you sure, You want to delete the certificate', 'deleteCertificate', 'Delete')"
+            <td>
+              <a *ngIf="getCertificateName(certificate.key, certificate.cert) != 'foglamp'" (click)="openDeleteModal(certificate.key, certificate.cert, 'Are you sure, you want to delete the certificate', 'deleteCertificate', 'Delete')"
                 class="button is-text">
                 delete
               </a>

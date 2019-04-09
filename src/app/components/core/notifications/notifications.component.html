@@ -1,0 +1,104 @@
+<div class="container is-fluid">
+  <div>
+    <ng-container *ngIf="!isNotificationServiceAvailable">
+      <article class="message is-warning">
+        <div class="message-body">
+          Notification service is not added
+          and enabled.&nbsp; <a (click)="addNotificationService()"><strong>add & enable now</strong></a>
+        </div>
+      </article>
+    </ng-container>
+    <ng-container *ngIf="isNotificationServiceAvailable && !isNotificationServiceEnabled">
+      <article class="message is-warning">
+        <div class="message-body">
+          Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable now</strong></a>
+        </div>
+      </article>
+    </ng-container>
+    <ng-container *ngIf="isNotificationServiceAvailable && isNotificationServiceEnabled">
+      <article id='messageDiv' class="message is-info">
+        <div class="message-body">
+          Notification service is enabled.&nbsp; <a (click)="openAlertModal()">disable now</a>
+          <button class="delete" aria-label="delete" (click)="closeMessage(true)"></button>
+        </div>
+      </article>
+      <app-alert-dialog *ngIf="!isNotificationModalOpen" (disableNotificationService)='disableNotificationService()' [notificationServiceRecord]='notificationServiceRecord'>
+      </app-alert-dialog>
+    </ng-container>
+  </div>
+
+  <div class="card">
+    <header class="card-header">
+      <div id="notification-service" class="card-header-title">
+        <div class="media-content">
+          <p class="title is-5">
+            Notifications
+            <a class="button is-small" (click)="getNotificationInstance()">
+              <span class="icon is-small">
+                <i class="fa fa-sync"></i>
+              </span>
+            </a>
+          </p>
+        </div>
+      </div>
+      <a id="add_notification_instance" class="fix-pad button is-light" (click)="addNotificationInstance()">Create
+        Notification Instance &nbsp;
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </a>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <div *ngIf="showSpinner" class="app-loading">
+          &nbsp;
+          <svg class="spinner" viewBox="0 0 100 100">
+            <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+          </svg>
+        </div>
+        <ng-container *ngIf="!showSpinner">
+          <div class="has-text-centered"
+            *ngIf="notificationInstances != undefined && notificationInstances.length === 0">
+            <small class="no-rec">No Record</small>
+          </div>
+          <ng-container *ngIf="notificationInstances!= undefined && notificationInstances.length > 0">
+            <table id="south-service-list" class="table is-fullwidth scroll is-responsive" cellpadding="0"
+              cellspacing="0">
+              <thead>
+                <tr>
+                  <th class="align-content">Name</th>
+                  <th class="align-content">Channel</th>
+                  <th class="align-content">Rule</th>
+                  <th class="align-content">Type</th>
+                  <th class="align-content">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let instance of notificationInstances">
+                  <td class="align-content">
+                    <a class="button is-text" (click)="openNotificationInstanceModal(instance)">{{instance.name}}</a>
+                  </td>
+                  <td class="align-content">
+                    {{instance.channel}}
+                  </td>
+                  <td class="align-content">
+                    {{instance.rule}}
+                  </td>
+                  <td class="align-content">
+                    {{instance.notificationType}}
+                  </td>
+                  <td class="align-content">
+                    <div class="tags has-addons">
+                      <span *ngIf="instance.enable === 'false'" class="tag">disabled</span>
+                      <span *ngIf="instance.enable === 'true'" class="tag is-success"
+                        [ngClass]="{'disable-tag': this.isNotificationServiceAvailable && !this.isNotificationServiceEnabled}">enabled</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>

@@ -92,7 +92,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     this.backupRestoreService.requestBackup().
       subscribe(
         (data) => {
-          this.alertService.success(data['status']);
+          this.alertService.info(data['status']);
         },
         error => {
           if (error.status === 0) {
@@ -109,7 +109,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     this.backupRestoreService.restoreBackup(id).
       subscribe(
         (data) => {
-          this.alertService.success(data['status']);
+          this.alertService.info(data['status']);
           this.getBackup();
           this.ngProgress.done();
         },
