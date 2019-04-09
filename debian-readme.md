@@ -7,9 +7,9 @@ Use `./make_deb` script to create debian package, the package will be placed in 
  $ ./make_deb
 Operating System Type: Linux
 The package root directory is         : /home/foglamp/foglamp-gui
-The FogLAMP gui version is            : 1.3.0
+The FogLAMP gui version is            : x.y.z
 The package will be built in          : /home/foglamp/foglamp-gui/packages/build
-The package name is                   : foglamp-gui-1.3.0
+The package name is                   : foglamp-gui-x.y.z
 
 INFO:  Cleaning the build and dependencies ...
 yarn run v1.3.2
@@ -37,16 +37,16 @@ INFO:  Build distribution contents  ...
 ...
 INFO   Size: 4.0M       dist
 INFO:  Removing unwanted contents ...
-INFO:  Deployable dist size   2.0M      dist
+INFO:  Deployable dist size   2.3M      dist
 INFO:  Creating compressed build artifacts for release ...
-Created foglamp-gui-1.3.0.tar.gz
+Created foglamp-gui-x.y.z.tar.gz
 INFO:  Done.
 Populating the package and updating version file...
 Done.
 Copy build artifacts for nginx webroot directory...
 Done.
 Building the new debian package...
-dpkg-deb: building package 'foglamp-gui' in 'foglamp-gui-1.3.0.deb'.
+dpkg-deb: building package 'foglamp-gui' in 'foglamp-gui-x.y.z.deb'.
 Done.
 
 ```
@@ -56,8 +56,8 @@ Done.
 Use the ``apt`` or the ``apt-get`` command
 
 ```
-$sudo cp packages/build/foglamp-gui-1.3.0.deb /var/cache/apt/archives/.
-$sudo apt install /var/cache/apt/archives/foglamp-gui-1.3.0.deb
+$sudo cp packages/build/foglamp-gui-x.y.z.deb /var/cache/apt/archives/.
+$sudo apt install /var/cache/apt/archives/foglamp-gui-x.y.z.deb
 ```
 
 #### Uninstalling debian package
@@ -66,4 +66,4 @@ $sudo apt install /var/cache/apt/archives/foglamp-gui-1.3.0.deb
 $ sudo apt remove foglamp-gui
 ```
 
-> you may want to check debian package contents with `sudo dpkg -c foglamp-gui-1.3.0.deb` or can install in dev env with `sudo dpkg -i foglamp-gui-1.3.0.deb`
+> you may want to check debian package contents with `sudo dpkg -c foglamp-gui-x.y.z.deb` or can install in dev env with `sudo dpkg -i foglamp-gui-x.y.z.deb`
