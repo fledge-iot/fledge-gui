@@ -2,24 +2,31 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head" style="flex-grow:0;">
-      <p class="modal-card-title is-size-5">Login with certificate</p>
+      <p class="modal-card-title is-size-5">Login with Certificate</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
+        <div class="columns">
+      <div class="column is-offset-7 has-text-right">
+        <button class="button is-small is-text" (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
+      </div>
+      </div>
       <form [formGroup]="form" id="ngForm" (ngSubmit)="LoginWithCertificate()" novalidate>
         <div class="columns">
           <div class="column">
-            <div class="field is-grouped is-horizontal">
-              <div class="control">
-                <label class="label">Browse Certificate</label>
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label *ngIf="showBrowseCertificate" class="label">Browse Certificate</label>
+                <label *ngIf="!showBrowseCertificate" class="label disabled">Browse Certificate</label>
               </div>
-              <div class="control">
-                <div class="field is-narrow">
-                  <div class="file">
+              <div class="field-body disabled">
+                <div class="field">
+                  <div class="file is-fullwidth">
                     <label class="file-label">
-                      <span class="file-cta">
+                      <span class="file-cta is-fullwidth">
                         <span class="file-icon">
-                          <i class="fa fa-upload"></i>
+                          <i *ngIf="showBrowseCertificate" class="fa fa-upload"></i>
+                          <i *ngIf="!showBrowseCertificate" class="fa fa-upload disabled"></i>
                         </span>
                         <input type="file" required id="certificate" (change)="onCertificateChange($event)"
                           formControlName="certificate" #fileInput>
@@ -33,18 +40,13 @@
             </div>
           </div>
         </div>
-        <div class="columns">
-          <div class="column has-text-centered">
-            <b>OR</b>
-          </div>
-        </div>
-        <div class="columns">
+        <div *ngIf="!showBrowseCertificate" class="columns">
           <div class="column">
-            <div class="field is-grouped is-horizontal">
-              <div class="control">
-                <label class="label">Certificate content</label>
+            <div class="field is-horizontal">
+              <div class="field-label is-grouped has-text-left">
+                <label class="label">Certificate Content</label>
               </div>
-              <div class="control">
+              <div class="field-body">
                 <textarea class="textarea" cols="30" formControlName="certificateText"></textarea>
               </div>
             </div>
