@@ -43,6 +43,7 @@ export class CertificateBaseLoginComponent implements OnInit {
   }
 
   selectOptionOfCertificateLogin() {
+    this.resetForm();
     if (this.showBrowseCertificate) {
       this.showBrowseCertificate = false;
       this.loginCertButtonText = 'Browse Certificate';
