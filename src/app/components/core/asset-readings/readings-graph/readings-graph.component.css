@@ -1,13 +1,3 @@
-.delete {
-  margin: 0;
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 23px;
-  height: 23px;
-  font-size: 0;
-}
-
 [hidden] {
   display: none !important;
 }

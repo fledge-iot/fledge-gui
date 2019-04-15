@@ -21,6 +21,7 @@ const appRoutes: Routes = [
   { path: 'syslog', loadChildren: './components/core/system-log/system-log.module#SystemLogModule' },
   { path: 'audit', loadChildren: './components/core/audit-log/audit-log.module#AuditLogModule' },
   { path: 'tasks', component: ListTasksComponent, canActivate: [AuthCheckGuard] },
+  { path: 'notification', loadChildren: './components/core/notifications/notifications.module#NotificationsModule' },
   { path: 'certificate', component: CertificateStoreComponent, canActivate: [AuthCheckGuard] },
   { path: 'support', component: SupportComponent, canActivate: [AuthCheckGuard] },
   { path: 'backup-restore', component: BackupRestoreComponent, canActivate: [AuthCheckGuard] },

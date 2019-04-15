@@ -1,14 +1,18 @@
 <div id="filter-dialog-box" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
+    <header class="modal-card-head">
+      <p *ngIf="filerDialogData" class="modal-card-title is-size-6">{{filerDialogData.headerTextValue}}</p>
+    </header>
     <section *ngIf="filerDialogData" class="modal-card-body">
       {{filerDialogData.message}}
       <span *ngIf="filerDialogData.name != ''" class="has-text-black has-text-weight-semibold">{{filerDialogData.name}}</span>
       <span>?</span>
     </section>
     <footer class="modal-card-foot">
-        <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-      <button *ngIf="filerDialogData" class="button is-small is-info" (click)="triggerAction()">{{filerDialogData.actionButtonValue}}</button>
+      <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+      <button *ngIf="filerDialogData" class="button is-small is-info" [ngClass]="{'is-warning': filerDialogData.actionButtonValue === 'Discard' }"
+        (click)="triggerAction()">{{filerDialogData.actionButtonValue}}</button>
     </footer>
   </div>
 </div>

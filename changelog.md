@@ -1,3 +1,27 @@
+## v1.5.2 [2019-04-08]
+
+#### Added
+
+* Notifications UI
+
+#### Fixed
+
+* Backup creation time format
+
+## v1.5.1 [2019-03-12]
+
+#### Added
+
+* Advanced Configuration in North instance modal
+* Added build version info on settings page
+
+#### Fixed
+
+* Certificate store upload issue
+* Allow negative numbers to be entered in numeric fields
+* HTTP Error (4xx / 5xx) response handling
+* Days info in uptime
+
 ## v1.5.0 [2019-02-07]
 
 #### Added

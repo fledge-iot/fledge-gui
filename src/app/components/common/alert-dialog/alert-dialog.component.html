@@ -1,22 +1,39 @@
 <div id="modal-box" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
+    <header class="modal-card-head">
+      <p *ngIf="childData" class="modal-card-title is-size-6">{{childData.headerTextValue}}</p>
+      <p *ngIf="serviceRecord" class="modal-card-title is-size-6">{{serviceRecord.headerTextValue}}</p>
+      <p *ngIf="deleteTaskData" class="modal-card-title is-size-6">{{deleteTaskData.headerTextValue}}</p>
+      <p *ngIf="notificationRecord" class="modal-card-title is-size-6">{{notificationRecord.headerTextValue}}</p>
+      <p *ngIf="notificationServiceRecord" class="modal-card-title is-size-6">{{notificationServiceRecord.headerTextValue}}</p>
+    </header>
+
     <section *ngIf="childData" class="modal-card-body">
       {{childData.message}}
       <span *ngIf="childData.name != ''" class="has-text-black has-text-weight-semibold">{{childData.name}}</span>
       <span>?</span>
     </section>
     <section *ngIf="serviceRecord" class="modal-card-body">
-      {{serviceRecord.message}}?
+      {{serviceRecord.message}}
+    </section>
+    <section *ngIf="notificationRecord" class="modal-card-body">
+      {{notificationRecord.message}}?
+    </section>
+    <section *ngIf="notificationServiceRecord" class="modal-card-body">
+      {{notificationServiceRecord.message}}?
     </section>
     <section *ngIf="deleteTaskData" class="modal-card-body">
-      {{deleteTaskData.message}}?
+      {{deleteTaskData.message}}
     </section>
+
     <footer class="modal-card-foot">
-      <button *ngIf="childData" class="button is-small" [ngClass]="childData.key === 'deleteUser' ? 'is-danger' : 'is-info'"
-        (click)="triggerAction()">{{childData.actionButtonValue}}</button>
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+      <button *ngIf="childData" class="button is-small" [ngClass]="{'is-danger': childData.actionButtonValue === 'Delete', 'is-warning': childData.actionButtonValue === 'Restore' || 'Clear Sessions' }"
+        (click)="triggerAction()">{{childData.actionButtonValue}}</button>
       <button *ngIf="serviceRecord" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
+      <button *ngIf="notificationRecord" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
+      <button *ngIf="notificationServiceRecord" class="button is-small is-warning" (click)="triggerAction()">Disable</button>
       <button *ngIf="deleteTaskData" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
     </footer>
   </div>

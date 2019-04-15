@@ -176,7 +176,7 @@ export class SkipLogin {
 
   getSchedulesTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process .card-header p.card-header-title')).getText();
+    return element(by.css('app-list-schedules .card-header p.card-header-title')).getText();
   }
 
   getSchedulesRefreshButton() {
@@ -186,7 +186,7 @@ export class SkipLogin {
 
   getCreateScheduleButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process .card-header .button.is-light')).getText();
+    return element(by.css('app-list-schedules .card-header .button.is-light')).getText();
   }
 
   closeAlert() {
@@ -196,12 +196,12 @@ export class SkipLogin {
 
   getTasksTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process app-list-tasks header > div')).getText();
+    return element(by.css('app-list-schedules app-list-tasks header > div')).getText();
   }
 
   getTasksRefreshButton() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-scheduled-process > div:nth-child(2) .fa.fa-sync')).isDisplayed();
+    return element(by.css('app-list-schedules > div:nth-child(2) .fa.fa-sync')).isDisplayed();
   }
 
   getTasksSelectTag() {
