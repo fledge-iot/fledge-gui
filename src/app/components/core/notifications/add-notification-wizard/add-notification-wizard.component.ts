@@ -173,13 +173,16 @@ export class AddNotificationWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
-
         if (formValues['name'].trim() !== '') {
           this.payload.name = formValues['name'];
           this.payload.description = this.description.nativeElement.value;
         }
+        if (this.notificationRulePlugins.length === 0) {
+          nxtButton.disabled = true;
+        }
         break;
       case 2:
+        nxtButton.disabled = false;
         this.pageId = +id;
         if (formValues['rule'] === '') {
           this.isRulePlugin = false;
@@ -208,6 +211,9 @@ export class AddNotificationWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
+        if (this.notificationDeliveryPlugins.length === 0) {
+          nxtButton.disabled = true;
+        }
         break;
       case 4:
         this.pageId = +id;
