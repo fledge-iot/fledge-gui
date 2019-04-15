@@ -19,4 +19,5 @@ export * from './north.service';
 export * from './filter.service';
 export * from './progress-bar.service';
 export * from './generate-csv.service';
+export * from './notifications.service';
 

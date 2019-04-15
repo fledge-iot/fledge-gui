@@ -12,10 +12,12 @@ import ConfigTypeValidation from '../configuration-type-validation';
 })
 export class ViewConfigItemComponent implements OnInit, OnChanges {
   @Input() categoryConfigurationData: any;
-  @Input() useProxy: string =  'false';
-  @Input() useFilterProxy: string = 'false';
-  @Input() formId: string = '';
-  @Input() pageId: string = 'page';
+  @Input() useProxy = 'false';
+  @Input() useFilterProxy = 'false';
+  @Input() useRuleProxy = 'false';
+  @Input() useDeliveryProxy = 'false';
+  @Input() formId = '';
+  @Input() pageId = 'page';
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration;
@@ -23,7 +25,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isValidForm: boolean;
   public isWizardCall = false;
   public filesToUpload = [];
-  public hasEditableConfigItems: boolean = true;
+  public hasEditableConfigItems = true;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -263,5 +265,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       return configItem.displayName.trim().length > 0 ? configItem.displayName : configItem.key;
     }
     return configItem.key;
+  }
+
+  public checkButtonProxy() {
+    if (this.useProxy === 'false'
+      && this.useFilterProxy === 'false'
+      && this.useRuleProxy === 'false'
+      && this.useDeliveryProxy === 'false') {
+      return 'false';
+    }
   }
 }

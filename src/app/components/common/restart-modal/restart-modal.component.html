@@ -1,12 +1,15 @@
 <div id="restartModal-box" class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-card">
-      <section class="modal-card-body">
-         <b> {{ restartData.message }} </b>
-      </section>
-      <footer class="modal-card-foot">
-          <button class="button is-warning is-small" (click)="triggerAction()">Restart</button>
-          <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-      </footer>
-  </div>
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title is-size-6">Restart FogLAMP</p>
+        </header>
+        <section class="modal-card-body">   
+            {{ restartData.message }}                
+        </section>
+        <footer class="modal-card-foot">  
+            <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+            <button class="button is-small is-warning" (click)="triggerAction()">Restart</button>
+        </footer>
+    </div>
 </div>

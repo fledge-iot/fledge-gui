@@ -6,7 +6,8 @@
           <div class="config-div" *ngIf="configItem.value.readonly != 'true'">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
-                <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.value.description">
+                <label class="label tooltip is-tooltip-right is-tooltip-multiline"
+                  [attr.data-tooltip]="configItem.value.description">
                   {{setDisplayName(configItem.value)}}
                 </label>
               </div>
@@ -19,23 +20,28 @@
                     </label>
                   </ng-container>
                   <div class="field">
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'" name="{{configItem.value.key}}"
-                      class="input is-fullwidth is-small" type="text" [ngModel]="setConfigValue(configItem.value)"
-                      [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length" />
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'"
+                      name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="text"
+                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                      [attr.maxLength]="configItem?.value?.length" />
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'" name="{{configItem.value.key}}"
-                      type="number" [value]='setConfigValue(configItem.value)' class="input is-fullwidth is-small"
-                      [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'"
+                      name="{{configItem.value.key}}" type="number" [value]='setConfigValue(configItem.value)'
+                      class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum"
+                      [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
                       appNumberOnly />
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'" name="{{configItem.value.key}}"
-                      type="number" [value]='setConfigValue(configItem.value)' step="any" class="input is-fullwidth is-small"
-                      [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'"
+                      name="{{configItem.value.key}}" type="number" [value]='setConfigValue(configItem.value)'
+                      step="any" class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum"
+                      [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
                       appNumberOnly />
 
-                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
-                      name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      [attr.maxLength]="configItem?.value?.length" [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
+                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'"
+                      class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
+                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                      [attr.maxLength]="configItem?.value?.length"
+                      [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
                       <textarea rows="3" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
@@ -43,12 +49,14 @@
                         disabled>
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </textarea>
-                      <p class="help">{{configItem?.value?.file | slice:configItem?.value?.file?.lastIndexOf('/')+1}}</p>
+                      <p class="help">{{configItem?.value?.file | slice:configItem?.value?.file?.lastIndexOf('/')+1}}
+                      </p>
                     </div>
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'ENUMERATION'" class="select is-small">
                       <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)">
-                        <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>{{configOption}}</option>
+                        <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>
+                          {{configOption}}</option>
                       </select>
                     </div>
 
@@ -59,9 +67,9 @@
                       </div>
                     </div>
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'" name="{{configItem.value.key}}"
-                      class="input is-fullwidth is-small" type="url" [ngModel]="setConfigValue(configItem.value)"
-                      [value]='setConfigValue(configItem.value)' />
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'"
+                      name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="url"
+                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)' />
                   </div>
 
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">
@@ -90,9 +98,22 @@
         </div>
         <div class="field-body">
           <div style="padding-top: 1rem;">
-            <button *ngIf="useFilterProxy == 'true'" [attr.id]="formId" type="submit" class="hidden button is-small is-link is-pulled-right vci-proxy-filter">Save</button>
-            <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"  class="hidden button is-small is-link is-pulled-right">Save</button>
-            <button *ngIf="useProxy != 'true' && useFilterProxy != 'true'" id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
+            <ng-container *ngIf="checkButtonProxy()">
+              <button id="vci" type="submit"  class="button is-small is-link is-pulled-left">Save</button>
+            </ng-container>
+
+            <button *ngIf="useProxy == 'true'" id="vci-proxy" type="submit"
+               class="hidden button is-small is-link is-pulled-right">Save</button>
+
+            <button *ngIf="useFilterProxy == 'true'" [attr.id]="formId" type="submit"
+              class="hidden button is-small is-link is-pulled-right vci-proxy-filter">Save</button>
+
+            <button *ngIf="useRuleProxy == 'true'" type="submit"
+              class="hidden button is-small is-link is-pulled-right vci-proxy-rule" [attr.id]="rule">Save</button>
+
+            <button *ngIf="useDeliveryProxy == 'true'" type="submit"
+              class="hidden button is-small is-link is-pulled-right vci-proxy-delivery"
+              [attr.id]="delivery">Save</button>
           </div>
         </div>
       </div>

@@ -1,0 +1,24 @@
+.align-content {
+  vertical-align: middle;
+}
+
+.delete {
+  margin: 1.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.is-text {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.is-hidden {
+  display: none;
+}
+
+.disable-tag {
+ opacity: 0.5;
+ filter: alpha(opacity=50);
+}

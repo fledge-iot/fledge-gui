@@ -1,0 +1,169 @@
+<div class="container is-fluid">
+  <div class="steps">
+    <div class="step-item is-active is-success" id="1">
+      <div class="step-marker">1</div>
+      <div class="step-details">
+        <p>Notification Instance</p>
+      </div>
+    </div>
+    <div class="step-item" id="2">
+      <div class="step-marker">2</div>
+      <div class="step-details">
+        <p>Rule</p>
+      </div>
+    </div>
+    <div hidden class="step-item" id="3">
+      <div class="step-details">
+        <p>Review Rule Configuration</p>
+      </div>
+    </div>
+    <div class="step-item" id="4">
+      <div class="step-marker">3</div>
+      <div class="step-details">
+        <p>Delivery Channel</p>
+      </div>
+    </div>
+    <div hidden class="step-item" id="5">
+      <div class="step-details">
+        <p>Review Delivery Channel Configuration</p>
+      </div>
+    </div>
+    <div class="step-item" id="6">
+      <div class="step-marker">4</div>
+      <div class="step-details">
+        <p>Done</p>
+      </div>
+    </div>
+    <div class="steps-content">
+      <form [formGroup]="notificationForm" validate>
+        <div class="box step-content  is-active" id="c-1">
+          <div class="field is-horizontal form-group">
+            <div class="field-label is-normal">
+              <label class="label">Name</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="input" id="name" type="text" placeholder="name" #name formControlName="name" required
+                    (input)="validateNotificationName($event)">
+                  <small *ngIf="!isValidName" class="help is-danger level-left">Notification instance name is
+                    required</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal form-group">
+            <div class="field-label is-normal">
+              <label class="label">Description</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="input" id="description" type="text" #desc placeholder="description"
+                    formControlName="description" required>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="box step-content" id="c-2">
+          <div *ngIf="!notificationRulePlugins || notificationRulePlugins.length === 0" class="has-text-centered">
+            <small class="no-rec">No notification rule plugin found</small>
+          </div>
+          <div *ngIf="notificationRulePlugins.length > 0" class="field is-horizontal form-group">
+            <div class="field-label is-normal">
+              <label class="label">Rule Plugin</label>
+            </div>
+            <div class="field-body">
+              <div class="select is-multiple">
+                <select multiple name="type" #selectedPlugin formControlName="rule"
+                  (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)" required>
+                  <option *ngFor="let p of notificationRulePlugins" [value]="p.name"> {{ p.name }}</option>
+                </select>
+              </div>
+              &nbsp;
+              <small *ngIf="selectedRulePluginDescription && notificationRulePlugins.length > 0"
+                class="help description level-left">
+                {{selectedRulePluginDescription }}</small>
+              <small *ngIf="!isRulePlugin" class="help is-danger level-left">* Please select a valid plugin</small>
+              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+            </div>
+          </div>
+        </div>
+        <div class="box step-content" id="c-3">
+          <app-view-config-item *ngIf="pageId == 2" [categoryConfigurationData]="rulePluginConfigurationData"
+            [useProxy]="useProxy"
+            (onConfigChanged)="getPluginChangedConfig($event, rulePluginConfigurationData, pageId)" [pageId]="'wizard'">
+          </app-view-config-item>
+        </div>
+        <div class="box step-content" id="c-4">
+          <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
+            class="has-text-centered">
+            <small class="no-rec">No notification delivery plugin found</small>
+          </div>
+          <div *ngIf="notificationDeliveryPlugins.length > 0" class="field is-horizontal form-group">
+            <div class="field-label is-normal">
+              <label class="label">Delivery Plugin</label>
+            </div>
+            <div class="field-body">
+              <div class="select is-multiple">
+                <select multiple name="type" #selectedDeliveryPlugin formControlName="delivery"
+                  (change)="isPluginSelected(selectedDeliveryPlugin.value, notificationDeliveryPlugins[0].type)"
+                  required>
+                  <option *ngFor="let d of notificationDeliveryPlugins" [value]="d.name"> {{ d.name }}</option>
+                </select>
+              </div>
+              &nbsp;
+              <small *ngIf="selectedDeliveryPluginDescription && notificationDeliveryPlugins.length > 0"
+                class="help description level-left">
+                {{selectedDeliveryPluginDescription }}</small>
+              <small *ngIf="!isDeliveryPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
+              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+            </div>
+          </div>
+        </div>
+        <div class="box step-content" id="c-5">
+          <app-view-config-item *ngIf="pageId == 4" [categoryConfigurationData]="deliveryPluginConfigurationData"
+            [useProxy]="useProxy"
+            (onConfigChanged)="getPluginChangedConfig($event, deliveryPluginConfigurationData, pageId)"
+            [pageId]="'wizard'">
+          </app-view-config-item>
+        </div>
+        <div class="box step-content" id="c-6">
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Trigger</label>
+            </div>
+            <div class="field-body">
+              <div class="select is-small">
+                <select name="type" formControlName="type" required>
+                  <option *ngFor="let type of notificationTypeList" [value]="type"> {{ type }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Enabled</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="steps-actions">
+      <div class="steps-action">
+        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
+      </div>
+      <div class="steps-action">
+        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+      </div>
+    </div>
+  </div>
+</div>

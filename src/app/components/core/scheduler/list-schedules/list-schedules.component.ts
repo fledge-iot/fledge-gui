@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { sortBy } from 'lodash';
 
-import { AlertService, ConfigurationService, SchedulesService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, ProgressBarService } from '../../../../services';
 import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
@@ -45,7 +45,6 @@ export class ListSchedulesComponent implements OnInit {
 
   constructor(private schedulesService: SchedulesService,
     private alertService: AlertService,
-    private configService: ConfigurationService,
     public ngProgress: ProgressBarService
   ) { }
 
@@ -62,70 +61,6 @@ export class ListSchedulesComponent implements OnInit {
       scheduleType: this.scheduleType,
       day: this.days
     };
-  }
-
-  private filterCategories(categories) {
-    const allCats = [];
-    categories.forEach(element => {
-      allCats.push({ key: element.key, children: element.children });
-    });
-
-    const sn = [];
-    const south = allCats.filter(el => el.key.toUpperCase() === 'SOUTH');
-    south.forEach(s => {
-      s.children.forEach(el => {
-        sn.push(el.key);
-      });
-    });
-    const north = allCats.filter(el => el.key.toUpperCase() === 'NORTH');
-    north.forEach(n => {
-      n.children.forEach(el => {
-        sn.push(el.key);
-      });
-    });
-    return sn;
-  }
-
-  public filterSouthAndNorth(schedules): void {
-    this.configService.getCategoryWithChildren().
-      subscribe(
-        (data) => {
-          /** request completed */
-          this.ngProgress.done();
-          const sn = this.filterCategories(data['categories']);
-          //  filter by South and North categories name
-          this.scheduleData = [];
-          schedules.forEach(sch => {
-            if (!sn.includes(sch.name)) {
-              this.scheduleData.push(sch);
-            }
-          });
-
-          this.scheduleData.forEach(element => {
-            const repeatTimeObj = Utils.secondsToDhms(element.repeat);
-            if (repeatTimeObj.days === 1) {
-              element.repeat = repeatTimeObj.days + ' day, ' + repeatTimeObj.time;
-            } else if (repeatTimeObj.days > 1) {
-              element.repeat = repeatTimeObj.days + ' days, ' + repeatTimeObj.time;
-            } else {
-              element.repeat = repeatTimeObj.time;
-            }
-            element.time = Utils.secondsToDhms(element.time).time;
-          });
-          this.scheduleData = sortBy(this.scheduleData, function (obj) {
-            return !obj.enabled + obj.name.toLowerCase();
-          });
-
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
   }
 
   public getSchedulesProcesses(): void {
@@ -167,9 +102,28 @@ export class ListSchedulesComponent implements OnInit {
     this.ngProgress.start();
     this.schedulesService.getSchedules().
       subscribe(
-        (data) => {
-          // To filter
-          this.filterSouthAndNorth(data['schedules']);
+        (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
+          data.schedules.forEach(sch => {
+            if (!['south_c', 'north_c', 'south', 'north', 'notification_c'].includes(sch.processName)) {
+              this.scheduleData.push(sch);
+            }
+          });
+          this.scheduleData.forEach(element => {
+            const repeatTimeObj = Utils.secondsToDhms(element.repeat);
+            if (repeatTimeObj.days === 1) {
+              element.repeat = repeatTimeObj.days + ' day, ' + repeatTimeObj.time;
+            } else if (repeatTimeObj.days > 1) {
+              element.repeat = repeatTimeObj.days + ' days, ' + repeatTimeObj.time;
+            } else {
+              element.repeat = repeatTimeObj.time;
+            }
+            element.time = Utils.secondsToDhms(element.time).time;
+          });
+          this.scheduleData = sortBy(this.scheduleData, function (obj) {
+            return !obj.enabled + obj.name.toLowerCase();
+          });
         },
         error => {
           /** request completed */
