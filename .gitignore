@@ -45,3 +45,6 @@ Thumbs.db
 
 # Debian build packages
 packages/build/
+
+# git-version file
+src/git-version.json
