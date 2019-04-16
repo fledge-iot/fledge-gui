@@ -109,7 +109,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     {
       provide: APP_INITIALIZER,
       useFactory: pingServiceFactory,
-      deps: [ServicesAPIService, SharedService],
+      deps: [PingService, SharedService],
       multi: true
     },
     ConnectedServiceStatus,
