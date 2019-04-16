@@ -1,51 +1,19 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
-import { catchError, map, timeout } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { InterceptorSkipHeader } from '../services/http.request.interceptor';
 
 @Injectable()
-export class ServicesHealthService {
-  private GET_PING_URL = environment.BASE_URL + 'ping';
-  private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
-  private FOGLAMP_RESTART_URL = environment.BASE_URL + 'restart';
+export class ServicesAPIService {
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
   private GET_INSTALLED_PLUGINS_URL = environment.BASE_URL + 'plugins/installed';
   private TRACK_SERVICE_URL = environment.BASE_URL + 'track';
-  private REQUEST_TIMEOUT_INTERVAL = 5000;
   private SOUTH_URL = environment.BASE_URL + 'south';
 
   constructor(private http: HttpClient) { }
-
-  /**
-     *  GET  | /foglamp/ping
-     */
-  pingService(): Promise<any> {
-    return this.http.get(this.GET_PING_URL)
-      .pipe(timeout(this.REQUEST_TIMEOUT_INTERVAL))
-      .toPromise()
-      .catch(err => Promise.reject(err));
-  }
-
-  /**
-   *  PUT  | /foglamp/shutdown
-   */
-  shutdown() {
-    return this.http.put(this.FOGLAMP_SHUTDOWN_URL, null).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  /**
-   *  PUT  | /foglamp/restart
-   */
-  restart() {
-    return this.http.put(this.FOGLAMP_RESTART_URL, null).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
 
   /**
    *  GET  | /foglamp/service
