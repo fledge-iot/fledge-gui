@@ -2,6 +2,8 @@
   display: none !important;
 }
 
-.modal-card {
-  width: 70%;
+@media screen and (min-width: 769px) {
+  .modal-card {
+    width: 70%;
+  }
 }
