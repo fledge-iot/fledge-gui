@@ -212,3 +212,22 @@ table.scroll tbody {
     max-height: 49vh;
   }
 }
+
+.dropdown {
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%
+}
+
+.dropdown-trigger > .button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between
+}
+
+a.dropdown-item:hover {
+  background-color: #3273dc;
+  color: #fff;
+}

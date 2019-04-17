@@ -46,14 +46,22 @@ export class SettingsComponent implements OnInit {
     this.serviceDiscoveryModal.toggleModal(true);
   }
 
+  public toggleDropDown(id: string) {
+    const dropDown = document.querySelector(`#${id}`);
+    dropDown.classList.toggle('is-active');
+  }
+
+  setProtocol(httpProtocol: string) {
+    this.protocol = httpProtocol;
+  }
+
   protected setServiceUrl() {
-    const protocolField = <HTMLSelectElement>document.getElementById('protocol');
     const hostField = <HTMLInputElement>document.getElementById('host');
     const servicePortField = <HTMLInputElement>document.getElementById('service_port');
-    localStorage.setItem('CONNECTED_PROTOCOL', protocolField.value);
+    localStorage.setItem('CONNECTED_PROTOCOL', this.protocol);
     localStorage.setItem('CONNECTED_HOST', hostField.value);
     localStorage.setItem('CONNECTED_PORT', servicePortField.value);
-    this.serviceUrl = protocolField.value + '://' + hostField.value + ':'
+    this.serviceUrl = this.protocol + '://' + hostField.value + ':'
       + servicePortField.value + '/foglamp/';
   }
 
@@ -70,14 +78,14 @@ export class SettingsComponent implements OnInit {
   /**
    * Set service ping interval
    */
-  public ping(event) {
-    const time = event.target.value;
+  public ping(time: string) {
+    this.pingInterval = time;
     localStorage.setItem('PING_INTERVAL', time);
     this.pingService.pingIntervalChanged.next(+time);
   }
 
-  setDashboardRefreshTime(event) {
-    const time = event.target.value;
+  setDashboardRefreshTime(time: string) {
+    this.refreshInterval = time;
     localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
     this.pingService.refreshIntervalChanged.next(+time);
   }

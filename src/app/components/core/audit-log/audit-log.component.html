@@ -24,7 +24,7 @@
             <div id="dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)=toggleDropDown()>
+                  (click)="toggleDropDown('dropdown')">
                   <span>{{source == ''? "Source": source.toUpperCase()}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -33,27 +33,21 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="toggleDropDown();filterSource('source', '')">Source</a>
+                  <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterSource('source', '')">Source</a>
                   <a class="dropdown-item" *ngFor="let source of logSourceList"
-                    (click)="toggleDropDown();filterSource('source', source.code)">
+                    (click)="toggleDropDown('dropdown');filterSource('source', source.code)">
                     {{source.code}}{{source.description
                         != '' ? ' - ' + source.description : ''}}
-                    </a>
+                  </a>
                 </div>
               </div>
             </div>
           </div>
           <div class="column">
-            <!-- <div class="select is-fullwidth is-small">
-              <select (change)="filterSource('severity', $event)">
-                <option selected="selected">Severity</option>
-                <option *ngFor="let severity of logSeverityList" [value]='severity.name'>{{severity.name}}</option>
-              </select>
-            </div> -->
             <div id="severity-dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)=toggleSeverityDropDown()>
+                  (click)="toggleDropDown('severity-dropdown')">
                   <span>{{severity == ''? "Severity": severity.toUpperCase()}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -63,11 +57,11 @@
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
                   <a class="dropdown-item"
-                    (click)="toggleSeverityDropDown();filterSource('severity', '')">Severity</a>
+                    (click)="toggleDropDown('severity-dropdown');filterSource('severity', '')">Severity</a>
                   <a class="dropdown-item" *ngFor="let severity of logSeverityList"
-                    (click)="toggleSeverityDropDown();filterSource('severity', severity.name)">
+                    (click)="toggleDropDown('severity-dropdown');filterSource('severity', severity.name)">
                     {{severity.name}}
-                </a>
+                  </a>
                 </div>
               </div>
             </div>

@@ -24,7 +24,7 @@ export class SystemLogComponent implements OnInit {
   constructor(private systemLogService: SystemLogService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService
-    ) { }
+  ) { }
 
   ngOnInit() {
     this.getSysLogs();
@@ -122,7 +122,12 @@ export class SystemLogComponent implements OnInit {
     this.getSysLogs();
   }
 
-  public filterData(event, filter) {
+  public toggleDropDown(id: string) {
+    const dropDown = document.querySelector(`#${id}`);
+    dropDown.classList.toggle('is-active');
+  }
+
+  public filterData(filter: string, value: string) {
     this.limit = 0;
     this.offset = 0;
     this.tempOffset = 0;
@@ -131,9 +136,9 @@ export class SystemLogComponent implements OnInit {
       this.page = 1;
     }
     if (filter === 'source') {
-      this.source = event.target.value.trim().toLowerCase() === 'all' ? '' : event.target.value.trim().toLowerCase();
+      this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim().toLowerCase();
     } else {
-      this.level = event.target.value.trim().toLowerCase();
+      this.level = value.trim().toLowerCase() === 'info' ? '' : value.trim().toLowerCase();
     }
     this.getSysLogs();
   }

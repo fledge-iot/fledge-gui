@@ -86,13 +86,8 @@ export class AuditLogComponent implements OnInit {
     this.setLimitOffset();
   }
 
-  public toggleDropDown() {
-    const dropDown = document.querySelector('#dropdown');
-    dropDown.classList.toggle('is-active');
-  }
-
-  public toggleSeverityDropDown() {
-    const dropDown = document.querySelector('#severity-dropdown');
+  public toggleDropDown(id: string) {
+    const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
   }
 
