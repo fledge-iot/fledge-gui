@@ -12,16 +12,16 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
-              <a class="dropdown-item" (click)="getStatisticsHistory(10)">10 minutes</a>
-              <a class="dropdown-item" (click)="getStatisticsHistory(30)">30 minutes</a>
-              <a class="dropdown-item" (click)="getStatisticsHistory(60)">60 minutes</a>
+              <a class="dropdown-item" (click)="toggleTimeDropdown();getStatisticsHistory(10)">10 minutes</a>
+              <a class="dropdown-item" (click)="toggleTimeDropdown();getStatisticsHistory(30)">30 minutes</a>
+              <a class="dropdown-item" (click)="toggleTimeDropdown();getStatisticsHistory(60)">60 minutes</a>
           </div>
         </div>
       </div>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <div id="graph-key-dropdown" class="dropdown is-right">
         <div class="dropdown-trigger">
-          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=togglegGraphDropdown()>
+          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleGraphDropdown()>
             <span>Select Graphs</span>
             <span class="icon is-small">
               <i class="fa fa-angle-down" aria-hidden="true"></i>
