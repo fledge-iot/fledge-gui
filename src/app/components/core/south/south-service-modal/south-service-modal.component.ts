@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash';
 
 import {
   AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
-  ServicesAPIService,
+  ServicesApiService,
   ProgressBarService,
   GenerateCsvService
 } from '../../../../services';
@@ -66,7 +66,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private filterService: FilterService,
     public ngProgress: ProgressBarService,
     public generateCsv: GenerateCsvService,
-    private servicesAPIService: ServicesAPIService,
+    private servicesApiService: ServicesApiService,
     private schedulesService: SchedulesService) { }
 
   ngOnInit() {
@@ -403,7 +403,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.isFilterDeleted = false;
     }
     this.ngProgress.start();
-    this.servicesAPIService.deleteService(svc.name)
+    this.servicesApiService.deleteService(svc.name)
       .subscribe(
         (data) => {
           this.ngProgress.done();

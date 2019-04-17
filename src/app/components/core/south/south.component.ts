@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
 import { interval } from 'rxjs';
 
-import { PingService, ServicesAPIService, ProgressBarService } from '../../../services';
+import { PingService, ServicesApiService, ProgressBarService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
@@ -22,7 +22,7 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
 
-  constructor(private servicesAPIService: ServicesAPIService,
+  constructor(private servicesApiService: ServicesApiService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private router: Router,
@@ -47,7 +47,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   public getSouthboundServices() {
-    this.servicesAPIService.getSouthServices().
+    this.servicesApiService.getSouthServices().
       subscribe(
         (data: any) => {
           this.southboundServices = data['services'];

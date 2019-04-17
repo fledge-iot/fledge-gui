@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 import { InterceptorSkipHeader } from '../services/http.request.interceptor';
 
 @Injectable()
-export class ServicesAPIService {
+export class ServicesApiService {
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
   private SOUTH_URL = environment.BASE_URL + 'south';
 

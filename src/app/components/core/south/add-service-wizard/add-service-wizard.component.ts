@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 
-import { AlertService, SchedulesService, ServicesAPIService, PluginService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, ServicesApiService, PluginService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -34,7 +34,7 @@ export class AddServiceWizardComponent implements OnInit {
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
   constructor(private formBuilder: FormBuilder,
-    private servicesAPIService: ServicesAPIService,
+    private servicesApiService: ServicesApiService,
     private pluginService: PluginService,
     private alertService: AlertService,
     private router: Router,
@@ -253,7 +253,7 @@ export class AddServiceWizardComponent implements OnInit {
   public addService(payload) {
     /** request started */
     this.ngProgress.start();
-    this.servicesAPIService.addService(payload)
+    this.servicesApiService.addService(payload)
       .subscribe(
         () => {
           /** request done */

@@ -12,7 +12,7 @@ import {
 import { sortBy } from 'lodash';
 import { Router } from '@angular/router';
 import {
-  AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesAPIService,
+  AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesApiService,
   ProgressBarService
 } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
@@ -51,7 +51,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
 
 
-  constructor(private servicesAPIService: ServicesAPIService,
+  constructor(private servicesApiService: ServicesApiService,
     private status: ConnectedServiceStatus,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
@@ -118,7 +118,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public getServiceStatus() {
     this.showLoadingSpinner();
-    this.servicesAPIService.getAllServices()
+    this.servicesApiService.getAllServices()
       .subscribe(
         (data: any) => {
           this.servicesRecord = [];
