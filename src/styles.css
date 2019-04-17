@@ -231,3 +231,7 @@ a.dropdown-item:hover {
   background-color: #3273dc;
   color: #fff;
 }
+
+.card { overflow: visible;}
+.card-content { overflow: visible; }
+
