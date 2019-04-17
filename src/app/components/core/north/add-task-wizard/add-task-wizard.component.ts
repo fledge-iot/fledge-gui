@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 
-import { AlertService, SchedulesService, ServicesAPIService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, PluginService, ProgressBarService } from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
@@ -39,7 +39,7 @@ export class AddTaskWizardComponent implements OnInit {
   @Input() categoryConfigurationData;
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
-  constructor(private servicesAPIService: ServicesAPIService,
+  constructor(private pluginService: PluginService,
     private alertService: AlertService,
     private schedulesService: SchedulesService,
     private router: Router,
@@ -207,7 +207,7 @@ export class AddTaskWizardComponent implements OnInit {
   private getInstalledNorthPlugins() {
     /** request started */
     this.ngProgress.start();
-    this.servicesAPIService.getInstalledPlugins('north').subscribe(
+    this.pluginService.getInstalledPlugins('north').subscribe(
       (data: any) => {
         /** request completed */
         this.ngProgress.done();

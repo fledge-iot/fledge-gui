@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 
-import { AlertService, SchedulesService, ServicesAPIService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, ServicesAPIService, PluginService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -35,6 +35,7 @@ export class AddServiceWizardComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
     private servicesAPIService: ServicesAPIService,
+    private pluginService: PluginService,
     private alertService: AlertService,
     private router: Router,
     private schedulesService: SchedulesService,
@@ -280,7 +281,7 @@ export class AddServiceWizardComponent implements OnInit {
   public getInstalledSouthPlugins() {
     /** request started */
     this.ngProgress.start();
-    this.servicesAPIService.getInstalledPlugins('south').subscribe(
+    this.pluginService.getInstalledPlugins('south').subscribe(
       (data: any) => {
         /** request completed */
         this.ngProgress.done();
