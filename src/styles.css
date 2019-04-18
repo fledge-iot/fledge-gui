@@ -232,6 +232,11 @@ a.dropdown-item:hover {
   color: #fff;
 }
 
+.dropdown-content {
+  max-height: 21rem;
+  overflow: auto;
+}
+
 .card { overflow: visible;}
 .card-content { overflow: visible; }
 
