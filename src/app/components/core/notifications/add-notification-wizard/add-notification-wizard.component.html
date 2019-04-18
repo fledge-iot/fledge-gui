@@ -135,10 +135,24 @@
               <label class="label">Trigger</label>
             </div>
             <div class="field-body">
-              <div class="select is-small">
-                <select name="type" formControlName="type" required>
-                  <option *ngFor="let type of notificationTypeList" [value]="type"> {{ type }}</option>
-                </select>
+              <div id="notify-type-dropdown" class="dropdown notification-type">
+                <div class="dropdown-trigger">
+                  <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                    (click)="toggleDropDown('notify-type-dropdown')">
+                    <span>{{notificationType}}</span>
+                    <span class="icon is-small">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a class="dropdown-item" *ngFor="let type of notificationTypeList"
+                      (click)="toggleDropDown('notify-type-dropdown');setNotificationType(type)">
+                      {{type}}
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
