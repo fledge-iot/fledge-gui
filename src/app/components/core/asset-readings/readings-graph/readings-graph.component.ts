@@ -165,7 +165,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   getColorCode(readKey, cnt, fill) {
     let cc = '';
     if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
-      if (cnt >= 16) { // 15 is length of Utils' colorCodes array
+      if (cnt >= 51) { // 50 is length of Utils' colorCodes array
         cc = '#ad7ebf';
       } else {
         cc = COLOR_CODES[cnt];
