@@ -275,8 +275,8 @@ export class SkipLogin {
   deleteBackup() {
     browser.ignoreSynchronization = true;
     element(by.css('app-backup-restore .button.is-text')).click();
-    browser.wait(this.EC.visibilityOf(element(by.css('.modal-card footer button.is-info'))), 2000);
-    element(by.css('.modal-card footer button.is-info')).click();
+    browser.wait(this.EC.visibilityOf(element(by.css('#modal-box button.button.is-small.is-danger'))), 2000);
+    element(by.css('#modal-box button.button.is-small.is-danger')).click();
     browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore .no-rec'))), 3000);
   }
 
@@ -343,6 +343,6 @@ export class SkipLogin {
 
   getGUISettingsDropdown() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings .columns.is-multiline select'));
+    return element.all(by.css('app-settings > div > div:nth-child(2) .columns select'));
   }
 }
