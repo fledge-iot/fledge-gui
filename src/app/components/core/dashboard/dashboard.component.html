@@ -3,7 +3,7 @@
     <div class="field-body is-pulled-right">
       <div id="time-dropdown" class="dropdown is-right">
         <div class="dropdown-trigger">
-          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleTimeDropdown()>
+          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropDown('time-dropdown')">
             <span>{{optedTime}} minutes</span>
             <span class="icon is-small">
               <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -12,16 +12,16 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
-              <a class="dropdown-item" (click)="toggleTimeDropdown();getStatisticsHistory(10)">10 minutes</a>
-              <a class="dropdown-item" (click)="toggleTimeDropdown();getStatisticsHistory(30)">30 minutes</a>
-              <a class="dropdown-item" (click)="toggleTimeDropdown();getStatisticsHistory(60)">60 minutes</a>
+              <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(10)">10 minutes</a>
+              <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(30)">30 minutes</a>
+              <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(60)">60 minutes</a>
           </div>
         </div>
       </div>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <div id="graph-key-dropdown" class="dropdown is-right">
         <div class="dropdown-trigger">
-          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleGraphDropdown()>
+          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropDown('graph-key-dropdown')">
             <span>Select Graphs</span>
             <span class="icon is-small">
               <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -33,7 +33,7 @@
             <div *ngFor="let data of statisticsKeys" class="dropdown-item">
               <div class="field is-grouped">
                 <div class="control checkbox">
-                  <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph($event)">
+                  <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph('graph-key-dropdown',$event)">
                   {{data.key}}
                 </div>
               </div>

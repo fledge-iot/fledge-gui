@@ -123,6 +123,12 @@ export class SystemLogComponent implements OnInit {
   }
 
   public toggleDropDown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
     const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
   }

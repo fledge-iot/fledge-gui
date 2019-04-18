@@ -236,23 +236,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public toggleGraphDropdown() {
-    const dropDown = document.querySelector('#graph-key-dropdown');
+  public toggleDropDown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
+    const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
   }
 
-  public toggleTimeDropdown() {
-    const dropDown = document.querySelector('#time-dropdown');
-    dropDown.classList.toggle('is-active');
-  }
-
-  public checkedGraph(event) {
+  public checkedGraph(id: string, event: any) {
     const data = {
       key: event.target.value,
       checked: event.target.checked
     };
     this.showGraph(data);
-    this.toggleGraphDropdown();
+    this.toggleDropDown(id);
   }
 
   public ngOnDestroy(): void {
