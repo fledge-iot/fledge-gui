@@ -28,6 +28,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
   private isAlive: boolean;
+  public summaryLimit = 5;
+  public buttonText = '';
+  public autoRefresh = false;
+
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
 
@@ -44,6 +48,17 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
       this.graphRefreshInterval = timeInterval;
     });
+  }
+
+  public loadMore() {
+    this.autoRefresh = false;
+    if (this.buttonText === 'Show Less') {
+      this.summaryLimit = 5;
+      this.buttonText = 'Show More';
+    } else {
+      this.summaryLimit = this.assetReadingSummary.length;
+      this.buttonText = 'Show Less';
+    }
   }
 
   public roundTo(num, to) {
@@ -91,12 +106,14 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;
+      this.autoRefresh = false;
       this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
       this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
     }
     interval(this.graphRefreshInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
+        this.autoRefresh = true;
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
       });
@@ -115,6 +132,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
+    if (this.autoRefresh === false) {
+      this.buttonText = '';
+      this.summaryLimit = 5;
+    }
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
@@ -128,6 +149,11 @@ export class ReadingsGraphComponent implements OnDestroy {
           };
         }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+        if (this.autoRefresh === false) {
+          if (this.assetReadingSummary.length > 5) {
+            this.buttonText = 'Show More';
+          }
+        }
       },
       error => {
         if (error.status === 0) {

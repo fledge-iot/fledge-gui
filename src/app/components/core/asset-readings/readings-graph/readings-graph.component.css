@@ -7,3 +7,16 @@
     width: 70%;
   }
 }
+
+@media screen and (max-width: 769px) {
+  table.summary {
+    width: 140%;
+  }
+  app-chart {
+    width: 140%;
+  }
+}
+
+.summary {
+  background-color: #FFFAFA;
+}
