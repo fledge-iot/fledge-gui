@@ -33,7 +33,7 @@ export class ServicesApiService {
   /**
    *  DELETE | /foglamp/service/{svc_name}
    */
-  public deleteService(svc) {
+  deleteService(svc) {
     return this.http.delete(this.GET_SERVICES_URL + '/' + encodeURIComponent(svc)).pipe(
       map(response => response),
       catchError(error => throwError(error)));
