@@ -27,32 +27,34 @@
           </div> -->
         </div>
         <ng-container>
-          <table class="table is-responsive summary">
+          <table class="table is-responsive summary is-borderless">
             <tbody>
               <tr [ngClass]="{'animated slideInDown': autoRefresh === false}" *ngFor="let asset of assetReadingSummary  | slice:0:summaryLimit">
                 <td>
                   <span>
-                    <b>{{asset.name}} &nbsp;</b>
+                    <b><small>{{asset.name}}</small></b>
                   </span>
                 </td>
-                <td>
-                  <ng-container class="tags has-addons" *ngFor="let reading of asset.value">
+                <ng-container class="tags has-addons" *ngFor="let reading of asset.value">
+                  <td>
                     <span class="tag is-light"> Avg </span>
-                    <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.average)
+                    <span class="tag is-info">{{isNumber(reading.average)
                       ?
                       roundTo(reading.average,
                       5) : reading.average }}
-                    </span> &nbsp;
+                    </span>
+                  </td>
+                  <td>
                     <span class="tag is-light"> Min </span>
-                    <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.min) ?
+                    <span class="tag is-info">{{isNumber(reading.min) ?
                       roundTo(reading.min, 5) : reading.min}}</span>
-                    &nbsp;
+                  </td>
+                  <td>
                     <span class="tag is-light"> Max </span>
-                    <span class="tag is-info" [ngStyle]="{'background-color': '#85C1E9'}">{{isNumber(reading.max) ?
+                    <span class="tag is-info">{{isNumber(reading.max) ?
                       roundTo(reading.max, 5): reading.max}}</span>
-                    &nbsp;
-                  </ng-container>
-                </td>
+                  </td>
+                </ng-container>
               </tr>
               <tr>
                 <td></td>
