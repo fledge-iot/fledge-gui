@@ -5,7 +5,7 @@ import { sortBy } from 'lodash';
 import { map } from 'rxjs/operators';
 
 import {
-  AlertService, NotificationsService, ProgressBarService, SchedulesService, ServicesHealthService
+  AlertService, NotificationsService, ProgressBarService, SchedulesService, ServicesApiService
 } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
@@ -14,7 +14,7 @@ import { NotificationModalComponent } from './notification-modal/notification-mo
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css'],
-  providers: [ServicesHealthService]
+  providers: [ServicesApiService]
 })
 export class NotificationsComponent implements OnInit {
 
@@ -30,7 +30,7 @@ export class NotificationsComponent implements OnInit {
   @ViewChild(NotificationModalComponent) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
-  constructor(public servicesHealthService: ServicesHealthService,
+  constructor(public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
     public notificationService: NotificationsService,
     public ngProgress: ProgressBarService,
@@ -77,7 +77,7 @@ export class NotificationsComponent implements OnInit {
     /** request start */
     this.ngProgress.start();
 
-    this.servicesHealthService.addService(payload)
+    this.servicesApiService.addService(payload)
       .subscribe(
         () => {
           /** request done */
