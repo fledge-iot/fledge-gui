@@ -50,11 +50,11 @@ export class ReadingsGraphComponent implements OnDestroy {
     });
   }
 
-  public loadMore() {
+  public showAll() {
     this.autoRefresh = false;
     if (this.buttonText === 'Show Less') {
       this.summaryLimit = 5;
-      this.buttonText = 'Show More';
+      this.buttonText = 'Show All';
     } else {
       this.summaryLimit = this.assetReadingSummary.length;
       this.buttonText = 'Show Less';
@@ -151,7 +151,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
         if (this.autoRefresh === false) {
           if (this.assetReadingSummary.length > 5) {
-            this.buttonText = 'Show More';
+            this.buttonText = 'Show All';
           }
         }
       },
