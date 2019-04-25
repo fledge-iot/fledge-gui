@@ -13,6 +13,7 @@ export class CreateUserComponent implements OnInit {
   model: User;
   isUpdateForm = false;
   userRole = [];
+  selectedRole = 'user'; // set "user" as a default role
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private userService: UserService,
@@ -82,8 +83,20 @@ export class CreateUserComponent implements OnInit {
     this.getRole();
   }
 
-  setRole(value) {
-    const role = this.userRole.find(r => r.id = value);
-    if (role) { this.model.role_id = role.id; }
+  setRole(role: any) {
+    this.selectedRole = role.name;
+    const selectedRole = this.userRole.find(r => r.id = role.id);
+    if (role) { this.model.role_id = selectedRole.id; }
+  }
+
+  public toggleDropDown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
+    const dropDown = document.querySelector(`#${id}`);
+    dropDown.classList.toggle('is-active');
   }
 }
