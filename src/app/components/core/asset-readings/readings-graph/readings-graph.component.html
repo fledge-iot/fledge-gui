@@ -63,10 +63,8 @@
                 </ng-container>
               </tr>
               <tr *ngIf="buttonText !== ''">
+                <td><a class="button is-small is-text" (click)="showAll()">{{buttonText}}</a></td>
                 <td></td>
-                <td>
-                  <a class="button is-small is-text" (click)="showAll()">{{buttonText}}</a>
-                </td>
               </tr>
             </tbody>
           </table>
