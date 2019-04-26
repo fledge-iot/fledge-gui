@@ -239,7 +239,7 @@
   </div>
   <div class="navbar-end">
     <div *ngIf='isUserLoggedIn' class="navbar-item">
-      <div class="dropdown is-right" id="dropdown-box" (click)="toggleDropdown()">
+      <div class="dropdown is-hoverable is-right">
         <div class="dropdown-trigger">
           <a class="navbar-link">
             <b class="has-text-grey">{{userName}}</b>
@@ -248,16 +248,16 @@
 
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
-            <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item">
+            <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item user-content">
               <i class="fa fa-user" aria-hidden="true"></i>&nbsp; Profile
             </a>
-            <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item">
+            <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item user-content">
               <i class="fa fa-sign-out-alt" aria-hidden="true"></i>&nbsp; Log Out
             </a>
-            <a *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
+            <a *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openModal()" class="dropdown-item user-content">
               <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp; Shut Down
             </a>
-            <a id="restart" *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openRestartModal()" class="dropdown-item">
+            <a id="restart" *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openRestartModal()" class="dropdown-item user-content">
               <i class="fa fa-sync" aria-hidden="true"></i>&nbsp; Restart
             </a>
           </div>

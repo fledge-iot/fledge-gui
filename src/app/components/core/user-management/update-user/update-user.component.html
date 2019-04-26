@@ -7,7 +7,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" id="updateForm" (ngSubmit)="updateUser($event)" #f="ngForm" novalidate>
+      <form name="form" id="updateForm" (ngSubmit)="updateUser()" #f="ngForm" novalidate>
         <div class="columns">
           <div class="column is-6">
             <label class="label">Username</label>
