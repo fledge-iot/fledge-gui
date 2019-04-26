@@ -1,3 +1,6 @@
 .panel.is-mobile {
     margin-top: 10px;
 }
+
+.card { overflow: visible;}
+.card-content { overflow: visible; }
