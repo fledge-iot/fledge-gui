@@ -78,10 +78,14 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.notify.emit(true);
     }
     this.isAlive = false;
-    // reset showGraph variable to default state
-    this.showGraph = true;
     chart_modal.classList.remove('is-active');
     sessionStorage.removeItem(this.assetCode);
+    // reset all variable and array to default state
+    this.showGraph = true;
+    this.assetReadingSummary = [];
+    this.buttonText = '';
+    this.assetReadingValues = [];
+    this.summaryLimit = 5;
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
@@ -152,6 +156,12 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.autoRefresh === false) {
           if (this.assetReadingSummary.length > 5) {
             this.buttonText = 'Show All';
+          }
+        } else {
+          if (this.summaryLimit === 5) {
+            this.buttonText = 'Show All';
+          } else {
+            this.buttonText = 'Show Less';
           }
         }
       },
