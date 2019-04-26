@@ -9,19 +9,13 @@
 }
 
 @media screen and (max-width: 769px) {
-  table.summary {
-    width: 140%;
-  }
-  app-chart {
-    width: 140%;
-  }
-}
-
-@media screen and (max-width: 769px) {
   .chart-container {
       position: relative;
       width: 736px;
       height: 397px;
+  }
+  .summary {
+    width: 736px;
   }
 }
 

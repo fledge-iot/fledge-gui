@@ -158,9 +158,13 @@ export class ReadingsGraphComponent implements OnDestroy {
             this.buttonText = 'Show All';
           }
         } else {
-          if (this.summaryLimit === 5) {
+          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
             this.buttonText = 'Show All';
-          } else {
+          }
+          if (this.assetReadingSummary.length <= 5) {
+            this.buttonText = '';
+          }
+          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
             this.buttonText = 'Show Less';
           }
         }
