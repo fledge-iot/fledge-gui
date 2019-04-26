@@ -278,8 +278,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     };
     this.assetChartType = 'line';
     this.assetChartOptions = {
-      responsive: true,
-      maintainAspectRatio: false,
       scales: {
         xAxes: [{
           type: 'time',

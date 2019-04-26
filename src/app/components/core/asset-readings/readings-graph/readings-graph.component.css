@@ -17,6 +17,14 @@
   }
 }
 
+@media screen and (max-width: 769px) {
+  .chart-container {
+      position: relative;
+      width: 736px;
+      height: 397px;
+  }
+}
+
 .summary {
   background-color: #F8F9F9;
   border-radius: 5px;

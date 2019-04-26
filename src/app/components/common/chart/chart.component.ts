@@ -3,7 +3,7 @@ import { Chart } from 'chart.js';
 
 @Component({
   selector: 'app-chart',
-  template: '<canvas width="600" height="600"></canvas>',
+  template: '<canvas></canvas>',
   styles: [':host { display: block; }']
 })
 export class ChartComponent implements OnInit, OnChanges, OnDestroy {

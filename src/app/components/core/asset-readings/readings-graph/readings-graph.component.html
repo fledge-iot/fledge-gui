@@ -69,7 +69,7 @@
             </tbody>
           </table>
         </ng-container>
-        <app-chart [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+        <app-chart class="chart-container" [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
         <ng-container *ngIf="excludedReadingsList.length > 0">
           <p class="help"> * Excluded <u>{{excludedReadingsList.toString().replace(',' , ', ')}}</u> having non-numeric
             readings </p>
