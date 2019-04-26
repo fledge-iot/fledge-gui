@@ -194,6 +194,18 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/user/profile']);
   }
 
+  public toggleDropdown() {
+    const userDropdown = <HTMLDivElement>document.getElementById('dropdown-box');
+    const classes = userDropdown.className.split(' ');
+    for (const cls of classes) {
+      if (cls === 'is-active') {
+        userDropdown.classList.remove('is-active');
+        return;
+      }
+    }
+    userDropdown.classList.add('is-active');
+  }
+
   public toggleInfoDropdown() {
     const foglampDropdown = <HTMLDivElement>document.getElementById('foglamp-info');
     const classes = foglampDropdown.className.split(' ');
