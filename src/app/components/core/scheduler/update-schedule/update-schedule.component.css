@@ -11,3 +11,9 @@
 .modal {
   position: absolute;
 }
+
+@media screen and (min-width: 769px) {
+  .modal-card {
+    height: 75%;
+  }
+}
