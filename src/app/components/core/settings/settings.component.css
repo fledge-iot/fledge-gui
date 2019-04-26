@@ -2,5 +2,5 @@
     margin-top: 10px;
 }
 
-.card { overflow: visible;}
-.card-content { overflow: visible; }
+#settings { overflow: visible;}
+#settings-content { overflow: visible; }

@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { pickBy, identity } from 'lodash';
 
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { AlertService, SchedulesService } from '../../../../services';
@@ -181,7 +180,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       this.form.get('time').setValue(0);
     }
 
-    const updatePayload = pickBy({
+    const updatePayload = {
       name: this.form.get('name').value,
       type: this.selectedScheduleTypeIndex,
       repeat: repeatTime,
@@ -189,7 +188,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       time: time,
       exclusive: this.form.get('exclusive').value,
       enabled: this.form.get('enabled').value
-    }, identity); // remove undefined object properties
+    };
 
     this.schedulesService.updateSchedule(this.childData.id, updatePayload).
       subscribe(
