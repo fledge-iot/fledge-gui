@@ -66,6 +66,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     // reset showGraph variable to default state
     this.showGraph = true;
     chart_modal.classList.remove('is-active');
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      activeDropDowns[0].classList.remove('is-active');
+    }
     sessionStorage.removeItem(this.assetCode);
   }
 
