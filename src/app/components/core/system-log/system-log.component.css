@@ -16,3 +16,6 @@
 .pagination-section {
   padding: 0.5rem;
 }
+
+.card { overflow: visible;}
+.card-content { overflow: visible; }

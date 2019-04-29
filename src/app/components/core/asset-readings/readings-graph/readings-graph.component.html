@@ -11,7 +11,7 @@
     <section class="modal-card-body">
       <ng-container *ngIf='showGraph'>
         <div class="columns is-mobile">
-          <div class="column is-two-fifths">
+          <div class="column is-2">
             <div id="time-dropdown" class="dropdown is-left">
               <div class="dropdown-trigger">
                 <button class="button is-rounded is-small" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
@@ -36,11 +36,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="column is-half">
-            <app-number-input-debounce placeholder="number of readings" #limitField (value)="getLimitBasedAssetReadingsAndSummary(limitField.inputValue);"
-              max="{{MAX_RANGE}}"></app-number-input-debounce>
-            <p *ngIf='isInvalidLimit' class='help is-danger'>Number of readings must be in range 1 - {{MAX_RANGE}}</p>
-          </div> -->
         </div>
         <div [ngClass]="{'summary': buttonText !== ''}">
           <table class="table is-responsive is-borderless">

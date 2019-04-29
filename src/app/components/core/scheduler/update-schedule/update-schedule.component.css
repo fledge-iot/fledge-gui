@@ -18,7 +18,7 @@
   }
 }
 
-@media screen and (min-width: 769px) and (max-width: 1280px) {
+@media screen and (min-width: 769px) and (max-width: 1919px) {
   .modal-card {
     min-height: 75% !important;
   }

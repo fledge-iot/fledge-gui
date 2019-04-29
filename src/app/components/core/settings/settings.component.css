@@ -5,9 +5,9 @@
 #settings { overflow: visible;}
 #settings-content { overflow: visible; }
 
-@media screen and (max-width: 1280px) {
+@media screen and (min-width: 769px) and (max-width: 1919px) {
   #connection .card-content {
-    min-height: 40vh !important;
+    min-height: 30vh !important;
   }
 }
 
