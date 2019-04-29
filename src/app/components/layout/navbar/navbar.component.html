@@ -29,13 +29,15 @@
     </div>
     <div *ngIf="viewPort == 'tablet'" class="navbar-item">
       <!-- tablet -->
-      <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
+      <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info"
+        (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
           <a id="hover-link" (click)="getServiceStatus()">
             <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
               <i class="fa fa-circle"> </i>
             </span>
-            <b *ngIf="pingData['hostName'] && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+            <b
+              *ngIf="pingData['hostName'] && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
             <span class="icon is-small">
               <i class="fa fa-angle-down" aria-hidden="true"></i>
             </span>
@@ -99,7 +101,8 @@
       <!-- mobile -->
       <div class="columns">
         <div class="column">
-          <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info" (click)="toggleInfoDropdown()">
+          <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info"
+            (click)="toggleInfoDropdown()">
             <div class="dropdown-trigger">
               <a id="hover-link" (click)="getServiceStatus()">
                 <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
@@ -184,7 +187,8 @@
                   <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                     <i class="fa fa-circle"> </i>
                   </span>
-                  <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+                  <b
+                    *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
                 </a>
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
@@ -192,7 +196,8 @@
                   <div *ngIf="showSpinner" class="app-loading">
                     &nbsp;
                     <svg class="spinner" viewBox="0 0 10 100">
-                      <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
+                      <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2"
+                        stroke-miterlimit="10" />
                     </svg>
                   </div>
                   <ng-container *ngIf="!showSpinner">
@@ -239,7 +244,8 @@
   </div>
   <div class="navbar-end">
     <div *ngIf='isUserLoggedIn' class="navbar-item">
-      <div class="dropdown is-right" id="dropdown-box" (click)="toggleDropdown()">
+      <div [ngClass]="{'is-hoverable': viewPort == 'desktop'}" class="dropdown is-right" id="dropdown-box"
+        (click)="viewPort !== 'desktop'? toggleDropdown(): false">
         <div class="dropdown-trigger">
           <a class="navbar-link">
             <b class="has-text-grey">{{userName}}</b>
@@ -248,16 +254,17 @@
 
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
-            <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item">
+            <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item user-content">
               <i class="fa fa-user" aria-hidden="true"></i>&nbsp; Profile
             </a>
-            <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item">
+            <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item user-content">
               <i class="fa fa-sign-out-alt" aria-hidden="true"></i>&nbsp; Log Out
             </a>
-            <a *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openModal()" class="dropdown-item">
+            <a *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openModal()" class="dropdown-item user-content">
               <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp; Shut Down
             </a>
-            <a id="restart" *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openRestartModal()" class="dropdown-item">
+            <a id="restart" *ngIf="pingInfo.isAlive && isUserLoggedIn" (click)="openRestartModal()"
+              class="dropdown-item user-content">
               <i class="fa fa-sync" aria-hidden="true"></i>&nbsp; Restart
             </a>
           </div>

@@ -17,8 +17,8 @@ export class AuditLogComponent implements OnInit {
   public MAX_RANGE = MAX_INT_SIZE;
   limit = this.DEFAULT_LIMIT;
   offset = 0;
-  public source: String = '';
-  public severity: String = '';
+  public source = '';
+  public severity = '';
 
   page = 1;             // Default page is 1 in pagination
   recordCount = 0;
@@ -84,6 +84,17 @@ export class AuditLogComponent implements OnInit {
   onPrev(): void {
     this.page--;
     this.setLimitOffset();
+  }
+
+  public toggleDropDown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
+    const dropDown = document.querySelector(`#${id}`);
+    dropDown.classList.toggle('is-active');
   }
 
   /**
@@ -180,7 +191,7 @@ export class AuditLogComponent implements OnInit {
     this.auditLogSubscriber();
   }
 
-  public filterSource(type, event) {
+  public filterSource(type: string, code: string) {
     this.limit = this.DEFAULT_LIMIT;
     this.offset = 0;
     this.tempOffset = 0;
@@ -190,10 +201,10 @@ export class AuditLogComponent implements OnInit {
     }
 
     if (type === 'source') {
-      this.source = event.target.value.trim().toLowerCase() === 'source' ? '' : event.target.value.trim().toLowerCase();
+      this.source = code.trim().toLowerCase() === 'source' ? '' : code.trim().toLowerCase();
     }
     if (type === 'severity') {
-      this.severity = event.target.value.trim().toLowerCase() === 'severity' ? '' : event.target.value.trim().toLowerCase();
+      this.severity = code.trim().toLowerCase() === 'severity' ? '' : code.trim().toLowerCase();
     }
     this.auditLogSubscriber();
   }

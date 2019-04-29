@@ -13,6 +13,7 @@ export class UpdateUserComponent implements OnInit {
   userRole = [];
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   showRoleSection = false;
+  selectedRole = 'user'; // set "user" as a default role
 
   constructor(private alertService: AlertService,
     private userService: UserService) { }
@@ -24,7 +25,7 @@ export class UpdateUserComponent implements OnInit {
       username: '',
       password: '',
       confirmPassword: '',
-      role_id: 2   // set "user" as a default role
+      role_id: 0   // set "user" as a default role
     };
   }
 
@@ -34,6 +35,7 @@ export class UpdateUserComponent implements OnInit {
    * @param key  key to show/hide particular section on UI
    */
   public setUser(userRecord, key) {
+    this.setUserRole({ id: userRecord.roleId, name: userRecord.roleName });
     this.showRoleSection = false;
     this.userRecord = {
       userId: userRecord.userId,
@@ -56,6 +58,10 @@ export class UpdateUserComponent implements OnInit {
       return;
     }
     updateUserModal.classList.remove('is-active');
+    const activeDropDown = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDown.length > 0) {
+      activeDropDown[0].classList.remove('is-active');
+    }
   }
 
   /**
@@ -65,7 +71,6 @@ export class UpdateUserComponent implements OnInit {
     this.userService.getRole()
       .subscribe(
         (roleRecord) => {
-          console.log('Role', roleRecord['roles']);
           this.userRole = roleRecord['roles'];
         },
         error => {
@@ -127,5 +132,21 @@ export class UpdateUserComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public toggleDropDown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
+    const dropDown = document.querySelector(`#${id}`);
+    dropDown.classList.toggle('is-active');
+  }
+
+  public setUserRole(role: any) {
+    this.selectedRole = role.name;
+    this.userRecord.role_id = role.id;
   }
 }

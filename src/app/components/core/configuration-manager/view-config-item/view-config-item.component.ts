@@ -267,6 +267,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     return configItem.key;
   }
 
+  public toggleDropdown(key) {
+    const dropDown = document.querySelector('#' + key + '-dropdown');
+    dropDown.classList.toggle('is-active');
+  }
+
   public checkButtonProxy() {
     if (this.useProxy === 'false'
       && this.useFilterProxy === 'false'

@@ -11,3 +11,6 @@
 .modal {
   position: absolute;
 }
+
+.modal-card { overflow: visible;}
+.modal-card-body { overflow: visible; }
