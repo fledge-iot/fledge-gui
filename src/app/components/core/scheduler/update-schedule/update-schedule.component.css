@@ -12,20 +12,5 @@
   position: absolute;
 }
 
-@media only screen and (max-width: 768px) {
-  .modal-card {
-    min-height: 57% !important;
-  }
-}
-
-@media screen and (min-width: 769px) and (max-width: 1919px) {
-  .modal-card {
-    min-height: 75% !important;
-  }
-}
-
-@media screen and (min-width: 1920px) {
-  .modal-card {
-    min-height: 47% !important;
-  }
-}
+.modal-card { overflow: visible;}
+.modal-card-body { overflow: visible; }

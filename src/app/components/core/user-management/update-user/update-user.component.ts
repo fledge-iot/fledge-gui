@@ -58,6 +58,10 @@ export class UpdateUserComponent implements OnInit {
       return;
     }
     updateUserModal.classList.remove('is-active');
+    const activeDropDown = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDown.length > 0) {
+      activeDropDown[0].classList.remove('is-active');
+    }
   }
 
   /**

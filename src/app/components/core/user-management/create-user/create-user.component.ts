@@ -41,6 +41,11 @@ export class CreateUserComponent implements OnInit {
     }
     this.isUpdateForm = false;
     createUserModal.classList.remove('is-active');
+
+    const activeDropDown = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDown.length > 0) {
+      activeDropDown[0].classList.remove('is-active');
+    }
   }
 
   public createUser(form: NgForm) {

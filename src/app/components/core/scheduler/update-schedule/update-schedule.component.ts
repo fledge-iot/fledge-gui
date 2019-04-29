@@ -158,9 +158,9 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     }
     update_schedule_modal.classList.remove('is-active');
 
-    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
-    if (activeDropDowns.length > 0) {
-      activeDropDowns[0].classList.remove('is-active');
+    const activeDropDown = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDown.length > 0) {
+      activeDropDown[0].classList.remove('is-active');
     }
   }
 

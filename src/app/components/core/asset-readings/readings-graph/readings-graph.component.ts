@@ -95,6 +95,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (activeDropDowns.length > 0) {
       activeDropDowns[0].classList.remove('is-active');
     }
+    this.optedTime = ASSET_READINGS_TIME_FILTER;
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
