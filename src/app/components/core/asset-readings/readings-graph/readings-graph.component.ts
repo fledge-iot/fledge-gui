@@ -31,6 +31,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   public summaryLimit = 5;
   public buttonText = '';
   public autoRefresh = false;
+  public showGraphSpinner = true;
+  public showSummarySpinner = true;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
@@ -86,6 +88,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.buttonText = '';
     this.assetReadingValues = [];
     this.summaryLimit = 5;
+    this.showGraphSpinner = true;
+    this.showSummarySpinner = true;
+    console.log('clear all assetReadingSummary', this.assetReadingSummary);
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
@@ -168,6 +173,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             this.buttonText = 'Show Less';
           }
         }
+        this.showSummarySpinner = false;
       },
       error => {
         if (error.status === 0) {
@@ -195,6 +201,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       subscribe(
         (data: any[]) => {
           this.statsAssetReadingsGraph(data);
+          this.showGraphSpinner = false;
         },
         error => {
           console.log('error in response', error);
