@@ -5,5 +5,7 @@
 #settings { overflow: visible;}
 #settings-content { overflow: visible; }
 
-.card { overflow: visible;}
-.card-content { overflow: visible; }
+
+@media screen and (min-width: 769px) {
+  #connection-content { overflow: visible; }
+}
