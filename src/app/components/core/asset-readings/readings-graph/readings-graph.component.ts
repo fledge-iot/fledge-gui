@@ -28,6 +28,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
   private isAlive: boolean;
+  public summaryLimit = 5;
+  public buttonText = '';
+  public autoRefresh = false;
+
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
 
@@ -46,12 +50,35 @@ export class ReadingsGraphComponent implements OnDestroy {
     });
   }
 
+  public showAll() {
+    this.autoRefresh = false;
+    if (this.buttonText === 'Show Less') {
+      this.summaryLimit = 5;
+      this.buttonText = 'Show All';
+    } else {
+      this.summaryLimit = this.assetReadingSummary.length;
+      this.buttonText = 'Show Less';
+    }
+  }
+
   public roundTo(num, to) {
     const _to = Math.pow(10, to);
     return Math.round(num * _to) / _to;
   }
 
   public toggleModal(shouldOpen: Boolean) {
+    // reset all variable and array to default state
+    this.showGraph = true;
+    this.assetReadingSummary = [];
+    this.buttonText = '';
+    this.assetReadingValues = [];
+    this.summaryLimit = 5;
+    this.readKeyColorLabel = [];
+    this.excludedReadingsList = [];
+    this.assetChartOptions = '';
+
+    sessionStorage.removeItem(this.assetCode);
+
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
       chart_modal.classList.add('is-active');
@@ -63,14 +90,11 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.notify.emit(true);
     }
     this.isAlive = false;
-    // reset showGraph variable to default state
-    this.showGraph = true;
     chart_modal.classList.remove('is-active');
     const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
     if (activeDropDowns.length > 0) {
       activeDropDowns[0].classList.remove('is-active');
     }
-    sessionStorage.removeItem(this.assetCode);
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
@@ -96,12 +120,14 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;
+      this.autoRefresh = false;
       this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
       this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
     }
     interval(this.graphRefreshInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
+        this.autoRefresh = true;
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
       });
@@ -120,6 +146,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
+    if (this.autoRefresh === false) {
+      this.buttonText = '';
+      this.summaryLimit = 5;
+    }
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
@@ -133,6 +163,21 @@ export class ReadingsGraphComponent implements OnDestroy {
           };
         }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+        if (this.autoRefresh === false) {
+          if (this.assetReadingSummary.length > 5) {
+            this.buttonText = 'Show All';
+          }
+        } else {
+          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
+            this.buttonText = 'Show All';
+          }
+          if (this.assetReadingSummary.length <= 5) {
+            this.buttonText = '';
+          }
+          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
+            this.buttonText = 'Show Less';
+          }
+        }
       },
       error => {
         if (error.status === 0) {
