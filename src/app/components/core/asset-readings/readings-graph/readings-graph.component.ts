@@ -78,6 +78,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.readKeyColorLabel = [];
     this.showGraphSpinner = true;
     this.showSummarySpinner = true;
+    this.excludedReadingsList = [];
+    this.assetChartOptions = {};
 
     sessionStorage.removeItem(this.assetCode);
 
