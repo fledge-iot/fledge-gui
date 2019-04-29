@@ -67,6 +67,16 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public toggleModal(shouldOpen: Boolean) {
+    // reset all variable and array to default state
+    this.showGraph = true;
+    this.assetReadingSummary = [];
+    this.buttonText = '';
+    this.assetReadingValues = [];
+    this.summaryLimit = 5;
+    this.readKeyColorLabel = [];
+
+    sessionStorage.removeItem(this.assetCode);
+
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
       chart_modal.classList.add('is-active');
@@ -79,13 +89,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
     this.isAlive = false;
     chart_modal.classList.remove('is-active');
-    sessionStorage.removeItem(this.assetCode);
-    // reset all variable and array to default state
-    this.showGraph = true;
-    this.assetReadingSummary = [];
-    this.buttonText = '';
-    this.assetReadingValues = [];
-    this.summaryLimit = 5;
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
