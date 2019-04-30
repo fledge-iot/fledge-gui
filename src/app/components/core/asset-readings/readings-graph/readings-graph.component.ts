@@ -95,6 +95,11 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
     this.isAlive = false;
     chart_modal.classList.remove('is-active');
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      activeDropDowns[0].classList.remove('is-active');
+    }
+    this.optedTime = ASSET_READINGS_TIME_FILTER;
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
@@ -109,6 +114,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.showAssetReadingsSummary(this.assetCode, this.limit, time);
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     }
+    this.toggleDropdown();
   }
 
   public getAssetCode(assetCode) {
@@ -337,6 +343,11 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
+  }
+
+  public toggleDropdown() {
+    const dropDown = document.querySelector('#time-dropdown');
+    dropDown.classList.toggle('is-active');
   }
 
   public isNumber(val) {

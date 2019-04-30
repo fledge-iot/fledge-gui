@@ -13,7 +13,8 @@
               <div class="form-group">
                 <label class="label is-small">Name</label>
                 <p class="control is-fullwidth">
-                  <input type="text" class="input is-small" formControlName="name" placeholder="name" required trim="blur" />
+                  <input type="text" class="input is-small" formControlName="name" placeholder="name" required
+                    trim="blur" />
                 </p>
                 <small *ngIf="!form.controls.name.valid" class="help is-danger level-left">Name is required</small>
               </div>
@@ -50,11 +51,24 @@
             <div class="field">
               <label class="label is-small">Type</label>
               <div class="control">
-                <div class="select is-fullwidth is-small">
-                  <select #selectedTypeValue (change)="selectedScheduleType = setScheduleTypeKey(selectedTypeValue.value)"
-                    formControlName="type">
-                    <option [selected]="type.name == type" *ngFor="let type of scheduleType">{{type.name}}</option>
-                  </select>
+                <div id="type-dropdown" class="dropdown">
+                  <div class="dropdown-trigger">
+                    <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                      (click)="toggleDropDown('type-dropdown')">
+                      <span>{{selectedScheduleTypeName}}</span>
+                      <span class="icon is-small">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                    <div class="dropdown-content">
+                      <a class="dropdown-item" *ngFor="let type of scheduleType"
+                        (click)="toggleDropDown('type-dropdown');form.markAsTouched();selectedScheduleTypeIndex = setScheduleTypeKey(type.name)">
+                        {{type.name}}
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -68,8 +82,8 @@
                 <div class="column is-fullwidth">
                   <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365"
                     placeholder="days" formControlName="repeatDay" required>
-                  <input id="repeat_time" class="input is-small" type='text' placeholder="hh:mm:ss" formControlName="repeat"
-                    mask='00:00:00' (input)="getChangedRepeatInterval($event)" required>
+                  <input id="repeat_time" class="input is-small" type='text' placeholder="hh:mm:ss"
+                    formControlName="repeat" mask='00:00:00' (input)="getChangedRepeatInterval($event)" required>
                 </div>
               </div>
               <small *ngIf="form.controls.repeatDay.invalid" class="help is-danger level-left">&nbsp; Repeat days must
@@ -81,25 +95,37 @@
         </div>
         <div class="columns is-mobile">
           <div class="column">
-            <div *ngIf="selectedScheduleType == 2" class="field">
+            <div *ngIf="selectedScheduleTypeIndex == 2" class="field">
               <label class="label is-small">Day &nbsp;
                 <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (1-7 Mon-Sun)">
                   <i class="fa fa-info-circle"></i>
                 </span>
               </label>
               <div class="control">
-                <div class="select is-fullwidth is-small">
-                  <select #selectedDay (change)="selectedDayIndex = getSelectedDayIndex(selectedDay.value)"
-                    formControlName="day">
-                    <option *ngIf="None == day">None</option>
-                    <option [selected]="d == day" *ngFor="let d of days">{{d}}</option>
-                  </select>
+                <div id="day-dropdown" class="dropdown is-up">
+                  <div class="dropdown-trigger">
+                    <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                      (click)="toggleDropDown('day-dropdown')">
+                      <span>{{selectedDayName}}</span>
+                      <span class="icon is-small">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                    <div class="dropdown-content">
+                      <a class="dropdown-item" *ngFor="let d of days"
+                        (click)="toggleDropDown('day-dropdown');form.markAsTouched();selectedDayIndex = getSelectedDayIndex(d)">
+                        {{d}}
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="column">
-            <div *ngIf="selectedScheduleType == 2" class="field">
+            <div *ngIf="selectedScheduleTypeIndex == 2" class="field">
               <label class="label is-small">Time</label>
               <p class="control is-fullwidth">
                 <input class="input is-small" type='text' placeholder="hh:mm:ss" mask="00:00:00" formControlName="time">
@@ -113,7 +139,8 @@
     </section>
     <footer class="modal-card-foot">
       <button type="button" id="cancel" class="button is-small" (click)="toggleModal(false)">Cancel</button>
-      <button id="save" type="submit" class="button is-info is-small" (click)="f.form.valid && updateSchedule()">Save</button>
+      <button id="save" type="submit" class="button is-info is-small"
+        (click)="f.form.valid && updateSchedule()">Save</button>
     </footer>
   </div>
 </div>

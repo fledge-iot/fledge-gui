@@ -2,29 +2,40 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">{{assetCode}}</p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <p class="modal-card-title is-size-5">{{assetCode}}
+      </p>
+      <div class="close">
+        <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      </div>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf='showGraph'>
-        <div class="columns is-mobile">
-          <div class="column is-two-fifths">
-            <div class="select is-small">
-              <select #selectedTime (change)="getTimeBasedAssetReadingsAndSummary(selectedTime.value)">
-                <!-- <option value="0" [selected]="optedTime == 0">None</option> -->
-                <option value="600" [selected]="optedTime == 600">10 minutes</option>
-                <option value="1800" [selected]="optedTime == 1800">30 minutes</option>
-                <option value="3600" [selected]="optedTime == 3600">1 hour</option>
-                <option value="28800" [selected]="optedTime == 28800">8 hours</option>
-                <option value="86400" [selected]="optedTime == 86400">1 day</option>
-              </select>
+        <div class="columns">
+          <div class="column is-2">
+            <div id="time-dropdown" class="dropdown is-left">
+              <div class="dropdown-trigger">
+                <button class="button is-rounded is-small" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
+                  <span *ngIf="optedTime == 600">10 minutes</span>
+                  <span *ngIf="optedTime == 1800">30 minutes</span>
+                  <span *ngIf="optedTime == 3600">1 hour</span>
+                  <span *ngIf="optedTime == 28800">8 hour</span>
+                  <span *ngIf="optedTime == 86400">1 day</span>
+                  <span class="icon is-small">
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(600)">10 minutes</a>
+                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(1800)">30 minutes</a>
+                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(3600)">1 hour</a>
+                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(28800)">8 hour</a>
+                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(86400)">1 day</a>
+                </div>
+              </div>
             </div>
           </div>
-          <!-- <div class="column is-half">
-            <app-number-input-debounce placeholder="number of readings" #limitField (value)="getLimitBasedAssetReadingsAndSummary(limitField.inputValue);"
-              max="{{MAX_RANGE}}"></app-number-input-debounce>
-            <p *ngIf='isInvalidLimit' class='help is-danger'>Number of readings must be in range 1 - {{MAX_RANGE}}</p>
-          </div> -->
         </div>
         <ng-container *ngIf="showSummarySpinner">
           <div class="app-loading">

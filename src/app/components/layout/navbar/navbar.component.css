@@ -59,6 +59,10 @@
   padding-left: 24px;
 }
 
-.dropdown-item{
+.dropdown-item {
   width: max-content;
+}
+
+.dropdown-item.user-content {
+  width:100%;
 }

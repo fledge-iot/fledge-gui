@@ -42,13 +42,13 @@ export class AddNotificationWizardComponent implements OnInit {
   public useProxy: string;
 
   public pageId: number;
+  public notificationType: string;
 
   notificationForm = new FormGroup({
     name: new FormControl(),
     description: new FormControl(),
     rule: new FormControl(),
-    delivery: new FormControl(),
-    type: new FormControl()
+    delivery: new FormControl()
   });
 
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
@@ -67,8 +67,7 @@ export class AddNotificationWizardComponent implements OnInit {
       name: ['', Validators.required],
       description: ['', Validators.required],
       rule: ['', Validators.required],
-      delivery: ['', Validators.required],
-      type: ['', Validators.required],
+      delivery: ['', Validators.required]
     });
   }
 
@@ -247,8 +246,8 @@ export class AddNotificationWizardComponent implements OnInit {
         break;
       case 6:
         this.pageId = +id;
-        if (formValues['type'].length > 0) {
-          this.payload.notification_type = formValues['type'];
+        if (this.notificationType.length > 0) {
+          this.payload.notification_type = this.notificationType;
         }
         this.payload.enabled = this.isNotificationEnabled;
         this.addNotificationInstance(this.payload);
@@ -348,6 +347,21 @@ export class AddNotificationWizardComponent implements OnInit {
     this.payload.enabled = this.isNotificationEnabled;
   }
 
+  public toggleDropDown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
+    const dropDown = document.querySelector(`#${id}`);
+    dropDown.classList.toggle('is-active');
+  }
+
+  setNotificationType(type: string) {
+    this.notificationType = type;
+  }
+
   /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
@@ -395,7 +409,7 @@ export class AddNotificationWizardComponent implements OnInit {
       .subscribe(
         (data: []) => {
           this.notificationTypeList = data['notification_type'];
-          this.notificationForm.controls['type'].setValue(this.notificationTypeList[0]);
+          this.notificationType = this.notificationTypeList[0];
         },
         (error) => {
           if (error.status === 0) {
