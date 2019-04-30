@@ -147,10 +147,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
-    if (this.autoRefresh === false) {
-      this.buttonText = '';
-      this.summaryLimit = 5;
-    }
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
@@ -164,20 +160,14 @@ export class ReadingsGraphComponent implements OnDestroy {
           };
         }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-        if (this.autoRefresh === false) {
-          if (this.assetReadingSummary.length > 5) {
-            this.buttonText = 'Show All';
-          }
-        } else {
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
-            this.buttonText = 'Show All';
-          }
-          if (this.assetReadingSummary.length <= 5) {
-            this.buttonText = '';
-          }
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
-            this.buttonText = 'Show Less';
-          }
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
+          this.buttonText = 'Show All';
+        }
+        if (this.assetReadingSummary.length <= 5) {
+          this.buttonText = '';
+        }
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
+          this.buttonText = 'Show Less';
         }
         this.showSummarySpinner = false;
       },
@@ -214,7 +204,6 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-
   getColorCode(readKey, cnt, fill) {
     let cc = '';
     if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
@@ -248,7 +237,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
     for (const k of uniqueKeys) {
       let assetReads = map(readings, k);
-      assetReads = assetReads.filter(function( el ) {
+      assetReads = assetReads.filter(function (el) {
         return el !== undefined;
       });
       if (!assetReads.some(isNaN)) {
