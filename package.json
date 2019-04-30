@@ -9,7 +9,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "clean": "rm -rf dist && rm -rf node_modules && yarn cache clean"
+    "clean": "rm -rf dist && rm -rf node_modules && yarn cache clean",
+    "purge": "git clean -fdx && yarn cache clean"
   },
   "private": true,
   "dependencies": {
