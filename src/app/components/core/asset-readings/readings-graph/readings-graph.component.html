@@ -1,11 +1,11 @@
 <div id="chart_modal" class="modal">
   <div class="modal-background"></div>
-  <div class="modal-card">
+  <div class="modal-card animated fadeIn">
     <header class="modal-card-head">
       <p class="modal-card-title is-size-5">{{assetCode}}
       </p>
       <div class="close">
-        <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+          <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
       </div>
     </header>
     <section class="modal-card-body">
@@ -40,12 +40,12 @@
         <ng-container *ngIf="showSummarySpinner">
           <div class="app-loading">
             &nbsp;
-            <svg class="spinner" viewBox="0 0 100 100">
+            <svg class="spinner animated fadeIn fadeOut" viewBox="0 0 100 100">
               <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
             </svg>
           </div>
         </ng-container>
-        <div [ngClass]="{'summary': buttonText !== ''}" *ngIf="!showSummarySpinner">
+        <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
           <table class="table is-responsive is-borderless">
             <tbody>
               <tr [ngClass]="{'animated fadeInDown': autoRefresh === false}" *ngFor="let asset of assetReadingSummary  | slice:0:summaryLimit">
@@ -91,12 +91,12 @@
         <ng-container *ngIf="showGraphSpinner">
           <div class="app-loading">
             &nbsp;
-            <svg class="spinner" viewBox="0 0 100 100">
+            <svg class="spinner animated fadeIn fadeOut" viewBox="0 0 100 100">
               <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
             </svg>
           </div>
         </ng-container>
-        <app-chart *ngIf="!showGraphSpinner" class="chart-container" [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions"
+        <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions"
           #assetChart></app-chart>
         <ng-container *ngIf="excludedReadingsList.length > 0">
           <p class="help"> * Excluded <u>{{excludedReadingsList.toString().replace(',' , ', ')}}</u> having non-numeric
