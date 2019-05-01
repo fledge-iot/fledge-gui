@@ -55,12 +55,12 @@ export class SkipLogin {
     return element(by.css('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(4)')).getText();
   }
 
-  isSelectTagPresent() {
+  isDashboardTimeDropdownPresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-dashboard div:nth-child(1) div.select.is-rounded')).isDisplayed();
+    return element(by.css('#time-dropdown')).isDisplayed();
   }
 
-  isGraphDropdownPresent() {
+  isDashboardGraphDropdownPresent() {
     browser.ignoreSynchronization = true;
     return element(by.css('#graph-key-dropdown')).isDisplayed();
   }
@@ -123,9 +123,14 @@ export class SkipLogin {
     return element(by.css('#card-title .subtitle.is-6')).getText();
   }
 
-  getAuditLogsSelectTag() {
+  isAuditLogsSourceDropdownPresent() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-audit-log div:nth-child(1) select')).count();
+    return element(by.css('.card #dropdown')).isDisplayed();
+  }
+
+  isAuditLogsSeverityDropdownPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('.card #severity-dropdown')).isDisplayed();
   }
 
   getAuditLogsInputTag() {
@@ -152,9 +157,14 @@ export class SkipLogin {
     return element(by.css('#card-title .subtitle.is-6')).getText();
   }
 
-  getSystemtLogSelectTag() {
+  isSystemLogDropDownPresent() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-system-log div:nth-child(1) select')).count();
+    return element(by.css('#dropdown')).isDisplayed();
+  }
+
+  isSystemLogLevelDropdownPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#level-dropdown')).isDisplayed();
   }
 
   getSystemLogInputTag() {
@@ -324,7 +334,7 @@ export class SkipLogin {
 
   getSettingsSelectTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings .column .select #protocol')).count();
+    return element.all(by.css('#protocol-dropdown')).count();
   }
 
   getSettingsHostInputTag() {
@@ -342,8 +352,13 @@ export class SkipLogin {
     return element.all(by.css('app-settings #set-url-restart-btn'));
   }
 
-  getGUISettingsDropdown() {
+  isRefreshDashboardDropdownPresent() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings > div > div:nth-child(2) .columns select'));
+    return element(by.css('#refresh-time-dropdown')).isDisplayed();
+  }
+
+  isPingIntervalDropdownPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#ping-interval-dropdown')).isDisplayed();
   }
 }

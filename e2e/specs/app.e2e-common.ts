@@ -32,8 +32,8 @@ describe('FogLAMP gui', () => {
     });
 
     it('Should Display Dashboard', () => {
-      expect(skipLogin.isSelectTagPresent()).toEqual(true);
-      expect(skipLogin.isGraphDropdownPresent()).toEqual(true);
+      expect(skipLogin.isDashboardTimeDropdownPresent()).toEqual(true);
+      expect(skipLogin.isDashboardGraphDropdownPresent()).toEqual(true);
     });
 
     // TODO: Test data required to pass below tests.
@@ -52,7 +52,8 @@ describe('FogLAMP gui', () => {
       expect(skipLogin.getAuditLogsTitle()).toEqual('Audit Logs');
       expect(skipLogin.auditLogCount()).toContain('Count');
       expect(skipLogin.isAuditLogRefreshIcon()).toEqual(true);
-      expect(skipLogin.getAuditLogsSelectTag()).toEqual(2);
+      expect(skipLogin.isAuditLogsSourceDropdownPresent()).toEqual(true);
+      expect(skipLogin.isAuditLogsSeverityDropdownPresent()).toEqual(true);
       expect(skipLogin.getAuditLogsInputTag()).toEqual(2);
     });
 
@@ -61,7 +62,8 @@ describe('FogLAMP gui', () => {
       expect(skipLogin.getSystemLogTitle()).toEqual('SysLog');
       expect(skipLogin.systemLogCount()).toContain('Count');
       expect(skipLogin.getSysLogRefreshButton()).toEqual(true);
-      expect(skipLogin.getSystemtLogSelectTag()).toEqual(2);
+      expect(skipLogin.isSystemLogDropDownPresent()).toEqual(true);
+      expect(skipLogin.isSystemLogLevelDropdownPresent()).toEqual(true);
       expect(skipLogin.getSystemLogInputTag()).toEqual(2);
     });
 
@@ -124,7 +126,8 @@ describe('FogLAMP gui', () => {
       expect(skipLogin.getSettingsSetUrlAndRestartButton().count()).toEqual(1);
       expect(skipLogin.getSettingsSetUrlAndRestartButton().get(0).getText()).toEqual('Set the URL & Restart');
 
-      expect(skipLogin.getGUISettingsDropdown().count()).toEqual(2);
+      expect(skipLogin.isRefreshDashboardDropdownPresent()).toEqual(true);
+      expect(skipLogin.isPingIntervalDropdownPresent()).toEqual(true);
     });
   } else {
     it('Should Display User Management for Admin', () => {
