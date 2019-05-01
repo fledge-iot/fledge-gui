@@ -10,7 +10,8 @@ export class SkipLogin {
 
   setUpInstance() {
     browser.waitForAngularEnabled(false);
-    element(by.css('select option[value="http"]')).click();
+    element(by.css('#protocol-dropdown')).click();
+    element(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
     element(by.id('host')).clear();
     element(by.id('host')).sendKeys(environment.HOST);
     element(by.id('service_port')).clear();
