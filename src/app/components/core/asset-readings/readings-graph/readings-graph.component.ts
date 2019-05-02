@@ -31,6 +31,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   public summaryLimit = 5;
   public buttonText = '';
   public autoRefresh = false;
+  public showGraphSpinner = true;
+  public showSummarySpinner = true;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
@@ -74,8 +76,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetReadingValues = [];
     this.summaryLimit = 5;
     this.readKeyColorLabel = [];
+    this.showGraphSpinner = true;
+    this.showSummarySpinner = true;
     this.excludedReadingsList = [];
-    this.assetChartOptions = '';
+    this.assetChartOptions = {};
 
     sessionStorage.removeItem(this.assetCode);
 
@@ -99,6 +103,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
+    this.showGraphSpinner = true;
+    this.showSummarySpinner = true;
     this.optedTime = time;
     if (this.optedTime === 0) {
       this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
@@ -147,10 +153,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
-    if (this.autoRefresh === false) {
-      this.buttonText = '';
-      this.summaryLimit = 5;
-    }
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
@@ -164,21 +166,16 @@ export class ReadingsGraphComponent implements OnDestroy {
           };
         }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-        if (this.autoRefresh === false) {
-          if (this.assetReadingSummary.length > 5) {
-            this.buttonText = 'Show All';
-          }
-        } else {
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
-            this.buttonText = 'Show All';
-          }
-          if (this.assetReadingSummary.length <= 5) {
-            this.buttonText = '';
-          }
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
-            this.buttonText = 'Show Less';
-          }
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
+          this.buttonText = 'Show All';
         }
+        if (this.assetReadingSummary.length <= 5) {
+          this.buttonText = '';
+        }
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
+          this.buttonText = 'Show Less';
+        }
+        this.showSummarySpinner = false;
       },
       error => {
         if (error.status === 0) {
@@ -206,12 +203,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       subscribe(
         (data: any[]) => {
           this.statsAssetReadingsGraph(data);
+          this.showGraphSpinner = false;
         },
         error => {
           console.log('error in response', error);
         });
   }
-
 
   getColorCode(readKey, cnt, fill) {
     let cc = '';
@@ -246,7 +243,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
     for (const k of uniqueKeys) {
       let assetReads = map(readings, k);
-      assetReads = assetReads.filter(function( el ) {
+      assetReads = assetReads.filter(function (el) {
         return el !== undefined;
       });
       if (!assetReads.some(isNaN)) {
