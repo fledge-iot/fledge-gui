@@ -42,3 +42,7 @@ table.is-borderless tr {
 tbody {
   line-height: 0.5;
 }
+
+.app-loading {
+  min-height: 50vh;
+}
