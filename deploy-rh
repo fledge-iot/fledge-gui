@@ -75,7 +75,7 @@ memory_footprints(){
   echo     # new line
 
   rm -f /tmp/diskusage
-  df -T -h /data/ > /tmp/diskusage
+  df -T -h > /tmp/diskusage
   echo -e "${CINFO}Disk Usages : ${CRESET}"
   cat /tmp/diskusage
   echo     # new line
