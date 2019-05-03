@@ -50,6 +50,7 @@ then
 fi
 
 machine_details() {
+  os=$(uname)
   OS_NAME=`sudo cat /etc/*-release | grep PRETTY_NAME | cut -d= -f2-`
   echo -e "${CINFO}Operating System: ${CRESET} ${OS_NAME} "
   if [[ ${os} == "Darwin" ]]
