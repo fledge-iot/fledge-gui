@@ -2,7 +2,7 @@ Name:          foglamp-gui
 Vendor:        Dianomic Systems, Inc. <info@dianomic.com>
 Version:       __VERSION__
 Release:       1
-BuildArch:     x86_64
+BuildArch:     __ARCH__
 Summary:       FogLAMP GUI
 License:       Apache License
 Group:         IoT

@@ -120,8 +120,8 @@ echo "Done."
 
 mkdir BUILDROOT
 cd BUILDROOT
-mkdir -p ${package_name}-1.x86_64
-cd ${package_name}-1.x86_64
+mkdir -p ${package_name}-1.${arch}
+cd ${package_name}-1.${arch}
 
 echo "Copying build artifacts for nginx webroot directory..."
 mkdir -p usr/share/nginx/html
