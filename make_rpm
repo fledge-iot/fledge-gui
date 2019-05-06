@@ -88,8 +88,8 @@ echo "The package name is                   : ${package_name}"
 echo
 
 # Prepare build artifacts
-# rm -rf ${GIT_ROOT}/dist
-# ./build --clean-start
+rm -rf ${GIT_ROOT}/dist
+./build --clean-start
 
 # Create the package directory. If a directory with the same name exists,
 # it is copied with a version number.
