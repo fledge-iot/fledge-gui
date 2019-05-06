@@ -42,14 +42,11 @@ fi
 FOGLAMP_GUI_VER=${__version__}
 
 machine_details() {
-  # OS Type
-  os=$(uname)
-  echo -e "${CINFO}Operating System Type :${CRESET} ${os} "
-
-  if [[ ${os} == "Darwin" ]]
-  then
-      echo -e Error:"${CERR} Script ${FOGLAMP_GUI_VER} is not compatible with macOS ${CRESET}"
-      exit 1
+  if [ -f /etc/lsb-release ]; then
+    echo "Ubuntu"
+  else
+    echo "This script is compatible with ubuntu only."
+    exit 1
   fi
 
   # Hostname
