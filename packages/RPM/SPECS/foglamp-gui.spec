@@ -31,16 +31,11 @@ PKG_NAME="foglamp-gui"
 #!/usr/bin/env bash
 set -e
 
-set_files_ownership () {
-    chown -R root:root usr/share/nginx/html/*
-}
-
 start_nginx_service () {
     sudo systemctl start nginx
     sudo systemctl status nginx | grep "Active:"
 }
 
-set_files_ownership
 start_nginx_service
 
 %files
