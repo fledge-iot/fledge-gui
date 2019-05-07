@@ -63,6 +63,9 @@ See details [here](windows-nginx-deployment-guide.md)
 ## Creating and Installing Debian Package
 [Debian packaging and usage](debian-readme.md)
 
+## Creating and Installing RPM Package
+[RPM packaging and usage](rpm-readme.md)
+
 ## Running using Docker 
 [Docker installation and using docker-compose](docker-readme.md)
 
