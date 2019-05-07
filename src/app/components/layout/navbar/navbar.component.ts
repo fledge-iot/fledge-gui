@@ -140,6 +140,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.hideLoadingSpinner();
         },
         (error) => {
+          this.servicesRecord = [];
           this.hideLoadingSpinner();
           console.log('service down ', error);
         });
@@ -338,6 +339,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.authService.logout().
       subscribe(
         () => {
+          this.servicesRecord = [];
           sessionStorage.clear();
           this.ngProgress.done();
           this.router.navigate(['/login'], { replaceUrl: true });
