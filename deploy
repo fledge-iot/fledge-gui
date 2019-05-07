@@ -61,8 +61,12 @@ machine_details() {
       echo -e "${CINFO}${n} ${CRESET}"
      else
       echo -e "${CWARN}${n} ${CRESET}"
+      echo -e "${CERR}This script is compatible with Linux (Ubuntu and Raspbian) Only. ${CRESET}"
       exit 1;
     fi
+  else
+    echo -e "${CERR}This script is compatible with Linux (Ubuntu and Raspbian) Only. ${CRESET}"
+    exit 1;
   fi
 
   echo -e "${CINFO}Hostname : ${CRESET} ${HOSTNAME} "
