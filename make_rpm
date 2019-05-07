@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+
+##--------------------------------------------------------------------
+## Copyright (c) 2019 Dianomic Systems
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##--------------------------------------------------------------------
+##
+## Author: Mohd. Shariq
+##
+
+set -e
+
+GIT_ROOT=`pwd`    # The script must be executed from the root git directory
+usage="$(basename "$0") [clean|cleanall]
+This script is used to create the RPM package of foglamp-gui
+
+Arguments:
+ help     - Display this help text
+ clean    - Remove all the old versions saved in format .XXXX
+ cleanall - Remove all the versions, including the last one"
+
+for i in "$@"
+do
+  case "$i" in
+      clean)
+          echo -n "Cleaning the build folder from older versions..."
+          find "${GIT_ROOT}/packages/build" -maxdepth 1 | grep '.*\.[0-9][0-9][0-9][0-9]' | xargs rm -rf
+          echo "Done."
+
+          exit 0
+          ;;
+      cleanall)
+          if [ -d "${GIT_ROOT}/packages/build" ]; then
+            echo -n "Cleaning the build folder..."
+            rm -rf ${GIT_ROOT}/packages/build/*
+            echo "Done."
+          else
+            echo "No build folder, skipping cleanall"
+          fi
+
+          exit 0
+          ;;
+      help)
+	          echo "${usage}"
+	          exit 0
+	          ;;
+	      *)
+          echo "Unrecognized option: $i"
+          exit 1
+          ;;
+  esac
+done
+
+# OS Type
+if [ -f /etc/redhat-release ]; then
+  echo "Red Hat"
+elif [ -f /etc/centos-release ]; then
+  echo "CentOS"
+else
+  echo "This script is compatible with Red Hat Linux only."
+  exit 1
+fi
+
+version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+BUILD_ROOT="${GIT_ROOT}/packages/build"
+
+# Final package name
+package_name="foglamp-gui-${version}"
+
+arch=`arch`
+
+# Print the summary of findings
+echo "The package root directory is         : ${GIT_ROOT}"
+echo "The FogLAMP gui version is            : ${version}"
+echo "The package will be built in          : ${BUILD_ROOT}"
+echo "The package name is                   : ${package_name}"
+echo
+
+# Prepare build artifacts
+rm -rf ${GIT_ROOT}/dist
+./build --clean-start
+
+# Create the package directory. If a directory with the same name exists,
+# it is copied with a version number.
+
+# First, create the BUILD_ROOT folder, if necessary
+if [ ! -L "${BUILD_ROOT}" -a ! -d "${BUILD_ROOT}" ]; then
+  mkdir -p "${BUILD_ROOT}"
+fi
+
+cd "${BUILD_ROOT}"
+existing_pkgs=`find . -maxdepth 1 -name "${package_name}.????" | wc -l`
+existing_pkgs=$((existing_pkgs+1))
+new_stored_pkg=$(printf "${package_name}.%04d" "${existing_pkgs}")
+if [ -d "${package_name}" ]; then
+  echo "Saving the old working environment as ${new_stored_pkg}"
+  mv "${package_name}" "${new_stored_pkg}"
+fi
+
+mkdir "${package_name}"
+
+# Populate the package directory with RPM files
+echo -n "Populating the package and updating version file..."
+cd "${package_name}"
+cp -R ${GIT_ROOT}/packages/RPM/* .
+sed -i "s/__VERSION__/${version}/g" SPECS/foglamp-gui.spec
+sed -i "s/__ARCH__/${arch}/g" SPECS/foglamp-gui.spec
+echo "Done."
+
+mkdir BUILDROOT
+cd BUILDROOT
+mkdir -p ${package_name}-1.${arch}
+cd ${package_name}-1.${arch}
+
+echo "Copying build artifacts for nginx webroot directory..."
+mkdir -p usr/share/nginx/html
+cp -R ${GIT_ROOT}/dist/* usr/share/nginx/html/
+echo "Done."
+
+cd ..
+# Build the package
+cd "${BUILD_ROOT}"
+# Save the old versions
+existing_pkgs=`find . -maxdepth 1 -name "${package_name}.rpm.????" | wc -l`
+existing_pkgs=$((existing_pkgs+1))
+new_stored_pkg=$(printf "${package_name}.rpm.%04d" "${existing_pkgs}")
+
+if [ -e "${package_name}.rpm" ]; then
+  echo "Saving the old package as ${new_stored_pkg}"
+  mv "${package_name}.rpm" "${new_stored_pkg}"
+fi
+
+echo "Building the new rpm package..."
+ rpmbuild --define "_topdir ${BUILD_ROOT}/${package_name}" --noclean -bb ${BUILD_ROOT}/${package_name}/SPECS/foglamp-gui.spec
+echo "Done."
+
+exit 0
