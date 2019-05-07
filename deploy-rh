@@ -44,7 +44,7 @@ if [ -f /etc/redhat-release ]; then
 elif [ -f /etc/centos-release ]; then
   echo "CentOS"
 else
-  echo "This script is compatible with Red Hat Linux only."
+  echo -e "${CERR}This script is compatible with Red Hat Linux only! ${CRESET}"
   exit 1
 fi
 
