@@ -67,14 +67,14 @@
                 </tr>
               </table>
             </div>
-            <hr class="dropdown-divider">
+            <hr class="dropdown-divider" *ngIf="servicesRecord.length !== 0" >
             <div *ngIf="showSpinner" class="app-loading">
               &nbsp;
               <svg class="spinner" viewBox="0 0 10 100">
                 <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
               </svg>
             </div>
-            <ng-container *ngIf="!showSpinner">
+            <ng-container *ngIf="!showSpinner && servicesRecord.length !== 0">
               <div class="dropdown-item">
                 <table>
                   <tr *ngFor="let s of servicesRecord">
@@ -141,14 +141,14 @@
                     </tr>
                   </table>
                 </div>
-                <hr class="dropdown-divider">
+                <hr class="dropdown-divider" *ngIf="servicesRecord.length !== 0">
                 <div *ngIf="showSpinner" class="app-loading">
                   &nbsp;
                   <svg class="spinner" viewBox="0 0 10 100">
                     <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
                   </svg>
                 </div>
-                <ng-container *ngIf="!showSpinner">
+                <ng-container *ngIf="!showSpinner && servicesRecord.length !== 0">
                   <div class="dropdown-item">
                     <table>
                       <tr *ngFor="let s of servicesRecord">
@@ -192,7 +192,7 @@
                 </a>
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
+                <div *ngIf="servicesRecord.length !== 0" class="dropdown-content">
                   <div *ngIf="showSpinner" class="app-loading">
                     &nbsp;
                     <svg class="spinner" viewBox="0 0 10 100">
