@@ -58,17 +58,35 @@ Done.
 
 #### Installing rpm package
 
-Use the ``rpm`` command
+```
+$ sudo cp packages/build/foglamp-gui-x.y.z/RPMS/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm /var/cache/yum/x86_64/.
+```
+
+Use the `rpm` or `yum localinstall` command
 
 ```
-$sudo cp packages/build/foglamp-gui-x.y.z/RPMS/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm /var/cache/yum/x86_64/.
-$sudo rpm  -i --force /var/cache/yum/x86_64/foglamp-gui-x.y.z.x86_64.rpm
+$ sudo rpm  -i --force /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
 ```
+
+> You can also use `--replacefiles` instead of `--force`
+
+OR
+
+```
+$ sudo yum localinstall /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
+```
+
+> `yum localinstall` should auto install the required depdencies i.e. nginx (if not installed)
 
 #### Uninstalling rpm package
 
 ```
 $ sudo rpm -e foglamp-gui-x.y.z-1.x86_64
 ```
+OR
 
-> you may want to check debian package content with `sudo rpm -ql foglamp-gui-x.y.z-1.x86_64`
+```
+$ sudo yum remove foglamp-gui-x.y.z-1.x86_64
+```
+
+You may want to check RPM package content with `sudo rpm -ql foglamp-gui-x.y.z-1.x86_64.rpm`
