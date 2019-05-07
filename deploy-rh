@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ##--------------------------------------------------------------------
-## Copyright (c) 2018 Dianomic Systems
+## Copyright (c) 2019 Dianomic Systems
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -21,6 +21,15 @@
 
 set -e
 
+# Variables
+__version__="1.5.2next"
+if [ -f "package.json" ]
+  then
+	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+fi
+
+FOGLAMP_GUI_VER=${__version__}
+
 # Colors
 CPFX="\033["
 
@@ -29,30 +38,29 @@ CERR="${CPFX}1;31m"
 CINFO="${CPFX}1;32m"
 CWARN="${CPFX}0;33m"
 
+DOC_ROOT="/usr/share/nginx/html"
 echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
-# Variables
-__version__="1.5.2next"
-if [ -f "package.json" ]
-  then
-	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+echo -e WARNING: "${CWARN} This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
+read -p "Continue? Press n or N to exit." -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Nn]$ ]]
+then
+    exit 0;
 fi
 
-
-FOGLAMP_GUI_VER=${__version__}
-
 machine_details() {
-  if [ -f /etc/lsb-release ]; then
-    echo "Ubuntu"
+  if [ -f /etc/redhat-release ]; then
+    echo "Red Hat"
+  elif [ -f /etc/centos-release ]; then
+    echo "CentOS"
   else
-    echo "This script is compatible with ubuntu only."
+    echo "This script is compatible with Red Hat Linux only."
     exit 1
   fi
 
-  # Hostname
   echo -e "${CINFO}Hostname : ${CRESET} ${HOSTNAME} "
 
-  # Internal IP
   internal_ip=$(hostname -I)
   echo -e "${CINFO}IP : ${CRESET} ${internal_ip}"
 }
@@ -66,10 +74,8 @@ memory_footprints(){
   cat /tmp/ramcache
   echo     # new line
 
-  # Check Disk Usages
   rm -f /tmp/diskusage
-  # TODO: add check for ubuntu vs raspbian, and PRINT for ubuntu machine too
-  sudo fdisk -l| grep 'Device\|/dev/mmcblk0*' > /tmp/diskusage
+  df -T -h > /tmp/diskusage
   echo -e "${CINFO}Disk Usages : ${CRESET}"
   cat /tmp/diskusage
   echo     # new line
@@ -77,8 +83,8 @@ memory_footprints(){
 
 nginx_health(){
   if ! which nginx > /dev/null 2>&1; then
-    echo -e "${CERR} FogLAMP GUI can not run, As Nginx(-light) is not installed.${CRESET}"
-    echo -e "${CINFO} Run ./deploy without any argument to install the foglamp gui with nginx-light.${CRESET}"
+    echo -e "${CERR} FogLAMP GUI can not run, As Nginx is not installed.${CRESET}"
+    echo -e "${CINFO} Run ./deploy-rh without any argument to install the foglamp gui with nginx.${CRESET}"
   else
     machine_details
 
@@ -92,14 +98,32 @@ nginx_health(){
 
     echo "USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND"
     ps aux -P | grep [n]ginx
-
   fi
+}
+
+install_epel () {
+  echo -e INFO: "${CINFO} Installing epel-release ... ${CRESET}"
+  sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  sudo yum -y update
+  sudo yum -y install epel-release
 }
 
 install () {
   if ! which nginx > /dev/null 2>&1; then
-      echo -e WARNING: "${CWARN} Nginx not installed ${CRESET}"
-      yes Y | sudo apt-get install nginx-light
+      echo -e WARNING: "${CWARN} Nginx not installed! ${CRESET}"
+      if rpm -q epel-release > /dev/null 2>&1;
+      then
+        sudo yum remove epel-release*.noarch
+        sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      else
+        install_epel
+      fi
+
+      EPEL=$(rpm -qa | grep epel)
+      echo $EPEL
+
+      echo -e INFO: "${CINFO} Installing nginx ... ${CRESET}"
+      sudo yum -y install nginx
   else
       nginx_version=$(nginx -v 2>&1)
       echo -e INFO: "${CINFO} Found ${nginx_version} ${CRESET}"
@@ -110,22 +134,22 @@ install () {
   # github release https://github.com/foglamp/foglamp-gui/releases/download/v1.2.0/foglamp-gui-1.2.0.tar.gz
   # wget ${BUILD_URL}
 
-  # FIXME: scp foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz pi@<IP>:/home/pi
-  tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
+  # FIXME: scp foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz pi@<IP>:/home/user
+  tar -zxf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
-  # put them into /var/www/html and start nginx
-  sudo rm -rf /var/www/html/*
-  sudo mv dist/* /var/www/html/.
+  # put them into /usr/share/nginx/html and start nginx
+  sudo rm -rf /usr/share/nginx/html/*
+  sudo mv dist/* /usr/share/nginx/html/.
+  restorecon -v /usr/share/nginx/html/* | grep index.html
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove
   sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   echo -e INFO: "${CINFO} nginx status ${CRESET}"
-  sudo service nginx stop
-  sudo service nginx start
-
-  sudo service nginx status | grep "Active:"
+  sudo systemctl enable nginx
+  sudo systemctl start nginx
+  sudo systemctl status nginx | grep "Active:"
 }
 
 ############################################################
