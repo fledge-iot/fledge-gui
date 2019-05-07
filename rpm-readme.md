@@ -1,5 +1,5 @@
 
-#### Create RPM package
+### Create RPM package
 
 Make sure [rpm-build and other packages](https://rpm-packaging-guide.github.io/#prerequisites) are installed.
 
@@ -56,13 +56,16 @@ Done.
 
 ```
 
-#### Installing rpm package
+> You may want to check RPM package content with `sudo rpm -ql foglamp-gui-x.y.z-1.x86_64.rpm`
+
+
+### Installing rpm package
 
 ```
 $ sudo cp packages/build/foglamp-gui-x.y.z/RPMS/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm /var/cache/yum/x86_64/.
 ```
 
-Use the `rpm` or `yum localinstall` command
+**Use the `rpm` or `yum localinstall` command**
 
 ```
 $ sudo rpm  -i --force /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
@@ -78,15 +81,14 @@ $ sudo yum localinstall /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
 
 > `yum localinstall` should auto install the required depdencies i.e. nginx (if not installed)
 
-#### Uninstalling rpm package
+### Uninstalling rpm package
 
 ```
 $ sudo rpm -e foglamp-gui-x.y.z-1.x86_64
 ```
+
 OR
 
 ```
 $ sudo yum remove foglamp-gui-x.y.z-1.x86_64
 ```
-
-You may want to check RPM package content with `sudo rpm -ql foglamp-gui-x.y.z-1.x86_64.rpm`
