@@ -34,6 +34,6 @@ start_nginx_service () {
 
 start_nginx_service
 
-
+%define _datadir /usr/share/nginx/html
 %files
-/usr/share/nginx/html/*
+%{_datadir}/*
