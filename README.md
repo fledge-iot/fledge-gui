@@ -7,6 +7,8 @@ This is a GUI for FogLAMP
 
 [Prerequisite Ubuntu](prerequisite-ubuntu.md)
 
+[Prerequisite RHEL/ CentOS](prerequisite-redhat.md)
+
 [Prerequisite Windows](prerequisite-windows.md)
 
 To update yarn, Run `sudo npm i -g yarn`
