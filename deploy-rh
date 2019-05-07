@@ -21,7 +21,6 @@
 
 set -e
 
-# Variables
 __version__="1.5.2next"
 if [ -f "package.json" ]
   then
@@ -38,9 +37,18 @@ CERR="${CPFX}1;31m"
 CINFO="${CPFX}1;32m"
 CWARN="${CPFX}0;33m"
 
-DOC_ROOT="/usr/share/nginx/html"
 echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
+if [ -f /etc/redhat-release ]; then
+  echo "Red Hat"
+elif [ -f /etc/centos-release ]; then
+  echo "CentOS"
+else
+  echo -e "${CERR}This script is compatible with Red Hat Linux only! ${CRESET}"
+  exit 1
+fi
+
+DOC_ROOT="/usr/share/nginx/html"
 echo -e WARNING: "${CWARN} This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
 read -p "Continue? Press n or N to exit." -n 1 -r
 echo    # (optional) move to a new line
@@ -50,15 +58,6 @@ then
 fi
 
 machine_details() {
-  if [ -f /etc/redhat-release ]; then
-    echo "Red Hat"
-  elif [ -f /etc/centos-release ]; then
-    echo "CentOS"
-  else
-    echo "This script is compatible with Red Hat Linux only."
-    exit 1
-  fi
-
   echo -e "${CINFO}Hostname : ${CRESET} ${HOSTNAME} "
 
   internal_ip=$(hostname -I)
