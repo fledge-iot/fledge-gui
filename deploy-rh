@@ -39,13 +39,26 @@ CWARN="${CPFX}0;33m"
 
 echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
-if [ -f /etc/redhat-release ]; then
-  echo "Red Hat"
-elif [ -f /etc/centos-release ]; then
-  echo "CentOS"
+compat_msg="This script is compatible with Red Hat Linux Only!"
+
+os=$(uname)
+if [[ $os != "Linux" ]]; then
+  echo -e "${CERR}${compat_msg}${CRESET}"
+  exit 1;
+fi
+
+if [ -f /etc/os-release ]; then
+  n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
+  if [[ $n == *"Red Hat"* ]] || [[ $n == *"CentOS"* ]]; then
+    echo -e "${CINFO}${n} ${CRESET}"
+  else
+    echo -e "${CWARN}${n} ${CRESET}"
+    echo -e "${CERR}${compat_msg} ${CRESET}"
+    exit 1;
+  fi
 else
-  echo -e "${CERR}This script is compatible with Red Hat Linux only! ${CRESET}"
-  exit 1
+  echo -e "${CERR}${compat_msg}${CRESET}"
+  exit 1;
 fi
 
 DOC_ROOT="/usr/share/nginx/html"

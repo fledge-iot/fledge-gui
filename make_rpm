@@ -62,14 +62,27 @@ do
   esac
 done
 
-# OS Type
-if [ -f /etc/redhat-release ]; then
-  echo "Red Hat"
-elif [ -f /etc/centos-release ]; then
-  echo "CentOS"
+os=$(uname)
+echo "Operating System Type: ${os}"
+compat_msg="This script is compatible with Red Hat Linux Only!"
+
+if [[ $os != "Linux" ]]; then
+  echo -e ${compat_msg}
+  exit 1;
+fi
+
+if [ -f /etc/os-release ]; then
+  n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
+  if [[ $n == *"Red Hat"* ]] || [[ $n == *"CentOS"* ]]; then
+    echo -e "${n}"
+  else
+    echo -e "${n}"
+    echo -e ${compat_msg}
+    exit 1;
+  fi
 else
-  echo "This script is compatible with Red Hat Linux only."
-  exit 1
+  echo -e ${compat_msg}
+  exit 1;
 fi
 
 version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
