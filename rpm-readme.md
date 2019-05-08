@@ -56,7 +56,7 @@ Done.
 
 ```
 
-> You may want to check RPM package content with `sudo rpm -ql foglamp-gui-x.y.z-1.x86_64.rpm`
+> You may want to check the created RPM package content with `sudo rpm -qplv foglamp-gui-x.y.z-1.x86_64.rpm`
 
 
 ### Installing rpm package
@@ -79,7 +79,7 @@ OR
 $ sudo yum localinstall /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
 ```
 
-> `yum localinstall` should auto install the required dependencies i.e. nginx (if not installed)
+> `yum localinstall` should auto install the required dependencies i.e. nginx (if not installed). You may want to check the installed RPM package content with `sudo rpm -ql foglamp-gui-x.y.z-1.x86_64`
 
 ### Uninstalling rpm package
 
