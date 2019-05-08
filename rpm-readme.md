@@ -79,7 +79,7 @@ OR
 $ sudo yum localinstall /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
 ```
 
-> `yum localinstall` should auto install the required depdencies i.e. nginx (if not installed)
+> `yum localinstall` should auto install the required dependencies i.e. nginx (if not installed)
 
 ### Uninstalling rpm package
 
