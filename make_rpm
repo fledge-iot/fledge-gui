@@ -62,6 +62,8 @@ do
   esac
 done
 
+os=$(uname)
+echo "Operating System Type: ${os}"
 compat_msg="This script is compatible with Red Hat Linux Only!"
 
 if [[ $os != "Linux" ]]; then
