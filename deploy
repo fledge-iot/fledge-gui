@@ -57,11 +57,12 @@ then
 fi
 
 machine_details() {
+  
   if [ -f /etc/os-release ]; then
     n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
     if [[ $n == *"Raspbian"* ]] || [[ $n == *"Ubuntu"* ]]; then
       echo -e "${CINFO}${n} ${CRESET}"
-     else
+    else
       echo -e "${CWARN}${n} ${CRESET}"
       echo -e "${CERR}${compat_msg} ${CRESET}"
       exit 1;

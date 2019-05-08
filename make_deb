@@ -68,18 +68,17 @@ if [[ $os != "Linux" ]]; then
 fi
 
 if [ -f /etc/os-release ]; then
-    n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
-    if [[ $n == *"Raspbian"* ]] || [[ $n == *"Ubuntu"* ]]; then
-      echo -e "${n}"
-     else
-      echo -e "${n}"
-      echo -e ${compat_msg}
-      exit 1;
-    fi
+  n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
+  if [[ $n == *"Raspbian"* ]] || [[ $n == *"Ubuntu"* ]]; then
+    echo -e "${n}"
   else
+    echo -e "${n}"
     echo -e ${compat_msg}
     exit 1;
   fi
+else
+  echo -e ${compat_msg}
+  exit 1;
 fi
 
 version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
