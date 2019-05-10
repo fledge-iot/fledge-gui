@@ -14,7 +14,6 @@ exports.config = {
         args: ['--headless', '--disable-gpu', '--no-sandbox','--disable-browser-side-navigation', '--disable-extensions', '--disable-dev-shm-usage', '--window-size=1800,1000', '--test-type=ui', '--start-maximized']
     }
   },
-  // chromeDriver: './node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver',
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
   framework: 'jasmine',
@@ -24,7 +23,6 @@ exports.config = {
     print: function () { }
   },
   onPrepare() {
-    // browser.driver.manage().timeouts().setScriptTimeout(60000);
     var HtmlReporter = require('protractor-beautiful-reporter');
     // Add a screenshot reporter and store screenshots to `/e2e-test-report`:
       jasmine.getEnv().addReporter(new HtmlReporter({
