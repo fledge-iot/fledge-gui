@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+v=$(git --version)
+echo $v
+if [[ $v == "git version 2"* ]]; then
+    echo "Found git version > 2.x"
+    node grab-git-info
+else
+    echo "Found git version < 2.x"
+    if [ ! -f "src/git-version.json" ]; then
+    echo > ${src}/git-version.json
+    fi
+    > src/git-version.json
+    echo '{"hash":""}' >> src/git-version.json
+fi

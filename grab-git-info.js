@@ -11,5 +11,7 @@ gitDescribe(__dirname, {
     const infoJson = JSON.stringify(gitInfo, null, 2);
     writeFileSync(file, infoJson);
   })
-  .catch((err) => console.error(err));
+  .catch((err) => {
+    console.error(err)}
+    );
 
