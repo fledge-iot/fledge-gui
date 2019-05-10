@@ -19,6 +19,46 @@ Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; 
 
 > Before running the tests make sure app is able to communicate with the FogLAMP REST Server API. Put the REST API info in `e2e/environment.ts`.
 
+### Steps to run e2e test in CI environment on headless machine
+
+#### Installation step on Ubuntu
+
+  1. Install google-chrome-stable
+      ```
+      $ wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+      $  echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
+      $ sudo apt-get update
+      $ sudo apt-get install google-chrome-stable
+      ```
+
+  2. Clone foglamp-gui & run e2e test
+      ```
+      $ sudo git clone https://github.com/foglamp/foglamp-gui.git
+      $ sudo yarn
+      $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
+      ``` 
+
+#### Installation step on RHEL/CentOS machine
+
+  1. Install google-chrome-stable
+      ```
+      $ wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+      $ sudo yum -y install google-chrome-stable_current_x86_64.rpm
+      ```
+
+      >If installation fail because of missing `liberation-fonts` dependency. Download and install it first
+      ```
+      $ yum install liberation-fonts-1.07.2-16.el7.noarch.rpm
+      ```
+
+  2. Clone foglamp-gui & run e2e test
+
+      ```
+      $ sudo git clone https://github.com/foglamp/foglamp-gui.git
+      $ sudo yarn
+      $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
+      ```
+
 ## REST API URL Configuration:
 
 ### Dev Mode:
