@@ -5,9 +5,11 @@
   "scripts": {
     "ng": "ng",
     "start": "node grab-git-info && ng serve",
-    "build": "node grab-git-info && ng build --prod --build-optimizer",
+    "prebuild":"node grab-git-info",
+    "build": "ng build --prod --build-optimizer",
     "test": "ng test",
     "lint": "ng lint",
+    "pree2e":"node grab-git-info",
     "e2e": "ng e2e",
     "clean": "rm -rf dist && rm -rf node_modules && yarn cache clean",
     "purge": "git clean -fdx && yarn cache clean"
