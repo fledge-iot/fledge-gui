@@ -31,16 +31,10 @@ Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; 
       $ sudo apt-get install google-chrome-stable
       ```
 
-  2. Clone foglamp-gui
+  2. Clone foglamp-gui & run e2e test
       ```
-      sudo git clone https://github.com/foglamp/foglamp-gui.git
-      ```
-  3. Inside foglamp-gui, run
-      ```
-      sudo yarn
-      ```
-  4. To run e2e test, run
-      ```
+      $ sudo git clone https://github.com/foglamp/foglamp-gui.git
+      $ sudo yarn
       $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
       ``` 
 
@@ -55,20 +49,13 @@ Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; 
       >If installation fail because of missing `liberation-fonts` dependency. Download and install it first
       ```
       $ yum install liberation-fonts-1.07.2-16.el7.noarch.rpm
-      ``` 
-
-  2. Clone foglamp-gui
-      ```
-      sudo git clone https://github.com/foglamp/foglamp-gui.git
       ```
 
-  3. Inside foglamp-gui, run
-      ```
-      sudo yarn
-      ```
+  2. Clone foglamp-gui & run e2e test
 
-  4. To run e2e test, run
       ```
+      $ sudo git clone https://github.com/foglamp/foglamp-gui.git
+      $ sudo yarn
       $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
       ```
 
