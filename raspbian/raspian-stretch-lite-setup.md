@@ -88,13 +88,12 @@ From your dev machine, `scp raspbian/deploy-core pi@<IP>:/home/pi/`
 
 SSH to Raspbian machine and:
 
-Run `./deploy-core` inside raspberry pi.
-
-
 ```
 git clone https://github.com/foglamp/FogLAMP.git
 
 cd FogLAMP
+
+./requirements.sh
 
 export FOGLAMP_ROOT=`pwd`
 
@@ -119,20 +118,20 @@ run `./build`
 
 **Copy compressed build file and deploy script to (raspberry pi) Raspbian**
 
-`scp foglamp-gui-1.2.0.tar.gz pi@1<IP>:/home/pi/`
+`scp foglamp-gui-x.y.z.tar.gz pi@<IP>:/home/pi/`
 
-> $ scp foglamp-gui-1.2.0.tar.gz pi@192.168.0.11:/home/pi/
+> $ scp foglamp-gui-x.y.z.tar.gz pi@<IP>:/home/pi/
 
-> pi@192.168.0.11's password:
+> pi@<IP>'s password:
 
-> foglamp-gui-1.2.0.tar.gz    100%  460KB   1.7MB/s   00:00
+> foglamp-gui-x.y.z.tar.gz    100%  460KB   1.7MB/s   00:00
 
 
 `scp deploy pi@<IP>:/home/pi/`
 
-> scp deploy pi@192.168.0.11:/home/pi/
+> scp deploy pi@<IP>:/home/pi/
 
-> pi@192.168.0.11's password:
+> pi@<IP>'s password:
 
 > deploy                 100% 4633   133.5KB/s   00:00
 
