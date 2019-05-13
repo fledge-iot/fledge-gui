@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
+import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-cert-store',
@@ -10,7 +11,8 @@ import { UploadCertificateComponent } from '../upload-certificate/upload-certifi
   styleUrls: ['./certificate-store.component.css']
 })
 export class CertificateStoreComponent implements OnInit {
-  public certificatesData = [];
+  public keys = [];
+  public certificates = [];
   public certificateName = '';
 
   // Object to hold data of certificate to delete
@@ -41,6 +43,7 @@ export class CertificateStoreComponent implements OnInit {
   }
 
   public getCertificates() {
+    this.certificates = [];
     /** request started */
     this.ngProgress.start();
     this.certService.getCertificates().
@@ -48,7 +51,22 @@ export class CertificateStoreComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          this.certificatesData = data['certificates'];
+          this.keys = sortBy(data['keys'], function (obj) {
+            return obj.split('.')[1] + obj.substr(0, obj.indexOf('.'));
+          });
+          const certExtensions = ['cert', 'pem', 'json'];
+          for (let i = 0; i < certExtensions.length; i++) {
+            let certificates = [];
+            data['certs'].forEach(c => {
+              if (c.split('.')[1] === certExtensions[i]) {
+                certificates.push(c);
+              }
+            });
+            certificates = sortBy(certificates, function (obj) {
+              return obj.substr(0, obj.indexOf('.'));
+            });
+            this.certificates = this.certificates.concat(certificates);
+          }
         },
         error => {
           /** request completed */
@@ -61,27 +79,20 @@ export class CertificateStoreComponent implements OnInit {
         });
   }
 
-  public getCertificateName(key, cert) {
-    if (key) {
-      return key.substr(0, key.indexOf('.'));
-    }
-    if (cert) {
-      return cert.substr(0, cert.indexOf('.'));
-    }
+  public getName(nameWithExtension) {
+    return nameWithExtension.substr(0, nameWithExtension.indexOf('.'));
   }
 
   /**
    * Open delete certificate modal dialog
-   * @param key   name of the key of certificate
-   * @param cert  name of the cert file of the certificate
+   * @param cert  name of the cert/key file of the certificate
    * @param message   message to show on alert
    * @param action here action is 'delete'
    */
-  openDeleteModal(key, cert, message, action) {
-    this.certificateName = this.getCertificateName(key, cert);
+  openDeleteModal(cert, message, action) {
     this.childData = {
       id: '',
-      name: this.certificateName,
+      name: cert,
       message: message,
       key: action
     };
@@ -91,12 +102,12 @@ export class CertificateStoreComponent implements OnInit {
 
   /**
    * Delete Certificate
-   * @param cert_name name of the certificate to delete
+   * @param certificate  object of certificate, contains name and its type (cert/key)
    */
-  deleteCertificate(cert_name) {
+  deleteCertificate(certificate) {
     /** request started */
     this.ngProgress.start();
-    this.certService.deleteCertificate(cert_name).
+    this.certService.deleteCertificate(certificate['name'], certificate['type']).
       subscribe(
         (data) => {
           /** request completed */
@@ -122,5 +133,4 @@ export class CertificateStoreComponent implements OnInit {
   onNotify() {
     this.getCertificates();
   }
-
 }
