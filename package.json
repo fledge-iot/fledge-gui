@@ -4,10 +4,13 @@
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
-    "start": "node grab-git-info && ng serve",
-    "build": "node grab-git-info && ng build --prod --build-optimizer",
+    "prestart": "./git-version",
+    "start": "ng serve",
+    "prebuild": "./git-version",
+    "build": "ng build --prod --build-optimizer",
     "test": "ng test",
     "lint": "ng lint",
+    "pree2e": "./git-version",
     "e2e": "ng e2e",
     "clean": "rm -rf dist && rm -rf node_modules && yarn cache clean",
     "purge": "git clean -fdx && yarn cache clean"
