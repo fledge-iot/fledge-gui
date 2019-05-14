@@ -1,5 +1,5 @@
 Name:          foglamp-gui
-Vendor:        Dianomic Systems, Inc. <info@dianomic.com>
+Vendor:        Dianomic Systems Inc. <info@dianomic.com>
 Version:       __VERSION__
 Release:       1
 BuildArch:     __ARCH__
