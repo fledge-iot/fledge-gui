@@ -8,6 +8,10 @@ exports.config = {
   specs: [
     './e2e/**/*.e2e-*.ts'
   ],
+  suites: {
+    common: './e2e/specs/**/*.e2e-common.ts',
+    south: './e2e/specs/**/*.e2e-south.ts',
+  },
   capabilities: {
     'browserName': 'chrome',
     chromeOptions: {
