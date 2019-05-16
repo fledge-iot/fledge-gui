@@ -59,6 +59,13 @@ Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; 
       $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
       ```
 
+  3. To run tests in a suite
+      ```
+       $ sudo yarn e2e --suite common --protractor-config=protractor_ci.conf.js
+      ```
+
+      > `common,south` are the test suite name defined in protractor_ci.conf.js inside suite section.
+
 ## REST API URL Configuration:
 
 ### Dev Mode:
