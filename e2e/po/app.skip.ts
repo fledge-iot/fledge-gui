@@ -238,27 +238,19 @@ export class SkipLogin {
     return element(by.css('app-cert-store button i')).isDisplayed();
   }
 
-  getCertificateStoreColNames() {
+  getCertificateStoreKeyColNames() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store table thead tr')).getText();
+    return element(by.css('app-cert-store div div div div:nth-child(1) table')).getText();
+  }
+
+  getCertificateStoreCertColNames() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-cert-store div div div div:nth-child(2) table')).getText();
   }
 
   getCertificateStoreImport() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-cert-store header a')).getText();
-  }
-
-  isKeyPresent() {
-    browser.ignoreSynchronization = true;
-    // wait
-    browser.wait(this.EC.
-      visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg'))), 2000);
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg')).isDisplayed();
-  }
-
-  isCertificatePresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .far.fa-check-circle.fa-lg')).isDisplayed();
   }
 
   navToBackupRestore() {

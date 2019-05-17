@@ -74,21 +74,24 @@ describe('FogLAMP gui', () => {
     });
 
     it('Should Display Certificate Store', () => {
-      const ColumnsName = [
-        'Name',
+      const KeyColumnsName = [
         'Key',
-        'Certificate'
+        'Extension'
+      ];
+      const CertificateColumnsName = [
+        'Certificate',
+        'Extension'
       ];
       skipLogin.navToCertificateStore();
       expect(skipLogin.getCertificateStoreTitle()).toContain('Certificate Store');
       expect(skipLogin.getCertificateStoreRefreshButton()).toEqual(true);
-      for (const ColumnName in ColumnsName) {
-        expect(skipLogin.getCertificateStoreColNames()).toContain(ColumnsName[ColumnName]);
+      for (const ColumnName in KeyColumnsName) {
+        expect(skipLogin.getCertificateStoreKeyColNames()).toContain(KeyColumnsName[ColumnName]);
+      }
+      for (const ColumnName in CertificateColumnsName) {
+        expect(skipLogin.getCertificateStoreCertColNames()).toContain(CertificateColumnsName[ColumnName]);
       }
       expect(skipLogin.getCertificateStoreImport()).toContain('Import');
-
-      expect(skipLogin.isKeyPresent()).toEqual(true);
-      expect(skipLogin.isCertificatePresent()).toEqual(true);
     });
 
     it('Should Display Backup & Restore', () => {
