@@ -9,6 +9,10 @@ export class SkipLogin {
   }
 
   setUpInstance() {
+    if (environment.HOST === 'localhost' &&
+      environment.SERVICE_PORT === '8081') {
+      return;
+    }
     browser.waitForAngularEnabled(false);
     element(by.css('#protocol-dropdown')).click();
     element(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
