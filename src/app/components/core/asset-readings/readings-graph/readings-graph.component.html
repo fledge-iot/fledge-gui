@@ -102,8 +102,16 @@
             </svg>
           </div>
         </ng-container>
-        <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
-          [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+        <ng-container *ngIf="!isSpectrum">
+          <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
+            [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+        </ng-container>
+        <ng-container *ngIf="isSpectrum">
+          <plotly-plot *ngIf="!showGraphSpinner" [data]="polyGraphData.data" [layout]="polyGraphData.layout"
+            [config]="{displayModeBar: false}">
+          </plotly-plot>
+        </ng-container>
+
         <ng-container *ngIf="excludedReadingsList.length > 0">
           <p class="help"> * Excluded <u>{{excludedReadingsList.toString().replace(',' , ', ')}}</u> having non-numeric
             readings </p>

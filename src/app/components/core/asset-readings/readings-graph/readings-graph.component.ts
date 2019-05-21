@@ -33,6 +33,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   public autoRefresh = false;
   public showGraphSpinner = true;
   public showSummarySpinner = true;
+  public isSpectrum = false;
+  public polyGraphData = {};
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
@@ -153,6 +155,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
+    if (this.isSpectrum) {
+      this.showSummarySpinner = false;
+      return;
+    }
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
@@ -166,6 +172,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           };
         }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+
         if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
           this.buttonText = 'Show All';
         }
@@ -234,6 +241,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   private statsAssetReadingsGraph(data: any): void {
+    this.isSpectrum = false;
     this.showGraph = true;
     this.assetReading = [];
     this.excludedReadingsList = [];
@@ -253,7 +261,49 @@ export class ReadingsGraphComponent implements OnDestroy {
         };
         this.assetReading.push(read);
       } else {
-        this.excludedReadingsList.push(k);
+        if (k !== 'spectrum') {
+          this.isSpectrum = false;
+          this.excludedReadingsList.push(k);
+        } else {
+          this.polyGraphData = {
+            data: [
+              {
+                type: 'surface',
+                y: timestamps,
+                z: assetReads,
+                showscale: false,
+                colorscale: [
+                  ['0', 'rgba(68,1,84,1)'],
+                  ['0.1', 'rgba(61,77,137,1)'],
+                  ['0.2', 'rgba(57,89,140,1)'],
+                  ['0.3', 'rgba(49,104,142,1)'],
+                  ['0.4', 'rgba(44,119,142,1)'],
+                  ['0.5', 'rgba(38,136,141,1)'],
+                  ['0.6', 'rgba(33,154,138,1)'],
+                  ['0.7', 'rgba(50,178,124,1)'],
+                  ['0.8', 'rgba(101,201,96,1)'],
+                  ['0.9', 'rgba(101,201,96,1)'],
+                  ['1', 'rgba(253,231,37,1)']],
+                  colorbar: {
+                    tick0: 0,
+                    dtick: 5
+                  }
+              },
+            ],
+            layout: {
+              title: 'FFT spectrum',
+              showlegend: true,
+              autoSize: true,
+              margin: {
+                b: 40,
+                l: 60,
+                r: 10,
+                t: 25
+              }
+            }
+          };
+          this.isSpectrum = true;
+        }
       }
     }
 

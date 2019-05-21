@@ -95,7 +95,8 @@ moment           |  2.23.0       |        2.24.0         | MIT
 @ngx-progressbar/core  |  5.3.2        |        5.3.2          | MIT
 protractor-beautiful-reporter |  1.2.7       |  1.2.7                | MIT
 node-git-describe | 4.0.4     | 4.0.4        | MIT
-
+angular-plotly.js | 1.3.2     | 1.3.2        | MIT
+plotly.js         | 1.47.4    | 1.47.4       | MIT
 
 #### Why Yarn?
 
