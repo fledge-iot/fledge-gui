@@ -4,11 +4,25 @@
     <div class="column is-one-quarter">
       <nav class="panel">
         <div class="panel-heading">
-          <div class="select is-rounded is-fullwidth is-small">
-            <select (change)="getChildren($event.target.value)">
-              <option *ngFor="let rootCategory of rootCategories" [selected]='rootCategory.key === selectedRootCategory' [value]='rootCategory.key'> {{ hasProperty(rootCategory, 'displayName') === true ?
-                  rootCategory.displayName:rootCategory.description}}</option>
-            </select>
+          <div id="dropdown" class="dropdown">
+            <div class="dropdown-trigger">
+              <button class="button is-rounded is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                (click)=toggleDropDown()>
+                <span>{{selectedRootCategory}}</span>
+                <span class="icon is-small">
+                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item" *ngFor="let rootCategory of rootCategories"
+                  (click)="toggleDropDown();getSelectedCategoryConfig(rootCategory)">
+                  {{ hasProperty(rootCategory, 'displayName') === true ?
+                        rootCategory.displayName:rootCategory.description}}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
         <div *ngIf="!isChild" class="panel-block">
@@ -17,7 +31,8 @@
           </button>
         </div>
         <div id="root-children" class="panel-block">
-          <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)" (activate)="onNodeActive($event)"></tree-root>
+          <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)"
+            (activate)="onNodeActive($event)"></tree-root>
         </div>
       </nav>
     </div>

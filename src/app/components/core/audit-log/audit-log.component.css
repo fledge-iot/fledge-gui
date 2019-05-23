@@ -7,3 +7,6 @@ table tbody {
   overflow-y: scroll;
   overflow-x: auto;
 }
+
+.card { overflow: visible;}
+.card-content { overflow: visible; }

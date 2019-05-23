@@ -26,7 +26,7 @@ export class ConfigurationManagerComponent implements OnInit {
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService
-    ) {
+  ) {
     this.JSON = JSON;
   }
 
@@ -53,8 +53,8 @@ export class ConfigurationManagerComponent implements OnInit {
               });
             }
             this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'SOUTH')
-            .filter(el => el.key.toUpperCase() !== 'NORTH')
-            .filter(el => el.key.toUpperCase() !== 'NOTIFICATIONS');
+              .filter(el => el.key.toUpperCase() !== 'NORTH')
+              .filter(el => el.key.toUpperCase() !== 'NOTIFICATIONS');
           });
           if (onLoadingPage === true) {
             this.getChildren(this.selectedRootCategory);
@@ -67,6 +67,11 @@ export class ConfigurationManagerComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  getSelectedCategoryConfig(rootCategory: any) {
+    const categoryName = this.hasProperty(rootCategory, 'displayName') === true ? rootCategory.displayName : rootCategory.description;
+    this.getChildren(categoryName);
   }
 
   public getChildren(categoryName) {
@@ -163,6 +168,11 @@ export class ConfigurationManagerComponent implements OnInit {
 
   public onNodeActive(event) {
     this.getCategory(event.node.data.id, event.node.data.description);
+  }
+
+  public toggleDropDown() {
+    const dropDown = document.querySelector('#dropdown');
+    dropDown.classList.toggle('is-active');
   }
 
   public resetAllFilters() {

@@ -1,3 +1,11 @@
 .panel.is-mobile {
     margin-top: 10px;
 }
+
+#settings { overflow: visible;}
+#settings-content { overflow: visible; }
+
+
+@media screen and (min-width: 769px) {
+  #connection-content { overflow: visible; }
+}

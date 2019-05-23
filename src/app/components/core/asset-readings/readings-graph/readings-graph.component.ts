@@ -28,6 +28,14 @@ export class ReadingsGraphComponent implements OnDestroy {
   public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
   private isAlive: boolean;
+  public summaryLimit = 5;
+  public buttonText = '';
+  public autoRefresh = false;
+  public showGraphSpinner = true;
+  public showSummarySpinner = true;
+  public isSpectrum = false;
+  public polyGraphData = {};
+
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
 
@@ -46,12 +54,37 @@ export class ReadingsGraphComponent implements OnDestroy {
     });
   }
 
+  public showAll() {
+    this.autoRefresh = false;
+    if (this.buttonText === 'Show Less') {
+      this.summaryLimit = 5;
+      this.buttonText = 'Show All';
+    } else {
+      this.summaryLimit = this.assetReadingSummary.length;
+      this.buttonText = 'Show Less';
+    }
+  }
+
   public roundTo(num, to) {
     const _to = Math.pow(10, to);
     return Math.round(num * _to) / _to;
   }
 
   public toggleModal(shouldOpen: Boolean) {
+    // reset all variable and array to default state
+    this.showGraph = true;
+    this.assetReadingSummary = [];
+    this.buttonText = '';
+    this.assetReadingValues = [];
+    this.summaryLimit = 5;
+    this.readKeyColorLabel = [];
+    this.showGraphSpinner = true;
+    this.showSummarySpinner = true;
+    this.excludedReadingsList = [];
+    this.assetChartOptions = {};
+
+    sessionStorage.removeItem(this.assetCode);
+
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
       chart_modal.classList.add('is-active');
@@ -63,13 +96,17 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.notify.emit(true);
     }
     this.isAlive = false;
-    // reset showGraph variable to default state
-    this.showGraph = true;
     chart_modal.classList.remove('is-active');
-    sessionStorage.removeItem(this.assetCode);
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      activeDropDowns[0].classList.remove('is-active');
+    }
+    this.optedTime = ASSET_READINGS_TIME_FILTER;
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
+    this.showGraphSpinner = true;
+    this.showSummarySpinner = true;
     this.optedTime = time;
     if (this.optedTime === 0) {
       this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
@@ -79,6 +116,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.showAssetReadingsSummary(this.assetCode, this.limit, time);
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     }
+    this.toggleDropdown();
   }
 
   public getAssetCode(assetCode) {
@@ -91,12 +129,14 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;
+      this.autoRefresh = false;
       this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
       this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
     }
     interval(this.graphRefreshInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
+        this.autoRefresh = true;
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
       });
@@ -115,6 +155,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
+    if (this.isSpectrum) {
+      this.showSummarySpinner = false;
+      return;
+    }
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
@@ -128,6 +172,17 @@ export class ReadingsGraphComponent implements OnDestroy {
           };
         }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
+          this.buttonText = 'Show All';
+        }
+        if (this.assetReadingSummary.length <= 5) {
+          this.buttonText = '';
+        }
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
+          this.buttonText = 'Show Less';
+        }
+        this.showSummarySpinner = false;
       },
       error => {
         if (error.status === 0) {
@@ -155,17 +210,17 @@ export class ReadingsGraphComponent implements OnDestroy {
       subscribe(
         (data: any[]) => {
           this.statsAssetReadingsGraph(data);
+          this.showGraphSpinner = false;
         },
         error => {
           console.log('error in response', error);
         });
   }
 
-
   getColorCode(readKey, cnt, fill) {
     let cc = '';
     if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
-      if (cnt >= 16) { // 15 is length of Utils' colorCodes array
+      if (cnt >= 51) { // 50 is length of Utils' colorCodes array
         cc = '#ad7ebf';
       } else {
         cc = COLOR_CODES[cnt];
@@ -186,6 +241,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   private statsAssetReadingsGraph(data: any): void {
+    this.isSpectrum = false;
     this.showGraph = true;
     this.assetReading = [];
     this.excludedReadingsList = [];
@@ -195,7 +251,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
     for (const k of uniqueKeys) {
       let assetReads = map(readings, k);
-      assetReads = assetReads.filter(function( el ) {
+      assetReads = assetReads.filter(function (el) {
         return el !== undefined;
       });
       if (!assetReads.some(isNaN)) {
@@ -205,7 +261,49 @@ export class ReadingsGraphComponent implements OnDestroy {
         };
         this.assetReading.push(read);
       } else {
-        this.excludedReadingsList.push(k);
+        if (k !== 'spectrum') {
+          this.isSpectrum = false;
+          this.excludedReadingsList.push(k);
+        } else {
+          this.polyGraphData = {
+            data: [
+              {
+                type: 'surface',
+                y: timestamps,
+                z: assetReads,
+                showscale: false,
+                colorscale: [
+                  ['0', 'rgba(68,1,84,1)'],
+                  ['0.1', 'rgba(61,77,137,1)'],
+                  ['0.2', 'rgba(57,89,140,1)'],
+                  ['0.3', 'rgba(49,104,142,1)'],
+                  ['0.4', 'rgba(44,119,142,1)'],
+                  ['0.5', 'rgba(38,136,141,1)'],
+                  ['0.6', 'rgba(33,154,138,1)'],
+                  ['0.7', 'rgba(50,178,124,1)'],
+                  ['0.8', 'rgba(101,201,96,1)'],
+                  ['0.9', 'rgba(101,201,96,1)'],
+                  ['1', 'rgba(253,231,37,1)']],
+                  colorbar: {
+                    tick0: 0,
+                    dtick: 5
+                  }
+              },
+            ],
+            layout: {
+              title: 'FFT spectrum',
+              showlegend: true,
+              autoSize: true,
+              margin: {
+                b: 40,
+                l: 60,
+                r: 10,
+                t: 25
+              }
+            }
+          };
+          this.isSpectrum = true;
+        }
       }
     }
 
@@ -295,6 +393,11 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
+  }
+
+  public toggleDropdown() {
+    const dropDown = document.querySelector('#time-dropdown');
+    dropDown.classList.toggle('is-active');
   }
 
   public isNumber(val) {

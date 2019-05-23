@@ -9,8 +9,13 @@ export class SkipLogin {
   }
 
   setUpInstance() {
+    if (environment.HOST === 'localhost' &&
+      environment.SERVICE_PORT === '8081') {
+      return;
+    }
     browser.waitForAngularEnabled(false);
-    element(by.css('select option[value="http"]')).click();
+    element(by.css('#protocol-dropdown')).click();
+    element(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
     element(by.id('host')).clear();
     element(by.id('host')).sendKeys(environment.HOST);
     element(by.id('service_port')).clear();
@@ -54,12 +59,12 @@ export class SkipLogin {
     return element(by.css('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(4)')).getText();
   }
 
-  isSelectTagPresent() {
+  isDashboardTimeDropdownPresent() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-dashboard div:nth-child(1) div.select.is-rounded')).isDisplayed();
+    return element(by.css('#time-dropdown')).isDisplayed();
   }
 
-  isGraphDropdownPresent() {
+  isDashboardGraphDropdownPresent() {
     browser.ignoreSynchronization = true;
     return element(by.css('#graph-key-dropdown')).isDisplayed();
   }
@@ -122,9 +127,14 @@ export class SkipLogin {
     return element(by.css('#card-title .subtitle.is-6')).getText();
   }
 
-  getAuditLogsSelectTag() {
+  isAuditLogsSourceDropdownPresent() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-audit-log div:nth-child(1) select')).count();
+    return element(by.css('.card #dropdown')).isDisplayed();
+  }
+
+  isAuditLogsSeverityDropdownPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('.card #severity-dropdown')).isDisplayed();
   }
 
   getAuditLogsInputTag() {
@@ -151,9 +161,14 @@ export class SkipLogin {
     return element(by.css('#card-title .subtitle.is-6')).getText();
   }
 
-  getSystemtLogSelectTag() {
+  isSystemLogDropDownPresent() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-system-log div:nth-child(1) select')).count();
+    return element(by.css('#dropdown')).isDisplayed();
+  }
+
+  isSystemLogLevelDropdownPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#level-dropdown')).isDisplayed();
   }
 
   getSystemLogInputTag() {
@@ -223,27 +238,19 @@ export class SkipLogin {
     return element(by.css('app-cert-store button i')).isDisplayed();
   }
 
-  getCertificateStoreColNames() {
+  getCertificateStoreKeyColNames() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store table thead tr')).getText();
+    return element(by.css('app-cert-store div div div div:nth-child(1) table')).getText();
+  }
+
+  getCertificateStoreCertColNames() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('app-cert-store div div div div:nth-child(2) table')).getText();
   }
 
   getCertificateStoreImport() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-cert-store header a')).getText();
-  }
-
-  isKeyPresent() {
-    browser.ignoreSynchronization = true;
-    // wait
-    browser.wait(this.EC.
-      visibilityOf(element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg'))), 2000);
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(2) .far.fa-check-circle.fa-lg')).isDisplayed();
-  }
-
-  isCertificatePresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store table tr:nth-child(1) td:nth-child(3) .far.fa-check-circle.fa-lg')).isDisplayed();
   }
 
   navToBackupRestore() {
@@ -275,8 +282,8 @@ export class SkipLogin {
   deleteBackup() {
     browser.ignoreSynchronization = true;
     element(by.css('app-backup-restore .button.is-text')).click();
-    browser.wait(this.EC.visibilityOf(element(by.css('.modal-card footer button.is-info'))), 2000);
-    element(by.css('.modal-card footer button.is-info')).click();
+    browser.wait(this.EC.visibilityOf(element(by.css('#modal-box button.button.is-small.is-danger'))), 2000);
+    element(by.css('#modal-box button.button.is-small.is-danger')).click();
     browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore .no-rec'))), 3000);
   }
 
@@ -323,7 +330,7 @@ export class SkipLogin {
 
   getSettingsSelectTag() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings .column .select #protocol')).count();
+    return element.all(by.css('#protocol-dropdown')).count();
   }
 
   getSettingsHostInputTag() {
@@ -341,8 +348,13 @@ export class SkipLogin {
     return element.all(by.css('app-settings #set-url-restart-btn'));
   }
 
-  getGUISettingsDropdown() {
+  isRefreshDashboardDropdownPresent() {
     browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings .columns.is-multiline select'));
+    return element(by.css('#refresh-time-dropdown')).isDisplayed();
+  }
+
+  isPingIntervalDropdownPresent() {
+    browser.ignoreSynchronization = true;
+    return element(by.css('#ping-interval-dropdown')).isDisplayed();
   }
 }

@@ -16,16 +16,17 @@
 ## limitations under the License.
 ##--------------------------------------------------------------------
 ##
-## Author: Ashish Jabble
+## Author: Mohd. Shariq
 ##
 
 set -e
 
 GIT_ROOT=`pwd`    # The script must be executed from the root git directory
 usage="$(basename "$0") [clean|cleanall]
-This script is used to create the Debian package of foglamp-gui
+This script is used to create the RPM package of foglamp-gui
 
 Arguments:
+ help     - Display this help text
  clean    - Remove all the old versions saved in format .XXXX
  cleanall - Remove all the versions, including the last one"
 
@@ -50,17 +51,20 @@ do
 
           exit 0
           ;;
-      *)
-          echo "${usage}"
+      help)
+	          echo "${usage}"
+	          exit 0
+	          ;;
+	      *)
+          echo "Unrecognized option: $i"
           exit 1
           ;;
   esac
 done
 
-# OS Type
 os=$(uname)
 echo "Operating System Type: ${os}"
-compat_msg="This script is compatible with Linux (Ubuntu and Raspbian) Only!"
+compat_msg="This script is compatible with Red Hat Linux Only!"
 
 if [[ $os != "Linux" ]]; then
   echo -e ${compat_msg}
@@ -69,7 +73,7 @@ fi
 
 if [ -f /etc/os-release ]; then
   n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
-  if [[ $n == *"Raspbian"* ]] || [[ $n == *"Ubuntu"* ]]; then
+  if [[ $n == *"Red Hat"* ]] || [[ $n == *"CentOS"* ]]; then
     echo -e "${n}"
   else
     echo -e "${n}"
@@ -87,6 +91,8 @@ BUILD_ROOT="${GIT_ROOT}/packages/build"
 # Final package name
 package_name="foglamp-gui-${version}"
 
+arch=`arch`
+
 # Print the summary of findings
 echo "The package root directory is         : ${GIT_ROOT}"
 echo "The FogLAMP gui version is            : ${version}"
@@ -103,7 +109,7 @@ rm -rf ${GIT_ROOT}/dist
 
 # First, create the BUILD_ROOT folder, if necessary
 if [ ! -L "${BUILD_ROOT}" -a ! -d "${BUILD_ROOT}" ]; then
-    mkdir -p "${BUILD_ROOT}"
+  mkdir -p "${BUILD_ROOT}"
 fi
 
 cd "${BUILD_ROOT}"
@@ -111,38 +117,45 @@ existing_pkgs=`find . -maxdepth 1 -name "${package_name}.????" | wc -l`
 existing_pkgs=$((existing_pkgs+1))
 new_stored_pkg=$(printf "${package_name}.%04d" "${existing_pkgs}")
 if [ -d "${package_name}" ]; then
-    echo "Saving the old working environment as ${new_stored_pkg}"
-    mv "${package_name}" "${new_stored_pkg}"
+  echo "Saving the old working environment as ${new_stored_pkg}"
+  mv "${package_name}" "${new_stored_pkg}"
 fi
+
 mkdir "${package_name}"
 
-# Populate the package directory with Debian files
+# Populate the package directory with RPM files
 echo -n "Populating the package and updating version file..."
 cd "${package_name}"
-cp -R ${GIT_ROOT}/packages/Debian/* .
-sed -i "s/Version: 0.0.0/Version: ${version}/g" DEBIAN/control
+cp -R ${GIT_ROOT}/packages/RPM/* .
+sed -i "s/__VERSION__/${version}/g" SPECS/foglamp-gui.spec
+sed -i "s/__ARCH__/${arch}/g" SPECS/foglamp-gui.spec
 echo "Done."
+
+mkdir BUILDROOT
+cd BUILDROOT
+mkdir -p ${package_name}-1.${arch}
+cd ${package_name}-1.${arch}
 
 echo "Copying build artifacts for nginx webroot directory..."
-mkdir -p var/www/html
-cp -R ${GIT_ROOT}/dist/* var/www/html/
+mkdir -p usr/share/nginx/html
+cp -R ${GIT_ROOT}/dist/* usr/share/nginx/html/
 echo "Done."
 
+cd ..
 # Build the package
 cd "${BUILD_ROOT}"
-
 # Save the old versions
-existing_pkgs=`find . -maxdepth 1 -name "${package_name}.deb.????" | wc -l`
+existing_pkgs=`find . -maxdepth 1 -name "${package_name}.rpm.????" | wc -l`
 existing_pkgs=$((existing_pkgs+1))
-new_stored_pkg=$(printf "${package_name}.deb.%04d" "${existing_pkgs}")
+new_stored_pkg=$(printf "${package_name}.rpm.%04d" "${existing_pkgs}")
 
-if [ -e "${package_name}.deb" ]; then
-    echo "Saving the old package as ${new_stored_pkg}"
-    mv "${package_name}.deb" "${new_stored_pkg}"
+if [ -e "${package_name}.rpm" ]; then
+  echo "Saving the old package as ${new_stored_pkg}"
+  mv "${package_name}.rpm" "${new_stored_pkg}"
 fi
 
-echo "Building the new debian package..."
-dpkg-deb --build ${package_name}
+echo "Building the new rpm package..."
+ rpmbuild --define "_topdir ${BUILD_ROOT}/${package_name}" --noclean -bb ${BUILD_ROOT}/${package_name}/SPECS/foglamp-gui.spec
 echo "Done."
 
 exit 0

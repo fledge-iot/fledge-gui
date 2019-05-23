@@ -80,3 +80,7 @@ a { color: black; }
 .cursor-move {
   cursor: move !important;
 }
+
+.columns {
+  display: block;
+}

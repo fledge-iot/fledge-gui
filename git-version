@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+create_git_version_info_json () {
+    > src/git-version.json
+    echo '{"hash": ""}' >> src/git-version.json
+}
+
+if ! [ -x "$(command -v git)" ]; then
+  echo 'WARNING: git is not installed!' >&2
+  create_git_version_info_json
+else
+  v=$(git --version)
+  echo $v
+  if [[ $v == "git version 2"* ]]; then
+    echo "Found git version 2.x"
+    node grab-git-info
+  else
+    create_git_version_info_json
+  fi
+fi

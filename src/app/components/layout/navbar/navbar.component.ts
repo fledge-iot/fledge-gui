@@ -12,7 +12,7 @@ import {
 import { sortBy } from 'lodash';
 import { Router } from '@angular/router';
 import {
-  AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesHealthService,
+  AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesApiService,
   ProgressBarService
 } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
@@ -51,7 +51,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
 
 
-  constructor(private servicesHealthService: ServicesHealthService,
+  constructor(private servicesApiService: ServicesApiService,
     private status: ConnectedServiceStatus,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
@@ -118,7 +118,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public getServiceStatus() {
     this.showLoadingSpinner();
-    this.servicesHealthService.getAllServices()
+    this.servicesApiService.getAllServices()
       .subscribe(
         (data: any) => {
           this.servicesRecord = [];
@@ -140,6 +140,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.hideLoadingSpinner();
         },
         (error) => {
+          this.servicesRecord = [];
           this.hideLoadingSpinner();
           console.log('service down ', error);
         });
@@ -149,7 +150,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     if (pingManually === true) {
       this.ngProgress.start();
     }
-    this.servicesHealthService.pingService().then(data => {
+    this.ping.pingService().then(data => {
       if (pingManually === true) {
         this.ngProgress.done();
       }
@@ -239,7 +240,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   restart() {
     /** request started */
     this.ngProgress.start();
-    this.servicesHealthService.restart()
+    this.ping.restart()
       .subscribe(
         (data) => {
           /** request completed */
@@ -261,7 +262,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   shutdown() {
     /** request started */
     this.ngProgress.start();
-    this.servicesHealthService.shutdown()
+    this.ping.shutdown()
       .subscribe(
         (data) => {
           /** request completed */
@@ -338,6 +339,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.authService.logout().
       subscribe(
         () => {
+          this.servicesRecord = [];
           sessionStorage.clear();
           this.ngProgress.done();
           this.router.navigate(['/login'], { replaceUrl: true });

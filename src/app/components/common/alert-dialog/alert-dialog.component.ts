@@ -17,7 +17,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
   @Output() disableNotificationService = new EventEmitter<Object>();
   @Output() deleteTask = new EventEmitter<Object>();
   @Output() deleteUserService = new EventEmitter<Number>();
-  @Output() deleteCertificate = new EventEmitter<Number>();
+  @Output() deleteCertificate = new EventEmitter<Object>();
   @Output() logoutUserService = new EventEmitter<Number>();
   @Output() createBackup = new EventEmitter<Number>();
   @Output() restoreBackup = new EventEmitter<Number>();
@@ -41,6 +41,10 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       if (this.childData.key === 'deleteCertificate') {
         this.childData.actionButtonValue = 'Delete';
         this.childData.headerTextValue = 'Delete Certificate';
+      }
+      if (this.childData.key === 'deleteKey') {
+        this.childData.actionButtonValue = 'Delete';
+        this.childData.headerTextValue = 'Delete Key';
       }
       if (this.childData.key === 'deleteUser') {
         this.childData.actionButtonValue = 'Delete';
@@ -99,7 +103,11 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.toggleModal(false);
       }
       if (this.childData.key === 'deleteCertificate') {
-        this.deleteCertificate.emit(this.childData.name);
+        this.deleteCertificate.emit({name: this.childData.name, type: 'cert'});
+        this.toggleModal(false);
+      }
+      if (this.childData.key === 'deleteKey') {
+        this.deleteCertificate.emit({name: this.childData.name, type: 'key'});
         this.toggleModal(false);
       }
       if (this.childData.key === 'clearSessions') {

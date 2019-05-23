@@ -13,14 +13,17 @@ exports.config = {
     south: './e2e/specs/**/*.e2e-south.ts',
   },
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'chrome',
+    chromeOptions: {
+        args: ['--headless', '--disable-gpu', '--no-sandbox','--disable-browser-side-navigation', '--disable-extensions', '--disable-dev-shm-usage', '--window-size=1800,1000', '--test-type=ui', '--start-maximized']
+    }
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: 30000,
+    defaultTimeoutInterval: 300000,
     print: function () { }
   },
   onPrepare() {

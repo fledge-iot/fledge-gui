@@ -1,15 +1,19 @@
 {
   "name": "foglamp",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
-    "start": "node grab-git-info && ng serve",
-    "build": "node grab-git-info && ng build --prod --build-optimizer",
+    "prestart": "./git-version",
+    "start": "ng serve",
+    "prebuild": "./git-version",
+    "build": "ng build --prod --build-optimizer",
     "test": "ng test",
     "lint": "ng lint",
+    "pree2e": "./git-version",
     "e2e": "ng e2e",
-    "clean": "rm -rf dist && rm -rf node_modules && yarn cache clean"
+    "clean": "rm -rf dist && rm -rf node_modules && yarn cache clean",
+    "purge": "git clean -fdx && yarn cache clean"
   },
   "private": true,
   "dependencies": {
@@ -24,12 +28,14 @@
     "@angular/platform-browser-dynamic": "~7.2.10",
     "@angular/router": "~7.2.10",
     "@ngx-progressbar/core": "^5.3.2",
+    "angular-plotly.js": "^1.3.2",
     "angular-tree-component": "~8.1.0",
     "animate.css": "^3.7.0",
     "chart.js": "~2.8.0",
     "core-js": "^2.6.4",
     "moment": "~2.23.0",
     "ng-sidebar": "~8.0.0",
+    "plotly.js": "^1.47.4",
     "rxjs": "~6.4.0",
     "rxjs-compat": "~6.4.0",
     "zone.js": "~0.8.29"

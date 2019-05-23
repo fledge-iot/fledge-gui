@@ -7,6 +7,8 @@ This is a GUI for FogLAMP
 
 [Prerequisite Ubuntu](prerequisite-ubuntu.md)
 
+[Prerequisite RHEL/ CentOS](prerequisite-redhat.md)
+
 [Prerequisite Windows](prerequisite-windows.md)
 
 To update yarn, Run `sudo npm i -g yarn`
@@ -25,24 +27,9 @@ Run `yarn install && yarn start` or `yarn install && yarn start --host [ip_addre
 
 Run `./build --clean-start` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-### Deploy with nginx
-
-#### Install nginx on macOS
-```
-brew install nginx 
-```
-
-#### Install nginx-light on ubuntu
-```
-  sudo apt-get update
-  sudo apt-get install nginx-light
-``` 
-
-> To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory and (may be you want to use) provided `nginx.conf`; Make sure you have nginx(-light) installed on the deployment machine.
+To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory (and may be you want to use provided `nginx.conf`, to avoid changes in default nginx config); Make sure you have nginx(-light) installed on the deployment machine.
 
 ### Starting with nginx
-
-#### macOS and ubuntu
 
 start: `nginx -c nginx.conf -p $(pwd)`
 
@@ -52,19 +39,20 @@ stop: `nginx -s stop`
 
 > nginx `-s stop` terminates the nginx process immediately while `-s quit` does a graceful shutdown.
 
-#### windows
 
-See details [here](windows-nginx-deployment-guide.md)
+For **windows**, see details [here](windows-nginx-deployment-guide.md)
 
 > Make sure to fix `include` directive and `server root` in `nginx.conf`; unless you want to use default.
 
-## Creating and Installing Debian Package
+## Creating and Installing Debian/ RPM Package
 [Debian packaging and usage](debian-readme.md)
+
+[RPM packaging and usage](rpm-readme.md)
 
 ## Running using Docker 
 [Docker installation and using docker-compose](docker-readme.md)
 
-## Supported/Tested Browser Version
+## Supported/ Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
 Safari (mac)  | 12.0.x   | latest 1
@@ -72,10 +60,9 @@ Chrome  | 73.0.x (64-bit) | latest 2
 Firefox | 66.x (64-bit) | latest 2
 
 
-## Other 
 [Changelog](changelog.md)
 
 [Developer's Guide](developers-guide.md)
 
 
-> &copy; 2017-19 DIANOMIC SYSTEMS. All Rights Reserved.
+> &copy; 2017-19 DIANOMIC SYSTEMS INC. All Rights Reserved.
