@@ -152,7 +152,7 @@ install () {
   # put them into /usr/share/nginx/html and start nginx
   sudo rm -rf /usr/share/nginx/html/*
   sudo mv dist/* /usr/share/nginx/html/.
-  restorecon -v /usr/share/nginx/html/* | grep index.html
+  restorecon -v /usr/share/nginx/html/* | grep foglamp.html
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove
