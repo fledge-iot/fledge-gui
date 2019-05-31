@@ -32,9 +32,8 @@ set_files_ownership () {
 }
 
 start_nginx_service () {
-    sudo service nginx start
+     sudo /usr/sbin/nginx -c /var/www/html/nginx.conf
 }
 
 set_files_ownership
 start_nginx_service
-sudo service nginx status | grep "Active:"

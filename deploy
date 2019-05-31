@@ -138,18 +138,19 @@ install () {
   tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   # put them into /var/www/html and start nginx
-  sudo rm -rf /var/www/html/*
-  sudo mv dist/* /var/www/html/.
+  sudo rm -rf ${DOC_ROOT}/*
+  sudo mv dist/* ${DOC_ROOT}/.
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove
   sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
-  echo -e INFO: "${CINFO} nginx status ${CRESET}"
-  sudo service nginx stop
-  sudo service nginx start
+  sudo service nginx stop 2> /dev/null  # upgrade safe
+  sudo /usr/sbin/nginx -s stop 2> /dev/null
 
-  sudo service nginx status | grep "Active:"
+  sudo /usr/sbin/nginx -c ${DOC_ROOT}/nginx.conf
+
+  echo -e INFO: "${CINFO} Done. ${CRESET}"
 }
 
 ############################################################

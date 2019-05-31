@@ -28,7 +28,8 @@
 
 echo "Installing FogLAMP GUI"
 stop_nginx_service () {
-    sudo service nginx stop
+    sudo service nginx stop 2> /dev/null  # upgrade safe
+    sudo /usr/sbin/nginx -s stop 2> /dev/null
 }
 
-stop_nginx_service
+# stop_nginx_service
