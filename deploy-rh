@@ -22,7 +22,7 @@
 set -e
 
 __version__="1.6.0next"
-if [ -f "package.json" ]
+if [ -f "package.json" ];
   then
 	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
 fi
@@ -62,7 +62,7 @@ else
 fi
 
 DOC_ROOT="/usr/share/nginx/html"
-echo -e WARNING: "${CWARN} This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
+echo -e WARNING: "${CWARN}This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
 read -p "Continue? Press n or N to exit." -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Nn]$ ]]
@@ -147,12 +147,11 @@ install () {
   # wget ${BUILD_URL}
 
   # FIXME: scp foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz pi@<IP>:/home/user
-  tar -zxf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
+  tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   # put them into /usr/share/nginx/html and start nginx
   sudo rm -rf ${DOC_ROOT}/*
   sudo mv dist/* ${DOC_ROOT}/.
-  restorecon -v ${DOC_ROOT}/* | grep foglamp.html
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove
@@ -161,6 +160,7 @@ install () {
   sudo service nginx stop 2> /dev/null  # upgrade safe
   sudo /usr/sbin/nginx -s stop 2> /dev/null
   
+  restorecon -v ${DOC_ROOT}/* | grep foglamp.html
   sudo sed 's/dist/\/usr\/share\/nginx\/html/g' ${DOC_ROOT}/nginx.conf > ${DOC_ROOT}/foglamp-nginx.conf
   sudo rm ${DOC_ROOT}/nginx.conf
   sudo /usr/sbin/nginx -c ${DOC_ROOT}/foglamp-nginx.conf
