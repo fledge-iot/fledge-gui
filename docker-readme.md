@@ -20,18 +20,15 @@ https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
 > Make sure to run `./build` to make sure docker container can load build artificats from `dist` directory 
 
 ```
-    $ sudo docker-compose build
+    $ docker-compose build
+    $ docker-compose up 
 ```
 
-```
-    $ sudo docker-compose up 
-```
-
-> To run in deamon mode: `sudo docker-compose up -d`
+> To run in deamon mode: `docker-compose up -d`
 
 Navigate to http://localhost:8080
 
 ### Stopping docker-compose
 ```
-    $ sudo docker-compose down
+    $ docker-compose down
 ```
