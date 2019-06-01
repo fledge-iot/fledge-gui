@@ -31,9 +31,9 @@ set_files_ownership () {
     chown -R root:root /var/www/html/*
 }
 
-start_nginx_service () {
-     sudo /usr/sbin/nginx -c /var/www/html/nginx.conf
+start_nginx () {
+    sudo /usr/sbin/nginx -c /var/www/html/foglamp-nginx.conf
 }
 
 set_files_ownership
-start_nginx_service
+start_nginx

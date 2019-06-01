@@ -148,9 +148,11 @@ install () {
   sudo service nginx stop 2> /dev/null  # upgrade safe
   sudo /usr/sbin/nginx -s stop 2> /dev/null
 
-  sudo /usr/sbin/nginx -c ${DOC_ROOT}/nginx.conf
+  sudo sed 's/dist/\/var\/www\/html/g' ${DOC_ROOT}/nginx.conf > ${DOC_ROOT}/foglamp-nginx.conf
+  sudo rm ${DOC_ROOT}/nginx.conf
+  sudo /usr/sbin/nginx -c ${DOC_ROOT}/foglamp-nginx.conf
 
-  echo -e INFO: "${CINFO} Done. ${CRESET}"
+  echo -e "${CINFO} Done. ${CRESET}"
 }
 
 ############################################################
