@@ -18,7 +18,9 @@ FogLAMP GUI
 echo "Installing FogLAMP GUI"
 stop_nginx () {
     sudo service nginx stop 2> /dev/null  # upgrade safe
-    sudo /usr/sbin/nginx -s stop 2> /dev/null
+    if [ -f /run/nginx.pid ]; then 
+      sudo /usr/sbin/nginx -s stop 2> /dev/null
+    fi
 }
 
 stop_nginx
@@ -29,7 +31,7 @@ stop_nginx
 set -e
 
 start_nginx () {
-    sudo /usr/sbin/nginx -c /usr/share/nginx/html/foglamp-nginx.conf
+    sudo /usr/sbin/nginx -c /usr/share/nginx/html/nginx.conf
 }
 
 start_nginx

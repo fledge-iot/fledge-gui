@@ -32,7 +32,7 @@ set_files_ownership () {
 }
 
 start_nginx () {
-    sudo /usr/sbin/nginx -c /var/www/html/foglamp-nginx.conf
+    sudo /usr/sbin/nginx -c /var/www/html/nginx.conf
 }
 
 set_files_ownership

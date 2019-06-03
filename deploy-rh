@@ -162,12 +162,13 @@ install () {
   sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   sudo service nginx stop 2> /dev/null  # upgrade safe
-  sudo /usr/sbin/nginx -s stop 2> /dev/null
+  if [ -f /run/nginx.pid ]; then 
+    sudo /usr/sbin/nginx -s stop 2> /dev/null
+  fi
   
   restorecon -v ${DOC_ROOT}/* | grep foglamp.html
-  sudo sed 's/dist/\/usr\/share\/nginx\/html/g' ${DOC_ROOT}/nginx.conf > ${DOC_ROOT}/foglamp-nginx.conf
-  sudo rm ${DOC_ROOT}/nginx.conf
-  sudo /usr/sbin/nginx -c ${DOC_ROOT}/foglamp-nginx.conf
+  sudo sed -i 's/dist/\/usr\/share\/nginx\/html/g' ${DOC_ROOT}/nginx.conf
+  sudo /usr/sbin/nginx -c ${DOC_ROOT}/nginx.conf
 
   echo -e "${CINFO} Done. ${CRESET}"
 }
