@@ -73,6 +73,6 @@ $ yum install /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
 ### Uninstalling rpm package
 
 ```
-$ yum list installed
+$ yum list installed | grep foglamp-gui
 $ yum remove foglamp-gui.x86_64
 ```
