@@ -40,6 +40,7 @@ INFO:  Build distribution contents  ...
 INFO   Size: 8.0M       dist
 INFO:  Removing unwanted contents ...
 INFO:  Deployable dist size   2.4M      dist
+Copying custom nginx conf file ...
 INFO:  Creating compressed build artifacts for release ...
 Created foglamp-gui-x.y.z.tar.gz
 INFO:  Done.
@@ -61,31 +62,17 @@ Done.
 
 ### Installing rpm package
 
-**Install Nginx**
-
 ```
-sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-sudo yum -y update
-sudo yum -y install epel-release
-sudo yum -y install nginx
+$ cp packages/build/foglamp-gui-x.y.z/RPMS/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm /var/cache/yum/x86_64/.
+
+$ yum install /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
 ```
 
-**Copy and Install RPM package**
 
-```
-$ sudo cp packages/build/foglamp-gui-x.y.z/RPMS/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm /var/cache/yum/x86_64/.
-
-$ sudo rpm  -i --force /var/cache/yum/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm
-```
-
-> You can also use `--replacefiles` instead of `--force`. You may want to check the installed RPM package content with `sudo rpm -ql foglamp-gui-x.y.z-1.x86_64`
 
 ### Uninstalling rpm package
 
 ```
-$ sudo rpm -e foglamp-gui-x.y.z-1.x86_64
+$ yum list installed
+$ yum remove foglamp-gui.x86_64
 ```
-
-#### TODO
-
-Investigate `yum localinstall` to auto install the required depdendency (i.e. nginx), And handle conflicts with nginx default install.
