@@ -119,7 +119,7 @@ nginx_health(){
   fi
 }
 
-install () {
+check_install_nginx () {
   if ! which nginx > /dev/null 2>&1; then
       echo -e WARNING: "${CWARN} Nginx not installed ${CRESET}"
       yes Y | sudo apt-get install nginx-light
@@ -127,6 +127,10 @@ install () {
       nginx_version=$(nginx -v 2>&1)
       echo -e INFO: "${CINFO} Found ${nginx_version} ${CRESET}"
   fi
+}
+
+install () {
+  check_install_nginx
 
   # Download foglamp-gui build artifacts i.e. dist directory compressed file
   # url e.g. http://192.168.1.120/foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz

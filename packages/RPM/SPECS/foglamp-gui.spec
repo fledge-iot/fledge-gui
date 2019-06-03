@@ -21,7 +21,7 @@ stop_nginx () {
     sudo /usr/sbin/nginx -s stop 2> /dev/null
 }
 
-# stop_nginx
+stop_nginx
 
 
 %post
