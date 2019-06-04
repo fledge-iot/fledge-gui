@@ -33,8 +33,6 @@ To deploy on another machine, you shall need to copy build artifacts stored in t
 
 start: `nginx -c nginx.conf -p $(pwd)`
 
-> You should be able to access it on 0.0.0.0:8080
-
 stop: `nginx -s stop`
 
 > nginx `-s stop` terminates the nginx process immediately while `-s quit` does a graceful shutdown.
