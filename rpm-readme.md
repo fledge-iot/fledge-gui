@@ -1,7 +1,7 @@
 
 ### Create RPM package
 
-Make sure [rpm-build and other packages](https://rpm-packaging-guide.github.io/#prerequisites) are installed.
+Make sure [RHEL/ CentOS prerequisites](prerequisite-redhat.md), [rpm-build and other packages](https://rpm-packaging-guide.github.io/#prerequisites) are installed.
 
 Use `sudo ./make_rpm` script to create RPM package, the package will be placed in `packages/build/`
 

@@ -1,5 +1,7 @@
 
-#### Create debian package
+### Create debian package
+
+Make sure [prerequisites](prerequisite-ubuntu.md) are installed.
 
 Use `./make_deb` script to create debian package, the package will be placed in `packages/build/`
 
