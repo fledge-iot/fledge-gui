@@ -62,6 +62,13 @@ Done.
 
 ### Installing rpm package
 
+**Install and enable the EPEL rpm package**
+
+```
+sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo yum -y update
+```
+
 ```
 $ cp packages/build/foglamp-gui-x.y.z/RPMS/x86_64/foglamp-gui-x.y.z-1.x86_64.rpm /var/cache/yum/x86_64/.
 

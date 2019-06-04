@@ -16,6 +16,7 @@ FogLAMP GUI
 %pre
 #!/usr/bin/env bash
 echo "Installing FogLAMP GUI"
+
 stop_nginx () {
     sudo systemctl stop nginx 2> /dev/null  # upgrade safe
     if [ -f /run/nginx.pid ]; then 
