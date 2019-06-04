@@ -147,7 +147,7 @@ install () {
   
   sudo systemctl stop nginx 2> /dev/null  # upgrade safe
   if [ -f /run/nginx.pid ]; then 
-    sudo /usr/sbin/nginx -s stop 2> /dev/null
+    sudo /usr/sbin/nginx -s stop
   fi
 
   # Download foglamp-gui build artifacts i.e. dist directory compressed file
