@@ -18,21 +18,14 @@
 
 ##--------------------------------------------------------------------
 ##
-## @preinst DEBIAN/preinst
+## @preinst DEBIAN/postrm
 ## This script is used to execute pre installation tasks.
 ##
-## Author: Ashish Jabble
+## Author: Praveen Garg
 ##
 ##--------------------------------------------------------------------
 
 
-echo "Installing FogLAMP GUI"
-stop_nginx () {
-    sudo service nginx stop 2> /dev/null  # upgrade safe
-    if [ -f /run/nginx.pid ]; then 
-      sudo /usr/sbin/nginx -s stop
-    fi
-    sudo kill $(ps aux | grep '[n]ginx' | awk '{print $2}')
-}
-
-stop_nginx
+# Kill all nginx process and allow downgrades
+# sudo apt install -y --allow-downgrades
+sudo kill $(ps aux | grep '[n]ginx' | awk '{print $2}')

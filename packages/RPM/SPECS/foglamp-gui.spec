@@ -22,6 +22,7 @@ stop_nginx () {
     if [ -f /run/nginx.pid ]; then 
       sudo /usr/sbin/nginx -s stop
     fi
+    sudo kill $(ps aux | grep '[n]ginx' | awk '{print $2}')
 }
 
 stop_nginx
@@ -36,6 +37,11 @@ start_nginx () {
 }
 
 start_nginx
+
+%postun
+#!/usr/bin/env bash
+
+sudo kill $(ps aux | grep '[n]ginx' | awk '{print $2}')
 
 %define _datadir /usr/share/nginx/html
 %files
