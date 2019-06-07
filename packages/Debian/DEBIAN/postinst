@@ -27,13 +27,8 @@
 
 set -e
 
-set_files_ownership () {
-    chown -R root:root /var/www/html/*
-}
-
 start_nginx () {
-    sudo /usr/sbin/nginx -c /var/www/html/nginx.conf
+  /usr/sbin/nginx -c /var/www/html/nginx.conf
 }
 
-set_files_ownership
 start_nginx
