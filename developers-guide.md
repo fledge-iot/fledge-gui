@@ -79,8 +79,8 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core:
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 7.2.15        |        7.2.15         | MIT
- Angular CLI  | 7.3.9         |        7.3.9          | MIT
+ Angular      | 7.2.15        |        8.0.0          | MIT
+ Angular CLI  | 7.3.9         |        8.0.2          | MIT
  TypeScript   | 3.2.4         |        3.3.4000       | Apache 2.0
  rxjs         | 6.5.2         |        6.5.2          | Apache 2.0
  Bulma css    | 0.7.4         |        0.7.4          | MIT
