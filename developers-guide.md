@@ -66,17 +66,17 @@ Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; 
 
       > `common,south` are the test suite name defined in protractor_ci.conf.js inside suite section.
 
-## REST API URL Configuration:
+## REST API URL Configuration
 
-### Dev Mode:
+### Dev Mode
 Set default API base URL in `environments/environment.ts`, you can always change it and restart the app from settings. 
 
-### Production Mode:
+### Production Mode
 Set API base URL in `environments/environment.prod.ts`, you can always change it and restart the app from settings. 
 
-## Used Libraries:
+## Used Libraries
 
-#### Core:
+#### Core
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
  Angular      | 7.2.15        |        8.0.0          | MIT
@@ -85,7 +85,7 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
  rxjs         | 6.5.2         |        6.5.2          | Apache 2.0
  Bulma css    | 0.7.4         |        0.7.4          | MIT
 
-#### Dev:
+#### Dev
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
 chart.js         |  2.8.0        |        2.8.0          | MIT
@@ -98,7 +98,18 @@ node-git-describe | 4.0.4     | 4.0.4        | MIT
 angular-plotly.js | 1.3.2     | 1.3.2        | MIT
 plotly.js         | 1.48.1    | 1.48.1       | MIT
 
-#### Why Yarn?
+## Update Dependencies
+* `npm update`: By running this command, npm checks if there exist newer versions in the repository that satisfy specified semantic versioning ranges and installs them.
+
+#### Fix Vulnerabilities Issues
+* `npm audit`: It scan the project for vulnerabilities and just show the details, without fixing anything.
+
+* `npm audit fix`: It scan the project for vulnerabilities and automatically install any compatible updates to vulnerable dependencies.
+
+   #### Note:
+   npm command generates `package-lock.json` file. Delete this file and run yarn to update yarn.lock file.
+    
+## Why Yarn?
 
 * Yarn parallelize operations to maximize resource utilization so install times are faster than ever.
 * Offline cache: package installation using Yarn, it places the package on your disk. During the next install, this package will be used instead of sending an HTTP request to get the tarball from the registry.
