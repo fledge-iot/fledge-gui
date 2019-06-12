@@ -2,7 +2,7 @@
     <app-navbar (toggle)="toggleSidebar()"></app-navbar>
 </div>
 <ng-sidebar-container>
-    <ng-sidebar *ngIf="!isLoginView" #sidebar [(opened)]="_opened" sidebarClass="column is-2">
+    <ng-sidebar *ngIf="!isLoginView" #sidebar [(opened)]="_opened" sidebarClass="column is-2 sidebar">
         <app-side-menu (toggle)="toggleSidebar()"></app-side-menu>
     </ng-sidebar>
     <div ng-sidebar-content [ngClass]="{'column is-offset-2 is-10 fixed-overflow':!isLoginView}">
