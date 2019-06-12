@@ -106,8 +106,8 @@ plotly.js         | 1.48.1    | 1.48.1       | MIT
 
 * `npm audit fix`: It scan the project for vulnerabilities and automatically install any compatible updates to vulnerable dependencies.
 
-   #### Note:
-   npm command generates `package-lock.json` file. Delete this file and run yarn to update yarn.lock file.
+  #### Note:
+   npm command generates `package-lock.json` file. Delete this file and run then `yarn` command to update `yarn.lock` file.
     
 ## Why Yarn?
 
