@@ -18,17 +18,17 @@
 
 ##--------------------------------------------------------------------
 ##
-## @postinst DEBIAN/postinst
-## This script is used to execute post installation tasks.
+## @postrm DEBIAN/postrm
+## This script is used to execute post uninstallation tasks.
 ##
-## Author: Ashish Jabble
+## Author: Praveen Garg
 ##
 ##--------------------------------------------------------------------
 
-set -e
 
-start_nginx () {
-  /usr/sbin/nginx -c /var/www/html/nginx.conf
-}
-
-start_nginx
+# Kill all nginx process and allow downgrades
+# sudo apt install -y --allow-downgrades
+PSLIST=$(ps aux | grep '[n]ginx' | awk '{print $2}')
+if [ ! -z "${PSLIST}" ]; then
+  kill ${PSLIST}
+fi

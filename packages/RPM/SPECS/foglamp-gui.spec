@@ -16,23 +16,34 @@ FogLAMP GUI
 %pre
 #!/usr/bin/env bash
 echo "Installing FogLAMP GUI"
-stop_nginx_service () {
-    sudo systemctl stop nginx
+
+kill_nginx_ps () {
+  PSLIST=$(ps aux | grep '[n]ginx' | awk '{print $2}')
+  if [ ! -z "${PSLIST}" ]; then
+    kill ${PSLIST}
+  fi
 }
 
-stop_nginx_service
+kill_nginx_ps
 
 
 %post
 #!/usr/bin/env bash
 set -e
 
-start_nginx_service () {
-    sudo systemctl start nginx
-    sudo systemctl status nginx | grep "Active:"
+start_nginx () {
+  /usr/sbin/nginx -c /usr/share/nginx/html/nginx.conf
 }
 
-start_nginx_service
+start_nginx
+
+%postun
+#!/usr/bin/env bash
+
+PSLIST=$(ps aux | grep '[n]ginx' | awk '{print $2}')
+if [ ! -z "${PSLIST}" ]; then
+  kill ${PSLIST}
+fi
 
 %define _datadir /usr/share/nginx/html
 %files

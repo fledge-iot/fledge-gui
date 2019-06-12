@@ -22,7 +22,7 @@
 set -e
 
 __version__="1.6.0next"
-if [ -f "package.json" ]
+if [ -f "package.json" ];
   then
 	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
 fi
@@ -62,7 +62,7 @@ else
 fi
 
 DOC_ROOT="/usr/share/nginx/html"
-echo -e WARNING: "${CWARN} This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
+echo -e WARNING: "${CWARN}This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
 read -p "Continue? Press n or N to exit." -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Nn]$ ]]
@@ -120,7 +120,7 @@ install_epel () {
   sudo yum -y install epel-release
 }
 
-install () {
+check_install_nginx () {
   if ! which nginx > /dev/null 2>&1; then
       echo -e WARNING: "${CWARN} Nginx not installed! ${CRESET}"
       if rpm -q epel-release > /dev/null 2>&1;
@@ -140,6 +140,15 @@ install () {
       nginx_version=$(nginx -v 2>&1)
       echo -e INFO: "${CINFO} Found ${nginx_version} ${CRESET}"
   fi
+}
+
+install () {
+  check_install_nginx
+  
+  sudo systemctl stop nginx 2> /dev/null  # upgrade safe
+  if [ -f /run/nginx.pid ]; then 
+    sudo /usr/sbin/nginx -s stop
+  fi
 
   # Download foglamp-gui build artifacts i.e. dist directory compressed file
   # url e.g. http://192.168.1.120/foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
@@ -147,21 +156,21 @@ install () {
   # wget ${BUILD_URL}
 
   # FIXME: scp foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz pi@<IP>:/home/user
-  tar -zxf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
+  tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   # put them into /usr/share/nginx/html and start nginx
-  sudo rm -rf /usr/share/nginx/html/*
-  sudo mv dist/* /usr/share/nginx/html/.
-  restorecon -v /usr/share/nginx/html/* | grep index.html
+  sudo rm -rf ${DOC_ROOT}/*
+  sudo mv dist/* ${DOC_ROOT}/.
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove
   sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
-  echo -e INFO: "${CINFO} nginx status ${CRESET}"
-  sudo systemctl enable nginx
-  sudo systemctl start nginx
-  sudo systemctl status nginx | grep "Active:"
+  sudo sed -i 's/dist/\/usr\/share\/nginx\/html/g' ${DOC_ROOT}/nginx.conf
+  restorecon -v ${DOC_ROOT}/* | grep foglamp.html
+  sudo /usr/sbin/nginx -c ${DOC_ROOT}/nginx.conf
+
+  echo -e "${CINFO} Done. ${CRESET}"
 }
 
 ############################################################

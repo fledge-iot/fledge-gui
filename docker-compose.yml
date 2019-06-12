@@ -10,9 +10,7 @@ services:
     image: nginx
     build:
       context: .
-      dockerfile: docker/nginx.dockerfile
-    volumes:
-      - ./dist:/usr/share/nginx/html
+      dockerfile: nginx.dockerfile
     ports:
       - "8080:80"
       # - "443:443"

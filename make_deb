@@ -123,6 +123,9 @@ cp -R ${GIT_ROOT}/packages/Debian/* .
 sed -i "s/Version: 0.0.0/Version: ${version}/g" DEBIAN/control
 echo "Done."
 
+
+sed -i 's/dist/\/var\/www\/html/g' ${GIT_ROOT}/dist/nginx.conf
+
 echo "Copying build artifacts for nginx webroot directory..."
 mkdir -p var/www/html
 cp -R ${GIT_ROOT}/dist/* var/www/html/

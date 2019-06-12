@@ -27,8 +27,11 @@
 
 
 echo "Installing FogLAMP GUI"
-stop_nginx_service () {
-    sudo service nginx stop
+kill_nginx_ps () {  
+  PSLIST=$(ps aux | grep '[n]ginx' | awk '{print $2}')
+  if [ ! -z "${PSLIST}" ]; then
+    kill ${PSLIST}
+  fi
 }
 
-stop_nginx_service
+kill_nginx_ps

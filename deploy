@@ -47,18 +47,7 @@ if [[ $os != "Linux" ]]; then
   exit 1;
 fi
 
-DOC_ROOT="/var/www/html"
-echo -e WARNING: "${CWARN}This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
-read -p "Continue? Press n or N to exit." -n 1 -r
-echo    # (optional) move to a new line
-if [[ $REPLY =~ ^[Nn]$ ]]
-then
-    exit 0;
-fi
-
-machine_details() {
-  
-  if [ -f /etc/os-release ]; then
+if [ -f /etc/os-release ]; then
     n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
     if [[ $n == *"Raspbian"* ]] || [[ $n == *"Ubuntu"* ]]; then
       echo -e "${CINFO}${n} ${CRESET}"
@@ -72,6 +61,16 @@ machine_details() {
     exit 1;
   fi
 
+DOC_ROOT="/var/www/html"
+echo -e WARNING: "${CWARN}This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
+read -p "Continue? Press n or N to exit." -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Nn]$ ]]
+then
+    exit 0;
+fi
+
+machine_details() {
   echo -e "${CINFO}Hostname : ${CRESET} ${HOSTNAME} "
 
   internal_ip=$(hostname -I)
@@ -120,13 +119,22 @@ nginx_health(){
   fi
 }
 
-install () {
+check_install_nginx () {
   if ! which nginx > /dev/null 2>&1; then
       echo -e WARNING: "${CWARN} Nginx not installed ${CRESET}"
       yes Y | sudo apt-get install nginx-light
   else
       nginx_version=$(nginx -v 2>&1)
       echo -e INFO: "${CINFO} Found ${nginx_version} ${CRESET}"
+  fi
+}
+
+install () {
+  check_install_nginx
+
+  sudo service nginx stop 2> /dev/null  # upgrade safe
+  if [ -f /run/nginx.pid ]; then 
+    sudo /usr/sbin/nginx -s stop
   fi
 
   # Download foglamp-gui build artifacts i.e. dist directory compressed file
@@ -138,18 +146,17 @@ install () {
   tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   # put them into /var/www/html and start nginx
-  sudo rm -rf /var/www/html/*
-  sudo mv dist/* /var/www/html/.
+  sudo rm -rf ${DOC_ROOT}/*
+  sudo mv dist/* ${DOC_ROOT}/.
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove
   sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
-  echo -e INFO: "${CINFO} nginx status ${CRESET}"
-  sudo service nginx stop
-  sudo service nginx start
+  sudo sed -i 's/dist/\/var\/www\/html/g' ${DOC_ROOT}/nginx.conf
+  sudo /usr/sbin/nginx -c ${DOC_ROOT}/nginx.conf
 
-  sudo service nginx status | grep "Active:"
+  echo -e "${CINFO} Done. ${CRESET}"
 }
 
 ############################################################
