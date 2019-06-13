@@ -366,37 +366,13 @@ export class AddNotificationWizardComponent implements OnInit {
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
-  getPluginChangedConfig(changedConfig: any, pluginConfigurationData: any, pageId: number) {
-    const defaultConfig = map(pluginConfigurationData.value[0], (v, key) => ({ key, ...v }));
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.some(e2 => {
-        return e1.key === e2.key;
-      });
-    });
-
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => {
-      changedConfig.forEach(c => {
-        if (e.key === c.key) {
-          e.value = c.value.toString();
-        }
-      });
-    });
-
-    // final array to hold changed configuration
+  getPluginChangedConfig(changedConfig: any, pageId: number) {
     const finalConfig = [];
-    matchedConfigCopy.forEach(item => {
+    changedConfig.forEach((item: any) => {
       finalConfig.push({
         [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
       });
     });
-
     if (pageId === 3) {
       this.rulePluginChangedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     } else if (pageId === 5) {
@@ -421,7 +397,7 @@ export class AddNotificationWizardComponent implements OnInit {
   }
 
   /**
-   * Method to add service
+   * Method to add notification
    * @param payload  to pass in request
    * @param nxtButton button to go next
    * @param previousButton button to go previous
@@ -435,6 +411,7 @@ export class AddNotificationWizardComponent implements OnInit {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(data.result, true);
+
           if (!isEmpty(this.rulePluginChangedConfig)) {
             this.updateConfiguration(`rule${payload.name}`, this.rulePluginChangedConfig);
           }
@@ -455,14 +432,42 @@ export class AddNotificationWizardComponent implements OnInit {
   }
 
   updateConfiguration(categoryName: string, config: any) {
-    this.configService.updateBulkConfiguration(categoryName, config).
+    const configItemsCopy = cloneDeep(config);
+    delete configItemsCopy.script;
+    if (Object.keys(configItemsCopy).length === 0) {
+      if ('script' in config) {
+        this.uploadScript(categoryName, config);
+      }
+      return;
+    }
+    this.configService.updateBulkConfiguration(categoryName, configItemsCopy).
       subscribe(
         (data: any) => {
+          if ('script' in config) {
+            this.uploadScript(categoryName, config);
+          }
           console.log('configuration updated successfully', data);
         },
         error => {
           /** request completed */
           this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public uploadScript(categoryName: string, config: any) {
+    const file = config.script[0];
+    const formData = new FormData();
+    formData.append('script', file.script);
+    this.configService.uploadFile(categoryName, 'script', formData)
+      .subscribe(() => {
+        this.alertService.success('configuration updated successfully.');
+      },
+        error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
