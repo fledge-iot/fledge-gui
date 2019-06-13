@@ -411,6 +411,7 @@ export class AddNotificationWizardComponent implements OnInit {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(data.result, true);
+
           if (!isEmpty(this.rulePluginChangedConfig)) {
             this.updateConfiguration(`rule${payload.name}`, this.rulePluginChangedConfig);
           }
@@ -433,6 +434,12 @@ export class AddNotificationWizardComponent implements OnInit {
   updateConfiguration(categoryName: string, config: any) {
     const configItemsCopy = cloneDeep(config);
     delete configItemsCopy.script;
+    if (Object.keys(configItemsCopy).length === 0) {
+      if ('script' in config) {
+        this.uploadScript(categoryName, config);
+      }
+      return;
+    }
     this.configService.updateBulkConfiguration(categoryName, configItemsCopy).
       subscribe(
         (data: any) => {
