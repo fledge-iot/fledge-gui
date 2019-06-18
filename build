@@ -104,8 +104,8 @@ build () {
   T_SIZE=$(du -hs dist)
   echo -e INFO: "${CINFO} Deployable dist size ${CWARN}  ${T_SIZE} ${CRESET}" 
 
-  echo "Copying custom nginx conf file ..."
-  cp nginx.conf dist/
+  # echo "Copying custom nginx conf file ..."
+  # cp nginx.conf dist/
 
   RELEASABLE_BUILD="foglamp-gui-${__version__}.tar.gz"
   echo -e  INFO: "${CINFO} Creating compressed build artifacts for release ... ${CRESET}"

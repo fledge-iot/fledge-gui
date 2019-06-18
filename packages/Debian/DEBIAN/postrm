@@ -25,10 +25,4 @@
 ##
 ##--------------------------------------------------------------------
 
-
-# Kill all nginx process and allow downgrades
-# sudo apt install -y --allow-downgrades
-PSLIST=$(ps aux | grep '[n]ginx' | awk '{print $2}')
-if [ ! -z "${PSLIST}" ]; then
-  kill ${PSLIST}
-fi
+service nginx stop

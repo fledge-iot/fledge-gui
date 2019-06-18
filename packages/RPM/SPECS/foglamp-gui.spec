@@ -25,6 +25,7 @@ kill_nginx_ps () {
 }
 
 kill_nginx_ps
+systemctl stop nginx
 
 
 %post
@@ -32,9 +33,11 @@ kill_nginx_ps
 set -e
 
 start_nginx () {
-  /usr/sbin/nginx -c /usr/share/nginx/html/nginx.conf
+  systemctl start nginx
+  systemctl status nginx | grep "Active:"
 }
 
+cp /usr/share/nginx/html/foglamp.html /usr/share/nginx/html/index.html
 start_nginx
 
 %postun

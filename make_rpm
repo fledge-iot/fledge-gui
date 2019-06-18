@@ -136,7 +136,7 @@ cd BUILDROOT
 mkdir -p ${package_name}-1.${arch}
 cd ${package_name}-1.${arch}
 
-sed -i 's/dist/\/usr\/share\/nginx\/html/g' ${GIT_ROOT}/dist/nginx.conf
+# sed -i 's/dist/\/usr\/share\/nginx\/html/g' ${GIT_ROOT}/dist/nginx.conf
 
 echo "Copying build artifacts for nginx webroot directory..."
 mkdir -p usr/share/nginx/html

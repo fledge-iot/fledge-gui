@@ -28,7 +28,9 @@
 set -e
 
 start_nginx () {
-  /usr/sbin/nginx -c /var/www/html/nginx.conf
+  service nginx start
+  service nginx status | grep "Active:"
 }
 
+cp /var/www/html/foglamp.html /var/www/html/index.html
 start_nginx

@@ -145,10 +145,7 @@ check_install_nginx () {
 install () {
   check_install_nginx
   
-  sudo systemctl stop nginx 2> /dev/null  # upgrade safe
-  if [ -f /run/nginx.pid ]; then 
-    sudo /usr/sbin/nginx -s stop
-  fi
+  sudo systemctl stop nginx
 
   # Download foglamp-gui build artifacts i.e. dist directory compressed file
   # url e.g. http://192.168.1.120/foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
@@ -166,9 +163,12 @@ install () {
   # FIXME: if --keep, then don't remove
   sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
-  sudo sed -i 's/dist/\/usr\/share\/nginx\/html/g' ${DOC_ROOT}/nginx.conf
+  # sudo sed -i 's/dist/\/usr\/share\/nginx\/html/g' ${DOC_ROOT}/nginx.conf
+  sudo cp ${DOC_ROOT}/foglamp.html ${DOC_ROOT}/index.html
   restorecon -v ${DOC_ROOT}/* | grep foglamp.html
-  sudo /usr/sbin/nginx -c ${DOC_ROOT}/nginx.conf
+  
+  sudo systemctl start nginx
+  sudo systemctl status nginx | grep "Active:"
 
   echo -e "${CINFO} Done. ${CRESET}"
 }
