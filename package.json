@@ -7,7 +7,7 @@
     "prestart": "./git-version",
     "start": "ng serve",
     "prebuild": "./git-version",
-    "build": "ng build --prod --build-optimizer",
+    "build": "ng build --prod --build-optimizer --vendor-chunk=true",
     "test": "ng test",
     "lint": "ng lint",
     "pree2e": "./git-version",
