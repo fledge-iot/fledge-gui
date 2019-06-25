@@ -50,7 +50,7 @@
                   <td class="align-content">
                     <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
                   </td>
-                  <td class="align-content status">
+                  <td class="align-content content-pad">
                     <div class="tags has-addons">
                       <ng-container *ngIf="!svc.schedule_enabled">
                         <span class="tag">disabled</span> <!-- This also take care of shutdown status-->
@@ -62,11 +62,11 @@
                       </ng-container>
                     </div>
                   </td>
-                  <td class="align-content">
-                      {{svc.plugin.name}}
+                  <td class="align-content content-pad">
+                      {{svc?.plugin?.name}}
                   </td>
-                  <td class="align-content">
-                      {{svc.plugin.version}}
+                  <td class="align-content content-pad">
+                      {{svc?.plugin?.version}}
                   </td>
                   <td class="align-content">
                     <table class="table is-narrow is-responsive">

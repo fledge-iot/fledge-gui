@@ -30,6 +30,8 @@
                 <tr>
                   <th>Process</th>
                   <th>Status</th>
+                  <th>Plugin</th>
+                  <th>Version</th>
                   <th>Sent</th>
                 </tr>
               </thead>
@@ -41,6 +43,12 @@
                   <td>
                     <span *ngIf="t.enabled == true" class="tag is-success">enabled</span>
                     <span *ngIf="t.enabled == false" class="tag">disabled</span>
+                  </td>
+                  <td>
+                    {{t?.plugin?.name}}
+                  </td>
+                  <td>
+                    {{t?.plugin?.version}}
                   </td>
                   <td>
                     <small *ngIf="t.sent >= '0'" class="level-right">{{t.sent | number}}</small>
