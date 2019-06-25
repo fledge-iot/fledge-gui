@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep } from 'lodash';
 
 import { AlertService, ConfigurationService, ProgressBarService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -63,7 +63,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         });
         // check if editable config item found, based on readonly property
         for (const el of this.categoryConfiguration.value) {
-          if (!has(el, 'readonly')) {
+          if (el.readonly === 'false') {
             this.hasEditableConfigItems = true;
             break;
           } else {
