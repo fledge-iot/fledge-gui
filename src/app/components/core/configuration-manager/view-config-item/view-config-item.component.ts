@@ -63,7 +63,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         });
         // check if editable config item found, based on readonly property
         for (const el of this.categoryConfiguration.value) {
-          if (!has(el, 'readonly')) {
+          if (!has(el, 'readonly') || el.readonly === 'false') {
             this.hasEditableConfigItems = true;
             break;
           } else {
