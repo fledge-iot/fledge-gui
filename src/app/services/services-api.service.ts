@@ -42,8 +42,12 @@ export class ServicesApiService {
   /**
    *  GET  | /foglamp/south
    */
-  getSouthServices() {
-    return this.http.get(this.SOUTH_URL).pipe(
+  getSouthServices(caching: boolean) {
+    let url = this.SOUTH_URL;
+    if (caching === false) {
+      url = `${this.SOUTH_URL}?cached=${caching}`;
+    }
+    return this.http.get(url).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
