@@ -38,16 +38,16 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.showLoadingSpinner();
-    this.getSouthboundServices();
+    this.getSouthboundServices(false);
     interval(this.refreshSouthboundServiceInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
-        this.getSouthboundServices();
+        this.getSouthboundServices(true);
       });
   }
 
-  public getSouthboundServices() {
-    this.servicesApiService.getSouthServices().
+  public getSouthboundServices(caching: boolean) {
+    this.servicesApiService.getSouthServices(caching).
       subscribe(
         (data: any) => {
           this.southboundServices = data['services'];
@@ -80,7 +80,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   onNotify() {
-    this.getSouthboundServices();
+    this.getSouthboundServices(false);
   }
 
   public showLoadingSpinner() {

@@ -45,10 +45,10 @@
                     <span *ngIf="t.enabled == false" class="tag">disabled</span>
                   </td>
                   <td>
-                    {{t?.plugin?.name}}
+                    <small>{{t?.plugin?.name}}</small>
                   </td>
                   <td>
-                    {{t?.plugin?.version}}
+                    <small>{{t?.plugin?.version}}</small>
                   </td>
                   <td>
                     <small *ngIf="t.sent >= '0'" class="level-right">{{t.sent | number}}</small>

@@ -38,11 +38,11 @@ export class NorthComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.showLoadingSpinner();
-    this.getNorthTasks();
+    this.getNorthTasks(false);
     interval(this.refreshInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
-        this.getNorthTasks();
+        this.getNorthTasks(true);
       });
   }
 
@@ -50,8 +50,8 @@ export class NorthComponent implements OnInit, OnDestroy {
     this.router.navigate(['/north/add']);
   }
 
-  public getNorthTasks(): void {
-    this.northService.getNorthTasks().
+  public getNorthTasks(caching: boolean): void {
+    this.northService.getNorthTasks(caching).
       subscribe(
         (data) => {
           this.tasks = data;
@@ -77,7 +77,7 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   onNotify() {
-    this.getNorthTasks();
+    this.getNorthTasks(false);
   }
 
   public showLoadingSpinner() {
