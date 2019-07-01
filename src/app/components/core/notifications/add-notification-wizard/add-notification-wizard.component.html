@@ -68,7 +68,10 @@
         </div>
         <div class="box step-content" id="c-2">
           <div *ngIf="!notificationRulePlugins || notificationRulePlugins.length === 0" class="has-text-centered">
-            <small class="no-rec">No notification rule plugin found</small>
+            <small class="no-rec">No notification rule plugin installed. </small>
+            <small>
+              <a (click)="openPluginModal(true, 'Rule')">Install from available plugins</a>
+            </small>
           </div>
           <div *ngIf="notificationRulePlugins.length > 0" class="field is-horizontal form-group">
             <div class="field-label is-normal">
@@ -76,7 +79,7 @@
             </div>
             <div class="field-body">
               <div class="select is-multiple">
-                <select multiple name="type" #selectedPlugin formControlName="rule"
+                <select multiple name="type" #selectedPlugin formControlName="rule" id="rule"
                   (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)" required>
                   <option *ngFor="let p of notificationRulePlugins" [value]="p.name"> {{ p.name }}</option>
                 </select>
@@ -89,6 +92,22 @@
               <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
             </div>
           </div>
+          <div class="field is-horizontal form-group is-right">
+            <div class="field-label is-normal">
+              <label class="label"></label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <ng-container *ngIf="notificationRulePlugins.length">
+                    <a id="avail-plugin" class="button is-text" (click)="openPluginModal(true, 'Rule')">available plugins</a>
+                  </ng-container>
+                  <app-plugin-modal *ngIf="pluginData?.modalState && pluginData?.type?.toLowerCase() === 'rule' "
+                    (notify)="onNotify($event)" [data]="pluginData"></app-plugin-modal>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="box step-content" id="c-3">
           <app-view-config-item *ngIf="pageId == 2" [categoryConfigurationData]="rulePluginConfigurationData"
@@ -98,7 +117,10 @@
         <div class="box step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
             class="has-text-centered">
-            <small class="no-rec">No notification delivery plugin found</small>
+            <small class="no-rec">No notification delivery plugin installed. </small>
+            <small>
+              <a (click)="openPluginModal(true, 'Notify')">Install from available plugins</a>
+            </small>
           </div>
           <div *ngIf="notificationDeliveryPlugins.length > 0" class="field is-horizontal form-group">
             <div class="field-label is-normal">
@@ -106,7 +128,7 @@
             </div>
             <div class="field-body">
               <div class="select is-multiple">
-                <select multiple name="type" #selectedDeliveryPlugin formControlName="delivery"
+                <select multiple name="type" #selectedDeliveryPlugin formControlName="delivery" id="notify"
                   (change)="isPluginSelected(selectedDeliveryPlugin.value, notificationDeliveryPlugins[0].type)"
                   required>
                   <option *ngFor="let d of notificationDeliveryPlugins" [value]="d.name"> {{ d.name }}</option>
@@ -118,6 +140,22 @@
                 {{selectedDeliveryPluginDescription }}</small>
               <small *ngIf="!isDeliveryPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
               <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+            </div>
+          </div>
+          <div class="field is-horizontal form-group is-right">
+            <div class="field-label is-normal">
+              <label class="label"></label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <ng-container *ngIf="notificationDeliveryPlugins.length">
+                    <a id="avail-plugin" class="button is-text" (click)="openPluginModal(true, 'Notify')">available plugins</a>
+                  </ng-container>
+                  <app-plugin-modal *ngIf="pluginData?.modalState && pluginData?.type?.toLowerCase() === 'notify'"
+                    (notify)="onNotify($event)" [data]="pluginData"></app-plugin-modal>
+                </div>
+              </div>
             </div>
           </div>
         </div>

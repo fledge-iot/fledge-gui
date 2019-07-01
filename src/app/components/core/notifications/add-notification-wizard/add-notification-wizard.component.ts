@@ -30,7 +30,6 @@ export class AddNotificationWizardComponent implements OnInit {
   public isNotificationEnabled = true;
 
   public payload: any = {};
-
   public rulePluginConfigurationData: any;
   public rulePluginChangedConfig: any;
 
@@ -53,6 +52,12 @@ export class AddNotificationWizardComponent implements OnInit {
 
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
 
+  public pluginData = {
+    modalState: false,
+    type: '',
+    pluginName: ''
+  };
+
   constructor(private formBuilder: FormBuilder,
     private notificationService: NotificationsService,
     private alertService: AlertService,
@@ -71,7 +76,18 @@ export class AddNotificationWizardComponent implements OnInit {
     });
   }
 
-  getNotificationPlugins() {
+  /**
+   * Open plugin modal
+   */
+  openPluginModal(state: boolean, pluginType: string) {
+    this.pluginData = {
+      modalState: state,
+      type: pluginType,
+      pluginName: ''
+    };
+  }
+
+  getNotificationPlugins(isPluginInstalled?: boolean) {
     /** request started */
     this.ngProgress.start();
     this.notificationService.getNotificationPlugins().subscribe(
@@ -93,6 +109,14 @@ export class AddNotificationWizardComponent implements OnInit {
         } else {
           this.alertService.error(error.statusText);
         }
+      },
+      () => {
+        setTimeout(() => {
+          if (isPluginInstalled) {
+            this.pluginData.modalState = false;
+            this.selectInstalledPlugin();
+          }
+        }, 1000);
       });
   }
 
@@ -187,7 +211,6 @@ export class AddNotificationWizardComponent implements OnInit {
           this.isRulePlugin = false;
           return;
         }
-
         if (formValues['rule'].length !== 1) {
           this.isSinglePlugin = false;
           this.selectedRulePluginDescription = '';
@@ -474,5 +497,32 @@ export class AddNotificationWizardComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  onNotify(event: any) {
+    this.pluginData.modalState = event.modalState;
+    this.pluginData.pluginName = event.name;
+    this.pluginData.type = event.type;
+    if (event.pluginInstall) {
+      this.getNotificationPlugins(event.pluginInstall);
+    }
+  }
+
+  selectInstalledPlugin() {
+    const select = <HTMLSelectElement>document.getElementById(this.pluginData.type.toLowerCase());
+    for (let i = 0, j = select.options.length; i < j; ++i) {
+      if (select.options[i].innerText.toLowerCase() === this.pluginData.pluginName.toLowerCase()) {
+        if (this.pluginData.type.toLowerCase() === 'rule') {
+          this.notificationForm.controls['rule'].setValue([this.notificationRulePlugins[i].name]);
+        } else if (this.pluginData.type.toLowerCase() === 'notify') {
+          this.notificationForm.controls['delivery'].setValue([this.notificationDeliveryPlugins[i].name]);
+        }
+        const nxtButton = <HTMLButtonElement>document.getElementById('next');
+        nxtButton.disabled = false;
+        select.selectedIndex = i;
+        select.dispatchEvent(new Event('change'));
+        break;
+      }
+    }
   }
 }

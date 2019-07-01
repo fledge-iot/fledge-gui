@@ -22,7 +22,7 @@
 set -e
 
 __version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
- 
+
 # Colors
 CPFX="\033["
 
@@ -37,7 +37,7 @@ CWARN="${CPFX}0;33m"
 USAGE="${__version__}
 
 DESCRIPTION
-  This script build foglamp-gui distribution artifacts 
+  This script build foglamp-gui distribution artifacts
 
 OPTIONS
   Multiple commands can be specified but they all must be
@@ -60,7 +60,7 @@ remove_unwanted_files () {
     find dist/assets/* | grep -v "favicon.ico" | xargs rm -rf
     rm dist/*.eot
     rm dist/*.svg
-    rm dist/*.ttf
+    # rm dist/*.ttf
     rm dist/*.woff
     # if built on mac
     rm -rf .DS_Store
@@ -85,7 +85,7 @@ clean(){
 build () {
   echo -e  INFO: "${CINFO} Installing dependencies ... ${CRESET}"
   yarn install
-  
+
   echo -e  INFO: "${CINFO} Creating production build ... ${CRESET}"
   yarn build
 
@@ -93,7 +93,7 @@ build () {
   show_files_with_size
 
   T_SIZE=$(du -hs dist)
-  echo -e INFO " ${CWARN} Size: ${T_SIZE} ${CRESET}" 
+  echo -e INFO " ${CWARN} Size: ${T_SIZE} ${CRESET}"
 
   echo -e INFO: "${CINFO} Removing unwanted contents ... ${CRESET}"
   remove_unwanted_files
@@ -102,7 +102,7 @@ build () {
   # compress_bundle_js_files
 
   T_SIZE=$(du -hs dist)
-  echo -e INFO: "${CINFO} Deployable dist size ${CWARN}  ${T_SIZE} ${CRESET}" 
+  echo -e INFO: "${CINFO} Deployable dist size ${CWARN}  ${T_SIZE} ${CRESET}"
 
   # echo "Copying custom nginx conf file ..."
   # cp nginx.conf dist/
@@ -125,15 +125,15 @@ execute_command() {
   elif [[ "$OPTION" == "VERSION" ]]
   then
     echo $__version__
-  
+
   elif [[ "$OPTION" == "CLEAN" ]]
   then
     clean
-  
+
   elif [[ "$OPTION" == "CLEAN_START" ]]
   then
     clean
-    build  
+    build
 
   fi
 }

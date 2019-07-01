@@ -25,6 +25,7 @@
             "styles": [
               "./node_modules/angular-tree-component/dist/angular-tree-component.css",
               "./node_modules/animate.css/animate.css",
+              "./node_modules/ngx-select-dropdown/dist/assets/style.css",
               "src/assets/css/bulma.min.css",
               "src/assets/css/font-awesome.min.css",
               "src/assets/css/bulma-tooltip.min.css",

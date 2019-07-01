@@ -7617,6 +7617,13 @@ ng-sidebar@~8.0.0:
   resolved "https://registry.yarnpkg.com/ng-sidebar/-/ng-sidebar-8.0.0.tgz#c9d170aea9831116f807e557aa32f2eb063163bb"
   integrity sha512-+uCduUkcsOerb8MjecrPcP1KY8gKyd8XVBB+8jRao/JCz/qBwD9E2GPRGLL+NzwU72coYhL8L4UvhZwwIpl1rA==
 
+ngx-select-dropdown@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/ngx-select-dropdown/-/ngx-select-dropdown-1.0.1.tgz#cea6816eef31caac3597c10de62701120ff34e3d"
+  integrity sha512-DKOJ465kVfjoKrfG5zcUwxjeimhiO2jSQjYvxd7Ns27jqAoEVyg5Mgi22JjuNxFl3o4miMl+r2dv9wc+ezwVkg==
+  dependencies:
+    node-gyp "^3.8.0"
+
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
