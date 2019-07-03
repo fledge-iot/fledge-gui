@@ -36,7 +36,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   public isSpectrum = false;
   public polyGraphData = {};
   public showSummary = false;
-  public toggleSummaryGraphButtonText = 'Show Summary';
+  public SHOW_SUMMARY_TEXT = 'Show Summary';
+  public SHOW_GRAPH_TEXT = 'Show Graph';
+  public toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
@@ -85,7 +87,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.excludedReadingsList = [];
     this.assetChartOptions = {};
     this.showSummary = false;
-    this.toggleSummaryGraphButtonText = 'Show summary';
+    this.toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
 
     sessionStorage.removeItem(this.assetCode);
 
@@ -132,9 +134,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   toggleSummaryGraph(state: boolean) {
     this.showSummary = !state;
     if (!this.showSummary) {
-      this.toggleSummaryGraphButtonText = 'Show Summary';
+      this.toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
     } else {
-      this.toggleSummaryGraphButtonText = 'Show Graph';
+      this.toggleSummaryGraphButtonText = this.SHOW_GRAPH_TEXT;
     }
   }
 
