@@ -130,7 +130,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   toggleSummaryGraph(state: boolean) {
-    state === true ? this.showSummary = false : this.showSummary = true;
+    this.showSummary = !state;
     if (!this.showSummary) {
       this.toggleSummaryGraphButtonText = 'Show Summary';
     } else {
