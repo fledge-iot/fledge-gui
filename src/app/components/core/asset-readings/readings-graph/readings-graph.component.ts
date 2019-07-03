@@ -284,10 +284,10 @@ export class ReadingsGraphComponent implements OnDestroy {
                   ['0.8', 'rgba(101,201,96,1)'],
                   ['0.9', 'rgba(101,201,96,1)'],
                   ['1', 'rgba(253,231,37,1)']],
-                  colorbar: {
-                    tick0: 0,
-                    dtick: 5
-                  }
+                colorbar: {
+                  tick0: 0,
+                  dtick: 5
+                }
               },
             ],
             layout: {
@@ -350,6 +350,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     };
     this.assetChartType = 'line';
     this.assetChartOptions = {
+      elements: {
+        point: { radius: 0 }
+      },
       scales: {
         xAxes: [{
           type: 'time',
