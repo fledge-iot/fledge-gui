@@ -46,3 +46,7 @@ tbody {
 .app-loading {
   min-height: 50vh;
 }
+
+.overflow {
+  overflow: visible;
+}

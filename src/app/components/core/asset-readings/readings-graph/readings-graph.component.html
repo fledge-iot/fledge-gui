@@ -1,6 +1,6 @@
 <div id="chart_modal" class="modal">
   <div class="modal-background"></div>
-  <div class="modal-card animated fadeIn">
+  <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
     <header class="modal-card-head">
       <p class="modal-card-title is-size-5">{{assetCode}}
       </p>
@@ -8,116 +8,126 @@
         <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
       </div>
     </header>
-    <section class="modal-card-body">
-      <ng-container *ngIf='showGraph'>
-        <div class="columns">
-          <div class="column is-2">
-            <div id="time-dropdown" class="dropdown is-left">
-              <div class="dropdown-trigger">
-                <button class="button is-rounded is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)=toggleDropdown()>
-                  <span *ngIf="optedTime == 60">1 minute</span>
-                  <span *ngIf="optedTime == 300">5 minutes</span>
-                  <span *ngIf="optedTime == 600">10 minutes</span>
-                  <span *ngIf="optedTime == 1800">30 minutes</span>
-                  <span *ngIf="optedTime == 3600">1 hour</span>
-                  <span *ngIf="optedTime == 28800">8 hour</span>
-                  <span *ngIf="optedTime == 86400">1 day</span>
-                  <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(60)">1 minute</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(300)">5 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(600)">10 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(1800)">30 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(3600)">1 hour</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(28800)">8 hour</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(86400)">1 day</a>
-                </div>
+    <section class="modal-card-body" [ngClass]="{overflow: timeDropDownOpened}">
+      <div class="columns">
+        <div class="column is-2">
+          <div id="time-dropdown" class="dropdown is-left">
+            <div class="dropdown-trigger">
+              <button class="button is-rounded is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                (click)=toggleDropdown()>
+                <span *ngIf="optedTime == 60">1 minute</span>
+                <span *ngIf="optedTime == 300">5 minutes</span>
+                <span *ngIf="optedTime == 600">10 minutes</span>
+                <span *ngIf="optedTime == 1800">30 minutes</span>
+                <span *ngIf="optedTime == 3600">1 hour</span>
+                <span *ngIf="optedTime == 28800">8 hour</span>
+                <span *ngIf="optedTime == 86400">1 day</span>
+                <span class="icon is-small">
+                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(60)">1 minute</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(300)">5 minutes</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(600)">10 minutes</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(1800)">30 minutes</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(3600)">1 hour</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(28800)">8 hour</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(86400)">1 day</a>
               </div>
             </div>
           </div>
         </div>
-        <ng-container *ngIf="showSummarySpinner">
-          <div class="app-loading">
-            &nbsp;
-            <svg class="spinner animated fadeIn fadeOut" viewBox="0 0 100 100">
-              <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
-            </svg>
-          </div>
-        </ng-container>
-        <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
-          <table class="table is-responsive is-borderless">
-            <tbody>
-              <tr [ngClass]="{'animated fadeInDown': autoRefresh === false}"
-                *ngFor="let asset of assetReadingSummary  | slice:0:summaryLimit">
-                <td>
-                  <span>
-                    <b><small>{{asset.name}}</small></b>
-                  </span>
-                </td>
-                <ng-container *ngFor="let reading of asset.value">
+        <div class="column" *ngIf="!isSpectrum && !showGraphSpinner">
+          <a class="button is-small is-text"
+            (click)="toggleSummaryGraph(showSummary)">{{toggleSummaryGraphButtonText}}</a>
+        </div>
+      </div>
+      <ng-container *ngIf='showGraph'>
+        <ng-container *ngIf="showSummary">
+          <ng-container *ngIf="showSummarySpinner">
+            <div class="app-loading">
+              &nbsp;
+              <svg class="spinner animated fadeIn fadeOut" viewBox="0 0 100 100">
+                <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+              </svg>
+            </div>
+          </ng-container>
+          <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
+            <table class="table is-responsive is-borderless">
+              <tbody>
+                <tr [ngClass]="{'animated fadeInDown': autoRefresh === false}"
+                  *ngFor="let asset of assetReadingSummary  | slice:0:summaryLimit">
                   <td>
-                    <div class="tags has-addons">
-                      <span class="tag is-light"> Avg </span>
-                      <span class="tag is-info">{{isNumber(reading.average)
+                    <span>
+                      <b><small>{{asset.name}}</small></b>
+                    </span>
+                  </td>
+                  <ng-container *ngFor="let reading of asset.value">
+                    <td>
+                      <div class="tags has-addons">
+                        <span class="tag is-light"> Avg </span>
+                        <span class="tag is-info">{{isNumber(reading.average)
                         ?
                         roundTo(reading.average,
                         5) : reading.average }}
-                      </span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="tags has-addons">
-                      <span class="tag is-light"> Min </span>
-                      <span class="tag is-info">{{isNumber(reading.min) ?
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="tags has-addons">
+                        <span class="tag is-light"> Min </span>
+                        <span class="tag is-info">{{isNumber(reading.min) ?
                         roundTo(reading.min, 5) : reading.min}}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="tags has-addons">
-                      <span class="tag is-light"> Max </span>
-                      <span class="tag is-info">{{isNumber(reading.max) ?
+                      </div>
+                    </td>
+                    <td>
+                      <div class="tags has-addons">
+                        <span class="tag is-light"> Max </span>
+                        <span class="tag is-info">{{isNumber(reading.max) ?
                         roundTo(reading.max, 5): reading.max}}</span>
-                    </div>
-                  </td>
-                </ng-container>
-              </tr>
-              <tr *ngIf="buttonText !== ''">
-                <td><a class="button is-small is-text" (click)="showAll()">{{buttonText}}</a></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <ng-container *ngIf="showGraphSpinner">
-          <div class="app-loading">
-            &nbsp;
-            <svg class="spinner animated fadeIn fadeOut" viewBox="0 0 100 100">
-              <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
-            </svg>
+                      </div>
+                    </td>
+                  </ng-container>
+                </tr>
+                <tr *ngIf="buttonText !== ''">
+                  <td><a class="button is-small is-text" (click)="showAll()">{{buttonText}}</a></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </ng-container>
-        <ng-container *ngIf="!isSpectrum">
-          <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
-            [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
-        </ng-container>
-        <ng-container *ngIf="isSpectrum">
-          <plotly-plot *ngIf="!showGraphSpinner" [data]="polyGraphData.data" [layout]="polyGraphData.layout"
-            [config]="{displayModeBar: false}">
-          </plotly-plot>
-        </ng-container>
+        <ng-container *ngIf="!showSummary">
+          <ng-container *ngIf="showGraphSpinner">
+            <div class="app-loading">
+              &nbsp;
+              <svg class="spinner animated fadeIn fadeOut" viewBox="0 0 100 100">
+                <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+              </svg>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="!isSpectrum">
+            <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
+              [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+          </ng-container>
+          <ng-container *ngIf="isSpectrum">
+            <plotly-plot *ngIf="!showGraphSpinner" [data]="polyGraphData.data" [layout]="polyGraphData.layout"
+              [config]="{displayModeBar: false}">
+            </plotly-plot>
+          </ng-container>
 
-        <ng-container *ngIf="excludedReadingsList.length > 0">
-          <p class="help"> * Excluded <u>{{excludedReadingsList.toString().replace(',' , ', ')}}</u> having non-numeric
-            readings </p>
+          <ng-container *ngIf="excludedReadingsList.length > 0">
+            <p class="help"> * Excluded <u>{{excludedReadingsList.toString().replace(',' , ', ')}}</u> having
+              non-numeric
+              readings </p>
+          </ng-container>
         </ng-container>
       </ng-container>
-      <p *ngIf='!showGraph' class="help"> Graph Not Available </p>
+      <p *ngIf='showSummary && !showGraph' class="help has-text-centered"> Summary Not Available </p>
+      <p *ngIf='!showSummary && !showGraph' class="help has-text-centered"> Graph Not Available </p>
     </section>
   </div>
 </div>
