@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ##--------------------------------------------------------------------
-## Copyright (c) 2018 Dianomic Systems
+## Copyright (c) 2019 Dianomic Systems Inc.
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -60,11 +60,25 @@ done
 # OS Type
 os=$(uname)
 echo "Operating System Type: ${os}"
+compat_msg="This script is compatible with Linux (Ubuntu and Raspbian) Only!"
 
-if [[ ${os} == "Darwin" ]]
-then
-  echo "This script is not compatible with macOS."
-  exit 1
+if [[ $os != "Linux" ]]; then
+  echo -e ${compat_msg}
+  exit 1;
+fi
+
+if [ -f /etc/os-release ]; then
+  n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
+  if [[ $n == *"Raspbian"* ]] || [[ $n == *"Ubuntu"* ]]; then
+    echo -e "${n}"
+  else
+    echo -e "${n}"
+    echo -e ${compat_msg}
+    exit 1;
+  fi
+else
+  echo -e ${compat_msg}
+  exit 1;
 fi
 
 version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
@@ -108,6 +122,9 @@ cd "${package_name}"
 cp -R ${GIT_ROOT}/packages/Debian/* .
 sed -i "s/Version: 0.0.0/Version: ${version}/g" DEBIAN/control
 echo "Done."
+
+
+# sed -i 's/dist/\/var\/www\/html/g' ${GIT_ROOT}/dist/nginx.conf
 
 echo "Copying build artifacts for nginx webroot directory..."
 mkdir -p var/www/html

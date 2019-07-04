@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ##--------------------------------------------------------------------
-## Copyright (c) 2018 Dianomic Systems
+## Copyright (c) 2019 Dianomic Systems Inc.
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -21,6 +21,14 @@
 
 set -e
 
+__version__="1.6.0next"
+if [ -f "package.json" ];
+  then
+	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+fi
+
+FOGLAMP_GUI_VER=${__version__}
+
 # Colors
 CPFX="\033["
 
@@ -31,31 +39,40 @@ CWARN="${CPFX}0;33m"
 
 echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
 
-# Variables
-__version__="1.5.2next"
-if [ -f "package.json" ]
-  then
-	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
+compat_msg="This script is compatible with Linux (Ubuntu and Raspbian) Only!"
+
+os=$(uname)
+if [[ $os != "Linux" ]]; then
+  echo -e "${CERR}${compat_msg}${CRESET}"
+  exit 1;
 fi
 
-
-FOGLAMP_GUI_VER=${__version__}
-
-machine_details() {
-  # OS Type
-  os=$(uname)
-  echo -e "${CINFO}Operating System Type :${CRESET} ${os} "
-
-  if [[ ${os} == "Darwin" ]]
-  then
-      echo -e Error:"${CERR} Script ${FOGLAMP_GUI_VER} is not compatible with macOS ${CRESET}"
-      exit 1
+if [ -f /etc/os-release ]; then
+    n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
+    if [[ $n == *"Raspbian"* ]] || [[ $n == *"Ubuntu"* ]]; then
+      echo -e "${CINFO}${n} ${CRESET}"
+    else
+      echo -e "${CWARN}${n} ${CRESET}"
+      echo -e "${CERR}${compat_msg} ${CRESET}"
+      exit 1;
+    fi
+  else
+    echo -e "${CERR}${compat_msg}${CRESET}"
+    exit 1;
   fi
 
-  # Hostname
+DOC_ROOT="/var/www/html"
+echo -e WARNING: "${CWARN}This script will remove all the contents of ${DOC_ROOT} ${CRESET}"
+read -p "Continue? Press n or N to exit." -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Nn]$ ]]
+then
+    exit 0;
+fi
+
+machine_details() {
   echo -e "${CINFO}Hostname : ${CRESET} ${HOSTNAME} "
 
-  # Internal IP
   internal_ip=$(hostname -I)
   echo -e "${CINFO}IP : ${CRESET} ${internal_ip}"
 }
@@ -69,13 +86,17 @@ memory_footprints(){
   cat /tmp/ramcache
   echo     # new line
 
-  # Check Disk Usages
-  rm -f /tmp/diskusage
-  # TODO: add check for ubuntu vs raspbian, and PRINT for ubuntu machine too
-  sudo fdisk -l| grep 'Device\|/dev/mmcblk0*' > /tmp/diskusage
-  echo -e "${CINFO}Disk Usages : ${CRESET}"
-  cat /tmp/diskusage
-  echo     # new line
+  # Check Disk Usages on RPi
+  if [ -f /etc/os-release ]; then
+    n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2-)
+    if [[ $n == *"Raspbian"* ]]; then
+      rm -f /tmp/diskusage
+      sudo fdisk -l| grep 'Device\|/dev/mmcblk0*' > /tmp/diskusage
+      echo -e "${CINFO}Disk Usages : ${CRESET}"
+      cat /tmp/diskusage
+      echo     # new line
+    fi
+  fi
 }
 
 nginx_health(){
@@ -95,11 +116,10 @@ nginx_health(){
 
     echo "USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND"
     ps aux -P | grep [n]ginx
-
   fi
 }
 
-install () {
+check_install_nginx () {
   if ! which nginx > /dev/null 2>&1; then
       echo -e WARNING: "${CWARN} Nginx not installed ${CRESET}"
       yes Y | sudo apt-get install nginx-light
@@ -107,6 +127,12 @@ install () {
       nginx_version=$(nginx -v 2>&1)
       echo -e INFO: "${CINFO} Found ${nginx_version} ${CRESET}"
   fi
+}
+
+install () {
+  check_install_nginx
+
+  sudo service nginx stop
 
   # Download foglamp-gui build artifacts i.e. dist directory compressed file
   # url e.g. http://192.168.1.120/foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
@@ -117,18 +143,21 @@ install () {
   tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
   # put them into /var/www/html and start nginx
-  sudo rm -rf /var/www/html/*
-  sudo mv dist/* /var/www/html/.
+  sudo rm -rf ${DOC_ROOT}/*
+  sudo mv dist/* ${DOC_ROOT}/.
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove
   sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
 
-  echo -e INFO: "${CINFO} nginx status ${CRESET}"
-  sudo service nginx stop
-  sudo service nginx start
+  # sudo sed -i 's/dist/\/var\/www\/html/g' ${DOC_ROOT}/nginx.conf
+  sudo cp ${DOC_ROOT}/foglamp.html ${DOC_ROOT}/index.html
 
+  sudo service nginx start
   sudo service nginx status | grep "Active:"
+
+
+  echo -e "${CINFO} Done. ${CRESET}"
 }
 
 ############################################################

@@ -16,8 +16,12 @@ export class NorthService {
   /**
    *  GET | foglamp/north
    */
-  public getNorthTasks() {
-    return this.http.get(this.GET_NORTH_TASKS).pipe(
+  public getNorthTasks(caching: boolean) {
+    let url = this.GET_NORTH_TASKS;
+    if (caching === false) {
+      url = `${this.GET_NORTH_TASKS}?cached=${caching}`;
+    }
+    return this.http.get(url).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

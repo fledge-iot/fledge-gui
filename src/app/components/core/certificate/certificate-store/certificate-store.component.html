@@ -13,40 +13,51 @@
         </a>
       </div>
     </header>
-    <div class="card-content">
-      <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Key</th>
-            <th>Certificate</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let certificate of certificatesData">
-            <td>{{ getCertificateName(certificate.key, certificate.cert) }}</td>
-            <td class="showInCenter" *ngIf="certificate.key">
-              <i class="far fa-check-circle fa-lg" style="color:rgb(101, 184, 101)" aria-hidden="true"></i>
-            </td>
-            <td class="showInCenter" *ngIf="!certificate.key">
-              <i class="far fa-times-circle fa-lg" style="color: rgb(204, 62, 19)" aria-hidden="true"></i>
-            </td>
-            <td class="showInCenter" *ngIf="certificate.cert">
-              <i class="far fa-check-circle fa-lg" style="color:rgb(101, 184, 101)" aria-hidden="true"></i>
-            </td>
-            <td class="showInCenter" *ngIf="!certificate.cert">
-              <i class="far fa-times-circle fa-lg" style="color:rgb(204, 62, 19)" aria-hidden="true"></i>
-            </td>
-            <td>
-              <a *ngIf="getCertificateName(certificate.key, certificate.cert) != 'foglamp'" (click)="openDeleteModal(certificate.key, certificate.cert, 'Are you sure, you want to delete the certificate', 'deleteCertificate', 'Delete')"
-                class="button is-text">
-                delete
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="card-content columns">
+      <div class="column">
+        <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Extension</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let key of keys">
+              <td class="showInCenter">{{getName(key)}}</td>
+              <td class="showInCenter">{{key.split(".")[1]}}</td>
+              <td class="showInCenter"><a *ngIf="getName(key) != 'foglamp'"
+                  (click)="openDeleteModal(key, 'Are you sure, you want to delete the key', 'deleteKey')"
+                  class="button is-text">
+                  delete
+                </a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="column">
+        <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Certificate</th>
+              <th>Extension</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cert of certificates">
+              <td class="showInCenter">{{getName(cert)}}</td>
+              <td class="showInCenter">{{cert.split(".")[1]}}</td>
+              <td class="showInCenter"><a *ngIf="getName(cert) != 'foglamp'"
+                  (click)="openDeleteModal(cert, 'Are you sure, you want to delete the certificate', 'deleteCertificate')"
+                  class="button is-text">
+                  delete
+                </a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <app-alert-dialog (deleteCertificate)='deleteCertificate($event)' [childData]='childData'></app-alert-dialog>

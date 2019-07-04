@@ -5,6 +5,6 @@ Priority: optional
 Architecture: all
 Depends: nginx-light
 Conflicts:
-Maintainer: Dianomic Systems, Inc. <info@dianomic.com>
+Maintainer: Dianomic Systems Inc. <info@dianomic.com>
 Homepage: http://www.dianomic.com
 Description: FogLAMP GUI

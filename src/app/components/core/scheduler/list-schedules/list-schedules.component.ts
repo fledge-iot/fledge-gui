@@ -7,13 +7,13 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
 
 enum weekDays {
-  Mon = 1,
-  Tue = 2,
-  Wed = 3,
-  Thu = 4,
-  Fri = 5,
-  Sat = 6,
-  Sun = 7
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6,
+  Sunday = 7
 }
 
 @Component({

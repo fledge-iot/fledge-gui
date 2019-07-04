@@ -1,5 +1,7 @@
 
-#### Create debian package
+### Create debian package
+
+Make sure [prerequisites](prerequisite-ubuntu.md) are installed.
 
 Use `./make_deb` script to create debian package, the package will be placed in `packages/build/`
 
@@ -31,7 +33,7 @@ $ ng build --prod --build-optimizer
 Done in 56.37s.
 INFO:  Build distribution contents  ...
 ...
-4.0K    dist/index.html
+4.0K    dist/foglamp.html
 1.2M    dist/main.104c5596418ab60d3be6.js
 64K     dist/polyfills.69e1297e41447c327ff4.js
 ...

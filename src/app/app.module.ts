@@ -39,7 +39,7 @@ import {
   NorthService,
   PingService,
   SchedulesService,
-  ServicesHealthService,
+  ServicesApiService,
   SupportService,
   SystemLogService,
   UserService,
@@ -50,8 +50,8 @@ import { SharedModule } from './shared.module';
 import { ProgressBarComponent } from './components/common/progress-bar/progress-bar.component';
 import { ProgressBarService } from './services/progress-bar.service';
 
-export function pingServiceFactory(healthService: ServicesHealthService, sharedService: SharedService): Function {
-  return () => healthService.pingService()
+export function pingServiceFactory(ping: PingService, sharedService: SharedService): Function {
+  return () => ping.pingService()
     .then((data) => {
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
       sharedService.isServiceUp.next(true);
@@ -107,11 +107,11 @@ export function pingServiceFactory(healthService: ServicesHealthService, sharedS
     ConfigurationService,
     AuditService,
     SystemLogService,
-    ServicesHealthService,
+    ServicesApiService,
     {
       provide: APP_INITIALIZER,
       useFactory: pingServiceFactory,
-      deps: [ServicesHealthService, SharedService],
+      deps: [PingService, SharedService],
       multi: true
     },
     ConnectedServiceStatus,

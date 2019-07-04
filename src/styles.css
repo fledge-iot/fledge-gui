@@ -43,7 +43,7 @@ table.scroll tbody {
   overflow-x: hidden;
 }
 
-.ng-sidebar[_ngcontent-c3] {
+.sidebar {
   z-index: 10 !important;
   padding-top: 0px;
 }
@@ -211,4 +211,39 @@ table.scroll tbody {
   table.scroll {
     max-height: 49vh;
   }
+}
+
+
+
+/**
+Custom css for bulma dropdown
+Card Modal dropdown issue(overlapping issue) https://github.com/jgthms/bulma/issues/936
+Bulma Burger Dropdown rendering under other elements https://github.com/jgthms/bulma/issues/1655
+*/
+.dropdown {
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%
+}
+
+.dropdown-trigger > .button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between
+}
+
+a.dropdown-item:hover {
+  background-color: #3273dc;
+  color: #fff;
+}
+
+.dropdown-content {
+  max-height: 21rem;
+  overflow: auto;
+}
+
+#avail-plugin{
+  padding: 0%;
 }

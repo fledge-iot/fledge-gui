@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
 import { interval } from 'rxjs';
 
-import { PingService, ServicesHealthService, ProgressBarService } from '../../../services';
+import { PingService, ServicesApiService, ProgressBarService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
@@ -22,7 +22,7 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
 
-  constructor(private servicesHealthService: ServicesHealthService,
+  constructor(private servicesApiService: ServicesApiService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private router: Router,
@@ -38,16 +38,16 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.showLoadingSpinner();
-    this.getSouthboundServices();
+    this.getSouthboundServices(false);
     interval(this.refreshSouthboundServiceInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
-        this.getSouthboundServices();
+        this.getSouthboundServices(true);
       });
   }
 
-  public getSouthboundServices() {
-    this.servicesHealthService.getSouthServices().
+  public getSouthboundServices(caching: boolean) {
+    this.servicesApiService.getSouthServices(caching).
       subscribe(
         (data: any) => {
           this.southboundServices = data['services'];
@@ -80,7 +80,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   onNotify() {
-    this.getSouthboundServices();
+    this.getSouthboundServices(false);
   }
 
   public showLoadingSpinner() {

@@ -63,7 +63,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         });
         // check if editable config item found, based on readonly property
         for (const el of this.categoryConfiguration.value) {
-          if (!has(el, 'readonly')) {
+          if (!has(el, 'readonly') || el.readonly === 'false') {
             this.hasEditableConfigItems = true;
             break;
           } else {
@@ -103,8 +103,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     let isConfigChanged = false;
     // condition to check if called from wizard
     if (this.isWizardCall) {
-      if (this.filesToUpload !== []) {
-        changedConfigValues.push({ 'value': this.filesToUpload, 'type': 'script' });
+      if (this.filesToUpload.length > 0) {
+        changedConfigValues.push({ key: 'script', 'value': this.filesToUpload, 'type': 'script' });
       }
       this.onConfigChanged.emit(changedConfigValues);
       return;
@@ -113,7 +113,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     if (changedConfigValues.length > 0) {
       isConfigChanged = true;
     }
-    if (this.filesToUpload !== []) {
+    if (this.filesToUpload.length > 0) {
       this.uploadScript(isConfigChanged);
     }
   }
@@ -265,6 +265,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       return configItem.displayName.trim().length > 0 ? configItem.displayName : configItem.key;
     }
     return configItem.key;
+  }
+
+  public toggleDropdown(key) {
+    const dropDown = document.querySelector('#' + key + '-dropdown');
+    dropDown.classList.toggle('is-active');
   }
 
   public checkButtonProxy() {

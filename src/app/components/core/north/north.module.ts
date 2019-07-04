@@ -7,6 +7,7 @@ import { DirectivesModule } from '../../../directives/directives.module';
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
+import { PluginService } from '../../../services';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddTaskWizardComponent } from './add-task-wizard/add-task-wizard.component';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
@@ -45,6 +46,6 @@ const routes: Routes = [
     FilterModule,
     SharedModule
   ],
-  providers: [],
+  providers: [PluginService],
 })
 export class NorthModule { }

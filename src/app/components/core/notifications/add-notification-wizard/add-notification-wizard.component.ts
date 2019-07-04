@@ -30,7 +30,6 @@ export class AddNotificationWizardComponent implements OnInit {
   public isNotificationEnabled = true;
 
   public payload: any = {};
-
   public rulePluginConfigurationData: any;
   public rulePluginChangedConfig: any;
 
@@ -42,16 +41,22 @@ export class AddNotificationWizardComponent implements OnInit {
   public useProxy: string;
 
   public pageId: number;
+  public notificationType: string;
 
   notificationForm = new FormGroup({
     name: new FormControl(),
     description: new FormControl(),
     rule: new FormControl(),
-    delivery: new FormControl(),
-    type: new FormControl()
+    delivery: new FormControl()
   });
 
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+
+  public pluginData = {
+    modalState: false,
+    type: '',
+    pluginName: ''
+  };
 
   constructor(private formBuilder: FormBuilder,
     private notificationService: NotificationsService,
@@ -67,12 +72,22 @@ export class AddNotificationWizardComponent implements OnInit {
       name: ['', Validators.required],
       description: ['', Validators.required],
       rule: ['', Validators.required],
-      delivery: ['', Validators.required],
-      type: ['', Validators.required],
+      delivery: ['', Validators.required]
     });
   }
 
-  getNotificationPlugins() {
+  /**
+   * Open plugin modal
+   */
+  openPluginModal(state: boolean, pluginType: string) {
+    this.pluginData = {
+      modalState: state,
+      type: pluginType,
+      pluginName: ''
+    };
+  }
+
+  getNotificationPlugins(isPluginInstalled?: boolean) {
     /** request started */
     this.ngProgress.start();
     this.notificationService.getNotificationPlugins().subscribe(
@@ -94,6 +109,14 @@ export class AddNotificationWizardComponent implements OnInit {
         } else {
           this.alertService.error(error.statusText);
         }
+      },
+      () => {
+        setTimeout(() => {
+          if (isPluginInstalled) {
+            this.pluginData.modalState = false;
+            this.selectInstalledPlugin();
+          }
+        }, 1000);
       });
   }
 
@@ -173,19 +196,21 @@ export class AddNotificationWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
-
         if (formValues['name'].trim() !== '') {
           this.payload.name = formValues['name'];
           this.payload.description = this.description.nativeElement.value;
         }
+        if (this.notificationRulePlugins.length === 0) {
+          nxtButton.disabled = true;
+        }
         break;
       case 2:
+        nxtButton.disabled = false;
         this.pageId = +id;
         if (formValues['rule'] === '') {
           this.isRulePlugin = false;
           return;
         }
-
         if (formValues['rule'].length !== 1) {
           this.isSinglePlugin = false;
           this.selectedRulePluginDescription = '';
@@ -208,6 +233,9 @@ export class AddNotificationWizardComponent implements OnInit {
         }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
+        if (this.notificationDeliveryPlugins.length === 0) {
+          nxtButton.disabled = true;
+        }
         break;
       case 4:
         this.pageId = +id;
@@ -241,8 +269,8 @@ export class AddNotificationWizardComponent implements OnInit {
         break;
       case 6:
         this.pageId = +id;
-        if (formValues['type'].length > 0) {
-          this.payload.notification_type = formValues['type'];
+        if (this.notificationType.length > 0) {
+          this.payload.notification_type = this.notificationType;
         }
         this.payload.enabled = this.isNotificationEnabled;
         this.addNotificationInstance(this.payload);
@@ -342,41 +370,32 @@ export class AddNotificationWizardComponent implements OnInit {
     this.payload.enabled = this.isNotificationEnabled;
   }
 
+  public toggleDropDown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
+    const dropDown = document.querySelector(`#${id}`);
+    dropDown.classList.toggle('is-active');
+  }
+
+  setNotificationType(type: string) {
+    this.notificationType = type;
+  }
+
   /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
-  getPluginChangedConfig(changedConfig: any, pluginConfigurationData: any, pageId: number) {
-    const defaultConfig = map(pluginConfigurationData.value[0], (v, key) => ({ key, ...v }));
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.some(e2 => {
-        return e1.key === e2.key;
-      });
-    });
-
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => {
-      changedConfig.forEach(c => {
-        if (e.key === c.key) {
-          e.value = c.value.toString();
-        }
-      });
-    });
-
-    // final array to hold changed configuration
+  getPluginChangedConfig(changedConfig: any, pageId: number) {
     const finalConfig = [];
-    matchedConfigCopy.forEach(item => {
+    changedConfig.forEach((item: any) => {
       finalConfig.push({
         [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
       });
     });
-
     if (pageId === 3) {
       this.rulePluginChangedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     } else if (pageId === 5) {
@@ -389,7 +408,7 @@ export class AddNotificationWizardComponent implements OnInit {
       .subscribe(
         (data: []) => {
           this.notificationTypeList = data['notification_type'];
-          this.notificationForm.controls['type'].setValue(this.notificationTypeList[0]);
+          this.notificationType = this.notificationTypeList[0];
         },
         (error) => {
           if (error.status === 0) {
@@ -401,7 +420,7 @@ export class AddNotificationWizardComponent implements OnInit {
   }
 
   /**
-   * Method to add service
+   * Method to add notification
    * @param payload  to pass in request
    * @param nxtButton button to go next
    * @param previousButton button to go previous
@@ -415,6 +434,7 @@ export class AddNotificationWizardComponent implements OnInit {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(data.result, true);
+
           if (!isEmpty(this.rulePluginChangedConfig)) {
             this.updateConfiguration(`rule${payload.name}`, this.rulePluginChangedConfig);
           }
@@ -435,9 +455,20 @@ export class AddNotificationWizardComponent implements OnInit {
   }
 
   updateConfiguration(categoryName: string, config: any) {
-    this.configService.updateBulkConfiguration(categoryName, config).
+    const configItemsCopy = cloneDeep(config);
+    delete configItemsCopy.script;
+    if (Object.keys(configItemsCopy).length === 0) {
+      if ('script' in config) {
+        this.uploadScript(categoryName, config);
+      }
+      return;
+    }
+    this.configService.updateBulkConfiguration(categoryName, configItemsCopy).
       subscribe(
         (data: any) => {
+          if ('script' in config) {
+            this.uploadScript(categoryName, config);
+          }
           console.log('configuration updated successfully', data);
         },
         error => {
@@ -449,5 +480,49 @@ export class AddNotificationWizardComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public uploadScript(categoryName: string, config: any) {
+    const file = config.script[0];
+    const formData = new FormData();
+    formData.append('script', file.script);
+    this.configService.uploadFile(categoryName, 'script', formData)
+      .subscribe(() => {
+        this.alertService.success('configuration updated successfully.');
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  onNotify(event: any) {
+    this.pluginData.modalState = event.modalState;
+    this.pluginData.pluginName = event.name;
+    this.pluginData.type = event.type;
+    if (event.pluginInstall) {
+      this.getNotificationPlugins(event.pluginInstall);
+    }
+  }
+
+  selectInstalledPlugin() {
+    const select = <HTMLSelectElement>document.getElementById(this.pluginData.type.toLowerCase());
+    for (let i = 0, j = select.options.length; i < j; ++i) {
+      if (select.options[i].innerText.toLowerCase() === this.pluginData.pluginName.toLowerCase()) {
+        if (this.pluginData.type.toLowerCase() === 'rule') {
+          this.notificationForm.controls['rule'].setValue([this.notificationRulePlugins[i].name]);
+        } else if (this.pluginData.type.toLowerCase() === 'notify') {
+          this.notificationForm.controls['delivery'].setValue([this.notificationDeliveryPlugins[i].name]);
+        }
+        const nxtButton = <HTMLButtonElement>document.getElementById('next');
+        nxtButton.disabled = false;
+        select.selectedIndex = i;
+        select.dispatchEvent(new Event('change'));
+        break;
+      }
+    }
   }
 }

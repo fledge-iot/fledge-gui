@@ -2,27 +2,29 @@
   <div>
     <ng-container *ngIf="!isNotificationServiceAvailable">
       <article class="message is-warning">
-        <div class="message-body">
+        <div *ngIf="allServicesFetched" class="message-body">
           Notification service is not added
-          and enabled.&nbsp; <a (click)="addNotificationService()"><strong>add & enable now</strong></a>
+          and enabled.&nbsp; <a (click)="addServiceEvent()"><strong>add & enable now</strong></a>
         </div>
       </article>
     </ng-container>
-    <ng-container *ngIf="isNotificationServiceAvailable && !isNotificationServiceEnabled">
+    <ng-container *ngIf="isNotificationServiceAvailable">
       <article class="message is-warning">
-        <div class="message-body">
-          Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable now</strong></a>
+        <div *ngIf="!isNotificationServiceEnabled" class="message-body">
+          Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable
+              now</strong></a>
         </div>
       </article>
     </ng-container>
-    <ng-container *ngIf="isNotificationServiceAvailable && isNotificationServiceEnabled">
+    <ng-container *ngIf="isNotificationServiceAvailable">
       <article id='messageDiv' class="message is-info">
-        <div class="message-body">
+        <div *ngIf="isNotificationServiceEnabled" class="message-body">
           Notification service is enabled.&nbsp; <a (click)="openAlertModal()">disable now</a>
           <button class="delete" aria-label="delete" (click)="closeMessage(true)"></button>
         </div>
       </article>
-      <app-alert-dialog *ngIf="!isNotificationModalOpen" (disableNotificationService)='disableNotificationService()' [notificationServiceRecord]='notificationServiceRecord'>
+      <app-alert-dialog *ngIf="!isNotificationModalOpen" (disableNotificationService)='disableNotificationService()'
+        [notificationServiceRecord]='notificationServiceRecord'>
       </app-alert-dialog>
     </ng-container>
   </div>

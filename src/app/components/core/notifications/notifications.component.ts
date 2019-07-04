@@ -5,7 +5,7 @@ import { sortBy } from 'lodash';
 import { map } from 'rxjs/operators';
 
 import {
-  AlertService, NotificationsService, ProgressBarService, SchedulesService, ServicesHealthService
+  AlertService, NotificationsService, ProgressBarService, SchedulesService, ServicesApiService
 } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
@@ -14,23 +14,27 @@ import { NotificationModalComponent } from './notification-modal/notification-mo
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css'],
-  providers: [ServicesHealthService]
+  providers: [ServicesApiService]
 })
 export class NotificationsComponent implements OnInit {
 
   isNotificationServiceAvailable = false;
   isNotificationServiceEnabled = false;
   notificationServiceName = 'FogLAMP Notifications';
+  notificationServicePackageName = 'foglamp-service-notification';
   notificationInstances = [];
   notification: any;
+  allServicesFetched = false;
   public notificationServiceRecord: any;
+
+  public availableServices = [];
 
   public showSpinner = false;
   isNotificationModalOpen = false;
   @ViewChild(NotificationModalComponent) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
 
-  constructor(public servicesHealthService: ServicesHealthService,
+  constructor(public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
     public notificationService: NotificationsService,
     public ngProgress: ProgressBarService,
@@ -39,6 +43,43 @@ export class NotificationsComponent implements OnInit {
     public router: Router) { }
 
   ngOnInit() {
+    this.getAvailableServicePackages();
+    this.getNotificationInstance();
+  }
+
+  public getAvailableServicePackages() {
+    /** request start */
+    this.ngProgress.start();
+    this.servicesApiService.getAvailableServicePackages()
+      .subscribe(
+        (data: any) => {
+          /** request done */
+          this.ngProgress.done();
+          this.allServicesFetched = true;
+          this.availableServices = data.services;
+          if (this.availableServices.length === 0) {
+            this.checkServiceStatus();
+          }
+          this.availableServices.forEach(svc => {
+            if (svc === this.notificationServicePackageName) {
+              this.isNotificationServiceAvailable = false;
+              this.isNotificationServiceEnabled = false;
+            }
+          });
+
+        },
+        (error) => {
+          /** request done */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  checkServiceStatus() {
     this.route.data.pipe(map(data => data['service'].services))
       .subscribe(res => {
         const service = res.find((svc: any) => {
@@ -64,7 +105,46 @@ export class NotificationsComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-    this.getNotificationInstance();
+  }
+
+
+  installNotificationService() {
+    const servicePayload = {
+      format: 'repository',
+      name: this.notificationServicePackageName,
+      version: ''
+    };
+
+    /** request started */
+    this.ngProgress.start();
+    this.alertService.activityMessage('installing ...', true);
+    this.servicesApiService.installService(servicePayload).
+      subscribe(
+        (data: any) => {
+          /** request done */
+          this.ngProgress.done();
+          this.alertService.closeMessage();
+          this.alertService.success(data.message, true);
+        },
+        error => {
+          /** request done */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        }, () => {
+          this.addNotificationService();
+        });
+  }
+
+  public addServiceEvent() {
+    if (this.availableServices.length > 0) {
+      this.installNotificationService();
+    } else {
+      this.addNotificationService();
+    }
   }
 
   addNotificationService() {
@@ -77,7 +157,7 @@ export class NotificationsComponent implements OnInit {
     /** request start */
     this.ngProgress.start();
 
-    this.servicesHealthService.addService(payload)
+    this.servicesApiService.addService(payload)
       .subscribe(
         () => {
           /** request done */
@@ -166,6 +246,7 @@ export class NotificationsComponent implements OnInit {
   }
 
   public getNotificationInstance() {
+    this.showLoadingSpinner();
     this.notificationService.getNotificationInstance().
       subscribe(
         (data: any) => {
