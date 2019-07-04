@@ -19,8 +19,10 @@ export default class ConfigTypeValidation {
       case 'IPV4':
       case 'IPV6':
       case 'STRING':
-      case 'PASSWORD':
         valueType = 'TEXT';
+        break;
+      case 'PASSWORD':
+        valueType = 'PASSWORD';
         break;
       case 'INTEGER':
         valueType = 'INTEGER';
