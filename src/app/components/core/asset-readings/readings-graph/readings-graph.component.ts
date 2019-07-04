@@ -190,8 +190,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
+          this.showGraph = true;
           const k = Object.keys(o)[0];
           if (isNaN(o[k]['max']) || isNaN(o[k]['min'])) {
+            this.showGraph = false;
             return;
           }
           return {

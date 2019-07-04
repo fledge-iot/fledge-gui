@@ -9,43 +9,43 @@
       </div>
     </header>
     <section class="modal-card-body">
-      <ng-container *ngIf='showGraph'>
-        <div class="columns">
-          <div class="column is-2">
-            <div id="time-dropdown" class="dropdown is-left">
-              <div class="dropdown-trigger">
-                <button class="button is-rounded is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)=toggleDropdown()>
-                  <span *ngIf="optedTime == 60">1 minute</span>
-                  <span *ngIf="optedTime == 300">5 minutes</span>
-                  <span *ngIf="optedTime == 600">10 minutes</span>
-                  <span *ngIf="optedTime == 1800">30 minutes</span>
-                  <span *ngIf="optedTime == 3600">1 hour</span>
-                  <span *ngIf="optedTime == 28800">8 hour</span>
-                  <span *ngIf="optedTime == 86400">1 day</span>
-                  <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(60)">1 minute</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(300)">5 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(600)">10 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(1800)">30 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(3600)">1 hour</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(28800)">8 hour</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(86400)">1 day</a>
-                </div>
+      <div class="columns">
+        <div class="column is-2">
+          <div id="time-dropdown" class="dropdown is-left">
+            <div class="dropdown-trigger">
+              <button class="button is-rounded is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                (click)=toggleDropdown()>
+                <span *ngIf="optedTime == 60">1 minute</span>
+                <span *ngIf="optedTime == 300">5 minutes</span>
+                <span *ngIf="optedTime == 600">10 minutes</span>
+                <span *ngIf="optedTime == 1800">30 minutes</span>
+                <span *ngIf="optedTime == 3600">1 hour</span>
+                <span *ngIf="optedTime == 28800">8 hour</span>
+                <span *ngIf="optedTime == 86400">1 day</span>
+                <span class="icon is-small">
+                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(60)">1 minute</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(300)">5 minutes</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(600)">10 minutes</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(1800)">30 minutes</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(3600)">1 hour</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(28800)">8 hour</a>
+                <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(86400)">1 day</a>
               </div>
             </div>
           </div>
-          <div class="column">
-            <a class="button is-small is-text"
-              (click)="toggleSummaryGraph(showSummary)">{{toggleSummaryGraphButtonText}}</a>
-          </div>
         </div>
+        <div class="column">
+          <a class="button is-small is-text"
+            (click)="toggleSummaryGraph(showSummary)">{{toggleSummaryGraphButtonText}}</a>
+        </div>
+      </div>
+      <ng-container *ngIf='showGraph'>
         <ng-container *ngIf="showSummary">
           <ng-container *ngIf="showSummarySpinner">
             <div class="app-loading">
@@ -126,8 +126,8 @@
           </ng-container>
         </ng-container>
       </ng-container>
-      <p *ngIf='showSummary && assetReadingSummary.length === 0' class="help"> Summary Not Available </p>
-      <p *ngIf='!showGraph' class="help"> Graph Not Available </p>
+      <p *ngIf='showSummary && !showGraph' class="help"> Summary Not Available </p>
+      <p *ngIf='!showSummary && !showGraph' class="help"> Graph Not Available </p>
     </section>
   </div>
 </div>
