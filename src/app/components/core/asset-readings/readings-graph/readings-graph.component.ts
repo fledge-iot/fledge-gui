@@ -111,8 +111,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
-    this.showGraphSpinner = true;
-    this.showSummarySpinner = true;
     this.optedTime = time;
     if (this.optedTime === 0) {
       if (this.showSummary) {
