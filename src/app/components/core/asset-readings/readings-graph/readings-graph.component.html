@@ -1,6 +1,6 @@
 <div id="chart_modal" class="modal">
   <div class="modal-background"></div>
-  <div class="modal-card animated fadeIn">
+  <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
     <header class="modal-card-head">
       <p class="modal-card-title is-size-5">{{assetCode}}
       </p>
@@ -8,7 +8,7 @@
         <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
       </div>
     </header>
-    <section class="modal-card-body">
+    <section class="modal-card-body" [ngClass]="{overflow: timeDropDownOpened}">
       <div class="columns">
         <div class="column is-2">
           <div id="time-dropdown" class="dropdown is-left">
@@ -126,8 +126,8 @@
           </ng-container>
         </ng-container>
       </ng-container>
-      <p *ngIf='showSummary && !showGraph' class="help"> Summary Not Available </p>
-      <p *ngIf='!showSummary && !showGraph' class="help"> Graph Not Available </p>
+      <p *ngIf='showSummary && !showGraph' class="help has-text-centered"> Summary Not Available </p>
+      <p *ngIf='!showSummary && !showGraph' class="help has-text-centered"> Graph Not Available </p>
     </section>
   </div>
 </div>

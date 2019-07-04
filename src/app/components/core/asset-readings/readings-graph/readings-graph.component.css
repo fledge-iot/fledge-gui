@@ -5,7 +5,6 @@
 @media screen and (min-width: 769px) {
   .modal-card {
     width: 70%;
-    min-height: 60%;
   }
 }
 
@@ -17,10 +16,6 @@
   }
   .summary {
     width: 736px;
-  }
-  .dropdown-content {
-    max-height: 10em;
-    overflow: auto;
   }
 }
 
@@ -50,4 +45,8 @@ tbody {
 
 .app-loading {
   min-height: 50vh;
+}
+
+.overflow {
+  overflow: visible;
 }

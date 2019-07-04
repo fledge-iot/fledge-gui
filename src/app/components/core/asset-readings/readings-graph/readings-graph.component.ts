@@ -36,6 +36,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public isSpectrum = false;
   public polyGraphData = {};
   public showSummary = false;
+  public timeDropDownOpened = false;
   public SHOW_SUMMARY_TEXT = 'Show Summary';
   public SHOW_GRAPH_TEXT = 'Show Graph';
   public toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
@@ -430,6 +431,11 @@ export class ReadingsGraphComponent implements OnDestroy {
   public toggleDropdown() {
     const dropDown = document.querySelector('#time-dropdown');
     dropDown.classList.toggle('is-active');
+    if (!dropDown.classList.contains('is-active')) {
+      this.timeDropDownOpened = false;
+    } else {
+      this.timeDropDownOpened = true;
+    }
   }
 
   public isNumber(val) {
