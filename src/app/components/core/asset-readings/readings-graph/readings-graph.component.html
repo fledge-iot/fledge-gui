@@ -40,7 +40,7 @@
             </div>
           </div>
         </div>
-        <div class="column">
+        <div class="column" *ngIf="!isSpectrum && !showGraphSpinner">
           <a class="button is-small is-text"
             (click)="toggleSummaryGraph(showSummary)">{{toggleSummaryGraphButtonText}}</a>
         </div>
