@@ -20,6 +20,11 @@
     </a>
   </li>
   <li>
+    <a id="notification" [ngClass]="{'is-active': step==='/notification'}" (click)="onToggle('/notification')">
+      Notifications
+    </a>
+  </li>
+  <li>
     <a id="configuration" [ngClass]="{'is-active': step==='/configuration'}" (click)="onToggle('/configuration')">
       Configuration
     </a>
@@ -40,11 +45,6 @@
     </a>
   </li>
   <li>
-    <a id="notification" [ngClass]="{'is-active': step==='/notification'}" (click)="onToggle('/notification')">
-      Notifications
-    </a>
-  </li>
-  <li>
     <a>Logs</a>
     <ul>
       <li>
@@ -59,7 +59,8 @@
     </ul>
   </li>
   <li>
-    <a id="user-management" *ngIf="isAdmin" [ngClass]="{'is-active': step==='/user-management'}" (click)="onToggle('/user-management')">
+    <a id="user-management" *ngIf="isAdmin" [ngClass]="{'is-active': step==='/user-management'}"
+      (click)="onToggle('/user-management')">
       User Management
     </a>
   </li>
