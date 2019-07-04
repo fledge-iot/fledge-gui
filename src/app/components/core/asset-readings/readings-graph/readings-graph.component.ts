@@ -200,7 +200,6 @@ export class ReadingsGraphComponent implements OnDestroy {
           };
         }).filter(value => value !== undefined);
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-
         if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
           this.buttonText = 'Show All';
         }

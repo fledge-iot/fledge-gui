@@ -42,7 +42,8 @@
             </div>
           </div>
           <div class="column">
-            <a class="button is-small is-text" (click)="toggleSummaryGraph(showSummary)">{{toggleSummaryGraphButtonText}}</a>
+            <a class="button is-small is-text"
+              (click)="toggleSummaryGraph(showSummary)">{{toggleSummaryGraphButtonText}}</a>
           </div>
         </div>
         <ng-container *ngIf="showSummary">
@@ -125,6 +126,7 @@
           </ng-container>
         </ng-container>
       </ng-container>
+      <p *ngIf='showSummary && assetReadingSummary.length === 0' class="help"> Summary Not Available </p>
       <p *ngIf='!showGraph' class="help"> Graph Not Available </p>
     </section>
   </div>
