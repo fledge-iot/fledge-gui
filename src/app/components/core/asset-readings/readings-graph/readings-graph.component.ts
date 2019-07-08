@@ -45,7 +45,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   @ViewChild('assetChart') assetChart: Chart;
 
   public excludedReadingsList = [];
-  public assetReading = [];
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
@@ -132,10 +131,12 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   toggleSummaryGraph(state: boolean) {
     this.showSummary = !state;
-    if (!this.showSummary) {
+    if (state) {
       this.toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     } else {
       this.toggleSummaryGraphButtonText = this.SHOW_GRAPH_TEXT;
+      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     }
   }
 
@@ -273,92 +274,56 @@ export class ReadingsGraphComponent implements OnDestroy {
   private statsAssetReadingsGraph(data: any): void {
     this.isSpectrum = false;
     this.showGraph = true;
-    this.assetReading = [];
     this.excludedReadingsList = [];
     const datePipe = new DateFormatterPipe();
     const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss:SSS'));
     const readings = data.map((r: any) => r.reading);
     const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
-    for (const k of uniqueKeys) {
-      let assetReads = map(readings, k);
-      assetReads = assetReads.filter(function (el) {
-        return el !== undefined;
-      });
-      if (!assetReads.some(isNaN)) {
-        const read = {
-          key: k,
-          values: assetReads
-        };
-        this.assetReading.push(read);
-      } else {
-        if (k !== 'spectrum') {
-          this.isSpectrum = false;
-          this.excludedReadingsList.push(k);
-        } else {
-          this.polyGraphData = {
-            data: [
-              {
-                type: 'surface',
-                y: timestamps,
-                z: assetReads,
-                showscale: false,
-                colorscale: [
-                  ['0', 'rgba(68,1,84,1)'],
-                  ['0.1', 'rgba(61,77,137,1)'],
-                  ['0.2', 'rgba(57,89,140,1)'],
-                  ['0.3', 'rgba(49,104,142,1)'],
-                  ['0.4', 'rgba(44,119,142,1)'],
-                  ['0.5', 'rgba(38,136,141,1)'],
-                  ['0.6', 'rgba(33,154,138,1)'],
-                  ['0.7', 'rgba(50,178,124,1)'],
-                  ['0.8', 'rgba(101,201,96,1)'],
-                  ['0.9', 'rgba(101,201,96,1)'],
-                  ['1', 'rgba(253,231,37,1)']],
-                colorbar: {
-                  tick0: 0,
-                  dtick: 5
-                }
-              },
-            ],
-            layout: {
-              title: 'FFT spectrum',
-              showlegend: true,
-              autoSize: true,
-              margin: {
-                b: 40,
-                l: 60,
-                r: 10,
-                t: 25
-              }
-            }
-          };
-          this.isSpectrum = true;
-        }
-      }
-    }
-
-    if (this.assetReading.length === 0 && this.excludedReadingsList.length >= 1) {
-      this.showGraph = false;
-      return;
-    }
+    const dataset = [];
     this.readKeyColorLabel = [];
-    const ds = [];
     let count = 0;
-    this.assetReading.forEach(element => {
+    for (const k of uniqueKeys) {
+      if (k.toLowerCase() === 'spectrum') {
+        this.createFFTGraph(k, readings, timestamps);
+        return;
+      }
+      this.isSpectrum = false;
+      const reads = [];
       const dt = {
-        label: element.key,
-        data: element.values,
+        label: k,
+        data: [],
         fill: false,
         lineTension: 0.1,
         spanGaps: true,
-        hidden: this.getLegendState(element.key),
-        backgroundColor: this.getColorCode(element.key.trim(), count, true),
-        borderColor: this.getColorCode(element.key, count, false)
+        hidden: this.getLegendState(k),
+        backgroundColor: this.getColorCode(k.trim(), count, true),
+        borderColor: this.getColorCode(k.trim(), count, false)
       };
+      for (const r of data) {
+        reads.push({
+          x: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'),
+          y: r.reading[k]
+        });
+      }
+      dt.data = reads.filter(r => r.y !== undefined).filter(r => {
+        if (!isNaN(r.y)) {
+          return r.y;
+        } else {
+          if (!this.excludedReadingsList.includes(k)) {
+            this.excludedReadingsList.push(k);
+          }
+        }
+      });
+      if (dataset.length === 0 && this.excludedReadingsList.length >= 1) {
+        this.showGraph = false;
+        return;
+      } else {
+        this.showGraph = true;
+        dataset.push(dt);
+        this.setAssetReadingValues(dataset);
+      }
       count++;
-      ds.push(dt);
-    });
-    this.setAssetReadingValues(timestamps, ds);
+    }
   }
 
   public getLegendState(key) {
@@ -373,9 +338,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  private setAssetReadingValues(labels, ds) {
+  private setAssetReadingValues(ds: any) {
     this.assetReadingValues = {
-      labels: labels,
       datasets: ds
     };
     this.assetChartType = 'line';
@@ -395,7 +359,6 @@ export class ReadingsGraphComponent implements OnDestroy {
             }
           },
           ticks: {
-            source: labels,
             autoSkip: true
           },
           bounds: 'ticks'
@@ -436,6 +399,48 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else {
       this.timeDropDownOpened = true;
     }
+  }
+
+  createFFTGraph(key: string, readings: [], timestamps: []) {
+    const assetReads = map(readings, key).filter(el => el !== undefined);
+    this.polyGraphData = {
+      data: [
+        {
+          type: 'surface',
+          y: timestamps,
+          z: assetReads,
+          showscale: false,
+          colorscale: [
+            ['0', 'rgba(68,1,84,1)'],
+            ['0.1', 'rgba(61,77,137,1)'],
+            ['0.2', 'rgba(57,89,140,1)'],
+            ['0.3', 'rgba(49,104,142,1)'],
+            ['0.4', 'rgba(44,119,142,1)'],
+            ['0.5', 'rgba(38,136,141,1)'],
+            ['0.6', 'rgba(33,154,138,1)'],
+            ['0.7', 'rgba(50,178,124,1)'],
+            ['0.8', 'rgba(101,201,96,1)'],
+            ['0.9', 'rgba(101,201,96,1)'],
+            ['1', 'rgba(253,231,37,1)']],
+          colorbar: {
+            tick0: 0,
+            dtick: 5
+          }
+        },
+      ],
+      layout: {
+        title: 'FFT spectrum',
+        showlegend: true,
+        autoSize: true,
+        margin: {
+          b: 40,
+          l: 60,
+          r: 10,
+          t: 25
+        }
+      }
+    };
+    this.isSpectrum = true;
   }
 
   public isNumber(val) {
