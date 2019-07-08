@@ -327,7 +327,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       } else {
         this.showGraph = true;
         dataset.push(dt);
-        this.setAssetReadingValues(dataset);
+        this.setAssetReadingValues(dataset, timestamps);
       }
       count++;
     }
@@ -345,8 +345,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  private setAssetReadingValues(ds: any) {
+  private setAssetReadingValues(ds: any, timestamps: any) {
     this.assetReadingValues = {
+      labels: timestamps,
       datasets: ds
     };
     this.assetChartType = 'line';
@@ -357,12 +358,14 @@ export class ReadingsGraphComponent implements OnDestroy {
       scales: {
         xAxes: [{
           type: 'time',
+          distribution: 'linear',
           time: {
             parser: 'HH:mm:ss',
             unit: 'second',
             displayFormats: {
               unit: 'second',
               second: 'HH:mm:ss'
+
             }
           },
           ticks: {
