@@ -327,12 +327,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       if (dt.data.length) {
         dataset.push(dt);
       }
-      if (dataset.length === 0 && this.excludedReadingsList.length >= 1) {
-        this.showGraph = false;
-      } else {
-        this.setAssetReadingValues(dataset, timestamps);
-      }
       count++;
+    }
+    if (dataset.length === 0 && this.excludedReadingsList.length >= 1) {
+      this.showGraph = false;
+    } else {
+      this.setAssetReadingValues(dataset, timestamps);
     }
   }
 
