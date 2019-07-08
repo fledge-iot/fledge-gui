@@ -139,6 +139,7 @@ export class CertificateBaseLoginComponent implements OnInit {
   protected resetForm() {
     this.form.get('certificate').setValue('');
     this.form.get('certificateText').setValue('');
+    this.certificateContent = '';
     this.isCertificateExt = true;
   }
 }
