@@ -45,6 +45,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   @ViewChild('assetChart') assetChart: Chart;
 
   public excludedReadingsList = [];
+  public excludedReadingsSummaryList = [];
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
@@ -195,14 +196,20 @@ export class ReadingsGraphComponent implements OnDestroy {
           this.showGraph = true;
           const k = Object.keys(o)[0];
           if (isNaN(o[k]['max']) || isNaN(o[k]['min'])) {
-            this.showGraph = false;
-            return;
+            if (!this.excludedReadingsSummaryList.includes(k)) {
+              this.excludedReadingsSummaryList.push(k);
+            }
+          } else {
+            return {
+              name: k,
+              value: [o[k]]
+            };
           }
-          return {
-            name: k,
-            value: [o[k]]
-          };
         }).filter(value => value !== undefined);
+        if (this.assetReadingSummary.length === 0 && this.excludedReadingsSummaryList.length >= 1) {
+          this.showGraph = false;
+          return;
+        }
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
         if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
           this.buttonText = 'Show All';
