@@ -86,6 +86,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.showGraphSpinner = true;
     this.showSummarySpinner = true;
     this.excludedReadingsList = [];
+    this.excludedReadingsSummaryList = [];
     this.assetChartOptions = {};
     this.showSummary = false;
     this.toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
@@ -186,6 +187,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
+    this.excludedReadingsSummaryList = [];
     if (this.isSpectrum) {
       this.showSummarySpinner = false;
       return;
@@ -312,21 +314,22 @@ export class ReadingsGraphComponent implements OnDestroy {
           y: r.reading[k]
         });
       }
-      dt.data = reads.filter(r => r.y !== undefined).filter(r => {
-        if (!isNaN(r.y)) {
-          return r.y;
-        } else {
-          if (!this.excludedReadingsList.includes(k)) {
-            this.excludedReadingsList.push(k);
+      dt.data = reads.filter(r => r.y !== undefined)
+        .filter(r => {
+          if (!isNaN(r.y)) {
+            return r;
+          } else {
+            if (!this.excludedReadingsList.includes(k)) {
+              this.excludedReadingsList.push(k);
+            }
           }
-        }
-      });
+        });
+      if (dt.data.length) {
+        dataset.push(dt);
+      }
       if (dataset.length === 0 && this.excludedReadingsList.length >= 1) {
         this.showGraph = false;
-        return;
       } else {
-        this.showGraph = true;
-        dataset.push(dt);
         this.setAssetReadingValues(dataset, timestamps);
       }
       count++;
