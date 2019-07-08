@@ -25,6 +25,11 @@
                       [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
                       [attr.maxLength]="configItem?.value?.length" />
 
+                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD'"
+                    name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
+                    [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                    [attr.maxLength]="configItem?.value?.length" />
+
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'"
                       name="{{configItem.value.key}}" type="number" [value]='setConfigValue(configItem.value)'
                       class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum"
