@@ -26,6 +26,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isWizardCall = false;
   public filesToUpload = [];
   public hasEditableConfigItems = true;
+  public fileContent: string;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -119,9 +120,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public fileChange(event, configItem) {
+    const fileReader = new FileReader();
     const fi = event.target;
     if (fi.files && fi.files[0]) {
       const file = fi.files[0];
+      fileReader.onload = () => {
+        this.fileContent = fileReader.result.toString();
+      };
+      fileReader.readAsText(file);
+
       this.filesToUpload.push({ [configItem]: file });
     }
   }
