@@ -134,9 +134,11 @@ export class ReadingsGraphComponent implements OnDestroy {
   toggleSummaryGraph(state: boolean) {
     this.showSummary = !state;
     if (state) {
+      this.excludedReadingsSummaryList = [];
       this.toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     } else {
+      this.excludedReadingsList = [];
       this.toggleSummaryGraphButtonText = this.SHOW_GRAPH_TEXT;
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     }
@@ -187,7 +189,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
-    this.excludedReadingsSummaryList = [];
     if (this.isSpectrum) {
       this.showSummarySpinner = false;
       return;
@@ -195,7 +196,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
         this.assetReadingSummary = data.map(o => {
-          this.showGraph = true;
           const k = Object.keys(o)[0];
           if (isNaN(o[k]['max']) || isNaN(o[k]['min'])) {
             if (!this.excludedReadingsSummaryList.includes(k)) {
@@ -208,21 +208,21 @@ export class ReadingsGraphComponent implements OnDestroy {
             };
           }
         }).filter(value => value !== undefined);
+        this.showSummarySpinner = false;
         if (this.assetReadingSummary.length === 0 && this.excludedReadingsSummaryList.length >= 1) {
           this.showGraph = false;
-          return;
+        } else {
+          this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
+            this.buttonText = 'Show All';
+          }
+          if (this.assetReadingSummary.length <= 5) {
+            this.buttonText = '';
+          }
+          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
+            this.buttonText = 'Show Less';
+          }
         }
-        this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-        if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
-          this.buttonText = 'Show All';
-        }
-        if (this.assetReadingSummary.length <= 5) {
-          this.buttonText = '';
-        }
-        if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
-          this.buttonText = 'Show Less';
-        }
-        this.showSummarySpinner = false;
       },
       error => {
         if (error.status === 0) {
