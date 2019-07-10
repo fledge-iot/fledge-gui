@@ -26,7 +26,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public isWizardCall = false;
   public filesToUpload = [];
   public hasEditableConfigItems = true;
-  public fileContent: string;
+  public fileContent = '';
+  public fileName = '';
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -38,6 +39,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
     this.configItems = [];
+    this.fileContent = '';
+    this.fileName = '';
     const categoryConfigurationCurrentData = cloneDeep(changes.categoryConfigurationData.currentValue);
     if (categoryConfigurationCurrentData !== undefined) {
       let configAttributes = [];
@@ -124,6 +127,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     const fi = event.target;
     if (fi.files && fi.files[0]) {
       const file = fi.files[0];
+      this.fileName = file.name;
       fileReader.onload = () => {
         this.fileContent = fileReader.result.toString();
       };

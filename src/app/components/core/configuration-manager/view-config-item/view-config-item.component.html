@@ -26,9 +26,9 @@
                       [attr.maxLength]="configItem?.value?.length" />
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD'"
-                    name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
-                    [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                    [attr.maxLength]="configItem?.value?.length" />
+                      name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
+                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                      [attr.maxLength]="configItem?.value?.length" />
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'"
                       name="{{configItem.value.key}}" type="number" [value]='setConfigValue(configItem.value)'
@@ -50,11 +50,12 @@
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
                       <textarea rows="3" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
-                        [ngModel]="fileContent || setConfigValue(configItem.value)" [value]='fileContent || setConfigValue(configItem.value)'
-                        disabled >
+                        [ngModel]="fileContent || setConfigValue(configItem.value)"
+                        [value]='fileContent || setConfigValue(configItem.value)' disabled>
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </textarea>
-                      <p class="help">{{configItem?.value?.file | slice:configItem?.value?.file?.lastIndexOf('/')+1}}
+                      <p class="help">
+                        {{fileName != '' ? fileName : configItem?.value?.file | slice:configItem?.value?.file?.lastIndexOf('/')+1}}
                       </p>
                     </div>
 
