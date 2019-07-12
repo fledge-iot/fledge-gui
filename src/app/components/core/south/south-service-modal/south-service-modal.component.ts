@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, QueryList, ViewChildren
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -39,7 +39,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public changedChildConfig = [];
   public filterPipeline = [];
   public deletedFilterPipeline = [];
-  public filterConfiguration;
+  public filterConfiguration = [];
 
   public isFilterOrderChanged = false;
   public isFilterDeleted = false;
@@ -477,12 +477,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
   }
 
-  getFilterConfiguration(filterName) {
-    this.filterConfiguration = [];
+  getFilterConfiguration(filterName: string) {
     const catName = this.service['name'] + '_' + filterName;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
-        this.filterConfiguration = { key: catName, 'value': [data] };
+        this.filterConfiguration.push({ key: catName, 'value': [data] });
       },
         error => {
           if (error.status === 0) {
@@ -491,6 +490,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  setFilterConfiguration(filterName: string) {
+    const catName = this.service['name'] + '_' + filterName;
+    return this.filterConfiguration.find(f => f.key === catName);
   }
 
   deleteFilterReference(filter) {

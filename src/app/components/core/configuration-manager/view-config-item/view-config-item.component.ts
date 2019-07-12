@@ -41,37 +41,39 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     this.configItems = [];
     this.fileContent = '';
     this.fileName = '';
-    const categoryConfigurationCurrentData = cloneDeep(changes.categoryConfigurationData.currentValue);
-    if (categoryConfigurationCurrentData !== undefined) {
-      let configAttributes = [];
-      if (categoryConfigurationCurrentData.length !== 0) {
-        const currentConfigValues = categoryConfigurationCurrentData.value[0];
-        configAttributes = Object.keys(currentConfigValues).map(key => {
-          const element = currentConfigValues[key];
-          element.key = key;
-          return element;
-        });
+    if (changes.categoryConfigurationData) {
+      const categoryConfigurationCurrentData = cloneDeep(changes.categoryConfigurationData.currentValue);
+      if (categoryConfigurationCurrentData !== undefined) {
+        let configAttributes = [];
+        if (categoryConfigurationCurrentData.length !== 0) {
+          const currentConfigValues = categoryConfigurationCurrentData.value[0];
+          configAttributes = Object.keys(currentConfigValues).map(key => {
+            const element = currentConfigValues[key];
+            element.key = key;
+            return element;
+          });
 
-        configAttributes = sortBy(configAttributes, function (ca) {
-          return parseInt(ca.order, 10);
-        });
+          configAttributes = sortBy(configAttributes, function (ca) {
+            return parseInt(ca.order, 10);
+          });
 
-        categoryConfigurationCurrentData.value = configAttributes;
-        this.categoryConfiguration = categoryConfigurationCurrentData;
-        this.configItems = configAttributes.map(el => {
-          return {
-            key: el.key,
-            value: el.value !== undefined ? el.value : el.default,
-            type: el.type
-          };
-        });
-        // check if editable config item found, based on readonly property
-        for (const el of this.categoryConfiguration.value) {
-          if (!has(el, 'readonly') || el.readonly === 'false') {
-            this.hasEditableConfigItems = true;
-            break;
-          } else {
-            this.hasEditableConfigItems = false;
+          categoryConfigurationCurrentData.value = configAttributes;
+          this.categoryConfiguration = categoryConfigurationCurrentData;
+          this.configItems = configAttributes.map(el => {
+            return {
+              key: el.key,
+              value: el.value !== undefined ? el.value : el.default,
+              type: el.type
+            };
+          });
+          // check if editable config item found, based on readonly property
+          for (const el of this.categoryConfiguration.value) {
+            if (!has(el, 'readonly') || el.readonly === 'false') {
+              this.hasEditableConfigItems = true;
+              break;
+            } else {
+              this.hasEditableConfigItems = false;
+            }
           }
         }
       }
@@ -103,7 +105,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       });
     });
 
-    const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
+    const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, isEqual) : [];
     let isConfigChanged = false;
     // condition to check if called from wizard
     if (this.isWizardCall) {
@@ -113,12 +115,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       this.onConfigChanged.emit(changedConfigValues);
       return;
     }
-    this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
     if (changedConfigValues.length > 0) {
+      this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
       isConfigChanged = true;
-    }
-    if (this.filesToUpload.length > 0) {
-      this.uploadScript(isConfigChanged);
+      if (this.filesToUpload.length > 0) {
+        this.uploadScript(isConfigChanged);
+      }
     }
   }
 
@@ -137,7 +139,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     }
   }
 
-  updateConfiguration(categoryName, changedConfig) {
+  updateConfiguration(categoryName: string, changedConfig) {
+    if (categoryName === undefined) {
+      return;
+    }
     changedConfig = changedConfig.map(el => {
       if (el.type.toUpperCase() === 'JSON') {
         el.value = JSON.parse(el.value);
