@@ -164,7 +164,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.');
+          this.alertService.success('Configuration updated successfully.', true);
 
           // fill configItems with changed data
           this.configItems = Object.keys(data).map(key => {
@@ -245,7 +245,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
           this.filesToUpload = [];
           if (!isConfigChanged) {
             this.ngProgress.done();
-            this.alertService.success('Configuration updated successfully.');
+            this.alertService.success('Configuration updated successfully.', true);
           }
           this.getConfigItem(configItem);
         },

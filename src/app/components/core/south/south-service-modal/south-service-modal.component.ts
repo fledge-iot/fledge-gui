@@ -301,7 +301,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           this.changedChildConfig = [];  // clear the array
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.');
+          this.alertService.success('Configuration updated successfully.', true);
         },
         error => {
           /** request completed */
