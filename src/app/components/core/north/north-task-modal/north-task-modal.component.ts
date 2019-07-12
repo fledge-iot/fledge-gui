@@ -38,7 +38,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public isFilterOrderChanged = false;
   public filterPipeline = [];
   public deletedFilterPipeline = [];
-  public filterConfiguration;
+  public filterConfiguration = [];
   public isFilterDeleted = false;
   public confirmationDialogData = {};
   public childConfiguration: any;
@@ -336,7 +336,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     const catName = this.task['name'] + '_' + filterName;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
-        this.filterConfiguration = { key: catName, 'value': [data] };
+        this.filterConfiguration.push({ key: catName, 'value': [data] });
       },
         error => {
           if (error.status === 0) {
@@ -345,6 +345,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  setFilterConfiguration(filterName: string) {
+    const catName = this.task['name'] + '_' + filterName;
+    return this.filterConfiguration.find(f => f.key === catName);
   }
 
   openAddFilterModal(isWizard) {
@@ -438,10 +443,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
   }
 
-   /**
-   * Get edited configuration from child config page
-   * @param changedConfig changed configuration of a selected plugin
-   */
+  /**
+  * Get edited configuration from child config page
+  * @param changedConfig changed configuration of a selected plugin
+  */
   getChangedConfig(changedConfig) {
     if (isEmpty(changedConfig)) {
       return;
