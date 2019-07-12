@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, QueryList, ViewChildren
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
