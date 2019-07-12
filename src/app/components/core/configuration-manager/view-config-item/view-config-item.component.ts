@@ -118,9 +118,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     if (changedConfigValues.length > 0) {
       this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
       isConfigChanged = true;
-      if (this.filesToUpload.length > 0) {
-        this.uploadScript(isConfigChanged);
-      }
+    }
+    if (this.filesToUpload.length > 0) {
+      this.uploadScript(isConfigChanged);
     }
   }
 
