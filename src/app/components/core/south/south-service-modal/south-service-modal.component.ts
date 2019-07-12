@@ -206,6 +206,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   saveChanges(serviceName) {
+    console.log('isFilterDeleted', this.isFilterDeleted);
+    console.log('Filter order', this.isFilterOrderChanged);
     if (this.isFilterDeleted) {
       this.deleteFilter();
     }
@@ -274,18 +276,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
+    console.log('proxy', this.useProxy);
+
     if (this.useProxy) {
       document.getElementById('vci-proxy').click();
     }
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
     for (const e of <any>el) {
       e.click();
-    }
-    if (this.filterConfigViewComponent !== undefined && !this.filterConfigViewComponent.isValidForm) {
-      return;
-    }
-    if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-      return;
     }
     this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
@@ -539,6 +537,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public updateFilterPipeline(filterPipeline) {
+    console.log('filterPipeline', filterPipeline);
     this.isFilterOrderChanged = false;
     this.ngProgress.start();
     this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service['name'])
