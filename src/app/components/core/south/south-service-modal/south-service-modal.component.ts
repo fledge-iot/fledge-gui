@@ -119,6 +119,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.notify.emit(false);
     this.isAdvanceConfig = true;
     this.getAdvanceConfig(null);
+    this.filterConfiguration = [];
     modalWindow.classList.remove('is-active');
   }
 

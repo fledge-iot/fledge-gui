@@ -144,6 +144,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.notify.emit(true);
     this.isAdvanceConfig = true;
     this.getAdvanceConfig(null);
+    this.filterConfiguration = [];
     modal.classList.remove('is-active');
   }
 
