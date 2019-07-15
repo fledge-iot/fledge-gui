@@ -63,7 +63,6 @@ export class GenerateCsvService {
     for (const header of keys) {
       row += ',' + header;
     }
-    row = row.slice(0, -1);
     // append Label row with line break
     str += row + '\r\n';
     for (const asset of assetData) {
