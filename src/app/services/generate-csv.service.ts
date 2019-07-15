@@ -9,8 +9,13 @@ export class GenerateCsvService {
 
   constructor(private alertService: AlertService) { }
 
-  download(data: any, filename: string) {
-    const csvData = this.ConvertToCSV(data);
+  download(data: any, filename: string, type: string) {
+    let csvData = '';
+    if (type === 'service') {
+      csvData = this.ConvertToCSV(data);
+    } else if (type === 'asset') {
+      csvData = this.ConvertAssetReadsToCSV(data);
+    }
     const a: any = document.createElement('a');
     a.setAttribute('style', 'display:none;');
     document.body.appendChild(a);
@@ -44,6 +49,29 @@ export class GenerateCsvService {
           line += JSON.stringify(assetData[i][key]).split(',').join('; ');
         } else {
           line += JSON.stringify(assetData[i][key]);
+        }
+      }
+      str += line + '\r\n';
+    }
+    return str;
+  }
+
+  ConvertAssetReadsToCSV(assetData: any) {
+    let str = '';
+    let row = 'timestamp';
+    const keys = Object.keys(assetData[0].reading);
+    for (const header of keys) {
+      row += ',' + header;
+    }
+    row = row.slice(0, -1);
+    // append Label row with line break
+    str += row + '\r\n';
+    for (const asset of assetData) {
+      let line = asset.timestamp;
+      for (const key in asset.reading) {
+        if (asset.reading.hasOwnProperty(key)) {
+          const element = asset.reading[key];
+          line += ',' + element;
         }
       }
       str += line + '\r\n';
