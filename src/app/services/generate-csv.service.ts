@@ -60,6 +60,7 @@ export class GenerateCsvService {
     let str = '';
     let row = 'timestamp';
     const keys = Object.keys(assetData[0].reading);
+    console.log(keys);
     for (const header of keys) {
       row += ',' + header;
     }
@@ -68,9 +69,10 @@ export class GenerateCsvService {
     for (const asset of assetData) {
       let line = asset.timestamp;
       for (const key in asset.reading) {
-        if (asset.reading.hasOwnProperty(key)) {
-          const element = asset.reading[key];
-          line += ',' + element;
+        if (asset.reading.hasOwnProperty(key) && key !== 'spectrum') {
+          line += ',' + asset.reading[key];
+        } else {
+          line += ',' + '"' + asset.reading[key].join() + '"';
         }
       }
       str += line + '\r\n';
