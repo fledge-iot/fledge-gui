@@ -25,10 +25,20 @@
                       [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
                       [attr.maxLength]="configItem?.value?.length" />
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD'"
-                      name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
-                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      [attr.maxLength]="configItem?.value?.length" />
+                    <div class="field has-addons" *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD'">
+                      <div class="control">
+                        <input name="{{configItem.value.key}}" class="input is-fullwidth is-small"
+                          type="{{typePassword? 'password' : 'text'}}" [ngModel]="setConfigValue(configItem.value)"
+                          [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length" />
+                      </div>
+                      <div class="control">
+                        <a class="button is-small">
+                          <span class="icon is-small" (click)="togglePassword()">
+                            <i class="{{typePassword? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
+                          </span>
+                        </a>
+                      </div>
+                    </div>
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'"
                       name="{{configItem.value.key}}" type="number" [value]='setConfigValue(configItem.value)'

@@ -28,6 +28,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public hasEditableConfigItems = true;
   public fileContent = '';
   public fileName = '';
+  public typePassword = true;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -295,5 +296,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       && this.useDeliveryProxy === 'false') {
       return 'false';
     }
+  }
+
+  togglePassword() {
+    this.typePassword = !this.typePassword;
   }
 }
