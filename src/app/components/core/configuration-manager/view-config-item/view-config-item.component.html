@@ -27,17 +27,41 @@
 
                     <div class="field has-addons" *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD'">
                       <div class="control">
-                        <input name="{{configItem.value.key}}" class="input is-fullwidth is-small"
-                          type="{{typePassword? 'password' : 'text'}}" [ngModel]="setConfigValue(configItem.value)"
-                          [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length" />
+                        <input #pwd (input)="showConfirmPassword()" name="{{configItem.value.key}}"
+                          class="input is-fullwidth is-small" type="password"
+                          [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                          [attr.maxLength]="configItem?.value?.length"
+                          (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)" />
                       </div>
                       <div class="control">
                         <a class="button is-small">
-                          <span class="icon is-small" (click)="togglePassword()">
-                            <i class="{{typePassword? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
+                          <span class="icon is-small" (click)="togglePassword(pwd)">
+                            <i class="{{pwd.type === 'password'? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
                           </span>
                         </a>
                       </div>
+                    </div>
+                    <div class="field"
+                      *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD' && passwordOnChangeFired">
+                      <div class="control">
+                        <div id="confirm-password" class="field has-addons">
+                          <div class="control">
+                            <input #confirmPwd name="confirm-password" class="input is-fullwidth is-small"
+                              type="password" [ngModel]="setConfigValue(configItem.value)"
+                              [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
+                              (ngModelChange)="checkPasswords(f?.controls[configItem.value.key]?.value, confirmPwd.value)" />
+                          </div>
+                          <div class="control">
+                            <a class="button is-small">
+                              <span class="icon is-small" (click)="togglePassword(confirmPwd)">
+                                <i class="{{confirmPwd.type === 'password' ? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
+                              </span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <p *ngIf="!passwordMatched" class="help is-danger">
+                        <sup>*</sup>Password mismatch</p>
                     </div>
 
                     <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'"

@@ -28,7 +28,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public hasEditableConfigItems = true;
   public fileContent = '';
   public fileName = '';
-  public typePassword = true;
+  public passwordOnChangeFired = false;
+  public passwordMatched = true;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -82,11 +83,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public saveConfiguration(form: NgForm) {
-
     this.isValidForm = true;
-    if (!form.valid) {
+    if (!form.valid || !this.passwordMatched) {
       this.isValidForm = false;
       return;
+    }
+
+    if (this.passwordMatched) {
+      this.passwordOnChangeFired = false;
+      form.control.removeControl('confirm-password');
     }
 
     const formData = Object.keys(form.value).map(key => {
@@ -298,7 +303,18 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     }
   }
 
-  togglePassword() {
-    this.typePassword = !this.typePassword;
+  showConfirmPassword() {
+    this.passwordOnChangeFired = true;
+  }
+
+  togglePassword(input: any): any {
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  checkPasswords(password: string, confirmPassword: string) {
+    this.passwordMatched = true;
+    if (password !== confirmPassword) {
+      this.passwordMatched = false;
+    }
   }
 }
