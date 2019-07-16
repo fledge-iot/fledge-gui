@@ -60,7 +60,6 @@ export class GenerateCsvService {
     let str = '';
     let row = 'timestamp';
     const keys = Object.keys(assetData[0].reading);
-    console.log(keys);
     for (const header of keys) {
       row += ',' + header;
     }
