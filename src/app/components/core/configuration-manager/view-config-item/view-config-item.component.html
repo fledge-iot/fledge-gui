@@ -29,7 +29,7 @@
                       <div class="control">
                         <input #pwd (input)="showConfirmPassword()" name="{{configItem.value.key}}"
                           class="input is-fullwidth is-small" type="password" onPaste="return false"
-                          (focus)="pwd.value=''" [ngModel]="setConfigValue(configItem.value)"
+                          (focus)="pwd.value=''; passwordMatched=false" [ngModel]="setConfigValue(configItem.value)"
                           [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
                           (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)" />
                       </div>
