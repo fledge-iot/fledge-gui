@@ -28,9 +28,9 @@
                     <div class="field has-addons" *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD'">
                       <div class="control">
                         <input #pwd (input)="showConfirmPassword()" name="{{configItem.value.key}}"
-                          class="input is-fullwidth is-small" type="password"
-                          [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                          [attr.maxLength]="configItem?.value?.length"
+                          class="input is-fullwidth is-small" type="password" onPaste="return false"
+                          (focus)="pwd.value=''" [ngModel]="setConfigValue(configItem.value)"
+                          [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
                           (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)" />
                       </div>
                       <div class="control">
@@ -47,16 +47,10 @@
                         <div id="confirm-password" class="field has-addons">
                           <div class="control">
                             <input #confirmPwd name="confirm-password" class="input is-fullwidth is-small"
-                              type="password" [ngModel]="setConfigValue(configItem.value)"
-                              [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
+                              onPaste="return false" type="password" [ngModel]="setConfigValue(confirmPwd.value)"
+                              [value]='setConfigValue(confirmPwd.value)' [attr.maxLength]="configItem?.value?.length"
+                              placeholder="confirm password"
                               (ngModelChange)="checkPasswords(f?.controls[configItem.value.key]?.value, confirmPwd.value)" />
-                          </div>
-                          <div class="control">
-                            <a class="button is-small">
-                              <span class="icon is-small" (click)="togglePassword(confirmPwd)">
-                                <i class="{{confirmPwd.type === 'password' ? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
-                              </span>
-                            </a>
                           </div>
                         </div>
                       </div>
