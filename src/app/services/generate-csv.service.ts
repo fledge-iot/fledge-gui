@@ -59,15 +59,11 @@ export class GenerateCsvService {
   ConvertAssetReadsToCSV(assetData: any) {
     let str = '';
     let row = 'timestamp';
-    const keys = Object.keys(assetData[0].reading);
-    for (const header of keys) {
-      row += ',' + header;
-    }
-    // append Label row with line break
-    str += row + '\r\n';
+    const keys = new Set();
     for (const asset of assetData) {
       let line = asset.timestamp;
       for (const key in asset.reading) {
+        keys.add(key);
         if (asset.reading.hasOwnProperty(key) && key !== 'spectrum') {
           line += ',' + asset.reading[key];
         } else {
@@ -76,6 +72,10 @@ export class GenerateCsvService {
       }
       str += line + '\r\n';
     }
+    keys.forEach(header => {
+      row += ',' + header;
+    });
+    str = row + '\r\n' + str;
     return str;
   }
 }
