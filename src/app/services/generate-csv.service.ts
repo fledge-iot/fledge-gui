@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AlertService } from './alert.service';
+import { uniq } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -57,25 +58,24 @@ export class GenerateCsvService {
   }
 
   ConvertAssetReadsToCSV(assetData: any) {
-    let str = '';
-    let row = 'timestamp';
-    const keys = new Set();
+    const keys = ['timestamp'];
     for (const asset of assetData) {
-      let line = asset.timestamp;
       for (const key in asset.reading) {
-        keys.add(key);
-        if (asset.reading.hasOwnProperty(key) && key !== 'spectrum') {
-          line += ',' + asset.reading[key];
-        } else {
-          line += ',' + '"' + asset.reading[key].join() + '"';
-        }
+        keys.push(key);
       }
-      str += line + '\r\n';
     }
-    keys.forEach(header => {
-      row += ',' + header;
-    });
-    str = row + '\r\n' + str;
-    return str;
+    const uniqueKeys = uniq(keys);
+    const csvContent =
+      uniqueKeys.join(',') +
+      '\n' +
+      assetData.map(asset => {
+        return uniqueKeys.map(k => {
+          const cell = k === 'timestamp' ? asset.timestamp :
+            (asset.reading[k] === null || asset.reading[k] === undefined ? '' :
+              (asset.reading[k] instanceof Array ? '"' + asset.reading[k].join() + '"' : asset.reading[k]));
+          return cell;
+        }).join(',');
+      }).join('\n');
+    return csvContent;
   }
 }
