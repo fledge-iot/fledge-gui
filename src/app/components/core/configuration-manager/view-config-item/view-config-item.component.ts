@@ -1,4 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component, EventEmitter, Input, OnChanges, OnInit,
+  Output, SimpleChanges, ViewChild, ElementRef, ChangeDetectorRef,
+  AfterViewChecked
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash';
 
@@ -10,7 +14,7 @@ import ConfigTypeValidation from '../configuration-type-validation';
   templateUrl: './view-config-item.component.html',
   styleUrls: ['./view-config-item.component.css']
 })
-export class ViewConfigItemComponent implements OnInit, OnChanges {
+export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChecked {
   @Input() categoryConfigurationData: any;
   @Input() useProxy = 'false';
   @Input() useFilterProxy = 'false';
@@ -30,12 +34,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public fileName = '';
   public isFileUploaded = false;
 
+  @ViewChild('textarea') textarea: ElementRef;
+
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
-    public ngProgress: ProgressBarService
+    public ngProgress: ProgressBarService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() { }
+
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
+  }
+
 
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
@@ -222,6 +234,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
    * @param configVal Config value to pass in ngModel
    */
   public setConfigValue(configVal) {
+    if (this.textarea !== undefined) {
+      this.textarea.nativeElement.click();
+    }
     if (configVal.value !== undefined) {
       return configVal.value;
     } else {
@@ -300,6 +315,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
 
   public getFileName(name: string) {
     this.fileName = name !== undefined ? name.substr(name.lastIndexOf('/') + 1) : this.fileName;
+    if (this.fileName !== undefined) {
+      this.isFileUploaded = this.fileName.length > 0 ? true : false;
+    }
   }
 
   createFileToUpload(data: any) {
