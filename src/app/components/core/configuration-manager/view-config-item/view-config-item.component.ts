@@ -28,6 +28,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public hasEditableConfigItems = true;
   public fileContent = '';
   public fileName = '';
+  public isFileUploaded = false;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -81,7 +82,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   }
 
   public saveConfiguration(form: NgForm) {
-
     this.isValidForm = true;
     if (!form.valid) {
       this.isValidForm = false;
@@ -106,7 +106,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     });
 
     const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, isEqual) : [];
-    let isConfigChanged = false;
+    this.filesToUpload = changedConfigValues.map((d) => {
+      if (d.type === 'script') {
+        return this.createFileToUpload(d);
+      }
+    }).filter(f => f !== undefined);
     // condition to check if called from wizard
     if (this.isWizardCall) {
       if (this.filesToUpload.length > 0) {
@@ -117,14 +121,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     }
     if (changedConfigValues.length > 0) {
       this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
-      isConfigChanged = true;
     }
     if (this.filesToUpload.length > 0) {
-      this.uploadScript(isConfigChanged);
+      this.uploadScript();
     }
   }
 
   public fileChange(event, configItem) {
+    this.isFileUploaded = true;
     const fileReader = new FileReader();
     const fi = event.target;
     if (fi.files && fi.files[0]) {
@@ -139,19 +143,22 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     }
   }
 
-  updateConfiguration(categoryName: string, changedConfig) {
+  updateConfiguration(categoryName: string, changedConfig: any) {
+
+
     if (categoryName === undefined) {
       return;
     }
-    changedConfig = changedConfig.map(el => {
-      if (el.type.toUpperCase() === 'JSON') {
-        el.value = JSON.parse(el.value);
+    changedConfig = cloneDeep(changedConfig.map(el => {
+      if (el.type.toUpperCase() !== 'SCRIPT') {
+        if (el.type.toUpperCase() === 'JSON') {
+          el.value = JSON.parse(el.value);
+        }
+        return {
+          [el.key]: el.value !== undefined ? el.value : el.default,
+        };
       }
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
+    })).filter(e => e !== undefined);
     changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
     if (isEmpty(changedConfig)) {
       return;
@@ -230,30 +237,24 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     this.isWizardCall = true;
   }
 
-  public uploadScript(isConfigChanged) {
+  public uploadScript() {
     this.filesToUpload.forEach(data => {
       let configItem: any;
       configItem = Object.keys(data)[0];
       const file = data[configItem];
       const formData = new FormData();
       formData.append('script', file);
-      if (!isConfigChanged) {
-        this.ngProgress.start();
-      }
+      this.ngProgress.start();
       this.configService.uploadFile(this.categoryConfiguration.key, configItem, formData)
         .subscribe(() => {
           this.filesToUpload = [];
-          if (!isConfigChanged) {
-            this.ngProgress.done();
-            this.alertService.success('Configuration updated successfully.', true);
-          }
+          this.ngProgress.done();
+          this.alertService.success('Configuration updated successfully.', true);
           this.getConfigItem(configItem);
         },
           error => {
             this.filesToUpload = [];
-            if (!isConfigChanged) {
-              this.ngProgress.done();
-            }
+            this.ngProgress.done();
             if (error.status === 0) {
               console.log('service down ', error);
             } else {
@@ -295,5 +296,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       && this.useDeliveryProxy === 'false') {
       return 'false';
     }
+  }
+
+  public getFileName(name: string) {
+    this.fileName = name !== undefined ? name.substr(name.lastIndexOf('/') + 1) : this.fileName;
+  }
+
+  createFileToUpload(data: any) {
+    const blob = new Blob([data.value], { type: 'plain/text' });
+    const file = new File([blob], this.fileName.substr(this.fileName.lastIndexOf('_') + 1));
+    return { script: file };
   }
 }

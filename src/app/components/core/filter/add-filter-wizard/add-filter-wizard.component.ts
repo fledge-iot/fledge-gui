@@ -331,6 +331,7 @@ export class AddFilterWizardComponent implements OnInit {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
+    console.log('change', changedConfig);
     // final array to hold changed configuration
     let finalConfig = [];
     changedConfig.forEach(item => {

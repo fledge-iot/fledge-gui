@@ -47,7 +47,6 @@ export class NotificationModalComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     if (this.notification !== undefined) {
-      console.log('notification', this.notification);
       this.getCategory();
       this.getRuleConfiguration();
       this.getDeliveryConfiguration();

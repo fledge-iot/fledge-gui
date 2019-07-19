@@ -49,9 +49,10 @@
                       [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
-                      <textarea rows="3" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
+                      <textarea rows="10" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
                         [ngModel]="fileContent || setConfigValue(configItem.value)"
-                        [value]='fileContent || setConfigValue(configItem.value)' disabled>
+                        (ngModelChange)="getFileName(configItem?.value?.file)"
+                        [value]='fileContent || setConfigValue(configItem.value)' [disabled]="!isFileUploaded">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </textarea>
                       <p class="help">
