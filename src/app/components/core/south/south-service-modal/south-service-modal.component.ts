@@ -384,7 +384,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       subscribe(
         (result: any) => {
           assetReadings = [].concat.apply([], result);
-          this.generateCsv.download(assetReadings, fileName);
+          this.generateCsv.download(assetReadings, fileName, 'service');
         },
         error => {
           console.log('error in response', error);

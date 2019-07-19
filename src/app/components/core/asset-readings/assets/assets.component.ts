@@ -112,7 +112,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           });
           this.assetReadings = this.assetReadings.concat(data);
           if (lastRequest === true) {
-            this.generateCsvService.download(this.assetReadings, fileName);
+            this.generateCsvService.download(this.assetReadings, fileName, 'asset');
           }
         },
         error => {
