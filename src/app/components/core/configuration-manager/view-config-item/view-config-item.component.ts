@@ -48,7 +48,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     this.cdRef.detectChanges();
   }
 
-
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
     this.configItems = [];
@@ -95,6 +94,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
 
   public saveConfiguration(form: NgForm) {
     this.isValidForm = true;
+
     if (!form.valid) {
       this.isValidForm = false;
       return;
@@ -118,6 +118,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     });
 
     const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, isEqual) : [];
+
     this.filesToUpload = changedConfigValues.map((d) => {
       if (d.type === 'script') {
         return this.createFileToUpload(d);
@@ -156,8 +157,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   }
 
   updateConfiguration(categoryName: string, changedConfig: any) {
-
-
     if (categoryName === undefined) {
       return;
     }
@@ -209,26 +208,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     return ConfigTypeValidation.getValueType(key);
   }
 
-  public getConfigItem(configItem) {
-    this.configService.getConfigItem(this.categoryConfiguration.key, configItem)
-      .subscribe(data => {
-        this.categoryConfiguration.value.forEach(item => {
-          if (item.key === configItem) {
-            item.value = data['value'];
-            item.description = data['description'];
-            item.key = configItem;
-          }
-        });
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
   /**
    * Method to set ngModal value
    * @param configVal Config value to pass in ngModel
@@ -261,11 +240,17 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
       formData.append('script', file);
       this.ngProgress.start();
       this.configService.uploadFile(this.categoryConfiguration.key, configItem, formData)
-        .subscribe(() => {
+        .subscribe((content: any) => {
           this.filesToUpload = [];
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.', true);
-          this.getConfigItem(configItem);
+          // fill configItems with changed data
+          this.configItems.map(obj => {
+            if (obj.key === content.type) {
+              obj.value = content.value;
+              obj.type = content.type;
+            }
+          });
         },
           error => {
             this.filesToUpload = [];
