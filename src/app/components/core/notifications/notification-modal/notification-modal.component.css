@@ -10,9 +10,8 @@
   vertical-align: middle;
 }
 
-label{
-  width: 12vw !important;
-  margin-right: 2vw;
+.field-body {
+  flex-grow : 2 !important;
 }
 
 [hidden] {
