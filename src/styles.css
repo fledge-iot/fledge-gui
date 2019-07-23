@@ -176,6 +176,12 @@ table.scroll tbody {
   }
 }
 
+@media screen and (min-width: 769px) {
+  .modal-card {
+    width: 80%;
+  }
+}
+
 .no-rec {
   color: darkgray;
 }

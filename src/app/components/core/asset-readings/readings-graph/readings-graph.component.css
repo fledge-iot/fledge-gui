@@ -2,12 +2,6 @@
   display: none !important;
 }
 
-@media screen and (min-width: 769px) {
-  .modal-card {
-    width: 70%;
-  }
-}
-
 @media screen and (max-width: 769px) {
   .chart-container {
       position: relative;
