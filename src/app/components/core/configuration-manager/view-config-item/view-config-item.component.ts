@@ -35,6 +35,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   public isFileUploaded = false;
 
   @ViewChild('textarea') textarea: ElementRef;
+  public passwordOnChangeFired = false;
+  public passwordMatched = true;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -94,10 +96,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
 
   public saveConfiguration(form: NgForm) {
     this.isValidForm = true;
-
-    if (!form.valid) {
+    if (!form.valid || !this.passwordMatched) {
       this.isValidForm = false;
       return;
+    }
+
+    if (this.passwordMatched) {
+      this.passwordOnChangeFired = false;
+      form.control.removeControl('confirm-password');
     }
 
     const formData = Object.keys(form.value).map(key => {
@@ -309,5 +315,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     const blob = new Blob([data.value], { type: 'plain/text' });
     const file = new File([blob], this.fileName.substr(this.fileName.lastIndexOf('_') + 1));
     return { script: file };
+  }
+
+  showConfirmPassword() {
+    this.passwordOnChangeFired = true;
+  }
+
+  togglePassword(input: any): any {
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  checkPasswords(password: string, confirmPassword: string) {
+    this.passwordMatched = true;
+    if (password !== confirmPassword) {
+      this.passwordMatched = false;
+    }
   }
 }
