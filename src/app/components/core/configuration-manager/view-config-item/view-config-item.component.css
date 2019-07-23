@@ -43,3 +43,11 @@
 .tooltip.is-tooltip-multiline::before {
   min-width: 16rem !important;
 }
+
+#confirm-password {
+  margin-top: 2%;
+}
+
+#confirm-password input{
+  padding-right: 2rem;
+}
