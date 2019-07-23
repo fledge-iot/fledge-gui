@@ -47,3 +47,7 @@
 #confirm-password {
   margin-top: 2%;
 }
+
+#confirm-password input{
+  padding-right: 2rem;
+}
