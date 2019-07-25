@@ -16,8 +16,8 @@ import { ViewConfigItemComponent } from '../../configuration-manager/view-config
   styleUrls: ['./add-notification-wizard.component.css']
 })
 export class AddNotificationWizardComponent implements OnInit {
-  @ViewChild('desc') description: ElementRef;
-  @ViewChild('name') name: ElementRef;
+  @ViewChild('desc', { static: true }) description: ElementRef;
+  @ViewChild('name', { static: true }) name: ElementRef;
 
   public notificationRulePlugins = [];
   public notificationDeliveryPlugins = [];
@@ -50,7 +50,7 @@ export class AddNotificationWizardComponent implements OnInit {
     delivery: new FormControl()
   });
 
-  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewConfigItemComponent, { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
 
   public pluginData = {
     modalState: false,

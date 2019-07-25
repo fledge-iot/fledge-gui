@@ -14,7 +14,7 @@ export class UserProfileComponent implements OnInit {
   public userRecord: any = {};
   public childData = {};
   isShow = false;
-  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
+  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
   constructor(private authService: AuthService,
     private alertService: AlertService,

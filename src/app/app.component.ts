@@ -12,7 +12,7 @@ import { SharedService } from './services/shared.service';
 })
 export class AppComponent implements OnInit {
   title = 'app';
-  @ViewChild('sidebar') sidebar: SidebarModule;
+  @ViewChild('sidebar', { static: false }) sidebar: SidebarModule;
   navMode = 'side';
 
   public _opened = true;

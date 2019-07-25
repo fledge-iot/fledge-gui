@@ -16,7 +16,7 @@ export class ConfigChildrenComponent implements AfterViewInit {
   configAttributes = [];
 
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('f') form;
+  @ViewChild('f', { static: true }) form;
 
   constructor(private configService: ConfigurationService) { }
 

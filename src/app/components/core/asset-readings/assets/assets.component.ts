@@ -22,7 +22,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   private isAlive: boolean;
   assetReadings = [];
 
-  @ViewChild(ReadingsGraphComponent) readingsGraphComponent: ReadingsGraphComponent;
+  @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
   constructor(private assetService: AssetsService,
     private alertService: AlertService,

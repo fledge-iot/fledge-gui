@@ -27,7 +27,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   public refreshInterval = POLLING_INTERVAL;
 
-  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
+  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
   constructor(private backupRestoreService: BackupRestoreService,
     private alertService: AlertService,

@@ -23,8 +23,8 @@ export class CertificateStoreComponent implements OnInit {
     key: ''
   };
 
-  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
-  @ViewChild(UploadCertificateComponent) uploadModal: UploadCertificateComponent;
+  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild(UploadCertificateComponent, { static: true }) uploadModal: UploadCertificateComponent;
 
   constructor(private certService: CertificateService,
     public ngProgress: ProgressBarService,

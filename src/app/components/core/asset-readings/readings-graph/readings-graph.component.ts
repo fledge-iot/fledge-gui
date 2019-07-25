@@ -42,7 +42,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('assetChart') assetChart: Chart;
+  @ViewChild('assetChart', { static: false }) assetChart: Chart;
 
   public excludedReadingsList = [];
   public excludedReadingsSummaryList = [];

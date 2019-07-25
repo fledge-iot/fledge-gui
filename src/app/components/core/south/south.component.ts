@@ -20,7 +20,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   private isAlive: boolean;
 
-  @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
+  @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
 
   constructor(private servicesApiService: ServicesApiService,
     private alertService: AlertService,

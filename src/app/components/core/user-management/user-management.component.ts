@@ -12,9 +12,9 @@ import { UpdateUserComponent } from './update-user/update-user.component';
 })
 export class UserManagementComponent implements OnInit {
 
-  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
-  @ViewChild(CreateUserComponent) createUserModal: CreateUserComponent;
-  @ViewChild(UpdateUserComponent) updateUserModal: UpdateUserComponent;
+  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild(CreateUserComponent, { static: true }) createUserModal: CreateUserComponent;
+  @ViewChild(UpdateUserComponent, { static: true }) updateUserModal: UpdateUserComponent;
 
   // Object to hold user record
   public childData = {};

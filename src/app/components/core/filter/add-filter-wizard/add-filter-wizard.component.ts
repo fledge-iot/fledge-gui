@@ -47,7 +47,7 @@ export class AddFilterWizardComponent implements OnInit {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @Input() serviceName: any;
 
-  @ViewChild(ViewConfigItemComponent) viewConfigItem: ViewConfigItemComponent;
+  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItem: ViewConfigItemComponent;
 
   constructor(private formBuilder: FormBuilder,
     private filterService: FilterService,

@@ -32,7 +32,7 @@ export class AddServiceWizardComponent implements OnInit {
   });
 
   @Input() categoryConfigurationData;
-  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
 
   public pluginData = {
     modalState: false,
