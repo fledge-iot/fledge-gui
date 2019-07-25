@@ -99,12 +99,12 @@
               </tbody>
             </table>
           </div>
-          <ng-container *ngIf="excludedReadingsSummaryList.length > 0">
+          <!-- <ng-container *ngIf="excludedReadingsSummaryList.length > 0">
             <br>
             <p class="help"> * Excluded <u>{{excludedReadingsSummaryList.toString().replace(',' , ', ')}}</u> having
               non-numeric
               readings </p>
-          </ng-container>
+          </ng-container> -->
         </ng-container>
         <ng-container *ngIf="!showSummary">
           <ng-container *ngIf="showGraphSpinner">
@@ -125,11 +125,11 @@
             </plotly-plot>
           </ng-container>
 
-          <ng-container *ngIf="excludedReadingsList.length > 0">
+          <!-- <ng-container *ngIf="excludedReadingsList.length > 0">
             <p class="help"> * Excluded <u>{{excludedReadingsList.toString().replace(',' , ', ')}}</u> having
               non-numeric
               readings </p>
-          </ng-container>
+          </ng-container> -->
         </ng-container>
       </ng-container>
       <p *ngIf='showSummary && !showGraph' class="help has-text-centered"> Summary Not Available </p>
