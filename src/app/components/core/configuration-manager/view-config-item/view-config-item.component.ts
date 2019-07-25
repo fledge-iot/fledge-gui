@@ -31,10 +31,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   public filesToUpload = [];
   public hasEditableConfigItems = true;
   public fileContent = '';
-  public fileName = '';
+  public oldFileName = '';
+  public newFileName = '';
   public isFileUploaded = false;
 
   @ViewChild('textarea') textarea: ElementRef;
+  @ViewChild('fileInput') fileInput: ElementRef;
+
+
   public passwordOnChangeFired = false;
   public passwordMatched = true;
 
@@ -47,6 +51,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   ngOnInit() { }
 
   ngAfterViewChecked() {
+    if (this.fileInput !== undefined) {
+      if (this.fileInput.nativeElement.value === '') {
+        this.newFileName = '';
+      }
+    }
     this.cdRef.detectChanges();
   }
 
@@ -54,7 +63,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     this.filesToUpload = [];
     this.configItems = [];
     this.fileContent = '';
-    this.fileName = '';
     if (changes.categoryConfigurationData) {
       const categoryConfigurationCurrentData = cloneDeep(changes.categoryConfigurationData.currentValue);
       if (categoryConfigurationCurrentData !== undefined) {
@@ -152,7 +160,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     const fi = event.target;
     if (fi.files && fi.files[0]) {
       const file = fi.files[0];
-      this.fileName = file.name;
+      this.newFileName = file.name;
       fileReader.onload = () => {
         this.fileContent = fileReader.result.toString();
       };
@@ -305,15 +313,16 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   }
 
   public getFileName(name: string) {
-    this.fileName = name !== undefined ? name.substr(name.lastIndexOf('/') + 1) : this.fileName;
-    if (this.fileName !== undefined) {
-      this.isFileUploaded = this.fileName.length > 0 ? true : false;
+    this.oldFileName = name !== undefined ? name.substr(name.lastIndexOf('/') + 1) : this.oldFileName;
+    if (this.oldFileName !== '') {
+      this.isFileUploaded = true;
     }
   }
 
   createFileToUpload(data: any) {
     const blob = new Blob([data.value], { type: 'plain/text' });
-    const file = new File([blob], this.fileName.substr(this.fileName.lastIndexOf('_') + 1));
+    const file = new File([blob], this.newFileName !== '' ?
+      this.newFileName : this.oldFileName.substr(this.oldFileName.lastIndexOf('_') + 1));
     return { script: file };
   }
 

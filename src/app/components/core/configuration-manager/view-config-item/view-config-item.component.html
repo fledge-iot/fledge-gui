@@ -85,7 +85,7 @@
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </textarea>
                       <p class="help">
-                        {{fileName != '' ? fileName : configItem?.value?.file | slice:configItem?.value?.file?.lastIndexOf('/')+1}}
+                        {{newFileName != '' ? newFileName : oldFileName}}
                       </p>
                     </div>
 
@@ -97,7 +97,7 @@
                     </div>
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
                       <div class="config-div is-fullwidth">
-                        <input class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}" type="file"
+                        <input #fileInput class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}" type="file"
                           (change)="fileChange($event, configItem.value.key)" />
                       </div>
                     </div>
