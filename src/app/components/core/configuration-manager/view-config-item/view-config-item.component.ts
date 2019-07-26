@@ -1,4 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component, EventEmitter, Input, OnChanges, OnInit,
+  Output, SimpleChanges, ViewChild, ElementRef, ChangeDetectorRef,
+  AfterViewChecked
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash';
 
@@ -10,7 +14,7 @@ import ConfigTypeValidation from '../configuration-type-validation';
   templateUrl: './view-config-item.component.html',
   styleUrls: ['./view-config-item.component.css']
 })
-export class ViewConfigItemComponent implements OnInit, OnChanges {
+export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChecked {
   @Input() categoryConfigurationData: any;
   @Input() useProxy = 'false';
   @Input() useFilterProxy = 'false';
@@ -27,22 +31,38 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
   public filesToUpload = [];
   public hasEditableConfigItems = true;
   public fileContent = '';
-  public fileName = '';
+  public oldFileName = '';
+  public newFileName = '';
+  public isFileUploaded = false;
+
+  @ViewChild('textarea') textarea: ElementRef;
+  @ViewChild('fileInput') fileInput: ElementRef;
+
+
   public passwordOnChangeFired = false;
   public passwordMatched = true;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
-    public ngProgress: ProgressBarService
+    public ngProgress: ProgressBarService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() { }
+
+  ngAfterViewChecked() {
+    if (this.fileInput !== undefined) {
+      if (this.fileInput.nativeElement.value === '') {
+        this.newFileName = '';
+      }
+    }
+    this.cdRef.detectChanges();
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     this.filesToUpload = [];
     this.configItems = [];
     this.fileContent = '';
-    this.fileName = '';
     if (changes.categoryConfigurationData) {
       const categoryConfigurationCurrentData = cloneDeep(changes.categoryConfigurationData.currentValue);
       if (categoryConfigurationCurrentData !== undefined) {
@@ -112,7 +132,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     });
 
     const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, isEqual) : [];
-    let isConfigChanged = false;
+
+    this.filesToUpload = changedConfigValues.map((d) => {
+      if (d.type === 'script') {
+        return this.createFileToUpload(d);
+      }
+    }).filter(f => f !== undefined);
     // condition to check if called from wizard
     if (this.isWizardCall) {
       if (this.filesToUpload.length > 0) {
@@ -123,19 +148,19 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     }
     if (changedConfigValues.length > 0) {
       this.updateConfiguration(this.categoryConfiguration.key, changedConfigValues);
-      isConfigChanged = true;
     }
     if (this.filesToUpload.length > 0) {
-      this.uploadScript(isConfigChanged);
+      this.uploadScript();
     }
   }
 
   public fileChange(event, configItem) {
+    this.isFileUploaded = true;
     const fileReader = new FileReader();
     const fi = event.target;
     if (fi.files && fi.files[0]) {
       const file = fi.files[0];
-      this.fileName = file.name;
+      this.newFileName = file.name;
       fileReader.onload = () => {
         this.fileContent = fileReader.result.toString();
       };
@@ -145,19 +170,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     }
   }
 
-  updateConfiguration(categoryName: string, changedConfig) {
+  updateConfiguration(categoryName: string, changedConfig: any) {
     if (categoryName === undefined) {
       return;
     }
-    changedConfig = changedConfig.map(el => {
-      if (el.type.toUpperCase() === 'JSON') {
-        el.value = JSON.parse(el.value);
+    changedConfig = cloneDeep(changedConfig.map(el => {
+      if (el.type.toUpperCase() !== 'SCRIPT') {
+        if (el.type.toUpperCase() === 'JSON') {
+          el.value = JSON.parse(el.value);
+        }
+        return {
+          [el.key]: el.value !== undefined ? el.value : el.default,
+        };
       }
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
+    })).filter(e => e !== undefined);
     changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
     if (isEmpty(changedConfig)) {
       return;
@@ -196,31 +222,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     return ConfigTypeValidation.getValueType(key);
   }
 
-  public getConfigItem(configItem) {
-    this.configService.getConfigItem(this.categoryConfiguration.key, configItem)
-      .subscribe(data => {
-        this.categoryConfiguration.value.forEach(item => {
-          if (item.key === configItem) {
-            item.value = data['value'];
-            item.description = data['description'];
-            item.key = configItem;
-          }
-        });
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
   /**
    * Method to set ngModal value
    * @param configVal Config value to pass in ngModel
    */
   public setConfigValue(configVal) {
+    if (this.textarea !== undefined) {
+      this.textarea.nativeElement.click();
+    }
     if (configVal.value !== undefined) {
       return configVal.value;
     } else {
@@ -236,30 +245,30 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
     this.isWizardCall = true;
   }
 
-  public uploadScript(isConfigChanged) {
+  public uploadScript() {
     this.filesToUpload.forEach(data => {
       let configItem: any;
       configItem = Object.keys(data)[0];
       const file = data[configItem];
       const formData = new FormData();
       formData.append('script', file);
-      if (!isConfigChanged) {
-        this.ngProgress.start();
-      }
+      this.ngProgress.start();
       this.configService.uploadFile(this.categoryConfiguration.key, configItem, formData)
-        .subscribe(() => {
+        .subscribe((content: any) => {
           this.filesToUpload = [];
-          if (!isConfigChanged) {
-            this.ngProgress.done();
-            this.alertService.success('Configuration updated successfully.', true);
-          }
-          this.getConfigItem(configItem);
+          this.ngProgress.done();
+          this.alertService.success('Configuration updated successfully.', true);
+          // fill configItems with changed data
+          this.configItems.map(obj => {
+            if (obj.key === content.type) {
+              obj.value = content.value;
+              obj.type = content.type;
+            }
+          });
         },
           error => {
             this.filesToUpload = [];
-            if (!isConfigChanged) {
-              this.ngProgress.done();
-            }
+            this.ngProgress.done();
             if (error.status === 0) {
               console.log('service down ', error);
             } else {
@@ -301,6 +310,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges {
       && this.useDeliveryProxy === 'false') {
       return 'false';
     }
+  }
+
+  public getFileName(name: string) {
+    this.oldFileName = name !== undefined ? name.substr(name.lastIndexOf('/') + 1) : this.oldFileName;
+    if (this.oldFileName !== '') {
+      this.isFileUploaded = true;
+    }
+  }
+
+  createFileToUpload(data: any) {
+    const blob = new Blob([data.value], { type: 'plain/text' });
+    const file = new File([blob], this.newFileName !== '' ?
+      this.newFileName : this.oldFileName.substr(this.oldFileName.lastIndexOf('_') + 1));
+    return { script: file };
   }
 
   showConfirmPassword() {

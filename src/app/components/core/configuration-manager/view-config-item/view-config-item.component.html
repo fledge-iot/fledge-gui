@@ -78,13 +78,14 @@
                       [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
-                      <textarea rows="3" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
+                      <textarea #textarea rows="10" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
                         [ngModel]="fileContent || setConfigValue(configItem.value)"
-                        [value]='fileContent || setConfigValue(configItem.value)' disabled>
+                        (click)="getFileName(configItem?.value?.file)"
+                        [value]='fileContent || setConfigValue(configItem.value)' [disabled]="!isFileUploaded">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </textarea>
                       <p class="help">
-                        {{fileName != '' ? fileName : configItem?.value?.file | slice:configItem?.value?.file?.lastIndexOf('/')+1}}
+                        {{newFileName != '' ? newFileName : oldFileName}}
                       </p>
                     </div>
 
@@ -96,7 +97,7 @@
                     </div>
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
                       <div class="config-div is-fullwidth">
-                        <input class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}" type="file"
+                        <input #fileInput class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}" type="file"
                           (change)="fileChange($event, configItem.value.key)" />
                       </div>
                     </div>
