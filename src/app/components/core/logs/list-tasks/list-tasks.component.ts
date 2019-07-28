@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { sortBy } from 'lodash';
 import { interval } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 
 import { AlertService, PingService, SchedulesService, ProgressBarService } from '../../../../services';
 import { POLLING_INTERVAL } from '../../../../utils';
@@ -34,7 +35,7 @@ export class ListTasksComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getLatestTasks();
     interval(this.refreshInterval)
-      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
       .subscribe(() => {
         this.getLatestTasks();
       });

@@ -1,6 +1,8 @@
 import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { orderBy, chain, keys, map } from 'lodash';
 import { interval } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
+
 import { Chart } from 'chart.js';
 
 import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
@@ -162,7 +164,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
     interval(this.graphRefreshInterval)
-      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
       .subscribe(() => {
         this.autoRefresh = true;
         if (this.showSummary) {

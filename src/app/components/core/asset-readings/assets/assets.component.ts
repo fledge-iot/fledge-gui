@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
 import { interval } from 'rxjs';
-
+import { takeWhile } from 'rxjs/operators';
 
 import { AlertService, AssetsService, PingService, GenerateCsvService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
@@ -41,7 +41,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.showLoadingSpinner();
     this.getAsset();
     interval(this.refreshInterval)
-      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
       .subscribe(() => {
         this.getAsset();
       });
@@ -139,7 +139,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   onNotify(event) {
     this.isAlive = event;
     interval(this.refreshInterval)
-      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
       .subscribe(() => {
         this.getAsset();
       });

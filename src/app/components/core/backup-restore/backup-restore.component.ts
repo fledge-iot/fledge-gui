@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { interval } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, ProgressBarService } from '../../../services';
@@ -46,7 +47,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getBackup();
     interval(this.refreshInterval)
-      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
       .subscribe(() => {
         this.getBackup();
       });
