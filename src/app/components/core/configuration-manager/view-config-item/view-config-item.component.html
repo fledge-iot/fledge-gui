@@ -71,7 +71,7 @@
                       [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
                       appNumberOnly />
 
-                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'"
+                    <textarea #jsonField [rows]="getRows(jsonField.value)" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'"
                       class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
                       [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
                       [attr.maxLength]="configItem?.value?.length"

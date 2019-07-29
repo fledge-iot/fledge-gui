@@ -340,4 +340,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
       this.passwordMatched = false;
     }
   }
+
+  getRows(text: String) {
+    return text.length > 300 ? Math.ceil(text.length / 100) : 3;
+  }
 }
