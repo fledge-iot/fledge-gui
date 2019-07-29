@@ -14,6 +14,9 @@ import { ServicesApiService, NotificationsService } from '../../../services';
 import { AddNotificationWizardComponent } from './add-notification-wizard/add-notification-wizard.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ServiceResolver } from '../../../resolver/service.resolver';
+import { NotificationLogComponent } from './notification-log/notification-log.component';
+import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
+import { PaginationModule } from '../../common/pagination/pagination.module';
 
 const routes: Routes = [
   {
@@ -26,13 +29,19 @@ const routes: Routes = [
     path: 'add',
     component: AddNotificationWizardComponent,
     canActivate: [AuthCheckGuard]
-  }
+  },
+  {
+    path: 'logs',
+    component: NotificationLogComponent,
+    canActivate: [AuthCheckGuard]
+  },
 ];
 
 @NgModule({
   declarations: [
     NotificationsComponent,
     AddNotificationWizardComponent,
+    NotificationLogComponent,
     NotificationModalComponent
   ],
   imports: [
@@ -44,7 +53,9 @@ const routes: Routes = [
     PipesModule,
     DirectivesModule,
     FilterModule,
-    SharedModule
+    SharedModule,
+    NumberInputDebounceModule,
+    PaginationModule
   ],
   providers: [ServicesApiService, NotificationsService],
 })

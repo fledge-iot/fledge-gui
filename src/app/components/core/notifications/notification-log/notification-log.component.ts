@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-
-import { AlertService, AuditService, ProgressBarService } from '../../../services';
-import { MAX_INT_SIZE } from '../../../utils';
+import { AlertService, ProgressBarService, AuditService } from '../../../../services';
+import { MAX_INT_SIZE } from '../../../../utils';
 
 @Component({
-  selector: 'app-audit-log',
-  templateUrl: './audit-log.component.html',
-  styleUrls: ['./audit-log.component.css']
+  selector: 'app-notification-log',
+  templateUrl: './notification-log.component.html',
+  styleUrls: ['./notification-log.component.css']
 })
-export class AuditLogComponent implements OnInit {
+export class NotificationLogComponent implements OnInit {
   public logSourceList = [];
   public logSeverityList = [];
-  public audit: any;
+  public notificationLogs: any;
   public totalCount: any;
   public DEFAULT_LIMIT = 20;
   public MAX_RANGE = MAX_INT_SIZE;
@@ -35,7 +34,7 @@ export class AuditLogComponent implements OnInit {
   ngOnInit() {
     this.getLogSource();
     this.getLogSeverity();
-    this.getAuditLogs();
+    this.getNotificationLogs();
   }
 
   /**
@@ -109,14 +108,15 @@ export class AuditLogComponent implements OnInit {
     } else {
       this.tempOffset = ((this.page) - 1) * this.limit;
     }
-    this.getAuditLogs();
+    this.getNotificationLogs();
   }
 
   public getLogSource() {
     this.auditService.getLogSource().
       subscribe(
         (data: any) => {
-          this.logSourceList = data.logCode.filter((log: any) => !(/NTF/.test(log.code)));
+          this.logSourceList = data.logCode
+            .filter((log: any) => /NTF/.test(log.code));
         },
         error => {
           if (error.status === 0) {
@@ -130,8 +130,9 @@ export class AuditLogComponent implements OnInit {
   public getLogSeverity() {
     this.auditService.getLogSeverity().
       subscribe(
-        (data) => {
-          this.logSeverityList = data['logSeverity'];
+        (data: any) => {
+          this.logSeverityList = data.logSeverity;
+          this.severity = this.logSeverityList.find(severity => severity.name.toLowerCase() === 'information').name;
         },
         error => {
           if (error.status === 0) {
@@ -158,7 +159,7 @@ export class AuditLogComponent implements OnInit {
     this.limit = limit;
     console.log('Limit: ', this.limit);
     this.totalPages();
-    this.getAuditLogs();
+    this.getNotificationLogs();
   }
 
   public setOffset(offset: number) {
@@ -178,17 +179,7 @@ export class AuditLogComponent implements OnInit {
     console.log('Offset: ', this.offset);
     this.tempOffset = offset;
     this.totalPages();
-    this.getAuditLogs();
-  }
-
-  public getAuditLogs(): void {
-    if (this.limit == null) {
-      this.limit = 0;
-    }
-    if (this.offset == null) {
-      this.offset = 0;
-    }
-    this.auditLogSubscriber();
+    this.getNotificationLogs();
   }
 
   public filterSource(type: string, code: string) {
@@ -206,10 +197,16 @@ export class AuditLogComponent implements OnInit {
     if (type === 'severity') {
       this.severity = code.trim().toLowerCase() === 'severity' ? '' : code.trim().toLowerCase();
     }
-    this.auditLogSubscriber();
+    this.getNotificationLogs();
   }
 
-  auditLogSubscriber() {
+  getNotificationLogs() {
+    if (this.limit == null) {
+      this.limit = 0;
+    }
+    if (this.offset == null) {
+      this.offset = 0;
+    }
     /** request started */
     this.progress.start();
     this.auditService.getAuditLogs(this.limit, this.tempOffset, this.source, this.severity).
@@ -217,8 +214,9 @@ export class AuditLogComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.progress.done();
-          this.audit = data.audit.filter((log: any) => !(/NTF/.test(log.source)));
-          this.totalCount = data.totalCount;
+          this.notificationLogs = data.audit
+            .filter((log: any) => /NTF/.test(log.source));
+          this.totalCount = this.notificationLogs.length;
           if (this.offset !== 0) {
             this.recordCount = this.totalCount - this.offset;
           } else {
@@ -235,5 +233,14 @@ export class AuditLogComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  filterByName(name: string) {
+    if (!name) {
+      this.getNotificationLogs();
+    } else {
+      this.notificationLogs = this.notificationLogs.filter((log: any) =>
+        log.details.name.trim().toLowerCase().includes(name.trim().toLowerCase()));
+    }
   }
 }
