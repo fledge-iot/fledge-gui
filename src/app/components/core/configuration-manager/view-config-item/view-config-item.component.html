@@ -77,12 +77,13 @@
                         [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
                         [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
-                      <a class="button is-small is-text" (click)="toggleJsonPreview()">
+                      <a id="btn-toggle" class="button is-small is-text" (click)="toggleJsonPreview()">
                         preview
                       </a>
 
                       <div *ngIf="jsonField && expanded
-                      && !f?.controls[configItem.value.key]?.hasError('jsonValue')" class="is-fullwidth is-small">
+                      && !f?.controls[configItem.value.key]?.hasError('jsonValue')"
+                        class="is-fullwidth animated slideInDown">
                         <pre>{{previewJSON(jsonField.value)}}</pre>
                       </div>
                     </ng-container>
