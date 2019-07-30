@@ -34,7 +34,6 @@ export class NotificationLogComponent implements OnInit {
   ngOnInit() {
     this.getLogSource();
     this.getLogSeverity();
-    this.getNotificationLogs();
   }
 
   /**
@@ -117,6 +116,8 @@ export class NotificationLogComponent implements OnInit {
         (data: any) => {
           this.logSourceList = data.logCode
             .filter((log: any) => /NTF/.test(log.code));
+          this.source = this.logSourceList.find((source: any) => source.code === 'NTFSN').code;
+          this.getNotificationLogs();
         },
         error => {
           if (error.status === 0) {
@@ -216,7 +217,7 @@ export class NotificationLogComponent implements OnInit {
           this.progress.done();
           this.notificationLogs = data.audit
             .filter((log: any) => /NTF/.test(log.source));
-          this.totalCount = this.notificationLogs.length;
+          this.totalCount = data.totalCount;
           if (this.offset !== 0) {
             this.recordCount = this.totalCount - this.offset;
           } else {
