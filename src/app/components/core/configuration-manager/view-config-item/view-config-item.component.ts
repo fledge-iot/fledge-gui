@@ -34,6 +34,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   public oldFileName = '';
   public newFileName = '';
   public isFileUploaded = false;
+  public expanded = false;
 
   @ViewChild('textarea') textarea: ElementRef;
   @ViewChild('fileInput') fileInput: ElementRef;
@@ -341,7 +342,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     }
   }
 
-  getRows(text: String) {
+  getRows(text: string) {
     return text.length > 300 ? Math.ceil(text.length / 100) : 3;
+  }
+
+  previewJSON(json: string) {
+    try {
+      const jsonObj = JSON.parse(json);
+      return JSON.stringify(jsonObj, undefined, 2);
+    } catch (e) {
+      return;
+    }
+  }
+
+  toggleJsonPreview() {
+    this.expanded = !this.expanded;
   }
 }

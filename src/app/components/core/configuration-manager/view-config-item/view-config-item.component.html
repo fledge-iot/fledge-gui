@@ -71,15 +71,24 @@
                       [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
                       appNumberOnly />
 
-                    <textarea #jsonField [rows]="getRows(jsonField.value)" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'"
-                      class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
-                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      [attr.maxLength]="configItem?.value?.length"
-                      [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
+                    <ng-container *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'">
+                      <textarea #jsonField [rows]="getRows(jsonField.value)" class="textarea is-fullwidth is-small"
+                        name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)"
+                        [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
+                        [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
 
+                      <a class="button is-small is-text" (click)="toggleJsonPreview()">
+                        preview
+                      </a>
+
+                      <div *ngIf="jsonField && expanded
+                      && !f?.controls[configItem.value.key]?.hasError('jsonValue')" class="is-fullwidth is-small">
+                        <pre>{{previewJSON(jsonField.value)}}</pre>
+                      </div>
+                    </ng-container>
                     <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
-                      <textarea #textarea rows="10" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
-                        [ngModel]="fileContent || setConfigValue(configItem.value)"
+                      <textarea #textarea rows="10" class="textarea is-fullwidth is-small"
+                        name="{{configItem.value.key}}" [ngModel]="fileContent || setConfigValue(configItem.value)"
                         (click)="getFileName(configItem?.value?.file)"
                         [value]='fileContent || setConfigValue(configItem.value)' [disabled]="!isFileUploaded">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
@@ -97,8 +106,8 @@
                     </div>
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
                       <div class="config-div is-fullwidth">
-                        <input #fileInput class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}" type="file"
-                          (change)="fileChange($event, configItem.value.key)" />
+                        <input #fileInput class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}"
+                          type="file" (change)="fileChange($event, configItem.value.key)" />
                       </div>
                     </div>
 
