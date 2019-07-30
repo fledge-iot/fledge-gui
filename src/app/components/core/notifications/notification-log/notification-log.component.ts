@@ -158,7 +158,6 @@ export class NotificationLogComponent implements OnInit {
       limit = this.DEFAULT_LIMIT;
     }
     this.limit = limit;
-    console.log('Limit: ', this.limit);
     this.totalPages();
     this.getNotificationLogs();
   }
@@ -177,7 +176,6 @@ export class NotificationLogComponent implements OnInit {
       offset = 0;
     }
     this.offset = offset;
-    console.log('Offset: ', this.offset);
     this.tempOffset = offset;
     this.totalPages();
     this.getNotificationLogs();
