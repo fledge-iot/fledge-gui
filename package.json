@@ -33,6 +33,7 @@
     "animate.css": "^3.7.2",
     "chart.js": "~2.8.0",
     "core-js": "^2.6.9",
+    "jsoneditor": "^6.2.0",
     "moment": "~2.23.0",
     "ng-sidebar": "~8.0.0",
     "ngx-select-dropdown": "^1.0.1",

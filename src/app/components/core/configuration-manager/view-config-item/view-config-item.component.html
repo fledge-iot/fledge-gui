@@ -72,21 +72,12 @@
                       appNumberOnly />
 
                     <ng-container *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'">
-                      <textarea #jsonField [rows]="getRows(jsonField.value)" class="textarea is-fullwidth is-small"
-                        name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)"
-                        [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
-                        [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
-
-                      <a id="btn-toggle" class="button is-small is-text" (click)="toggleJsonPreview()">
-                        preview
-                      </a>
-
-                      <div *ngIf="jsonField && expanded
-                      && !f?.controls[configItem.value.key]?.hasError('jsonValue')"
-                        class="is-fullwidth animated slideInDown">
-                        <pre>{{previewJSON(jsonField.value)}}</pre>
-                      </div>
+                      <json-editor #editor [options]="editorOptions" [data]="configItem?.value?.value">
+                      </json-editor>
+                      <input class="input" type="hidden" name="{{configItem.value.key}}" [ngModel]="editor.getText()"
+                        [jsonValue]="setConfigValue(configItem.value)" />
                     </ng-container>
+
                     <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
                       <textarea #textarea rows="10" class="textarea is-fullwidth is-small"
                         name="{{configItem.value.key}}" [ngModel]="fileContent || setConfigValue(configItem.value)"

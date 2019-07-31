@@ -8,6 +8,7 @@ import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash
 
 import { AlertService, ConfigurationService, ProgressBarService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
+import { JsonEditorComponent, JsonEditorOptions } from '../../../common/json-editor/json-editor.component';
 
 @Component({
   selector: 'app-view-config-item',
@@ -39,6 +40,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   @ViewChild('textarea') textarea: ElementRef;
   @ViewChild('fileInput') fileInput: ElementRef;
 
+  @ViewChild(JsonEditorComponent) editor: JsonEditorComponent;
+  public editorOptions: JsonEditorOptions;
 
   public passwordOnChangeFired = false;
   public passwordMatched = true;
@@ -47,7 +50,17 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private cdRef: ChangeDetectorRef
-  ) { }
+  ) {
+    this.editorOptions = new JsonEditorOptions();
+    this.editorOptions.mode = 'code';
+    // this.options.modes = ['code', 'text', 'tree', 'view'];
+    this.editorOptions.mainMenuBar = false;
+    this.editorOptions.onChange = () => {
+      try {
+          this.editor.isValidJson();
+      } catch {}
+};
+  }
 
   ngOnInit() { }
 
@@ -342,20 +355,4 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     }
   }
 
-  getRows(text: string) {
-    return text.length > 300 ? Math.ceil(text.length / 100) : 3;
-  }
-
-  previewJSON(json: string) {
-    try {
-      const jsonObj = JSON.parse(json);
-      return JSON.stringify(jsonObj, undefined, 2);
-    } catch (e) {
-      return;
-    }
-  }
-
-  toggleJsonPreview() {
-    this.expanded = !this.expanded;
-  }
 }
