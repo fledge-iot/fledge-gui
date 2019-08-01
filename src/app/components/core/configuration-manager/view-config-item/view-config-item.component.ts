@@ -4,7 +4,7 @@ import {
   AfterViewChecked
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has, xorWith } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash';
 
 import { AlertService, ConfigurationService, ProgressBarService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -135,7 +135,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
       };
     });
 
-    const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, isEqual) : [];
+    const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, (newConfig, oldConfig) => {
+      if (newConfig.type === 'JSON' && oldConfig.type === 'JSON') {
+        return isEqual(JSON.parse(newConfig.value), JSON.parse(oldConfig.value));
+      }
+      return isEqual(newConfig, oldConfig);
+    }) : [];
 
     this.filesToUpload = changedConfigValues.map((d) => {
       if (d.type === 'script') {
