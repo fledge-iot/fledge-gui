@@ -97,6 +97,7 @@ protractor-beautiful-reporter |  1.2.8       |  1.2.8                | MIT
 node-git-describe | 4.0.4     | 4.0.4        | MIT
 angular-plotly.js | 1.3.2     | 1.3.2        | MIT
 plotly.js         | 1.48.1    | 1.48.1       | MIT
+jsoneditor        | 6.2.0     | 6.2.0        | Apache-2.0
 
 ## Update Dependencies
 * `npm update`: By running this command, npm checks if there exist newer versions in the repository that satisfy specified semantic versioning ranges and installs them.
