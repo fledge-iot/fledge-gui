@@ -31,16 +31,6 @@
   }
 }
 
-pre {
-  width: 100%;
-  white-space: pre-wrap;
-  white-space: -moz-pre-wrap !important;
-  white-space: -pre-wrap;
-  white-space: -o-pre-wrap;
-  word-wrap: break-word;
-}
-
-
 :host ::ng-deep json-editor div.jsoneditor {
   border: thin solid lightgray !important;
 }
@@ -49,10 +39,6 @@ pre {
 :host ::ng-deep json-editor > div,
 :host ::ng-deep json-editor jsoneditor-outer {
   height: 21rem;
-}
-
-#btn-toggle {
-  padding-left: 0%;
 }
 
 .config-div {

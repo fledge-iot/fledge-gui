@@ -4,7 +4,7 @@ import {
   AfterViewChecked
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash';
+import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has, xorWith } from 'lodash';
 
 import { AlertService, ConfigurationService, ProgressBarService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -35,7 +35,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   public oldFileName = '';
   public newFileName = '';
   public isFileUploaded = false;
-  public expanded = false;
 
   @ViewChild('textarea') textarea: ElementRef;
   @ViewChild('fileInput') fileInput: ElementRef;
@@ -57,9 +56,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     this.editorOptions.mainMenuBar = false;
     this.editorOptions.onChange = () => {
       try {
-          this.editor.isValidJson();
-      } catch {}
-};
+        this.editor.isValidJson();
+      } catch { }
+    };
   }
 
   ngOnInit() { }
@@ -131,18 +130,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     const formData = Object.keys(form.value).map(key => {
       return {
         key: key,
-        value: form.value[key] === null ? '0' : form.value[key].toString()
+        value: form.value[key] === null ? '0' : form.value[key].toString(),
+        type: this.configItems.find(conf => key === conf.key).type
       };
-    });
-
-    formData.map(d => {
-      return this.configItems.map(conf => {
-        if (conf.key === d.key) {
-          d['type'] = conf.type;  // there is no key 'type' in the object
-          d.value = d.value.toString();
-        }
-        return d;
-      });
     });
 
     const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, isEqual) : [];

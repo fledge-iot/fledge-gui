@@ -26,7 +26,6 @@ export class JsonEditorComponent implements ControlValueAccessor, OnInit {
   public id = 'angjsoneditor' + Math.floor(Math.random() * 1000000);
   public name = 'angjsoneditor';
   disabled = false;
-  isFocused = false;
 
   public optionsChanged = false;
 

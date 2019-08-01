@@ -2,9 +2,9 @@
 export type JsonEditorMode = 'tree' | 'view' | 'form' | 'code' | 'text';
 
 export interface JsonEditorTreeNode {
-  field: String,
-  value: String,
-  path: String[]
+  field: String;
+  value: String;
+  path: String[];
 }
 
 export interface IError {
