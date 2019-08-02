@@ -8,6 +8,7 @@ import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has } from 'lodash
 
 import { AlertService, ConfigurationService, ProgressBarService } from '../../../../services';
 import ConfigTypeValidation from '../configuration-type-validation';
+import { JsonEditorComponent, JsonEditorOptions } from '../../../common/json-editor/json-editor.component';
 
 @Component({
   selector: 'app-view-config-item',
@@ -38,6 +39,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   @ViewChild('textarea') textarea: ElementRef;
   @ViewChild('fileInput') fileInput: ElementRef;
 
+  @ViewChild(JsonEditorComponent) editor: JsonEditorComponent;
+  public editorOptions: JsonEditorOptions;
 
   public passwordOnChangeFired = false;
   public passwordMatched = true;
@@ -46,7 +49,17 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private cdRef: ChangeDetectorRef
-  ) { }
+  ) {
+    this.editorOptions = new JsonEditorOptions();
+    this.editorOptions.mode = 'code';
+    // this.options.modes = ['code', 'text', 'tree', 'view'];
+    this.editorOptions.mainMenuBar = false;
+    this.editorOptions.onChange = () => {
+      try {
+        this.editor.isValidJson();
+      } catch { }
+    };
+  }
 
   ngOnInit() { }
 
@@ -117,21 +130,17 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     const formData = Object.keys(form.value).map(key => {
       return {
         key: key,
-        value: form.value[key] === null ? '0' : form.value[key].toString()
+        value: form.value[key] === null ? '0' : form.value[key].toString(),
+        type: this.configItems.find(conf => key === conf.key).type
       };
     });
 
-    formData.map(d => {
-      return this.configItems.map(conf => {
-        if (conf.key === d.key) {
-          d['type'] = conf.type;  // there is no key 'type' in the object
-          d.value = d.value.toString();
-        }
-        return d;
-      });
-    });
-
-    const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, isEqual) : [];
+    const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, (newConfig, oldConfig) => {
+      if (newConfig.type === 'JSON' && oldConfig.type === 'JSON') {
+        return isEqual(JSON.parse(newConfig.value), JSON.parse(oldConfig.value));
+      }
+      return isEqual(newConfig, oldConfig);
+    }) : [];
 
     this.filesToUpload = changedConfigValues.map((d) => {
       if (d.type === 'script') {
@@ -340,4 +349,5 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
       this.passwordMatched = false;
     }
   }
+
 }
