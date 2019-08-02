@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnChanges, Output, EventEmitter } from '@angu
 import { isEmpty } from 'lodash';
 
 import { ServicesApiService, AlertService, ProgressBarService } from '../../../services';
-
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-plugin-modal',
@@ -21,6 +21,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
     noResultsFound: 'No plugin found!',
     searchPlaceholder: 'Search',
   };
+  private PACKAGE_LOG_URL = environment.BASE_URL + 'package/';
 
   installButtonEnabled = true;
 
@@ -101,7 +102,9 @@ export class PluginModalComponent implements OnInit, OnChanges {
           } else if (error.status === 404) {
             this.alertService.error('Make sure package repository is configured / added in FogLAMP');
           } else {
-            this.alertService.error(error.statusText);
+            const errorText = error.statusText  + ' <a href=' + this.PACKAGE_LOG_URL + error.error.link + '>'
+            +  error.error.link + '</a>';
+            this.alertService.error(errorText);
           }
         }
       );
@@ -139,7 +142,9 @@ export class PluginModalComponent implements OnInit, OnChanges {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
+            const errorText = error.statusText  + ' <a href=' + this.PACKAGE_LOG_URL + error.error.link + '>'
+            +  error.error.link + '</a>';
+            this.alertService.error(errorText);
           }
         },
         () => {

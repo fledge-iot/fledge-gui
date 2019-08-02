@@ -1,0 +1,44 @@
+<div class="container is-fluid">
+  <div class="card">
+    <header class="card-header">
+      <p id="scheduled-process" class="card-header-title">
+        Package Logs &nbsp;
+        <button (click)="getPackagesLog()" class="button is-small">
+          <i class="fa fa-sync" aria-hidden="true"></i>
+        </button>
+      </p>
+    </header>
+    <div class="card-content">
+      <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of logList">
+            <td style="vertical-align: middle;">
+              <small>
+                {{ log.timestamp }}
+              </small>
+            </td>
+            <td style="vertical-align: middle;">
+              {{ log.name ? log.name : 'update' }}
+            </td>
+            <td>
+              <a (click)="showLogs(log.filename)" class="button is-text">
+                view
+              </a>
+            </td>
+            <td>
+              <a (click)="downloadLogs(log.filename)" class="button is-text">
+                download
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
