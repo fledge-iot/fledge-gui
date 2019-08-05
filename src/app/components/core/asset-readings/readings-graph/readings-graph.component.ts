@@ -152,13 +152,13 @@ export class ReadingsGraphComponent implements OnDestroy {
       (data: any) => {
         this.showSpinner = false;
         this.assetReadingSummary = data
-        .map(o => {
-          const k = Object.keys(o)[0];
-          return {
-            name: k,
-            value: [o[k]]
-          };
-        }).filter(value => value !== undefined);
+          .map(o => {
+            const k = Object.keys(o)[0];
+            return {
+              name: k,
+              value: [o[k]]
+            };
+          }).filter(value => value !== undefined);
 
         this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
         if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
@@ -246,6 +246,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.selectedTab = 3;
     } else if (this.arrayTypeReadingsList.length > 0 && this.numberTypeReadingsList.length === 0) {
       this.selectedTab = 2;
+      this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
     }
   }
 
@@ -382,7 +383,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  createFFTGraph(readings: any, timestamps: any) {
+  create3DGraph(readings: any, timestamps: any) {
     this.polyGraphData = {
       data: [
         {
@@ -409,7 +410,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         },
       ],
       layout: {
-        title: 'FFT spectrum',
+        title: this.assetCode,
         showlegend: true,
         autoSize: true,
         margin: {
@@ -427,8 +428,13 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   selectTab(id: number) {
+    console.log('length', this.numberTypeReadingsList.length);
+
     this.showSpinner = true;
     this.selectedTab = id;
+    if (this.selectedTab === 2) {
+      this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
+    }
   }
 
   showHideTab() {
