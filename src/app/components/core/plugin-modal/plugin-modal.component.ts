@@ -102,12 +102,10 @@ export class PluginModalComponent implements OnInit, OnChanges {
           } else if (error.status === 404) {
             this.alertService.error('Make sure package repository is configured / added in FogLAMP');
           } else {
-            let errorText;
+            let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
-              errorText = error.statusText  + ' <a href=' + this.PACKAGE_LOG_URL + error.error.link + '>'
-              +  error.error.link + '</a>';
-            } else {
-              errorText = error.statusText;
+              errorText += ' <a href=' + this.PACKAGE_LOG_URL + error.error.link + '>'
+              + error.error.link + '</a>';
             }
             this.alertService.error(errorText);
           }
@@ -147,12 +145,10 @@ export class PluginModalComponent implements OnInit, OnChanges {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            let errorText;
+            let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
-              errorText = error.statusText  + ' <a href=' + this.PACKAGE_LOG_URL + error.error.link + '>'
-              +  error.error.link + '</a>';
-            } else {
-              errorText = error.statusText;
+              errorText += ' <a href=' + this.PACKAGE_LOG_URL + error.error.link + '>'
+              + error.error.link + '</a>';
             }
             this.alertService.error(errorText);
           }
