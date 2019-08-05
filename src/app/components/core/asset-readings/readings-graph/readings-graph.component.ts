@@ -102,6 +102,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
+    this.showSpinner = true;
     this.optedTime = time;
     if (this.optedTime === 0) {
       if (this.selectedTab === 4) {
@@ -428,8 +429,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   selectTab(id: number) {
-    console.log('length', this.numberTypeReadingsList.length);
-
     this.showSpinner = true;
     this.selectedTab = id;
     if (this.selectedTab === 2) {
@@ -438,7 +437,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   showHideTab() {
-    return !(this.stringTypeReadingsList.length > 0 && this.numberTypeReadingsList.length === 0);
+    return this.numberTypeReadingsList.length;
   }
 
   public ngOnDestroy(): void {
