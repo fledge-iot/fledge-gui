@@ -67,7 +67,7 @@
                     <span><b>Tabular Data</b></span>
                   </a>
                 </li>
-                <li *ngIf="showHideTab()" [ngClass]="{'is-active': selectedTab == 4}" data-tab="4">
+                <li *ngIf="showSummaryTab()" [ngClass]="{'is-active': selectedTab == 4}" data-tab="4">
                   <a (click)="selectTab(4)">
                     <span class="icon is-small"><i class="fa fa-file-text-o"></i></span>
                     <span><b>Summary</b></span>

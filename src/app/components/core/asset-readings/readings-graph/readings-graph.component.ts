@@ -436,7 +436,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  showHideTab() {
+  showSummaryTab() {
     return this.numberTypeReadingsList.length;
   }
 
