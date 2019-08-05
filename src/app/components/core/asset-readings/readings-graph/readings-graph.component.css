@@ -43,6 +43,10 @@ tbody {
   line-height: 0.5;
 }
 
+.data-table {
+  width: 50%;
+}
+
 .app-loading {
   min-height: 50vh;
 }

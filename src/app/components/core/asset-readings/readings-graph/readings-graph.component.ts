@@ -17,7 +17,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public assetChartType: string;
   public assetReadingValues: any;
   public assetChartOptions: any;
-  public showGraph = true;
+  public loadPage = true;
   public assetReadingSummary = [];
   public isInvalidLimit = false;
   public MAX_RANGE = MAX_INT_SIZE;
@@ -31,27 +31,18 @@ export class ReadingsGraphComponent implements OnDestroy {
   public summaryLimit = 5;
   public buttonText = '';
   public autoRefresh = false;
-  public showGraphSpinner = true;
-  public showSummarySpinner = true;
+  public showSpinner = false;
   public polyGraphData: any;
-  public showSummary = false;
   public timeDropDownOpened = false;
-  public SHOW_SUMMARY_TEXT = 'Show Summary';
-  public SHOW_GRAPH_TEXT = 'Show Graph';
-  public toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
-
-  public excludedReadingsList = [];
-  public excludedReadingsSummaryList = [];
 
   public numberTypeReadingsList = [];
   public stringTypeReadingsList = [];
   public arrayTypeReadingsList = [];
   public selectedTab = 1;
   public timestamps = [];
-
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
@@ -83,20 +74,12 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   public toggleModal(shouldOpen: Boolean) {
     // reset all variable and array to default state
-    this.showGraph = true;
     this.assetReadingSummary = [];
     this.buttonText = '';
     this.assetReadingValues = [];
     this.summaryLimit = 5;
     this.readKeyColorLabel = [];
-    this.showGraphSpinner = true;
-    this.showSummarySpinner = true;
-    this.excludedReadingsList = [];
-    this.excludedReadingsSummaryList = [];
     this.assetChartOptions = {};
-    this.showSummary = false;
-    this.toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
-
     sessionStorage.removeItem(this.assetCode);
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
@@ -121,14 +104,14 @@ export class ReadingsGraphComponent implements OnDestroy {
   getTimeBasedAssetReadingsAndSummary(time) {
     this.optedTime = time;
     if (this.optedTime === 0) {
-      if (this.showSummary) {
+      if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
       } else {
         this.plotReadingsGraph(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
       }
     } else {
       this.limit = 0;
-      if (this.showSummary) {
+      if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.limit, time);
       } else {
         this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
@@ -138,6 +121,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public getAssetCode(assetCode: string) {
+    this.selectedTab = 1;
+    this.loadPage = true;
     this.notify.emit(false);
     if (this.graphRefreshInterval === -1) {
       this.isAlive = false;
@@ -154,42 +139,36 @@ export class ReadingsGraphComponent implements OnDestroy {
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
         this.autoRefresh = true;
-        this.selectTab(this.selectedTab);
-        // this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+        if (this.selectedTab === 4) {
+          this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+        } else {
+          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+        }
       });
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
-        this.excludedReadingsSummaryList = [];
-        this.assetReadingSummary = data.map(o => {
+        this.showSpinner = false;
+        this.assetReadingSummary = data
+        .map(o => {
           const k = Object.keys(o)[0];
-          if (isNaN(o[k]['max']) || isNaN(o[k]['min'])) {
-            if (!this.excludedReadingsSummaryList.includes(k)) {
-              this.excludedReadingsSummaryList.push(k);
-            }
-          } else {
-            return {
-              name: k,
-              value: [o[k]]
-            };
-          }
+          return {
+            name: k,
+            value: [o[k]]
+          };
         }).filter(value => value !== undefined);
-        this.showSummarySpinner = false;
-        if (this.assetReadingSummary.length === 0 && this.excludedReadingsSummaryList.length >= 1) {
-          this.showGraph = false;
-        } else {
-          this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
-            this.buttonText = 'Show All';
-          }
-          if (this.assetReadingSummary.length <= 5) {
-            this.buttonText = '';
-          }
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
-            this.buttonText = 'Show Less';
-          }
+
+        this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
+          this.buttonText = 'Show All';
+        }
+        if (this.assetReadingSummary.length <= 5) {
+          this.buttonText = '';
+        }
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
+          this.buttonText = 'Show Less';
         }
       },
       error => {
@@ -217,8 +196,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
+          this.loadPage = false;
+          this.showSpinner = false;
           this.getReadings(data);
-          this.showGraphSpinner = false;
         },
         error => {
           console.log('error in response', error);
@@ -243,7 +223,8 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (typeof value === 'string') {
           strReadings.push({
             key: k,
-            read: { x: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'), y: value }
+            timestamp: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'),
+            data: value
           });
         }
         if (Array.isArray(value)) {
@@ -256,15 +237,15 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
-    this.stringTypeReadingsList = strReadings.length > 0 ? this.mergeObjects(strReadings) : [];
+    this.stringTypeReadingsList = strReadings;
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
-
     if (this.numberTypeReadingsList.length > 0) {
       this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
     }
-
-    if (this.stringTypeReadingsList.length > 0) {
-      // this.statsAssetReadingsGraph(this.stringTypeReadingsList, timestamps);
+    if (this.stringTypeReadingsList.length > 0 && this.numberTypeReadingsList.length === 0) {
+      this.selectedTab = 3;
+    } else if (this.arrayTypeReadingsList.length > 0 && this.numberTypeReadingsList.length === 0) {
+      this.selectedTab = 2;
     }
   }
 
@@ -446,24 +427,12 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   selectTab(id: number) {
+    this.showSpinner = true;
     this.selectedTab = id;
-    switch (this.selectedTab) {
-      case 1:
-        console.log(this.selectTab);
-        this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
-        break;
-      case 2:
-        this.createFFTGraph(this.arrayTypeReadingsList, this.timestamps);
-        break;
-      case 3:
-        break;
-      case 4:
-        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-        break;
-      default:
-        this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
-        break;
-    }
+  }
+
+  showHideTab() {
+    return !(this.stringTypeReadingsList.length > 0 && this.numberTypeReadingsList.length === 0);
   }
 
   public ngOnDestroy(): void {
