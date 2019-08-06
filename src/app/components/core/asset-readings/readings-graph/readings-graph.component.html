@@ -140,7 +140,7 @@
                                 <span class="tag is-info">{{isNumber(reading.average)
                             ?
                             roundTo(reading.average,
-                            5) : reading.average }}
+                            5) : reading.average.toString().substring(0,6)}}
                                 </span>
                               </div>
                             </td>
@@ -148,14 +148,14 @@
                               <div class="tags has-addons">
                                 <span class="tag is-light"> Min </span>
                                 <span class="tag is-info">{{isNumber(reading.min) ?
-                            roundTo(reading.min, 5) : reading.min}}</span>
+                            roundTo(reading.min, 5) : reading.min.toString().substring(0,6)}}</span>
                               </div>
                             </td>
                             <td>
                               <div class="tags has-addons">
                                 <span class="tag is-light"> Max </span>
                                 <span class="tag is-info">{{isNumber(reading.max) ?
-                            roundTo(reading.max, 5): reading.max}}</span>
+                            roundTo(reading.max, 5): reading.max.toString().substring(0,6)}}</span>
                               </div>
                             </td>
                           </ng-container>
