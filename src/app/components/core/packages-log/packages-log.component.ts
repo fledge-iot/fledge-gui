@@ -26,9 +26,7 @@ export class PackagesLogComponent implements OnInit {
     subscribe(
       (data) => {
         this.ngProgress.done();
-        this.logList = sortBy(data['logs'], function (obj) {
-          return obj.timestamp;
-        }).reverse();
+        this.logList = sortBy(data['logs'], (obj) => obj.timestamp).reverse();
       },
       error => {
         this.ngProgress.done();

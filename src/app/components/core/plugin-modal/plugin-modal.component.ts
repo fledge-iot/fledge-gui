@@ -104,8 +104,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
-              errorText += ' <a href=' + this.PACKAGE_LOG_URL + error.error.link + '>'
-              + error.error.link + '</a>';
+              errorText += ` <a href= ${this.PACKAGE_LOG_URL}${error.error.link}>${error.error.link}</a>`;
             }
             this.alertService.error(errorText);
           }
@@ -147,8 +146,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
-              errorText += ' <a href=' + this.PACKAGE_LOG_URL + error.error.link + '>'
-              + error.error.link + '</a>';
+              errorText += ` <a href= ${this.PACKAGE_LOG_URL}${error.error.link}>${error.error.link}</a>`;
             }
             this.alertService.error(errorText);
           }
