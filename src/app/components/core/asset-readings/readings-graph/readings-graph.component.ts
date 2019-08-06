@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { orderBy, chain, map } from 'lodash';
 import { interval } from 'rxjs';
 import { Chart } from 'chart.js';
@@ -34,6 +34,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public showSpinner = false;
   public polyGraphData: any;
   public timeDropDownOpened = false;
+  public isModalOpened = false;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
@@ -102,7 +103,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getTimeBasedAssetReadingsAndSummary(time) {
-    this.showSpinner = true;
     this.optedTime = time;
     if (this.optedTime === 0) {
       if (this.selectedTab === 4) {
@@ -122,6 +122,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public getAssetCode(assetCode: string) {
+    this.isModalOpened = true;
     this.selectedTab = 1;
     this.loadPage = true;
     this.notify.emit(false);
@@ -197,8 +198,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
-          this.loadPage = false;
           this.showSpinner = false;
+          this.loadPage = false;
           this.getReadings(data);
         },
         error => {
@@ -240,13 +241,22 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
     this.stringTypeReadingsList = strReadings;
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
-    if (this.numberTypeReadingsList.length > 0) {
-      this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
+
+    while (this.isModalOpened) {
+      if (this.numberTypeReadingsList.length > 0) {
+        this.selectedTab = 1;
+      } else if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      } else if (this.stringTypeReadingsList.length > 0) {
+        this.selectedTab = 3;
+      }
+      this.showSpinner = false;
+      this.isModalOpened = false;
     }
-    if (this.stringTypeReadingsList.length > 0 && this.numberTypeReadingsList.length === 0) {
-      this.selectedTab = 3;
-    } else if (this.arrayTypeReadingsList.length > 0 && this.numberTypeReadingsList.length === 0) {
-      this.selectedTab = 2;
+
+    if (this.selectedTab === 1) {
+      this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
+    } else if (this.selectedTab === 2) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
     }
   }
@@ -431,8 +441,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   selectTab(id: number) {
     this.showSpinner = true;
     this.selectedTab = id;
-    if (this.selectedTab === 2) {
-      this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
+    if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
+      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    } else if (this.graphRefreshInterval === -1) {
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     }
   }
 
