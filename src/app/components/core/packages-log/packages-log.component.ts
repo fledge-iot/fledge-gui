@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertService, PackagesLogService, ProgressBarService } from '../../../services';
 import { sortBy } from 'lodash';
+import { ViewLogsComponent } from './view-logs/view-logs.component';
 
 @Component({
   selector: 'app-packages-log',
@@ -9,7 +10,8 @@ import { sortBy } from 'lodash';
 })
 export class PackagesLogComponent implements OnInit {
   public logList = [];
-  public logContent;
+
+  @ViewChild(ViewLogsComponent) viewLogsModal: ViewLogsComponent;
 
   constructor(private packagesLogService: PackagesLogService,
     private ngProgress: ProgressBarService,
@@ -40,15 +42,7 @@ export class PackagesLogComponent implements OnInit {
       });
   }
 
-  public async showLogs(logLink): Promise<void> {
-    const logContent = await this.packagesLogService.getLog(logLink);
-    const file = new Blob([logContent], {type: 'text/plain'});
-    const url = window.URL.createObjectURL(file);
-    const tab = window.open();
-    tab.location.href = url;
-  }
-
-  public async downloadLogs(logLink): Promise<void> {
+  public async downloadLogs(logLink: string): Promise<void> {
     const blob = await this.packagesLogService.getLog(logLink);
     const url = window.URL.createObjectURL(blob);
     // create a custom anchor tag
@@ -58,6 +52,14 @@ export class PackagesLogComponent implements OnInit {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }
+
+  /**
+   * toggle view logs modal and pass info
+   * @param logLink link of the log to show
+   */
+  public showLogs(logLink: string) {
+    this.viewLogsModal.toggleModal(true, logLink);
   }
 
 }
