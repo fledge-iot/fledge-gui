@@ -1,5 +1,5 @@
-import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { orderBy, chain, keys, map } from 'lodash';
+import { Component, EventEmitter, OnDestroy, Output, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { orderBy, chain, map } from 'lodash';
 import { interval } from 'rxjs';
 import { Chart } from 'chart.js';
 
@@ -17,7 +17,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public assetChartType: string;
   public assetReadingValues: any;
   public assetChartOptions: any;
-  public showGraph = true;
+  public loadPage = true;
   public assetReadingSummary = [];
   public isInvalidLimit = false;
   public MAX_RANGE = MAX_INT_SIZE;
@@ -31,21 +31,19 @@ export class ReadingsGraphComponent implements OnDestroy {
   public summaryLimit = 5;
   public buttonText = '';
   public autoRefresh = false;
-  public showGraphSpinner = true;
-  public showSummarySpinner = true;
-  public isSpectrum = false;
-  public polyGraphData = {};
-  public showSummary = false;
+  public showSpinner = false;
+  public polyGraphData: any;
   public timeDropDownOpened = false;
-  public SHOW_SUMMARY_TEXT = 'Show Summary';
-  public SHOW_GRAPH_TEXT = 'Show Graph';
-  public toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
+  public isModalOpened = false;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart') assetChart: Chart;
 
-  public excludedReadingsList = [];
-  public excludedReadingsSummaryList = [];
+  public numberTypeReadingsList = [];
+  public stringTypeReadingsList = [];
+  public arrayTypeReadingsList = [];
+  public selectedTab = 1;
+  public timestamps = [];
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
@@ -77,20 +75,12 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   public toggleModal(shouldOpen: Boolean) {
     // reset all variable and array to default state
-    this.showGraph = true;
     this.assetReadingSummary = [];
     this.buttonText = '';
     this.assetReadingValues = [];
     this.summaryLimit = 5;
     this.readKeyColorLabel = [];
-    this.showGraphSpinner = true;
-    this.showSummarySpinner = true;
-    this.excludedReadingsList = [];
-    this.excludedReadingsSummaryList = [];
     this.assetChartOptions = {};
-    this.showSummary = false;
-    this.toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
-
     sessionStorage.removeItem(this.assetCode);
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
@@ -115,14 +105,14 @@ export class ReadingsGraphComponent implements OnDestroy {
   getTimeBasedAssetReadingsAndSummary(time) {
     this.optedTime = time;
     if (this.optedTime === 0) {
-      if (this.showSummary) {
+      if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
       } else {
         this.plotReadingsGraph(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
       }
     } else {
       this.limit = 0;
-      if (this.showSummary) {
+      if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.limit, time);
       } else {
         this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
@@ -131,20 +121,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.toggleDropdown();
   }
 
-  toggleSummaryGraph(state: boolean) {
-    this.showSummary = !state;
-    if (state) {
-      this.excludedReadingsSummaryList = [];
-      this.toggleSummaryGraphButtonText = this.SHOW_SUMMARY_TEXT;
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-    } else {
-      this.excludedReadingsList = [];
-      this.toggleSummaryGraphButtonText = this.SHOW_GRAPH_TEXT;
-      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    }
-  }
-
-  public getAssetCode(assetCode) {
+  public getAssetCode(assetCode: string) {
+    this.isModalOpened = true;
+    this.selectedTab = 1;
+    this.loadPage = true;
     this.notify.emit(false);
     if (this.graphRefreshInterval === -1) {
       this.isAlive = false;
@@ -155,17 +135,13 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.optedTime !== 0) {
       this.limit = 0;
       this.autoRefresh = false;
-      if (this.showSummary) {
-        this.showAssetReadingsSummary(assetCode, this.limit, this.optedTime);
-      } else {
-        this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
-      }
+      this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
     }
     interval(this.graphRefreshInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
         this.autoRefresh = true;
-        if (this.showSummary) {
+        if (this.selectedTab === 4) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
           this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
@@ -173,56 +149,28 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  public getLimitBasedAssetReadingsAndSummary(limit: number = 0) {
-    if (limit == null) {
-      this.optedTime = ASSET_READINGS_TIME_FILTER;
-      this.limit = 0;
-    } else {
-      this.limit = limit;
-      this.optedTime = 0;
-    }
-    if (!this.showSummary) {
-      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    } else {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-    }
-  }
-
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
-    if (this.isSpectrum) {
-      this.showSummarySpinner = false;
-      return;
-    }
     this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
       (data: any) => {
-        this.excludedReadingsSummaryList = [];
-        this.assetReadingSummary = data.map(o => {
-          const k = Object.keys(o)[0];
-          if (isNaN(o[k]['max']) || isNaN(o[k]['min'])) {
-            if (!this.excludedReadingsSummaryList.includes(k)) {
-              this.excludedReadingsSummaryList.push(k);
-            }
-          } else {
+        this.showSpinner = false;
+        this.assetReadingSummary = data
+          .map(o => {
+            const k = Object.keys(o)[0];
             return {
               name: k,
               value: [o[k]]
             };
-          }
-        }).filter(value => value !== undefined);
-        this.showSummarySpinner = false;
-        if (this.assetReadingSummary.length === 0 && this.excludedReadingsSummaryList.length >= 1) {
-          this.showGraph = false;
-        } else {
-          this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
-            this.buttonText = 'Show All';
-          }
-          if (this.assetReadingSummary.length <= 5) {
-            this.buttonText = '';
-          }
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
-            this.buttonText = 'Show Less';
-          }
+          }).filter(value => value !== undefined);
+
+        this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
+          this.buttonText = 'Show All';
+        }
+        if (this.assetReadingSummary.length <= 5) {
+          this.buttonText = '';
+        }
+        if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
+          this.buttonText = 'Show Less';
         }
       },
       error => {
@@ -250,12 +198,76 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
-          this.statsAssetReadingsGraph(data);
-          this.showGraphSpinner = false;
+          this.showSpinner = false;
+          this.loadPage = false;
+          this.getReadings(data);
         },
         error => {
           console.log('error in response', error);
         });
+  }
+
+  getReadings(readings: any) {
+    const numReadings = [];
+    const strReadings = [];
+    const arrReadings = [];
+    const datePipe = new DateFormatterPipe();
+    this.timestamps = readings.map((r: any) => datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'));
+
+    for (const r of readings) {
+      Object.entries(r.reading).forEach(([k, value]) => {
+        if (typeof value === 'number') {
+          numReadings.push({
+            key: k,
+            read: { x: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'), y: value }
+          });
+        }
+        if (typeof value === 'string') {
+          strReadings.push({
+            key: k,
+            timestamp: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'),
+            data: value
+          });
+        }
+        if (Array.isArray(value)) {
+          arrReadings.push({
+            key: k,
+            read: value
+          });
+        }
+      });
+    }
+
+    this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
+    this.stringTypeReadingsList = strReadings;
+    this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
+
+    while (this.isModalOpened) {
+      if (this.numberTypeReadingsList.length > 0) {
+        this.selectedTab = 1;
+      } else if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      } else if (this.stringTypeReadingsList.length > 0) {
+        this.selectedTab = 3;
+      }
+      this.showSpinner = false;
+      this.isModalOpened = false;
+    }
+
+    if (this.selectedTab === 1) {
+      this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
+    } else if (this.selectedTab === 2) {
+      this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
+    }
+  }
+
+  mergeObjects(assetReadings: any) {
+    return chain(assetReadings).groupBy('key').map(function (group, key) {
+      return {
+        key: key,
+        read: map(group, 'read')
+      };
+    }).value();
   }
 
   getColorCode(readKey, cnt, fill) {
@@ -281,60 +293,27 @@ export class ReadingsGraphComponent implements OnDestroy {
     return cc;
   }
 
-  private statsAssetReadingsGraph(data: any): void {
-    this.isSpectrum = false;
-    this.showGraph = true;
-    this.excludedReadingsList = [];
-    const datePipe = new DateFormatterPipe();
-    const timestamps = data.map((t: any) => datePipe.transform(t.timestamp, 'HH:mm:ss:SSS'));
-    const readings = data.map((r: any) => r.reading);
-    const uniqueKeys = chain(readings).map(keys).flatten().uniq().value();
+  private statsAssetReadingsGraph(assetReadings: any, timestamps: any): void {
     const dataset = [];
     this.readKeyColorLabel = [];
     let count = 0;
-    for (const k of uniqueKeys) {
-      if (k.toLowerCase() === 'spectrum') {
-        this.createFFTGraph(k, readings, timestamps);
-        return;
-      }
-      this.isSpectrum = false;
-      const reads = [];
+    for (const r of assetReadings) {
       const dt = {
-        label: k,
-        data: [],
+        label: r.key,
+        data: r.read,
         fill: false,
         lineTension: 0.1,
         spanGaps: true,
-        hidden: this.getLegendState(k),
-        backgroundColor: this.getColorCode(k.trim(), count, true),
-        borderColor: this.getColorCode(k.trim(), count, false)
+        hidden: this.getLegendState(r.key),
+        backgroundColor: this.getColorCode(r.key.trim(), count, true),
+        borderColor: this.getColorCode(r.key.trim(), count, false)
       };
-      for (const r of data) {
-        reads.push({
-          x: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'),
-          y: r.reading[k]
-        });
-      }
-      dt.data = reads.filter(r => r.y !== undefined)
-        .filter(r => {
-          if (!isNaN(r.y)) {
-            return r;
-          } else {
-            if (!this.excludedReadingsList.includes(k)) {
-              this.excludedReadingsList.push(k);
-            }
-          }
-        });
       if (dt.data.length) {
         dataset.push(dt);
       }
       count++;
     }
-    if (dataset.length === 0 && this.excludedReadingsList.length >= 1) {
-      this.showGraph = false;
-    } else {
-      this.setAssetReadingValues(dataset, timestamps);
-    }
+    this.setAssetReadingValues(dataset, timestamps);
   }
 
   public getLegendState(key) {
@@ -349,7 +328,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  private setAssetReadingValues(ds: any, timestamps: any) {
+  private setAssetReadingValues(ds: any, timestamps) {
     this.assetReadingValues = {
       labels: timestamps,
       datasets: ds
@@ -415,14 +394,13 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  createFFTGraph(key: string, readings: [], timestamps: []) {
-    const assetReads = map(readings, key).filter(el => el !== undefined);
+  create3DGraph(readings: any, timestamps: any) {
     this.polyGraphData = {
       data: [
         {
           type: 'surface',
           y: timestamps,
-          z: assetReads,
+          z: readings.map(r => r.read)[0],
           showscale: false,
           colorscale: [
             ['0', 'rgba(68,1,84,1)'],
@@ -443,7 +421,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         },
       ],
       layout: {
-        title: 'FFT spectrum',
+        title: this.assetCode,
         showlegend: true,
         autoSize: true,
         margin: {
@@ -454,11 +432,24 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
-    this.isSpectrum = true;
   }
 
   public isNumber(val) {
     return typeof val === 'number';
+  }
+
+  selectTab(id: number) {
+    this.showSpinner = true;
+    this.selectedTab = id;
+    if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
+      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    } else if (this.graphRefreshInterval === -1) {
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    }
+  }
+
+  showSummaryTab() {
+    return this.numberTypeReadingsList.length;
   }
 
   public ngOnDestroy(): void {
