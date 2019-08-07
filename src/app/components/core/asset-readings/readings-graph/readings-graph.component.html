@@ -62,7 +62,7 @@
                     <span><b>3D Graph</b></span>
                   </a>
                 </li>
-                <li *ngIf="stringTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 3}" data-tab="3">
+                <li *ngIf="stringTypeReadingsList" [ngClass]="{'is-active': selectedTab == 3}" data-tab="3">
                   <a (click)="selectTab(3)">
                     <span><b>Tabular Data</b></span>
                   </a>
@@ -101,21 +101,27 @@
                   <table class="table is-responsive is-borderless data-table">
                     <thead>
                       <tr>
-                        <th>Name</th>
-                        <th>Value</th>
                         <th>Timestamp</th>
+                        <th>Reading</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let txtData of stringTypeReadingsList">
-                        <td>
+                      <tr *ngFor="let txtData of stringTypeReadingsList | keyvalue">
+                        <td style="vertical-align: top; line-height: initial">
                           <small>{{txtData.key}}</small>
                         </td>
                         <td>
-                          <small>{{txtData.data}}</small>
-                        </td>
-                        <td>
-                          <small>{{txtData.timestamp}}</small>
+                          <table class="table is-responsive is-borderless">
+                            <tbody>
+                              <ng-container *ngFor="let item of txtData.value">
+                                <tr>
+                                  <td style="padding-left: 0px">{{item.key}}</td>
+                                  <td style="padding-left: 0px">{{item.data}}</td>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+
                         </td>
                       </tr>
                     </tbody>

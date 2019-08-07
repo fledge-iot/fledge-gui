@@ -1,5 +1,5 @@
-import { Component, EventEmitter, OnDestroy, Output, ViewChild, OnInit, AfterViewInit } from '@angular/core';
-import { orderBy, chain, map } from 'lodash';
+import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
+import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval } from 'rxjs';
 import { Chart } from 'chart.js';
 
@@ -40,7 +40,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   @ViewChild('assetChart') assetChart: Chart;
 
   public numberTypeReadingsList = [];
-  public stringTypeReadingsList = [];
+  public stringTypeReadingsList: any;
   public arrayTypeReadingsList = [];
   public selectedTab = 1;
   public timestamps = [];
@@ -242,12 +242,15 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.stringTypeReadingsList = strReadings;
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
 
+    this.stringTypeReadingsList = mapValues(groupBy(this.stringTypeReadingsList,
+      (reading) => reading.timestamp), rlist => rlist.map(read => omit(read, 'timestamp')));
+
     while (this.isModalOpened) {
       if (this.numberTypeReadingsList.length > 0) {
         this.selectedTab = 1;
       } else if (this.arrayTypeReadingsList.length > 0) {
         this.selectedTab = 2;
-      } else if (this.stringTypeReadingsList.length > 0) {
+      } else if (this.stringTypeReadingsList !== undefined) {
         this.selectedTab = 3;
       }
       this.showSpinner = false;
