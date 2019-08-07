@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PackagesLogComponent } from './packages-log.component';
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
+import { ViewLogsComponent } from './view-logs/view-logs.component';
 
 const routes: Routes = [
   {
@@ -17,7 +18,8 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    PackagesLogComponent
+    PackagesLogComponent,
+    ViewLogsComponent
   ],
   imports: [
     FormsModule,
