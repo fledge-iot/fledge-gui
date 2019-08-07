@@ -6,6 +6,7 @@ import { Chart } from 'chart.js';
 import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'app-readings-graph',
@@ -457,6 +458,10 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length === 0));
+  }
+
+  keyDescOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => {
+    return a.key > b.key ? -1 : (b.key > a.key ? 1 : 0);
   }
 
   public ngOnDestroy(): void {
