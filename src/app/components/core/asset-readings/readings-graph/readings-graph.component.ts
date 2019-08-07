@@ -250,7 +250,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         this.selectedTab = 1;
       } else if (this.arrayTypeReadingsList.length > 0) {
         this.selectedTab = 2;
-      } else if (this.stringTypeReadingsList !== undefined) {
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
         this.selectedTab = 3;
       }
       this.showSpinner = false;
@@ -453,6 +453,10 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   showSummaryTab() {
     return this.numberTypeReadingsList.length;
+  }
+
+  isEmptyObject(obj) {
+    return (obj && (Object.keys(obj).length === 0));
   }
 
   public ngOnDestroy(): void {
