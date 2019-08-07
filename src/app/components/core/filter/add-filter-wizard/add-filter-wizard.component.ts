@@ -4,6 +4,7 @@ import { assign, reduce, sortBy, isEmpty } from 'lodash';
 
 import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -27,6 +28,7 @@ export class AddFilterWizardComponent implements OnInit {
   public requestInProgress = false;
 
   public show = false;
+  private PACKAGE_LOG_URL = environment.BASE_URL + 'package/';
 
   config = {
     search: true,
@@ -119,7 +121,11 @@ export class AddFilterWizardComponent implements OnInit {
           } else if (error.status === 404) {
             this.alertService.error('Make sure package repository is configured / added in FogLAMP');
           } else {
-            this.alertService.error(error.statusText);
+            let errorText = error.statusText;
+            if (typeof error.error.link === 'string') {
+              errorText += ` <a href= ${this.PACKAGE_LOG_URL}${error.error.link}>${error.error.link}</a>`;
+            }
+            this.alertService.error(errorText);
           }
         }
       );
