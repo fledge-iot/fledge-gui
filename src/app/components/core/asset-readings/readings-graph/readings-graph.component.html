@@ -62,7 +62,7 @@
                     <span><b>3D Graph</b></span>
                   </a>
                 </li>
-                <li *ngIf="stringTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 3}" data-tab="3">
+                <li *ngIf="!isEmptyObject(stringTypeReadingsList)" [ngClass]="{'is-active': selectedTab == 3}" data-tab="3">
                   <a (click)="selectTab(3)">
                     <span><b>Tabular Data</b></span>
                   </a>
@@ -88,40 +88,46 @@
                 </div>
               </ng-container>
               <ng-template #DataDiv>
-                <div *ngIf="selectedTab === 1" class="is-active" data-content="1">
+                <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
                   <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
                     [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
                 </div>
-                <div *ngIf="selectedTab === 2" data-content="2">
+                <div *ngIf="selectedTab === 2 && arrayTypeReadingsList?.length > 0" data-content="2">
                   <plotly-plot [data]="polyGraphData?.data" [layout]="polyGraphData?.layout"
                     [config]="{displayModeBar: false}">
                   </plotly-plot>
                 </div>
-                <div *ngIf="selectedTab === 3" data-content="3">
+                <div *ngIf="selectedTab === 3 && !isEmptyObject(stringTypeReadingsList)" data-content="3">
                   <table class="table is-responsive is-borderless data-table">
                     <thead>
                       <tr>
-                        <th>Name</th>
-                        <th>Value</th>
-                        <th>Timestamp</th>
+                        <th style="width: 21%">Timestamp</th>
+                        <th>Reading</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let txtData of stringTypeReadingsList">
-                        <td>
+                      <tr *ngFor="let txtData of stringTypeReadingsList | keyvalue: keyDescOrder">
+                        <td style="vertical-align: top; line-height: initial">
                           <small>{{txtData.key}}</small>
                         </td>
                         <td>
-                          <small>{{txtData.data}}</small>
-                        </td>
-                        <td>
-                          <small>{{txtData.timestamp}}</small>
+                          <table class="table is-responsive is-borderless">
+                            <tbody>
+                              <ng-container *ngFor="let item of txtData.value">
+                                <tr>
+                                  <td style="padding-left: 0px">{{item.key}}</td>
+                                  <td style="padding-left: 0px">{{item.data}}</td>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <div *ngIf="selectedTab === 4" data-content="4">
+                <div *ngIf="selectedTab === 4 && assetReadingSummary?.length > 0" data-content="4">
                   <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
                     <table class="table is-responsive is-borderless data-table">
                       <tbody>
