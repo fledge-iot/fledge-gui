@@ -60,4 +60,12 @@ export class PackagesLogComponent implements OnInit {
     this.viewLogsModal.toggleModal(true, logLink);
   }
 
+  /**
+   * Reload package log list
+   * @param notify
+   */
+  onNotify() {
+    this.getPackagesLog();
+  }
+
 }

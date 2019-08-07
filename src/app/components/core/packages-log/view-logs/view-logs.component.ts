@@ -16,7 +16,7 @@ export class ViewLogsComponent implements OnInit {
   ngOnInit() {
   }
 
-  public toggleModal(isOpen: Boolean, link: string) {
+  public toggleModal(isOpen: Boolean, link: string = null) {
     const view_logs = <HTMLDivElement>document.getElementById('view_logs');
     if (isOpen) {
       this.getLogs(link);
@@ -42,7 +42,7 @@ export class ViewLogsComponent implements OnInit {
   @HostListener('document:keydown', ['$event'])
   onKeyDownHandler(event: KeyboardEvent) {
     if (event.key === 'Escape') {
-      this.toggleModal(false, null);
+      this.toggleModal(false);
     }
   }
 }
