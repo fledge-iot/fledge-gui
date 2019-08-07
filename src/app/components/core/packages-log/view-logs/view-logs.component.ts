@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 
 import { PackagesLogService, ProgressBarService } from '../../../../services';
 
@@ -37,5 +37,12 @@ export class ViewLogsComponent implements OnInit {
     const logContent = await this.packagesLogService.getLog(logLink);
     this.logText = await (new Response(logContent)).text();
     this.ngProgress.done();
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDownHandler(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      this.toggleModal(false, null);
+    }
   }
 }
