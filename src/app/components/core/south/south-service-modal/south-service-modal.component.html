@@ -11,7 +11,7 @@
           <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
             [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
           <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right"
-            style="margin-bottom: 0%;">
+            style="margin-bottom: -1%;">
             <button class="button is-small is-text"
               (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
           </div>

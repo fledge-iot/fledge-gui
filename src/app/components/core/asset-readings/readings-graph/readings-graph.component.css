@@ -4,7 +4,7 @@
 
 @media screen and (min-width: 769px) {
   .modal-card {
-    width: 70%;
+    width: 80%;
   }
 }
 
@@ -41,6 +41,10 @@ table.is-borderless tr {
 
 tbody {
   line-height: 0.5;
+}
+
+.data-table {
+  width: 100%;
 }
 
 .app-loading {

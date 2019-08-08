@@ -71,20 +71,22 @@
                       [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
                       appNumberOnly />
 
-                    <textarea rows="3" *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'"
-                      class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
-                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      [attr.maxLength]="configItem?.value?.length"
-                      [jsonValue]="setConfigValue(configItem.value)">{{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}</textarea>
+                    <ng-container *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'">
+                      <json-editor #editor [options]="editorOptions" [data]="configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default">
+                      </json-editor>
+                      <input class="input" type="hidden" name="{{configItem.value.key}}" [ngModel]="editor.getText()"
+                        [jsonValue]="setConfigValue(configItem.value)" />
+                    </ng-container>
 
                     <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
-                      <textarea rows="3" class="textarea is-fullwidth is-small" name="{{configItem.value.key}}"
-                        [ngModel]="fileContent || setConfigValue(configItem.value)"
-                        [value]='fileContent || setConfigValue(configItem.value)' disabled>
+                      <textarea #textarea rows="10" class="textarea is-fullwidth is-small"
+                        name="{{configItem.value.key}}" [ngModel]="fileContent || setConfigValue(configItem.value)"
+                        (click)="getFileName(configItem?.value?.file)"
+                        [value]='fileContent || setConfigValue(configItem.value)' [disabled]="!isFileUploaded">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </textarea>
                       <p class="help">
-                        {{fileName != '' ? fileName : configItem?.value?.file | slice:configItem?.value?.file?.lastIndexOf('/')+1}}
+                        {{newFileName != '' ? newFileName : oldFileName}}
                       </p>
                     </div>
 
@@ -96,8 +98,8 @@
                     </div>
                     <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
                       <div class="config-div is-fullwidth">
-                        <input class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}" type="file"
-                          (change)="fileChange($event, configItem.value.key)" />
+                        <input #fileInput class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}"
+                          type="file" (change)="fileChange($event, configItem.value.key)" />
                       </div>
                     </div>
 

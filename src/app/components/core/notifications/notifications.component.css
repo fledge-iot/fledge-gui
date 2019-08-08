@@ -22,3 +22,8 @@
  opacity: 0.5;
  filter: alpha(opacity=50);
 }
+
+button {
+  margin-top: 0.5rem;
+  margin-right: 0.2rem;
+}

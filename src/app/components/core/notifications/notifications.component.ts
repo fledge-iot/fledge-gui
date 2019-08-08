@@ -43,30 +43,26 @@ export class NotificationsComponent implements OnInit {
     public router: Router) { }
 
   ngOnInit() {
-    this.getAvailableServicePackages();
+    this.getInstalledServicesList();
     this.getNotificationInstance();
   }
 
-  public getAvailableServicePackages() {
+  public getInstalledServicesList() {
     /** request start */
     this.ngProgress.start();
-    this.servicesApiService.getAvailableServicePackages()
+    this.servicesApiService.getInstalledServices()
       .subscribe(
         (data: any) => {
           /** request done */
           this.ngProgress.done();
           this.allServicesFetched = true;
           this.availableServices = data.services;
-          if (this.availableServices.length === 0) {
+          if (data.services.includes('notification')) {
             this.checkServiceStatus();
+          } else {
+            this.isNotificationServiceAvailable = false;
+            this.isNotificationServiceEnabled = false;
           }
-          this.availableServices.forEach(svc => {
-            if (svc === this.notificationServicePackageName) {
-              this.isNotificationServiceAvailable = false;
-              this.isNotificationServiceEnabled = false;
-            }
-          });
-
         },
         (error) => {
           /** request done */
@@ -87,6 +83,7 @@ export class NotificationsComponent implements OnInit {
             return svc;
           }
         });
+
         if (service) {
           this.notificationServiceName = service.name;
           this.isNotificationServiceAvailable = true;
@@ -140,7 +137,7 @@ export class NotificationsComponent implements OnInit {
   }
 
   public addServiceEvent() {
-    if (this.availableServices.length > 0) {
+    if (!this.availableServices.includes('notification')) {
       this.installNotificationService();
     } else {
       this.addNotificationService();
@@ -181,15 +178,15 @@ export class NotificationsComponent implements OnInit {
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
-          const schedule = data.schedules.find((item: any) => {
-            if (item.processName === 'notification_c' && item.enabled === false) {
-              return item;
-            }
-          });
-          if (schedule !== undefined) {
-            this.notificationServiceName = schedule.name;
-            this.isNotificationServiceAvailable = true;
-            this.isNotificationServiceEnabled = false;
+          const schedule = data.schedules.find((item: any) => item.processName === 'notification_c');
+          if (schedule === undefined) {
+            return;
+          }
+          this.notificationServiceName = schedule.name;
+          this.isNotificationServiceAvailable = true;
+          this.isNotificationServiceEnabled = false;
+          if (schedule.enabled) {
+            this.isNotificationServiceEnabled = true;
           }
         },
         error => {

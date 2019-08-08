@@ -43,10 +43,10 @@
           </p>
         </div>
       </div>
-      <a id="add_notification_instance" class="fix-pad button is-light" (click)="addNotificationInstance()">Create
+      <button [disabled]="!isNotificationServiceAvailable" id="add_notification_instance" class="button is-light" (click)="addNotificationInstance()">Create
         Notification Instance &nbsp;
         <i class="fa fa-plus" aria-hidden="true"></i>
-      </a>
+      </button>
     </header>
     <div class="card-content">
       <div class="content">

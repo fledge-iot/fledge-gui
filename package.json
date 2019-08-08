@@ -34,6 +34,7 @@
     "chart.js": "~2.8.0",
     "core-js": "^3.1.4",
     "moment": "~2.24.0",
+    "jsoneditor": "^6.2.0",
     "ng-sidebar": "~8.0.0",
     "ngx-select-dropdown": "^1.0.1",
     "plotly.js": "^1.48.1",
