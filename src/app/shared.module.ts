@@ -6,6 +6,9 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {
   ViewConfigItemComponent,
 } from './components/core/configuration-manager/view-config-item/view-config-item.component';
+import {
+  ViewLogsComponent,
+} from './components/core/packages-log/view-logs/view-logs.component';
 import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ConfigChildrenComponent } from './components/core/configuration-manager/config-children/config-children.component';
@@ -14,7 +17,7 @@ import { JsonEditorModule } from './components/common/json-editor/json-editor.mo
 
 @NgModule({
   imports: [CommonModule, PipesModule, FormsModule, DirectivesModule, SelectDropDownModule, JsonEditorModule],
-  declarations: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent],
-  exports: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent]
+  declarations: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent],
+  exports: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent]
 })
 export class SharedModule { }

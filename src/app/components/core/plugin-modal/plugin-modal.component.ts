@@ -2,7 +2,6 @@ import { Component, OnInit, Input, OnChanges, Output, EventEmitter } from '@angu
 import { isEmpty } from 'lodash';
 
 import { ServicesApiService, AlertService, ProgressBarService } from '../../../services';
-import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-plugin-modal',
@@ -21,7 +20,6 @@ export class PluginModalComponent implements OnInit, OnChanges {
     noResultsFound: 'No plugin found!',
     searchPlaceholder: 'Search',
   };
-  private PACKAGE_LOG_URL = environment.BASE_URL + 'package/';
 
   installButtonEnabled = true;
 
@@ -104,7 +102,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
-              errorText += ` <a href= ${this.PACKAGE_LOG_URL}${error.error.link}>${error.error.link}</a>`;
+              errorText += ` <a>${error.error.link}</a>`;
             }
             this.alertService.error(errorText);
           }
@@ -146,7 +144,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
-              errorText += ` <a href= ${this.PACKAGE_LOG_URL}${error.error.link}>${error.error.link}</a>`;
+              errorText += ` <a>${error.error.link}</a>`;
             }
             this.alertService.error(errorText);
           }

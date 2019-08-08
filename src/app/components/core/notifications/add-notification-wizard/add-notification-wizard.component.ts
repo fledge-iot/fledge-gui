@@ -6,9 +6,10 @@ import { assign, cloneDeep, reduce, sortBy, map, isEmpty } from 'lodash';
 
 import {
   NotificationsService, ProgressBarService,
-  AlertService, ConfigurationService
+  AlertService, ConfigurationService, SharedService
 } from '../../../../services/index';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-add-notification-wizard',
@@ -51,6 +52,7 @@ export class AddNotificationWizardComponent implements OnInit {
   });
 
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
     modalState: false,
@@ -63,6 +65,7 @@ export class AddNotificationWizardComponent implements OnInit {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private configService: ConfigurationService,
+    private sharedService: SharedService,
     private router: Router) { }
 
   ngOnInit() {
@@ -73,6 +76,16 @@ export class AddNotificationWizardComponent implements OnInit {
       description: ['', Validators.required],
       rule: ['', Validators.required],
       delivery: ['', Validators.required]
+    });
+    this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
     });
   }
 

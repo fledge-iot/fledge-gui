@@ -5,7 +5,7 @@
     </article>
 </ng-container>
 <ng-container *ngIf="darkAlerts">
-    <div id="alert" *ngIf="message" class="notification" [ngClass]="{'is-success': message.type === 'success', 'is-info': message.type === 'info', 'is-danger': message.type === 'error', 'is-warning': message.type === 'warning' }">
+    <div id="alert" (click)="showLogs(message.text)" *ngIf="message" class="notification" [ngClass]="{'is-success': message.type === 'success', 'is-info': message.type === 'info', 'is-danger': message.type === 'error', 'is-warning': message.type === 'warning' }">
         <button class="delete" (click)=closeMessage()></button>
         <span [innerHTML]="message.text"></span>
     </div>

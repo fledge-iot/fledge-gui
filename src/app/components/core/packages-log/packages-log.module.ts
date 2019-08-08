@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PackagesLogComponent } from './packages-log.component';
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
-import { ViewLogsComponent } from './view-logs/view-logs.component';
+import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
   {
@@ -18,12 +18,12 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    PackagesLogComponent,
-    ViewLogsComponent
+    PackagesLogComponent
   ],
   imports: [
     FormsModule,
     CommonModule,
+    SharedModule,
     RouterModule.forChild(routes),
     PipesModule
   ],

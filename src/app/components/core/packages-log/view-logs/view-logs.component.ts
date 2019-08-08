@@ -25,11 +25,6 @@ export class ViewLogsComponent implements OnInit {
     }
     this.logText = '';
     view_logs.classList.remove('is-active');
-
-    const activeDropDown = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
-    if (activeDropDown.length > 0) {
-      activeDropDown[0].classList.remove('is-active');
-    }
   }
 
   public async getLogs(logLink: string): Promise<void> {

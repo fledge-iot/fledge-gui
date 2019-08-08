@@ -28,7 +28,6 @@ export class AddFilterWizardComponent implements OnInit {
   public requestInProgress = false;
 
   public show = false;
-  private PACKAGE_LOG_URL = environment.BASE_URL + 'package/';
 
   config = {
     search: true,
@@ -123,7 +122,7 @@ export class AddFilterWizardComponent implements OnInit {
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
-              errorText += ` <a href= ${this.PACKAGE_LOG_URL}${error.error.link}>${error.error.link}</a>`;
+              errorText += ` <a>${error.error.link}</a>`;
             }
             this.alertService.error(errorText);
           }

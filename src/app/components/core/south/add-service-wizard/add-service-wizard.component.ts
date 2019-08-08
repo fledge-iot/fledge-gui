@@ -1,10 +1,12 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 
-import { AlertService, SchedulesService, ServicesApiService, PluginService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, SharedService, ServicesApiService, PluginService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -25,6 +27,7 @@ export class AddServiceWizardComponent implements OnInit {
   public payload: any;
   public schedulesName = [];
   public showSpinner = false;
+  private subscription: Subscription;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -33,6 +36,7 @@ export class AddServiceWizardComponent implements OnInit {
 
   @Input() categoryConfigurationData;
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
     modalState: false,
@@ -45,7 +49,8 @@ export class AddServiceWizardComponent implements OnInit {
     private alertService: AlertService,
     private router: Router,
     private schedulesService: SchedulesService,
-    private ngProgress: ProgressBarService
+    private ngProgress: ProgressBarService,
+    private sharedService: SharedService
   ) { }
 
   ngOnInit() {
@@ -55,6 +60,16 @@ export class AddServiceWizardComponent implements OnInit {
       plugin: ['', Validators.required]
     });
     this.getInstalledSouthPlugins();
+    this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
   }
 
   movePrevious() {
