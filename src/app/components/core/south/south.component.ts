@@ -3,10 +3,11 @@ import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
 import { interval } from 'rxjs';
 
-import { PingService, ServicesApiService, ProgressBarService } from '../../../services';
+import { PingService, ServicesApiService, ProgressBarService, SharedService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
+import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-south',
@@ -21,12 +22,14 @@ export class SouthComponent implements OnInit, OnDestroy {
   private isAlive: boolean;
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   constructor(private servicesApiService: ServicesApiService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private router: Router,
-    private ping: PingService) {
+    private ping: PingService,
+    private sharedService: SharedService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
       if (timeInterval === -1) {
@@ -44,6 +47,16 @@ export class SouthComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getSouthboundServices(true);
       });
+    this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
   }
 
   public getSouthboundServices(caching: boolean) {

@@ -4,7 +4,6 @@ import { assign, reduce, sortBy, isEmpty } from 'lodash';
 
 import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
-import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-add-filter-wizard',

@@ -27,7 +27,6 @@ export class AddServiceWizardComponent implements OnInit {
   public payload: any;
   public schedulesName = [];
   public showSpinner = false;
-  private subscription: Subscription;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -60,7 +59,7 @@ export class AddServiceWizardComponent implements OnInit {
       plugin: ['', Validators.required]
     });
     this.getInstalledSouthPlugins();
-    this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+    this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
         // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
         // if (closeBtn) {
