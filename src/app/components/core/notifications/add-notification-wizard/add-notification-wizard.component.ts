@@ -79,7 +79,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       rule: ['', Validators.required],
       delivery: ['', Validators.required]
     });
-    this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
         // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
         // if (closeBtn) {

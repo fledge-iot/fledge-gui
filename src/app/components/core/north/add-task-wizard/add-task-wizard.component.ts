@@ -65,7 +65,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     this.taskForm.get('repeatDays').setValue('0');
     this.taskForm.get('repeatTime').setValue('00:00:30');
     this.getInstalledNorthPlugins();
-    this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
         // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
         // if (closeBtn) {

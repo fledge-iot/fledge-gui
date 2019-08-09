@@ -33,7 +33,7 @@ export class AlertComponent implements OnInit {
                 message.lastIndexOf('log/') + 4,
                 message.lastIndexOf('</a>')
             );
-            this.sharedService.showPackageLogs.next({
+            this.sharedService.showLogs.next({
                 'fileLink': fileLink,
                 'isSubscribed': true
             });
