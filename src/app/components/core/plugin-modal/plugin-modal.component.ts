@@ -3,7 +3,6 @@ import { isEmpty } from 'lodash';
 
 import { ServicesApiService, AlertService, ProgressBarService } from '../../../services';
 
-
 @Component({
   selector: 'app-plugin-modal',
   templateUrl: './plugin-modal.component.html',
@@ -101,7 +100,11 @@ export class PluginModalComponent implements OnInit, OnChanges {
           } else if (error.status === 404) {
             this.alertService.error('Make sure package repository is configured / added in FogLAMP');
           } else {
-            this.alertService.error(error.statusText);
+            let errorText = error.statusText;
+            if (typeof error.error.link === 'string') {
+              errorText += ` <a>${error.error.link}</a>`;
+            }
+            this.alertService.error(errorText);
           }
         }
       );
@@ -139,7 +142,11 @@ export class PluginModalComponent implements OnInit, OnChanges {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
+            let errorText = error.statusText;
+            if (typeof error.error.link === 'string') {
+              errorText += ` <a>${error.error.link}</a>`;
+            }
+            this.alertService.error(errorText);
           }
         },
         () => {

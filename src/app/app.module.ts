@@ -38,6 +38,7 @@ import {
   DiscoveryService,
   NorthService,
   PingService,
+  PackagesLogService,
   SchedulesService,
   ServicesApiService,
   SupportService,
@@ -107,6 +108,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     ConfigurationService,
     AuditService,
     SystemLogService,
+    PackagesLogService,
     ServicesApiService,
     {
       provide: APP_INITIALIZER,

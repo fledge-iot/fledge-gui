@@ -20,6 +20,7 @@ const appRoutes: Routes = [
   { path: 'schedules', loadChildren: './components/core/scheduler/scheduler.module#SchedulerModule' },
   { path: 'syslog', loadChildren: './components/core/system-log/system-log.module#SystemLogModule' },
   { path: 'audit', loadChildren: './components/core/audit-log/audit-log.module#AuditLogModule' },
+  { path: 'packages', loadChildren: './components/core/packages-log/packages-log.module#PackagesLogModule' },
   { path: 'tasks', component: ListTasksComponent, canActivate: [AuthCheckGuard] },
   { path: 'notification', loadChildren: './components/core/notifications/notifications.module#NotificationsModule' },
   { path: 'certificate', component: CertificateStoreComponent, canActivate: [AuthCheckGuard] },
