@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { assign, cloneDeep, reduce, sortBy, map, isEmpty } from 'lodash';
 
@@ -16,7 +17,7 @@ import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.compon
   templateUrl: './add-notification-wizard.component.html',
   styleUrls: ['./add-notification-wizard.component.css']
 })
-export class AddNotificationWizardComponent implements OnInit {
+export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   @ViewChild('desc') description: ElementRef;
   @ViewChild('name') name: ElementRef;
 
@@ -43,6 +44,7 @@ export class AddNotificationWizardComponent implements OnInit {
 
   public pageId: number;
   public notificationType: string;
+  private subscription: Subscription;
 
   notificationForm = new FormGroup({
     name: new FormControl(),
@@ -77,7 +79,7 @@ export class AddNotificationWizardComponent implements OnInit {
       rule: ['', Validators.required],
       delivery: ['', Validators.required]
     });
-    this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+    this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
         // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
         // if (closeBtn) {
@@ -537,5 +539,9 @@ export class AddNotificationWizardComponent implements OnInit {
         break;
       }
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

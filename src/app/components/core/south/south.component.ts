@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
-import { interval } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
 import { PingService, ServicesApiService, ProgressBarService, SharedService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
@@ -20,6 +20,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   public refreshSouthboundServiceInterval = POLLING_INTERVAL;
   public showSpinner = false;
   private isAlive: boolean;
+  private subscription: Subscription;
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
@@ -47,7 +48,7 @@ export class SouthComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getSouthboundServices(true);
       });
-    this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+      this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
         // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
         // if (closeBtn) {
@@ -106,5 +107,6 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.isAlive = false;
+    this.subscription.unsubscribe();
   }
 }

@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
+import { Subscription } from 'rxjs';
 
 import { AlertService, SchedulesService, SharedService, PluginService, ProgressBarService } from '../../../../services';
 import Utils from '../../../../utils';
@@ -13,7 +14,7 @@ import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.compon
   templateUrl: './add-task-wizard.component.html',
   styleUrls: ['./add-task-wizard.component.css']
 })
-export class AddTaskWizardComponent implements OnInit {
+export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
@@ -29,6 +30,7 @@ export class AddTaskWizardComponent implements OnInit {
   public schedulesName = [];
   public selectedPluginDescription = '';
   public showSpinner = false;
+  private subscription: Subscription;
 
   public taskType = 'North';
 
@@ -63,7 +65,7 @@ export class AddTaskWizardComponent implements OnInit {
     this.taskForm.get('repeatDays').setValue('0');
     this.taskForm.get('repeatTime').setValue('00:00:30');
     this.getInstalledNorthPlugins();
-    this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+    this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
         // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
         // if (closeBtn) {
@@ -450,5 +452,9 @@ export class AddTaskWizardComponent implements OnInit {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

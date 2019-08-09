@@ -8,7 +8,7 @@ import { PackagesLogService, ProgressBarService } from '../../../../services';
   styleUrls: ['./view-logs.component.css']
 })
 export class ViewLogsComponent implements OnInit {
-  public logText;
+  public logText: string;
 
   constructor(private packagesLogService: PackagesLogService,
     private ngProgress: ProgressBarService) { }

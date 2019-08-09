@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.compon
   templateUrl: './add-service-wizard.component.html',
   styleUrls: ['./add-service-wizard.component.css']
 })
-export class AddServiceWizardComponent implements OnInit {
+export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
@@ -27,6 +27,7 @@ export class AddServiceWizardComponent implements OnInit {
   public payload: any;
   public schedulesName = [];
   public showSpinner = false;
+  private subscription: Subscription;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -59,7 +60,7 @@ export class AddServiceWizardComponent implements OnInit {
       plugin: ['', Validators.required]
     });
     this.getInstalledSouthPlugins();
-    this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+    this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
         // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
         // if (closeBtn) {
@@ -396,5 +397,9 @@ export class AddServiceWizardComponent implements OnInit {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
