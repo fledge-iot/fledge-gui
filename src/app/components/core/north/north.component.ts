@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
-import { interval } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
-import { AlertService, NorthService, PingService } from '../../../services';
+import { AlertService, NorthService, PingService, SharedService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
+import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-north',
@@ -20,11 +21,13 @@ export class NorthComponent implements OnInit, OnDestroy {
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
   private isAlive: boolean;
+  private subscription: Subscription;
 
   constructor(private northService: NorthService,
     private ping: PingService,
     private alertService: AlertService,
-    private router: Router) {
+    private router: Router,
+    private sharedService: SharedService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
       if (timeInterval === -1) {
@@ -32,9 +35,20 @@ export class NorthComponent implements OnInit, OnDestroy {
       }
       this.refreshInterval = timeInterval;
     });
+    this.subscription = this.sharedService.showPackageLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
   }
 
   @ViewChild(NorthTaskModalComponent) northTaskModal: NorthTaskModalComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   ngOnInit() {
     this.showLoadingSpinner();
@@ -90,6 +104,7 @@ export class NorthComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.isAlive = false;
+    this.subscription.unsubscribe();
   }
 }
 
