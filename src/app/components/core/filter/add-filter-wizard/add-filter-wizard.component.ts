@@ -119,7 +119,11 @@ export class AddFilterWizardComponent implements OnInit {
           } else if (error.status === 404) {
             this.alertService.error('Make sure package repository is configured / added in FogLAMP');
           } else {
-            this.alertService.error(error.statusText);
+            let errorText = error.statusText;
+            if (typeof error.error.link === 'string') {
+              errorText += ` <a>${error.error.link}</a>`;
+            }
+            this.alertService.error(errorText);
           }
         }
       );

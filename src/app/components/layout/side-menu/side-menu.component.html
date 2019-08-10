@@ -51,7 +51,11 @@
         <a id="audit" [ngClass]="{'is-active': step==='/audit'}" (click)="onToggle('/audit')">Audit</a>
       </li>
       <li>
-        <a id="notification-log" [ngClass]="{'is-active': step==='/notification/logs'}" (click)="onToggle('/notification/logs')">Notifications</a>
+        <a id="notification-log" [ngClass]="{'is-active': step==='/notification/logs'}"
+          (click)="onToggle('/notification/logs')">Notifications</a>
+      </li>
+      <li>
+        <a id="packages" [ngClass]="{'is-active': step==='/packages'}" (click)="onToggle('/packages')">Packages</a>
       </li>
       <li>
         <a id="syslog" [ngClass]="{'is-active': step==='/syslog'}" (click)="onToggle('/syslog')">System</a>

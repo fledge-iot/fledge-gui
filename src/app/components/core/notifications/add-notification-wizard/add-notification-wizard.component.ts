@@ -1,23 +1,25 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
-import { assign, cloneDeep, reduce, sortBy, map, isEmpty } from 'lodash';
+import { assign, cloneDeep, reduce, sortBy, isEmpty } from 'lodash';
 
 import {
   NotificationsService, ProgressBarService,
-  AlertService, ConfigurationService
+  AlertService, ConfigurationService, SharedService
 } from '../../../../services/index';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-add-notification-wizard',
   templateUrl: './add-notification-wizard.component.html',
   styleUrls: ['./add-notification-wizard.component.css']
 })
-export class AddNotificationWizardComponent implements OnInit {
-  @ViewChild('desc', { static: true }) description: ElementRef;
-  @ViewChild('name', { static: true }) name: ElementRef;
+export class AddNotificationWizardComponent implements OnInit, OnDestroy {
+  @ViewChild('desc', { static: false }) description: ElementRef;
+  @ViewChild('name', { static: false }) name: ElementRef;
 
   public notificationRulePlugins = [];
   public notificationDeliveryPlugins = [];
@@ -42,6 +44,7 @@ export class AddNotificationWizardComponent implements OnInit {
 
   public pageId: number;
   public notificationType: string;
+  private subscription: Subscription;
 
   notificationForm = new FormGroup({
     name: new FormControl(),
@@ -50,7 +53,8 @@ export class AddNotificationWizardComponent implements OnInit {
     delivery: new FormControl()
   });
 
-  @ViewChild(ViewConfigItemComponent, { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewLogsComponent, { static: true }) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
     modalState: false,
@@ -63,6 +67,7 @@ export class AddNotificationWizardComponent implements OnInit {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private configService: ConfigurationService,
+    private sharedService: SharedService,
     private router: Router) { }
 
   ngOnInit() {
@@ -73,6 +78,16 @@ export class AddNotificationWizardComponent implements OnInit {
       description: ['', Validators.required],
       rule: ['', Validators.required],
       delivery: ['', Validators.required]
+    });
+    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
     });
   }
 
@@ -524,5 +539,9 @@ export class AddNotificationWizardComponent implements OnInit {
         break;
       }
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

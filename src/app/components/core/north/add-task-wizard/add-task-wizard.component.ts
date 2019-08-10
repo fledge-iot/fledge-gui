@@ -1,18 +1,20 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
+import { Subscription } from 'rxjs';
 
-import { AlertService, SchedulesService, PluginService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, SharedService, PluginService, ProgressBarService } from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-add-task-wizard',
   templateUrl: './add-task-wizard.component.html',
   styleUrls: ['./add-task-wizard.component.css']
 })
-export class AddTaskWizardComponent implements OnInit {
+export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
@@ -28,6 +30,7 @@ export class AddTaskWizardComponent implements OnInit {
   public schedulesName = [];
   public selectedPluginDescription = '';
   public showSpinner = false;
+  private subscription: Subscription;
 
   public taskType = 'North';
 
@@ -41,6 +44,7 @@ export class AddTaskWizardComponent implements OnInit {
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
   @Input() categoryConfigurationData;
   @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
     modalState: false,
@@ -52,7 +56,8 @@ export class AddTaskWizardComponent implements OnInit {
     private alertService: AlertService,
     private schedulesService: SchedulesService,
     private router: Router,
-    private ngProgress: ProgressBarService
+    private ngProgress: ProgressBarService,
+    private sharedService: SharedService
   ) { }
 
   ngOnInit() {
@@ -60,6 +65,16 @@ export class AddTaskWizardComponent implements OnInit {
     this.taskForm.get('repeatDays').setValue('0');
     this.taskForm.get('repeatTime').setValue('00:00:30');
     this.getInstalledNorthPlugins();
+    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
   }
 
   movePrevious() {
@@ -437,5 +452,9 @@ export class AddTaskWizardComponent implements OnInit {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
