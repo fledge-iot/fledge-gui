@@ -9,7 +9,7 @@ Use `sudo ./make_rpm` script to create RPM package, the package will be placed i
 $sudo ./make_rpm
 Red Hat
 The package root directory is         : /home/foglamp/foglamp-gui
-The FogLAMP gui version is            : 1.6.0
+The FogLAMP gui version is            : 1.6.0next
 The package will be built in          : /home/foglamp/foglamp-gui/packages/build
 The package name is                   : foglamp-gui-x.y.z
 
