@@ -279,12 +279,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     for (const e of <any>el) {
       e.click();
     }
-    if (this.filterConfigViewComponent !== undefined && !this.filterConfigViewComponent.isValidForm) {
-      return;
-    }
-    if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-      return;
-    }
     this.updateAdvanceConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
