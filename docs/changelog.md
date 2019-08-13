@@ -1,26 +1,26 @@
-## v1.6.0next [2019-08-13]
+## v1.6.0next [2019-08-XX]
 
 #### Added
 
 * Allow login using certificate
-* Interface to install new plugins on south, north, filters and notification page
-* Displaying Plugin name and version on south/north page
-* Add support for password configuration items
-* Tab base asset readings page for handling of textual data values
-* Added JSON editor for json data handling
-* Add ability to edit python file
-* Support to show Packages log and link added in alert to download logs 
-* New logs tab for notification under logs section
+* Interface to install plugins on South, North, Filters and Notification page
+* Display the plugin name and version on South and North page
+* Support for password configuration items
+* JSON editor for json data
+* Supprot to update python script 
+* New log tabs for Notification and Packages under logs section
+* Link added in alert to show failure logs 
 
+#### Changed 
+
+* Update asset reading page to show textual data
 
 #### Fixed
 
-* Fixed upload script issue on notification create
-* Respect the existence of "readonly" key 
-* Notification tab moved below North tab
-* Fixed wrong time for points in the past for asset reading graphs
-* Fixed save multiple filter configuration on singe save click
-* Fixed csv formate for single asset reading download from asset page
+* Fix upload script issue on notification
+* Fixed wrong time on graph data for the past reading
+* Fixed save multiple filter configuration at once
+* Fixed csv formate to download for asset readings
 * Misc performance improvements and visual changes
 
 ## v1.6.0 [2019-05-22]
