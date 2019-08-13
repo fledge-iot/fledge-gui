@@ -5,9 +5,6 @@
     "baseUrl": "./",
     "types": ["node"]
   },
-  "angularCompilerOptions": {
-    "enableIvy": true
-  },
   "exclude": [
     "test.ts",
     "**/*.spec.ts"
