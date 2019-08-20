@@ -34,5 +34,5 @@ kill_nginx_ps () {
   fi
 }
 
-kill_nginx_ps
+# kill_nginx_ps
 service nginx stop
