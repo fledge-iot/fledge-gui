@@ -199,7 +199,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
-          this.showSpinner = false;
           this.loadPage = false;
           this.getReadings(data);
         },
@@ -238,15 +237,17 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       });
     }
-
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
     this.stringTypeReadingsList = strReadings;
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
-
     this.stringTypeReadingsList = mapValues(groupBy(this.stringTypeReadingsList,
       (reading) => reading.timestamp), rlist => rlist.map(read => omit(read, 'timestamp')));
+    this.setTabData();
+  }
 
-    while (this.isModalOpened) {
+
+  setTabData() {
+    if (this.isModalOpened) {
       if (this.numberTypeReadingsList.length > 0) {
         this.selectedTab = 1;
       } else if (this.arrayTypeReadingsList.length > 0) {
@@ -254,15 +255,18 @@ export class ReadingsGraphComponent implements OnDestroy {
       } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
         this.selectedTab = 3;
       }
-      this.showSpinner = false;
       this.isModalOpened = false;
     }
 
-    if (this.selectedTab === 1) {
+    if (this.selectedTab === 1 && this.numberTypeReadingsList.length > 0) {
       this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
-    } else if (this.selectedTab === 2) {
+    } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
+    } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+      this.selectedTab = 3;
+      this.selectTab(this.selectedTab, false);
     }
+    this.showSpinner = false;
   }
 
   mergeObjects(assetReadings: any) {
@@ -442,8 +446,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     return typeof val === 'number';
   }
 
-  selectTab(id: number) {
-    this.showSpinner = true;
+  selectTab(id: number, showSpinner = true) {
+    this.showSpinner = showSpinner;
     this.selectedTab = id;
     if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
