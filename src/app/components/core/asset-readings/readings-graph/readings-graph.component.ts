@@ -264,7 +264,9 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
     } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
       this.selectedTab = 3;
-      this.selectTab(this.selectedTab, false);
+      if (this.graphRefreshInterval !== -1) {
+         this.selectTab(this.selectedTab, false);
+      }
     }
     this.showSpinner = false;
   }
