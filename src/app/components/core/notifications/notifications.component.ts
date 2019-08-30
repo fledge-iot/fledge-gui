@@ -128,7 +128,6 @@ export class NotificationsComponent implements OnInit {
         () => {
           this.alertService.success('Notification service added successfully.', true);
           this.isNotificationServiceAvailable = true;
-          this.isNotificationServiceEnabled = true;
           this.checkServiceStatus();
         },
         (error) => {
