@@ -113,7 +113,6 @@ export class NotificationsComponent implements OnInit {
   }
 
   addNotificationService() {
-
     const payload = {
       name: this.notificationServiceName,
       type: 'notification',
@@ -129,6 +128,12 @@ export class NotificationsComponent implements OnInit {
           this.alertService.success('Notification service added successfully.', true);
           this.isNotificationServiceAvailable = true;
           this.checkServiceStatus();
+          if (!this.isNotificationServiceEnabled) {
+            setTimeout(() => {
+              this.checkServiceStatus();
+            }, 2000);
+          }
+
         },
         (error) => {
           /** request done */
@@ -312,7 +317,6 @@ export class NotificationsComponent implements OnInit {
             return svc;
           }
         });
-
         this.checkServiceEnabled(service);
       },
         (error) => {
