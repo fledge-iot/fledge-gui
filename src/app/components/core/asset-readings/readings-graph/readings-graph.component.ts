@@ -105,20 +105,8 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   getTimeBasedAssetReadingsAndSummary(time) {
     this.optedTime = time;
-    if (this.optedTime === 0) {
-      if (this.selectedTab === 4) {
-        this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
-      } else {
-        this.plotReadingsGraph(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
-      }
-    } else {
-      this.limit = 0;
-      if (this.selectedTab === 4) {
-        this.showAssetReadingsSummary(this.assetCode, this.limit, time);
-      } else {
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-      }
-    }
+    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     this.toggleDropdown();
   }
 
@@ -258,15 +246,42 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.isModalOpened = false;
     }
 
+    if (this.selectedTab === 1 && this.numberTypeReadingsList.length === 0) {
+      if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
+      }
+    }
+
+    if (this.selectedTab === 2 && this.arrayTypeReadingsList.length === 0) {
+      if (this.numberTypeReadingsList.length > 0) {
+        this.selectedTab = 1;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
+      }
+    }
+
+    if (this.selectedTab === 3 && this.isEmptyObject(this.stringTypeReadingsList)) {
+      if (this.numberTypeReadingsList.length > 0) {
+        this.selectedTab = 1;
+      } else if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      }
+    }
+
+    if (this.selectedTab === 4 && this.numberTypeReadingsList.length === 0) {
+      if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
+      }
+    }
+
     if (this.selectedTab === 1 && this.numberTypeReadingsList.length > 0) {
       this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
     } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
-    } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
-      this.selectedTab = 3;
-      if (this.graphRefreshInterval !== -1) {
-         this.selectTab(this.selectedTab, false);
-      }
     }
     this.showSpinner = false;
   }
@@ -459,7 +474,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   showSummaryTab() {
-    return this.numberTypeReadingsList.length;
+    return this.numberTypeReadingsList.length > 0;
   }
 
   isEmptyObject(obj) {
