@@ -345,6 +345,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    nxtButton.disabled = false;
+
     this.isSinglePlugin = true;
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
