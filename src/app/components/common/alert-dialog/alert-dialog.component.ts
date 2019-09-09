@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-alert-dialog',
@@ -81,6 +81,10 @@ export class AlertDialogComponent implements OnInit, OnChanges {
        this.notificationServiceRecord.headerTextValue = 'Disable Service';
       }
     }
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
   }
 
   public toggleModal(isOpen: Boolean) {

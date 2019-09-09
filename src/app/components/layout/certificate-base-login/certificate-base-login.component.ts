@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ProgressBarService, AlertService, AuthService, PingService, UserService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
@@ -30,6 +30,10 @@ export class CertificateBaseLoginComponent implements OnInit {
       certificate: '',
       certificateText: ''
     });
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
   }
 
   public toggleModal(isOpen: Boolean) {
