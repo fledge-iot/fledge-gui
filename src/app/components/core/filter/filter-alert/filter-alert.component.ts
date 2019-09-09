@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-filter-alert',
@@ -22,14 +22,11 @@ export class FilterAlertComponent implements OnInit, OnChanges {
     }
   }
 
-  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    if (this.filerDialogData.key !== 'unsavedConfirmation') {
-      this.toggleModal(false);
-    }
-  }
-
   public toggleModal(isOpen: Boolean) {
     const alertModal = <HTMLDivElement>document.getElementById('filter-dialog-box');
+    if (alertModal.classList.contains('is-active')) {
+      isOpen = false;
+    }
     if (isOpen) {
       alertModal.classList.add('is-active');
       return;
