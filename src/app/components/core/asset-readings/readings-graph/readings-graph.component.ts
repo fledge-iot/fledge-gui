@@ -288,16 +288,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
     }
-
-    if (this.selectedTab === 4 && this.numberTypeReadingsList.length === 0) {
-      if (this.numberTypeReadingsList.length > 0) {
-        this.selectedTab = 1;
-      } else if (this.arrayTypeReadingsList.length > 0) {
-        this.selectedTab = 2;
-      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
-        this.selectedTab = 3;
-      }
-    }
     this.showSpinner = false;
   }
 
