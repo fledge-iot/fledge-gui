@@ -23,7 +23,9 @@ export class FilterAlertComponent implements OnInit, OnChanges {
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.toggleModal(false);
+    if (this.filerDialogData.key !== 'unsavedConfirmation') {
+      this.toggleModal(false);
+    }
   }
 
   public toggleModal(isOpen: Boolean) {
