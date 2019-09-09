@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
@@ -24,6 +24,10 @@ export class UploadCertificateComponent implements OnInit {
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
     public formBuilder: FormBuilder) { }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
+  }
 
   ngOnInit() {
     this.form = this.formBuilder.group({

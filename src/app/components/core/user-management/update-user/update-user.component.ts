@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, HostListener } from '@angular/core';
 
 import { User } from '../../../../models';
 import { AlertService, UserService } from '../../../../services';
@@ -17,6 +17,10 @@ export class UpdateUserComponent implements OnInit {
 
   constructor(private alertService: AlertService,
     private userService: UserService) { }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
+  }
 
   ngOnInit() {
     this.getRole();

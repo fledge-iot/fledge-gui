@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild } from '@angular/core';
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval } from 'rxjs';
 import { Chart } from 'chart.js';
@@ -56,6 +56,11 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
       this.graphRefreshInterval = timeInterval;
     });
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.loadPage = false;
+    this.toggleModal(false);
   }
 
   public showAll() {
@@ -282,6 +287,16 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
     } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
+    }
+
+    if (this.selectedTab === 4 && this.numberTypeReadingsList.length === 0) {
+      if (this.numberTypeReadingsList.length > 0) {
+        this.selectedTab = 1;
+      } else if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
+      }
     }
     this.showSpinner = false;
   }
