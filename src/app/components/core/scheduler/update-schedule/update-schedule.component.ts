@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CustomValidator } from '../../../../directives/custom-validator';
@@ -30,6 +30,10 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   constructor(private schedulesService: SchedulesService, public fb: FormBuilder, private alertService: AlertService) { }
 
   ngOnInit() {
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
   }
 
   ngOnChanges(changes: SimpleChanges) {

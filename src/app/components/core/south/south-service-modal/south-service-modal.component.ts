@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -68,6 +68,13 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public generateCsv: GenerateCsvService,
     private servicesApiService: ServicesApiService,
     private schedulesService: SchedulesService) { }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    const alertModal = <HTMLDivElement>document.getElementById('modal-box');
+    if (!alertModal.classList.contains('is-active')) {
+      this.toggleModal(false);
+    }
+  }
 
   ngOnInit() {
     this.svcCheckbox.valueChanges.subscribe(val => {

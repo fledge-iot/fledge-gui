@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, HostListener } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { User } from '../../../../models';
@@ -28,6 +28,10 @@ export class CreateUserComponent implements OnInit {
       confirmPassword: '',
       role_id: 2   // set "user" as a default role
     };
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {

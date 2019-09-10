@@ -24,6 +24,9 @@ export class FilterAlertComponent implements OnInit, OnChanges {
 
   public toggleModal(isOpen: Boolean) {
     const alertModal = <HTMLDivElement>document.getElementById('filter-dialog-box');
+    if (alertModal.classList.contains('is-active')) {
+      isOpen = false;
+    }
     if (isOpen) {
       alertModal.classList.add('is-active');
       return;

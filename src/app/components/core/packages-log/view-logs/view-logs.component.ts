@@ -34,10 +34,7 @@ export class ViewLogsComponent implements OnInit {
     this.ngProgress.done();
   }
 
-  @HostListener('document:keydown', ['$event'])
-  onKeyDownHandler(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      this.toggleModal(false);
-    }
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
   }
 }

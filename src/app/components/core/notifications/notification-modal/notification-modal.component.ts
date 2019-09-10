@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener } from '@angular/core';
 
 import { isEmpty } from 'lodash';
 
@@ -50,6 +50,13 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       this.getCategory();
       this.getRuleConfiguration();
       this.getDeliveryConfiguration();
+    }
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    const alertModal = <HTMLDivElement>document.getElementById('modal-box');
+    if (!alertModal.classList.contains('is-active')) {
+      this.toggleModal(false);
     }
   }
 

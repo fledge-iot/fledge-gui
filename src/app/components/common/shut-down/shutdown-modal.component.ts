@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-shutdown-modal',
@@ -12,6 +12,10 @@ export class ShutdownModalComponent implements OnInit {
   constructor() { }
 
   ngOnInit() { }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
+  }
 
   public toggleModal(isOpen: Boolean) {
     const modal_name = <HTMLDivElement>document.getElementById('shutdownModal-box');
