@@ -54,7 +54,10 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.toggleModal(false);
+    const alertModal = <HTMLDivElement>document.getElementById('modal-box');
+    if (!alertModal.classList.contains('is-active')) {
+      this.toggleModal(false);
+    }
   }
 
   public toggleModal(isOpen: Boolean) {

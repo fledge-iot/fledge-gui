@@ -70,7 +70,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private schedulesService: SchedulesService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.toggleModal(false);
+    const alertModal = <HTMLDivElement>document.getElementById('modal-box');
+    if (!alertModal.classList.contains('is-active')) {
+      this.toggleModal(false);
+    }
   }
 
   ngOnInit() {
