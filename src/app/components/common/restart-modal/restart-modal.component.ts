@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-restart-modal',
@@ -10,6 +10,10 @@ export class RestartModalComponent implements OnInit {
   @Output() restart = new EventEmitter<Number>();
 
   constructor() { }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
+  }
 
   ngOnInit() { }
 

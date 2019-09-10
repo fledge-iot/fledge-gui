@@ -127,7 +127,7 @@
                     </tbody>
                   </table>
                 </div>
-                <div *ngIf="selectedTab === 4 && assetReadingSummary?.length > 0" data-content="4">
+                <div *ngIf="selectedTab === 4 && assetReadingSummary?.length > 0 && showSummaryTab() " data-content="4">
                   <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
                     <table class="table is-responsive is-borderless data-table">
                       <tbody>

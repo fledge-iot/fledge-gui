@@ -326,12 +326,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
     if (this.oldFileName !== '') {
       this.isFileUploaded = true;
     }
+    this.cdRef.detectChanges();
   }
 
   createFileToUpload(data: any) {
     const blob = new Blob([data.value], { type: 'plain/text' });
     const file = new File([blob], this.newFileName !== '' ?
-      this.newFileName : this.oldFileName.substr(this.oldFileName.lastIndexOf('_') + 1));
+      this.newFileName : this.oldFileName
+        .replace(`${this.categoryConfiguration.key.toLowerCase()}_${data.key.toLowerCase()}_`, ''));
     return { script: file };
   }
 

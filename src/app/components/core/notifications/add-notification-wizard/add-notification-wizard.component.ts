@@ -11,6 +11,7 @@ import {
 } from '../../../../services/index';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
+import { delay, retryWhen, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-notification-wizard',
@@ -105,34 +106,38 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   getNotificationPlugins(isPluginInstalled?: boolean) {
     /** request started */
     this.ngProgress.start();
-    this.notificationService.getNotificationPlugins().subscribe(
-      (data: any) => {
-        /** request completed */
-        this.ngProgress.done();
-        this.notificationRulePlugins = sortBy(data.rules, p => {
-          return p.name.toLowerCase();
-        });
-        this.notificationDeliveryPlugins = sortBy(data.delivery, p => {
-          return p.name.toLowerCase();
-        });
-      },
-      (error) => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      },
-      () => {
-        setTimeout(() => {
-          if (isPluginInstalled) {
-            this.pluginData.modalState = false;
-            this.selectInstalledPlugin();
-          }
-        }, 1000);
-      });
+    setTimeout(() => {
+      this.notificationService.getNotificationPlugins()
+        .pipe(retryWhen(errors => errors.pipe(delay(2000), take(3))))
+        .subscribe(
+          (data: any) => {
+            /** request completed */
+            this.ngProgress.done();
+            this.notificationRulePlugins = sortBy(data.rules, p => {
+              return p.name.toLowerCase();
+            });
+            this.notificationDeliveryPlugins = sortBy(data.delivery, p => {
+              return p.name.toLowerCase();
+            });
+          },
+          (error) => {
+            /** request completed */
+            this.ngProgress.done();
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          },
+          () => {
+            setTimeout(() => {
+              if (isPluginInstalled) {
+                this.pluginData.modalState = false;
+                this.selectInstalledPlugin();
+              }
+            }, 1000);
+          });
+    }, 2000);
   }
 
   movePrevious() {
@@ -339,6 +344,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       this.selectedDeliveryPluginDescription = '';
       return;
     }
+
+    const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    nxtButton.disabled = false;
 
     this.isSinglePlugin = true;
     this.isRulePlugin = true;

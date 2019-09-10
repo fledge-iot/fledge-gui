@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -45,6 +45,10 @@ export class ServiceDiscoveryComponent implements OnInit {
     this.status.currentMessage.subscribe(status => {
       this.connectedServiceStatus = status;
     });
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
   }
 
   public toggleModal(isOpen: Boolean) {

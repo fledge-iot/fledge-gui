@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener
 } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 
@@ -73,6 +73,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
   ) { }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    const alertModal = <HTMLDivElement>document.getElementById('modal-box');
+    if (!alertModal.classList.contains('is-active')) {
+      this.toggleModal(false);
+    }
+  }
 
   ngOnInit() { }
 
@@ -278,12 +285,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
     for (const e of <any>el) {
       e.click();
-    }
-    if (this.filterConfigViewComponent !== undefined && !this.filterConfigViewComponent.isValidForm) {
-      return;
-    }
-    if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-      return;
     }
     this.updateAdvanceConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();

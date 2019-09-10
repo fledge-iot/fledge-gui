@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, Output, EventEmitter, HostListener } from '@angular/core';
 import { isEmpty } from 'lodash';
 
 import { ServicesApiService, AlertService, ProgressBarService } from '../../../services';
@@ -40,6 +40,10 @@ export class PluginModalComponent implements OnInit, OnChanges {
       this.toggleModal(true);
       this.getAvailablePlugins(this.data.type);
     }
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
   }
 
   public toggleModal(isOpen: Boolean) {

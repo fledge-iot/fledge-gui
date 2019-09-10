@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -21,6 +21,10 @@ export class UserProfileComponent implements OnInit {
     private userService: UserService,
     public ngProgress: ProgressBarService,
     private router: Router) { }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.toggleModal(false);
+  }
 
   ngOnInit() {
     this.getUser();
@@ -141,7 +145,7 @@ export class UserProfileComponent implements OnInit {
           sessionStorage.clear();
           this.ngProgress.done();
           this.alertService.success('All active sessions cleared');
-          this.router.navigate(['/login'], {replaceUrl : true});
+          this.router.navigate(['/login'], { replaceUrl: true });
         },
         error => {
           this.ngProgress.done();

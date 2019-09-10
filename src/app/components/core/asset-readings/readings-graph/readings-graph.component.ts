@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild } from '@angular/core';
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
@@ -60,6 +60,11 @@ export class ReadingsGraphComponent implements OnDestroy {
     });
   }
 
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.loadPage = false;
+    this.toggleModal(false);
+  }
+
   public showAll() {
     this.autoRefresh = false;
     if (this.buttonText === 'Show Less') {
@@ -107,20 +112,8 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   getTimeBasedAssetReadingsAndSummary(time) {
     this.optedTime = time;
-    if (this.optedTime === 0) {
-      if (this.selectedTab === 4) {
-        this.showAssetReadingsSummary(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
-      } else {
-        this.plotReadingsGraph(this.assetCode, this.DEFAULT_LIMIT, this.optedTime);
-      }
-    } else {
-      this.limit = 0;
-      if (this.selectedTab === 4) {
-        this.showAssetReadingsSummary(this.assetCode, this.limit, time);
-      } else {
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-      }
-    }
+    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     this.toggleDropdown();
   }
 
@@ -201,7 +194,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
       subscribe(
         (data: any[]) => {
-          this.showSpinner = false;
           this.loadPage = false;
           this.getReadings(data);
         },
@@ -240,15 +232,17 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       });
     }
-
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
     this.stringTypeReadingsList = strReadings;
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
-
     this.stringTypeReadingsList = mapValues(groupBy(this.stringTypeReadingsList,
       (reading) => reading.timestamp), rlist => rlist.map(read => omit(read, 'timestamp')));
+    this.setTabData();
+  }
 
-    while (this.isModalOpened) {
+
+  setTabData() {
+    if (this.isModalOpened) {
       if (this.numberTypeReadingsList.length > 0) {
         this.selectedTab = 1;
       } else if (this.arrayTypeReadingsList.length > 0) {
@@ -256,15 +250,47 @@ export class ReadingsGraphComponent implements OnDestroy {
       } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
         this.selectedTab = 3;
       }
-      this.showSpinner = false;
       this.isModalOpened = false;
     }
 
-    if (this.selectedTab === 1) {
+    if (this.selectedTab === 1 && this.numberTypeReadingsList.length === 0) {
+      if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
+      }
+    }
+
+    if (this.selectedTab === 2 && this.arrayTypeReadingsList.length === 0) {
+      if (this.numberTypeReadingsList.length > 0) {
+        this.selectedTab = 1;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
+      }
+    }
+
+    if (this.selectedTab === 3 && this.isEmptyObject(this.stringTypeReadingsList)) {
+      if (this.numberTypeReadingsList.length > 0) {
+        this.selectedTab = 1;
+      } else if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      }
+    }
+
+    if (this.selectedTab === 4 && this.numberTypeReadingsList.length === 0) {
+      if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
+      }
+    }
+
+    if (this.selectedTab === 1 && this.numberTypeReadingsList.length > 0) {
       this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
-    } else if (this.selectedTab === 2) {
+    } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
     }
+    this.showSpinner = false;
   }
 
   mergeObjects(assetReadings: any) {
@@ -444,8 +470,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     return typeof val === 'number';
   }
 
-  selectTab(id: number) {
-    this.showSpinner = true;
+  selectTab(id: number, showSpinner = true) {
+    this.showSpinner = showSpinner;
     this.selectedTab = id;
     if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
@@ -455,7 +481,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   showSummaryTab() {
-    return this.numberTypeReadingsList.length;
+    return this.numberTypeReadingsList.length > 0;
   }
 
   isEmptyObject(obj) {
