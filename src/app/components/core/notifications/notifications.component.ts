@@ -20,8 +20,8 @@ export class NotificationsComponent implements OnInit {
 
   isNotificationServiceAvailable = false;
   isNotificationServiceEnabled = false;
-  notificationServiceName = 'FogLAMP Notifications';
-  notificationServicePackageName = 'foglamp-service-notification';
+  notificationServiceName = 'Fledge Notifications';
+  notificationServicePackageName = 'fledge-service-notification';
   notificationInstances = [];
   notification: any;
   public notificationServiceRecord: any;

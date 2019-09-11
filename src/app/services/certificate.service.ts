@@ -13,7 +13,7 @@ export class CertificateService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | /foglamp/certificate
+   *  GET | /fledge/certificate
    */
   public getCertificates() {
     return this.http.get(this.CERTIFICATE_URL).pipe(
@@ -22,7 +22,7 @@ export class CertificateService {
   }
 
   /**
-   *  DELETE | /foglamp/certificate/{name with ext}?type={cert|key}
+   *  DELETE | /fledge/certificate/{name with ext}?type={cert|key}
    */
   public deleteCertificate(name: string, type: string) {
     let params = new HttpParams();
@@ -33,7 +33,7 @@ export class CertificateService {
   }
 
   /**
-   *  POST | /foglamp/certificate
+   *  POST | /fledge/certificate
    */
   public uploadCertificate(payload) {
     return this.http.post(this.CERTIFICATE_URL, payload).pipe(

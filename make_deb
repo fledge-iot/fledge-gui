@@ -23,7 +23,7 @@ set -e
 
 GIT_ROOT=`pwd`    # The script must be executed from the root git directory
 usage="$(basename "$0") [clean|cleanall]
-This script is used to create the Debian package of foglamp-gui
+This script is used to create the Debian package of fledge-gui
 
 Arguments:
  clean    - Remove all the old versions saved in format .XXXX
@@ -85,11 +85,11 @@ version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | se
 BUILD_ROOT="${GIT_ROOT}/packages/build"
 
 # Final package name
-package_name="foglamp-gui-${version}"
+package_name="fledge-gui-${version}"
 
 # Print the summary of findings
 echo "The package root directory is         : ${GIT_ROOT}"
-echo "The FogLAMP gui version is            : ${version}"
+echo "The Fledge gui version is            : ${version}"
 echo "The package will be built in          : ${BUILD_ROOT}"
 echo "The package name is                   : ${package_name}"
 echo

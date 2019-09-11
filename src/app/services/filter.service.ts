@@ -28,7 +28,7 @@ export class FilterService {
   /**
    *  Create filter
    *
-   *  POST |  foglamp/filter
+   *  POST |  fledge/filter
    *  @param payload  {"name":"S3","plugin":"scale","filter_config":{}}
    */
   public saveFilter(payload) {
@@ -41,7 +41,7 @@ export class FilterService {
   /**
    * Add filter pipeline
    *
-   * PUT |  foglamp/filter/{serviceName}/pipeline?allow_duplicates=true&append_filter=true
+   * PUT |  fledge/filter/{serviceName}/pipeline?allow_duplicates=true&append_filter=true
    * @param payload  {"pipeline":["S3"]}
    * @param serviceName service name
    */

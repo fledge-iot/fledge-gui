@@ -15,7 +15,7 @@ export class AuditService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | foglamp/audit/logcode
+   *  GET | fledge/audit/logcode
    */
   public getLogSource() {
     return this.http.get(this.GET_LOG_SOURCE).pipe(
@@ -24,7 +24,7 @@ export class AuditService {
   }
 
   /**
-  *  GET | foglamp/audit/severity
+  *  GET | fledge/audit/severity
   */
   public getLogSeverity() {
     return this.http.get(this.GET_LOG_SEVERITY).pipe(
@@ -33,7 +33,7 @@ export class AuditService {
   }
 
   /**
-   * GET | /foglamp/audit
+   * GET | /fledge/audit
    *
    * @param limit
    * @param offset

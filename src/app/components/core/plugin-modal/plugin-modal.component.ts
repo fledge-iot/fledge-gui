@@ -89,7 +89,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
       subscribe(
         (data: any) => {
           this.installButtonEnabled = true;
-          this.plugins = data['plugins'].map((p: string) => p.replace(`foglamp-${this.data.type.toLowerCase()}-`, ''));
+          this.plugins = data['plugins'].map((p: string) => p.replace(`fledge-${this.data.type.toLowerCase()}-`, ''));
           if (isEmpty(this.plugins)) {
             this.alertService.warning('No plugin available to install');
           }
@@ -102,7 +102,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
           if (error.status === 0) {
             console.log('service down ', error);
           } else if (error.status === 404) {
-            this.alertService.error('Make sure package repository is configured / added in FogLAMP');
+            this.alertService.error('Make sure package repository is configured / added in Fledge');
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
@@ -122,7 +122,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
     }
     const pluginData = {
       format: 'repository',
-      name: `foglamp-${this.data.type.toLowerCase()}-` + pluginName,
+      name: `fledge-${this.data.type.toLowerCase()}-` + pluginName,
       version: ''
     };
 

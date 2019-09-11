@@ -13,7 +13,7 @@ export class SystemLogService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | foglamp/syslog
+   *  GET | fledge/syslog
    */
   public getSysLogs(limit: Number = 0, offset: Number = 0, source: String, level: String) {
     let params = new HttpParams();

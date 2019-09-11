@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "foglamp": {
+    "fledge": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -15,7 +15,7 @@
               "path": "./extra-webpack.config.js"
             },
             "outputPath": "dist",
-            "index": "src/foglamp.html",
+            "index": "src/fledge.html",
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
             "polyfills": "src/polyfills.ts",
@@ -58,18 +58,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "foglamp:build"
+            "browserTarget": "fledge:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "foglamp:build:production"
+              "browserTarget": "fledge:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "foglamp:build"
+            "browserTarget": "fledge:build"
           }
         },
         "test": {
@@ -106,7 +106,7 @@
         }
       }
     },
-    "foglamp-e2e": {
+    "fledge-e2e": {
       "root": "",
       "sourceRoot": "",
       "projectType": "application",
@@ -115,7 +115,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "foglamp:serve"
+            "devServerTarget": "fledge:serve"
           }
         },
         "lint": {
@@ -132,7 +132,7 @@
       }
     }
   },
-  "defaultProject": "foglamp",
+  "defaultProject": "fledge",
   "cli": {
     "packageManager": "yarn"
   },

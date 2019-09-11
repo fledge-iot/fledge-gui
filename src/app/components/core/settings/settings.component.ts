@@ -68,7 +68,7 @@ export class SettingsComponent implements OnInit {
     localStorage.setItem('CONNECTED_HOST', hostField.value);
     localStorage.setItem('CONNECTED_PORT', servicePortField.value);
     this.serviceUrl = this.protocol + '://' + hostField.value + ':'
-      + servicePortField.value + '/foglamp/';
+      + servicePortField.value + '/fledge/';
   }
 
   public resetEndPoint() {

@@ -15,9 +15,9 @@ Run `yarn test` to execute the unit tests via [Karma](https://karma-runner.githu
 ## Running end-to-end tests
 Run `yarn e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; Open `report.html` in your favorite browser!
+Test report will be available in HTML format in `fledge-gui/e2e-test-report/`; Open `report.html` in your favorite browser!
 
-> Before running the tests make sure app is able to communicate with the FogLAMP REST Server API. Put the REST API info in `e2e/environment.ts`.
+> Before running the tests make sure app is able to communicate with the Fledge REST Server API. Put the REST API info in `e2e/environment.ts`.
 
 ### Steps to run e2e test in CI environment on headless machine
 
@@ -31,9 +31,9 @@ Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; 
       $ sudo apt-get install google-chrome-stable
       ```
 
-  2. Clone foglamp-gui & run e2e test
+  2. Clone fledge-gui & run e2e test
       ```
-      $ sudo git clone https://github.com/foglamp/foglamp-gui.git
+      $ sudo git clone https://github.com/fledge/fledge-gui.git
       $ sudo yarn
       $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
       ``` 
@@ -51,10 +51,10 @@ Test report will be available in HTML format in `foglamp-gui/e2e-test-report/`; 
       $ yum install liberation-fonts-1.07.2-16.el7.noarch.rpm
       ```
 
-  2. Clone foglamp-gui & run e2e test
+  2. Clone fledge-gui & run e2e test
 
       ```
-      $ sudo git clone https://github.com/foglamp/foglamp-gui.git
+      $ sudo git clone https://github.com/fledge/fledge-gui.git
       $ sudo yarn
       $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
       ```

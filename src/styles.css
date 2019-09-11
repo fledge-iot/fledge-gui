@@ -156,10 +156,10 @@ table.scroll tbody {
   color: #707070;
 }
 
-.foglamp-logo {
+.fledge-logo {
   width: 34px;
   height: 20px;
-  background: url(./assets/foglamp.png) center center no-repeat;
+  background: url(./assets/fledge.png) center center no-repeat;
 }
 
 .navbar-menu {

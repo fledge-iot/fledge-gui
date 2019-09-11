@@ -18,5 +18,5 @@
 ## Your environment
 
 <!-- Describe the environment you have that lead to your issue.
-     This includes FogLAMP version, OS, Docker, nginx, browser and other bits that are related to your case. 
+     This includes Fledge version, OS, Docker, nginx, browser and other bits that are related to your case. 
      -->

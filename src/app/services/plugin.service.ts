@@ -12,7 +12,7 @@ export class PluginService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET  | /foglamp/plugin/installed
+   *  GET  | /fledge/plugin/installed
    */
   getInstalledPlugins(direction) {
     let params = new HttpParams();

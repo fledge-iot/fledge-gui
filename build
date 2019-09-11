@@ -37,7 +37,7 @@ CWARN="${CPFX}0;33m"
 USAGE="${__version__}
 
 DESCRIPTION
-  This script build foglamp-gui distribution artifacts
+  This script build fledge-gui distribution artifacts
 
 OPTIONS
   Multiple commands can be specified but they all must be
@@ -107,7 +107,7 @@ build () {
   # echo "Copying custom nginx conf file ..."
   # cp nginx.conf dist/
 
-  RELEASABLE_BUILD="foglamp-gui-${__version__}.tar.gz"
+  RELEASABLE_BUILD="fledge-gui-${__version__}.tar.gz"
   echo -e  INFO: "${CINFO} Creating compressed build artifacts for release ... ${CRESET}"
   tar -zcvf ${RELEASABLE_BUILD} dist &>/dev/null
   echo "Created ${RELEASABLE_BUILD}"

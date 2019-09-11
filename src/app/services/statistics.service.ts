@@ -14,7 +14,7 @@ export class StatisticsService {
   constructor(private http: HttpClient) { }
 
   /**
-   *    GET  | /foglamp/statistics
+   *    GET  | /fledge/statistics
    */
   public getStatistics() {
     return this.http.get(this.GET_STATISTICS).pipe(
@@ -23,7 +23,7 @@ export class StatisticsService {
   }
 
   /**
-   *  GET | /foglamp/statistics/history
+   *  GET | /fledge/statistics/history
    */
   public getStatisticsHistory(time, limitValue = null, keyValue = null) {
     let params = new HttpParams();

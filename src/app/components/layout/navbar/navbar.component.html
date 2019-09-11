@@ -7,17 +7,17 @@
     </div>
     <div *ngIf="viewPort !== 'mobile'">
       <div class="navbar-item">
-        <div class="foglamp-logo"></div>
+        <div class="fledge-logo"></div>
         &nbsp;&nbsp;
         <b>
-          <a href="/" style="color: #363636;">FogLAMP</a>
+          <a href="/" style="color: #363636;">Fledge</a>
         </b>
         &nbsp;&nbsp;&nbsp;&nbsp;
       </div>
     </div>
     <div *ngIf="pingInfo.isAuth || !pingInfo.isAlive">
       <div *ngIf="viewPort == 'mobile'" class="navbar-item">
-        <b>FogLAMP
+        <b>Fledge
         </b>
       </div>
     </div>
@@ -29,7 +29,7 @@
     </div>
     <div *ngIf="viewPort == 'tablet'" class="navbar-item">
       <!-- tablet -->
-      <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info"
+      <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="fledge-info"
         (click)="toggleInfoDropdown()">
         <div class="dropdown-trigger">
           <a id="hover-link" (click)="getServiceStatus()">
@@ -101,7 +101,7 @@
       <!-- mobile -->
       <div class="columns">
         <div class="column">
-          <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="foglamp-info"
+          <div *ngIf="pingInfo.isAlive && !pingInfo.isAuth" class="dropdown is-left" id="fledge-info"
             (click)="toggleInfoDropdown()">
             <div class="dropdown-trigger">
               <a id="hover-link" (click)="getServiceStatus()">
@@ -181,7 +181,7 @@
       <div class="navbar-item">
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <div class="dropdown is-hoverable" id="foglamp-info">
+            <div class="dropdown is-hoverable" id="fledge-info">
               <div class="dropdown-trigger">
                 <a id="hover-link" (mouseover)="getServiceStatus()">
                   <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
@@ -274,7 +274,7 @@
     <div class="navbar-item">
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
-          <a class="tooltip is-tooltip-left" data-tooltip="Shut Down FogLAMP" (click)="openModal()">
+          <a class="tooltip is-tooltip-left" data-tooltip="Shut Down Fledge" (click)="openModal()">
             <i class="fa fa-power-off" aria-hidden="true"></i>
           </a>
         </span>
@@ -283,7 +283,7 @@
     <div class="navbar-item">
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
-          <a id="restart" class="tooltip is-tooltip-left" data-tooltip="Restart FogLAMP" (click)="openRestartModal()">
+          <a id="restart" class="tooltip is-tooltip-left" data-tooltip="Restart Fledge" (click)="openRestartModal()">
             <i class="fa fa-sync" aria-hidden="true"></i>
           </a>
         </span>

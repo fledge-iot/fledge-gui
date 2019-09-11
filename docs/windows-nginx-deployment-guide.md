@@ -11,7 +11,7 @@ cd nginx
 start nginx
 ```
 
-`C:\nginx> .\nginx.exe -c <PATH TO>\foglamp-gui\nginx.conf`
+`C:\nginx> .\nginx.exe -c <PATH TO>\fledge-gui\nginx.conf`
 
 > UNIX style path (forward slash in conf)
 

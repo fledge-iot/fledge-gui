@@ -16,8 +16,8 @@ export class Filters {
 
   /**
    * Add a filter in south service pipeline
-   * @prerequisite A south service should be added in the FogLAMP.
-   * A filter should be installed and discoverable at FogLAMP side.
+   * @prerequisite A south service should be added in the Fledge.
+   * A filter should be installed and discoverable at Fledge side.
    * @param filterName {string} filter name
    * @param {string}   filter plugin name
    */

@@ -1,21 +1,21 @@
-Name:          foglamp-gui
+Name:          fledge-gui
 Vendor:        Dianomic Systems Inc. <info@dianomic.com>
 Version:       __VERSION__
 Release:       1
 BuildArch:     __ARCH__
-Summary:       FogLAMP GUI
+Summary:       Fledge GUI
 License:       Apache License
 Group:         IoT
 URL:           http://www.dianomic.com
 Requires:      nginx
 
 %description
-FogLAMP GUI
+Fledge GUI
 
 
 %pre
 #!/usr/bin/env bash
-echo "Installing FogLAMP GUI"
+echo "Installing Fledge GUI"
 
 kill_nginx_ps () {
   PSLIST=$(ps aux | grep '[n]ginx' | awk '{print $2}')
@@ -37,7 +37,7 @@ start_nginx () {
   systemctl status nginx | grep "Active:"
 }
 
-cp /usr/share/nginx/html/foglamp.html /usr/share/nginx/html/index.html
+cp /usr/share/nginx/html/fledge.html /usr/share/nginx/html/index.html
 start_nginx
 
 %postun

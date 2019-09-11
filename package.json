@@ -1,5 +1,5 @@
 {
-  "name": "foglamp",
+  "name": "fledge",
   "version": "1.6.0next",
   "license": "Apache-2.0",
   "scripts": {

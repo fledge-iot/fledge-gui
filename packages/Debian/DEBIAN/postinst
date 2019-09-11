@@ -32,5 +32,5 @@ start_nginx () {
   service nginx status | grep "Active:"
 }
 
-cp /var/www/html/foglamp.html /var/www/html/index.html
+cp /var/www/html/fledge.html /var/www/html/index.html
 start_nginx

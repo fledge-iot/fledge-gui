@@ -16,7 +16,7 @@ export class UserService {
   /**
    * Get all users
    *
-   * GET | /foglamp/user
+   * GET | /fledge/user
    *
    */
   getAllUsers() {
@@ -28,7 +28,7 @@ export class UserService {
   /**
    * Get user profile
    *
-   * GET |  /foglamp/user?id={id}
+   * GET |  /fledge/user?id={id}
    * @param string UID : id of logged in user
    *
    */
@@ -43,7 +43,7 @@ export class UserService {
   /**
   * get user role
   *
-  *  GET |  /foglamp/user/role
+  *  GET |  /fledge/user/role
   *
   */
   getRole() {
@@ -55,7 +55,7 @@ export class UserService {
   /**
    * delete user
    *
-   * DELETE  | /foglamp/admin/{id}/delete
+   * DELETE  | /fledge/admin/{id}/delete
    *
    * @param Number id
    */
@@ -68,7 +68,7 @@ export class UserService {
   /**
   * Create user
   *
-  * POST  | foglamp/admin/user
+  * POST  | fledge/admin/user
   *
   *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "role_id": 1}
   */
@@ -96,7 +96,7 @@ export class UserService {
   /**
   * change user password
   *
-  * PUT  | /foglamp/user/{username}/password
+  * PUT  | /fledge/user/{username}/password
   * @param Object payload  => {"current_password": "F0gl@mp!", "new_password": "F0gl@mp1"}
   */
   changePassword(payload, userName) {
@@ -108,7 +108,7 @@ export class UserService {
   /**
     * change user password by admin
     *
-    * PUT  | /foglamp/admin/{userId}/reset
+    * PUT  | /fledge/admin/{userId}/reset
     * @param Object payload => {"password": "F0gl@mp!"}
     */
   resetPassword(data) {

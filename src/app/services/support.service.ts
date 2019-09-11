@@ -12,7 +12,7 @@ export class SupportService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | /foglamp/support
+   *  GET | /fledge/support
    */
   public get() {
     return this.http.get(this.SUPPORT_BUNDLE_URL).pipe(
@@ -21,7 +21,7 @@ export class SupportService {
   }
 
   /**
-   *  POST | /foglamp/support
+   *  POST | /fledge/support
    */
   public post() {
     return this.http.post(this.SUPPORT_BUNDLE_URL, null).pipe(
