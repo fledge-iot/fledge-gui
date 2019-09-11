@@ -58,7 +58,6 @@
     "babel-loader": "^8.0.2",
     "babel-plugin-lodash": "^3.3.4",
     "babel-polyfill": "^7.0.0-beta.3",
-    "babel-preset-env": "^7.0.0-beta.3",
     "codelyzer": "^5.0.1",
     "git-describe": "^4.0.4",
     "jasmine-core": "~3.4.0",
