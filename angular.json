@@ -33,9 +33,7 @@
               "src/assets/css/bulma-steps.min.css",
               "src/styles.css"
             ],
-            "scripts": [
-              "./node_modules/plotly.js/dist/plotly.min.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {

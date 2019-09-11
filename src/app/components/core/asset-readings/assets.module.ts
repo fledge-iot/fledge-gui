@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { PlotlyViaWindowModule } from 'angular-plotly.js';
 
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
@@ -13,6 +12,9 @@ import { PaginationModule } from '../../common/pagination/pagination.module';
 import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
 import { AssetsComponent } from './assets/assets.component';
 
+import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import { PlotlyModule } from 'angular-plotly.js';
+
 const routes: Routes = [
   {
     path: '',
@@ -21,7 +23,7 @@ const routes: Routes = [
   }
 ];
 
-// PlotlyModule.plotlyjs = PlotlyJS;
+PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
   declarations: [
@@ -36,7 +38,7 @@ const routes: Routes = [
     ChartModule,
     NumberInputDebounceModule,
     PaginationModule,
-    PlotlyViaWindowModule
+    PlotlyModule
   ],
   providers: [AssetsService],
   exports: []
