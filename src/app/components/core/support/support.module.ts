@@ -2,26 +2,26 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { DashboardComponent } from '.';
 import { DateFormatterPipe } from '../../../pipes';
 import { StatisticsService } from '../../../services';
 import { ChartModule } from '../../common/chart';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthCheckGuard } from '../../../guards';
+import { SupportComponent } from './support.component';
 
 
 const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent,
+    component: SupportComponent,
     canActivate: [AuthCheckGuard]
   }
 ];
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    SupportComponent
   ],
   imports: [
     RouterModule.forChild(routes),
@@ -33,4 +33,4 @@ const routes: Routes = [
   providers: [StatisticsService, DateFormatterPipe],
   exports: []
 })
-export class DashboardModule { }
+export class SupportModule { }
