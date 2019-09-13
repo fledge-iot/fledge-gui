@@ -115,8 +115,8 @@ export class AuditLogComponent implements OnInit {
   public getLogSource() {
     this.auditService.getLogSource().
       subscribe(
-        (data) => {
-          this.logSourceList = data['logCode'];
+        (data: any) => {
+          this.logSourceList = data.logCode.filter((log: any) => !(/NTF/.test(log.code)));
         },
         error => {
           if (error.status === 0) {
@@ -214,11 +214,11 @@ export class AuditLogComponent implements OnInit {
     this.progress.start();
     this.auditService.getAuditLogs(this.limit, this.tempOffset, this.source, this.severity).
       subscribe(
-        (data) => {
+        (data: any) => {
           /** request completed */
           this.progress.done();
-          this.audit = data['audit'];
-          this.totalCount = data['totalCount'];
+          this.audit = data.audit.filter((log: any) => !(/NTF/.test(log.source)));
+          this.totalCount = data.totalCount;
           if (this.offset !== 0) {
             this.recordCount = this.totalCount - this.offset;
           } else {

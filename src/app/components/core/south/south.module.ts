@@ -32,7 +32,7 @@ const routes: Routes = [
   declarations: [
     SouthComponent,
     AddServiceWizardComponent,
-    SouthServiceModalComponent,
+    SouthServiceModalComponent
   ],
   imports: [
     FormsModule,

@@ -1,17 +1,19 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 
-import { AlertService, SchedulesService, ServicesApiService, PluginService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, SharedService, ServicesApiService, PluginService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-add-service-wizard',
   templateUrl: './add-service-wizard.component.html',
   styleUrls: ['./add-service-wizard.component.css']
 })
-export class AddServiceWizardComponent implements OnInit {
+export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
@@ -24,6 +26,8 @@ export class AddServiceWizardComponent implements OnInit {
   public isScheduleEnabled = true;
   public payload: any;
   public schedulesName = [];
+  public showSpinner = false;
+  private subscription: Subscription;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -32,14 +36,21 @@ export class AddServiceWizardComponent implements OnInit {
 
   @Input() categoryConfigurationData;
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
+  public pluginData = {
+    modalState: false,
+    type: this.serviceType,
+    pluginName: ''
+  };
   constructor(private formBuilder: FormBuilder,
     private servicesApiService: ServicesApiService,
     private pluginService: PluginService,
     private alertService: AlertService,
     private router: Router,
     private schedulesService: SchedulesService,
-    private ngProgress: ProgressBarService
+    private ngProgress: ProgressBarService,
+    private sharedService: SharedService
   ) { }
 
   ngOnInit() {
@@ -49,6 +60,16 @@ export class AddServiceWizardComponent implements OnInit {
       plugin: ['', Validators.required]
     });
     this.getInstalledSouthPlugins();
+    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
   }
 
   movePrevious() {
@@ -103,6 +124,17 @@ export class AddServiceWizardComponent implements OnInit {
     }
   }
 
+  /**
+   * Open plugin modal
+   */
+  openPluginModal() {
+    this.pluginData = {
+      modalState: true,
+      type: this.serviceType,
+      pluginName: ''
+    };
+  }
+
   moveNext() {
     this.isValidPlugin = true;
     this.isValidName = true;
@@ -118,7 +150,7 @@ export class AddServiceWizardComponent implements OnInit {
           return;
         }
 
-        if (formValues['plugin'].length !== 1 ) {
+        if (formValues['plugin'].length !== 1) {
           this.isSinglePlugin = false;
           return;
         }
@@ -143,7 +175,7 @@ export class AddServiceWizardComponent implements OnInit {
         if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
           this.payload = {
             name: formValues['name'],
-            type: this.serviceType,
+            type: this.serviceType.toLowerCase(),
             plugin: formValues['plugin'][0],
             enabled: this.isScheduleEnabled
           };
@@ -278,25 +310,32 @@ export class AddServiceWizardComponent implements OnInit {
     }
   }
 
-  public getInstalledSouthPlugins() {
+  public getInstalledSouthPlugins(pluginInstalled?: boolean) {
     /** request started */
-    this.ngProgress.start();
-    this.pluginService.getInstalledPlugins('south').subscribe(
+    this.showLoadingSpinner();
+    this.pluginService.getInstalledPlugins(this.serviceType.toLowerCase()).subscribe(
       (data: any) => {
         /** request completed */
-        this.ngProgress.done();
+        this.hideLoadingSpinner();
         this.plugins = sortBy(data.plugins, p => {
           return p.name.toLowerCase();
         });
       },
       (error) => {
         /** request completed */
-        this.ngProgress.done();
+        this.hideLoadingSpinner();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
           this.alertService.error(error.statusText);
         }
+      },
+      () => {
+        setTimeout(() => {
+          if (pluginInstalled) {
+            this.selectInstalledPlugin();
+          }
+        }, 1000);
       });
   }
 
@@ -330,5 +369,37 @@ export class AddServiceWizardComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  onNotify(event: any) {
+    this.pluginData.modalState = event.modalState;
+    this.pluginData.pluginName = event.name;
+    if (event.pluginInstall) {
+      this.getInstalledSouthPlugins(event.pluginInstall);
+    }
+  }
+
+  selectInstalledPlugin() {
+    const select = <HTMLSelectElement>document.getElementById('pluginSelect');
+    for (let i = 0, j = select.options.length; i < j; ++i) {
+      if (select.options[i].innerText.toLowerCase() === this.pluginData.pluginName.toLowerCase()) {
+        this.serviceForm.controls['plugin'].setValue([this.plugins[i].name]);
+        select.selectedIndex = i;
+        select.dispatchEvent(new Event('change'));
+        break;
+      }
+    }
+  }
+
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

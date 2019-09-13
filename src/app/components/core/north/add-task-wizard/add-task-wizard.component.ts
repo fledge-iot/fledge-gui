@@ -1,18 +1,20 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
+import { Subscription } from 'rxjs';
 
-import { AlertService, SchedulesService, PluginService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, SharedService, PluginService, ProgressBarService } from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-add-task-wizard',
   templateUrl: './add-task-wizard.component.html',
   styleUrls: ['./add-task-wizard.component.css']
 })
-export class AddTaskWizardComponent implements OnInit {
+export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
@@ -27,6 +29,10 @@ export class AddTaskWizardComponent implements OnInit {
   public payload: any;
   public schedulesName = [];
   public selectedPluginDescription = '';
+  public showSpinner = false;
+  private subscription: Subscription;
+
+  public taskType = 'North';
 
   taskForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -38,19 +44,37 @@ export class AddTaskWizardComponent implements OnInit {
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
   @Input() categoryConfigurationData;
   @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
+
+  public pluginData = {
+    modalState: false,
+    type: this.taskType,
+    pluginName: ''
+  };
 
   constructor(private pluginService: PluginService,
     private alertService: AlertService,
     private schedulesService: SchedulesService,
     private router: Router,
-    private ngProgress: ProgressBarService
-    ) { }
+    private ngProgress: ProgressBarService,
+    private sharedService: SharedService
+  ) { }
 
   ngOnInit() {
     this.getSchedules();
     this.taskForm.get('repeatDays').setValue('0');
     this.taskForm.get('repeatTime').setValue('00:00:30');
     this.getInstalledNorthPlugins();
+    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
   }
 
   movePrevious() {
@@ -156,7 +180,7 @@ export class AddTaskWizardComponent implements OnInit {
           this.payload = {
             'name': formValues['name'],
             'plugin': formValues['plugin'][0],
-            'type': 'north',
+            'type': this.taskType.toLowerCase(),
             'schedule_repeat': repeatTime,
             'schedule_type': '3',
             'schedule_enabled': this.isScheduleEnabled
@@ -204,25 +228,43 @@ export class AddTaskWizardComponent implements OnInit {
     }
   }
 
-  private getInstalledNorthPlugins() {
+  /**
+   * Open plugin modal
+   */
+  openPluginModal() {
+    this.pluginData = {
+      modalState: true,
+      type: this.taskType,
+      pluginName: ''
+    };
+  }
+
+  private getInstalledNorthPlugins(isPluginInstalled?: boolean) {
     /** request started */
-    this.ngProgress.start();
-    this.pluginService.getInstalledPlugins('north').subscribe(
+    this.showLoadingSpinner();
+    this.pluginService.getInstalledPlugins(this.taskType.toLowerCase()).subscribe(
       (data: any) => {
         /** request completed */
-        this.ngProgress.done();
+        this.hideLoadingSpinner();
         this.plugins = sortBy(data.plugins, p => {
           return p.name.toLowerCase();
         });
       },
       (error) => {
         /** request completed */
-        this.ngProgress.done();
+        this.hideLoadingSpinner();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
           this.alertService.error(error.statusText);
         }
+      },
+      () => {
+        setTimeout(() => {
+          if (isPluginInstalled) {
+            this.selectInstalledPlugin();
+          }
+        }, 1000);
       });
   }
 
@@ -356,6 +398,8 @@ export class AddTaskWizardComponent implements OnInit {
     this.schedulesService.getSchedules().
       subscribe(
         (data) => {
+          /** request completed */
+          this.ngProgress.done();
           // To filter
           this.schedulesName = data['schedules'];
         },
@@ -380,5 +424,37 @@ export class AddTaskWizardComponent implements OnInit {
 
   get name() {
     return this.taskForm.get('name');
+  }
+
+  onNotify(event: any) {
+    this.pluginData.modalState = event.modalState;
+    this.pluginData.pluginName = event.name;
+    if (event.pluginInstall) {
+      this.getInstalledNorthPlugins(event.pluginInstall);
+    }
+  }
+
+  selectInstalledPlugin() {
+    const select = <HTMLSelectElement>document.getElementById('pluginSelect');
+    for (let i = 0, j = select.options.length; i < j; ++i) {
+      if (select.options[i].innerText.toLowerCase() === this.pluginData.pluginName.toLowerCase()) {
+        this.taskForm.controls['plugin'].setValue([this.plugins[i].name]);
+        select.selectedIndex = i;
+        select.dispatchEvent(new Event('change'));
+        break;
+      }
+    }
+  }
+
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

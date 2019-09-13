@@ -4,7 +4,7 @@
 
 @media screen and (min-width: 769px) {
   .modal-card {
-    width: 70%;
+    width: 80%;
   }
 }
 
@@ -43,6 +43,14 @@ tbody {
   line-height: 0.5;
 }
 
+.data-table {
+  width: 100%;
+}
+
 .app-loading {
   min-height: 50vh;
+}
+
+.overflow {
+  overflow: visible;
 }

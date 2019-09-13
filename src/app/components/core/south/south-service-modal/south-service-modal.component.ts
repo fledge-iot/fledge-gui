@@ -39,7 +39,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public changedChildConfig = [];
   public filterPipeline = [];
   public deletedFilterPipeline = [];
-  public filterConfiguration;
+  public filterConfiguration = [];
 
   public isFilterOrderChanged = false;
   public isFilterDeleted = false;
@@ -119,6 +119,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.notify.emit(false);
     this.isAdvanceConfig = true;
     this.getAdvanceConfig(null);
+    this.filterConfiguration = [];
     modalWindow.classList.remove('is-active');
   }
 
@@ -281,12 +282,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     for (const e of <any>el) {
       e.click();
     }
-    if (this.filterConfigViewComponent !== undefined && !this.filterConfigViewComponent.isValidForm) {
-      return;
-    }
-    if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-      return;
-    }
     this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
@@ -303,7 +298,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           this.changedChildConfig = [];  // clear the array
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.');
+          this.alertService.success('Configuration updated successfully.', true);
         },
         error => {
           /** request completed */
@@ -389,7 +384,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       subscribe(
         (result: any) => {
           assetReadings = [].concat.apply([], result);
-          this.generateCsv.download(assetReadings, fileName);
+          this.generateCsv.download(assetReadings, fileName, 'service');
         },
         error => {
           console.log('error in response', error);
@@ -477,12 +472,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
   }
 
-  getFilterConfiguration(filterName) {
-    this.filterConfiguration = [];
+  getFilterConfiguration(filterName: string) {
     const catName = this.service['name'] + '_' + filterName;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
-        this.filterConfiguration = { key: catName, 'value': [data] };
+        this.filterConfiguration.push({ key: catName, 'value': [data] });
       },
         error => {
           if (error.status === 0) {
@@ -491,6 +485,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  setFilterConfiguration(filterName: string) {
+    const catName = this.service['name'] + '_' + filterName;
+    return this.filterConfiguration.find(f => f.key === catName);
   }
 
   deleteFilterReference(filter) {

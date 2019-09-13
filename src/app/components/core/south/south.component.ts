@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
-import { interval } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
-import { PingService, ServicesApiService, ProgressBarService } from '../../../services';
+import { PingService, ServicesApiService, ProgressBarService, SharedService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
+import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-south',
@@ -19,14 +20,17 @@ export class SouthComponent implements OnInit, OnDestroy {
   public refreshSouthboundServiceInterval = POLLING_INTERVAL;
   public showSpinner = false;
   private isAlive: boolean;
+  private subscription: Subscription;
 
   @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   constructor(private servicesApiService: ServicesApiService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private router: Router,
-    private ping: PingService) {
+    private ping: PingService,
+    private sharedService: SharedService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
       if (timeInterval === -1) {
@@ -38,16 +42,26 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.showLoadingSpinner();
-    this.getSouthboundServices();
+    this.getSouthboundServices(false);
     interval(this.refreshSouthboundServiceInterval)
       .takeWhile(() => this.isAlive) // only fires when component is alive
       .subscribe(() => {
-        this.getSouthboundServices();
+        this.getSouthboundServices(true);
       });
+      this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+        // if (closeBtn) {
+        //   closeBtn.click();
+        // }
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
   }
 
-  public getSouthboundServices() {
-    this.servicesApiService.getSouthServices().
+  public getSouthboundServices(caching: boolean) {
+    this.servicesApiService.getSouthServices(caching).
       subscribe(
         (data: any) => {
           this.southboundServices = data['services'];
@@ -80,7 +94,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   onNotify() {
-    this.getSouthboundServices();
+    this.getSouthboundServices(false);
   }
 
   public showLoadingSpinner() {
@@ -93,5 +107,6 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.isAlive = false;
+    this.subscription.unsubscribe();
   }
 }

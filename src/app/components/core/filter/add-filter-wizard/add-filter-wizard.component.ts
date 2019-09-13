@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { assign, reduce, sortBy } from 'lodash';
+import { assign, reduce, sortBy, isEmpty } from 'lodash';
 
-import { AlertService, ConfigurationService, FilterService } from '../../../../services';
+import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 
 @Component({
@@ -21,12 +21,27 @@ export class AddFilterWizardComponent implements OnInit {
   public isValidName = true;
   public payload: any;
   public selectedPluginDescription = '';
-
+  public pluginData = [];
   public filesToUpload = [];
+
+  public requestInProgress = false;
+
+  public show = false;
+
+  config = {
+    search: true,
+    height: '200px',
+    placeholder: 'Choose from available filter plugins',
+    limitTo: this.pluginData.length,
+    moreText: 'more', // text to be displayed when more than one items are selected like Option 1 + 5 more
+    noResultsFound: 'No plugin found!',
+    searchPlaceholder: 'Search',
+  };
 
   serviceForm = new FormGroup({
     name: new FormControl(),
-    plugin: new FormControl()
+    plugin: new FormControl(),
+    pluginToInstall: new FormControl()
   });
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -38,15 +53,80 @@ export class AddFilterWizardComponent implements OnInit {
     private filterService: FilterService,
     private configurationService: ConfigurationService,
     private configService: ConfigurationService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private service: ServicesApiService,
+    private ngProgress: ProgressBarService) { }
 
   ngOnInit() {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
-      plugin: ['', Validators.required]
+      plugin: ['', Validators.required],
+      pluginToInstall: ['', Validators.required]
     });
     this.getInstalledFilterPlugins();
+  }
+
+  toggleAvailablePlugins() {
+    if (this.show) {
+      this.show = false;
+      return;
+    }
+    this.show = true;
+    this.getAvailablePlugins('Filter');
+  }
+
+  fetchPluginRequestStarted() {
+    this.ngProgress.start();
+    const requestInProgressEle: HTMLElement = document.getElementById('requestInProgress') as HTMLElement;
+    requestInProgressEle.innerHTML = 'fetching available plugins ...';
+  }
+
+  fetchPluginRequestDone() {
+    this.ngProgress.done();
+
+    if (this.pluginData.length) {
+      const ddnEle: HTMLElement = document.getElementsByClassName('ngx-dropdown-button')[0] as HTMLElement;
+      if (ddnEle !== undefined) {
+        ddnEle.click();
+      }
+    }
+
+    const requestInProgressEle: HTMLElement = document.getElementById('requestInProgress') as HTMLElement;
+    if (requestInProgressEle !== null) {
+      requestInProgressEle.innerHTML = '';
+    }
+  }
+
+  getAvailablePlugins(type: string) {
+    this.requestInProgress = true;
+    this.fetchPluginRequestStarted();
+    this.service.getAvailablePlugins(type).
+      subscribe(
+        (data: any) => {
+          this.pluginData = data['plugins'].map((p: string) => p.replace(`foglamp-filter-`, ''));
+          this.fetchPluginRequestDone();
+          this.requestInProgress = false;
+          if (isEmpty(this.pluginData)) {
+            this.alertService.warning('No plugin available to install');
+          }
+        },
+        error => {
+          this.fetchPluginRequestDone();
+          this.requestInProgress = false;
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else if (error.status === 404) {
+            this.alertService.error('Make sure package repository is configured / added in FogLAMP');
+          } else {
+            let errorText = error.statusText;
+            if (typeof error.error.link === 'string') {
+              errorText += ` <a>${error.error.link}</a>`;
+            }
+            this.alertService.error(errorText);
+          }
+        }
+      );
   }
 
   movePrevious() {
@@ -82,22 +162,40 @@ export class AddFilterWizardComponent implements OnInit {
     }
   }
 
+  gotoNext() {
+    const pluginToInstall = this.serviceForm.value['pluginToInstall'];
+    const isPluginInstalled = this.plugins.filter(p => p.name.toLowerCase() === pluginToInstall.toLowerCase());
+    if (this.serviceForm.value['pluginToInstall'] && isPluginInstalled.length === 0) {
+      if (this.serviceForm.value['name'].trim() === '') {
+        this.isValidName = false;
+        return;
+      }
+      this.installPlugin(this.serviceForm.value['pluginToInstall']);
+    } else {
+      this.moveNext();
+    }
+  }
+
   moveNext() {
     this.isValidPlugin = true;
     this.isValidName = true;
     const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
+    if (first === undefined) {
+      return;
+    }
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
+
     switch (+id) {
       case 1:
-        if (formValues['plugin'] === '') {
+        if (formValues['plugin'] === '' && formValues['pluginToInstall'] === '') {
           this.isValidPlugin = false;
           return;
         }
 
-        if (formValues['plugin'].length !== 1) {
+        if (formValues['plugin'].length !== 1 && formValues['pluginToInstall'] === '') {
           this.isSinglePlugin = false;
           return;
         }
@@ -120,13 +218,19 @@ export class AddFilterWizardComponent implements OnInit {
         }
 
         // create payload
-        if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
+        if (formValues['name'].trim() !== '' && (formValues['plugin'].length > 0 || formValues['pluginToInstall'].length > 0)) {
+          let pluginValue;
+          if (formValues['pluginToInstall']) {
+            pluginValue = this.plugins.find(p => p.name.toLowerCase() === formValues['pluginToInstall'].toLowerCase()).name;
+          } else {
+            pluginValue = formValues['plugin'][0];
+          }
           this.payload = {
             name: formValues['name'],
-            plugin: formValues['plugin'][0]
+            plugin: pluginValue
           };
-        }
 
+        }
         this.getConfiguration(formValues['name'].trim());
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
@@ -166,6 +270,39 @@ export class AddFilterWizardComponent implements OnInit {
     }
   }
 
+  installPlugin(pluginName: string) {
+    if (pluginName === undefined) {
+      return;
+    }
+    const pluginData = {
+      format: 'repository',
+      name: `foglamp-filter-` + pluginName,
+      version: ''
+    };
+
+    /** request started */
+    this.ngProgress.start();
+    this.alertService.activityMessage('installing ...', true);
+    this.service.installPlugin(pluginData).
+      subscribe(
+        (data: any) => {
+          /** request done */
+          this.ngProgress.done();
+          this.alertService.closeMessage();
+          this.alertService.success(data.message, true);
+          this.getInstalledFilterPlugins(true);
+        },
+        error => {
+          /** request done */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   getDescription(selectedPlugin) {
     if (selectedPlugin === '') {
       this.isValidPlugin = false;
@@ -184,11 +321,10 @@ export class AddFilterWizardComponent implements OnInit {
    */
   private getConfiguration(filterName: string): void {
     const config = this.plugins.map(p => {
-      if (p.name === this.payload.plugin) {
+      if (p.name.toLowerCase() === this.payload.plugin.toLowerCase()) {
         return p.config;
       }
     }).filter(value => value !== undefined);
-
     // array to hold data to display on configuration page
     this.configurationData = { key: this.serviceName + '_' + filterName, 'value': config };
     this.useProxy = 'true';
@@ -283,12 +419,15 @@ export class AddFilterWizardComponent implements OnInit {
     }
   }
 
-  public getInstalledFilterPlugins() {
+  public getInstalledFilterPlugins(pluginInstalled?: boolean) {
     this.filterService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
         this.plugins = sortBy(data.plugins, p => {
           return p.name.toLowerCase();
         });
+        if (pluginInstalled) {
+          this.moveNext();
+        }
       },
       (error) => {
         if (error.status === 0) {
@@ -313,5 +452,13 @@ export class AddFilterWizardComponent implements OnInit {
           }
         }
       );
+  }
+
+  filterSelectionChanged(event: any) {
+    if (event.value !== undefined) {
+      this.isValidPlugin = true;
+    } else {
+      this.serviceForm.controls['pluginToInstall'].setValue('');
+    }
   }
 }

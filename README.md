@@ -3,13 +3,13 @@ This is a GUI for FogLAMP
 
 ## Prerequisites
 
-[Prerequisite macOS](prerequisite-macos.md)
+[Prerequisite macOS](docs/prerequisite-macos.md)
 
-[Prerequisite Ubuntu](prerequisite-ubuntu.md)
+[Prerequisite Ubuntu](docs/prerequisite-ubuntu.md)
 
-[Prerequisite RHEL/ CentOS](prerequisite-redhat.md)
+[Prerequisite RHEL/ CentOS](docs/prerequisite-redhat.md)
 
-[Prerequisite Windows](prerequisite-windows.md)
+[Prerequisite Windows](docs/prerequisite-windows.md)
 
 To update yarn, Run `sudo npm i -g yarn`
 
@@ -33,36 +33,34 @@ To deploy on another machine, you shall need to copy build artifacts stored in t
 
 start: `nginx -c nginx.conf -p $(pwd)`
 
-> You should be able to access it on 0.0.0.0:8080
-
 stop: `nginx -s stop`
 
 > nginx `-s stop` terminates the nginx process immediately while `-s quit` does a graceful shutdown.
 
 
-For **windows**, see details [here](windows-nginx-deployment-guide.md)
+For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 
 > Make sure to fix `include` directive and `server root` in `nginx.conf`; unless you want to use default.
 
 ## Creating and Installing Debian/ RPM Package
-[Debian packaging and usage](debian-readme.md)
+[Debian packaging and usage](docs/debian-readme.md)
 
-[RPM packaging and usage](rpm-readme.md)
+[RPM packaging and usage](docs/rpm-readme.md)
 
 ## Running using Docker 
-[Docker installation and using docker-compose](docker-readme.md)
+[Docker installation and using docker-compose](docs/docker-readme.md)
 
 ## Supported/ Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
-Safari (mac)  | 12.0.x   | latest 1
-Chrome  | 73.0.x (64-bit) | latest 2
-Firefox | 66.x (64-bit) | latest 2
+Safari (mac)  | 12.1.x   | latest 1
+Chrome  | 76.0.x (64-bit) | latest 2
+Firefox | 68.0.x (64-bit) | latest 2
 
 
-[Changelog](changelog.md)
+[Changelog](docs/changelog.md)
 
-[Developer's Guide](developers-guide.md)
+[Developer's Guide](docs/developers-guide.md)
 
 
-> &copy; 2017-19 DIANOMIC SYSTEMS INC. All Rights Reserved.
+> &copy; 2019 DIANOMIC SYSTEMS, INC. All Rights Reserved.

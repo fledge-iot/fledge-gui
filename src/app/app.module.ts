@@ -21,6 +21,7 @@ import { SettingsComponent } from './components/core/settings';
 import { SupportComponent } from './components/core/support/support.component';
 import { FooterComponent } from './components/layout/footer';
 import { LoginComponent } from './components/layout/login';
+import { CertificateBaseLoginComponent } from './components/layout/certificate-base-login';
 import { NavbarComponent } from './components/layout/navbar/navbar.component';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
 import { DirectivesModule } from './directives/directives.module';
@@ -37,6 +38,7 @@ import {
   DiscoveryService,
   NorthService,
   PingService,
+  PackagesLogService,
   SchedulesService,
   ServicesApiService,
   SupportService,
@@ -85,6 +87,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
   declarations: [
     AppComponent,
     LoginComponent,
+    CertificateBaseLoginComponent,
     AlertComponent,
     ProgressBarComponent,
     FooterComponent,
@@ -105,6 +108,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     ConfigurationService,
     AuditService,
     SystemLogService,
+    PackagesLogService,
     ServicesApiService,
     {
       provide: APP_INITIALIZER,

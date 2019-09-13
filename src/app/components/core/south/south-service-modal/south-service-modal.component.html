@@ -9,9 +9,11 @@
       <ng-container *ngIf="!isWizard">
         <div class="box">
           <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
-          [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
-          <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right" style="margin-bottom: 0%;">
-            <button class="button is-small is-text" (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
+            [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
+          <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right"
+            style="margin-bottom: -1%;">
+            <button class="button is-small is-text"
+              (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
           </div>
           <br />
           <div [hidden]="!isAdvanceConfig">
@@ -34,8 +36,8 @@
           <hr>
           <div class="columns">
             <div class="column has-text-centered">
-              <span class="label is-size-6 add-application"><a (click)="openAddFilterModal(true)">Applications <i class="fa fa-plus-circle"
-                    aria-hidden="true"></i></a></span>
+              <span class="label is-size-6 add-application"><a (click)="openAddFilterModal(true)">Applications <i
+                    class="fa fa-plus-circle" aria-hidden="true"></i></a></span>
             </div>
           </div>
           <div *ngIf="filterPipeline != undefined" class="view-content columns">
@@ -43,7 +45,8 @@
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
                   [cdkDragDisabled]="filterPipeline.length == 1">
-                  <header class="card-header" cdkDragHandle [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 }">
+                  <header class="card-header" cdkDragHandle
+                    [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 }">
                     <p class="card-header-title">
                       <i class="fa fa-bars"></i>&nbsp;{{filter}}
                     </p>
@@ -54,12 +57,14 @@
                     </a>
                   </header>
                   <div class="card-content" hidden>
-                    <div class="content">
-                      <app-view-config-item #filterConfigView *ngIf="filterConfiguration" [categoryConfigurationData]="filterConfiguration"
-                        [useFilterProxy]="useFilterProxy" [formId]="item"></app-view-config-item>
+                    <div class="content" *ngIf="filterConfiguration">
+                      <app-view-config-item #filterConfigView
+                        [categoryConfigurationData]="setFilterConfiguration(filter)" [useFilterProxy]="useFilterProxy"
+                        [formId]="item"></app-view-config-item>
                       <div class="field is-pulled-right">
-                        <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span class="icon is-medium"><i
-                              class="fa fa-trash-alt fa-lg" aria-hidden="true"></i></span></button>
+                        <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span
+                            class="icon is-medium"><i class="fa fa-trash-alt fa-lg"
+                              aria-hidden="true"></i></span></button>
                       </div>
                     </div>
                   </div>
@@ -100,7 +105,8 @@
               <button (click)="getAssetReadings(service)" class="button is-small">
                 <span>Export Readings</span>
               </button>
-              <button (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Deleting this service can not be undone. Continue?', 'deleteService')"
+              <button
+                (click)="openDeleteModal(service.management_port, service.protocol, service.name, 'Deleting this service can not be undone. Continue?', 'deleteService')"
                 class="button is-small">Delete Service</button>
             </p>
           </ng-container>

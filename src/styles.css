@@ -15,7 +15,7 @@ html,
   background-color: #f5f5f5 !important;
 }
 
-@media only screen and (min-height: 600px) {
+@media only screen and (min-height: 769px) {
   aside {
             overflow-y: hidden !important;
   }
@@ -43,7 +43,7 @@ table.scroll tbody {
   overflow-x: hidden;
 }
 
-.ng-sidebar[_ngcontent-c3] {
+.sidebar {
   z-index: 10 !important;
   padding-top: 0px;
 }
@@ -244,3 +244,6 @@ a.dropdown-item:hover {
   overflow: auto;
 }
 
+#avail-plugin{
+  padding: 0%;
+}

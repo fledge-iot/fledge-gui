@@ -1,0 +1,6 @@
+.media-content {
+  overflow: hidden;
+}
+
+.card { overflow: visible;}
+.card-content { overflow: visible; }

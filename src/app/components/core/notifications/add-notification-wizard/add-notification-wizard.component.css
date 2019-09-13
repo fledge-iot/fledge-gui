@@ -9,3 +9,7 @@
 .dropdown.notification-type {
   width: auto !important;
 }
+
+.tooltip.is-tooltip-multiline::before {
+  min-width: 16rem !important;
+}

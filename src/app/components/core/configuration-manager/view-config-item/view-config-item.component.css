@@ -7,16 +7,16 @@
 }
 
 .columns-fields {
-    margin-top: auto;
+  margin-top: auto;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .panel {
-    background-color: #fff;
-    margin-top: 10px;
+  background-color: #fff;
+  margin-top: 10px;
 }
 
 @media screen and (min-width: 769px) {
@@ -26,10 +26,19 @@
 }
 
 @media screen and (min-width: 769px) {
-  label{
-    width: 12vw !important;
-    margin-right: 2vw;
+  .field-body {
+    flex-grow: 2 !important;
   }
+}
+
+:host ::ng-deep json-editor div.jsoneditor {
+  border: thin solid lightgray !important;
+}
+:host ::ng-deep json-editor,
+:host ::ng-deep json-editor .jsoneditor,
+:host ::ng-deep json-editor > div,
+:host ::ng-deep json-editor jsoneditor-outer {
+  height: 21rem;
 }
 
 .config-div {
@@ -42,4 +51,12 @@
 
 .tooltip.is-tooltip-multiline::before {
   min-width: 16rem !important;
+}
+
+#confirm-password {
+  margin-top: 2%;
+}
+
+#confirm-password input {
+  padding-right: 2rem;
 }

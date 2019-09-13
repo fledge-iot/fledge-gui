@@ -1,17 +1,18 @@
 <div class="container is-fluid">
   <div>
-    <ng-container *ngIf="!isNotificationServiceAvailable">
+    <ng-container *ngIf="!isNotificationServiceAvailable && !isNotificationServiceEnabled">
       <article class="message is-warning">
         <div class="message-body">
           Notification service is not added
-          and enabled.&nbsp; <a (click)="addNotificationService()"><strong>add & enable now</strong></a>
+          and enabled.&nbsp; <a (click)="addServiceEvent()"><strong>add & enable now</strong></a>
         </div>
       </article>
     </ng-container>
     <ng-container *ngIf="isNotificationServiceAvailable && !isNotificationServiceEnabled">
       <article class="message is-warning">
         <div class="message-body">
-          Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable now</strong></a>
+          Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable
+              now</strong></a>
         </div>
       </article>
     </ng-container>
@@ -22,7 +23,8 @@
           <button class="delete" aria-label="delete" (click)="closeMessage(true)"></button>
         </div>
       </article>
-      <app-alert-dialog *ngIf="!isNotificationModalOpen" (disableNotificationService)='disableNotificationService()' [notificationServiceRecord]='notificationServiceRecord'>
+      <app-alert-dialog *ngIf="!isNotificationModalOpen" (disableNotificationService)='disableNotificationService()'
+        [notificationServiceRecord]='notificationServiceRecord'>
       </app-alert-dialog>
     </ng-container>
   </div>
@@ -41,10 +43,11 @@
           </p>
         </div>
       </div>
-      <a id="add_notification_instance" class="fix-pad button is-light" (click)="addNotificationInstance()">Create
+      <button [disabled]="!isNotificationServiceEnabled" id="add_notification_instance" class="button is-light"
+        (click)="addNotificationInstance()">Create
         Notification Instance &nbsp;
         <i class="fa fa-plus" aria-hidden="true"></i>
-      </a>
+      </button>
     </header>
     <div class="card-content">
       <div class="content">

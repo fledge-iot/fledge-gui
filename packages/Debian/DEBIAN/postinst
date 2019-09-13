@@ -27,14 +27,10 @@
 
 set -e
 
-set_files_ownership () {
-    chown -R root:root /var/www/html/*
+start_nginx () {
+  service nginx start
+  service nginx status | grep "Active:"
 }
 
-start_nginx_service () {
-    sudo service nginx start
-}
-
-set_files_ownership
-start_nginx_service
-sudo service nginx status | grep "Active:"
+cp /var/www/html/foglamp.html /var/www/html/index.html
+start_nginx

@@ -1,3 +1,28 @@
+## v1.7.0 [2019-08-15]
+
+#### Added
+
+* Allow login using certificate
+* Interface to install plugins on South, North, Filters and Notification page
+* Display the plugin name and version on South and North page
+* Support for password configuration items
+* JSON editor for config items of type json
+* Support to update python script 
+* New log tabs for Notification and Packages under logs section
+* Link added in alert to show failure logs 
+
+#### Changed 
+
+* Updated asset reading page to show textual data
+
+#### Fixed
+
+* Fixed upload script issue for notification instances
+* Fixed wrong time on graph data for the past reading
+* Fixed save multiple filter configuration at once
+* Fixed csv format for asset readings download
+* Fixed RPM package installation conflict issue
+
 ## v1.6.0 [2019-05-22]
 
 #### Added
