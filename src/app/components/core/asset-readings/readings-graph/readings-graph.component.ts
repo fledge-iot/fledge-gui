@@ -237,8 +237,13 @@ export class ReadingsGraphComponent implements OnDestroy {
       (reading) => reading.timestamp), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> origin/master
   setTabData() {
     if (this.isModalOpened) {
       if (this.numberTypeReadingsList.length > 0) {
