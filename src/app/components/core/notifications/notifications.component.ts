@@ -105,6 +105,7 @@ export class NotificationsComponent implements OnInit {
   }
 
   public addServiceEvent() {
+    this.getInstalledServicesList();
     if (!this.availableServices.includes('notification')) {
       this.installNotificationService();
     } else {
@@ -171,6 +172,14 @@ export class NotificationsComponent implements OnInit {
   }
 
   enableNotificationService() {
+    this.checkServiceStatus();
+    if (this.isNotificationServiceEnabled) {
+      // May be we don't need this, as enableScheduleByName will return the almost similar message
+      // if enabled in background via cURL or other GUI instance; and this GUI instance stayed here on this page
+      // note: also the same should apply for disable event
+      console.log("Notification service is already enabled.");
+      return;
+    }
     /** request started */
     this.ngProgress.start();
     this.schedulesService.enableScheduleByName(this.notificationServiceName).
