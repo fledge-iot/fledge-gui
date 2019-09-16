@@ -99,6 +99,8 @@ export class NotificationsComponent implements OnInit {
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
+          } else if (error.status === 500) {
+            this.alertService.error('Failed to install from repository');
           } else {
             this.alertService.error(error.statusText);
           }
