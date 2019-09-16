@@ -46,9 +46,13 @@ export class NotificationsComponent implements OnInit {
     this.getNotificationInstance();
   }
 
-  public async checkNotificationServiceStatus() {
+  public async checkNotificationServiceStatus(refresh: boolean = false) {
     await this.getInstalledServicesList();
     if (this.availableServices.includes('notification')) {
+      if (refresh) {
+        this.checkServiceStatus();
+        return;
+      }
       this.checkInstalledServices();
     } else {
       this.isNotificationServiceAvailable = false;
@@ -142,30 +146,6 @@ export class NotificationsComponent implements OnInit {
         (error) => {
           /** request done */
           this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  public getSchedules(): void {
-    this.schedulesService.getSchedules().
-      subscribe(
-        (data: any) => {
-          const schedule = data.schedules.find((item: any) => item.processName === 'notification_c');
-          if (schedule === undefined) {
-            return;
-          }
-
-          this.notificationServiceName = schedule.name;
-          this.isNotificationServiceAvailable = true;
-          if (schedule.enabled) {
-            this.isNotificationServiceEnabled = true;
-          }
-        },
-        error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -343,5 +323,30 @@ export class NotificationsComponent implements OnInit {
     } else {
       this.getSchedules();
     }
+  }
+
+  public getSchedules(): void {
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          const schedule = data.schedules.find((item: any) => item.processName === 'notification_c');
+          if (schedule === undefined) {
+            this.isNotificationServiceAvailable = false;
+            this.isNotificationServiceEnabled = false;
+            return;
+          }
+          this.notificationServiceName = schedule.name;
+          this.isNotificationServiceAvailable = true;
+          if (schedule.enabled) {
+            this.isNotificationServiceEnabled = true;
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }
