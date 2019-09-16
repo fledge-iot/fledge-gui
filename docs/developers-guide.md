@@ -1,4 +1,4 @@
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.5
 
 ## Code scaffolding
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
@@ -79,9 +79,9 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 7.2.15        |        8.0.0          | MIT
- Angular CLI  | 7.3.9         |        8.0.2          | MIT
- TypeScript   | 3.2.4         |        3.5.1       | Apache 2.0
+ Angular      | 8.2.5         |        8.2.6          | MIT
+ Angular CLI  | 8.2.2         |        8.3.4          | MIT
+ TypeScript   | 3.5.3         |        3.6.3          | Apache 2.0
  rxjs         | 6.5.2         |        6.5.2          | Apache 2.0
  Bulma css    | 0.7.5         |        0.7.5          | MIT
 
@@ -89,7 +89,7 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
 chart.js         |  2.8.0        |        2.8.0          | MIT
-core-js          |  2.6.9        |        3.1.3          | MIT
+core-js          |  3.1.4        |        3.2.1          | MIT
 ng-sidebar       |  8.0.0        |        8.0.0          | MIT
 moment           |  2.23.0       |        2.24.0         | MIT
 @ngx-progressbar/core  |  5.3.2        |        5.3.2          | MIT

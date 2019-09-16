@@ -4,12 +4,10 @@ import { ServiceDiscoveryComponent } from './components/core/service-discovery';
 import { SettingsComponent } from './components/core/settings';
 import { LoginComponent } from './components/layout/login';
 import { AuthCheckGuard } from './guards';
+import { DashboardComponent } from './components/core/dashboard';
 
 const appRoutes: Routes = [
-  {
-    path: '', loadChildren: () => import('./components/core/dashboard/dashboard.module')
-      .then(m => m.DashboardModule)
-  },
+  { path: '', component: DashboardComponent, canActivate: [AuthCheckGuard] },
   {
     path: 'asset', loadChildren: () => import('./components/core/asset-readings/assets.module')
       .then(m => m.AssetsModule)

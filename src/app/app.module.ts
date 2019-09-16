@@ -45,6 +45,7 @@ import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
 import { ProgressBarComponent } from './components/common/progress-bar/progress-bar.component';
 import { ProgressBarService } from './services/progress-bar.service';
+import { DashboardModule } from './components/core/dashboard/dashboard.module';
 
 export function pingServiceFactory(ping: PingService, sharedService: SharedService): Function {
   return () => ping.pingService()
@@ -74,6 +75,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     PipesModule,
     AlertDialogModule,
     SharedModule,
+    DashboardModule,
     DirectivesModule
   ],
   declarations: [
