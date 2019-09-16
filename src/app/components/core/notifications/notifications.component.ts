@@ -42,35 +42,38 @@ export class NotificationsComponent implements OnInit {
     public router: Router) { }
 
   ngOnInit() {
-    this.getInstalledServicesList();
+    this.checkNotificationServiceStatus();
     this.getNotificationInstance();
   }
 
-  public getInstalledServicesList() {
+  public async checkNotificationServiceStatus() {
+    await this.getInstalledServicesList();
+    if (this.availableServices.includes('notification')) {
+      this.checkInstalledServices();
+    } else {
+      this.isNotificationServiceAvailable = false;
+      this.isNotificationServiceEnabled = false;
+    }
+  }
+
+  public async getInstalledServicesList() {
     /** request start */
     this.ngProgress.start();
-    this.servicesApiService.getInstalledServices()
-      .subscribe(
-        (data: any) => {
-          this.availableServices = data.services;
-          if (data.services.includes('notification')) {
-            this.checkInstalledService();
-          } else {
-            /** request done */
-            this.ngProgress.done();
-            this.isNotificationServiceAvailable = false;
-            this.isNotificationServiceEnabled = false;
-          }
-        },
-        (error) => {
-          /** request done */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    await this.servicesApiService.getInstalledServices().
+      then(data => {
+        /** request done */
+        this.ngProgress.done();
+        this.availableServices = data['services'];
+      })
+      .catch(error => {
+        /** request done */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   installNotificationService() {
@@ -104,8 +107,8 @@ export class NotificationsComponent implements OnInit {
         });
   }
 
-  public addServiceEvent() {
-    this.getInstalledServicesList();
+  public async addServiceEvent() {
+    await this.getInstalledServicesList();
     if (!this.availableServices.includes('notification')) {
       this.installNotificationService();
     } else {
@@ -119,7 +122,6 @@ export class NotificationsComponent implements OnInit {
       type: 'notification',
       enabled: true
     };
-
     /** request start */
     this.ngProgress.start();
 
@@ -134,7 +136,6 @@ export class NotificationsComponent implements OnInit {
               this.checkServiceStatus();
             }, 2000);
           }
-
         },
         (error) => {
           /** request done */
@@ -172,14 +173,6 @@ export class NotificationsComponent implements OnInit {
   }
 
   enableNotificationService() {
-    this.checkServiceStatus();
-    if (this.isNotificationServiceEnabled) {
-      // May be we don't need this, as enableScheduleByName will return the almost similar message
-      // if enabled in background via cURL or other GUI instance; and this GUI instance stayed here on this page
-      // note: also the same should apply for disable event
-      console.log("Notification service is already enabled.");
-      return;
-    }
     /** request started */
     this.ngProgress.start();
     this.schedulesService.enableScheduleByName(this.notificationServiceName).
@@ -294,6 +287,8 @@ export class NotificationsComponent implements OnInit {
   }
 
   public checkServiceStatus() {
+    /** request start */
+    this.ngProgress.start();
     this.servicesApiService.getAllServices()
       .subscribe((res: any) => {
         /** request done */
@@ -316,9 +311,7 @@ export class NotificationsComponent implements OnInit {
         });
   }
 
-  checkInstalledService() {
-    /** request done */
-    this.ngProgress.done();
+  checkInstalledServices() {
     this.route.data.pipe(map(data => data['service'].services))
       .subscribe(res => {
         const service = res.find((svc: any) => {
@@ -329,8 +322,6 @@ export class NotificationsComponent implements OnInit {
         this.checkServiceEnabled(service);
       },
         (error) => {
-          /** request done */
-          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
