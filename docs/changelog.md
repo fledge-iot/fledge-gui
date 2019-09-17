@@ -1,3 +1,8 @@
+## v1.x.x [xxxx-xx-xx]
+
+#### Changed
+* Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
+
 ## v1.7.0 [2019-08-15]
 
 #### Added
