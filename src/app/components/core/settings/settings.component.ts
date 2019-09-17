@@ -12,7 +12,7 @@ import { ServiceDiscoveryComponent } from '../service-discovery';
 export class SettingsComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
   @Input() navbarComponent: NavbarComponent;
-  @ViewChild(ServiceDiscoveryComponent) serviceDiscoveryModal: ServiceDiscoveryComponent;
+  @ViewChild(ServiceDiscoveryComponent, { static: true }) serviceDiscoveryModal: ServiceDiscoveryComponent;
 
   protocol = 'http'; // default protocol
   host;

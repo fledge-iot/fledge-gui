@@ -17,7 +17,7 @@ export class UploadCertificateComponent implements OnInit {
   keyExtension = true;
   certExtension = true;
 
-  @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private certificateService: CertificateService,

@@ -1,3 +1,11 @@
+## v1.7.0next [2019-xx-xx]
+
+#### Changed
+* Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
+
+#### Fixed 
+* Fixed notification service install and enabled check to get latest state
+
 ## v1.7.0 [2019-08-15]
 
 #### Added

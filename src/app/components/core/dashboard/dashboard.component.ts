@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { map } from 'lodash';
 import { interval } from 'rxjs';
-import 'rxjs/add/operator/takeWhile';
+import { takeWhile } from 'rxjs/operators';
 
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, StatisticsService } from '../../../services';
@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     this.getStatistics();
     interval(this.refreshInterval)
-      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
       .subscribe(() => {
         this.refreshGraph();
       });

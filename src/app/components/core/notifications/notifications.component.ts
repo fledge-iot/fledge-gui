@@ -30,8 +30,8 @@ export class NotificationsComponent implements OnInit {
 
   public showSpinner = false;
   isNotificationModalOpen = false;
-  @ViewChild(NotificationModalComponent) notificationModal: NotificationModalComponent;
-  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
+  @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
+  @ViewChild(AlertDialogComponent, { static: false }) child: AlertDialogComponent;
 
   constructor(public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,

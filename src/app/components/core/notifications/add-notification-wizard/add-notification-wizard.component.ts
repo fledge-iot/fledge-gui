@@ -19,8 +19,8 @@ import { delay, retryWhen, take } from 'rxjs/operators';
   styleUrls: ['./add-notification-wizard.component.css']
 })
 export class AddNotificationWizardComponent implements OnInit, OnDestroy {
-  @ViewChild('desc') description: ElementRef;
-  @ViewChild('name') name: ElementRef;
+  @ViewChild('desc', { static: false }) description: ElementRef;
+  @ViewChild('name', { static: false }) name: ElementRef;
 
   public notificationRulePlugins = [];
   public notificationDeliveryPlugins = [];
@@ -54,8 +54,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     delivery: new FormControl()
   });
 
-  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(ViewConfigItemComponent, { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewLogsComponent, { static: true }) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
     modalState: false,

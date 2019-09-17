@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
   model: any = {};
   returnUrl: string;
 
-  @ViewChild(CertificateBaseLoginComponent) certificateBaseLogin: CertificateBaseLoginComponent;
+  @ViewChild(CertificateBaseLoginComponent, { static: true }) certificateBaseLogin: CertificateBaseLoginComponent;
   constructor(
     private router: Router,
     private authService: AuthService,

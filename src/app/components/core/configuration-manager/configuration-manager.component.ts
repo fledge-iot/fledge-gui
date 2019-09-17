@@ -20,7 +20,7 @@ export class ConfigurationManagerComponent implements OnInit {
   nodes: any[] = [];
   options = {};
 
-  @ViewChild(TreeComponent)
+  @ViewChild(TreeComponent, { static: true })
   private tree: TreeComponent;
 
   constructor(private configService: ConfigurationService,

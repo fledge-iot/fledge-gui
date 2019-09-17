@@ -47,8 +47,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   viewPort: any = '';
   public showSpinner = false;
 
-  @ViewChild(ShutdownModalComponent) child: ShutdownModalComponent;
-  @ViewChild(RestartModalComponent) childRestart: RestartModalComponent;
+  @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
+  @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
 
 
   constructor(private servicesApiService: ServicesApiService,

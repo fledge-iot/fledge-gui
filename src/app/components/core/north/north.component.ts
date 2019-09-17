@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
+import { takeWhile } from 'rxjs/operators';
 import { interval, Subscription } from 'rxjs';
 
 import { AlertService, NorthService, PingService, SharedService } from '../../../services';
@@ -47,14 +48,14 @@ export class NorthComponent implements OnInit, OnDestroy {
     });
   }
 
-  @ViewChild(NorthTaskModalComponent) northTaskModal: NorthTaskModalComponent;
-  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(NorthTaskModalComponent, { static: true }) northTaskModal: NorthTaskModalComponent;
+  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
 
   ngOnInit() {
     this.showLoadingSpinner();
     this.getNorthTasks(false);
     interval(this.refreshInterval)
-      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
       .subscribe(() => {
         this.getNorthTasks(true);
       });
