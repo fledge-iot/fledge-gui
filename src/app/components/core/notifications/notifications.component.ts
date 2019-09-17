@@ -42,35 +42,42 @@ export class NotificationsComponent implements OnInit {
     public router: Router) { }
 
   ngOnInit() {
-    this.getInstalledServicesList();
+    this.checkNotificationServiceStatus();
     this.getNotificationInstance();
   }
 
-  public getInstalledServicesList() {
+  public async checkNotificationServiceStatus(refresh: boolean = false) {
+    await this.getInstalledServicesList();
+    if (this.availableServices.includes('notification')) {
+      if (refresh) {
+        this.checkServiceStatus();
+        return;
+      }
+      this.checkInstalledServices();
+    } else {
+      this.isNotificationServiceAvailable = false;
+      this.isNotificationServiceEnabled = false;
+    }
+  }
+
+  public async getInstalledServicesList() {
     /** request start */
     this.ngProgress.start();
-    this.servicesApiService.getInstalledServices()
-      .subscribe(
-        (data: any) => {
-          this.availableServices = data.services;
-          if (data.services.includes('notification')) {
-            this.checkInstalledService();
-          } else {
-            /** request done */
-            this.ngProgress.done();
-            this.isNotificationServiceAvailable = false;
-            this.isNotificationServiceEnabled = false;
-          }
-        },
-        (error) => {
-          /** request done */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    await this.servicesApiService.getInstalledServices().
+      then(data => {
+        /** request done */
+        this.ngProgress.done();
+        this.availableServices = data['services'];
+      })
+      .catch(error => {
+        /** request done */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   installNotificationService() {
@@ -96,6 +103,8 @@ export class NotificationsComponent implements OnInit {
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
+          } else if (error.status === 500) {
+            this.alertService.error('Failed to install from repository');
           } else {
             this.alertService.error(error.statusText);
           }
@@ -104,7 +113,8 @@ export class NotificationsComponent implements OnInit {
         });
   }
 
-  public addServiceEvent() {
+  public async addServiceEvent() {
+    await this.getInstalledServicesList();
     if (!this.availableServices.includes('notification')) {
       this.installNotificationService();
     } else {
@@ -118,7 +128,6 @@ export class NotificationsComponent implements OnInit {
       type: 'notification',
       enabled: true
     };
-
     /** request start */
     this.ngProgress.start();
 
@@ -133,35 +142,10 @@ export class NotificationsComponent implements OnInit {
               this.checkServiceStatus();
             }, 2000);
           }
-
         },
         (error) => {
           /** request done */
           this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  public getSchedules(): void {
-    this.schedulesService.getSchedules().
-      subscribe(
-        (data: any) => {
-          const schedule = data.schedules.find((item: any) => item.processName === 'notification_c');
-          if (schedule === undefined) {
-            return;
-          }
-
-          this.notificationServiceName = schedule.name;
-          this.isNotificationServiceAvailable = true;
-          if (schedule.enabled) {
-            this.isNotificationServiceEnabled = true;
-          }
-        },
-        error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -285,6 +269,8 @@ export class NotificationsComponent implements OnInit {
   }
 
   public checkServiceStatus() {
+    /** request start */
+    this.ngProgress.start();
     this.servicesApiService.getAllServices()
       .subscribe((res: any) => {
         /** request done */
@@ -307,9 +293,7 @@ export class NotificationsComponent implements OnInit {
         });
   }
 
-  checkInstalledService() {
-    /** request done */
-    this.ngProgress.done();
+  checkInstalledServices() {
     this.route.data.pipe(map(data => data['service'].services))
       .subscribe(res => {
         const service = res.find((svc: any) => {
@@ -320,8 +304,6 @@ export class NotificationsComponent implements OnInit {
         this.checkServiceEnabled(service);
       },
         (error) => {
-          /** request done */
-          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -341,5 +323,30 @@ export class NotificationsComponent implements OnInit {
     } else {
       this.getSchedules();
     }
+  }
+
+  public getSchedules(): void {
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          const schedule = data.schedules.find((item: any) => item.processName === 'notification_c');
+          if (schedule === undefined) {
+            this.isNotificationServiceAvailable = false;
+            this.isNotificationServiceEnabled = false;
+            return;
+          }
+          this.notificationServiceName = schedule.name;
+          this.isNotificationServiceAvailable = true;
+          if (schedule.enabled) {
+            this.isNotificationServiceEnabled = true;
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }

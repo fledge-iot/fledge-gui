@@ -27,3 +27,10 @@ button {
   margin-top: 0.5rem;
   margin-right: 0.2rem;
 }
+
+#refresh-check {
+  margin-left: 1rem;
+  margin-top: 0rem;
+  background: none;
+  border: none;
+}

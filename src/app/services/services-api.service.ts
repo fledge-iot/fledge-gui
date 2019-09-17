@@ -57,10 +57,10 @@ export class ServicesApiService {
   /**
    *  GET  | /foglamp/service/installed
    */
-  getInstalledServices() {
-    return this.http.get(`${this.GET_SERVICES_URL}/installed`).pipe(
+  async getInstalledServices() {
+    return await this.http.get(`${this.GET_SERVICES_URL}/installed`).pipe(
       map(response => response),
-      catchError(error => throwError(error)));
+      catchError(error => throwError(error))).toPromise();
   }
 
   /**

@@ -496,4 +496,3 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.isAlive = false;
   }
 }
-
