@@ -43,8 +43,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
   @Input() categoryConfigurationData;
-  @ViewChild(ViewConfigItemComponent) viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
     modalState: false,

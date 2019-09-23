@@ -5,6 +5,9 @@
         <div class="message-body">
           Notification service is not added
           and enabled.&nbsp; <a (click)="addServiceEvent()"><strong>add & enable now</strong></a>
+          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
+            <i class="fa fa-sync" aria-hidden="true"></i>
+          </button>
         </div>
       </article>
     </ng-container>
@@ -13,6 +16,9 @@
         <div class="message-body">
           Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable
               now</strong></a>
+          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
+            <i class="fa fa-sync" aria-hidden="true"></i>
+          </button>
         </div>
       </article>
     </ng-container>
@@ -21,6 +27,9 @@
         <div class="message-body">
           Notification service is enabled.&nbsp; <a (click)="openAlertModal()">disable now</a>
           <button class="delete" aria-label="delete" (click)="closeMessage(true)"></button>
+          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
+            <i class="fa fa-sync" aria-hidden="true"></i>
+          </button>
         </div>
       </article>
       <app-alert-dialog *ngIf="!isNotificationModalOpen" (disableNotificationService)='disableNotificationService()'

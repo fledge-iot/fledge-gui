@@ -40,8 +40,8 @@ export class ListSchedulesComponent implements OnInit {
     key: ''
   };
   public updateScheduleData: any;
-  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
-  @ViewChild(UpdateScheduleComponent) updateScheduleModal: UpdateScheduleComponent;
+  @ViewChild(AlertDialogComponent, { static: false }) child: AlertDialogComponent;
+  @ViewChild(UpdateScheduleComponent, { static: true }) updateScheduleModal: UpdateScheduleComponent;
 
   constructor(private schedulesService: SchedulesService,
     private alertService: AlertService,

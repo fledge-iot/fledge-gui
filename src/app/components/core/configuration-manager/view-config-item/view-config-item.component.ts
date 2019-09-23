@@ -36,10 +36,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, AfterViewChec
   public newFileName = '';
   public isFileUploaded = false;
 
-  @ViewChild('textarea') textarea: ElementRef;
-  @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('textarea', { static: false }) textarea: ElementRef;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
-  @ViewChild(JsonEditorComponent) editor: JsonEditorComponent;
+  @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
   public editorOptions: JsonEditorOptions;
 
   public passwordOnChangeFired = false;

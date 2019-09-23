@@ -9,16 +9,11 @@ import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog.module';
 import { AlertComponent } from './components/common/alert/alert.component';
-import { ChartModule } from './components/common/chart';
 import { RestartModalComponent } from './components/common/restart-modal/restart-modal.component';
 import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
-import { BackupRestoreComponent } from './components/core/backup-restore/backup-restore.component';
-import { CertificateModule } from './components/core/certificate/certificate.module';
-import { DashboardModule } from './components/core/dashboard/dashboard.module';
 import { ListTasksComponent } from './components/core/logs/list-tasks/list-tasks.component';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 import { SettingsComponent } from './components/core/settings';
-import { SupportComponent } from './components/core/support/support.component';
 import { FooterComponent } from './components/layout/footer';
 import { LoginComponent } from './components/layout/login';
 import { CertificateBaseLoginComponent } from './components/layout/certificate-base-login';
@@ -50,6 +45,7 @@ import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
 import { ProgressBarComponent } from './components/common/progress-bar/progress-bar.component';
 import { ProgressBarService } from './services/progress-bar.service';
+import { DashboardModule } from './components/core/dashboard/dashboard.module';
 
 export function pingServiceFactory(ping: PingService, sharedService: SharedService): Function {
   return () => ping.pingService()
@@ -74,14 +70,12 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     ReactiveFormsModule,
     HttpClientModule,
     routing,
-    ChartModule,
     SidebarModule.forRoot(),
     NgProgressModule,
     PipesModule,
     AlertDialogModule,
-    CertificateModule,
-    DashboardModule,
     SharedModule,
+    DashboardModule,
     DirectivesModule
   ],
   declarations: [
@@ -97,8 +91,6 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     ServiceDiscoveryComponent,
     ShutdownModalComponent,
     RestartModalComponent,
-    SupportComponent,
-    BackupRestoreComponent,
     ListTasksComponent
   ],
   providers: [

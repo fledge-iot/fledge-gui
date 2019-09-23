@@ -52,11 +52,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('taskConfigView') viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
-  @ViewChild('filterConfigView') filterConfigViewComponent: ViewConfigItemComponent;
-  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
-  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
+  @ViewChild('taskConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild('filterConfigView', { static: false }) filterConfigViewComponent: ViewConfigItemComponent;
+  @ViewChild(FilterAlertComponent, { static: false }) filterAlert: FilterAlertComponent;
+  @ViewChild(ConfigChildrenComponent, { static: false }) configChildrenComponent: ConfigChildrenComponent;
 
   // Object to hold data of north task to delete
   public deleteTaskData = {

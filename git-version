@@ -5,6 +5,13 @@ create_git_version_info_json () {
     echo '{"hash": ""}' >> src/git-version.json
 }
 
+DIR=".git"
+if [ ! -d "$DIR" ]; then
+  echo 'WARNING: This is not a git repository!' >&2
+  create_git_version_info_json
+  exit 0;
+fi
+
 if ! [ -x "$(command -v git)" ]; then
   echo 'WARNING: git is not installed!' >&2
   create_git_version_info_json

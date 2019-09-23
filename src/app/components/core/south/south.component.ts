@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
+import { takeWhile } from 'rxjs/operators';
 import { interval, Subscription } from 'rxjs';
 
 import { PingService, ServicesApiService, ProgressBarService, SharedService } from '../../../services';
@@ -22,8 +23,8 @@ export class SouthComponent implements OnInit, OnDestroy {
   private isAlive: boolean;
   private subscription: Subscription;
 
-  @ViewChild(SouthServiceModalComponent) southServiceModal: SouthServiceModalComponent;
-  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
+  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
 
   constructor(private servicesApiService: ServicesApiService,
     private alertService: AlertService,
@@ -44,7 +45,7 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.showLoadingSpinner();
     this.getSouthboundServices(false);
     interval(this.refreshSouthboundServiceInterval)
-      .takeWhile(() => this.isAlive) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
       .subscribe(() => {
         this.getSouthboundServices(true);
       });
