@@ -103,8 +103,6 @@ export class ConfigChildrenComponent implements AfterViewInit {
               type: el.type
             });
           });
-          console.log('config item', this.configItems);
-
         },
         error => {
           console.log('error ', error);
