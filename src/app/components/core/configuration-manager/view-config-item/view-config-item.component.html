@@ -1,8 +1,9 @@
 <div class="view-content columns">
   <div class="column">
     <form name="form" id="ngForm" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
-      <ng-container *ngIf="categoryConfiguration != undefined && hasEditableConfigItems">
-        <ng-container *ngFor="let configItem of (categoryConfiguration.value | keys)">
+      <ng-container *ngIf="categoryConfiguration && hasEditableConfigItems">
+        <ng-container *ngFor="let configItem of (categoryConfiguration | keys)"
+          [ngSwitch]="getConfigAttributeType(configItem.value.type)">
           <div class="config-div" *ngIf="configItem.value.readonly != 'true'">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
@@ -13,26 +14,31 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <ng-container *ngIf="getConfigAttributeType(configItem.value.type) == 'BOOLEAN'">
+                  <ng-container *ngSwitchCase="'BOOLEAN'">
                     <label class="checkbox">
                       <input type="checkbox" name='{{configItem.value.key}}' value="setConfigValue(configItem.value)"
-                        [ngModel]="setConfigValue(configItem.value) == 'true'">
+                        [ngModel]="setConfigValue(configItem.value) == 'true'"
+                        (change)="checkValidityOnChange(configItem.value.key, $event.target.checked)"
+                        [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable">
                     </label>
                   </ng-container>
                   <div class="field">
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'TEXT'"
-                      name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="text"
-                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      [attr.maxLength]="configItem?.value?.length" />
+                    <input *ngSwitchCase="'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
+                      type="text" [ngModel]="setConfigValue(configItem.value)"
+                      (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
+                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
 
-                    <div class="field has-addons " *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD'">
+                    <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
                       <div class="control">
-                        <input #pwd (input)="showConfirmPassword()" name="{{configItem.value.key}}"
+                        <input #pwd (click)="showConfirmPassword()"
+                          (input)="checkValidityOnChange(configItem.value.key, $event.target.value)" name="{{configItem.value.key}}"
                           class="input is-fullwidth is-small" type="password" onPaste="return false"
-                          (focus)="pwd.value=''; passwordMatched=false" [ngModel]="setConfigValue(configItem.value)"
+                          (focus)="pwd.value='';passwordMatched=false" [ngModel]="setConfigValue(configItem.value)"
                           [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
                           placeholder="password"
-                          (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)" />
+                          (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)"
+                          [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </div>
                       <div class="control">
                         <a class="button is-small">
@@ -42,8 +48,7 @@
                         </a>
                       </div>
                     </div>
-                    <div class="field"
-                      *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD' && passwordOnChangeFired">
+                    <div class="field" *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD' && passwordOnChangeFired">
                       <div class="control">
                         <div id="confirm-password" class="field has-addons">
                           <div class="control">
@@ -51,6 +56,7 @@
                               onPaste="return false" type="password" [ngModel]="setConfigValue(confirmPwd.value)"
                               [value]='setConfigValue(confirmPwd.value)' [attr.maxLength]="configItem?.value?.length"
                               placeholder="confirm password"
+                              [hidden]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                               (ngModelChange)="checkPasswords(f?.controls[configItem.value.key]?.value, confirmPwd.value)" />
                           </div>
                         </div>
@@ -59,30 +65,36 @@
                         <sup>*</sup>Password mismatch</p>
                     </div>
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'INTEGER'"
-                      name="{{configItem.value.key}}" type="number" [value]='setConfigValue(configItem.value)'
-                      class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum"
-                      [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
+                    <input *ngSwitchCase="'INTEGER'" name="{{configItem.value.key}}" type="number"
+                      [value]='setConfigValue(configItem.value)' class="input is-fullwidth is-small"
+                      [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
+                      [ngModel]="setConfigValue(configItem.value)"
+                      (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                       appNumberOnly />
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'FLOAT'"
-                      name="{{configItem.value.key}}" type="number" [value]='setConfigValue(configItem.value)'
-                      step="any" class="input is-fullwidth is-small" [minValue]="configItem?.value?.minimum"
-                      [maxValue]="configItem?.value?.maximum" [ngModel]="setConfigValue(configItem.value)"
+                    <input *ngSwitchCase="'FLOAT'" name="{{configItem.value.key}}" type="number"
+                      [value]='setConfigValue(configItem.value)' step="any" class="input is-fullwidth is-small"
+                      [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
+                      [ngModel]="setConfigValue(configItem.value)"
+                      (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                       appNumberOnly />
 
-                    <ng-container *ngIf="getConfigAttributeType(configItem.value.type) === 'LONG_TEXT'">
-                      <json-editor #editor [options]="editorOptions" [data]="configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default">
+                    <ng-container *ngSwitchCase="'LONG_TEXT'">
+                      <json-editor #editor [options]="editorOptions"
+                        [data]="configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default">
                       </json-editor>
                       <input class="input" type="hidden" name="{{configItem.value.key}}" [ngModel]="editor.getText()"
                         [jsonValue]="setConfigValue(configItem.value)" />
                     </ng-container>
 
-                    <div *ngIf="getConfigAttributeType(configItem.value.type) === 'SCRIPT'">
+                    <div *ngSwitchCase="'SCRIPT'">
                       <textarea #textarea rows="10" class="textarea is-fullwidth is-small"
                         name="{{configItem.value.key}}" [ngModel]="fileContent || setConfigValue(configItem.value)"
                         (click)="getFileName(configItem?.value?.file)"
-                        [value]='fileContent || setConfigValue(configItem.value)' [disabled]="!isFileUploaded">
+                        [value]='fileContent || setConfigValue(configItem.value)'
+                        [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </textarea>
                       <p class="help">
@@ -90,22 +102,26 @@
                       </p>
                     </div>
 
-                    <div *ngIf="getConfigAttributeType(configItem.value.type) == 'ENUMERATION'" class="select is-small">
-                      <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)">
+                    <div *ngSwitchCase="'ENUMERATION'" class="select is-small">
+                      <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)"
+                        [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                        (change)="checkValidityOnChange(configItem.value.key, $event.target.value)">
                         <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>
                           {{configOption}}</option>
                       </select>
                     </div>
-                    <div *ngIf="getConfigAttributeType(configItem.value.type) == 'SCRIPT'">
+                    <div *ngSwitchCase="'SCRIPT'">
                       <div class="config-div is-fullwidth">
                         <input #fileInput class="input is-small is-fullwidth" multiple name="{{configItem.value.key}}"
-                          type="file" (change)="fileChange($event, configItem.value.key)" />
+                          type="file" (change)="fileChange($event, configItem.value.key)"
+                          [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </div>
                     </div>
 
-                    <input *ngIf="getConfigAttributeType(configItem.value.type) === 'URL'"
-                      name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="url"
-                      [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)' />
+                    <input *ngSwitchCase="'URL'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
+                      type="url" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
+                      (change)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                   </div>
 
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">

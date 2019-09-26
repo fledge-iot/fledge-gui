@@ -60,3 +60,7 @@
 #confirm-password input {
   padding-right: 2rem;
 }
+
+[hidden] {
+display: none !important;
+}
