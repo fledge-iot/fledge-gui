@@ -37,6 +37,7 @@ export class ViewConfigItemComponent implements OnChanges {
 
   @ViewChild('textarea', { static: false }) textarea: ElementRef;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+  @ViewChild(NgForm, { static: false }) form;
 
   @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
   public editorOptions: JsonEditorOptions;

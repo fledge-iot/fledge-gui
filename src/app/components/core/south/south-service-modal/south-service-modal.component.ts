@@ -20,6 +20,7 @@ import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -67,6 +68,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public ngProgress: ProgressBarService,
     public generateCsv: GenerateCsvService,
     private servicesApiService: ServicesApiService,
+    private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -282,6 +284,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
+    if (!this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
+    || !this.validateFormService.checkViewConfigItemFormValidity(this.filterConfigViewComponent)) {
+    return;
+  }
     if (this.useProxy) {
       document.getElementById('vci-proxy').click();
     }
