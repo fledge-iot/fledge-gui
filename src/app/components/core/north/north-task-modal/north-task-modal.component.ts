@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, QueryList, ViewChildren
 } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 
@@ -55,7 +55,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('taskConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild('filterConfigView', { static: false }) filterConfigViewComponent: ViewConfigItemComponent;
+  @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(FilterAlertComponent, { static: false }) filterAlert: FilterAlertComponent;
   @ViewChild(ConfigChildrenComponent, { static: false }) configChildrenComponent: ConfigChildrenComponent;
 
@@ -271,9 +271,16 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    if (!this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
-      || !this.form.valid
-      || !this.validateFormService.checkViewConfigItemFormValidity(this.filterConfigViewComponent)) {
+    if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
+      && this.form.valid)) {
+      return;
+    }
+
+    const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {
+      return this.validateFormService.checkViewConfigItemFormValidity(component);
+    });
+
+    if (!filterFormStatus) {
       return;
     }
 

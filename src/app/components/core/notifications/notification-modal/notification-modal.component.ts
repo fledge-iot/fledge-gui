@@ -182,9 +182,9 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    if (!this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
-      || !this.validateFormService.checkViewConfigItemFormValidity(this.ruleConfigView)
-      || !this.validateFormService.checkViewConfigItemFormValidity(this.deliveryConfigView)) {
+    if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
+      && this.validateFormService.checkViewConfigItemFormValidity(this.ruleConfigView)
+      && this.validateFormService.checkViewConfigItemFormValidity(this.deliveryConfigView))) {
       return;
     }
     if (this.useProxy) {

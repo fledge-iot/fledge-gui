@@ -12,10 +12,7 @@ export class ValidateFormService {
     if (viewComponent !== undefined) {
       const isValidPassword = viewComponent.passwordMatched;
       const isValidForm = viewComponent.form.valid;
-      if (!isValidPassword || !isValidForm) {
-        return false;
-      }
-      return true;
+      return isValidPassword && isValidForm;
     }
   }
 }
