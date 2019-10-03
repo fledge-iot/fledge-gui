@@ -1,73 +1,19 @@
 <div class="container is-fluid">
-  <div id="connection" class="card">
-    <header class="card-header">
-      <p class="card-header-title">
-        Connection Setup
-      </p>
-    </header>
-    <div id="connection-content" class="card-content">
-      <div class="columns">
-        <div class="column is-2">
-          <label class="label">&nbsp;</label>
-          <div id="protocol-dropdown" class="dropdown">
-            <div class="dropdown-trigger">
-              <button class="button is-fullwidth" aria-haspopup="true" aria-controls="dropdown-menu"
-                (click)="toggleDropDown('protocol-dropdown')">
-                <span>{{protocol}}</span>
-                <span class="icon is-small">
-                  <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </span>
-              </button>
-            </div>
-            <div class="dropdown-menu" id="dropdown-menu" role="menu">
-              <div class="dropdown-content">
-                <a class="dropdown-item" (click)="toggleDropDown('protocol-dropdown');setProtocol('http')">http</a>
-                <a class="dropdown-item" (click)="toggleDropDown('protocol-dropdown');setProtocol('https')">https</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="column">
-          <label class="label is-fullwidth">Host</label>
-          <input id="host" class="input" type="text" placeholder="127.0.0.1" [ngModel]="host" trim="blur">
-        </div>
-        <div class="column">
-          <label class="label is-fullwidth">Port</label>
-          <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081"
-            [ngModel]="servicePort">
-        </div>
-      </div>
-      <div class="columns">
-        <div class="column">
-          <div class="field">
-            <button id="set-url-restart-btn" class="button is-info is-pulled-left is-small"
-              (click)="resetEndPoint()">Set
-              the URL &amp; Restart</button>
-            <!-- <button id="test-connection-btn" class="button is-text is-small" (click)="testServiceConnection()">Test Connection</button> -->
-            <!-- <button id="discover-foglamp-btn" class="button is-text is-small" (click)="openServiceDiscoveryModal()">Discover FogLAMP Instances</button> -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div id="settings" class="card">
-    <header class="card-header">
-      <p class="card-header-title">
-        GUI Settings
-      </p>
-    </header>
-    <div id="settings-content" class="card-content">
-      <div class="columns">
-        <div class="column is-4">
-          <label class="label"> Refresh Dashboard Graph</label>
-          <div class="control">
-            <div id="refresh-time-dropdown" class="dropdown">
+    <div id="connection" class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          Connection Setup
+        </p>
+      </header>
+      <div id="connection-content" class="card-content">
+        <div class="columns">
+          <div class="column is-2">
+            <label class="label">&nbsp;</label>
+            <div id="protocol-dropdown" class="dropdown">
               <div class="dropdown-trigger">
-                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)="toggleDropDown('refresh-time-dropdown')">
-                  <span *ngIf="refreshInterval === '5000'">Every 5 Seconds</span>
-                  <span *ngIf="refreshInterval === '10000'">Every 10 Seconds</span>
-                  <span *ngIf="refreshInterval === '15000'">Every 15 Seconds</span>
+                <button class="button is-fullwidth" aria-haspopup="true" aria-controls="dropdown-menu"
+                  (click)="toggleDropDown('protocol-dropdown')">
+                  <span>{{protocol}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -75,56 +21,130 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('5000')">Every 5
-                    Seconds</a>
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('10000')">Every 10
-                    Seconds</a>
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('15000')">Every 15
-                    Seconds</a>
+                  <a class="dropdown-item" (click)="toggleDropDown('protocol-dropdown');setProtocol('http')">http</a>
+                  <a class="dropdown-item" (click)="toggleDropDown('protocol-dropdown');setProtocol('https')">https</a>
                 </div>
               </div>
             </div>
           </div>
+          <div class="column">
+            <label class="label is-fullwidth">Host</label>
+            <input id="host" class="input" type="text" placeholder="127.0.0.1" [ngModel]="host" trim="blur">
+          </div>
+          <div class="column">
+            <label class="label is-fullwidth">Port</label>
+            <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081"
+              [ngModel]="servicePort">
+          </div>
         </div>
-
-        <!-- extra space -->
-        <div class="column is-3"></div>
-
-        <div class="column is-4">
-          <label class="label">Ping Interval</label>
-          <div class="control">
-            <div id="ping-interval-dropdown" class="dropdown">
-              <div class="dropdown-trigger">
-                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)="toggleDropDown('ping-interval-dropdown')">
-                  <span *ngIf="pingInterval === '-1'">Manual</span>
-                  <span *ngIf="pingInterval === '5000'">Every 5 Seconds</span>
-                  <span *ngIf="pingInterval === '10000'">Every 10 Seconds</span>
-                  <span *ngIf="pingInterval === '15000'">Every 15 Seconds</span>
-                  <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="toggleDropDown('ping-interval-dropdown');ping('-1')">Manual</a>
-                  <a class="dropdown-item" (click)="toggleDropDown('ping-interval-dropdown');ping('5000')">Every 5
-                    Seconds</a>
-                  <a class="dropdown-item" (click)="toggleDropDown('ping-interval-dropdown');ping('10000')">Every 10
-                    Seconds</a>
-                  <a class="dropdown-item" (click)="toggleDropDown('ping-interval-dropdown');ping('15000')">Every 15
-                    Seconds</a>
-                </div>
-              </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <button id="set-url-restart-btn" class="button is-info is-pulled-left is-small"
+                (click)="resetEndPoint()">Set
+                the URL &amp; Restart</button>
+              <!-- <button id="test-connection-btn" class="button is-text is-small" (click)="testServiceConnection()">Test Connection</button> -->
+              <!-- <button id="discover-foglamp-btn" class="button is-text is-small" (click)="openServiceDiscoveryModal()">Discover FogLAMP Instances</button> -->
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div id="settings" class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          GUI Settings
+        </p>
+      </header>
+      <div id="settings-content" class="card-content">
+        <div class="columns">
+          <div class="column is-4">
+            <label class="label"> Refresh Dashboard Graph</label>
+            <div class="control">
+              <div id="refresh-time-dropdown" class="dropdown">
+                <div class="dropdown-trigger">
+                  <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                    (click)="toggleDropDown('refresh-time-dropdown')">
+                    <span *ngIf="refreshInterval === '5000'">Every 5 Seconds</span>
+                    <span *ngIf="refreshInterval === '10000'">Every 10 Seconds</span>
+                    <span *ngIf="refreshInterval === '15000'">Every 15 Seconds</span>
+                    <span class="icon is-small">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a class="dropdown-item"
+                      (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('5000')">Every 5
+                      Seconds</a>
+                    <a class="dropdown-item"
+                      (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('10000')">Every 10
+                      Seconds</a>
+                    <a class="dropdown-item"
+                      (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('15000')">Every 15
+                      Seconds</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="column is-4">
+            <label class="label">Ping Interval</label>
+            <div class="control">
+              <div id="ping-interval-dropdown" class="dropdown">
+                <div class="dropdown-trigger">
+                  <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                    (click)="toggleDropDown('ping-interval-dropdown')">
+                    <span *ngIf="pingInterval === '-1'">Manual</span>
+                    <span *ngIf="pingInterval === '5000'">Every 5 Seconds</span>
+                    <span *ngIf="pingInterval === '10000'">Every 10 Seconds</span>
+                    <span *ngIf="pingInterval === '15000'">Every 15 Seconds</span>
+                    <span class="icon is-small">
+                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a class="dropdown-item" (click)="toggleDropDown('ping-interval-dropdown');ping('-1')">Manual</a>
+                    <a class="dropdown-item" (click)="toggleDropDown('ping-interval-dropdown');ping('5000')">Every 5
+                      Seconds</a>
+                    <a class="dropdown-item" (click)="toggleDropDown('ping-interval-dropdown');ping('10000')">Every 10
+                      Seconds</a>
+                    <a class="dropdown-item" (click)="toggleDropDown('ping-interval-dropdown');ping('15000')">Every 15
+                      Seconds</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-4">
+              <label class="label">Editor Theme</label>
+              <div class="control">
+                <div id="theme-dropdown" class="dropdown">
+                  <div class="dropdown-trigger">
+                    <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                      (click)="toggleDropDown('theme-dropdown')">
+                      <span *ngIf="selectedTheme === 'light'">Light</span>
+                      <span *ngIf="selectedTheme === 'dark'">Dark</span>
+                      <span class="icon is-small">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                    <div class="dropdown-content">
+                      <a class="dropdown-item" (click)="toggleDropDown('theme-dropdown');selectTheme('light')">Light</a>
+                      <a class="dropdown-item" (click)="toggleDropDown('theme-dropdown');selectTheme('dark')">Dark</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <app-service-discovery></app-service-discovery>
   </div>
-  <app-service-discovery></app-service-discovery>
-</div>
