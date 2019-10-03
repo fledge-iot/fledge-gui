@@ -26,7 +26,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   public categoryConfiguration: any;
   public configItems = [];
-  public isValidForm: true;
+  public isValidForm = true;
   public isWizardCall = false;
   public filesToUpload = [];
   public hasEditableConfigItems = true;

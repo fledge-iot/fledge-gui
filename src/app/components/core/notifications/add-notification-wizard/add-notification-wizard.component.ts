@@ -247,12 +247,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         previousButton.textContent = 'Previous';
         break;
       case 3:
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+          return;
+        }
         this.pageId = +id;
         this.viewConfigItemComponent.callFromWizard();
         document.getElementById('vci-proxy').click();
-        if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-          return false;
-        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (this.notificationDeliveryPlugins.length === 0) {
