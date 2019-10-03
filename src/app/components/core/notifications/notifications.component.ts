@@ -1,14 +1,16 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { sortBy } from 'lodash';
 import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 import {
-  AlertService, NotificationsService, ProgressBarService, SchedulesService, ServicesApiService
+  AlertService, NotificationsService, SharedService, ProgressBarService, SchedulesService, ServicesApiService
 } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
+import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-notifications',
@@ -16,7 +18,7 @@ import { NotificationModalComponent } from './notification-modal/notification-mo
   styleUrls: ['./notifications.component.css'],
   providers: [ServicesApiService]
 })
-export class NotificationsComponent implements OnInit {
+export class NotificationsComponent implements OnInit, OnDestroy {
 
   isNotificationServiceAvailable = false;
   isNotificationServiceEnabled = false;
@@ -24,14 +26,16 @@ export class NotificationsComponent implements OnInit {
   notificationServicePackageName = 'foglamp-service-notification';
   notificationInstances = [];
   notification: any;
+
   public notificationServiceRecord: any;
-
   public availableServices = [];
-
   public showSpinner = false;
+  private subscription: Subscription;
   isNotificationModalOpen = false;
+
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent, { static: false }) child: AlertDialogComponent;
+  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
 
   constructor(public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
@@ -39,11 +43,18 @@ export class NotificationsComponent implements OnInit {
     public ngProgress: ProgressBarService,
     public alertService: AlertService,
     private route: ActivatedRoute,
-    public router: Router) { }
+    public router: Router,
+    private sharedService: SharedService) { }
 
   ngOnInit() {
     this.checkNotificationServiceStatus();
     this.getNotificationInstance();
+    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
   }
 
   public async checkNotificationServiceStatus(refresh: boolean = false) {
@@ -106,7 +117,11 @@ export class NotificationsComponent implements OnInit {
           } else if (error.status === 500) {
             this.alertService.error('Failed to install from repository');
           } else {
-            this.alertService.error(error.statusText);
+            let errorText = error.statusText;
+            if (typeof error.error.link === 'string') {
+              errorText += ` <a>${error.error.link}</a>`;
+            }
+            this.alertService.error(errorText);
           }
         }, () => {
           this.addNotificationService();
@@ -348,5 +363,9 @@ export class NotificationsComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
