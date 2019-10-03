@@ -7,6 +7,7 @@ import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 import { AlertService, SchedulesService, SharedService, ServicesApiService, PluginService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -48,6 +49,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private pluginService: PluginService,
     private alertService: AlertService,
     private router: Router,
+    private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService
@@ -183,11 +185,11 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         this.getConfiguration();
         break;
       case 2:
+          if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+            return;
+          }
         this.viewConfigItemComponent.callFromWizard();
         document.getElementById('vci-proxy').click();
-        if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-          return false;
-        }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;

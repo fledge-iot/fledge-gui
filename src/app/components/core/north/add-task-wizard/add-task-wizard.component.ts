@@ -8,6 +8,7 @@ import { AlertService, SchedulesService, SharedService, PluginService, ProgressB
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 
 @Component({
   selector: 'app-add-task-wizard',
@@ -57,6 +58,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private schedulesService: SchedulesService,
     private router: Router,
     private ngProgress: ProgressBarService,
+    private validateFormService: ValidateFormService,
     private sharedService: SharedService
   ) { }
 
@@ -189,11 +191,11 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         this.getConfiguration();
         break;
       case 2:
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+          return;
+        }
         this.viewConfigItemComponent.callFromWizard();
         document.getElementById('vci-proxy').click();
-        if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-          return false;
-        }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
