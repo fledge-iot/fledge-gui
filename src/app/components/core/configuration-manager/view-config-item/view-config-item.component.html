@@ -29,12 +29,13 @@
                       [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
 
-                    <textarea #textarea rows="3" *ngSwitchCase="'RAW_TEXT'" class="textarea is-fullwidth is-small"
-                      name="{{configItem.value.key}}" [ngModel]="setConfigValue(configItem.value)"
-                      [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
-                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable">
-                      {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
-                    </textarea>
+                    <ng-container *ngSwitchCase="'RAW_TEXT'">
+                      <ngx-codemirror name="{{configItem.value.key}}"
+                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
+                        [ngModel]="setConfigValue(configItem.value)" [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable">
+                        {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
+                      </ngx-codemirror>
+                    </ng-container>
                     <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
                       <div class="control">
                         <input #pwd (click)="showConfirmPassword()"
@@ -88,24 +89,29 @@
                       appNumberOnly />
 
                     <ng-container *ngSwitchCase="'LONG_TEXT'">
-                      <json-editor #editor [options]="editorOptions"
-                        [data]="configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default">
-                      </json-editor>
-                      <input class="input" type="hidden" name="{{configItem.value.key}}" [ngModel]="editor.getText()"
-                        [jsonValue]="setConfigValue(configItem.value)" />
+                      <ngx-codemirror #jsoneditor name="{{configItem.value.key}}"
+                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
+                        [ngModel]="JSON.parse(setConfigValue(configItem.value)) | json " (ngModelChange)="checkValidJson(jsoneditor.value)">
+                      </ngx-codemirror>
+                      <p *ngIf="!isValidJson" class="help is-danger">
+                        Invalid JSON
+                      </p>
                     </ng-container>
 
                     <div *ngSwitchCase="'SCRIPT'">
-                      <textarea #textarea rows="10" class="textarea is-fullwidth is-small"
-                        name="{{configItem.value.key}}" [ngModel]="fileContent || setConfigValue(configItem.value)"
-                        (click)="getFileName(configItem?.value?.file)"
-                        [value]='fileContent || setConfigValue(configItem.value)'
-                        [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)">
+                      <ngx-codemirror [ngClass]="{'readonly-editor': !isFileUploaded, 'dark-bg-color': !isFileUploaded && selectedTheme === 'darcula'}" name="{{configItem.value.key}}"
+                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
+                        (ngModelChange)="getFileName(configItem?.value?.file)"
+                        [ngModel]="fileContent || setConfigValue(configItem.value)" [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
-                      </textarea>
+                      </ngx-codemirror>
+                      <input class="input" #codeeditor (click)="getFileName(configItem?.value?.file)" type="hidden" />
                       <p class="help">
                         {{newFileName != '' ? newFileName : oldFileName}}
                       </p>
+                      <span *ngIf="!isValidExtension" class="help is-danger">
+                        Invalid file. Please upload file with .py extension.
+                      </span>
                     </div>
 
                     <div *ngSwitchCase="'ENUMERATION'" class="select is-small">
@@ -137,7 +143,7 @@
                     <sup>*</sup>Value should not be greater than {{configItem?.value?.maximum}}.
                   </span>
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('jsonValue')" class="help is-danger">
-                    Invalid JSON.
+                    Invalid JSON
                   </span>
                 </div>
               </div>
