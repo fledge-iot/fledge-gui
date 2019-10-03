@@ -31,16 +31,6 @@
   }
 }
 
-:host ::ng-deep json-editor div.jsoneditor {
-  border: thin solid lightgray !important;
-}
-:host ::ng-deep json-editor,
-:host ::ng-deep json-editor .jsoneditor,
-:host ::ng-deep json-editor > div,
-:host ::ng-deep json-editor jsoneditor-outer {
-  height: 21rem;
-}
-
 .config-div {
   margin-top: 1vw;
 }
@@ -61,6 +51,34 @@
   padding-right: 2rem;
 }
 
+:host ::ng-deep ngx-codemirror .CodeMirror-wrap {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+}
+
+:host ::ng-deep ngx-codemirror.readonly-editor .CodeMirror-wrap  {
+  background-color: #f5f5f5;
+  border-color: #f5f5f5;
+  box-shadow: none;
+  color: #7a7a7a;
+  cursor: not-allowed;
+}
+
+:host ::ng-deep ngx-codemirror.dark-bg-color .CodeMirror-wrap  {
+  background-color: #2B2B2B !important;
+}
+
+:host ::ng-deep ngx-codemirror.readonly-editor .CodeMirror-cursors  {
+  visibility: hidden !important;
+}
+
+:host ::ng-deep ngx-codemirror.readonly-editor .CodeMirror-lines  {
+  border-color: #f5f5f5;
+  box-shadow: none;
+  color: #7a7a7a;
+  cursor: not-allowed;
+}
+
 [hidden] {
-display: none !important;
+  display: none !important;
 }
