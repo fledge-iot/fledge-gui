@@ -109,6 +109,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Back';
         nxtButton.disabled = false;
+        if (!this.viewConfigItemComponent !== undefined) {
+          this.viewConfigItemComponent.passwordOnChangeFired = false;
+          this.viewConfigItemComponent.passwordMatched = true;
+        }
         break;
       case 3:
         nxtButton.textContent = 'Next';
