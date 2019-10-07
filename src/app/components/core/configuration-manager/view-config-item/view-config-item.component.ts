@@ -1,6 +1,7 @@
 import {
   Component, EventEmitter, Input, OnChanges, OnInit,
-  Output, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy} from '@angular/core';
+  Output, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has, map, assign, find } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -64,7 +65,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         this.selectedTheme = 'darcula';
       }
     });
-   }
+  }
 
   ngOnChanges() {
     this.filesToUpload = [];
@@ -125,7 +126,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       lint: true
     };
     if (type === 'JSON') {
-        editorOptions.mode = 'application/json';
+      editorOptions.mode = 'application/json';
     }
     return editorOptions;
   }
@@ -142,7 +143,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       form.control.removeControl('confirm-password');
     }
 
-    if (!this.isValidJson || !this.isValidExtension) {
+    if (!this.isValidJson || !this.isValidExtension || this.configItems.length === 0) {
       return;
     }
 
@@ -155,7 +156,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     });
     const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, (newConfig, oldConfig) => {
       if (newConfig.type === 'JSON' && oldConfig.type === 'JSON') {
-          return isEqual(JSON.parse(newConfig.value), JSON.parse(oldConfig.value));
+        return isEqual(JSON.parse(newConfig.value), JSON.parse(oldConfig.value));
       }
       return isEqual(newConfig, oldConfig);
     }) : [];
