@@ -4,6 +4,7 @@ import { assign, reduce, sortBy, isEmpty } from 'lodash';
 
 import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -55,6 +56,7 @@ export class AddFilterWizardComponent implements OnInit {
     private configService: ConfigurationService,
     private alertService: AlertService,
     private service: ServicesApiService,
+    private validateFormService: ValidateFormService,
     private ngProgress: ProgressBarService) { }
 
   ngOnInit() {
@@ -236,6 +238,9 @@ export class AddFilterWizardComponent implements OnInit {
         previousButton.textContent = 'Previous';
         break;
       case 2:
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItem))) {
+          return;
+        }
         this.viewConfigItem.callFromWizard();
         document.getElementById('vci-proxy').click();
         if (this.viewConfigItem !== undefined && !this.viewConfigItem.isValidForm) {

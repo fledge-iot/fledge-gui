@@ -12,6 +12,7 @@ import {
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 
 @Component({
   selector: 'app-add-notification-wizard',
@@ -69,6 +70,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     private ngProgress: ProgressBarService,
     private configService: ConfigurationService,
     private sharedService: SharedService,
+    private validateFormService: ValidateFormService,
     private router: Router) { }
 
   ngOnInit() {
@@ -245,12 +247,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         previousButton.textContent = 'Previous';
         break;
       case 3:
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+          return;
+        }
         this.pageId = +id;
         this.viewConfigItemComponent.callFromWizard();
         document.getElementById('vci-proxy').click();
-        if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-          return false;
-        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (this.notificationDeliveryPlugins.length === 0) {
@@ -278,12 +280,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         this.getDeliveryPluginConfiguration();
         break;
       case 5:
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+          return;
+        }
         this.pageId = +id;
         this.viewConfigItemComponent.callFromWizard();
         document.getElementById('vci-proxy').click();
-        if (this.viewConfigItemComponent !== undefined && !this.viewConfigItemComponent.isValidForm) {
-          return false;
-        }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
