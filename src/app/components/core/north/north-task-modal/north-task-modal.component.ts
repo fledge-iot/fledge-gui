@@ -150,6 +150,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     modal.classList.remove('is-active');
     if (this.viewConfigItemComponent !== undefined) {
       this.viewConfigItemComponent.passwordOnChangeFired = false;
+      this.viewConfigItemComponent.passwordMatched = true;
     }
   }
 

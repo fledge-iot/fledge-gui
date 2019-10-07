@@ -10,11 +10,11 @@ export class ValidateFormService {
 
   checkViewConfigItemFormValidity(viewComponent: ViewConfigItemComponent) {
     if (viewComponent !== undefined) {
+      const isValidForm = viewComponent.form.valid;
       const isValidPassword = viewComponent.passwordMatched;
       const isValidJSON = viewComponent.isValidJson;
       const isValidFileExtension = viewComponent.isValidExtension;
-      const isValidForm = viewComponent.form.valid;
-      return isValidPassword && isValidForm && isValidJSON && isValidFileExtension;
+      return isValidForm && isValidPassword && isValidJSON && isValidFileExtension;
     }
   }
 }
