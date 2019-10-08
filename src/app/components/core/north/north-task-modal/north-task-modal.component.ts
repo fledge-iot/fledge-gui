@@ -1,7 +1,7 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, QueryList, ViewChildren
 } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormBuilder, NgForm } from '@angular/forms';
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
@@ -16,6 +16,7 @@ import {
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -47,14 +48,14 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public advanceConfigButtonText = 'Show Advanced Config';
   public isAdvanceConfig = false;
 
-  form: FormGroup;
+  @ViewChild('fg', { static: false }) form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
 
   @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('taskConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild('filterConfigView', { static: false }) filterConfigViewComponent: ViewConfigItemComponent;
+  @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(FilterAlertComponent, { static: false }) filterAlert: FilterAlertComponent;
   @ViewChild(ConfigChildrenComponent, { static: false }) configChildrenComponent: ConfigChildrenComponent;
 
@@ -70,6 +71,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private northService: NorthService,
     private filterService: FilterService,
+    private validateFormService: ValidateFormService,
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
   ) { }
@@ -89,13 +91,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.checkIfAdvanceConfig(this.task['name']);
       this.getFilterPipeline();
     }
-
-    this.form = this.fb.group({
-      repeatDays: [''],
-      repeatTime: ['', Validators.required],
-      exclusive: [Validators.required],
-      enabled: [Validators.required]
-    });
   }
 
   onDrop(event: CdkDragDrop<string[]>) {
@@ -149,10 +144,15 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       return;
     }
     this.notify.emit(true);
+    this.form.reset();
     this.isAdvanceConfig = true;
     this.getAdvanceConfig(null);
     this.filterConfiguration = [];
     modal.classList.remove('is-active');
+    if (this.viewConfigItemComponent !== undefined) {
+      this.viewConfigItemComponent.passwordOnChangeFired = false;
+      this.viewConfigItemComponent.passwordMatched = true;
+    }
   }
 
   public getCategory(): void {
@@ -234,19 +234,16 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public saveScheduleFields(form: NgForm) {
-    if (this.isFilterDeleted) {
-      this.deleteFilter();
-    }
-    if (this.isFilterOrderChanged) {
-      this.updateFilterPipeline(this.filterPipeline);
-    }
     if (!form.dirty && !form.touched) {
       this.toggleModal(false);
       return false;
     }
 
-    if (!form.valid) {
-      return false;
+    if (this.isFilterDeleted) {
+      this.deleteFilter();
+    }
+    if (this.isFilterOrderChanged) {
+      this.updateFilterPipeline(this.filterPipeline);
     }
     const repeatInterval = form.controls['repeatTime'].value !== ('None' || undefined) ? Utils.convertTimeToSec(
       form.controls['repeatTime'].value, form.controls['repeatDays'].value) : 0;
@@ -279,6 +276,19 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
+    if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
+      && this.form.valid)) {
+      return;
+    }
+
+    const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {
+      return this.validateFormService.checkViewConfigItemFormValidity(component);
+    });
+
+    if (!filterFormStatus) {
+      return;
+    }
+
     if (this.useProxy) {
       document.getElementById('vci-proxy').click();
     }

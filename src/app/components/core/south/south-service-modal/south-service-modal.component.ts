@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, ViewChildren, QueryList
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -20,6 +20,7 @@ import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -55,7 +56,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('serviceConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild('filterConfigView', { static: false }) filterConfigViewComponent: ViewConfigItemComponent;
+  @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(ConfigChildrenComponent, { static: false }) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(FilterAlertComponent, { static: false }) filterAlert: FilterAlertComponent;
@@ -67,6 +68,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public ngProgress: ProgressBarService,
     public generateCsv: GenerateCsvService,
     private servicesApiService: ServicesApiService,
+    private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -282,6 +284,18 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
+    if (!this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)) {
+      return;
+    }
+
+    const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {
+      return this.validateFormService.checkViewConfigItemFormValidity(component);
+    });
+
+    if (!filterFormStatus) {
+      return;
+    }
+
     if (this.useProxy) {
       document.getElementById('vci-proxy').click();
     }

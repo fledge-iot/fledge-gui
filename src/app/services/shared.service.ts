@@ -7,4 +7,6 @@ export class SharedService {
   public isAdmin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isServiceUp: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public showLogs: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public theme: BehaviorSubject<any> = new BehaviorSubject<any>(localStorage.getItem('OPTED_THEME') != null ?
+  localStorage.getItem('OPTED_THEME') : 'light');
 }

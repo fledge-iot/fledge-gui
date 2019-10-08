@@ -9,6 +9,7 @@ import {
 } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 
 @Component({
   selector: 'app-notification-modal',
@@ -41,6 +42,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     private notificationService: NotificationsService,
+    private validateFormService: ValidateFormService,
     public ngProgress: ProgressBarService) { }
 
   ngOnInit() { }
@@ -180,6 +182,11 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
+    if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
+      && this.validateFormService.checkViewConfigItemFormValidity(this.ruleConfigView)
+      && this.validateFormService.checkViewConfigItemFormValidity(this.deliveryConfigView))) {
+      return;
+    }
     if (this.useProxy) {
       document.getElementById('vci-proxy').click();
     }

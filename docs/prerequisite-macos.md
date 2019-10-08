@@ -6,4 +6,4 @@ https://nodejs.org/en/download/
 
 ### Install yarn
 
-`brew install yarn --without-node`
+`brew install yarn`
