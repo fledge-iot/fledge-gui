@@ -7,6 +7,7 @@ import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
+import { DateFormatterPipe } from '../../../../pipes';
 
 @Component({
   selector: 'app-readings-graph',
@@ -422,7 +423,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  create3DGraph(readings: any, timestamps: any) {
+  create3DGraph(readings: any, ts: any) {
+    const datePipe = new DateFormatterPipe();
+    const timestamps = ts.map((t: any) => datePipe.transform(t, 'HH:mm:ss:SSS'));
     this.polyGraphData = {
       data: [
         {
