@@ -4,8 +4,6 @@ import { interval } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
-
-import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
@@ -206,21 +204,20 @@ export class ReadingsGraphComponent implements OnDestroy {
     const numReadings = [];
     const strReadings = [];
     const arrReadings = [];
-    const datePipe = new DateFormatterPipe();
-    this.timestamps = readings.map((r: any) => datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'));
+    this.timestamps = readings.map((r: any) => r.timestamp);
 
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
         if (typeof value === 'number') {
           numReadings.push({
             key: k,
-            read: { x: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'), y: value }
+            read: { x: r.timestamp, y: value }
           });
         }
         if (typeof value === 'string') {
           strReadings.push({
             key: k,
-            timestamp: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'),
+            timestamp: r.timestamp,
             data: value
           });
         }
@@ -375,12 +372,11 @@ export class ReadingsGraphComponent implements OnDestroy {
           type: 'time',
           distribution: 'linear',
           time: {
-            parser: 'HH:mm:ss',
             unit: 'second',
+            tooltipFormat: 'HH:mm:ss:SSS',
             displayFormats: {
               unit: 'second',
               second: 'HH:mm:ss'
-
             }
           },
           ticks: {
