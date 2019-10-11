@@ -116,7 +116,6 @@ export class NotificationLogComponent implements OnInit {
         (data: any) => {
           this.logSourceList = data.logCode
             .filter((log: any) => /NTF/.test(log.code));
-          this.source = this.logSourceList.find((source: any) => source.code === 'NTFSN').code;
           this.getNotificationLogs();
         },
         error => {
@@ -208,7 +207,12 @@ export class NotificationLogComponent implements OnInit {
     }
     /** request started */
     this.progress.start();
-    this.auditService.getAuditLogs(this.limit, this.tempOffset, this.source, this.severity).
+    let sourceCode = this.source;
+    if (this.source.length === 0) {
+      const codes = this.logSourceList.map(s => s.code);
+      sourceCode = codes.toString();
+    }
+    this.auditService.getAuditLogs(this.limit, this.tempOffset, sourceCode, this.severity).
       subscribe(
         (data: any) => {
           /** request completed */
