@@ -473,7 +473,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public async generate3Dgraph() {
-    // Initilization of DOM elemnt to render graph
+    // Initilization of DOM element to render graph
     // takes time at fist so need some time to wait here.
     const intervalId = setInterval(() => {
       if (this.Graph) {
