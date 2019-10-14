@@ -62,7 +62,8 @@
                     <span><b>3D Graph</b></span>
                   </a>
                 </li>
-                <li *ngIf="!isEmptyObject(stringTypeReadingsList)" [ngClass]="{'is-active': selectedTab == 3}" data-tab="3">
+                <li *ngIf="!isEmptyObject(stringTypeReadingsList)" [ngClass]="{'is-active': selectedTab == 3}"
+                  data-tab="3">
                   <a (click)="selectTab(3)">
                     <span><b>Tabular Data</b></span>
                   </a>
@@ -93,9 +94,7 @@
                     [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
                 </div>
                 <div *ngIf="selectedTab === 2 && arrayTypeReadingsList?.length > 0" data-content="2">
-                  <plotly-plot [data]="polyGraphData?.data" [layout]="polyGraphData?.layout"
-                    [config]="{displayModeBar: false}">
-                  </plotly-plot>
+                  <div id="3d_graph" #3DGraph></div>
                 </div>
                 <div *ngIf="selectedTab === 3 && !isEmptyObject(stringTypeReadingsList)" data-content="3">
                   <table class="table is-responsive is-borderless data-table">
