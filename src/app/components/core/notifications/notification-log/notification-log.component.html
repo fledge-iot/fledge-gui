@@ -20,7 +20,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('dropdown')">
-                  <span>{{source.toUpperCase()}}</span>
+                  <span>{{source == ''? "ALL": source.toUpperCase()}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -28,10 +28,11 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item" *ngFor="let source of logSourceList"
-                    (click)="toggleDropDown('dropdown');filterSource('source', source.code)">
-                    {{source.code}}{{source.description
-                        != '' ? ' - ' + source.description : ''}}
+                  <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterSource('source', '')">ALL</a>
+                  <a class="dropdown-item" *ngFor="let s of logSourceList"
+                    (click)="toggleDropDown('dropdown');filterSource('source', s.code)">
+                    {{s.code}}{{s.description
+                        != '' ? ' - ' + s.description : ''}}
                   </a>
                 </div>
               </div>
@@ -60,7 +61,7 @@
           </div>
           <div class="column">
             <input #nameField type="text" class="input is-fullwidth is-small" placeholder="Name"
-              (input)="filterByName(nameField.value)" />
+              [(ngModel)]="searchTerm" />
           </div>
 
           <!-- <div class="column">
@@ -75,7 +76,7 @@
           </div> -->
         </div>
       </div>
-      <table class="table is-narrow is-responsive" cellpadding="0" cellspacing="0">
+      <table #dataTable class="table is-narrow is-responsive" cellpadding="0" cellspacing="0">
         <thead>
           <tr>
             <th>Timestamp</th>
@@ -85,7 +86,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let log of notificationLogs">
+          <tr *ngFor="let log of notificationLogs | SearchPipe:searchTerm">
             <td>
               <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
             </td>
@@ -95,7 +96,7 @@
           </tr>
         </tbody>
       </table>
-      <div *ngIf='totalPagesCount > 1'>
+      <div *ngIf='totalPagesCount > 1 && dataTable.rows.length > 1'>
         <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount'
           (goPrev)="onPrev()" (goNext)="onNext()" (goFirst)="onFirst()" (goLast)="onLast()" (goPage)="goToPage($event)">
         </app-pagination>
