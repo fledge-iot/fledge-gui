@@ -26,6 +26,7 @@ export class NotificationLogComponent implements OnInit {
 
   isInvalidLimit = false;
   isInvalidOffset = false;
+  searchTerm = '';
 
   constructor(private auditService: AuditService,
     private progress: ProgressBarService,
@@ -236,14 +237,5 @@ export class NotificationLogComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  filterByName(name: string) {
-    if (!name) {
-      this.getNotificationLogs();
-    } else {
-      this.notificationLogs = this.notificationLogs.filter((log: any) =>
-        log.details.name.trim().toLowerCase().includes(name.trim().toLowerCase()));
-    }
   }
 }

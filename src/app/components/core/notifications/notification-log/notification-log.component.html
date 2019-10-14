@@ -61,7 +61,7 @@
           </div>
           <div class="column">
             <input #nameField type="text" class="input is-fullwidth is-small" placeholder="Name"
-              (input)="filterByName(nameField.value)" />
+              [(ngModel)]="searchTerm" />
           </div>
 
           <!-- <div class="column">
@@ -86,7 +86,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let log of notificationLogs">
+          <tr *ngFor="let log of notificationLogs | SearchPipe:searchTerm">
             <td>
               <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
             </td>
