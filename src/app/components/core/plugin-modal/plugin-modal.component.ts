@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, OnChanges, Output, EventEmitter, HostListener } from '@angular/core';
 import { isEmpty } from 'lodash';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { ServicesApiService, AlertService, ProgressBarService } from '../../../services';
 
@@ -11,17 +12,10 @@ import { ServicesApiService, AlertService, ProgressBarService } from '../../../s
 export class PluginModalComponent implements OnInit, OnChanges {
 
   plugins = [];
-  config = {
-    search: true,
-    height: '200px',
-    placeholder: 'Select',
-    limitTo: this.plugins.length,
-    moreText: 'more', // text to be displayed when more than one items are selected like Option 1 + 5 more
-    noResultsFound: 'No plugin found!',
-    searchPlaceholder: 'Search',
-  };
-
   installButtonEnabled = true;
+  pluginForm: FormGroup;
+  stopLoading = false;
+  placeholderText = 'fetching available plugins ...';
 
   @Input() data: {
     modalState: boolean,
@@ -33,7 +27,11 @@ export class PluginModalComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private ngProgress: ProgressBarService) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.pluginForm = new FormGroup({
+      pluginName: new FormControl({value: null, disabled: false}, Validators.required)
+    });
+  }
 
   ngOnChanges() {
     if (this.data.modalState === true) {
@@ -62,43 +60,21 @@ export class PluginModalComponent implements OnInit, OnChanges {
     }
   }
 
-  fetchPluginRequestStarted() {
-    this.ngProgress.start();
-    const requestInProgressEle: HTMLElement = document.getElementById('requestInProgress') as HTMLElement;
-    requestInProgressEle.innerHTML = 'fetching available plugins ...';
-  }
-
-  fetchPluginRequestDone() {
-    this.ngProgress.done();
-    if (this.plugins.length) {
-      const ddnEle: HTMLElement = document.getElementsByClassName('ngx-dropdown-button')[0] as HTMLElement;
-      if (ddnEle !== undefined) {
-        ddnEle.click();
-      }
-    }
-
-    const requestInProgressEle: HTMLElement = document.getElementById('requestInProgress') as HTMLElement;
-    if (requestInProgressEle !== null) {
-      requestInProgressEle.innerHTML = '';
-    }
-  }
-
   getAvailablePlugins(type: string) {
-    this.fetchPluginRequestStarted();
     this.service.getAvailablePlugins(type).
       subscribe(
         (data: any) => {
           this.installButtonEnabled = true;
           this.plugins = data['plugins'].map((p: string) => p.replace(`foglamp-${this.data.type.toLowerCase()}-`, ''));
+          this.placeholderText = 'Select Plugin';
           if (isEmpty(this.plugins)) {
+            this.stopLoading = true;
             this.alertService.warning('No plugin available to install');
           }
-          setTimeout(() => {
-            this.fetchPluginRequestDone();
-          }, 100);
         },
         error => {
-          this.fetchPluginRequestDone();
+          this.stopLoading = true;
+          this.placeholderText = 'Select Plugin';
           if (error.status === 0) {
             console.log('service down ', error);
           } else if (error.status === 404) {
@@ -116,7 +92,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
 
   installPlugin(pluginName: string) {
     this.installButtonEnabled = false;
-    if (pluginName === undefined) {
+    if (pluginName === undefined || pluginName === null) {
       this.installButtonEnabled = true;
       return;
     }
@@ -128,7 +104,8 @@ export class PluginModalComponent implements OnInit, OnChanges {
 
     /** request started */
     this.ngProgress.start();
-    this.alertService.activityMessage('installing ...', true);
+    this.pluginForm.controls.pluginName.disable();
+    this.alertService.activityMessage('Installing ' + pluginName + ' ' + this.data.type.toLowerCase() + ' plugin ...', true);
     this.service.installPlugin(pluginData).
       subscribe(
         (data: any) => {
@@ -138,10 +115,12 @@ export class PluginModalComponent implements OnInit, OnChanges {
           this.alertService.closeMessage();
           this.alertService.success(data.message, true);
           this.installButtonEnabled = false;
+          this.pluginForm.controls.pluginName.enable();
         },
         error => {
           /** request done */
           this.ngProgress.done();
+          this.pluginForm.controls.pluginName.enable();
           this.installButtonEnabled = true;
           if (error.status === 0) {
             console.log('service down ', error);

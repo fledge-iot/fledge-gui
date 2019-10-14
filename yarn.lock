@@ -428,6 +428,13 @@
   resolved "https://registry.yarnpkg.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==
 
+"@ng-select/ng-select@^3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-3.0.7.tgz#913ea310bcf8b9053516c97e0e7c80d71ce99263"
+  integrity sha512-PckxF7pGmz2k8enaourVnnN6G/1pfuJdjo6LA4yTA/1nMAYqCEuHsiuN8mCs7haWV2rx6tzQDxySuYH/2y8pwA==
+  dependencies:
+    tslib "^1.9.0"
+
 "@ngtools/webpack@8.2.2":
   version "8.2.2"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-8.2.2.tgz#61ba246ba4aff5e03daa0abea76947647b0da25e"
@@ -6545,11 +6552,6 @@ ng-sidebar@~8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/ng-sidebar/-/ng-sidebar-8.0.0.tgz#c9d170aea9831116f807e557aa32f2eb063163bb"
   integrity sha512-+uCduUkcsOerb8MjecrPcP1KY8gKyd8XVBB+8jRao/JCz/qBwD9E2GPRGLL+NzwU72coYhL8L4UvhZwwIpl1rA==
-
-ngx-select-dropdown@^1.0.1:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/ngx-select-dropdown/-/ngx-select-dropdown-1.1.0.tgz#52d1e787f78454154d60e1bdd645f0be36c4a19e"
-  integrity sha512-o7tL7yeSAMzSEZfklF8iSEtB1aMU2P835tHahkvKyr9svYBp2E6nvAEsEivVKQZZ+Rh4zdTBmiEUhrgT+U0hlg==
 
 nice-try@^1.0.4:
   version "1.0.5"
