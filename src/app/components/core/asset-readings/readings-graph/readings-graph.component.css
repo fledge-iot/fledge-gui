@@ -2,9 +2,19 @@
   display: none !important;
 }
 
+.modal-card-head {
+  border-top-left-radius: 3px !important;
+  border-top-right-radius: 3px !important;
+  padding: 15px !important;
+}
+
+.modal-card-body {
+  padding: 15px !important;
+}
+
 @media screen and (min-width: 769px) {
   .modal-card {
-    width: 80%;
+    width: 85%;
   }
 }
 
