@@ -59,7 +59,7 @@ describe('FogLAMP gui', () => {
 
     it('Should Display System Logs', () => {
       skipLogin.navToSystemLogs();
-      expect(skipLogin.getSystemLogTitle()).toEqual('SysLog');
+      expect(skipLogin.getSystemLogTitle()).toEqual('System Logs');
       expect(skipLogin.systemLogCount()).toContain('Count');
       expect(skipLogin.getSysLogRefreshButton()).toEqual(true);
       expect(skipLogin.isSystemLogDropDownPresent()).toEqual(true);

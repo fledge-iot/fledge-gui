@@ -8,7 +8,7 @@ import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { AddFilterWizardComponent } from './add-filter-wizard/add-filter-wizard.component';
 import { FilterAlertComponent } from './filter-alert/filter-alert.component';
-import { SelectDropDownModule } from 'ngx-select-dropdown';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,7 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
     AlertDialogModule,
     SharedModule,
     PipesModule,
-    SelectDropDownModule
+    NgSelectModule
   ],
   exports: [AddFilterWizardComponent, FilterAlertComponent],
   providers: [ServicesApiService, AssetsService, SchedulesService, FilterService],

@@ -29,8 +29,5 @@ button {
 }
 
 #refresh-check {
-  margin-left: 1rem;
-  margin-top: 0rem;
-  background: none;
-  border: none;
+  margin: auto;
 }

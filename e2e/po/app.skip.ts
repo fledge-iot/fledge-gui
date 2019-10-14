@@ -148,7 +148,7 @@ export class SkipLogin {
 
   getSystemLogTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title > div > div.column.is-9 > h5')).getText();
+    return element(by.css('#card-title h5')).getText();
   }
 
   getSysLogRefreshButton() {

@@ -1,5 +1,8 @@
 ## v1.7.0next [2019-xx-xx]
 
+#### Added
+* Python editor with light and dark mode support for `script` & `code` types
+
 #### Changed
 * Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
 
