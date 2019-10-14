@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { SelectDropDownModule } from 'ngx-select-dropdown';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 import {
@@ -16,7 +16,7 @@ import { ConfigChildrenComponent } from './components/core/configuration-manager
 import { PluginModalComponent } from './components/core/plugin-modal/plugin-modal.component';
 
 @NgModule({
-  imports: [CommonModule, CodemirrorModule, PipesModule, FormsModule, DirectivesModule, SelectDropDownModule],
+  imports: [CommonModule, CodemirrorModule, PipesModule, FormsModule, DirectivesModule, NgSelectModule, ReactiveFormsModule],
   declarations: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent],
   exports: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent]
 })

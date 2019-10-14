@@ -2,19 +2,14 @@
   <div class="card">
     <header class="card-header">
       <div id="card-title" class="card-content">
-        <div class="columns is-mobile">
-          <div class="column is-10">
-            <h5 class="title is-5">Notification Logs</h5>
-            <h6 class='subtitle is-6'>
-              <small>Count: {{ totalCount }}</small>
-            </h6>
-          </div>
-          <div class="column">
-            <button (click)="getNotificationLogs()" class="button is-small">
-              <i class="fa fa-sync" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
+        <h5 class="title is-5">Notification Logs
+          <button (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
+            <i class="fa fa-sync" aria-hidden="true"></i>
+          </button>
+        </h5>
+        <h6 class='subtitle is-6'>
+          <small class="help">Count: {{ totalCount }}</small>
+        </h6>
       </div>
     </header>
     <div class="card-content">
@@ -64,7 +59,8 @@
             </div>
           </div>
           <div class="column">
-            <input #nameField type="text" class="input is-fullwidth is-small" placeholder="Name" (input)="filterByName(nameField.value)"/>
+            <input #nameField type="text" class="input is-fullwidth is-small" placeholder="Name"
+              (input)="filterByName(nameField.value)" />
           </div>
 
           <!-- <div class="column">

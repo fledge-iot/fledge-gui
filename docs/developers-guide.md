@@ -100,7 +100,7 @@ plotly.js         | 1.48.1    | 1.48.1       | MIT
 @ctrl/ngx-codemirror | 2.1.0    | 2.1.0     | MIT
 codemirror    | 5.48.4 | 5.48.4 | MIT
 jsonlint-mod  | 1.7.5  | 1.7.5  | MIT
-
+@ng-select/ng-select | 3.0.7 | 3.0.7 | MIT
 
 ## Update Dependencies
 * `npm update`: By running this command, npm checks if there exist newer versions in the repository that satisfy specified semantic versioning ranges and installs them.
