@@ -42,7 +42,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart', { static: false }) assetChart: Chart;
-  @ViewChild('Graph', { static: false }) Graph: ElementRef;
+  @ViewChild('3DGraph', { static: false }) Graph: ElementRef;
 
   public numberTypeReadingsList = [];
   public stringTypeReadingsList: any;
@@ -473,6 +473,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public async generate3Dgraph() {
+    // Initilization of DOM elemnt to render graph
+    // takes time at fist so need some time to wait here.
     const intervalId = setInterval(() => {
       if (this.Graph) {
         Plotly.newPlot(
