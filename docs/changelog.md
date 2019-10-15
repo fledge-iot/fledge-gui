@@ -2,6 +2,7 @@
 
 #### Added
 * Python editor with light and dark mode support for `script` & `code` types
+* Option to show ALL Notification info in Notification Logs tab.
 
 #### Changed
 * Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
