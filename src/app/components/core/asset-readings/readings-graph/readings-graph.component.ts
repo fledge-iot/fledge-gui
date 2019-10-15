@@ -1,14 +1,15 @@
-import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, ElementRef } from '@angular/core';
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
-
-import { DateFormatterPipe } from '../../../../pipes/date-formatter-pipe';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
+import { DateFormatterPipe } from '../../../../pipes';
+
+declare var Plotly: any;
 
 @Component({
   selector: 'app-readings-graph',
@@ -41,6 +42,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart', { static: false }) assetChart: Chart;
+  @ViewChild('3DGraph', { static: false }) Graph: ElementRef;
 
   public numberTypeReadingsList = [];
   public stringTypeReadingsList: any;
@@ -206,21 +208,20 @@ export class ReadingsGraphComponent implements OnDestroy {
     const numReadings = [];
     const strReadings = [];
     const arrReadings = [];
-    const datePipe = new DateFormatterPipe();
-    this.timestamps = readings.map((r: any) => datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'));
+    this.timestamps = readings.map((r: any) => r.timestamp);
 
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
         if (typeof value === 'number') {
           numReadings.push({
             key: k,
-            read: { x: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'), y: value }
+            read: { x: r.timestamp, y: value }
           });
         }
         if (typeof value === 'string') {
           strReadings.push({
             key: k,
-            timestamp: datePipe.transform(r.timestamp, 'HH:mm:ss:SSS'),
+            timestamp: r.timestamp,
             data: value
           });
         }
@@ -375,12 +376,11 @@ export class ReadingsGraphComponent implements OnDestroy {
           type: 'time',
           distribution: 'linear',
           time: {
-            parser: 'HH:mm:ss',
             unit: 'second',
+            tooltipFormat: 'HH:mm:ss:SSS',
             displayFormats: {
               unit: 'second',
               second: 'HH:mm:ss'
-
             }
           },
           ticks: {
@@ -426,7 +426,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  create3DGraph(readings: any, timestamps: any) {
+  create3DGraph(readings: any, ts: any) {
+    const datePipe = new DateFormatterPipe();
+    const timestamps = ts.map((t: any) => datePipe.transform(t, 'HH:mm:ss:SSS'));
     this.polyGraphData = {
       data: [
         {
@@ -462,8 +464,25 @@ export class ReadingsGraphComponent implements OnDestroy {
           r: 10,
           t: 25
         }
+      },
+      config: {
+        displayModeBar: false
       }
     };
+    this.generate3Dgraph();
+  }
+
+  public async generate3Dgraph() {
+    // Initilization of DOM element to render graph
+    // takes time at fist so need some time to wait here.
+    const intervalId = setInterval(() => {
+      if (this.Graph) {
+        Plotly.newPlot(
+          this.Graph.nativeElement,
+          this.polyGraphData);
+        clearInterval(intervalId);
+      }
+    }, 100);
   }
 
   public isNumber(val) {

@@ -24,20 +24,11 @@ export class AddFilterWizardComponent implements OnInit {
   public selectedPluginDescription = '';
   public pluginData = [];
   public filesToUpload = [];
-
   public requestInProgress = false;
-
   public show = false;
-
-  config = {
-    search: true,
-    height: '200px',
-    placeholder: 'Choose from available filter plugins',
-    limitTo: this.pluginData.length,
-    moreText: 'more', // text to be displayed when more than one items are selected like Option 1 + 5 more
-    noResultsFound: 'No plugin found!',
-    searchPlaceholder: 'Search',
-  };
+  public stopLoading = false;
+  public placeholderText = 'fetching available plugins ...';
+  public disabledBtn = false;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -63,8 +54,8 @@ export class AddFilterWizardComponent implements OnInit {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
-      plugin: ['', Validators.required],
-      pluginToInstall: ['', Validators.required]
+      plugin: [{value: '', disabled: false}, Validators.required],
+      pluginToInstall: [{value: null, disabled: false}, Validators.required]
     });
     this.getInstalledFilterPlugins();
   }
@@ -78,44 +69,23 @@ export class AddFilterWizardComponent implements OnInit {
     this.getAvailablePlugins('Filter');
   }
 
-  fetchPluginRequestStarted() {
-    this.ngProgress.start();
-    const requestInProgressEle: HTMLElement = document.getElementById('requestInProgress') as HTMLElement;
-    requestInProgressEle.innerHTML = 'fetching available plugins ...';
-  }
-
-  fetchPluginRequestDone() {
-    this.ngProgress.done();
-
-    if (this.pluginData.length) {
-      const ddnEle: HTMLElement = document.getElementsByClassName('ngx-dropdown-button')[0] as HTMLElement;
-      if (ddnEle !== undefined) {
-        ddnEle.click();
-      }
-    }
-
-    const requestInProgressEle: HTMLElement = document.getElementById('requestInProgress') as HTMLElement;
-    if (requestInProgressEle !== null) {
-      requestInProgressEle.innerHTML = '';
-    }
-  }
-
   getAvailablePlugins(type: string) {
     this.requestInProgress = true;
-    this.fetchPluginRequestStarted();
     this.service.getAvailablePlugins(type).
       subscribe(
         (data: any) => {
           this.pluginData = data['plugins'].map((p: string) => p.replace(`fledge-filter-`, ''));
-          this.fetchPluginRequestDone();
           this.requestInProgress = false;
+          this.placeholderText = 'Select Plugin';
           if (isEmpty(this.pluginData)) {
+            this.stopLoading = true;
             this.alertService.warning('No plugin available to install');
           }
         },
         error => {
-          this.fetchPluginRequestDone();
+          this.stopLoading = true;
           this.requestInProgress = false;
+          this.placeholderText = 'Select Plugin';
           if (error.status === 0) {
             console.log('service down ', error);
           } else if (error.status === 404) {
@@ -165,7 +135,17 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   gotoNext() {
-    const pluginToInstall = this.serviceForm.value['pluginToInstall'];
+    let pluginToInstall: any;
+    if (this.serviceForm.value['plugin']) {
+      pluginToInstall = this.serviceForm.value['plugin']['0'];
+    }
+    if (this.serviceForm.value['pluginToInstall']) {
+      pluginToInstall = this.serviceForm.value['pluginToInstall'];
+    }
+    if (pluginToInstall === null || pluginToInstall === undefined) {
+      this.isValidPlugin = false;
+      return;
+    }
     const isPluginInstalled = this.plugins.filter(p => p.name.toLowerCase() === pluginToInstall.toLowerCase());
     if (this.serviceForm.value['pluginToInstall'] && isPluginInstalled.length === 0) {
       if (this.serviceForm.value['name'].trim() === '') {
@@ -287,7 +267,10 @@ export class AddFilterWizardComponent implements OnInit {
 
     /** request started */
     this.ngProgress.start();
-    this.alertService.activityMessage('installing ...', true);
+    this.serviceForm.controls.pluginToInstall.disable();
+    this.serviceForm.controls.plugin.disable();
+    this.disabledBtn = true;
+    this.alertService.activityMessage('Installing ' + pluginName + ' filter plugin ...', true);
     this.service.installPlugin(pluginData).
       subscribe(
         (data: any) => {
@@ -296,10 +279,16 @@ export class AddFilterWizardComponent implements OnInit {
           this.alertService.closeMessage();
           this.alertService.success(data.message, true);
           this.getInstalledFilterPlugins(true);
+          this.serviceForm.controls.pluginToInstall.enable();
+          this.serviceForm.controls.plugin.enable();
+          this.disabledBtn = false;
         },
         error => {
           /** request done */
           this.ngProgress.done();
+          this.serviceForm.controls.pluginToInstall.enable();
+          this.serviceForm.controls.plugin.enable();
+          this.disabledBtn = false;
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -460,10 +449,10 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   filterSelectionChanged(event: any) {
-    if (event.value !== undefined) {
+    if (event !== undefined) {
       this.isValidPlugin = true;
     } else {
-      this.serviceForm.controls['pluginToInstall'].setValue('');
+      this.serviceForm.controls.pluginToInstall.reset();
     }
   }
 }

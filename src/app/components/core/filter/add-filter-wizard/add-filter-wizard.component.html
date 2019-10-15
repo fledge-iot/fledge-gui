@@ -11,9 +11,9 @@
       <p>Review Configuration</p>
     </div>
   </div>
-  <div class="steps-content">
+  <div class="steps-content" [ngClass]="{'loading':!pluginData.length && !stopLoading && requestInProgress}">
     <form [formGroup]="serviceForm" validate>
-      <div class="box step-content  is-active" id="c-1">
+      <div class="box step-content is-active" id="c-1">
 
         <ng-container *ngIf="!plugins || plugins.length === 0">
           <div *ngIf="!show" class="has-text-centered">
@@ -30,8 +30,9 @@
               </div>
               <div class="field-body">
                 <div class="column">
-                  <ngx-select-dropdown #plugin [config]="config" [options]="pluginData"
-                    (change)="filterSelectionChanged($event)" formControlName="pluginToInstall"></ngx-select-dropdown>
+                  <ng-select #pluginToInstall [items]="pluginData" [searchable]="pluginData.length" [placeholder]="placeholderText" notFoundText="No plugin available to install"
+                    [loading]="!pluginData.length && !stopLoading" (change)="filterSelectionChanged($event)" bindLabel="pluginToInstall" formControlName="pluginToInstall">
+                  </ng-select>
                   <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
                 </div>
               </div>
@@ -100,9 +101,9 @@
             </div>
             <div class="field-body">
               <div class="column" style="padding: 0;">
-                <ngx-select-dropdown *ngIf="show" #plugin [config]="config" (change)="filterSelectionChanged($event)"
-                  [options]="pluginData" formControlName="pluginToInstall">
-                </ngx-select-dropdown>
+                <ng-select #pluginToInstall *ngIf="show" [items]="pluginData" [searchable]="pluginData.length" [placeholder]="placeholderText" [loading]="!pluginData.length && !stopLoading"
+                  notFoundText="No plugin available to install" (change)="filterSelectionChanged($event)" bindLabel="pluginToInstall" formControlName="pluginToInstall">
+                </ng-select>
                 <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
                 <p id="requestInProgress" class="help has-text-centered"></p>
               </div>
@@ -137,7 +138,7 @@
       <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
     </div>
     <div class="steps-action">
-      <button (click)="gotoNext()" data-nav="next" class="button is-link" id="next">Next</button>
+      <button (click)="gotoNext()" data-nav="next" [disabled]="disabledBtn" class="button is-link" id="next">Next</button>
     </div>
   </div>
 </div>

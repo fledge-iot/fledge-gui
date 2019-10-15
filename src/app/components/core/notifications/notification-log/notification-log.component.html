@@ -2,19 +2,14 @@
   <div class="card">
     <header class="card-header">
       <div id="card-title" class="card-content">
-        <div class="columns is-mobile">
-          <div class="column is-10">
-            <h5 class="title is-5">Notification Logs</h5>
-            <h6 class='subtitle is-6'>
-              <small>Count: {{ totalCount }}</small>
-            </h6>
-          </div>
-          <div class="column">
-            <button (click)="getNotificationLogs()" class="button is-small">
-              <i class="fa fa-sync" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
+        <h5 class="title is-5">Notification Logs
+          <button (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
+            <i class="fa fa-sync" aria-hidden="true"></i>
+          </button>
+        </h5>
+        <h6 class='subtitle is-6'>
+          <small class="help">Count: {{ totalCount }}</small>
+        </h6>
       </div>
     </header>
     <div class="card-content">
@@ -25,7 +20,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('dropdown')">
-                  <span>{{source.toUpperCase()}}</span>
+                  <span>{{source == ''? "ALL": source.toUpperCase()}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -33,10 +28,11 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item" *ngFor="let source of logSourceList"
-                    (click)="toggleDropDown('dropdown');filterSource('source', source.code)">
-                    {{source.code}}{{source.description
-                        != '' ? ' - ' + source.description : ''}}
+                  <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterSource('source', '')">ALL</a>
+                  <a class="dropdown-item" *ngFor="let s of logSourceList"
+                    (click)="toggleDropDown('dropdown');filterSource('source', s.code)">
+                    {{s.code}}{{s.description
+                        != '' ? ' - ' + s.description : ''}}
                   </a>
                 </div>
               </div>
@@ -64,7 +60,8 @@
             </div>
           </div>
           <div class="column">
-            <input #nameField type="text" class="input is-fullwidth is-small" placeholder="Name" (input)="filterByName(nameField.value)"/>
+            <input #nameField type="text" class="input is-fullwidth is-small" placeholder="Name"
+              [(ngModel)]="searchTerm" />
           </div>
 
           <!-- <div class="column">
@@ -79,7 +76,7 @@
           </div> -->
         </div>
       </div>
-      <table class="table is-narrow is-responsive" cellpadding="0" cellspacing="0">
+      <table #dataTable class="table is-narrow is-responsive" cellpadding="0" cellspacing="0">
         <thead>
           <tr>
             <th>Timestamp</th>
@@ -89,7 +86,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let log of notificationLogs">
+          <tr *ngFor="let log of notificationLogs | SearchPipe:searchTerm">
             <td>
               <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
             </td>
@@ -99,7 +96,7 @@
           </tr>
         </tbody>
       </table>
-      <div *ngIf='totalPagesCount > 1'>
+      <div *ngIf='totalPagesCount > 1 && dataTable.rows.length > 1'>
         <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount'
           (goPrev)="onPrev()" (goNext)="onNext()" (goFirst)="onFirst()" (goLast)="onLast()" (goPage)="goToPage($event)">
         </app-pagination>

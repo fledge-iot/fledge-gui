@@ -1,4 +1,4 @@
-<form name="form" id="ngForm" #f="ngForm" novalidate>
+<form name="form" id="configForm" #f="ngForm" novalidate>
   <ng-container *ngIf="configuration != undefined">
     <ng-container *ngFor="let configItem of configAttributes">
       <div class="config-div" *ngIf="!configItem.readonly">

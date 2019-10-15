@@ -12,9 +12,6 @@ import { PaginationModule } from '../../common/pagination/pagination.module';
 import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
 import { AssetsComponent } from './assets/assets.component';
 
-import * as PlotlyJS from 'plotly.js/dist/plotly.js';
-import { PlotlyModule } from 'angular-plotly.js';
-
 const routes: Routes = [
   {
     path: '',
@@ -23,7 +20,6 @@ const routes: Routes = [
   }
 ];
 
-PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
   declarations: [
@@ -37,8 +33,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     PipesModule,
     ChartModule,
     NumberInputDebounceModule,
-    PaginationModule,
-    PlotlyModule
+    PaginationModule
   ],
   providers: [AssetsService],
   exports: []

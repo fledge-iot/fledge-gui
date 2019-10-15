@@ -26,6 +26,7 @@ export class NotificationLogComponent implements OnInit {
 
   isInvalidLimit = false;
   isInvalidOffset = false;
+  searchTerm = '';
 
   constructor(private auditService: AuditService,
     private progress: ProgressBarService,
@@ -116,7 +117,6 @@ export class NotificationLogComponent implements OnInit {
         (data: any) => {
           this.logSourceList = data.logCode
             .filter((log: any) => /NTF/.test(log.code));
-          this.source = this.logSourceList.find((source: any) => source.code === 'NTFSN').code;
           this.getNotificationLogs();
         },
         error => {
@@ -208,7 +208,12 @@ export class NotificationLogComponent implements OnInit {
     }
     /** request started */
     this.progress.start();
-    this.auditService.getAuditLogs(this.limit, this.tempOffset, this.source, this.severity).
+    let sourceCode = this.source;
+    if (this.source.length === 0) {
+      const codes = this.logSourceList.map(s => s.code);
+      sourceCode = codes.toString();
+    }
+    this.auditService.getAuditLogs(this.limit, this.tempOffset, sourceCode, this.severity).
       subscribe(
         (data: any) => {
           /** request completed */
@@ -232,14 +237,5 @@ export class NotificationLogComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  filterByName(name: string) {
-    if (!name) {
-      this.getNotificationLogs();
-    } else {
-      this.notificationLogs = this.notificationLogs.filter((log: any) =>
-        log.details.name.trim().toLowerCase().includes(name.trim().toLowerCase()));
-    }
   }
 }

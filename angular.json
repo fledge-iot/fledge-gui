@@ -25,14 +25,16 @@
             "styles": [
               "./node_modules/angular-tree-component/dist/angular-tree-component.css",
               "./node_modules/animate.css/animate.css",
-              "./node_modules/ngx-select-dropdown/dist/assets/style.css",
+              "./node_modules/@ng-select/ng-select/themes/default.theme.css",
               "src/assets/css/bulma.min.css",
               "src/assets/css/font-awesome.min.css",
               "src/assets/css/bulma-tooltip.min.css",
               "src/assets/css/bulma-steps.min.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/plotly.js/dist/plotly.js"
+            ]
           },
           "configurations": {
             "production": {

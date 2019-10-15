@@ -3,7 +3,7 @@
     <header class="card-header">
       <p class="card-header-title">
         Certificate Store &nbsp;
-        <button (click)="getCertificates()" class="button is-small">
+        <button (click)="getCertificates()" class="button is-small" id="refresh-check">
           <i class="fa fa-sync" aria-hidden="true"></i>
         </button>
       </p>
@@ -15,7 +15,7 @@
     </header>
     <div class="card-content columns">
       <div class="column">
-        <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+        <table class="table is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
           <thead>
             <tr>
               <th>Key</th>
@@ -37,7 +37,7 @@
         </table>
       </div>
       <div class="column">
-        <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+        <table class="table is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
           <thead>
             <tr>
               <th>Certificate</th>

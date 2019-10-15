@@ -252,3 +252,9 @@ a.dropdown-item:hover {
 #avail-plugin{
   padding: 0%;
 }
+
+#refresh-check {
+  vertical-align: middle;
+  background: none;
+  border: none;
+}

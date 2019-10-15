@@ -29,8 +29,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   public notificationServiceRecord: any;
   public availableServices = [];
-  public showSpinner = false;
   private subscription: Subscription;
+  public showSpinner = false;
   isNotificationModalOpen = false;
 
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
@@ -100,7 +100,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     /** request started */
     this.ngProgress.start();
-    this.alertService.activityMessage('installing ...', true);
+    this.alertService.activityMessage('Installing ' + 'notification service ...', true);
     this.servicesApiService.installService(servicePayload).
       subscribe(
         (data: any) => {
