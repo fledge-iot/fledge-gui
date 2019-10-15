@@ -2,6 +2,7 @@
 
 #### Added
 * Python editor with light and dark mode support for `script` & `code` types
+* Option to show all accumulated audit logs for event engine in Notification Logs page
 
 #### Changed
 * Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
