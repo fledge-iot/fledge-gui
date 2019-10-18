@@ -27,8 +27,8 @@
                       type="text" [ngModel]="setConfigValue(configItem.value)"
                       (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                       [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
-                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
-
+                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                     <ng-container *ngSwitchCase="'RAW_TEXT'">
                       <ngx-codemirror name="{{configItem.value.key}}"
                         [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
@@ -78,6 +78,7 @@
                       [ngModel]="setConfigValue(configItem.value)"
                       (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                       appNumberOnly />
 
                     <input *ngSwitchCase="'FLOAT'" name="{{configItem.value.key}}" type="number"
@@ -86,6 +87,7 @@
                       [ngModel]="setConfigValue(configItem.value)"
                       (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                       appNumberOnly />
 
                     <ng-container *ngSwitchCase="'LONG_TEXT'">
@@ -133,9 +135,12 @@
                     <input *ngSwitchCase="'URL'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                       type="url" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
                       (change)="checkValidityOnChange(configItem.value.key, $event.target.value)"
-                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
+                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                   </div>
-
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
+                      <sup>*</sup>required
+                  </span>
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">
                     <sup>*</sup>Value should not be less than {{configItem?.value?.minimum}}.
                   </span>
