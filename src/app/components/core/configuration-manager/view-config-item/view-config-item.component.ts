@@ -123,7 +123,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
       autoCloseBrackets: true,
       matchBrackets: true,
-      lint: true
+      lint: true,
+      inputStyle: 'textarea'
     };
     if (type === 'JSON') {
       editorOptions.mode = 'application/json';
