@@ -35,7 +35,6 @@ export class AuditLogComponent implements OnInit {
   ngOnInit() {
     this.getLogSource();
     this.getLogSeverity();
-    this.getAuditLogs();
   }
 
   /**
@@ -117,6 +116,7 @@ export class AuditLogComponent implements OnInit {
       subscribe(
         (data: any) => {
           this.logSourceList = data.logCode.filter((log: any) => !(/NTF/.test(log.code)));
+          this.getAuditLogs();
         },
         error => {
           if (error.status === 0) {
@@ -210,9 +210,14 @@ export class AuditLogComponent implements OnInit {
   }
 
   auditLogSubscriber() {
+    let sourceCode = this.source;
+    if (this.source.length === 0) {
+      const codes = this.logSourceList.map(s => s.code);
+      sourceCode = codes.toString();
+    }
     /** request started */
     this.progress.start();
-    this.auditService.getAuditLogs(this.limit, this.tempOffset, this.source, this.severity).
+    this.auditService.getAuditLogs(this.limit, this.tempOffset, sourceCode, this.severity).
       subscribe(
         (data: any) => {
           /** request completed */
