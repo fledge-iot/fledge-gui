@@ -32,9 +32,10 @@ export class ConfigChildrenComponent implements AfterViewInit {
               return conf.key === key;
             }).type
           };
-          formData.push(d);
+          if (this.form.valid) {
+            formData.push(d);
+          }
         }
-
         const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
         if (!isEmpty(changedConfigValues)) {
           this.onConfigChanged.emit(changedConfigValues);
