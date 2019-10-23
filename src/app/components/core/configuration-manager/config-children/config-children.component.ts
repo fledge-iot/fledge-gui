@@ -2,6 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Output, ViewChild } from '@angu
 import { differenceWith, isEqual, isEmpty } from 'lodash';
 
 import { ConfigurationService } from '../../../../services';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import ConfigTypeValidation from '../configuration-type-validation';
 
 @Component({
@@ -18,7 +19,8 @@ export class ConfigChildrenComponent implements AfterViewInit {
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('f', { static: true }) form;
 
-  constructor(private configService: ConfigurationService) { }
+  constructor(private configService: ConfigurationService,
+    private validateFormService: ValidateFormService) { }
 
   ngAfterViewInit() {
     this.form.control.valueChanges
@@ -39,6 +41,9 @@ export class ConfigChildrenComponent implements AfterViewInit {
         const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
         if (!isEmpty(changedConfigValues)) {
           this.onConfigChanged.emit(changedConfigValues);
+        }
+        if (!(this.validateFormService.checkConfigChildrenForm(this.form.valid))) {
+          return;
         }
       });
   }
