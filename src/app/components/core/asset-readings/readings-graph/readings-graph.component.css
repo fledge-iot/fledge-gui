@@ -14,7 +14,10 @@
 
 @media screen and (min-width: 769px) {
   .modal-card {
-    width: 81%;
+    width: 82%;
+  }
+  :host ::ng-deep canvas[style] {
+    height: calc(100vh - 200px) !important;
   }
 }
 
