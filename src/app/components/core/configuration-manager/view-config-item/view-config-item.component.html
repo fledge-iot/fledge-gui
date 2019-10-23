@@ -19,7 +19,7 @@
                       <input type="checkbox" name='{{configItem.value.key}}' value="setConfigValue(configItem.value)"
                         [ngModel]="setConfigValue(configItem.value) == 'true'"
                         (change)="checkValidityOnChange(configItem.value.key, $event.target.checked)"
-                        [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable">
+                        [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                     </label>
                   </ng-container>
                   <div class="field">
@@ -27,12 +27,13 @@
                       type="text" [ngModel]="setConfigValue(configItem.value)"
                       (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                       [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
-                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
-
+                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                     <ng-container *ngSwitchCase="'RAW_TEXT'">
                       <ngx-codemirror name="{{configItem.value.key}}"
                         [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
-                        [ngModel]="setConfigValue(configItem.value)" [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable">
+                        [ngModel]="setConfigValue(configItem.value)" [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                        [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </ngx-codemirror>
                     </ng-container>
@@ -78,6 +79,7 @@
                       [ngModel]="setConfigValue(configItem.value)"
                       (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                       appNumberOnly />
 
                     <input *ngSwitchCase="'FLOAT'" name="{{configItem.value.key}}" type="number"
@@ -86,6 +88,7 @@
                       [ngModel]="setConfigValue(configItem.value)"
                       (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                       appNumberOnly />
 
                     <ng-container *ngSwitchCase="'LONG_TEXT'">
@@ -102,7 +105,8 @@
                       <ngx-codemirror [ngClass]="{'readonly-editor': !isFileUploaded, 'dark-bg-color': !isFileUploaded && selectedTheme === 'darcula'}" name="{{configItem.value.key}}"
                         [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
                         (ngModelChange)="getFileName(configItem?.value?.file)"
-                        [ngModel]="fileContent || setConfigValue(configItem.value)" [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)">
+                        [ngModel]="fileContent || setConfigValue(configItem.value)" [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)"
+                        [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </ngx-codemirror>
                       <input class="input" #codeeditor (click)="getFileName(configItem?.value?.file)" type="hidden" />
@@ -133,9 +137,12 @@
                     <input *ngSwitchCase="'URL'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                       type="url" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
                       (change)="checkValidityOnChange(configItem.value.key, $event.target.value)"
-                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
+                      [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                   </div>
-
+                  <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
+                      <sup>*</sup>required
+                  </span>
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">
                     <sup>*</sup>Value should not be less than {{configItem?.value?.minimum}}.
                   </span>
