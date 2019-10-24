@@ -16,7 +16,7 @@
   .modal-card {
     width: 85%;
   }
-  :host ::ng-deep canvas[style] {
+  :host ::ng-deep .chart-container canvas[style] {
     height: calc(100vh - 181px) !important;
   }
 }
