@@ -21,7 +21,7 @@
   }
 
   :host ::ng-deep .svg-container {
-    height: 444px !important;
+    height: calc(100vh - 181px) !important;
   }
 }
 
