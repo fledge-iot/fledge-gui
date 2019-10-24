@@ -19,6 +19,10 @@
   :host ::ng-deep .chart-container canvas[style] {
     height: calc(100vh - 181px) !important;
   }
+
+  :host ::ng-deep .svg-container {
+    height: 444px !important;
+  }
 }
 
 @media screen and (max-width: 769px) {
