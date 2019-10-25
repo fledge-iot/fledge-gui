@@ -14,7 +14,14 @@
 
 @media screen and (min-width: 769px) {
   .modal-card {
-    width: 81%;
+    width: 85%;
+  }
+  :host ::ng-deep .chart-container canvas[style] {
+    height: calc(100vh - 181px) !important;
+  }
+
+  :host ::ng-deep .svg-container {
+    height: calc(100vh - 181px) !important;
   }
 }
 
