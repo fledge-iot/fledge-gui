@@ -48,7 +48,7 @@
                           (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)"
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </div>
-                      <div class="control">
+                      <div class="control" *ngIf="configItem?.value?.hasOwnProperty('editable') && configItem?.value?.editable">
                         <a class="button is-small">
                           <span class="icon is-small" (click)="togglePassword(pwd)">
                             <i class="{{pwd.type === 'password'? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
@@ -69,7 +69,7 @@
                           </div>
                         </div>
                       </div>
-                      <p *ngIf="!passwordMatched" class="help is-danger">
+                      <p *ngIf="!passwordMatched" [hidden]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" class="help is-danger">
                         <sup>*</sup>Password mismatch</p>
                     </div>
 
