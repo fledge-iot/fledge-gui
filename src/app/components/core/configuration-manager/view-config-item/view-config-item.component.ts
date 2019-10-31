@@ -444,7 +444,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       });
 
       this.categoryConfiguration.map(obj => {
-        if (obj.key === 'password' && obj.editable === false) {
+        if (obj.type === 'password' && obj.editable === false) {
           this.passwordMatched = true;
         }
       });
@@ -477,9 +477,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     });
-
     this.categoryConfiguration.map(obj => {
-      if (obj.key === 'password' && obj.editable === false) {
+      if (obj.type === 'password' && obj.editable === false) {
         this.passwordMatched = true;
       }
     });
