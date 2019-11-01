@@ -18,15 +18,15 @@
               <div class="field">
                 <input *ngIf="getConfigAttributeType(configItem.type) === 'TEXT'" name="{{configItem.key}}" class="input is-fullwidth is-small"
                   type="text" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)'
-                  [attr.maxLength]="configItem?.length" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
+                  [attr.maxLength]="configItem?.length" (input)="checkValueOnChange(configItem.key, $event.target.value)" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
 
                 <input *ngIf="getConfigAttributeType(configItem.type) === 'INTEGER'" name="{{configItem.key}}" type="number"
                   [value]='setConfigValue(configItem)' class="input is-fullwidth is-small" [minValue]="configItem?.minimum"
-                  [maxValue]="configItem?.maximum" [ngModel]="setConfigValue(configItem)" appNumberOnly [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
+                  [maxValue]="configItem?.maximum" [ngModel]="setConfigValue(configItem)" appNumberOnly (input)="checkValueOnChange(configItem.key, $event.target.value)" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
 
                 <input *ngIf="getConfigAttributeType(configItem.type) === 'FLOAT'" name="{{configItem.key}}" type="number"
                   [value]='setConfigValue(configItem)' step="any" class="input is-fullwidth is-small" [minValue]="configItem?.minimum"
-                  [maxValue]="configItem?.maximum" [ngModel]="setConfigValue(configItem)" appNumberOnly [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
+                  [maxValue]="configItem?.maximum" [ngModel]="setConfigValue(configItem)" appNumberOnly (input)="checkValueOnChange(configItem.key, $event.target.value)" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
 
                 <textarea rows="3" *ngIf="getConfigAttributeType(configItem.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
                   name="{{configItem.key}}" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)'
@@ -39,7 +39,7 @@
                 </div>
               </div>
               <input *ngIf="getConfigAttributeType(configItem.type) === 'URL'" name="{{configItem.key}}" class="input is-fullwidth is-small"
-                type="url" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)' [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
+                type="url" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)' (input)="checkValueOnChange(configItem.key, $event.target.value)" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
 
               <span *ngIf="f?.controls[configItem.key]?.hasError('required')" class="help is-danger">
                 <sup>*</sup>required

@@ -31,7 +31,7 @@
                       [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                     <ng-container *ngSwitchCase="'RAW_TEXT'">
                       <ngx-codemirror name="{{configItem.value.key}}"
-                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
+                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true" (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                         [ngModel]="setConfigValue(configItem.value)" [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
@@ -92,18 +92,15 @@
 
                     <ng-container *ngSwitchCase="'LONG_TEXT'">
                       <ngx-codemirror #jsoneditor name="{{configItem.value.key}}"
-                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
-                        [ngModel]="JSON.parse(setConfigValue(configItem.value)) | json " (ngModelChange)="checkValidJson(jsoneditor.value)">
+                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true" [jsonValue]="isValidJson"
+                        [ngModel]="JSON.parse(setConfigValue(configItem.value)) | json " (ngModelChange)="checkValidJson(configItem.value.key, jsoneditor.value)">
                       </ngx-codemirror>
-                      <p *ngIf="!isValidJson" class="help is-danger">
-                        Invalid JSON
-                      </p>
                     </ng-container>
 
                     <div *ngSwitchCase="'SCRIPT'">
                       <ngx-codemirror [ngClass]="{'readonly-editor': !isFileUploaded, 'dark-bg-color': !isFileUploaded && selectedTheme === 'darcula'}" name="{{configItem.value.key}}"
                         [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
-                        (ngModelChange)="getFileName(configItem?.value?.file)"
+                        (ngModelChange)="getFileName(configItem?.value?.file)" (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                         [ngModel]="fileContent || setConfigValue(configItem.value)" [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
@@ -135,7 +132,7 @@
 
                     <input *ngSwitchCase="'URL'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                       type="url" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      (change)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                       [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                   </div>
