@@ -42,13 +42,12 @@
                         <input #pwd (click)="showConfirmPassword()"
                           (input)="checkValidityOnChange(configItem.value.key, $event.target.value)" name="{{configItem.value.key}}"
                           class="input is-fullwidth is-small" type="password" onPaste="return false"
-                          (focus)="pwd.value='';passwordMatched=false" [ngModel]="setConfigValue(configItem.value)"
-                          [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
-                          placeholder="password"
+                          (focus)="pwd.value='';passwordMatched=false;" [ngModel]="setConfigValue(configItem.value)"
+                          [attr.maxLength]="configItem?.value?.length" placeholder="password"
                           (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)"
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </div>
-                      <div class="control">
+                      <div class="control" *ngIf="configItem?.value?.hasOwnProperty('editable') && configItem?.value?.editable">
                         <a class="button is-small">
                           <span class="icon is-small" (click)="togglePassword(pwd)">
                             <i class="{{pwd.type === 'password'? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
@@ -65,7 +64,7 @@
                               [value]='setConfigValue(confirmPwd.value)' [attr.maxLength]="configItem?.value?.length"
                               placeholder="confirm password"
                               [hidden]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
-                              (ngModelChange)="checkPasswords(f?.controls[configItem.value.key]?.value, confirmPwd.value)" />
+                              (ngModelChange)="checkPasswords(pwd.nativeElement.value, confirmPwd.value)" />
                           </div>
                         </div>
                       </div>
