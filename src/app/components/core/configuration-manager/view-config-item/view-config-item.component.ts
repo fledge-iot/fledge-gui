@@ -43,6 +43,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('codeeditor', { static: false }) codeeditor: ElementRef;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   @ViewChild('jsoneditor', { static: false }) jsoneditor: ElementRef;
+  @ViewChild('pwd', { static: false }) pwd: ElementRef;
   @ViewChild(NgForm, { static: false }) form;
 
   public passwordOnChangeFired = false;
