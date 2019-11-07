@@ -43,6 +43,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('codeeditor', { static: false }) codeeditor: ElementRef;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   @ViewChild('jsoneditor', { static: false }) jsoneditor: ElementRef;
+  @ViewChild('pwd', { static: false }) pwd: ElementRef;
   @ViewChild(NgForm, { static: false }) form;
 
   public passwordOnChangeFired = false;
@@ -183,13 +184,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  public checkValidJson(configValue) {
+  public checkValidJson(key, configValue) {
     try {
       JSON.parse(configValue);
       this.isValidJson = true;
       return true;
     } catch (e) {
       this.isValidJson = false;
+      this.form.controls[key].setErrors({'jsonValue': true});
       return false;
     }
   }
@@ -444,7 +446,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       });
 
       this.categoryConfiguration.map(obj => {
-        if (obj.key === 'password' && obj.editable === false) {
+        if (obj.type === 'password' && obj.editable === false) {
           this.passwordMatched = true;
         }
       });
@@ -457,6 +459,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         if (configItem.validity.includes(key)) {
           configItem.validityExpression = configItem.validity
             .replace(new RegExp(key, 'g'), `'${configValue}'`);
+        }
+      }
+      if (configItem.hasOwnProperty('mandatory') && configItem['key'] === key) {
+        if (configItem['mandatory'] === 'true' && configValue.trim().length === 0) {
+         this.form.controls[key].setErrors({'required': true});
         }
       }
     });
@@ -477,9 +484,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     });
-
     this.categoryConfiguration.map(obj => {
-      if (obj.key === 'password' && obj.editable === false) {
+      if (obj.type === 'password' && obj.editable === false) {
         this.passwordMatched = true;
       }
     });

@@ -57,7 +57,7 @@ export class ConfigChildrenComponent implements AfterViewInit {
    * @param configVal Config value to pass in ngModel
    */
   public setConfigValue(configVal) {
-    if (configVal.value !== undefined && configVal.value !== '') {
+    if (configVal.value !== undefined) {
       return configVal.value;
     } else {
       return configVal.default;
@@ -114,5 +114,15 @@ export class ConfigChildrenComponent implements AfterViewInit {
           console.log('error ', error);
         }
       );
+  }
+
+  checkValueOnChange(key: string, configValue: string) {
+    this.configAttributes.map(configItem => {
+      if (configItem.hasOwnProperty('mandatory') && configItem['key'] === key) {
+       if (configItem['mandatory'] === 'true' && configValue.trim().length === 0) {
+        this.form.controls[key].setErrors({'required': true});
+       }
+      }
+    });
   }
 }

@@ -79,8 +79,8 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 8.2.5         |        8.2.6          | MIT
- Angular CLI  | 8.2.2         |        8.3.4          | MIT
+ Angular      | 8.2.12         |        8.2.12         | MIT
+ Angular CLI  | 8.3.14         |        8.3.14          | MIT
  TypeScript   | 3.5.3         |        3.6.3          | Apache 2.0
  rxjs         | 6.5.2         |        6.5.2          | Apache 2.0
  Bulma css    | 0.7.5         |        0.7.5          | MIT
@@ -89,17 +89,17 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
 chart.js         |  2.8.0        |        2.8.0          | MIT
-core-js          |  3.1.4        |        3.2.1          | MIT
+core-js          |  3.3.3        |        3.3.3          | MIT
 ng-sidebar       |  8.0.0        |        8.0.0          | MIT
-moment           |  2.23.0       |        2.24.0         | MIT
+moment           |  2.24.0       |        2.24.0         | MIT
 @ngx-progressbar/core  |  5.3.2        |        5.3.2          | MIT
 protractor-beautiful-reporter |  1.2.8       |  1.2.8                | MIT
 node-git-describe | 4.0.4     | 4.0.4        | MIT
-plotly.js         | 1.48.1    | 1.48.1       | MIT
-@ctrl/ngx-codemirror | 2.1.0    | 2.1.0     | MIT
-codemirror    | 5.48.4 | 5.48.4 | MIT
+plotly.js         | 1.50.1    | 1.50.1       | MIT
+@ctrl/ngx-codemirror | 2.2.0    | 2.2.0     | MIT
+codemirror    | 5.49.2 | 5.49.2 | MIT
 jsonlint-mod  | 1.7.5  | 1.7.5  | MIT
-@ng-select/ng-select | 3.0.7 | 3.0.7 | MIT
+@ng-select/ng-select | 3.3.0 | 3.3.0 | MIT
 
 ## Update Dependencies
 * `npm update`: By running this command, npm checks if there exist newer versions in the repository that satisfy specified semantic versioning ranges and installs them.
