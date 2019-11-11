@@ -70,14 +70,14 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   getSelectedCategoryConfig(rootCategory: any) {
-    const categoryName = this.hasProperty(rootCategory, 'displayName') === true ? rootCategory.displayName : rootCategory.description;
-    this.getChildren(categoryName);
+    this.selectedRootCategory = this.hasProperty(rootCategory, 'displayName') === true ?
+      rootCategory.displayName : rootCategory.key;
+    this.getChildren(rootCategory.key);
   }
 
   public getChildren(categoryName) {
     /** request started */
     this.ngProgress.start();
-    this.selectedRootCategory = categoryName;
     this.tree.treeModel.nodes = [];
 
     this.nodes = [];
