@@ -41,20 +41,18 @@
   <div class="card">
     <header class="card-header">
       <div id="notification-service" class="card-header-title">
-        <div class="media-content">
-          <p class="title is-5">
-            Notifications
-            <a class="button is-small" (click)="getNotificationInstance()" id="refresh-check">
-              <span class="icon is-small">
-                <i class="fa fa-sync"></i>
-              </span>
-            </a>
-          </p>
-        </div>
+        <p>
+          Notifications
+          <a class="button is-small" (click)="getNotificationInstance()" id="refresh-check">
+            <span class="icon is-small">
+              <i class="fa fa-sync"></i>
+            </span>
+          </a>
+        </p>
       </div>
       <button [disabled]="!isNotificationServiceEnabled" id="add_notification_instance" class="button is-light"
-        (click)="addNotificationInstance()">Create
-        Notification Instance &nbsp;
+        (click)="addNotificationInstance()">
+        <p *ngIf="viewPort !== 'mobile'">Create Notification Instance &nbsp;</p>
         <i class="fa fa-plus" aria-hidden="true"></i>
       </button>
     </header>

@@ -26,10 +26,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   notificationServicePackageName = 'foglamp-service-notification';
   notificationInstances = [];
   notification: any;
+  viewPort: any = '';
 
   public notificationServiceRecord: any;
   public availableServices = [];
   private subscription: Subscription;
+  private viewPortSubscription: Subscription;
   public showSpinner = false;
   isNotificationModalOpen = false;
 
@@ -54,6 +56,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
         showPackageLogs.isSubscribed = false;
       }
+    });
+    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
+      this.viewPort = viewport;
     });
   }
 
@@ -100,7 +105,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     /** request started */
     this.ngProgress.start();
-    this.alertService.activityMessage('Installing ' + 'notification service ...', true);
+    this.alertService.activityMessage('Installing ' + 'notification service...', true);
     this.servicesApiService.installService(servicePayload).
       subscribe(
         (data: any) => {
@@ -367,5 +372,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.viewPortSubscription.unsubscribe();
   }
 }

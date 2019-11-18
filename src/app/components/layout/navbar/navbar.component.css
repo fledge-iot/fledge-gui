@@ -66,3 +66,8 @@
 .dropdown-item.user-content {
   width:100%;
 }
+
+.navbar-link:not(.is-arrowless)::after {
+  border-color: gray !important;
+  right: 1.25em !important;
+}

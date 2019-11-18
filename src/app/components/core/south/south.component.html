@@ -2,16 +2,10 @@
   <div class="card">
     <header class="card-header">
       <div id="south-service" class="card-header-title">
-        <div class="media-content">
-          <p class="title is-5">
-            South Services
-            <!-- <button (click)="getSouthboundServices()" class="button is-small">
-            <i class="fa fa-sync" aria-hidden="true"></i>
-          </button> -->
-          </p>
-        </div>
+        South Services
       </div>
-      <a id="add_south_service" class="fix-pad button is-light" (click)="addSouthService()">Add &nbsp;
+      <a id="add_south_service" class="fix-pad button is-light" (click)="addSouthService()">
+        <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
         <i class="fa fa-plus" aria-hidden="true"></i>
       </a>
     </header>

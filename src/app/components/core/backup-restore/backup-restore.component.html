@@ -2,10 +2,11 @@
   <div class="card">
     <header class="card-header">
       <p class="card-header-title">
-        Backup
+        Backups
       </p>
       <div>
-        <a class="button is-light fix-pad" (click)="requestBackup()">Backup &nbsp;
+        <a class="button is-light fix-pad" (click)="requestBackup()">
+          <p *ngIf="viewPort !== 'mobile'">Create New &nbsp;</p>
           <i class="fa fa-file-archive" aria-hidden="true"></i>
         </a>
       </div>

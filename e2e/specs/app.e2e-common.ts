@@ -101,11 +101,11 @@ describe('FogLAMP gui', () => {
       ];
       skipLogin.navToBackupRestore();
       skipLogin.clickRequestBackup();
-      expect(skipLogin.getBackupRestoreTitle()).toContain('Backup');
+      expect(skipLogin.getBackupRestoreTitle()).toContain('Backups');
       for (const ColumnName in ColumnsName) {
         expect(skipLogin.getBackupRestoreColNames()).toContain(ColumnsName[ColumnName]);
       }
-      expect(skipLogin.getRequestBackup()).toContain('Backup');
+      expect(skipLogin.getRequestBackup()).toContain('Create New');
       // Delete backup
       skipLogin.deleteBackup();
       expect(skipLogin.noBackupRecord()).toContain('No Record');

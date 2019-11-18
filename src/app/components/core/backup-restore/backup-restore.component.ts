@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { interval } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 import { DateFormatterPipe } from '../../../pipes';
-import { AlertService, PingService, ProgressBarService } from '../../../services';
+import { AlertService, PingService, ProgressBarService, SharedService } from '../../../services';
 import { BackupRestoreService } from '../../../services/backup-restore.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
@@ -27,11 +28,14 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   };
   public showSpinner = false;
   public refreshInterval = POLLING_INTERVAL;
+  private viewPortSubscription: Subscription;
+  viewPort: any = '';
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
   constructor(private backupRestoreService: BackupRestoreService,
     private alertService: AlertService,
+    private sharedService: SharedService,
     public ngProgress: ProgressBarService,
     private dateFormatter: DateFormatterPipe,
     private ping: PingService) {
@@ -51,6 +55,9 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getBackup();
       });
+    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
+      this.viewPort = viewport;
+    });
   }
 
   /**
@@ -168,5 +175,6 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.isAlive = false;
+    this.viewPortSubscription.unsubscribe();
   }
 }

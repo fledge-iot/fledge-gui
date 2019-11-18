@@ -1,19 +1,22 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 
-import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
+import { AlertService, CertificateService, ProgressBarService, SharedService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
 import { sortBy } from 'lodash';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cert-store',
   templateUrl: './certificate-store.component.html',
   styleUrls: ['./certificate-store.component.css']
 })
-export class CertificateStoreComponent implements OnInit {
+export class CertificateStoreComponent implements OnInit, OnDestroy {
   public keys = [];
   public certificates = [];
   public certificateName = '';
+  private viewPortSubscription: Subscription;
+  viewPort: any = '';
 
   // Object to hold data of certificate to delete
   public childData = {
@@ -28,10 +31,14 @@ export class CertificateStoreComponent implements OnInit {
 
   constructor(private certService: CertificateService,
     public ngProgress: ProgressBarService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private sharedService: SharedService) { }
 
   ngOnInit() {
     this.getCertificates();
+    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
+      this.viewPort = viewport;
+    });
   }
 
   /**
@@ -132,5 +139,9 @@ export class CertificateStoreComponent implements OnInit {
    */
   onNotify() {
     this.getCertificates();
+  }
+
+  public ngOnDestroy(): void {
+    this.viewPortSubscription.unsubscribe();
   }
 }

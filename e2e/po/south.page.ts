@@ -19,7 +19,7 @@ export class SouthPage {
    */
   getSouthPageTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#south-service .title')).getText();
+    return element(by.css('#south-service')).getText();
   }
 
   /**
