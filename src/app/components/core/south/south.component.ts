@@ -22,6 +22,8 @@ export class SouthComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   private isAlive: boolean;
   private subscription: Subscription;
+  private viewPortSubscription: Subscription;
+  viewPort: any = '';
 
   @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
   @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
@@ -58,6 +60,9 @@ export class SouthComponent implements OnInit, OnDestroy {
         this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
         showPackageLogs.isSubscribed = false;
       }
+    });
+    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
+      this.viewPort = viewport;
     });
   }
 
@@ -109,5 +114,6 @@ export class SouthComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.subscription.unsubscribe();
+    this.viewPortSubscription.unsubscribe();
   }
 }

@@ -1,3 +1,7 @@
 .align-content {
-    vertical-align: middle;
-  }
+  vertical-align: middle;
+}
+
+.card-header-title {
+  padding: 0.75rem 1.5rem;
+}

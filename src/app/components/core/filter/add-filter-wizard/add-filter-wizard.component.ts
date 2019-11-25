@@ -27,7 +27,7 @@ export class AddFilterWizardComponent implements OnInit {
   public requestInProgress = false;
   public show = false;
   public stopLoading = false;
-  public placeholderText = 'fetching available plugins ...';
+  public placeholderText = 'fetching available plugins...';
   public disabledBtn = false;
 
   serviceForm = new FormGroup({
@@ -270,7 +270,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.serviceForm.controls.pluginToInstall.disable();
     this.serviceForm.controls.plugin.disable();
     this.disabledBtn = true;
-    this.alertService.activityMessage('Installing ' + pluginName + ' filter plugin ...', true);
+    this.alertService.activityMessage('Installing ' + pluginName + ' filter plugin...', true);
     this.service.installPlugin(pluginData).
       subscribe(
         (data: any) => {

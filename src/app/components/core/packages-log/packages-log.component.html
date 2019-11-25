@@ -1,12 +1,13 @@
 <div class="container is-fluid">
   <div class="card">
     <header class="card-header">
-      <p id="scheduled-process" class="card-header-title">
-        Package Logs &nbsp;
-        <button (click)="getPackagesLog()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sync" aria-hidden="true"></i>
-        </button>
-      </p>
+      <div id="card-title" class="card-content">
+        <p class="card-header-title">Package Logs
+          <button (click)="getPackagesLog()" class="button is-small" id="refresh-check">
+            <i class="fa fa-sync" aria-hidden="true"></i>
+          </button>  
+        </p>
+      </div>
     </header>
     <div class="card-content">
       <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
@@ -26,12 +27,12 @@
             <td style="vertical-align: middle;">
               {{ log.name ? log.name : '' }}
             </td>
-            <td>
+            <td style="vertical-align: middle;">
               <a (click)="showLogs(log.filename)" class="button is-text">
                 view
               </a>
             </td>
-            <td>
+            <td style="vertical-align: middle;">
               <a (click)="downloadLogs(log.filename)" class="button is-text">
                 download
               </a>

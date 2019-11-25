@@ -2,13 +2,10 @@
   <div class="card">
     <header class="card-header">
       <div id="north-tasks" class="card-header-title">
-        <div class="media-content">
-          <p class="title is-5">
-            North Instances
-          </p>
-        </div>
+        North Instances
       </div>
-      <a id="add_task" class="fix-pad button is-light" (click)="addNorthInstance()">Create North Instance &nbsp;
+      <a id="add_task" class="fix-pad button is-light" (click)="addNorthInstance()">
+        <p *ngIf="viewPort !== 'mobile'">Create North Instance &nbsp;</p>
         <i class="fa fa-plus" aria-hidden="true"></i>
       </a>
     </header>

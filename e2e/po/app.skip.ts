@@ -114,7 +114,7 @@ export class SkipLogin {
 
   getAuditLogsTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .title.is-5')).getText();
+    return element(by.css('#card-title .card-header-title')).getText();
   }
 
   isAuditLogRefreshIcon() {
@@ -124,7 +124,7 @@ export class SkipLogin {
 
   auditLogCount() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .subtitle.is-6')).getText();
+    return element(by.css('#card-title .card-subtitle small')).getText();
   }
 
   isAuditLogsSourceDropdownPresent() {
@@ -148,7 +148,7 @@ export class SkipLogin {
 
   getSystemLogTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title h5')).getText();
+    return element(by.css('#card-title .card-header-title')).getText();
   }
 
   getSysLogRefreshButton() {
@@ -158,7 +158,7 @@ export class SkipLogin {
 
   systemLogCount() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .subtitle.is-6')).getText();
+    return element(by.css('#card-title .card-subtitle small')).getText();
   }
 
   isSystemLogDropDownPresent() {

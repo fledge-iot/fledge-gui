@@ -2,14 +2,12 @@
   <div class="card">
     <header class="card-header">
       <div id="card-title" class="card-content">
-        <h5 class="title is-5">System Logs
+        <p class="card-header-title">System Logs
           <button (click)="getSysLogs()" class="button is-small" id="refresh-check">
             <i class="fa fa-sync" aria-hidden="true"></i>
-          </button>
-        </h5>
-        <h6 class='subtitle is-6'>
-          <small class="help">Count: {{ totalCount }}</small>
-        </h6>
+          </button>  
+        </p>
+        <p class="card-subtitle"><small class="help">Count: {{ totalCount }}</small></p>
       </div>
     </header>
     <div class="card-content">

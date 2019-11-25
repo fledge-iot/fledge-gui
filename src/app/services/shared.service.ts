@@ -9,4 +9,5 @@ export class SharedService {
   public showLogs: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public theme: BehaviorSubject<any> = new BehaviorSubject<any>(localStorage.getItem('OPTED_THEME') != null ?
   localStorage.getItem('OPTED_THEME') : 'light');
+  public viewport: BehaviorSubject<any> = new BehaviorSubject<any>(false);
 }

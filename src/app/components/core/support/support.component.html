@@ -8,7 +8,8 @@
         </button>
       </p>
       <div>
-        <a class="button is-light fix-pad" (click)="requestNewBundle()">Request New &nbsp;
+        <a class="button is-light fix-pad" (click)="requestNewBundle()">
+          <p *ngIf="viewPort !== 'mobile'">Request New &nbsp;</p>
           <i class="fa fa-file-archive" aria-hidden="true"></i>
         </a>
       </div>

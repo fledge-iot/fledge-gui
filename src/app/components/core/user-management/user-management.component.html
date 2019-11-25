@@ -14,12 +14,13 @@
                 <a (click)="showDiv(2)">Roles</a>
               </h6>
             </li>
+            <li style="position: absolute;right: 0;">
+              <a class="is-light" (click)="openCreateUserModal()" style="border-bottom-width: 0">
+                <p *ngIf="viewPort !== 'mobile'">&nbsp; Add User &nbsp;</p>
+                <i class="fa fa-user" aria-hidden="true"></i>
+              </a>
+            </li>
           </ul>
-          <div>
-            <a class="is-light" (click)="openCreateUserModal()">
-              <i class="fa fa-user" aria-hidden="true"></i>&nbsp; Add User&nbsp;
-            </a>
-          </div>
         </div>
       </header>
       <div class="card-content">
@@ -47,7 +48,8 @@
               <td>
                 <ng-container *ngIf='user.userId != uid && user.userId != 1'>
                   <a (click)="openUpdateUserModal(user, 'role')" class="button is-text">
-                    change role
+                    <p *ngIf="viewPort !== 'mobile'">change role</p>
+                    <i *ngIf="viewPort == 'mobile'" class="fa fa-user-tag" aria-hidden="true"></i>
                   </a>
                 </ng-container>
                 <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>
@@ -56,7 +58,8 @@
               <td>
                 <ng-container *ngIf='user.userId != uid && user.userId != 1'>
                   <a (click)="openUpdateUserModal(user, 'password')" class="button is-text">
-                    reset password
+                    <p *ngIf="viewPort !== 'mobile'">reset password</p>
+                    <i *ngIf="viewPort == 'mobile'" class="fa fa-key" aria-hidden="true"></i>
                   </a>
                 </ng-container>
               </td>
@@ -64,13 +67,17 @@
                 <ng-container *ngIf='user.userId != uid && user.userId != 1'>
                   <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')"
                     class="button is-text">
-                    <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                    <p *ngIf="viewPort !== 'mobile'">delete</p>
+                    <i *ngIf="viewPort == 'mobile'" class="fa fa-trash-alt" aria-hidden="true"></i>
                   </a>
                 </ng-container>
               </td>
               <td>
                 <span *ngIf='user.userId != uid && user.userId != 1' (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')"
-                  class="button is-text">logout active sessions</span>
+                  class="button is-text">
+                  <p *ngIf="viewPort !== 'mobile'">logout active sessions</p>
+                  <i *ngIf="viewPort == 'mobile'" class="fa fa-sign-out-alt" aria-hidden="true"></i>
+                </span>
               </td>
             </tr>
           </table>

@@ -15,7 +15,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
   installButtonEnabled = true;
   pluginForm: FormGroup;
   stopLoading = false;
-  placeholderText = 'fetching available plugins ...';
+  placeholderText = 'fetching available plugins...';
 
   @Input() data: {
     modalState: boolean,
@@ -105,7 +105,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
     /** request started */
     this.ngProgress.start();
     this.pluginForm.controls.pluginName.disable();
-    this.alertService.activityMessage('Installing ' + pluginName + ' ' + this.data.type.toLowerCase() + ' plugin ...', true);
+    this.alertService.activityMessage('Installing ' + pluginName + ' ' + this.data.type.toLowerCase() + ' plugin...', true);
     this.service.installPlugin(pluginData).
       subscribe(
         (data: any) => {

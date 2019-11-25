@@ -1,16 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 
-import { AlertService, AuthService, UserService, ProgressBarService } from '../../../services';
+import { AlertService, AuthService, UserService, ProgressBarService, SharedService } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css']
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit, OnDestroy {
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(CreateUserComponent, { static: true }) createUserModal: CreateUserComponent;
@@ -22,16 +23,22 @@ export class UserManagementComponent implements OnInit {
   public uid: string;
   public roles = [];
   seletedTab: Number = 1;  // 1: user-management , 2 : roles
+  private viewPortSubscription: Subscription;
+  viewPort: any = '';
 
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
-    public ngProgress: ProgressBarService
+    public ngProgress: ProgressBarService,
+    private sharedService: SharedService
     ) { }
 
   ngOnInit() {
     this.uid = sessionStorage.getItem('uid');
     this.getUsers();
+    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
+      this.viewPort = viewport;
+    });
   }
 
   getUsers() {
@@ -167,5 +174,9 @@ export class UserManagementComponent implements OnInit {
     if (id === 2) {
       this.seletedTab = id;
     }
+  }
+
+  public ngOnDestroy(): void {
+    this.viewPortSubscription.unsubscribe();
   }
 }

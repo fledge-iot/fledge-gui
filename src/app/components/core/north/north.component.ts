@@ -18,7 +18,9 @@ import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component
 export class NorthComponent implements OnInit, OnDestroy {
   public task: string;
   public tasks: any;
+  viewPort: any = '';
 
+  private viewPortSubscription: Subscription;
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
   private isAlive: boolean;
@@ -59,6 +61,9 @@ export class NorthComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getNorthTasks(true);
       });
+    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
+      this.viewPort = viewport;
+    });
   }
 
   addNorthInstance() {
@@ -106,6 +111,7 @@ export class NorthComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.subscription.unsubscribe();
+    this.viewPortSubscription.unsubscribe();
   }
 }
 

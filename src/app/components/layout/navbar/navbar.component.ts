@@ -102,6 +102,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.viewPort = 'desktop';
       }
     }
+    this.sharedService.viewport.next(this.viewPort);
   }
 
   ngAfterViewInit() {
