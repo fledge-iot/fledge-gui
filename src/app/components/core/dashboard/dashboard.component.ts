@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { map } from 'lodash';
-import { interval } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { interval, Subject } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, StatisticsService } from '../../../services';
@@ -35,17 +35,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   DEFAULT_LIMIT = 20;
   private isAlive: boolean;
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private statisticsService: StatisticsService,
     private alertService: AlertService,
     private dateFormatter: DateFormatterPipe,
     private ping: PingService) {
     this.isAlive = true;
-    this.ping.refreshIntervalChanged.subscribe((timeInterval: number) => {
-      if (timeInterval === -1) {
-        this.isAlive = false;
-      }
-      this.refreshInterval = timeInterval;
-    });
+    this.ping.refreshIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.refreshInterval = timeInterval;
+      });
   }
 
   ngOnInit() {
@@ -56,7 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     this.getStatistics();
     interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.refreshGraph();
       });
@@ -84,8 +88,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public getStatistics(): void {
-    this.statisticsService.getStatistics().
-      subscribe((data: any[]) => {
+    this.statisticsService.getStatistics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any[]) => {
         // filter received data for FOGBENCH data
         this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
 
@@ -151,8 +156,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
    *  Refresh graphs
    */
   public refreshGraph() {
-    this.statisticsService.getStatistics().
-      subscribe((data: any[]) => {
+    this.statisticsService.getStatistics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any[]) => {
         this.statistics = data.filter(value => value['key'].toLowerCase().indexOf('fogbench') === -1);
         for (const stats of this.statistics) {
           this.graphsToShow.map((item) => item.key === stats.key ? item.value = stats.value : item.value);
@@ -169,8 +175,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public refreshStatisticsHistory(): void {
-    this.statisticsService.getStatisticsHistory(this.optedTime).
-      subscribe((data: any[]) => {
+    this.statisticsService.getStatisticsHistory(this.optedTime)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
           const labels = [];
           const record = map(data['statistics'], dt.key).reverse();
@@ -206,8 +213,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       localStorage.setItem('STATS_HISTORY_TIME_FILTER', time);
     }
     this.optedTime = localStorage.getItem('STATS_HISTORY_TIME_FILTER');
-    this.statisticsService.getStatisticsHistory(this.optedTime, null, null).
-      subscribe((data: any[]) => {
+    this.statisticsService.getStatisticsHistory(this.optedTime, null, null)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
           const labels = [];
           const record = map(data['statistics'], dt.key).reverse();
@@ -258,5 +266,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

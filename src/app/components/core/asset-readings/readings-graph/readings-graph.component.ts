@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, ElementRef } from '@angular/core';
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
-import { interval } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { interval, Subject } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
@@ -50,16 +50,20 @@ export class ReadingsGraphComponent implements OnDestroy {
   public selectedTab = 1;
   public timestamps = [];
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService) {
     this.assetChartType = 'line';
     this.assetReadingValues = [];
-    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-      if (timeInterval === -1) {
-        this.isAlive = false;
-      }
-      this.graphRefreshInterval = timeInterval;
-    });
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.graphRefreshInterval = timeInterval;
+      });
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -136,7 +140,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
     }
     interval(this.graphRefreshInterval)
-      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.autoRefresh = true;
         if (this.selectedTab === 4) {
@@ -148,36 +152,38 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
-    this.assetService.getAllAssetSummary(assetCode, limit, time).subscribe(
-      (data: any) => {
-        this.showSpinner = false;
-        this.assetReadingSummary = data
-          .map(o => {
-            const k = Object.keys(o)[0];
-            return {
-              name: k,
-              value: [o[k]]
-            };
-          }).filter(value => value !== undefined);
+    this.assetService.getAllAssetSummary(assetCode, limit, time)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          this.showSpinner = false;
+          this.assetReadingSummary = data
+            .map(o => {
+              const k = Object.keys(o)[0];
+              return {
+                name: k,
+                value: [o[k]]
+              };
+            }).filter(value => value !== undefined);
 
-        this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-        if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
-          this.buttonText = 'Show All';
-        }
-        if (this.assetReadingSummary.length <= 5) {
-          this.buttonText = '';
-        }
-        if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
-          this.buttonText = 'Show Less';
-        }
-      },
-      error => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+          this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
+          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
+            this.buttonText = 'Show All';
+          }
+          if (this.assetReadingSummary.length <= 5) {
+            this.buttonText = '';
+          }
+          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
+            this.buttonText = 'Show Less';
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   public plotReadingsGraph(assetCode, limit = null, time = null) {
@@ -193,8 +199,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     this.limit = limit;
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time).
-      subscribe(
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data: any[]) => {
           this.loadPage = false;
           this.getReadings(data);
@@ -513,5 +520,8 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   public ngOnDestroy(): void {
     this.isAlive = false;
+    this.destroy$.next(true);
+    // Now let's also unsubscribe from the subject itself:
+    this.destroy$.unsubscribe();
   }
 }

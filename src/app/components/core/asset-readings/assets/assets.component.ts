@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
-import { interval } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { interval, Subject } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { AlertService, AssetsService, PingService, GenerateCsvService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
@@ -24,32 +24,37 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private assetService: AssetsService,
     private alertService: AlertService,
     private generateCsvService: GenerateCsvService,
     private ping: PingService) {
     this.isAlive = true;
-    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-      if (timeInterval === -1) {
-        this.isAlive = false;
-      }
-      this.refreshInterval = timeInterval;
-    });
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.refreshInterval = timeInterval;
+      });
   }
 
   ngOnInit() {
     this.showLoadingSpinner();
     this.getAsset();
     interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getAsset();
       });
   }
 
   public getAsset(): void {
-    this.assetService.getAsset().
-      subscribe(
+    this.assetService.getAsset()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data: any[]) => {
           this.assets = data;
           this.assets = orderBy(this.assets, ['assetCode'], ['asc']);
@@ -104,8 +109,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   exportReadings(assetCode: any, limit: number, offset: number, lastRequest: boolean, fileName: string) {
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), limit, offset).
-      subscribe(
+    this.assetService.getAssetReadings(encodeURIComponent(assetCode), limit, offset)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data: any[]) => {
           data = data.map(r => {
             return r;
@@ -139,7 +145,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   onNotify(event) {
     this.isAlive = event;
     interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getAsset();
       });
@@ -147,5 +153,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
