@@ -103,6 +103,6 @@
   </div>
   <app-alert-dialog (deleteUserService)='deleteUser($event)' (logoutAllUserSessionsService)='clearAllSessions($event)'
     [childData]='childData'></app-alert-dialog>
-  <app-create-user (notify)='onNotify()'></app-create-user>
-  <app-update-user (notify)='onNotify()'></app-update-user>
+  <app-create-user [userRoles]="roles" (notify)='onNotify()'></app-create-user>
+  <app-update-user [userRoles]="roles" (notify)='onNotify()'></app-update-user>
 </div>

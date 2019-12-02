@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
-import { takeWhile } from 'rxjs/operators';
-import { interval, Subscription } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
+import { interval, Subscription, Subject } from 'rxjs';
 
 import { AlertService, NorthService, PingService, SharedService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
@@ -25,19 +25,21 @@ export class NorthComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   private isAlive: boolean;
   private subscription: Subscription;
-
+  destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(private northService: NorthService,
     private ping: PingService,
     private alertService: AlertService,
     private router: Router,
     private sharedService: SharedService) {
     this.isAlive = true;
-    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-      if (timeInterval === -1) {
-        this.isAlive = false;
-      }
-      this.refreshInterval = timeInterval;
-    });
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.refreshInterval = timeInterval;
+      });
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
         // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
@@ -57,7 +59,7 @@ export class NorthComponent implements OnInit, OnDestroy {
     this.showLoadingSpinner();
     this.getNorthTasks(false);
     interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getNorthTasks(true);
       });
@@ -71,8 +73,9 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   public getNorthTasks(caching: boolean): void {
-    this.northService.getNorthTasks(caching).
-      subscribe(
+    this.northService.getNorthTasks(caching)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data) => {
           this.tasks = data;
           this.tasks = sortBy(this.tasks, function (obj) {
@@ -112,6 +115,8 @@ export class NorthComponent implements OnInit, OnDestroy {
     this.isAlive = false;
     this.subscription.unsubscribe();
     this.viewPortSubscription.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
 

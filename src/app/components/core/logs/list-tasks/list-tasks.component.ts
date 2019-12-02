@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { sortBy } from 'lodash';
-import { interval } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { interval, Subject } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { AlertService, PingService, SchedulesService, ProgressBarService } from '../../../../services';
 import { POLLING_INTERVAL } from '../../../../utils';
@@ -16,6 +16,7 @@ export class ListTasksComponent implements OnInit, OnDestroy {
   public refreshInterval = POLLING_INTERVAL;
   private REQUEST_TIMEOUT_INTERVAL = 5000;
   private isAlive: boolean;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private schedulesService: SchedulesService,
@@ -24,7 +25,9 @@ export class ListTasksComponent implements OnInit, OnDestroy {
     private ping: PingService
   ) {
     this.isAlive = true;
-    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
+    this.ping.pingIntervalChanged
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((timeInterval: number) => {
       if (timeInterval === -1) {
         this.isAlive = false;
       }
@@ -35,7 +38,7 @@ export class ListTasksComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getLatestTasks();
     interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getLatestTasks();
       });
@@ -45,7 +48,9 @@ export class ListTasksComponent implements OnInit, OnDestroy {
    * Get latest tasks
    */
   public getLatestTasks(): void {
-    this.schedulesService.getLatestTask().subscribe(
+    this.schedulesService.getLatestTask()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(
       (data) => {
         const taskData = data['tasks'];
         let runningTasks = taskData.filter((rt => (rt.state === 'Running')));
@@ -77,7 +82,9 @@ export class ListTasksComponent implements OnInit, OnDestroy {
   public cancelRunningTask(id) {
     /** request started */
     this.ngProgress.start();
-    this.schedulesService.cancelTask(id).subscribe(
+    this.schedulesService.cancelTask(id)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(
       data => {
         /** request completed */
         this.ngProgress.done();
@@ -102,5 +109,7 @@ export class ListTasksComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
