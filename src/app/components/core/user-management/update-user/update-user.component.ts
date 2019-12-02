@@ -35,7 +35,6 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    console.log('userRoles', this.userRoles);
     this.userRole = this.userRoles;
   }
 
