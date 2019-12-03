@@ -11,6 +11,7 @@ import {
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
+import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
 
 @Component({
   selector: 'app-notifications',
@@ -20,10 +21,10 @@ import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
 
-  isNotificationServiceAvailable = false;
-  isNotificationServiceEnabled = false;
-  notificationServiceName = 'FogLAMP Notifications';
-  notificationServicePackageName = 'foglamp-service-notification';
+  isNotificationServiceAvailable: boolean;
+  isNotificationServiceEnabled: boolean;
+  isNotificationModalOpen = false;
+  notificationServiceName = '';
   notificationInstances = [];
   notification: any;
   viewPort: any = '';
@@ -33,11 +34,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   private viewPortSubscription: Subscription;
   public showSpinner = false;
-  isNotificationModalOpen = false;
+  public notificationServiceData = {};
 
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent, { static: false }) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(NotificationServiceModalComponent, { static: true }) notificationServiceModal: NotificationServiceModalComponent;
 
   constructor(public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
@@ -96,128 +98,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       });
   }
 
-  installNotificationService() {
-    const servicePayload = {
-      format: 'repository',
-      name: this.notificationServicePackageName,
-      version: ''
-    };
-
-    /** request started */
-    this.ngProgress.start();
-    this.alertService.activityMessage('Installing ' + 'notification service...', true);
-    this.servicesApiService.installService(servicePayload).
-      subscribe(
-        (data: any) => {
-          /** request done */
-          this.ngProgress.done();
-          this.alertService.closeMessage();
-          this.alertService.success(data.message, true);
-        },
-        error => {
-          /** request done */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else if (error.status === 500) {
-            this.alertService.error('Failed to install from repository');
-          } else {
-            let errorText = error.statusText;
-            if (typeof error.error.link === 'string') {
-              errorText += ` <a>${error.error.link}</a>`;
-            }
-            this.alertService.error(errorText);
-          }
-        }, () => {
-          this.addNotificationService();
-        });
-  }
-
-  public async addServiceEvent() {
-    await this.getInstalledServicesList();
-    if (!this.availableServices.includes('notification')) {
-      this.installNotificationService();
-    } else {
-      this.addNotificationService();
-    }
-  }
-
-  addNotificationService() {
-    const payload = {
-      name: this.notificationServiceName,
-      type: 'notification',
-      enabled: true
-    };
-    /** request start */
-    this.ngProgress.start();
-
-    this.servicesApiService.addService(payload)
-      .subscribe(
-        () => {
-          this.alertService.success('Notification service added successfully.', true);
-          this.isNotificationServiceAvailable = true;
-          this.checkServiceStatus();
-          if (!this.isNotificationServiceEnabled) {
-            setTimeout(() => {
-              this.checkServiceStatus();
-            }, 2000);
-          }
-        },
-        (error) => {
-          /** request done */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  enableNotificationService() {
-    /** request started */
-    this.ngProgress.start();
-    this.schedulesService.enableScheduleByName(this.notificationServiceName).
-      subscribe(
-        (data) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success(data['message'], true);
-          this.isNotificationServiceEnabled = true;
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  disableNotificationService() {
-    /** request started */
-    this.ngProgress.start();
-    this.schedulesService.disableScheduleByName(this.notificationServiceName).
-      subscribe(
-        (data) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success(data['message'], true);
-          this.isNotificationServiceEnabled = false;
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
   public getNotificationInstance() {
     this.showLoadingSpinner();
     this.notificationService.getNotificationInstance().
@@ -246,6 +126,20 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }, 2000);
   }
 
+  onNotifySettingModal(event: any) {
+    if (event.isEnabled !== undefined) {
+      this.isNotificationServiceEnabled = event.isEnabled;
+    }
+    if (event.isAddDeleteAction !== undefined) {
+      setTimeout(() => {
+        this.checkNotificationServiceStatus(true);
+      }, 2000);
+    }
+    if (event.isConfigChanged !== undefined) {
+      this.checkServiceStatus();
+    }
+  }
+
   public showLoadingSpinner() {
     this.showSpinner = true;
   }
@@ -267,25 +161,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   addNotificationInstance() {
     this.router.navigate(['/notification/add']);
-  }
-
-  public closeMessage(isOpen: Boolean) {
-    const modalName = <HTMLElement>document.getElementById('messageDiv');
-    if (isOpen) {
-      modalName.classList.add('is-hidden');
-      return;
-    }
-    modalName.classList.remove('is-hidden');
-  }
-
-  openAlertModal() {
-    this.notificationServiceRecord = {
-      name: this.notificationServiceName,
-      message: `Do you really want to disable ${this.notificationServiceName}`,
-      key: 'disableNotification'
-    };
-    // call child component method to toggle modal
-    this.child.toggleModal(true);
   }
 
   public checkServiceStatus() {
@@ -345,6 +220,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
   }
 
+  public enableNotificationService() {
+    this.notificationServiceModal.enableNotificationService(this.notificationServiceName);
+  }
+
   public getSchedules(): void {
     this.schedulesService.getSchedules().
       subscribe(
@@ -353,6 +232,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           if (schedule === undefined) {
             this.isNotificationServiceAvailable = false;
             this.isNotificationServiceEnabled = false;
+            this.notificationServiceName = '';
             return;
           }
           this.notificationServiceName = schedule.name;
@@ -368,6 +248,18 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  /**
+   * Open Notification Settings modal
+   */
+  openNotificationServiceModal() {
+    this.notificationServiceData = {
+      notificationServiceAvailable: this.isNotificationServiceAvailable,
+      notificationServiceEnabled: this.isNotificationServiceEnabled,
+      notificationServiceName: this.notificationServiceName
+    };
+    this.notificationServiceModal.toggleModal(true);
   }
 
   ngOnDestroy() {

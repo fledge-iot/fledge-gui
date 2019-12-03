@@ -1,0 +1,82 @@
+<div id="notification-service-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
+                Notification Service</p>
+            <p *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</p>
+            <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+        </header>
+        <section class="modal-card-body">
+            <form name="notification-form" id="notificationForm" #fg="ngForm"
+                (ngSubmit)="fg.form.valid && saveChanges()" novalidate>
+                <div *ngIf="!isNotificationServiceAvailable" class="columns is-mobile">
+                    <div class="column">
+                        <div class="field is-horizontal">
+                            <div class="field-label has-text-left">
+                                <label class="label">Name</label>
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <input *ngIf="!isNotificationServiceAvailable" type="text" class="input is-small"
+                                        name="notificationServiceName" [(ngModel)]="notificationServiceName"
+                                        placeholder="FogLAMP Notifications" required trim="blur" />
+                                    <small
+                                        *ngIf="(fg?.touched || fg?.controls['notificationServiceName']?.dirty) && fg?.controls['notificationServiceName']?.invalid"
+                                        class="help is-danger level-left">*required</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <app-view-config-item #notificationConfigView *ngIf="category" [categoryConfigurationData]="category"
+                    [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'modal'">
+                </app-view-config-item>
+                <div class="columns">
+                    <div class="column">
+                        <div class="field is-horizontal">
+                            <div class="field-label has-text-left">
+                                <label class="label">Enabled</label>
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled"
+                                        [value]="enabled" [(ngModel)]="enabled">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="hidden-save" class="is-hidden button is-small is-link is-pulled-right"
+                    form="notificationForm">Save</button>
+            </form>
+            <hr class="hr-text" data-content="">
+            <div class="columns">
+                <div class="column">
+                    <div class="field is-grouped is-pulled-right">
+                        <p class="control">
+                            <button class="button is-small" id="cancel" (click)="toggleModal(false)">Cancel</button>
+                        </p>
+                        <p class="control">
+                            <button class="button is-small is-link" (click)="proxy()">{{btnText}}</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <hr *ngIf="isNotificationServiceAvailable && showDeleteBtn" class="hr-text" data-content="">
+            <div *ngIf="isNotificationServiceAvailable && showDeleteBtn" class="columns">
+                <div class="column">
+                    <div class="field is-grouped is-pulled-right">
+                        <p class="control">
+                            <button (click)="openDeleteModal(notificationServiceName)" class="button is-small">Delete
+                                Service
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <app-alert-dialog (deleteNotificationService)='deleteNotificationService($event)'
+        [notificationServiceRecord]='notificationServiceRecord'></app-alert-dialog>
+</div>

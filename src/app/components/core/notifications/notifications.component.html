@@ -1,13 +1,10 @@
 <div class="container is-fluid">
   <div>
-    <ng-container *ngIf="!isNotificationServiceAvailable && !isNotificationServiceEnabled">
+    <ng-container *ngIf="isNotificationServiceAvailable == false && isNotificationServiceEnabled == false">
       <article class="message is-warning">
         <div class="message-body">
           Notification service is not added
-          and enabled.&nbsp; <a (click)="addServiceEvent()"><strong>add & enable now</strong></a>
-          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
-            <i class="fa fa-sync" aria-hidden="true"></i>
-          </button>
+          and enabled.&nbsp; <a (click)="openNotificationServiceModal()"><strong>add & enable now</strong></a>
         </div>
       </article>
     </ng-container>
@@ -22,22 +19,7 @@
         </div>
       </article>
     </ng-container>
-    <ng-container *ngIf="isNotificationServiceAvailable && isNotificationServiceEnabled">
-      <article id='messageDiv' class="message is-info">
-        <div class="message-body">
-          Notification service is enabled.&nbsp; <a (click)="openAlertModal()">disable now</a>
-          <button class="delete" aria-label="delete" (click)="closeMessage(true)"></button>
-          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
-            <i class="fa fa-sync" aria-hidden="true"></i>
-          </button>
-        </div>
-      </article>
-      <app-alert-dialog *ngIf="!isNotificationModalOpen" (disableNotificationService)='disableNotificationService()'
-        [notificationServiceRecord]='notificationServiceRecord'>
-      </app-alert-dialog>
-    </ng-container>
   </div>
-
   <div class="card">
     <header class="card-header">
       <div id="notification-service" class="card-header-title">
@@ -55,6 +37,11 @@
         <p *ngIf="viewPort !== 'mobile'">Create Notification Instance &nbsp;</p>
         <i class="fa fa-plus" aria-hidden="true"></i>
       </button>
+      <a class="button" (click)="openNotificationServiceModal()" id="refresh-check">
+        <span class="icon">
+          <i class="fa fa-cog" aria-hidden="true"></i>
+        </span>
+      </a>
     </header>
     <div class="card-content">
       <div class="content">
@@ -113,3 +100,4 @@
 </div>
 <app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>
 <app-view-logs></app-view-logs>
+<app-notification-service-modal (notifyServiceEmitter)='onNotifySettingModal($event)' [notificationServiceData]="notificationServiceData"></app-notification-service-modal>

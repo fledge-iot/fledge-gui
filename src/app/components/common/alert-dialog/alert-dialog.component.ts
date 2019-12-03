@@ -14,7 +14,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
   @Output() delete = new EventEmitter<Number>();
   @Output() deleteService = new EventEmitter<Object>();
   @Output() deleteNotification = new EventEmitter<Object>();
-  @Output() disableNotificationService = new EventEmitter<Object>();
+  @Output() deleteNotificationService = new EventEmitter<Object>();
   @Output() deleteTask = new EventEmitter<Object>();
   @Output() deleteUserService = new EventEmitter<Number>();
   @Output() deleteCertificate = new EventEmitter<Object>();
@@ -23,6 +23,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
   @Output() restoreBackup = new EventEmitter<Number>();
   @Output() deleteBackup = new EventEmitter<Number>();
   @Output() logoutAllUserSessionsService = new EventEmitter<Number>();
+  modalId = '';
 
   constructor() { }
 
@@ -77,8 +78,8 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       }
     }
     if (this.notificationServiceRecord) {
-      if (this.notificationServiceRecord.key === 'disableNotification') {
-       this.notificationServiceRecord.headerTextValue = 'Disable Service';
+      if (this.notificationServiceRecord.key === 'deleteNotificationService') {
+       this.notificationServiceRecord.headerTextValue = 'Delete Service';
       }
     }
   }
@@ -87,13 +88,17 @@ export class AlertDialogComponent implements OnInit, OnChanges {
     this.toggleModal(false);
   }
 
-  public toggleModal(isOpen: Boolean) {
-    const alertModal = <HTMLDivElement>document.getElementById('modal-box');
+  public toggleModal(isOpen: Boolean, id = '') {
+    if (id !== '' && this.modalId === '') {
+      this.modalId = id;
+    }
+    const alertModal = <HTMLDivElement>document.querySelector(this.modalId + '#modal-box');
     if (isOpen) {
       alertModal.classList.add('is-active');
       return;
     }
     alertModal.classList.remove('is-active');
+    this.modalId = '';
   }
 
   triggerAction() {
@@ -153,8 +158,8 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       }
     }
     if (this.notificationServiceRecord) {
-      if (this.notificationServiceRecord.key === 'disableNotification') {
-        this.disableNotificationService.emit();
+      if (this.notificationServiceRecord.key === 'deleteNotificationService') {
+        this.deleteNotificationService.emit(this.notificationServiceRecord.name);
         this.toggleModal(false);
       }
     }
