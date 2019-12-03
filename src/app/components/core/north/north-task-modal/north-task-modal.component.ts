@@ -234,16 +234,15 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public saveScheduleFields(form: NgForm) {
-    if (!form.dirty && !form.touched) {
-      this.toggleModal(false);
-      return false;
-    }
-
     if (this.isFilterDeleted) {
       this.deleteFilter();
     }
     if (this.isFilterOrderChanged) {
       this.updateFilterPipeline(this.filterPipeline);
+    }
+    if (!form.dirty && !form.touched) {
+      this.toggleModal(false);
+      return false;
     }
     const repeatInterval = form.controls['repeatTime'].value !== ('None' || undefined) ? Utils.convertTimeToSec(
       form.controls['repeatTime'].value, form.controls['repeatDays'].value) : 0;
