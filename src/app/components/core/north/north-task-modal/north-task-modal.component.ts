@@ -144,7 +144,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       return;
     }
     this.notify.emit(true);
-    this.form.reset();
+    if (this.form !== undefined) {
+      this.form.reset();
+    }
     this.isAdvanceConfig = true;
     this.getAdvanceConfig(null);
     this.filterConfiguration = [];
@@ -234,16 +236,17 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public saveScheduleFields(form: NgForm) {
-    if (!form.dirty && !form.touched) {
-      this.toggleModal(false);
-      return false;
-    }
-
     if (this.isFilterDeleted) {
       this.deleteFilter();
     }
     if (this.isFilterOrderChanged) {
       this.updateFilterPipeline(this.filterPipeline);
+    }
+    // 'touched' means the user has entered the form
+    // 'dirty' / '!pristine' means the user has made a modification
+    if (!form.dirty && !form.touched) {
+      this.toggleModal(false);
+      return false;
     }
     const repeatInterval = form.controls['repeatTime'].value !== ('None' || undefined) ? Utils.convertTimeToSec(
       form.controls['repeatTime'].value, form.controls['repeatDays'].value) : 0;
