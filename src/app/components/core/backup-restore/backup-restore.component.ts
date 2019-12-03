@@ -167,7 +167,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     const a = document.createElement('a');
     a.href = url;
     const date = this.dateFormatter.transform(backup.date, 'YYYY_MM_DD_HH_mm_ss');
-    a.download = 'foglamp_backup_' + date + '.tar.gz';
+    a.download = 'fledge_backup_' + date + '.tar.gz';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

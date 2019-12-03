@@ -14,7 +14,7 @@ export class NorthService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | foglamp/north
+   *  GET | fledge/north
    */
   public getNorthTasks(caching: boolean) {
     let url = this.GET_NORTH_TASKS;
@@ -27,7 +27,7 @@ export class NorthService {
   }
 
   /**
-   *  DELETE | /foglamp/scheduled/task/{taskName}
+   *  DELETE | /fledge/scheduled/task/{taskName}
    */
   public deleteTask(taskName) {
     return this.http.delete(this.DELETE_TASK + '/' + encodeURIComponent(taskName)).pipe(

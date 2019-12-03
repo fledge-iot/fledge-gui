@@ -7,8 +7,8 @@ import { GRAPH_REFRESH_INTERVAL, POLLING_INTERVAL } from '../utils';
 
 @Injectable()
 export class PingService {
-  private FOGLAMP_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
-  private FOGLAMP_RESTART_URL = environment.BASE_URL + 'restart';
+  private FLEDGE_SHUTDOWN_URL = environment.BASE_URL + 'shutdown';
+  private FLEDGE_RESTART_URL = environment.BASE_URL + 'restart';
   private GET_PING_URL = environment.BASE_URL + 'ping';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
   pingIntervalChanged: BehaviorSubject<number> = new BehaviorSubject(0);
@@ -16,7 +16,7 @@ export class PingService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET  | /foglamp/ping
+   *  GET  | /fledge/ping
    */
   pingService(): Promise<any> {
     return this.http.get(this.GET_PING_URL)
@@ -26,19 +26,19 @@ export class PingService {
   }
 
   /**
-   *  PUT  | /foglamp/shutdown
+   *  PUT  | /fledge/shutdown
    */
   shutdown() {
-    return this.http.put(this.FOGLAMP_SHUTDOWN_URL, null).pipe(
+    return this.http.put(this.FLEDGE_SHUTDOWN_URL, null).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
   /**
-   *  PUT  | /foglamp/restart
+   *  PUT  | /fledge/restart
    */
   restart() {
-    return this.http.put(this.FOGLAMP_RESTART_URL, null).pipe(
+    return this.http.put(this.FLEDGE_RESTART_URL, null).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

@@ -11,7 +11,7 @@ export class DiscoveryService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET  | /foglamp/discover
+   *  GET  | /fledge/discover
    */
   discover(discoveryUrl) {
     const headers = new HttpHeaders().set(InterceptorSkipHeader, '');

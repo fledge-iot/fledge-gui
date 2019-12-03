@@ -1,5 +1,5 @@
 
-## Prerequisite to setup FogLAMP UI Client on CentOS/RHEL 7
+## Prerequisite to setup Fledge UI Client on CentOS/RHEL 7
 
 ### Node 
 

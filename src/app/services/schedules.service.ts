@@ -19,7 +19,7 @@ export class SchedulesService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | foglamp/schedule/type
+   *  GET | fledge/schedule/type
    */
   public getScheduleType() {
     return this.http.get(this.GET_SCHEDULE_TYPE).pipe(
@@ -29,7 +29,7 @@ export class SchedulesService {
 
 
   /**
-   *  GET | /foglamp/schedule
+   *  GET | /fledge/schedule
    */
   public getSchedules() {
     return this.http.get(this.SCHEDULE_URL).pipe(
@@ -38,7 +38,7 @@ export class SchedulesService {
   }
 
   /**
-   *  GET | /foglamp/schedule/{schedule_id}
+   *  GET | /fledge/schedule/{schedule_id}
    */
   public getSchedule(schedule_id) {
     return this.http.get(this.SCHEDULE_URL + '/' + schedule_id).pipe(
@@ -49,7 +49,7 @@ export class SchedulesService {
   /**
    * Create schedule
    *
-   * POST | /foglamp/schedule
+   * POST | /fledge/schedule
    *
    */
   public createSchedule(payload: any) {
@@ -61,7 +61,7 @@ export class SchedulesService {
   /**
     * Update schedule
     *
-    * PUT | /foglamp/schedule/{schedule_id}
+    * PUT | /fledge/schedule/{schedule_id}
     *
     */
   public updateSchedule(schedule_id, payload: any) {
@@ -71,7 +71,7 @@ export class SchedulesService {
   }
 
   /**
-   *  GET | /foglamp/schedule/process
+   *  GET | /fledge/schedule/process
    */
   public getScheduledProcess() {
     return this.http.get(this.GET_SCHEDULE_PROCESS).pipe(
@@ -80,7 +80,7 @@ export class SchedulesService {
   }
 
   /**
-   *  PUT | /foglamp/schedule/{schedule_id}/enable
+   *  PUT | /fledge/schedule/{schedule_id}/enable
    */
   public enableSchedule(id) {
     return this.http.put(this.SCHEDULE_URL + '/' + id + '/' + 'enable', null).pipe(
@@ -89,7 +89,7 @@ export class SchedulesService {
   }
 
   /**
-   *  PUT | /foglamp/schedule/{schedule_id}/disable
+   *  PUT | /fledge/schedule/{schedule_id}/disable
    */
   public disableSchedule(id) {
     return this.http.put(this.SCHEDULE_URL + '/' + id + '/' + 'disable', null).pipe(
@@ -98,7 +98,7 @@ export class SchedulesService {
   }
 
   /**
-   *  PUT | /foglamp/schedule/enable
+   *  PUT | /fledge/schedule/enable
    */
   public enableScheduleByName(scheduleName) {
     return this.http.put(this.SCHEDULE_URL + '/enable', { 'schedule_name': scheduleName }).pipe(
@@ -107,7 +107,7 @@ export class SchedulesService {
   }
 
   /**
-   *  PUT | /foglamp/schedule/disable
+   *  PUT | /fledge/schedule/disable
    */
   public disableScheduleByName(scheduleName) {
     return this.http.put(this.SCHEDULE_URL + '/disable', { 'schedule_name': scheduleName }).pipe(
@@ -116,7 +116,7 @@ export class SchedulesService {
   }
 
   /**
-   *  GET | /foglamp/task/latest
+   *  GET | /fledge/task/latest
    */
   public getLatestTask() {
     return this.http.get(this.LATEST_TASK_URL).pipe(
@@ -125,7 +125,7 @@ export class SchedulesService {
   }
 
   /**
-   *  PUT | /foglamp/task/{task_id}/cancel
+   *  PUT | /fledge/task/{task_id}/cancel
    */
   public cancelTask(id) {
     return this.http.put(this.TASKS_URL + '/' + id + '/cancel', null).pipe(
@@ -136,7 +136,7 @@ export class SchedulesService {
   /**
    * Create a task
    *
-   * POST | /foglamp/scheduled/task
+   * POST | /fledge/scheduled/task
    *
    */
   public createScheduledTask(payload: any) {

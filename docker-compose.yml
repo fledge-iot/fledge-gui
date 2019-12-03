@@ -5,8 +5,8 @@ version: '3.1'
 
 services:
 
-  foglamp:
-    container_name: foglamp-gui
+  fledge:
+    container_name: fledge-gui
     image: nginx
     build:
       context: .

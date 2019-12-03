@@ -12,7 +12,7 @@ export class BackupRestoreService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | /foglamp/backup
+   *  GET | /fledge/backup
    */
   public get() {
     return this.http.get(this.BACKUP_URL).pipe(
@@ -21,7 +21,7 @@ export class BackupRestoreService {
   }
 
   /**
-   *  POST | /foglamp/backup
+   *  POST | /fledge/backup
    */
   public requestBackup() {
     return this.http.post(this.BACKUP_URL, null).pipe(
@@ -30,7 +30,7 @@ export class BackupRestoreService {
   }
 
   /**
-   *  PUT | /foglamp/backup/{backup-id}/restore
+   *  PUT | /fledge/backup/{backup-id}/restore
    */
   public restoreBackup(id) {
     return this.http.put(this.BACKUP_URL + '/' + id + '/restore', null).pipe(
@@ -39,7 +39,7 @@ export class BackupRestoreService {
   }
 
   /**
-   *  DELETE | /foglamp/backup/{backup-id}
+   *  DELETE | /fledge/backup/{backup-id}
    */
   public deleteBackup(id) {
     return this.http.delete(this.BACKUP_URL + '/' + id).pipe(

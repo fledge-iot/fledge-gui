@@ -82,49 +82,49 @@ After restart you will see the new locale. Run `locale` to view the set locales.
 
 > You can also set preferred timezone, as the default raspberry pi is shipped with UTC. It can be done with utility `tzselect`.
 
-### Setting up FogLAMP
+### Setting up Fledge
 
 From your dev machine, `scp raspbian/deploy-core pi@<IP>:/home/pi/`
 
 SSH to Raspbian machine and:
 
 ```
-git clone https://github.com/foglamp/FogLAMP.git
+git clone https://github.com/fledge/Fledge.git
 
-cd FogLAMP
+cd Fledge
 
 ./requirements.sh
 
-export FOGLAMP_ROOT=`pwd`
+export FLEDGE_ROOT=`pwd`
 
 make
 
-./scripts/foglamp start
+./scripts/fledge start
 ```
 
-### Setting up FogLAMP gui
+### Setting up Fledge gui
 
 **On dev machine:**
 
-[Set up dev env](https://github.com/foglamp/foglamp-gui#prerequisites)
+[Set up dev env](https://github.com/fledge/fledge-gui#prerequisites)
 
-`git clone https://github.com/foglamp/foglamp-gui.git` 
+`git clone https://github.com/fledge/fledge-gui.git` 
 
 > default will be the `develop` branch
 
-`cd foglamp-gui/`
+`cd fledge-gui/`
 
 run `./build`
 
 **Copy compressed build file and deploy script to (raspberry pi) Raspbian**
 
-`scp foglamp-gui-x.y.z.tar.gz pi@<IP>:/home/pi/`
+`scp fledge-gui-x.y.z.tar.gz pi@<IP>:/home/pi/`
 
-> $ scp foglamp-gui-x.y.z.tar.gz pi@<IP>:/home/pi/
+> $ scp fledge-gui-x.y.z.tar.gz pi@<IP>:/home/pi/
 
 > pi@<IP>'s password:
 
-> foglamp-gui-x.y.z.tar.gz    100%  460KB   1.7MB/s   00:00
+> fledge-gui-x.y.z.tar.gz    100%  460KB   1.7MB/s   00:00
 
 
 `scp deploy pi@<IP>:/home/pi/`

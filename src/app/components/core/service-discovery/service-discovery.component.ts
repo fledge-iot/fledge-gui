@@ -67,7 +67,7 @@ export class ServiceDiscoveryComponent implements OnInit {
     const hostField = this.form.get('discoveryHostControl').value;
     const servicePortField = this.form.get('discoveryPortControl').value;
     const discoveryURL = protocolField + '://' + hostField.trim()
-      + ':' + servicePortField + '/foglamp/discover';
+      + ':' + servicePortField + '/fledge/discover';
     localStorage.setItem('DISCOVERY_PROTOCOL', protocolField);
     localStorage.setItem('DISCOVERY_HOST', hostField);
     localStorage.setItem('DISCOVERY_PORT', servicePortField);
@@ -92,7 +92,7 @@ export class ServiceDiscoveryComponent implements OnInit {
           this.discoveredServices = serviceRecord;
           if (this.discoveredServices.length <= 0) {
             this.discoveryServiceStatus = false;
-            this.message = 'No running FogLAMP instance found over the network.';
+            this.message = 'No running Fledge instance found over the network.';
             this.toggleMessage(false);
           } else if (!this.connectedServiceStatus) {
             this.message = 'Connected service is down. Connect to other service listed below, or ' +
@@ -116,7 +116,7 @@ export class ServiceDiscoveryComponent implements OnInit {
 
   connectService(service) {
     // TODO: Get protocol from service discovery
-    const serviceEndpoint = service.protocol + '://' + service.address + ':' + service.port + '/foglamp/';
+    const serviceEndpoint = service.protocol + '://' + service.address + ':' + service.port + '/fledge/';
     localStorage.setItem('CONNECTED_PROTOCOL', service.protocol);
     localStorage.setItem('CONNECTED_HOST', service.address);
     localStorage.setItem('CONNECTED_PORT', service.port);

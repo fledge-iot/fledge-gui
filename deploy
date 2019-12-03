@@ -27,7 +27,7 @@ if [ -f "package.json" ];
 	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
 fi
 
-FOGLAMP_GUI_VER=${__version__}
+FLEDGE_GUI_VER=${__version__}
 
 # Colors
 CPFX="\033["
@@ -37,7 +37,7 @@ CERR="${CPFX}1;31m"
 CINFO="${CPFX}1;32m"
 CWARN="${CPFX}0;33m"
 
-echo -e "${CWARN}This script is partially done, please track https://github.com/foglamp/foglamp-gui/issues/73 ${CRESET}"
+echo -e "${CWARN}This script is partially done, please track https://github.com/fledge/fledge-gui/issues/73 ${CRESET}"
 
 compat_msg="This script is compatible with Linux (Ubuntu and Raspbian) Only!"
 
@@ -101,8 +101,8 @@ memory_footprints(){
 
 nginx_health(){
   if ! which nginx > /dev/null 2>&1; then
-    echo -e "${CERR} FogLAMP GUI can not run, As Nginx(-light) is not installed.${CRESET}"
-    echo -e "${CINFO} Run ./deploy without any argument to install the foglamp gui with nginx-light.${CRESET}"
+    echo -e "${CERR} Fledge GUI can not run, As Nginx(-light) is not installed.${CRESET}"
+    echo -e "${CINFO} Run ./deploy without any argument to install the fledge gui with nginx-light.${CRESET}"
   else
     machine_details
 
@@ -134,13 +134,13 @@ install () {
 
   sudo service nginx stop
 
-  # Download foglamp-gui build artifacts i.e. dist directory compressed file
-  # url e.g. http://192.168.1.120/foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
-  # github release https://github.com/foglamp/foglamp-gui/releases/download/v1.2.0/foglamp-gui-1.2.0.tar.gz
+  # Download fledge-gui build artifacts i.e. dist directory compressed file
+  # url e.g. http://192.168.1.120/fledge-gui-${FLEDGE_GUI_VER}.tar.gz
+  # github release https://github.com/fledge/fledge-gui/releases/download/v1.2.0/fledge-gui-1.2.0.tar.gz
   # wget ${BUILD_URL}
 
-  # FIXME: scp foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz pi@<IP>:/home/pi
-  tar -zxvf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
+  # FIXME: scp fledge-gui-${FLEDGE_GUI_VER}.tar.gz pi@<IP>:/home/pi
+  tar -zxvf fledge-gui-${FLEDGE_GUI_VER}.tar.gz
 
   # put them into /var/www/html and start nginx
   sudo rm -rf ${DOC_ROOT}/*
@@ -148,10 +148,10 @@ install () {
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove
-  sudo rm -rf foglamp-gui-${FOGLAMP_GUI_VER}.tar.gz
+  sudo rm -rf fledge-gui-${FLEDGE_GUI_VER}.tar.gz
 
   # sudo sed -i 's/dist/\/var\/www\/html/g' ${DOC_ROOT}/nginx.conf
-  sudo cp ${DOC_ROOT}/foglamp.html ${DOC_ROOT}/index.html
+  sudo cp ${DOC_ROOT}/fledge.html ${DOC_ROOT}/index.html
 
   sudo service nginx start
   sudo service nginx status | grep "Active:"
@@ -166,7 +166,7 @@ install () {
 USAGE="${__version__}
 
 DESCRIPTION
-  This script installs foglamp-gui with nginx-light
+  This script installs fledge-gui with nginx-light
 
 OPTIONS
   Multiple commands can be specified but they all must be

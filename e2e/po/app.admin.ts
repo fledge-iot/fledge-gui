@@ -6,7 +6,7 @@ export class AdminLogin {
   login() {
     browser.ignoreSynchronization = true;
     element(by.css('app-login form div:nth-child(1) div input[name="username"]')).sendKeys('admin');
-    element(by.css('app-login form input[name="password"]')).sendKeys('foglamp');
+    element(by.css('app-login form input[name="password"]')).sendKeys('fledge');
     browser.sleep(1000);
     element(by.css('app-login form button.is-info')).click();
   }

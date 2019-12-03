@@ -12,7 +12,7 @@ export class ConfigurationService {
   constructor(private http: HttpClient) { }
 
   /**
-   *   GET  | /foglamp/category
+   *   GET  | /fledge/category
    */
   getCategories() {
     return this.http.get(this.CATEGORY_URL).pipe(
@@ -21,7 +21,7 @@ export class ConfigurationService {
   }
 
   /**
-   *   GET  | /foglamp/category?root=true&children=true
+   *   GET  | /fledge/category?root=true&children=true
    */
   getCategoryWithChildren() {
     return this.http.get(this.CATEGORY_URL + '?root=true&children=true').pipe(
@@ -29,7 +29,7 @@ export class ConfigurationService {
       catchError(error => throwError(error)));
   }
   /**
-   *   GET  | /foglamp/category/{categoryName}
+   *   GET  | /fledge/category/{categoryName}
    */
   getCategory(categoryName) {
     categoryName = encodeURIComponent(categoryName);
@@ -39,7 +39,7 @@ export class ConfigurationService {
   }
 
   /**
-   *   GET  | /foglamp/category/{categoryName}/children
+   *   GET  | /fledge/category/{categoryName}/children
    */
   getChildren(categoryName) {
     categoryName = encodeURIComponent(categoryName);
@@ -49,7 +49,7 @@ export class ConfigurationService {
   }
 
   /**
-   *   GET  | /foglamp/category
+   *   GET  | /fledge/category
    *   @param root boolean type
    */
   getRootCategories() {
@@ -61,7 +61,7 @@ export class ConfigurationService {
   }
 
   /**
-  *  PUT  | /foglamp/category/{categoryName}/{config_item}
+  *  PUT  | /fledge/category/{categoryName}/{config_item}
   */
   saveConfigItem(categoryName: string, configItem: string, value: string, type: string) {
     let body = JSON.stringify({ 'value': value });
@@ -74,7 +74,7 @@ export class ConfigurationService {
   }
 
   /**
-  *  POST  | /foglamp/category/{categoryName}/{config_item}/upload
+  *  POST  | /fledge/category/{categoryName}/{config_item}/upload
   */
   uploadFile(categoryName: string, configItem: string, fileToUpload) {
     return this.http.post(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName) + '/'
@@ -84,7 +84,7 @@ export class ConfigurationService {
   }
 
   /**
-  *  GET  | /foglamp/category/{categoryName}/{config_item}
+  *  GET  | /fledge/category/{categoryName}/{config_item}
   */
   getConfigItem(categoryName: string, configItem: string) {
     return this.http.get(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName) + '/' + encodeURIComponent(configItem)).pipe(
@@ -93,7 +93,7 @@ export class ConfigurationService {
   }
 
   /**
-  *  GET  | /foglamp/category/{categoryName}/children
+  *  GET  | /fledge/category/{categoryName}/children
   */
   getCategoryConfigChildren(categoryName: string) {
     categoryName = encodeURIComponent(categoryName);
@@ -103,7 +103,7 @@ export class ConfigurationService {
   }
 
   /**
-  *  PUT  | /foglamp/category/{categoryName}
+  *  PUT  | /fledge/category/{categoryName}
   */
   updateBulkConfiguration(categoryName, configItems) {
     categoryName = encodeURIComponent(categoryName);

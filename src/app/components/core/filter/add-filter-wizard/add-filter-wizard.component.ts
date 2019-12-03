@@ -74,7 +74,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.service.getAvailablePlugins(type).
       subscribe(
         (data: any) => {
-          this.pluginData = data['plugins'].map((p: string) => p.replace(`foglamp-filter-`, ''));
+          this.pluginData = data['plugins'].map((p: string) => p.replace(`fledge-filter-`, ''));
           this.requestInProgress = false;
           this.placeholderText = 'Select Plugin';
           if (isEmpty(this.pluginData)) {
@@ -89,7 +89,7 @@ export class AddFilterWizardComponent implements OnInit {
           if (error.status === 0) {
             console.log('service down ', error);
           } else if (error.status === 404) {
-            this.alertService.error('Make sure package repository is configured / added in FogLAMP');
+            this.alertService.error('Make sure package repository is configured / added in Fledge');
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
@@ -261,7 +261,7 @@ export class AddFilterWizardComponent implements OnInit {
     }
     const pluginData = {
       format: 'repository',
-      name: `foglamp-filter-` + pluginName,
+      name: `fledge-filter-` + pluginName,
       version: ''
     };
 

@@ -1,4 +1,4 @@
-## Prerequisite to setup FogLAMP UI Client
+## Prerequisite to setup Fledge UI Client
 
 ### Node 
 

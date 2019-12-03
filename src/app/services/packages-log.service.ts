@@ -12,7 +12,7 @@ export class PackagesLogService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET | foglamp/package/log
+   *  GET | fledge/package/log
    */
   public getPackageLogs() {
     return this.http.get(this.PACKAGE_LOG_URL).pipe(
@@ -21,7 +21,7 @@ export class PackagesLogService {
   }
 
   /**
-   *  GET | foglamp/package/log/{logFile}
+   *  GET | fledge/package/log/{logFile}
    */
   public async getLog(logFile: string): Promise<Blob> {
     const file = await this.http.get<Blob>(

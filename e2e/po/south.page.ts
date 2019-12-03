@@ -33,7 +33,7 @@ export class SouthPage {
   /**
    * To add south service
    * @prerequisite south service plugin should be pre-installed and discoverable at
-   * FogLAMP side.
+   * Fledge side.
    * @param serviceName {string} south service name
    * @param {string}    south plugin name
    */

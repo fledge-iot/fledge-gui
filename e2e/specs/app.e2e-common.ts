@@ -3,7 +3,7 @@ import { SkipLogin } from '../po/app.skip';
 import { NonAdminLogin } from '../po/app.non-admin';
 import { environment } from '../environment';
 
-describe('FogLAMP gui', () => {
+describe('Fledge gui', () => {
   let skipLogin: SkipLogin;
   let adminLogin: AdminLogin;
   let nonAdminLogin: NonAdminLogin;
@@ -24,7 +24,7 @@ describe('FogLAMP gui', () => {
   if (environment.AUTH_OPTIONAL === true) {
     it('Should Display Nav Title and App Status', () => {
       skipLogin.navigateToHome();
-      expect(skipLogin.getNavTitle()).toEqual('FogLAMP');
+      expect(skipLogin.getNavTitle()).toEqual('Fledge');
       expect(skipLogin.getAppStatus()).toEqual(true);
       expect(skipLogin.getReceived()).toContain('Received');
       expect(skipLogin.getSent()).toContain('Sent');

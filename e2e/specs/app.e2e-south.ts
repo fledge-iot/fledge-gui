@@ -1,7 +1,7 @@
 import { SouthPage } from '../po/south.page';
 import { Filters } from '../po/app.filters';
 
-describe('FogLAMP South Page tests', () => {
+describe('Fledge South Page tests', () => {
   const southPage = new SouthPage();
   const filters = new Filters();
 

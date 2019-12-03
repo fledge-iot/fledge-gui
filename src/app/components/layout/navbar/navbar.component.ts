@@ -217,21 +217,21 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public toggleInfoDropdown() {
-    const foglampDropdown = <HTMLDivElement>document.getElementById('foglamp-info');
-    const classes = foglampDropdown.className.split(' ');
+    const fledgeDropdown = <HTMLDivElement>document.getElementById('fledge-info');
+    const classes = fledgeDropdown.className.split(' ');
     for (const cls of classes) {
       if (cls === 'is-active') {
-        foglampDropdown.classList.remove('is-active');
+        fledgeDropdown.classList.remove('is-active');
         return;
       }
     }
-    foglampDropdown.classList.add('is-active');
+    fledgeDropdown.classList.add('is-active');
   }
 
   openModal() {
     this.shutDownData = {
       key: 'shutdown',
-      message: 'Do you really want to shut down the FogLAMP?'
+      message: 'Do you really want to shut down the Fledge?'
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
@@ -240,7 +240,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   openRestartModal() {
     this.restartData = {
       key: 'restart',
-      message: 'Do you really want to restart the FogLAMP?'
+      message: 'Do you really want to restart the Fledge?'
     };
     // call childRestart component method to toggle modal
     this.childRestart.toggleModal(true);

@@ -15,7 +15,7 @@ export class ServicesApiService {
   constructor(private http: HttpClient) { }
 
   /**
-   *  GET  | /foglamp/service
+   *  GET  | /fledge/service
    */
   getAllServices() {
     return this.http.get(this.GET_SERVICES_URL).pipe(
@@ -24,7 +24,7 @@ export class ServicesApiService {
   }
 
   /**
-  *  POST  | /foglamp/service
+  *  POST  | /fledge/service
   */
   addService(payload) {
     return this.http.post(this.GET_SERVICES_URL, payload).pipe(
@@ -33,7 +33,7 @@ export class ServicesApiService {
   }
 
   /**
-   *  DELETE | /foglamp/service/{svc_name}
+   *  DELETE | /fledge/service/{svc_name}
    */
   deleteService(svc) {
     return this.http.delete(this.GET_SERVICES_URL + '/' + encodeURIComponent(svc)).pipe(
@@ -42,7 +42,7 @@ export class ServicesApiService {
   }
 
   /**
-   *  GET  | /foglamp/south
+   *  GET  | /fledge/south
    */
   getSouthServices(caching: boolean) {
     let url = this.SOUTH_URL;
@@ -55,7 +55,7 @@ export class ServicesApiService {
   }
 
   /**
-   *  GET  | /foglamp/service/installed
+   *  GET  | /fledge/service/installed
    */
   async getInstalledServices() {
     return await this.http.get(`${this.GET_SERVICES_URL}/installed`).pipe(
@@ -64,7 +64,7 @@ export class ServicesApiService {
   }
 
   /**
-   *  GET  | /foglamp/plugins/available
+   *  GET  | /fledge/plugins/available
    */
   getAvailablePlugins(pluginType: string) {
     return this.http.get(`${this.AVAILABLE_PLUGINS_URL}?type=${pluginType}`).pipe(
@@ -73,7 +73,7 @@ export class ServicesApiService {
   }
 
   /**
-   * POST | /foglamp/plugin
+   * POST | /fledge/plugin
    * @param payload plugin data
    */
   installPlugin(payload: any) {
@@ -83,7 +83,7 @@ export class ServicesApiService {
   }
 
   /**
-   * POST | /foglamp/service?action=install
+   * POST | /fledge/service?action=install
    * @param payload service data
    */
   installService(payload: any) {

@@ -1,5 +1,5 @@
-# FogLAMP GUI
-This is a GUI for FogLAMP
+# Fledge GUI
+This is a GUI for Fledge
 
 ## Prerequisites
 
@@ -13,9 +13,9 @@ This is a GUI for FogLAMP
 
 To update yarn, Run `sudo npm i -g yarn`
 
-`git clone https://github.com/foglamp/foglamp-gui.git`
+`git clone https://github.com/fledge/fledge-gui.git`
 
-`cd  foglamp-gui`
+`cd  fledge-gui`
 
 ## Development Server
 

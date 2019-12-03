@@ -26,7 +26,7 @@
 ##--------------------------------------------------------------------
 
 
-echo "Installing FogLAMP GUI"
+echo "Installing Fledge GUI"
 kill_nginx_ps () {  
   PSLIST=$(ps aux | grep '[n]ginx' | awk '{print $2}')
   if [ ! -z "${PSLIST}" ]; then
