@@ -1,6 +1,6 @@
 <div class="view-content columns">
   <div class="column">
-    <form name="form" id='{{pageId}}' (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
+    <form name="form" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
       <ng-container *ngIf="categoryConfiguration && hasEditableConfigItems">
         <ng-container *ngFor="let configItem of (categoryConfiguration | keys)"
           [ngSwitch]="getConfigAttributeType(configItem.value.type)">
