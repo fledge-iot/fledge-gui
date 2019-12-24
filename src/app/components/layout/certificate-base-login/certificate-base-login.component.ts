@@ -69,14 +69,18 @@ export class CertificateBaseLoginComponent implements OnInit {
 
   LoginWithCertificate() {
     if (this.certificateContent.length <= 0
-      && this.form.value.certificateText.length <= 0) {
+      && this.form.get('certificateText').value.length <= 0) {
       this.alertService.error('Certificate is required');
       return;
     }
     if (this.certificateContent.length <= 0
-      && this.form.value.certificateText !== '') {
-      this.certificateContent = this.form.value.certificateText;
+      && this.form.get('certificateText').value !== '') {
+      this.certificateContent = this.form.get('certificateText').value;
     }
+    if (this.form.get('certificateText').value !== '' && this.certificateContent.length > 0) {
+      this.certificateContent = this.form.get('certificateText').value;
+    }
+
     /** request started */
     this.ngProgress.start();
     this.authService.loginWithCertificate(this.certificateContent).
