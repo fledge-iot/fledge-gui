@@ -69,19 +69,13 @@ export class CertificateBaseLoginComponent implements OnInit {
 
   LoginWithCertificate() {
     const certificateTextValue = this.form.get('certificateText').value;
-    // If neither certificate file nor certificate text value exist, then show error
+    // If neither the certificate file nor the certificate text value exist, then show error
     if (this.certificateContent.length <= 0 && certificateTextValue.length <= 0) {
       this.alertService.error('Certificate is required');
       return;
     }
-    // If certificate file is not exist but certificate text value is exist,
-    // then update `certificateContent`
-    if (this.certificateContent.length <= 0 && certificateTextValue !== '') {
-      this.certificateContent = certificateTextValue;
-    }
-    // If `certificateTextValue` (new value) is exist and `certificateContent` has old invalid value,
-    // then update `certificateContent`
-    if (certificateTextValue !== '' && this.certificateContent.length > 0) {
+    // If certificate text value exists
+    if (certificateTextValue !== '') {
       this.certificateContent = certificateTextValue;
     }
 
