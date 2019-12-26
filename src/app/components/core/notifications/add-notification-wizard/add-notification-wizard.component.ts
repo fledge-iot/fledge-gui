@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { assign, cloneDeep, reduce, sortBy, isEmpty } from 'lodash';
+import { assign, reduce, sortBy, isEmpty } from 'lodash';
 
 import {
   NotificationsService, ProgressBarService,
@@ -451,6 +451,13 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
    * @param previousButton button to go previous
    */
   public addNotificationInstance(payload: any) {
+    payload['rule_config'] = this.rulePluginChangedConfig;
+    payload['delivery_config'] = this.deliveryPluginChangedConfig;
+    const ruleScript = this.rulePluginChangedConfig.script;
+    const deliveryScript = this.deliveryPluginChangedConfig.script;
+    delete payload['rule_config'].script;  // delete script key from payload object
+    delete payload['delivery_config'].script; // delete script key from payload object
+
     /** request started */
     this.ngProgress.start();
     this.notificationService.addNotificationInstance(payload)
@@ -460,11 +467,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
           this.ngProgress.done();
           this.alertService.success(data.result, true);
 
-          if (!isEmpty(this.rulePluginChangedConfig)) {
-            this.updateConfiguration(`rule${payload.name}`, this.rulePluginChangedConfig);
+          if (!isEmpty(ruleScript)) {
+            this.uploadScript(`rule${payload.name}`, ruleScript[0]);
           }
-          if (!isEmpty(this.deliveryPluginChangedConfig)) {
-            this.updateConfiguration(`delivery${payload.name}`, this.deliveryPluginChangedConfig);
+
+          if (!isEmpty(deliveryScript)) {
+            this.uploadScript(`delivery${payload.name}`, deliveryScript[0]);
           }
           this.router.navigate(['/notification']);
         },
@@ -479,38 +487,10 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         });
   }
 
-  updateConfiguration(categoryName: string, config: any) {
-    const configItemsCopy = cloneDeep(config);
-    delete configItemsCopy.script;
-    if (Object.keys(configItemsCopy).length === 0) {
-      if ('script' in config) {
-        this.uploadScript(categoryName, config);
-      }
-      return;
-    }
-    this.configService.updateBulkConfiguration(categoryName, configItemsCopy).
-      subscribe(
-        (data: any) => {
-          if ('script' in config) {
-            this.uploadScript(categoryName, config);
-          }
-          console.log('configuration updated successfully', data);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
   public uploadScript(categoryName: string, config: any) {
-    const file = config.script[0];
+    const file = config.script;
     const formData = new FormData();
-    formData.append('script', file.script);
+    formData.append('script', file);
     this.configService.uploadFile(categoryName, 'script', formData)
       .subscribe(() => {
         this.alertService.success('configuration updated successfully.');
