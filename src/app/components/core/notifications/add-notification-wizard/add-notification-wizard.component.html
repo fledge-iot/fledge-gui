@@ -110,8 +110,8 @@
           </div>
         </div>
         <div class="box step-content" id="c-3">
-          <app-view-config-item *ngIf="pageId == 2" [categoryConfigurationData]="rulePluginConfigurationData"
-            [useProxy]="useProxy" (onConfigChanged)="getPluginChangedConfig($event, pageId)" [pageId]="'wizard'">
+          <app-view-config-item #ruleConfigView [categoryConfigurationData]="rulePluginConfigurationData"
+          [useRuleProxy]="useRuleProxy" (onConfigChanged)="getPluginChangedConfig($event, 'rule')" [pageId]="'wizard'">
           </app-view-config-item>
         </div>
         <div class="box step-content" id="c-4">
@@ -160,8 +160,8 @@
           </div>
         </div>
         <div class="box step-content" id="c-5">
-          <app-view-config-item *ngIf="pageId == 4" [categoryConfigurationData]="deliveryPluginConfigurationData"
-            [useProxy]="useProxy" (onConfigChanged)="getPluginChangedConfig($event, pageId)" [pageId]="'wizard'">
+          <app-view-config-item #deliveryConfigView [categoryConfigurationData]="deliveryPluginConfigurationData"
+            [useDeliveryProxy]="useDeliveryProxy" (onConfigChanged)="getPluginChangedConfig($event, 'delivery')" [pageId]="'wizard'">
           </app-view-config-item>
         </div>
         <div class="box step-content" id="c-6">

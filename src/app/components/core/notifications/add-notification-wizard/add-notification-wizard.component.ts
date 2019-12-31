@@ -42,9 +42,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   public selectedRulePluginDescription: string;
   public selectedDeliveryPluginDescription: string;
 
-  public useProxy: string;
+  public useRuleProxy: string;
+  public useDeliveryProxy: string;
 
-  public pageId: number;
   public notificationType: string;
   private subscription: Subscription;
 
@@ -55,7 +55,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     delivery: new FormControl()
   });
 
-  @ViewChild(ViewConfigItemComponent, { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('ruleConfigView', { static: false }) ruleViewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('deliveryConfigView', { static: false }) deliveryViewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ViewLogsComponent, { static: true }) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
@@ -169,29 +170,24 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 2:
-        this.pageId = +id - 2;
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Back';
         nxtButton.disabled = false;
         break;
       case 3:
-        this.pageId = +id - 2;
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Back';
         nxtButton.disabled = false;
         break;
       case 4:
-        this.pageId = +id - 2;
         nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
       case 5:
-        this.pageId = +id - 2;
         nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
       case 6:
-        this.pageId = +id - 2;
         nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
@@ -211,7 +207,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 1:
-        this.pageId = +id;
         if (formValues['name'].trim() === '') {
           this.isValidName = false;
           return;
@@ -228,7 +223,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         break;
       case 2:
         nxtButton.disabled = false;
-        this.pageId = +id;
         if (formValues['rule'] === '') {
           this.isRulePlugin = false;
           return;
@@ -247,12 +241,15 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         previousButton.textContent = 'Previous';
         break;
       case 3:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.ruleViewConfigItemComponent))) {
           return;
         }
-        this.pageId = +id;
-        this.viewConfigItemComponent.callFromWizard();
-        document.getElementById('vci-proxy').click();
+        this.ruleViewConfigItemComponent.callFromWizard();
+        // document.getElementById('vci-proxy-rule').click();
+        const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-rule');
+        for (const e of <any>el) {
+          e.click();
+        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (this.notificationDeliveryPlugins.length === 0) {
@@ -260,7 +257,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         break;
       case 4:
-        this.pageId = +id;
         if (formValues['delivery'] === '') {
           this.isDeliveryPlugin = false;
           return;
@@ -280,17 +276,18 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         this.getDeliveryPluginConfiguration();
         break;
       case 5:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.deliveryViewConfigItemComponent))) {
           return;
         }
-        this.pageId = +id;
-        this.viewConfigItemComponent.callFromWizard();
-        document.getElementById('vci-proxy').click();
+        this.deliveryViewConfigItemComponent.callFromWizard();
+        const elm = <HTMLCollection>document.getElementsByClassName('vci-proxy-delivery');
+        for (const e of <any>elm) {
+          e.click();
+        }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
       case 6:
-        this.pageId = +id;
         if (this.notificationType.length > 0) {
           this.payload.notification_type = this.notificationType;
         }
@@ -336,7 +333,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
     // array to hold data to display on configuration page
     this.rulePluginConfigurationData = { value: config };
-    this.useProxy = 'true';
+    this.useRuleProxy = 'true';
   }
 
   isPluginSelected(selectedPlugin, pluginType: string) {
@@ -372,7 +369,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
     // array to hold data to display on configuration page
     this.deliveryPluginConfigurationData = { value: config };
-    this.useProxy = 'true';
+    this.useDeliveryProxy = 'true';
   }
 
   validateNotificationName(event: any) {
@@ -414,16 +411,16 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
-  getPluginChangedConfig(changedConfig: any, pageId: number) {
+  getPluginChangedConfig(changedConfig: any, pageId: string) {
     const finalConfig = [];
     changedConfig.forEach((item: any) => {
       finalConfig.push({
         [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
       });
     });
-    if (pageId === 3) {
+    if (pageId === 'rule') {
       this.rulePluginChangedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    } else if (pageId === 5) {
+    } else if (pageId === 'delivery') {
       this.deliveryPluginChangedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     }
   }
