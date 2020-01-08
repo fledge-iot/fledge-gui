@@ -20,7 +20,7 @@
                                 <div class="field">
                                     <input *ngIf="!isNotificationServiceAvailable" type="text" class="input is-small"
                                         name="notificationServiceName" [(ngModel)]="notificationServiceName"
-                                        placeholder="FogLAMP Notifications" required trim="blur" />
+                                        placeholder="Fledge Notifications" required trim="blur" />
                                     <small
                                         *ngIf="(fg?.touched || fg?.controls['notificationServiceName']?.dirty) && fg?.controls['notificationServiceName']?.invalid"
                                         class="help is-danger level-left">*required</small>
