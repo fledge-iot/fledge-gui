@@ -22,7 +22,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   notificationServiceName = '';
   changedChildConfig = [];
   availableServices = [];
-  notificationServicePackageName = 'foglamp-service-notification';
+  notificationServicePackageName = 'fledge-service-notification';
   btnText = 'Add';
   showDeleteBtn = true;
   public notificationServiceRecord;
