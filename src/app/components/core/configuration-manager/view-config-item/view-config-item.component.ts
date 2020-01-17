@@ -452,15 +452,23 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   checkValidityOnChange(key: string, configValue: string) {
-    this.categoryConfiguration.map(configItem => {
-      if (configItem.hasOwnProperty('validity')) {
-        if (configItem.validity.includes(key)) {
-          configItem.validityExpression = configItem.validity
-            .replace(new RegExp(`\\b${key}\\b`), `'${configValue}'`);
-        }
+
+    this.categoryConfiguration.forEach(cnf => {
+      if (cnf.hasOwnProperty('validity')) {
+        let expression = cnf.validity;
+        this.categoryConfiguration.forEach(el => {
+          if (el.key === key) {
+            el.value = configValue;
+          }
+          if (expression.includes(el.key)) {
+            expression = expression
+              .replace(new RegExp(el.key, 'g'), `'${el.value}'`);
+          }
+        });
+        cnf.validityExpression = expression;
       }
-      if (configItem.hasOwnProperty('mandatory') && configItem['key'] === key) {
-        if (configItem['mandatory'] === 'true' && configValue.trim().length === 0) {
+      if (cnf.hasOwnProperty('mandatory') && cnf['key'] === key) {
+        if (cnf['mandatory'] === 'true' && configValue.trim().length === 0) {
           this.form.controls[key].setErrors({ 'required': true });
         }
       }
