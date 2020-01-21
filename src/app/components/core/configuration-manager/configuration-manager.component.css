@@ -1,6 +1,17 @@
 .panel {
     background-color: #fff;
-    margin-top: 10px;
+}
+
+.columns {
+  margin-top: 10px;
+}
+
+.card {
+  margin-top: 0px !important;
+}
+
+.column {
+  padding-top: 0px !important;
 }
 
 #root-children {
