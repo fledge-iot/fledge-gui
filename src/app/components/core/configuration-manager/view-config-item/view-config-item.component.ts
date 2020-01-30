@@ -414,8 +414,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         if (data[k].hasOwnProperty('validity')) {
           data[k].validityExpression = data[k].validity;
           config.forEach(el => {
-            data[k].validityExpression = data[k].validityExpression.includes(el.key) ? data[k].validityExpression
-              .replace(new RegExp(`\\b${el.key}\\b`), `'${el.value}'`) : data[k].validityExpression;
+            const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
+            if (regex.test(data[k].validityExpression)) {
+              data[k].validityExpression = data[k].validityExpression.replace(`${el.key}`, `"${el.value}"`);
+            }
           });
         }
       }
@@ -460,13 +462,16 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
           if (el.key === key) {
             el.value = configValue;
           }
-          if (expression.includes(el.key)) {
+
+          const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
+          if (regex.test(expression)) {
             expression = expression
-              .replace(new RegExp(el.key, 'g'), `'${el.value}'`);
+              .replace(new RegExp(`${el.key.trim()}+(?=.*=)`), `"${el.value !== undefined ? el.value : el.default}"`);
           }
         });
         cnf.validityExpression = expression;
       }
+
       if (cnf.hasOwnProperty('mandatory') && cnf['key'] === key) {
         if (cnf['mandatory'] === 'true' && configValue.trim().length === 0) {
           this.form.controls[key].setErrors({ 'required': true });
