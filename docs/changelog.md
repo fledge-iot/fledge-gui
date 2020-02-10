@@ -1,14 +1,31 @@
-## v1.7.0next [2019-xx-xx]
+## v1.7.0next [2020-02-xx]
 
 #### Added
 * Python editor with light and dark mode support for `script` & `code` types
 * Option to show all accumulated audit logs for event engine in Notification Logs page
+* Support to upload .cert, .cer, .crt & .pem certificate file without key file
+* Support for configuration item validity expression
+* Log link in alert for packages logs
+* Support for mandatory attribute of config item
+* Better control to Add, Enable / Disable the Notification Service
 
 #### Changed
 * Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
+* Improved Notification logs
 
 #### Fixed 
-* Fixed notification service install and enabled check to get latest state
+* Fixed deletion of filter from pipeline on north instances
+* Fixed memory leak issue with pages having auto refresh feature
+* Fixed wrong API call to show category children for root categories
+* Fixed notification service install and enabled state checks
+* Fixed readings timestamp display issue on safari browser
+* Fixed data persistence issue on add notification instance page
+* Fixed multiple API network calls issue for notification instance creation
+* Fixed issue in login with certificate
+* Fixed legend state on graph refresh
+* Fixed audit logs pagination issue
+* Fixed broken graphs when time passes (00:00:00) midnight
+
 
 ## v1.7.0 [2019-08-15]
 
