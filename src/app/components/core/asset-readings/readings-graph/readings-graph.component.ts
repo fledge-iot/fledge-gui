@@ -53,7 +53,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
-    private ping: PingService) {
+    private ping: PingService, private dateFormatter: DateFormatterPipe) {
     this.assetChartType = 'line';
     this.assetReadingValues = [];
     this.ping.pingIntervalChanged
@@ -244,10 +244,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.stringTypeReadingsList = strReadings;
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(this.stringTypeReadingsList,
-      (reading) => reading.timestamp), rlist => rlist.map(read => omit(read, 'timestamp')));
+      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss:SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
-
 
   setTabData() {
     if (this.isModalOpened) {
@@ -434,8 +433,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   create3DGraph(readings: any, ts: any) {
-    const datePipe = new DateFormatterPipe();
-    const timestamps = ts.map((t: any) => datePipe.transform(t, 'HH:mm:ss:SSS'));
+    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss:SSS'));
     this.polyGraphData = {
       data: [
         {

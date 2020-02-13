@@ -61,7 +61,7 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
           this.keys = sortBy(data['keys'], function (obj) {
             return obj.split('.')[1] + obj.substr(0, obj.indexOf('.'));
           });
-          const certExtensions = ['cert', 'pem', 'json'];
+          const certExtensions = ['cert', 'cer', 'crt', 'pem', 'json'];
           for (let i = 0; i < certExtensions.length; i++) {
             let certificates = [];
             data['certs'].forEach(c => {

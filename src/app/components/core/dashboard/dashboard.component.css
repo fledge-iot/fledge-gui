@@ -21,3 +21,11 @@
 .dropdown {
   width: auto !important;
 }
+
+.dropdown-columns {
+  margin-top: 10px;
+}
+
+.dropdown-column {
+  padding-top: 0px;
+}
