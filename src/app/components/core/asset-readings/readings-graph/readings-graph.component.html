@@ -68,8 +68,13 @@
                     <span><b>Tabular Data</b></span>
                   </a>
                 </li>
-                <li *ngIf="showSummaryTab()" [ngClass]="{'is-active': selectedTab == 4}" data-tab="4">
+                <li *ngIf="fft2DReadings.length > 0" [ngClass]="{'is-active': selectedTab == 4}" data-tab="4">
                   <a (click)="selectTab(4)">
+                    <span><b>2D FFT</b></span>
+                  </a>
+                </li>
+                <li *ngIf="showSummaryTab()" [ngClass]="{'is-active': selectedTab == 5}" data-tab="5">
+                  <a (click)="selectTab(5)">
                     <span><b>Summary</b></span>
                   </a>
                 </li>
@@ -126,7 +131,10 @@
                     </tbody>
                   </table>
                 </div>
-                <div *ngIf="selectedTab === 4 && assetReadingSummary?.length > 0 && showSummaryTab() " data-content="4">
+                <div *ngIf="selectedTab === 4 && arrayTypeReadingsList?.length > 0" data-content="4">
+                  <div id="fft-2d-graph" #FFT2DGraph></div>
+                </div>
+                <div *ngIf="selectedTab === 5 && assetReadingSummary?.length > 0 && showSummaryTab()" data-content="5">
                   <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
                     <table class="table is-responsive is-borderless data-table">
                       <tbody>

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, ElementRef } from '@angular/core';
-import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
+import { orderBy, chain, map, groupBy, mapValues, omit, isEmpty } from 'lodash';
 import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 
@@ -43,7 +43,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('assetChart', { static: false }) assetChart: Chart;
   @ViewChild('3DGraph', { static: false }) Graph: ElementRef;
+  @ViewChild('FFT2DGraph', { static: false }) FFT2DGraph: ElementRef;
 
+  public fft2DReadings = [];
   public numberTypeReadingsList = [];
   public stringTypeReadingsList: any;
   public arrayTypeReadingsList = [];
@@ -143,7 +145,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.autoRefresh = true;
-        if (this.selectedTab === 4) {
+        if (this.selectedTab === 5) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
           this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
@@ -215,8 +217,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     const numReadings = [];
     const strReadings = [];
     const arrReadings = [];
-    this.timestamps = readings.map((r: any) => r.timestamp);
 
+    this.timestamps = readings.map((r: any) => r.timestamp);
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
         if (typeof value === 'number') {
@@ -232,10 +234,22 @@ export class ReadingsGraphComponent implements OnDestroy {
             data: value
           });
         }
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) && k === 'spectrum') {
+          const spectrumFrequency = value.map((read, index) => {
+            {
+              if (r.reading.spectrum_freq_scale !== undefined) {
+                return read * r.reading.spectrum_freq_scale
+                  + r.reading.spectrum_min_freq
+                  + r.reading.spectrum_freq_scale / 2
+                  + (index) * r.reading.spectrum_freq_scale;
+              }
+            }
+          }).filter(f => f !== undefined);
+
           arrReadings.push({
             key: k,
-            read: value
+            read: value,
+            freq: spectrumFrequency
           });
         }
       });
@@ -243,6 +257,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
     this.stringTypeReadingsList = strReadings;
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
+    this.fft2DReadings = this.arrayTypeReadingsList.length > 0 && !isEmpty(arrReadings[0].freq)
+      && arrReadings[0].key === 'spectrum' ? [arrReadings[0]] : [];
+
     this.stringTypeReadingsList = mapValues(groupBy(this.stringTypeReadingsList,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss:SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
@@ -256,6 +273,8 @@ export class ReadingsGraphComponent implements OnDestroy {
         this.selectedTab = 2;
       } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
         this.selectedTab = 3;
+      } else if (this.fft2DReadings.length > 0) {
+        this.selectedTab = 4;
       }
       this.isModalOpened = false;
     }
@@ -284,7 +303,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
 
-    if (this.selectedTab === 4 && this.numberTypeReadingsList.length === 0) {
+    if (this.selectedTab === 5 && this.numberTypeReadingsList.length === 0) {
       if (this.arrayTypeReadingsList.length > 0) {
         this.selectedTab = 2;
       } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
@@ -296,7 +315,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
     } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
+    } else if (this.selectedTab === 4 && this.fft2DReadings.length > 0) {
+      this.createFFT2DGraph(this.fft2DReadings);
     }
+
     this.showSpinner = false;
   }
 
@@ -304,7 +326,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     return chain(assetReadings).groupBy('key').map(function (group, key) {
       return {
         key: key,
-        read: map(group, 'read')
+        read: map(group, 'read'),
+        freq: map(group, 'freq')
       };
     }).value();
   }
@@ -432,40 +455,149 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
+
+  createFFT2DGraph(readings: any) {
+    const frequency = readings.map(r => r.freq)[0];
+    const amplitude = readings.map(r => r.read)[0];
+    const data = {
+      data: [
+        {
+          type: 'scatter',
+          mode: 'lines',
+          x: frequency,
+          y: amplitude,
+        },
+      ],
+      layout: {
+        title: {
+          text: this.assetCode,
+          font: {
+            size: 16,
+            color: '#7f7f7f'
+          },
+          xref: 'paper'
+        },
+        showlegend: false,
+        autoSize: true,
+        xaxis: {
+          automargin: true,
+          title: {
+            text: 'Freq(Hz)',
+            font: {
+              size: 12,
+              color: '#7f7f7f'
+            },
+            xref: 'paper'
+          }
+        },
+        yaxis: {
+          automargin: true,
+          title: {
+            text: 'Amplitude',
+            font: {
+              size: 12,
+              color: '#7f7f7f'
+            },
+            xref: 'paper'
+          }
+        },
+        margin: {
+          b: 10,
+          l: 10,
+          r: 10,
+          t: 25
+        }
+      },
+      frames: [],
+      config: {
+        displayModeBar: false
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      if (this.FFT2DGraph) {
+        Plotly.newPlot(
+          this.FFT2DGraph.nativeElement,
+          data);
+        clearInterval(intervalId);
+      }
+    }, 100);
+  }
+
   create3DGraph(readings: any, ts: any) {
-    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss:SSS'));
+    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss'));
+    const frequency = readings.map(r => r.freq)[0];
+    const amplitude = readings.map(r => r.read)[0];
+    const frequencyAvailable = !isEmpty(frequency[0]);
     this.polyGraphData = {
       data: [
         {
           type: 'surface',
+          ...frequencyAvailable && { x: frequency },
           y: timestamps,
-          z: readings.map(r => r.read)[0],
+          z: amplitude,
           showscale: false,
-          colorscale: [
-            ['0', 'rgba(68,1,84,1)'],
-            ['0.1', 'rgba(61,77,137,1)'],
-            ['0.2', 'rgba(57,89,140,1)'],
-            ['0.3', 'rgba(49,104,142,1)'],
-            ['0.4', 'rgba(44,119,142,1)'],
-            ['0.5', 'rgba(38,136,141,1)'],
-            ['0.6', 'rgba(33,154,138,1)'],
-            ['0.7', 'rgba(50,178,124,1)'],
-            ['0.8', 'rgba(101,201,96,1)'],
-            ['0.9', 'rgba(101,201,96,1)'],
-            ['1', 'rgba(253,231,37,1)']],
-          colorbar: {
-            tick0: 0,
-            dtick: 5
-          }
+          colorscale: 'Rainbow'
         },
       ],
       layout: {
-        title: this.assetCode,
+        title: {
+          text: this.assetCode,
+          font: {
+            size: 16,
+            color: '#7f7f7f'
+          },
+          xref: 'paper'
+        },
         showlegend: true,
         autoSize: true,
+        scene: {
+          xaxis: {
+            autorange: 'reversed',
+            automargin: true,
+            title: {
+              text: 'Freq(Hz)',
+              font: {
+                size: 10,
+                color: '#7f7f7f'
+              },
+              xref: 'paper'
+            }
+          },
+          yaxis: {
+            autorange: 'reversed',
+            automargin: true,
+            title: {
+              text: 'Time',
+              font: {
+                size: 10,
+                color: '#7f7f7f'
+              },
+              xref: 'paper'
+            }
+          },
+          zaxis: {
+            automargin: true,
+            title: {
+              text: 'Amplitude',
+              font: {
+                size: 10,
+                color: '#7f7f7f'
+              },
+              xref: 'paper'
+            }
+          },
+          camera: {
+            eye: {
+              x: 1,
+              y: 2,
+              z: 0.1
+            }
+          }
+        },
         margin: {
-          b: 40,
-          l: 60,
+          b: 10,
+          l: 10,
           r: 10,
           t: 25
         }
@@ -474,7 +606,17 @@ export class ReadingsGraphComponent implements OnDestroy {
         displayModeBar: false
       }
     };
-    this.generate3Dgraph();
+
+    if (this.Graph === undefined) {
+      this.generate3Dgraph();
+    } else {
+      const update = {
+        ...frequencyAvailable && { x: [frequency] },
+        y: [timestamps],
+        z: [amplitude],
+      };
+      Plotly.update(this.Graph.nativeElement, update);
+    }
   }
 
   public async generate3Dgraph() {
@@ -497,7 +639,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   selectTab(id: number, showSpinner = true) {
     this.showSpinner = showSpinner;
     this.selectedTab = id;
-    if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
+    if (this.graphRefreshInterval === -1 && this.selectedTab === 5) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     } else if (this.graphRefreshInterval === -1) {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);

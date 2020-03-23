@@ -2,7 +2,7 @@ export const POLLING_INTERVAL = 5000;   // milliseconds
 export const MAX_INT_SIZE = 2147483647;
 export const GRAPH_REFRESH_INTERVAL = 5000; // milliseconds
 export const STATS_HISTORY_TIME_FILTER = '10'; // minutes
-export const ASSET_READINGS_TIME_FILTER = 600; // seconds
+export const ASSET_READINGS_TIME_FILTER = 60; // seconds
 export const COLOR_CODES = ['#3498DB', '#85C1E9', '#239B56', '#82E0AA', '#B03A2E', '#F1948A', '#FF8C00', '#FF0000',
 '#FF5733', '#34AEDB', '#FF6C32', '#8595E9', '#239B87', '#FF9D00', '#82D8E0', '#C79217', '#C75817',
 '#E058E5', '#A464A6', '#533754', '#1D081E', '#7C767C', '#937EE5', '#6442EC', '#5744A5', '#17112E', '#6B6A6E', '#251E40',

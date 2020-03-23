@@ -23,6 +23,10 @@
   :host ::ng-deep .svg-container {
     height: calc(100vh - 181px) !important;
   }
+
+  :host ::ng-deep div#scene{
+    height: calc(100vh - 181px) !important;
+  }
 }
 
 @media screen and (max-width: 769px) {
