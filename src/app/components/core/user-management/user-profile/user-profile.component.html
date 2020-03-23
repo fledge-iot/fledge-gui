@@ -1,41 +1,43 @@
-<div class="container is-fluid">
-  <div class="card">
-    <header class="card-header">
-      <p class="card-header-title">
-        Profile
-      </p>
-    </header>
-    <div class="card-content">
-      <div id="edit_profile">
-          <div class="columns">
-            <div class="column is-6">
-              <label class="label">Username</label>
-              <p class="control is-fullwidth">
-                  <input [disabled]='true' type="text" class="input" placeholder="username" name='username' [(ngModel)]="userRecord.userName"/>
-              </p>
-            </div>
-          </div>
-          <div class="columns">
-            <div class="column is-6">
-              <label class="label">Role</label>
-              <p class="control is-fullwidth">
-                  <input [disabled]='true' type="text" class="input" placeholder="role" name='role' [(ngModel)]="userRecord.roleName">
-              </p>
-            </div>
-          </div>
-          <div class="columns">
-            <div class="column is-6">
-              <a (click)="toggleModal(true)">change password</a>
-            </div>
-          </div>
-          <div class="columns">
-            <div class="column is-3">
-              <div class="control">
-                <span (click)="openModal(userRecord.userId, '', 'clearSessions', 'Are you sure, You want to clear your all active sessions')"
-                  class="button is-warning is-small">Logout Active Sessions</span>
+<div class="columns">
+  <div class="column is-offset-1 is-four-fifths">
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          Profile
+        </p>
+      </header>
+      <div class="card-content">
+        <div id="edit_profile">
+            <div class="columns">
+              <div class="column is-6">
+                <label class="label">Username</label>
+                <p class="control is-fullwidth">
+                    <input [disabled]='true' type="text" class="input" placeholder="username" name='username' [(ngModel)]="userRecord.userName"/>
+                </p>
               </div>
             </div>
-          </div>
+            <div class="columns">
+              <div class="column is-6">
+                <label class="label">Role</label>
+                <p class="control is-fullwidth">
+                    <input [disabled]='true' type="text" class="input" placeholder="role" name='role' [(ngModel)]="userRecord.roleName">
+                </p>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column is-6">
+                <a (click)="toggleModal(true)">change password</a>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column is-3">
+                <div class="control">
+                  <span (click)="openModal(userRecord.userId, '', 'clearSessions', 'Are you sure, You want to clear your all active sessions')"
+                    class="button is-warning is-small">Logout Active Sessions</span>
+                </div>
+              </div>
+            </div>
+        </div>
       </div>
     </div>
   </div>

@@ -28,7 +28,7 @@
                   </div>
                 </div>
               </div>
-              <small *ngIf="!keyExtension && form.controls['key'].touched && form.controls['key'].value" class="help is-danger level-left">should be a .key or .pem file</small>
+              <small *ngIf="!keyExtension" class="help is-danger level-left">should be a .key or .pem file</small>
             </div>
           </div>
           <div class="columns">
@@ -52,7 +52,20 @@
                   </div>
                 </div>
               </div>
-              <small *ngIf="!certExtension && form.controls['cert'].touched && form.controls['cert'].value" class="help is-danger level-left">should be a .cert, .cer, .crt, .pem or .json file</small>
+              <small *ngIf="!certExtension" class="help is-danger level-left">should be a .cert, .pem or .json file</small>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <div class="control">
+                  <label class="checkbox">
+                    <input *ngIf="certOnly == '1'" checked type="checkbox" ng-model="certonly" (change)="onCertOnlyChange($event)">
+                    <input *ngIf="certOnly == '0'" type="checkbox" ng-model="certonly" (change)="onCertOnlyChange($event)"> Certificate Only 
+                  </label>
+                </div>
+                <p class="help">PEM or JSON</p>
+              </div>
             </div>
           </div>
           <div class="columns">

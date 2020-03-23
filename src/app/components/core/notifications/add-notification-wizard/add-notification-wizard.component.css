@@ -13,7 +13,3 @@
 .tooltip.is-tooltip-multiline::before {
   min-width: 16rem !important;
 }
-
-.container.is-fluid {
-  margin-top: 10px;
-}

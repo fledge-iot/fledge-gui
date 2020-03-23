@@ -191,7 +191,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       return true;
     } catch (e) {
       this.isValidJson = false;
-      this.form.controls[key].setErrors({ 'jsonValue': true });
+      this.form.controls[key].setErrors({'jsonValue': true});
       return false;
     }
   }
@@ -410,13 +410,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       for (const k in data) {
-        data[k].key = k;
-        if (data[k].hasOwnProperty('validity')) {
-          data[k].validityExpression = data[k].validity;
-          config.forEach(el => {
-            data[k].validityExpression = data[k].validityExpression.includes(el.key) ? data[k].validityExpression
-              .replace(new RegExp(`\\b${el.key}\\b`), `'${el.value}'`) : data[k].validityExpression;
-          });
+        if (data.hasOwnProperty(k)) {
+          data[k].key = k;
+          if (data[k].hasOwnProperty('validity')) {
+            data[k].validityExpression = data[k].validity;
+            config.forEach(element => {
+              data[k].validityExpression = data[k].validityExpression.includes(element.key) ? data[k].validityExpression
+                .replace(new RegExp(element.key, 'g'), `'${element.value}'`) : data[k].validityExpression;
+            });
+          }
         }
       }
 
@@ -452,24 +454,16 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   checkValidityOnChange(key: string, configValue: string) {
-
-    this.categoryConfiguration.forEach(cnf => {
-      if (cnf.hasOwnProperty('validity')) {
-        let expression = cnf.validity;
-        this.categoryConfiguration.forEach(el => {
-          if (el.key === key) {
-            el.value = configValue;
-          }
-          if (expression.includes(el.key)) {
-            expression = expression
-              .replace(new RegExp(el.key, 'g'), `'${el.value}'`);
-          }
-        });
-        cnf.validityExpression = expression;
+    this.categoryConfiguration.map(configItem => {
+      if (configItem.hasOwnProperty('validity')) {
+        if (configItem.validity.includes(key)) {
+          configItem.validityExpression = configItem.validity
+            .replace(new RegExp(key, 'g'), `'${configValue}'`);
+        }
       }
-      if (cnf.hasOwnProperty('mandatory') && cnf['key'] === key) {
-        if (cnf['mandatory'] === 'true' && configValue.trim().length === 0) {
-          this.form.controls[key].setErrors({ 'required': true });
+      if (configItem.hasOwnProperty('mandatory') && configItem['key'] === key) {
+        if (configItem['mandatory'] === 'true' && configValue.trim().length === 0) {
+         this.form.controls[key].setErrors({'required': true});
         }
       }
     });

@@ -1,45 +1,40 @@
-<div class="container is-fluid">
-  <div class="columns is-mobile dropdown-columns">
-    <div class="column dropdown-column">
-      <div class="field-body is-pulled-right">
-        <div id="time-dropdown" class="dropdown is-left">
-          <div class="dropdown-trigger">
-            <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu"
-              (click)="toggleDropDown('time-dropdown')">
-              <span>{{optedTime}} minutes</span>
-              <span class="icon is-small">
-                <i class="fa fa-angle-down" aria-hidden="true"></i>
-              </span>
-            </button>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu" role="menu">
-            <div class="dropdown-content">
+<div class="columns is-mobile">
+  <div class="column">
+    <div class="field-body is-pulled-right">
+      <div id="time-dropdown" class="dropdown is-left">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropDown('time-dropdown')">
+            <span>{{optedTime}} minutes</span>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
               <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(10)">10 minutes</a>
               <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(30)">30 minutes</a>
               <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(60)">60 minutes</a>
-            </div>
           </div>
         </div>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <div id="graph-key-dropdown" class="dropdown is-right">
-          <div class="dropdown-trigger">
-            <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu"
-              (click)="toggleDropDown('graph-key-dropdown')">
-              <span>Select Graphs</span>
-              <span class="icon is-small">
-                <i class="fa fa-angle-down" aria-hidden="true"></i>
-              </span>
-            </button>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-              <div *ngFor="let data of statisticsKeys" class="dropdown-item">
-                <div class="field is-grouped">
-                  <div class="control checkbox">
-                    <input [value]='data.key' type="checkbox" [checked]='data.checked'
-                      (click)="checkedGraph('graph-key-dropdown',$event)">
-                    {{data.key}}
-                  </div>
+      </div>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <div id="graph-key-dropdown" class="dropdown is-right">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropDown('graph-key-dropdown')">
+            <span>Select Graphs</span>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div *ngFor="let data of statisticsKeys" class="dropdown-item">
+              <div class="field is-grouped">
+                <div class="control checkbox">
+                  <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph('graph-key-dropdown',$event)">
+                  {{data.key}}
                 </div>
               </div>
             </div>
@@ -62,8 +57,7 @@
               <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
             </svg>
           </div>
-          <plotly-plot *ngIf="!showSpinner" [data]="statistic.chartValue" [layout]="statistic.layout" [config]="config">
-          </plotly-plot>
+          <plotly-plot *ngIf="!showSpinner" [data]="statistic.chartValue" [layout]="statistic.layout" [config]="config"></plotly-plot>
           <br />
           <h6 *ngIf="!showSpinner">Total since startup:
             <b> {{ statistic.value | number }} </b>
@@ -72,4 +66,3 @@
       </div>
     </div>
   </div>
-</div>
