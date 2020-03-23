@@ -23,9 +23,9 @@ window.jsonlint = jsonlint;
 
 if (environment.production) {
   enableProdMode();
-  if (window) {
-    window.console.log = function () { };
-  }
+  // if (window) {
+  //   window.console.log = function () { };
+  // }
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule);

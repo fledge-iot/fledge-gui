@@ -22,6 +22,10 @@
   width: auto !important;
 }
 
+.app-loading {
+  height: auto;
+}
+
 .dropdown-columns {
   margin-top: 10px;
 }

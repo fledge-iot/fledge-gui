@@ -48,19 +48,26 @@
       </div>
     </div>
   </div>
-  <div class="columns is-mobile">
-    <div class="column">
-      <div class="columns is-multiline">
-        <div class="column columns-content is-half" *ngFor="let statistic of graphsToShow">
-          <div *ngIf="statistic != undefined" class="box">
-            <h6 class="subtitle is-6">{{ statistic.description }}</h6>
-            <br />
-            <app-chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></app-chart>
-            <br />
-            <h6>Total since startup:
-              <b> {{ statistic.value | number }} </b>
-            </h6>
+</div>
+<div class="columns is-mobile">
+  <div class="column">
+    <div class="columns is-multiline">
+      <div class="column columns-content is-half" *ngFor="let statistic of graphsToShow">
+        <div *ngIf="statistic != undefined" class="box">
+          <h6 class="subtitle is-6">{{ statistic.description }}</h6>
+          <br />
+          <div *ngIf="showSpinner" class="app-loading">
+            &nbsp;
+            <svg class="spinner" viewBox="0 0 100 100">
+              <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+            </svg>
           </div>
+          <plotly-plot *ngIf="!showSpinner" [data]="statistic.chartValue" [layout]="statistic.layout" [config]="config">
+          </plotly-plot>
+          <br />
+          <h6 *ngIf="!showSpinner">Total since startup:
+            <b> {{ statistic.value | number }} </b>
+          </h6>
         </div>
       </div>
     </div>

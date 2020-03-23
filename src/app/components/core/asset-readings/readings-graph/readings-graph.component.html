@@ -1,6 +1,6 @@
 <div id="chart_modal" class="modal">
   <div class="modal-background"></div>
-  <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
+  <div class="modal-card animated fadeIn">
     <header class="modal-card-head">
       <p class="modal-card-title is-size-5">{{assetCode}}
       </p>
@@ -8,7 +8,7 @@
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
     </header>
-    <section class="modal-card-body" [ngClass]="{overflow: timeDropDownOpened}">
+    <section class="modal-card-body">
       <ng-container *ngIf="loadPage; else tabs">
         <div class="app-loading">
           &nbsp;
@@ -18,164 +18,8 @@
         </div>
       </ng-container>
       <ng-template #tabs>
-        <div class="columns">
-          <div class="column is-2">
-            <div id="time-dropdown" class="dropdown is-left">
-              <div class="dropdown-trigger">
-                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)=toggleDropdown()>
-                  <span *ngIf="optedTime == 60">1 minute</span>
-                  <span *ngIf="optedTime == 300">5 minutes</span>
-                  <span *ngIf="optedTime == 600">10 minutes</span>
-                  <span *ngIf="optedTime == 1800">30 minutes</span>
-                  <span *ngIf="optedTime == 3600">1 hour</span>
-                  <span *ngIf="optedTime == 28800">8 hour</span>
-                  <span *ngIf="optedTime == 86400">1 day</span>
-                  <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(60)">1 minute</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(300)">5 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(600)">10 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(1800)">30 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(3600)">1 hour</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(28800)">8 hour</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(86400)">1 day</a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="tabs is-boxed is-fullwidth is-small" id="tabs">
-              <ul>
-                <li *ngIf="numberTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 1}" data-tab="1">
-                  <a (click)="selectTab(1)">
-                    <span><b>Graph</b></span>
-                  </a>
-                </li>
-                <li *ngIf="arrayTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 2}" data-tab="2">
-                  <a (click)="selectTab(2)">
-                    <span><b>3D Graph</b></span>
-                  </a>
-                </li>
-                <li *ngIf="!isEmptyObject(stringTypeReadingsList)" [ngClass]="{'is-active': selectedTab == 3}"
-                  data-tab="3">
-                  <a (click)="selectTab(3)">
-                    <span><b>Tabular Data</b></span>
-                  </a>
-                </li>
-                <li *ngIf="showSummaryTab()" [ngClass]="{'is-active': selectedTab == 4}" data-tab="4">
-                  <a (click)="selectTab(4)">
-                    <span><b>Summary</b></span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column">
-            <div id="tab-content">
-              <ng-container *ngIf="showSpinner; else DataDiv">
-                <div class="app-loading">
-                  &nbsp;
-                  <svg class="spinner animated fadeIn fadeOut" viewBox="0 0 100 100">
-                    <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
-                  </svg>
-                </div>
-              </ng-container>
-              <ng-template #DataDiv>
-                <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
-                  <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
-                    [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
-                </div>
-                <div *ngIf="selectedTab === 2 && arrayTypeReadingsList?.length > 0" data-content="2">
-                  <div id="3d_graph" #3DGraph></div>
-                </div>
-                <div *ngIf="selectedTab === 3 && !isEmptyObject(stringTypeReadingsList)" data-content="3">
-                  <table class="table is-responsive is-borderless data-table">
-                    <thead>
-                      <tr>
-                        <th style="width: 21%">Timestamp</th>
-                        <th>Reading</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let txtData of stringTypeReadingsList | keyvalue: keyDescOrder">
-                        <td style="vertical-align: top; line-height: initial">
-                          <small>{{txtData.key}}</small>
-                        </td>
-                        <td>
-                          <table class="table is-responsive is-borderless">
-                            <tbody>
-                              <ng-container *ngFor="let item of txtData.value">
-                                <tr>
-                                  <td style="padding-left: 0px">{{item.key}}</td>
-                                  <td style="padding-left: 0px">{{item.data}}</td>
-                                </tr>
-                              </ng-container>
-                            </tbody>
-                          </table>
-
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div *ngIf="selectedTab === 4 && assetReadingSummary?.length > 0 && showSummaryTab() " data-content="4">
-                  <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
-                    <table class="table is-responsive is-borderless data-table">
-                      <tbody>
-                        <tr [ngClass]="{'animated fadeInDown': autoRefresh === false}"
-                          *ngFor="let asset of assetReadingSummary  | slice:0:summaryLimit">
-                          <td>
-                            <span>
-                              <b><small>{{asset.name}}</small></b>
-                            </span>
-                          </td>
-                          <ng-container *ngFor="let reading of asset.value">
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Avg </span>
-                                <span class="tag is-info">{{isNumber(reading.average)
-                            ?
-                            roundTo(reading.average,
-                            5) : reading.average.toString().substring(0,6)}}
-                                </span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Min </span>
-                                <span class="tag is-info">{{isNumber(reading.min) ?
-                            roundTo(reading.min, 5) : reading.min.toString().substring(0,6)}}</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Max </span>
-                                <span class="tag is-info">{{isNumber(reading.max) ?
-                            roundTo(reading.max, 5): reading.max.toString().substring(0,6)}}</span>
-                              </div>
-                            </td>
-                          </ng-container>
-                        </tr>
-                        <tr *ngIf="buttonText !== ''">
-                          <td><a class="button is-small is-text" (click)="showAll()">{{buttonText}}</a></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </ng-template>
-            </div>
-          </div>
-        </div>
+        <plotly-plot #assetChart (relayout)="dragGraph($event)" (afterPlot)="calculateDragTime()" (legendClick)="legendClick($event)"
+          [data]="numReadings" [layout]="layout" [config]="config"></plotly-plot>
       </ng-template>
     </section>
   </div>

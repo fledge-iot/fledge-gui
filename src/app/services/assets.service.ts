@@ -37,9 +37,24 @@ export class AssetsService {
     if (+offset !== 0) {
       params = params.set('offset', offset.toString());
     }
-    return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
+    return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetCode), { params: params }).pipe(
       map(response => response),
       catchError(error => throwError(error)));
+  }
+
+  public getAssetReadingsBucket(payload) {
+    let params = new HttpParams();
+    if (payload.start !== 0) {
+      params = params.append('start', payload.start);
+    }
+    if (payload.len) {
+      params = params.append('length', payload.len);
+    }
+
+    return this.http.get(`${this.GET_ASSET}/${encodeURIComponent(payload.assetCode)}/bucket/${payload.bucketSize}`,
+      { params: params }).pipe(
+        map(response => response),
+        catchError(error => throwError(error)));
   }
 
   /**

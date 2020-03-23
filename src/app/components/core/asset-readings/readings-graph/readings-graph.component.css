@@ -8,60 +8,10 @@
   padding: 15px !important;
 }
 
-.modal-card-body {
-  padding: 15px !important;
-}
-
 @media screen and (min-width: 769px) {
   .modal-card {
     width: 85%;
   }
-  :host ::ng-deep .chart-container canvas[style] {
-    height: calc(100vh - 181px) !important;
-  }
-
-  :host ::ng-deep .svg-container {
-    height: calc(100vh - 181px) !important;
-  }
-}
-
-@media screen and (max-width: 769px) {
-  .chart-container {
-      position: relative;
-      width: 736px;
-      height: 397px;
-  }
-  .summary {
-    width: 736px;
-  }
-}
-
-.summary,
-.summary .table {
-  background-color: #F8F9F9;
-  border-radius: 5px;
-}
-
-.is-info {
-  background-color: #85C1E9 !important;
-}
-
-table.is-borderless tr a {
-  padding-left: 0;
-}
-
-table.is-borderless td,
-table.is-borderless tr {
-  border: 0 !important;
-  vertical-align: middle;
-}
-
-tbody {
-  line-height: 0.5;
-}
-
-.data-table {
-  width: 100%;
 }
 
 .app-loading {

@@ -1,61 +1,157 @@
-import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, ElementRef } from '@angular/core';
-import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
+import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild } from '@angular/core';
+import { uniq } from 'lodash';
 import { interval, Subject } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
+import { takeWhile, takeUntil, repeatWhen } from 'rxjs/operators';
+import * as moment from 'moment';
 
-import { Chart } from 'chart.js';
-import { AlertService, AssetsService, PingService } from '../../../../services';
-import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
-import { KeyValue } from '@angular/common';
-import { DateFormatterPipe } from '../../../../pipes';
-
-declare var Plotly: any;
+import { AssetsService, PingService } from '../../../../services';
+import Utils, { COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import { PlotlyService } from 'angular-plotly.js';
 
 @Component({
   selector: 'app-readings-graph',
   templateUrl: './readings-graph.component.html',
   styleUrls: ['./readings-graph.component.css']
 })
+
 export class ReadingsGraphComponent implements OnDestroy {
   public assetCode: string;
-  public assetChartType: string;
-  public assetReadingValues: any;
-  public assetChartOptions: any;
-  public loadPage = true;
-  public assetReadingSummary = [];
-  public isInvalidLimit = false;
   public MAX_RANGE = MAX_INT_SIZE;
   public graphRefreshInterval = POLLING_INTERVAL;
-
-  public limit: number;
-  public DEFAULT_LIMIT = 100;
-  public optedTime = ASSET_READINGS_TIME_FILTER;
   public readKeyColorLabel = [];
+
+  public loadPage = true;
   private isAlive: boolean;
-  public summaryLimit = 5;
-  public buttonText = '';
-  public autoRefresh = false;
-  public showSpinner = false;
-  public polyGraphData: any;
-  public timeDropDownOpened = false;
-  public isModalOpened = false;
+
+  numReadings = [];
+  startPingInterval = new Subject<boolean>();
+  destroy$: Subject<boolean> = new Subject<boolean>();
+  xAxisRange = [];
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('assetChart', { static: false }) assetChart: Chart;
-  @ViewChild('3DGraph', { static: false }) Graph: ElementRef;
+  @ViewChild('assetChart', { static: false }) assetChart: any;
 
-  public numberTypeReadingsList = [];
-  public stringTypeReadingsList: any;
-  public arrayTypeReadingsList = [];
-  public selectedTab = 1;
-  public timestamps = [];
+  DEFAULT_TIME_WINDOW_INDEX = 23;
+  DEFAULT_TIME_WINDOW = 600;
+  panning = false;
+  zoomOut = false;
+  layout = {
+    font: {
+      size: 12
+    },
+    dragmode: 'pan',
+    xaxis: {
+      tickformat: '%H:%M:%S',
+      type: 'date',
+      title: {
+        text: 'Time Window - 10 mins',
+        font: {
+          size: 14,
+          color: '#7f7f7f'
+        }
+      },
+    },
+    yaxis: {
+      fixedrange: true
+    },
+    height: 500,
+    margin: {
+      l: 50,
+      r: 50,
+      b: 50,
+      t: 50,
+      pad: 1
+    }
+  };
 
-  destroy$: Subject<boolean> = new Subject<boolean>();
+  timeWindowIndex = this.DEFAULT_TIME_WINDOW_INDEX;  // initial value is 600s
+  config = {
+    doubleClick: false,
+    displaylogo: false,
+    displayModeBar: true,
+    modeBarButtonsToRemove: ['resetScale2d', 'hoverClosestCartesian', 'select2d',
+      'hoverCompareCartesian', 'lasso2d', 'zoom2d', 'autoScale2d', 'pan2d',
+      'zoomIn2d', 'zoomOut2d', 'toImage', 'toggleSpikelines'],
+    modeBarButtonsToAdd: [[
+      {
+        name: 'Zoom in',
+        icon: {
+          'width': 875,
+          'height': 1000,
+          'path': 'm1 787l0-875 875 0 0 875-875 0z m687-500l-187 0 0-187-125 0 0 187-188 0 0 125 188 0 0 187 125 0 0-187 187 0 0-125z',
+          'transform': 'matrix(1 0 0 -1 0 850)'
+        },
+        click: () => {
+          if (this.timeWindowIndex <= 0) {
+            console.log('minimum zoom level reached');
+            return;
+          }
 
-  constructor(private assetService: AssetsService, private alertService: AlertService,
-    private ping: PingService, private dateFormatter: DateFormatterPipe) {
-    this.assetChartType = 'line';
-    this.assetReadingValues = [];
+          if (!this.zoomOut && (this.numReadings.length <= 0 || (this.numReadings.length > 0 && this.numReadings[0].x.length <= 1))) {
+            console.log('No readings to zoom in');
+            return;
+          }
+          this.zoomOut = false;
+          this.timeWindowIndex--;
+          const timeWindow = Utils.getTimeWindow(this.timeWindowIndex);
+          if (this.panning) {
+            this.panModeZoom();
+            return;
+          }
+          this.zoomGraph(timeWindow.value);
+        }
+      },
+      {
+        name: 'Zoom out',
+        icon: {
+          'width': 875,
+          'height': 1000,
+          'path': 'm0 788l0-876 875 0 0 876-875 0z m688-500l-500 0 0 125 500 0 0-125z',
+          'transform': 'matrix(1 0 0 -1 0 850)'
+        },
+        click: () => {
+          this.zoomOut = true;
+          if (this.timeWindowIndex >= Utils.getTimeWindow(this.timeWindowIndex).size - 1) {
+            console.log('maximum zoom level reached');
+            return;
+          }
+          this.timeWindowIndex++;
+          const timeWindow = Utils.getTimeWindow(this.timeWindowIndex);
+          if (this.panning) {
+            this.panModeZoom(true);
+            return;
+          }
+          this.zoomGraph(timeWindow.value);
+        }
+      },
+      {
+        name: 'Reset',
+        icon: {
+          'width': 1000,
+          'height': 1000,
+          // tslint:disable-next-line: max-line-length
+          'path': 'm250 850l-187 0-63 0 0-62 0-188 63 0 0 188 187 0 0 62z m688 0l-188 0 0-62 188 0 0-188 62 0 0 188 0 62-62 0z m-875-938l0 188-63 0 0-188 0-62 63 0 187 0 0 62-187 0z m875 188l0-188-188 0 0-62 188 0 62 0 0 62 0 188-62 0z m-125 188l-1 0-93-94-156 156 156 156 92-93 2 0 0 250-250 0 0-2 93-92-156-156-156 156 94 92 0 2-250 0 0-250 0 0 93 93 157-156-157-156-93 94 0 0 0-250 250 0 0 0-94 93 156 157 156-157-93-93 0 0 250 0 0 250z',
+          'transform': 'matrix(1 0 0 -1 0 850)'
+        },
+        click: () => {
+          this.resetGraphToDefault();
+          if (this.assetCode !== undefined) {
+            this.getAssetReadings(this.payload);
+          }
+        }
+      }
+    ]]
+  };
+
+  payload = {
+    assetCode: '',
+    start: 0,
+    len: this.DEFAULT_TIME_WINDOW,
+    bucketSize: 1
+  };
+
+  constructor(private assetService: AssetsService,
+    private ping: PingService, public plotly: PlotlyService) {
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((timeInterval: number) => {
@@ -71,35 +167,13 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.toggleModal(false);
   }
 
-  public showAll() {
-    this.autoRefresh = false;
-    if (this.buttonText === 'Show Less') {
-      this.summaryLimit = 5;
-      this.buttonText = 'Show All';
-    } else {
-      this.summaryLimit = this.assetReadingSummary.length;
-      this.buttonText = 'Show Less';
-    }
-  }
-
-  public roundTo(num, to) {
-    const _to = Math.pow(10, to);
-    return Math.round(num * _to) / _to;
-  }
-
   public toggleModal(shouldOpen: Boolean) {
     // reset all variable and array to default state
-    this.assetReadingSummary = [];
-    this.buttonText = '';
-    this.assetReadingValues = [];
-    this.summaryLimit = 5;
     this.readKeyColorLabel = [];
-    this.assetChartOptions = {};
     sessionStorage.removeItem(this.assetCode);
-
-    const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
+    const chartModal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
-      chart_modal.classList.add('is-active');
+      chartModal.classList.add('is-active');
       return;
     }
     if (this.graphRefreshInterval === -1) {
@@ -108,205 +182,46 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.notify.emit(true);
     }
     this.isAlive = false;
-    chart_modal.classList.remove('is-active');
-    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
-    if (activeDropDowns.length > 0) {
-      activeDropDowns[0].classList.remove('is-active');
-    }
-    this.optedTime = ASSET_READINGS_TIME_FILTER;
+    chartModal.classList.remove('is-active');
+
+    this.startPingInterval.complete();
+    this.resetGraphToDefault();
   }
 
-  getTimeBasedAssetReadingsAndSummary(time) {
-    this.optedTime = time;
-    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-    this.toggleDropdown();
+  public resetGraphToDefault() {
+    sessionStorage.removeItem(this.assetCode);
+    this.timeWindowIndex = this.DEFAULT_TIME_WINDOW_INDEX;
+    this.panning = false;
+    this.zoomOut = false;
+    // reset payload to default
+    this.payload = {
+      assetCode: this.assetCode,
+      start: 0,
+      len: this.DEFAULT_TIME_WINDOW,
+      bucketSize: 1
+    };
+    this.updateTimeWindowText('10 mins');
+    this.isAlive = true;
+    this.startPingInterval.next(this.isAlive);
   }
 
   public getAssetCode(assetCode: string) {
-    this.isModalOpened = true;
-    this.selectedTab = 1;
+    this.payload.assetCode = assetCode;
+    this.assetCode = assetCode;
     this.loadPage = true;
     this.notify.emit(false);
     if (this.graphRefreshInterval === -1) {
       this.isAlive = false;
+      this.getAssetReadings(this.payload);
     } else {
       this.isAlive = true;
-    }
-    this.assetCode = assetCode;
-    if (this.optedTime !== 0) {
-      this.limit = 0;
-      this.autoRefresh = false;
-      this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
-    }
-    interval(this.graphRefreshInterval)
-      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
-      .subscribe(() => {
-        this.autoRefresh = true;
-        if (this.selectedTab === 4) {
-          this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-        } else {
-          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-        }
-      });
-  }
-
-  public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
-    this.assetService.getAllAssetSummary(assetCode, limit, time)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (data: any) => {
-          this.showSpinner = false;
-          this.assetReadingSummary = data
-            .map(o => {
-              const k = Object.keys(o)[0];
-              return {
-                name: k,
-                value: [o[k]]
-              };
-            }).filter(value => value !== undefined);
-
-          this.assetReadingSummary = orderBy(this.assetReadingSummary, ['name'], ['asc']);
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit === 5) {
-            this.buttonText = 'Show All';
-          }
-          if (this.assetReadingSummary.length <= 5) {
-            this.buttonText = '';
-          }
-          if (this.assetReadingSummary.length > 5 && this.summaryLimit > 5) {
-            this.buttonText = 'Show Less';
-          }
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
+      interval(this.graphRefreshInterval)
+        .pipe(takeWhile(() => this.isAlive), repeatWhen(() => this.startPingInterval),
+          takeUntil(this.destroy$)) // only fires when component is alive
+        .subscribe(() => {
+          this.getAssetReadings(this.payload);
         });
-  }
-
-  public plotReadingsGraph(assetCode, limit = null, time = null) {
-    if (assetCode === '') {
-      return false;
     }
-    this.isInvalidLimit = false;
-    if (limit === undefined || limit === null || limit === '' || limit === 0) {
-      limit = 0;
-    } else if (!Number.isInteger(+limit) || +limit < 0 || +limit > this.MAX_RANGE) { // max limit of int in c++
-      this.isInvalidLimit = true;
-      return;
-    }
-
-    this.limit = limit;
-    this.assetService.getAssetReadings(encodeURIComponent(assetCode), +limit, 0, time)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (data: any[]) => {
-          this.loadPage = false;
-          this.getReadings(data);
-        },
-        error => {
-          console.log('error in response', error);
-        });
-  }
-
-  getReadings(readings: any) {
-    const numReadings = [];
-    const strReadings = [];
-    const arrReadings = [];
-    this.timestamps = readings.map((r: any) => r.timestamp);
-
-    for (const r of readings) {
-      Object.entries(r.reading).forEach(([k, value]) => {
-        if (typeof value === 'number') {
-          numReadings.push({
-            key: k,
-            read: { x: r.timestamp, y: value }
-          });
-        }
-        if (typeof value === 'string') {
-          strReadings.push({
-            key: k,
-            timestamp: r.timestamp,
-            data: value
-          });
-        }
-        if (Array.isArray(value)) {
-          arrReadings.push({
-            key: k,
-            read: value
-          });
-        }
-      });
-    }
-    this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
-    this.stringTypeReadingsList = strReadings;
-    this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
-    this.stringTypeReadingsList = mapValues(groupBy(this.stringTypeReadingsList,
-      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss:SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
-    this.setTabData();
-  }
-
-  setTabData() {
-    if (this.isModalOpened) {
-      if (this.numberTypeReadingsList.length > 0) {
-        this.selectedTab = 1;
-      } else if (this.arrayTypeReadingsList.length > 0) {
-        this.selectedTab = 2;
-      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
-        this.selectedTab = 3;
-      }
-      this.isModalOpened = false;
-    }
-
-    if (this.selectedTab === 1 && this.numberTypeReadingsList.length === 0) {
-      if (this.arrayTypeReadingsList.length > 0) {
-        this.selectedTab = 2;
-      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
-        this.selectedTab = 3;
-      }
-    }
-
-    if (this.selectedTab === 2 && this.arrayTypeReadingsList.length === 0) {
-      if (this.numberTypeReadingsList.length > 0) {
-        this.selectedTab = 1;
-      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
-        this.selectedTab = 3;
-      }
-    }
-
-    if (this.selectedTab === 3 && this.isEmptyObject(this.stringTypeReadingsList)) {
-      if (this.numberTypeReadingsList.length > 0) {
-        this.selectedTab = 1;
-      } else if (this.arrayTypeReadingsList.length > 0) {
-        this.selectedTab = 2;
-      }
-    }
-
-    if (this.selectedTab === 4 && this.numberTypeReadingsList.length === 0) {
-      if (this.arrayTypeReadingsList.length > 0) {
-        this.selectedTab = 2;
-      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
-        this.selectedTab = 3;
-      }
-    }
-
-    if (this.selectedTab === 1 && this.numberTypeReadingsList.length > 0) {
-      this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
-    } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
-      this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
-    }
-    this.showSpinner = false;
-  }
-
-  mergeObjects(assetReadings: any) {
-    return chain(assetReadings).groupBy('key').map(function (group, key) {
-      return {
-        key: key,
-        read: map(group, 'read')
-      };
-    }).value();
   }
 
   getColorCode(readKey, cnt, fill) {
@@ -332,194 +247,243 @@ export class ReadingsGraphComponent implements OnDestroy {
     return cc;
   }
 
-  private statsAssetReadingsGraph(assetReadings: any, timestamps: any): void {
-    const dataset = [];
-    this.readKeyColorLabel = [];
-    let count = 0;
-    for (const r of assetReadings) {
-      const dt = {
-        label: r.key,
-        data: r.read,
-        fill: false,
-        lineTension: 0.1,
-        spanGaps: true,
-        hidden: this.getLegendState(r.key),
-        backgroundColor: this.getColorCode(r.key.trim(), count, true),
-        borderColor: this.getColorCode(r.key.trim(), count, false)
-      };
-      if (dt.data.length) {
-        dataset.push(dt);
+  getAssetReadings(payload: any) {
+    this.assetService.getAssetReadingsBucket(payload).
+      subscribe(
+        (data: any[]) => {
+          this.generateGraph(data);
+          this.loadPage = false;
+        },
+        error => {
+          console.log('error in response', error);
+        });
+  }
+
+  generateGraph(readings: any) {
+    this.numReadings = [];
+    const output = {};
+    let readingTimestamps = [];
+    // iterate the outer array to look at each item in that array
+    for (const r of readings) {
+      const item = r.reading;
+      // iterate each key on the object
+      for (const prop in item) {
+        if (item.hasOwnProperty(prop)) {
+          // if this keys doesn't exist in the output object, add it
+          if (!(prop in output)) {
+            output[prop] = [];
+          }
+          // add data onto the end of the key's array
+          output[prop].push({ read: item[prop].average, ts: r.timestamp });
+          readingTimestamps.push(r.timestamp);
+        }
       }
+    }
+
+    readingTimestamps = uniq(readingTimestamps, 'timestamp');
+    let count = 0;
+    for (const key in output) {
+      this.numReadings.push({
+        x: output[key].map(({ ts }) => ts),
+        y: output[key].map(({ read }) => read),
+        type: 'scatter',
+        mode: output[key].length === 1 ? 'markers' : 'lines',
+        name: key,
+        visible: this.getLegendState(key),
+        marker: {
+          color: this.getColorCode(key.trim(), count, false)
+        },
+        modeBarButtons: [{
+          displaylogo: false
+        }]
+      });
       count++;
     }
-    this.setAssetReadingValues(dataset, timestamps);
+
+    const now = moment.utc(new Date()).valueOf() / 1000.0; // in seconds
+    const graphStartTimeSeconds = this.payload.start === 0 ? (now - this.payload.len) : this.payload.start;
+    const graphStartDateTime = moment(graphStartTimeSeconds * 1000).format('YYYY-MM-DD H:mm:ss.SSS');
+    const timeWindow = Utils.getTimeWindow(this.timeWindowIndex);
+    const graphEndDateTime = this.panning ? moment((this.payload.start + this.payload.len) * 1000).format('YYYY-M-D H:mm:ss.SSS')
+      : moment(now * 1000).format('YYYY-MM-DD H:mm:ss.SSS');
+    this.layout.xaxis['range'] = [graphStartDateTime, graphEndDateTime];
+    console.log('range', this.layout.xaxis['range']);
+    this.updateXAxisTickFormat(timeWindow.value);
+    this.updateTimeWindowText(timeWindow.key);
+    const Plotly = this.plotly.getPlotly();
+    if (this.assetChart) {
+      Plotly.relayout(this.assetChart.plotEl.nativeElement,
+        'xaxis.range', [graphStartDateTime, graphEndDateTime]);
+    }
+  }
+
+  public zoomGraph(seconds: number) {
+    const maxDataPoints = this.DEFAULT_TIME_WINDOW;
+    const bucket = seconds / maxDataPoints;
+    const length = seconds;
+    console.log('Bucket = ', bucket, ' length = ', length);
+    this.payload = {
+      assetCode: this.assetCode,
+      start: 0,
+      len: length,
+      bucketSize: bucket
+    };
+    this.getAssetReadings(this.payload);
+  }
+
+  updateXAxisTickFormat(length) {
+    // below 1 minute
+    if (length < 60) {
+      this.layout.xaxis.tickformat = '%H:%M:%S.%L';
+    }
+    // 1 minute to 6 hours
+    if (60 <= length && length <= 21600) {
+      this.layout.xaxis.tickformat = '%H:%M:%S';
+    }
+    // 6 hours to 1 day
+    if (21600 < length && length < 86400) {
+      this.layout.xaxis.tickformat = '%H:%M';
+    }
+    // 1 day to 1 week
+    if (86400 <= length && length < 604800) {
+      this.layout.xaxis.tickformat = '%e %b %H:%M';
+    }
+    // 1 week to 6 months
+    if (604800 <= length && length < 15552000) {
+      this.layout.xaxis.tickformat = '%e %b';
+    }
+    // above 6 months
+    if (15552000 <= length) {
+      this.layout.xaxis.tickformat = '%b %y';
+    }
+  }
+
+  calculateDragTime() {
+    const point = this.assetChart.plotEl.nativeElement.layout.xaxis.range[0];
+    if (this.xAxisRange.length > 1) {
+      this.xAxisRange.shift();
+    }
+    this.xAxisRange.push(point);
+  }
+
+  dragGraph(event: any) {
+    if (event['xaxis.range[0]'] === undefined) {
+      return;
+    }
+
+    const maxDataPoints = this.DEFAULT_TIME_WINDOW;
+    const panClickTime = moment(this.xAxisRange[0]).utc();
+    const panReleaseTime = moment(this.xAxisRange[1]).utc();
+    console.log('Pan Click Time ', panClickTime);
+    console.log('Pan Release Time ', panReleaseTime);
+
+    console.log('panClickTime utc', panClickTime.format());
+    console.log('panReleaseTime utc', panReleaseTime.format());
+
+    const panDeltaTime = moment.duration(panClickTime.diff(panReleaseTime)).asSeconds();
+    console.log('panDeltaTime', panDeltaTime);
+
+    const now = moment.utc(new Date()).valueOf() / 1000.0; // in seconds
+    console.log('now', now);
+
+    const currentTimeWindow = Utils.getTimeWindow(this.timeWindowIndex); // in seconds
+    console.log('current time window', currentTimeWindow);
+
+    const start = now - currentTimeWindow.value - panDeltaTime;
+    console.log('start', start);
+
+    const bucket = currentTimeWindow.value / maxDataPoints;
+    console.log('bucket', bucket);
+
+    const draggedToTime = moment(event['xaxis.range[1]']).utc().valueOf() / 1000.0;
+    console.log('draggedToTime', draggedToTime);
+
+    this.panning = true;
+    this.isAlive = false;
+    this.payload = {
+      assetCode: this.assetCode,
+      start: start,
+      len: currentTimeWindow.value,
+      bucketSize: bucket
+    };
+
+    if (now < draggedToTime) {
+      this.panning = false;
+      console.log('Graph cannot be dragged in future time.');
+      this.isAlive = true;
+      this.payload = {
+        assetCode: this.assetCode,
+        start: 0,
+        len: currentTimeWindow.value,
+        bucketSize: bucket
+      };
+    }
+    this.getAssetReadings(this.payload);
+  }
+
+  legendClick(event) {
+    const legendItem = event.data[event.curveNumber].name;
+    let selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
+    selectedLegends = selectedLegends === null ? [] : selectedLegends;
+    if (selectedLegends.includes(legendItem)) {
+      selectedLegends = selectedLegends.filter(dt => dt !== legendItem);
+    } else {
+      selectedLegends.push(legendItem);
+    }
+    sessionStorage.setItem(this.assetCode, JSON.stringify(selectedLegends));
   }
 
   public getLegendState(key) {
     const selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
     if (selectedLegends == null) {
-      return false;
+      return true;
     }
-    for (const l of selectedLegends) {
-      if (l.key === key && l.selected === true) {
-        return true;
+    for (const lg of selectedLegends) {
+      if (lg === key) {
+        return 'legendonly';
       }
     }
   }
 
-  private setAssetReadingValues(ds: any, timestamps) {
-    this.assetReadingValues = {
-      labels: timestamps,
-      datasets: ds
-    };
-    this.assetChartType = 'line';
-    this.assetChartOptions = {
-      elements: {
-        point: { radius: 0 }
-      },
-      scales: {
-        xAxes: [{
-          type: 'time',
-          distribution: 'linear',
-          time: {
-            unit: 'second',
-            tooltipFormat: 'HH:mm:ss:SSS',
-            displayFormats: {
-              unit: 'second',
-              second: 'HH:mm:ss'
-            }
-          },
-          ticks: {
-            autoSkip: true
-          },
-          bounds: 'ticks'
-        }]
-      },
-      legend: {
-        onClick: (e, legendItem) => {
-          console.log('clicked ', legendItem, e);
-          const index = legendItem.datasetIndex;
-          const chart = this.assetChart.chart;
-          const meta = chart.getDatasetMeta(index);
-          /**
-          * meta data have hidden property as null by default in chart.js
-          */
-          meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
-          let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
-          if (savedLegendState !== null) {
-            if (legendItem.hidden === false) {
-              savedLegendState.push({ key: legendItem.text, selected: true });
-            } else {
-              savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
-            }
-          } else {
-            savedLegendState = [{ key: legendItem.text, selected: true }];
-          }
-          sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
-          chart.update();
-        }
-      }
-    };
+  public updateTimeWindowText(timeWindowText) {
+    this.layout.xaxis.title.text = `Time Window - ${timeWindowText}`;
   }
 
-  public toggleDropdown() {
-    const dropDown = document.querySelector('#time-dropdown');
-    dropDown.classList.toggle('is-active');
-    if (!dropDown.classList.contains('is-active')) {
-      this.timeDropDownOpened = false;
-    } else {
-      this.timeDropDownOpened = true;
+  panModeZoom(zoomOut = false) {
+    // <Start> =(previous Start) + (previous Timespan in seconds) / 2 - (new Timespan in seconds) /2
+    const currentTimeWindow = Utils.getTimeWindow(this.timeWindowIndex); // in seconds
+    console.log('current time window', currentTimeWindow);
+
+    const now = moment.utc(new Date()).valueOf() / 1000.0; // in seconds
+    console.log('now', now);
+
+    let start = this.payload.start + this.payload.len / 2 - currentTimeWindow.value / 2;
+    console.log('start', start);
+    // <bucket> = (new Timespan in seconds) / (Max Datapoints)
+    const bucket = currentTimeWindow.value / this.DEFAULT_TIME_WINDOW;
+    // <length> = (new Timespan in seconds)
+    const len = currentTimeWindow.value;
+
+    if (zoomOut) {
+      const totalDuration = start + len;
+      console.log('totalDuration', totalDuration);
+      if (start < 0 || totalDuration >= now) {
+        console.log('Graph cannot be dragged in future time.');
+        start = 0;
+        this.panning = false;
+      }
     }
-  }
-
-  create3DGraph(readings: any, ts: any) {
-    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss:SSS'));
-    this.polyGraphData = {
-      data: [
-        {
-          type: 'surface',
-          y: timestamps,
-          z: readings.map(r => r.read)[0],
-          showscale: false,
-          colorscale: [
-            ['0', 'rgba(68,1,84,1)'],
-            ['0.1', 'rgba(61,77,137,1)'],
-            ['0.2', 'rgba(57,89,140,1)'],
-            ['0.3', 'rgba(49,104,142,1)'],
-            ['0.4', 'rgba(44,119,142,1)'],
-            ['0.5', 'rgba(38,136,141,1)'],
-            ['0.6', 'rgba(33,154,138,1)'],
-            ['0.7', 'rgba(50,178,124,1)'],
-            ['0.8', 'rgba(101,201,96,1)'],
-            ['0.9', 'rgba(101,201,96,1)'],
-            ['1', 'rgba(253,231,37,1)']],
-          colorbar: {
-            tick0: 0,
-            dtick: 5
-          }
-        },
-      ],
-      layout: {
-        title: this.assetCode,
-        showlegend: true,
-        autoSize: true,
-        margin: {
-          b: 40,
-          l: 60,
-          r: 10,
-          t: 25
-        }
-      },
-      config: {
-        displayModeBar: false
-      }
-    };
-    this.generate3Dgraph();
-  }
-
-  public async generate3Dgraph() {
-    // Initilization of DOM element to render graph
-    // takes time at fist so need some time to wait here.
-    const intervalId = setInterval(() => {
-      if (this.Graph) {
-        Plotly.newPlot(
-          this.Graph.nativeElement,
-          this.polyGraphData);
-        clearInterval(intervalId);
-      }
-    }, 100);
-  }
-
-  public isNumber(val) {
-    return typeof val === 'number';
-  }
-
-  selectTab(id: number, showSpinner = true) {
-    this.showSpinner = showSpinner;
-    this.selectedTab = id;
-    if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
-      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    } else if (this.graphRefreshInterval === -1) {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-    }
-  }
-
-  showSummaryTab() {
-    return this.numberTypeReadingsList.length > 0;
-  }
-
-  isEmptyObject(obj) {
-    return (obj && (Object.keys(obj).length === 0));
-  }
-
-  keyDescOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => {
-    return a.key > b.key ? -1 : (b.key > a.key ? 1 : 0);
+    this.payload.start = start;
+    this.payload.len = len;
+    this.payload.bucketSize = bucket;
+    console.log('final payload', this.payload);
+    this.getAssetReadings(this.payload);
   }
 
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.destroy$.next(true);
-    // Now let's also unsubscribe from the subject itself:
+    // Now let's also unsubscribe from the subject itself
     this.destroy$.unsubscribe();
   }
 }

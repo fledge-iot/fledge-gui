@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 
 import { DateFormatterPipe } from '../../../pipes';
 import { StatisticsService } from '../../../services';
-import { ChartModule } from '../../common/chart';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthCheckGuard } from '../../../guards';
@@ -27,8 +26,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     FormsModule,
     CommonModule,
-    NumberInputDebounceModule,
-    ChartModule,
+    NumberInputDebounceModule
   ],
   providers: [StatisticsService, DateFormatterPipe],
   exports: []
