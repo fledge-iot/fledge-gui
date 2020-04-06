@@ -1,4 +1,4 @@
-## v1.7.0next [2020-02-xx]
+## v1.7.0next [2020-xx-xx]
 
 #### Added
 * Python editor with light and dark mode support for `script` & `code` types
