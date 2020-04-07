@@ -63,4 +63,4 @@ Firefox | 68.0.x (64-bit) | latest 2
 [Developer's Guide](docs/developers-guide.md)
 
 
-> &copy; 2019 DIANOMIC SYSTEMS, INC. All Rights Reserved.
+> &copy; 2020 DIANOMIC SYSTEMS, INC. All Rights Reserved.
