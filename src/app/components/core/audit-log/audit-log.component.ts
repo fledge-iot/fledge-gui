@@ -13,20 +13,16 @@ export class AuditLogComponent implements OnInit {
   public logSeverityList = [];
   public audit: any;
   public totalCount: any;
-  public DEFAULT_LIMIT = 20;
+  public DEFAULT_LIMIT = 5;
   public MAX_RANGE = MAX_INT_SIZE;
   limit = this.DEFAULT_LIMIT;
-  offset = 0;
   public source = '';
   public severity = '';
 
   page = 1;             // Default page is 1 in pagination
   recordCount = 0;
-  tempOffset = 0;       // Temporary offset during pagination
   totalPagesCount = 0;
-
   isInvalidLimit = false;
-  isInvalidOffset = false;
 
   constructor(private auditService: AuditService,
     private progress: ProgressBarService,
@@ -103,12 +99,11 @@ export class AuditLogComponent implements OnInit {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    if (this.offset > 0) {
-      this.tempOffset = (((this.page) - 1) * this.limit) + this.offset;
-    } else {
-      this.tempOffset = ((this.page) - 1) * this.limit;
-    }
     this.getAuditLogs();
+  }
+
+  resetLimitPerPage(value)  {
+    this.setLimit(value);
   }
 
   public getLogSource() {
@@ -150,7 +145,6 @@ export class AuditLogComponent implements OnInit {
     }
     if (this.page !== 1) {
       this.page = 1;
-      this.tempOffset = this.offset;
     }
     if (limit === '' || limit === 0 || limit === null || limit === undefined) {
       limit = this.DEFAULT_LIMIT;
@@ -161,40 +155,15 @@ export class AuditLogComponent implements OnInit {
     this.getAuditLogs();
   }
 
-  public setOffset(offset: number) {
-    this.isInvalidOffset = false;
-    if (offset > this.MAX_RANGE) {
-      this.isInvalidOffset = true; // offset range validation
-      return;
-    }
-
-    if (this.page !== 1) {
-      this.page = 1;
-    }
-    if (offset === null || offset === undefined) {
-      offset = 0;
-    }
-    this.offset = offset;
-    console.log('Offset: ', this.offset);
-    this.tempOffset = offset;
-    this.totalPages();
-    this.getAuditLogs();
-  }
-
   public getAuditLogs(): void {
     if (this.limit == null) {
       this.limit = 0;
-    }
-    if (this.offset == null) {
-      this.offset = 0;
     }
     this.auditLogSubscriber();
   }
 
   public filterSource(type: string, code: string) {
     this.limit = this.DEFAULT_LIMIT;
-    this.offset = 0;
-    this.tempOffset = 0;
     this.recordCount = 0;
     if (this.page !== 1) {
       this.page = 1;
@@ -217,18 +186,14 @@ export class AuditLogComponent implements OnInit {
     }
     /** request started */
     this.progress.start();
-    this.auditService.getAuditLogs(this.limit, this.tempOffset, sourceCode, this.severity).
+    this.auditService.getAuditLogs(this.limit, sourceCode, this.severity).
       subscribe(
         (data: any) => {
           /** request completed */
           this.progress.done();
           this.audit = data.audit.filter((log: any) => !(/NTF/.test(log.source)));
           this.totalCount = data.totalCount;
-          if (this.offset !== 0) {
-            this.recordCount = this.totalCount - this.offset;
-          } else {
-            this.recordCount = this.totalCount;
-          }
+          this.recordCount = this.totalCount;
           this.totalPages();
         },
         error => {

@@ -12,20 +12,17 @@ export class NotificationLogComponent implements OnInit {
   public logSeverityList = [];
   public notificationLogs: any;
   public totalCount: any;
-  public DEFAULT_LIMIT = 20;
+  public DEFAULT_LIMIT = 5;
   public MAX_RANGE = MAX_INT_SIZE;
   limit = this.DEFAULT_LIMIT;
-  offset = 0;
   public source = '';
   public severity = '';
 
   page = 1;             // Default page is 1 in pagination
   recordCount = 0;
-  tempOffset = 0;       // Temporary offset during pagination
   totalPagesCount = 0;
 
   isInvalidLimit = false;
-  isInvalidOffset = false;
   searchTerm = '';
 
   constructor(private auditService: AuditService,
@@ -85,6 +82,10 @@ export class NotificationLogComponent implements OnInit {
     this.setLimitOffset();
   }
 
+  resetLimitPerPage(value)  {
+    this.setLimit(value);
+  }
+
   public toggleDropDown(id: string) {
     const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
     if (activeDropDowns.length > 0) {
@@ -102,11 +103,6 @@ export class NotificationLogComponent implements OnInit {
   setLimitOffset() {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
-    }
-    if (this.offset > 0) {
-      this.tempOffset = (((this.page) - 1) * this.limit) + this.offset;
-    } else {
-      this.tempOffset = ((this.page) - 1) * this.limit;
     }
     this.getNotificationLogs();
   }
@@ -152,7 +148,6 @@ export class NotificationLogComponent implements OnInit {
     }
     if (this.page !== 1) {
       this.page = 1;
-      this.tempOffset = this.offset;
     }
     if (limit === '' || limit === 0 || limit === null || limit === undefined) {
       limit = this.DEFAULT_LIMIT;
@@ -162,29 +157,8 @@ export class NotificationLogComponent implements OnInit {
     this.getNotificationLogs();
   }
 
-  public setOffset(offset: number) {
-    this.isInvalidOffset = false;
-    if (offset > this.MAX_RANGE) {
-      this.isInvalidOffset = true; // offset range validation
-      return;
-    }
-
-    if (this.page !== 1) {
-      this.page = 1;
-    }
-    if (offset === null || offset === undefined) {
-      offset = 0;
-    }
-    this.offset = offset;
-    this.tempOffset = offset;
-    this.totalPages();
-    this.getNotificationLogs();
-  }
-
   public filterSource(type: string, code: string) {
     this.limit = this.DEFAULT_LIMIT;
-    this.offset = 0;
-    this.tempOffset = 0;
     this.recordCount = 0;
     if (this.page !== 1) {
       this.page = 1;
@@ -203,9 +177,7 @@ export class NotificationLogComponent implements OnInit {
     if (this.limit == null) {
       this.limit = 0;
     }
-    if (this.offset == null) {
-      this.offset = 0;
-    }
+
     /** request started */
     this.progress.start();
     let sourceCode = this.source;
@@ -213,7 +185,7 @@ export class NotificationLogComponent implements OnInit {
       const codes = this.logSourceList.map(s => s.code);
       sourceCode = codes.toString();
     }
-    this.auditService.getAuditLogs(this.limit, this.tempOffset, sourceCode, this.severity).
+    this.auditService.getAuditLogs(this.limit, sourceCode, this.severity).
       subscribe(
         (data: any) => {
           /** request completed */
@@ -221,11 +193,8 @@ export class NotificationLogComponent implements OnInit {
           this.notificationLogs = data.audit
             .filter((log: any) => /NTF/.test(log.source));
           this.totalCount = data.totalCount;
-          if (this.offset !== 0) {
-            this.recordCount = this.totalCount - this.offset;
-          } else {
-            this.recordCount = this.totalCount;
-          }
+          this.recordCount = this.totalCount;
+
           this.totalPages();
         },
         error => {
