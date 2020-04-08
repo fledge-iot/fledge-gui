@@ -8,7 +8,7 @@
       <div id="connection-content" class="card-content">
         <div class="columns">
           <div class="column is-2">
-            <label class="label">&nbsp;</label>
+            <label class="label is-small">&nbsp;</label>
             <div id="protocol-dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -28,11 +28,11 @@
             </div>
           </div>
           <div class="column">
-            <label class="label is-fullwidth">Host</label>
+            <label class="label is-small is-fullwidth">Host</label>
             <input id="host" class="input" type="text" placeholder="127.0.0.1" [ngModel]="host" trim="blur">
           </div>
           <div class="column">
-            <label class="label is-fullwidth">Port</label>
+            <label class="label is-small is-fullwidth">Port</label>
             <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081"
               [ngModel]="servicePort">
           </div>
@@ -59,7 +59,7 @@
       <div id="settings-content" class="card-content">
         <div class="columns">
           <div class="column is-4">
-            <label class="label"> Refresh Dashboard Graph</label>
+            <label class="label is-small"> Refresh Dashboard Graph</label>
             <div class="control">
               <div id="refresh-time-dropdown" class="dropdown">
                 <div class="dropdown-trigger">
@@ -91,7 +91,7 @@
           </div>
   
           <div class="column is-4">
-            <label class="label">Ping Interval</label>
+            <label class="label is-small">Ping Interval</label>
             <div class="control">
               <div id="ping-interval-dropdown" class="dropdown">
                 <div class="dropdown-trigger">
@@ -121,7 +121,7 @@
             </div>
           </div>
           <div class="column is-4">
-              <label class="label">Editor Theme</label>
+              <label class="label is-small">Editor Theme</label>
               <div class="control">
                 <div id="theme-dropdown" class="dropdown">
                   <div class="dropdown-trigger">

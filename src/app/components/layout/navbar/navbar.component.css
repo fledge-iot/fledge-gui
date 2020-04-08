@@ -71,3 +71,11 @@
   border-color: gray !important;
   right: 1.25em !important;
 }
+
+.parent-icon {
+  font-size: 0.8rem;
+}
+
+.child-icon {
+  font-size: 0.7rem;
+}
