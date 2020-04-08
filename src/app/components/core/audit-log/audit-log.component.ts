@@ -13,7 +13,7 @@ export class AuditLogComponent implements OnInit {
   public logSeverityList = [];
   public audit: any;
   public totalCount: any;
-  public DEFAULT_LIMIT = 5;
+  public DEFAULT_LIMIT = 20;
   public MAX_RANGE = MAX_INT_SIZE;
   limit = this.DEFAULT_LIMIT;
   public source = '';
