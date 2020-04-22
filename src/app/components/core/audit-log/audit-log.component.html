@@ -3,7 +3,7 @@
     <header class="card-header">
       <div id="card-title" class="card-content">
         <p class="card-header-title">Audit Logs
-          <button (click)="getAuditLogs()" class="button is-small" id="refresh-check">
+          <button *ngIf="!isAlive" (click)="getAuditLogs()" class="button is-small" id="refresh-check">
             <i class="fa fa-sync" aria-hidden="true"></i>
           </button>
         </p>

@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-
-import { AlertService, AuditService, ProgressBarService } from '../../../services';
-import { MAX_INT_SIZE } from '../../../utils';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { interval, Subject } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
+import { AlertService, AuditService, PingService } from '../../../services';
+import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 
 @Component({
   selector: 'app-audit-log',
   templateUrl: './audit-log.component.html',
   styleUrls: ['./audit-log.component.css']
 })
-export class AuditLogComponent implements OnInit {
+export class AuditLogComponent implements OnInit, OnDestroy {
   public logSourceList = [];
   public logSeverityList = [];
   public audit: any;
@@ -18,19 +19,38 @@ export class AuditLogComponent implements OnInit {
   limit = this.DEFAULT_LIMIT;
   public source = '';
   public severity = '';
+  private isAlive: boolean;
 
   page = 1;             // Default page is 1 in pagination
   recordCount = 0;
   totalPagesCount = 0;
   isInvalidLimit = false;
 
+  public refreshInterval = POLLING_INTERVAL;
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private auditService: AuditService,
-    private progress: ProgressBarService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private ping: PingService) {
+      this.isAlive = true;
+      this.ping.pingIntervalChanged
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((timeInterval: number) => {
+          if (timeInterval === -1) {
+            this.isAlive = false;
+          }
+          this.refreshInterval = timeInterval;
+        });
+  }
 
   ngOnInit() {
     this.getLogSource();
     this.getLogSeverity();
+    interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getAuditLogs();
+      });
   }
 
   /**
@@ -184,26 +204,27 @@ export class AuditLogComponent implements OnInit {
       const codes = this.logSourceList.map(s => s.code);
       sourceCode = codes.toString();
     }
-    /** request started */
-    this.progress.start();
-    this.auditService.getAuditLogs(this.limit, sourceCode, this.severity).
-      subscribe(
+    this.auditService.getAuditLogs(this.limit, sourceCode, this.severity)
+    .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data: any) => {
-          /** request completed */
-          this.progress.done();
           this.audit = data.audit.filter((log: any) => !(/NTF/.test(log.source)));
           this.totalCount = data.totalCount;
           this.recordCount = this.totalCount;
           this.totalPages();
         },
         error => {
-          /** request completed */
-          this.progress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

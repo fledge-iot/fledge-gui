@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { AlertService, ProgressBarService, AuditService, PingService } from '../../../../services';
+import { AlertService, AuditService, PingService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
@@ -9,7 +9,7 @@ import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
   templateUrl: './notification-log.component.html',
   styleUrls: ['./notification-log.component.css']
 })
-export class NotificationLogComponent implements OnInit {
+export class NotificationLogComponent implements OnInit, OnDestroy {
   public logSourceList = [];
   public logSeverityList = [];
   public notificationLogs: any;
@@ -32,7 +32,6 @@ export class NotificationLogComponent implements OnInit {
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private auditService: AuditService,
-    private progress: ProgressBarService,
     private alertService: AlertService,
     private ping: PingService) {
       this.isAlive = true;
@@ -200,18 +199,15 @@ export class NotificationLogComponent implements OnInit {
       this.limit = 0;
     }
 
-    /** request started */
-    this.progress.start();
     let sourceCode = this.source;
     if (this.source.length === 0) {
       const codes = this.logSourceList.map(s => s.code);
       sourceCode = codes.toString();
     }
-    this.auditService.getAuditLogs(this.limit, sourceCode, this.severity).
+    this.auditService.getAuditLogs(this.limit, sourceCode, this.severity)
+    .pipe(takeUntil(this.destroy$)).
       subscribe(
         (data: any) => {
-          /** request completed */
-          this.progress.done();
           this.notificationLogs = data.audit
             .filter((log: any) => /NTF/.test(log.source));
           this.totalCount = data.totalCount;
@@ -220,13 +216,17 @@ export class NotificationLogComponent implements OnInit {
           this.totalPages();
         },
         error => {
-          /** request completed */
-          this.progress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
