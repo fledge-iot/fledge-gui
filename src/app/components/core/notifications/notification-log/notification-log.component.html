@@ -3,7 +3,7 @@
     <header class="card-header">
       <div id="card-title" class="card-content">
         <p class="card-header-title">Notification Logs
-          <button (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
+          <button *ngIf="!isAlive" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
             <i class="fa fa-sync" aria-hidden="true"></i>
           </button>
         </p>
@@ -91,6 +91,11 @@
             <td><small>{{log.details.name}}</small></td>
             <td><small>{{log.severity}}</small></td>
             <td><small>{{log.source}}</small></td>
+          </tr>
+          <tr class="has-text-centered">
+            <small class="no-rec">
+              Total Count: {{ totalCount }}
+            </small>
           </tr>
         </tbody>
       </table>

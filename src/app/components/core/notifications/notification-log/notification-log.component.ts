@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertService, ProgressBarService, AuditService } from '../../../../services';
-import { MAX_INT_SIZE } from '../../../../utils';
+import { interval, Subject } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
+import { AlertService, ProgressBarService, AuditService, PingService } from '../../../../services';
+import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
   selector: 'app-notification-log',
@@ -17,6 +19,7 @@ export class NotificationLogComponent implements OnInit {
   limit = this.DEFAULT_LIMIT;
   public source = '';
   public severity = '';
+  private isAlive: boolean;
 
   page = 1;             // Default page is 1 in pagination
   recordCount = 0;
@@ -25,13 +28,32 @@ export class NotificationLogComponent implements OnInit {
   isInvalidLimit = false;
   searchTerm = '';
 
+  public refreshInterval = POLLING_INTERVAL;
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private auditService: AuditService,
     private progress: ProgressBarService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private ping: PingService) {
+      this.isAlive = true;
+      this.ping.pingIntervalChanged
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((timeInterval: number) => {
+          if (timeInterval === -1) {
+            this.isAlive = false;
+          }
+          this.refreshInterval = timeInterval;
+        });
+    }
 
   ngOnInit() {
     this.getLogSource();
     this.getLogSeverity();
+    interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getNotificationLogs();
+      });
   }
 
   /**
