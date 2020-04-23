@@ -1,33 +1,51 @@
-import { Component, OnInit } from '@angular/core';
-
-import { AlertService, SystemLogService, ProgressBarService } from '../../../services';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { interval, Subject } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
+import { AlertService, SystemLogService, PingService } from '../../../services';
+import { POLLING_INTERVAL } from '../../../utils';
 
 @Component({
   selector: 'app-system-log',
   templateUrl: './system-log.component.html',
   styleUrls: ['./system-log.component.css']
 })
-export class SystemLogComponent implements OnInit {
+export class SystemLogComponent implements OnInit, OnDestroy {
   public logs: any;
   public source: String = '';
   public level: String = '';
   public totalCount: any;
-  DEFAULT_LIMIT = 50;
+  DEFAULT_LIMIT = 20;
   limit = this.DEFAULT_LIMIT;
-  offset = 0;
+  private isAlive: boolean;
+
+  public refreshInterval = POLLING_INTERVAL;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   page = 1;
   recordCount = 0;
-  tempOffset = 0;
   totalPagesCount = 0;
 
   constructor(private systemLogService: SystemLogService,
     private alertService: AlertService,
-    public ngProgress: ProgressBarService
-  ) { }
+    private ping: PingService) {
+      this.isAlive = true;
+      this.ping.pingIntervalChanged
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((timeInterval: number) => {
+          if (timeInterval === -1) {
+            this.isAlive = false;
+          }
+          this.refreshInterval = timeInterval;
+        });
+    }
 
   ngOnInit() {
     this.getSysLogs();
+    interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getSysLogs();
+      });
   }
 
   /**
@@ -65,7 +83,6 @@ export class SystemLogComponent implements OnInit {
     this.limit = 0;
     if (this.page !== 1) {
       this.page = 1;
-      this.tempOffset = this.offset;
     }
     if (limit === '' || limit === 0 || limit === null || limit === undefined) {
       limit = this.DEFAULT_LIMIT;
@@ -83,9 +100,6 @@ export class SystemLogComponent implements OnInit {
     if (offset === null || offset === undefined) {
       offset = 0;
     }
-    this.offset = offset;
-    console.log('Offset: ', this.offset);
-    this.tempOffset = offset;
     this.totalPages();
     this.getSysLogs();
   }
@@ -114,11 +128,6 @@ export class SystemLogComponent implements OnInit {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    if (this.offset > 0) {
-      this.tempOffset = (((this.page) - 1) * this.limit) + this.offset;
-    } else {
-      this.tempOffset = ((this.page) - 1) * this.limit;
-    }
     this.getSysLogs();
   }
 
@@ -135,8 +144,6 @@ export class SystemLogComponent implements OnInit {
 
   public filterData(filter: string, value: string) {
     this.limit = 0;
-    this.offset = 0;
-    this.tempOffset = 0;
     this.recordCount = 0;
     if (this.page !== 1) {
       this.page = 1;
@@ -150,16 +157,12 @@ export class SystemLogComponent implements OnInit {
   }
 
   public getSysLogs() {
-    /** request started */
-    this.ngProgress.start();
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.limit, this.tempOffset, this.source, this.level).
+    this.systemLogService.getSysLogs(this.limit, this.source, this.level).
       subscribe(
         (data) => {
-          /** request completed */
-          this.ngProgress.done();
           const logs = [];
           data['logs'].forEach(l => {
             let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
@@ -171,22 +174,21 @@ export class SystemLogComponent implements OnInit {
 
           this.logs = logs.reverse();
           this.totalCount = data['count'];
-          // console.log('System Logs', this.logs, 'Total count', this.totalCount);
-          if (this.offset !== 0) {
-            this.recordCount = this.totalCount - this.offset;
-          } else {
-            this.recordCount = this.totalCount;
-          }
+          this.recordCount = this.totalCount;
           this.totalPages();
         },
         error => {
-          /** request completed */
-          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
