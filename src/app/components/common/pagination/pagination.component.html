@@ -1,11 +1,18 @@
 <div class="container is-fluid">
   <nav class="navbar pagination columns is-small is-right" role="navigation" aria-label="pagination">
     <div class="column is-4">
-      <div class="select is-pulled-left">
-        <select (change)="setPagination($event.target.value)">
-          <option *ngFor="let range of paginationRange" [selected]="range === perPage">
-            {{range}}</option>
-        </select>
+      <div class="field is-horizontal">
+        <div class="field-label has-text-left">
+          <label class="label is-small">Show</label>
+        </div>
+        <div class="field-body">
+          <div class="select is-pulled-left">
+            <select (change)="setPagination($event.target.value)">
+              <option *ngFor="let range of paginationRange" [selected]="range === perPage">
+                {{range}}</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
     <div class="column is-4">

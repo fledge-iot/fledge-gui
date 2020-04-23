@@ -16,7 +16,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   public totalCount: any;
   DEFAULT_LIMIT = 20;
   limit = this.DEFAULT_LIMIT;
-  private isAlive: boolean;
+  public isAlive: boolean;
 
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();

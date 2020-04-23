@@ -42,7 +42,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('level-dropdown')">
-                  <span>{{level == ''? "INFO": level.toUpperCase()}}</span>
+                  <span>{{level == ''? "Info and above": level.toUpperCase()}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -51,13 +51,13 @@
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
                   <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'INFO')">
-                    INFO
+                    Info and above
                   </a>
                   <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'WARNING')">
-                    WARNING
+                    Warning and above
                   </a>
                   <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'ERROR')">
-                    ERROR
+                    Error and above
                   </a>
                 </div>
               </div>

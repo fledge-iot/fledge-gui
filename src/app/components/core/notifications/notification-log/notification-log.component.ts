@@ -19,7 +19,7 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   limit = this.DEFAULT_LIMIT;
   public source = '';
   public severity = '';
-  private isAlive: boolean;
+  public isAlive: boolean;
 
   page = 1;             // Default page is 1 in pagination
   recordCount = 0;
