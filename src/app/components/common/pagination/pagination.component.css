@@ -11,3 +11,7 @@
 .field-label {
     margin-right: 0;
 }
+
+.label {
+    font-weight: 400;
+}
