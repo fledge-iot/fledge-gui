@@ -18,7 +18,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('dropdown')">
-                  <span>{{source == ''? "All": source.toUpperCase()}}</span>
+                  <span>{{source == ''? "All": source}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -31,6 +31,9 @@
                   </a>
                   <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterData('source', 'storage')">
                     Storage
+                  </a>
+                  <a class="dropdown-item" *ngFor="let schedule of scheduleData" (click)="toggleDropDown('dropdown');filterData('source', schedule.name)">
+                    {{schedule.name}}
                   </a>
                 </div>
               </div>

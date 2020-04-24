@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { AlertService, SystemLogService, PingService } from '../../../services';
+import { AlertService, SystemLogService, PingService, SchedulesService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
+import Utils from '../../../utils';
+import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-system-log',
@@ -17,6 +19,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   DEFAULT_LIMIT = 20;
   limit = this.DEFAULT_LIMIT;
   public isAlive: boolean;
+  public scheduleData = [];
 
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -27,6 +30,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   searchTerm = '';
 
   constructor(private systemLogService: SystemLogService,
+    private schedulesService: SchedulesService,
     private alertService: AlertService,
     private ping: PingService) {
       this.isAlive = true;
@@ -42,11 +46,58 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getSysLogs();
+    this.getSchedules();
     interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getSysLogs();
+        this.getSchedules();
       });
+  }
+
+  public getSchedules(): void {
+    this.scheduleData = [];
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          this.scheduleData.forEach(element => {
+            const repeatTimeObj = Utils.secondsToDhms(element.repeat);
+            if (repeatTimeObj.days === 1) {
+              element.repeat = repeatTimeObj.days + ' day, ' + repeatTimeObj.time;
+            } else if (repeatTimeObj.days > 1) {
+              element.repeat = repeatTimeObj.days + ' days, ' + repeatTimeObj.time;
+            } else {
+              element.repeat = repeatTimeObj.time;
+            }
+            element.time = Utils.secondsToDhms(element.time).time;
+          });
+          const south_c = [];
+          const notification_c = [];
+          const north_c = [];
+          const north = [];
+          data.schedules.forEach(sch => {
+            if ('south_c'.includes(sch.processName)) {
+              south_c.push(sch);
+            }
+            if ('notification_c'.includes(sch.processName)) {
+              notification_c.push(sch);
+            }
+            if ('north_c'.includes(sch.processName)) {
+              north_c.push(sch);
+            }
+            if ('north'.includes(sch.processName)) {
+              north.push(sch);
+            }
+          });
+          this.scheduleData = south_c.concat(notification_c, north_c, north);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
@@ -150,7 +201,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       this.page = 1;
     }
     if (filter === 'source') {
-      this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim().toLowerCase();
+      this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim();
     } else {
       this.level = value.trim().toLowerCase() === 'info' ? '' : value.trim().toLowerCase();
     }
@@ -161,7 +212,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.limit, this.source, this.level).
+    this.systemLogService.getSysLogs(this.source, this.level).
       subscribe(
         (data) => {
           const logs = [];
