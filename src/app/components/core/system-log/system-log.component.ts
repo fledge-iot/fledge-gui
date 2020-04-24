@@ -60,17 +60,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
-          this.scheduleData.forEach(element => {
-            const repeatTimeObj = Utils.secondsToDhms(element.repeat);
-            if (repeatTimeObj.days === 1) {
-              element.repeat = repeatTimeObj.days + ' day, ' + repeatTimeObj.time;
-            } else if (repeatTimeObj.days > 1) {
-              element.repeat = repeatTimeObj.days + ' days, ' + repeatTimeObj.time;
-            } else {
-              element.repeat = repeatTimeObj.time;
-            }
-            element.time = Utils.secondsToDhms(element.time).time;
-          });
           const south_c = [];
           const notification_c = [];
           const north_c = [];

@@ -21,7 +21,7 @@ export class SystemLogService {
       params = params.set('level', level.toString());
     }
     if (source) {
-      params = params.set('source', source.toString());
+      params = params.set('source', encodeURIComponent(source.toString()));
     }
     return this.http.get(this.SYSLOG_URL, { params: params }).pipe(map(response => response),
     catchError(error => throwError(error)));

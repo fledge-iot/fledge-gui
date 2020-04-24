@@ -12,7 +12,7 @@ import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 export class AuditLogComponent implements OnInit, OnDestroy {
   public logSourceList = [];
   public logSeverityList = [];
-  public audit: any;
+  public audit = [];
   public totalCount: any;
   public DEFAULT_LIMIT = 20;
   public MAX_RANGE = MAX_INT_SIZE;
