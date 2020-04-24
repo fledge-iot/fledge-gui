@@ -24,6 +24,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   page = 1;
   recordCount = 0;
   totalPagesCount = 0;
+  searchTerm = '';
 
   constructor(private systemLogService: SystemLogService,
     private alertService: AlertService,

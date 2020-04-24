@@ -65,12 +65,12 @@
           </div>
           <div class="column">
             <label class="label is-small">Search</label>
-            <app-number-input-debounce placeholder="search text">
-            </app-number-input-debounce>
+            <input type="text" class="input is-fullwidth is-small" placeholder="search text"
+                [(ngModel)]="searchTerm" />
           </div>
         </div>
       </div>
-      <ng-container *ngFor="let log of logs">
+      <ng-container *ngFor="let log of logs | SearchPipe:searchTerm">
         <p class="s-log" [innerHTML]="log"> </p>
       </ng-container>
     </div>
