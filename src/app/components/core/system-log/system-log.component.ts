@@ -14,7 +14,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   public source = '';
   public level = '';
   public totalCount: any;
-  DEFAULT_LIMIT = 20;
+  DEFAULT_LIMIT = 50;
   limit = this.DEFAULT_LIMIT;
   public isAlive: boolean;
   public scheduleData = [];
