@@ -69,7 +69,7 @@
           </div>
           <div class="column">
             <label class="label is-small">Search</label>
-            <input type="text" class="input is-fullwidth is-small" placeholder="search text" [(ngModel)]="searchTerm" />
+            <input type="text" class="input is-fullwidth is-small" placeholder="search text on current page" [(ngModel)]="searchTerm" />
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@
     </ng-container>
     <ng-template #no_data_div>
       <div class="card-content">
-        <div class="has-text-centered"><small class="text-secondary"> No matchs</small></div>
+        <div class="has-text-centered"><small class="text-secondary">No Matching Log Entry Found</small></div>
       </div>
     </ng-template>
   </div>
