@@ -24,6 +24,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   page = 1;
   recordCount = 0;
+  tempOffset = 0;
   totalPagesCount = 0;
   searchTerm = '';
 
@@ -167,6 +168,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
+    this.tempOffset = (((this.page) - 1) * this.limit);
     this.getSysLogs();
   }
 
@@ -183,6 +185,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   public filterData(filter: string, value: string) {
     this.limit = 0;
+    this.tempOffset = 0;
     this.recordCount = 0;
     if (this.page !== 1) {
       this.page = 1;
@@ -203,7 +206,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.source, this.level, this.limit).
+    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.tempOffset).
       subscribe(
         (data) => {
           const logs = [];

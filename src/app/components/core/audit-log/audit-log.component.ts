@@ -23,6 +23,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
 
   page = 1;             // Default page is 1 in pagination
   recordCount = 0;
+  tempOffset = 0;
   totalPagesCount = 0;
   isInvalidLimit = false;
 
@@ -119,6 +120,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
+    this.tempOffset = (((this.page) - 1) * this.limit);
     this.getAuditLogs();
   }
 
@@ -184,6 +186,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
 
   public filterSource(type: string, code: string) {
     this.limit = this.DEFAULT_LIMIT;
+    this.tempOffset = 0;
     this.recordCount = 0;
     if (this.page !== 1) {
       this.page = 1;
@@ -204,7 +207,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       const codes = this.logSourceList.map(s => s.code);
       sourceCode = codes.toString();
     }
-    this.auditService.getAuditLogs(this.limit, sourceCode, this.severity)
+    this.auditService.getAuditLogs(this.limit, this.tempOffset, sourceCode, this.severity)
     .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
