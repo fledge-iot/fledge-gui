@@ -62,32 +62,37 @@
           </div>
         </div>
       </div>
-      <table class="table is-narrow is-responsive is-hoverable" cellpadding="0" cellspacing="0">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>Severity</th>
-            <th>Source</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let log of audit">
-            <td>
-              <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
-            </td>
-            <td><small>{{log.severity}}</small></td>
-            <td><small>{{log.source}}</small></td>
-            <td><small>{{log.details | json}}</small></td>
-          </tr>
-        </tbody>
-      </table>
-      <div *ngIf="audit.length !== 0">
-        <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount'
-          (onRangeChange)="resetLimitPerPage($event)" (goPrev)="onPrev()" (goNext)="onNext()" (goFirst)="onFirst()"
-          (goLast)="onLast()" (goPage)="goToPage($event)">
-        </app-pagination>
-      </div>
+      <ng-container *ngIf="audit?.length > 0; else no_data_div">
+        <table class="table is-narrow is-responsive is-hoverable" cellpadding="0" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Severity</th>
+              <th>Source</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of audit">
+              <td>
+                <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
+              </td>
+              <td><small>{{log.severity}}</small></td>
+              <td><small>{{log.source}}</small></td>
+              <td><small>{{log.details | json}}</small></td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="audit.length !== 0">
+          <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount'
+            (onRangeChange)="resetLimitPerPage($event)" (goPrev)="onPrev()" (goNext)="onNext()" (goFirst)="onFirst()"
+            (goLast)="onLast()" (goPage)="goToPage($event)">
+          </app-pagination>
+        </div>
+      </ng-container>
+      <ng-template #no_data_div>
+        <div class="has-text-centered"><small class="text-secondary"> No Notification Logs Found </small></div>
+      </ng-template>
     </div>
   </div>
 </div>

@@ -7,3 +7,7 @@
 .columns:last-child {
     margin-bottom: 0;
 }
+
+.container.is-fluid {
+    z-index: 19;
+}
