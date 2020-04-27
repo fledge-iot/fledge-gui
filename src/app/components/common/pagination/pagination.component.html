@@ -1,18 +1,11 @@
 <div class="container is-fluid">
   <nav class="navbar pagination columns is-small is-right" role="navigation" aria-label="pagination">
     <div class="column is-4">
-      <div class="field is-horizontal">
-        <div class="field-label is-normal has-text-left">
-          <label class="label is-small">Show</label>
-        </div>
-        <div class="field-body">
-          <div class="select is-pulled-left">
-            <select (change)="setPagination($event.target.value)">
-              <option *ngFor="let range of paginationRange" [selected]="range === perPage">
-                {{range}}</option>
-            </select>
-          </div>
-        </div>
+      <div class="select is-pulled-left">
+        <select (change)="setPagination($event.target.value)">
+          <option *ngFor="let range of paginationRange" [selected]="changeStringToNumber(range) === perPage">
+            {{range}}</option>
+        </select>
       </div>
     </div>
     <div class="column is-4">
@@ -22,22 +15,22 @@
     </div>
     <div class="column is-4">
       <ul class="pagination-list is-pulled-right" *ngIf="totalPage != 1">
-        <li><a class="{{(page === 1) ? 'button is-info is-small is-rounded' : 'button pagination-link is-rounded'}}"
+        <li><a class="{{(page === 1) ? 'button is-info is-small' : 'button pagination-link'}}"
             (click)="onFirst()">1</a></li>
         <li [hidden]='middlePg == 0'><span class="pagination-ellipsis">&hellip;</span></li>
         <li>
-          <button class="button is-rounded pagination-previous" (click)="onPrev()"
+          <button class="button pagination-previous" (click)="onPrev()"
             [disabled]="page === 1">{{ page ==1 ? '': page-1 }}&nbsp;<i class="fa fa-caret-left"
               aria-hidden="true"></i></button>
         </li>
-        <li [hidden]='page == 0'><a class="button is-rounded is-info is-small">{{page}}</a></li>
+        <li [hidden]='page == 0'><a class="button is-info is-small">{{page}}</a></li>
         <li>
-          <button class="button is-rounded pagination-next" (click)="onNext()" [disabled]="lastPage()"><i
+          <button class="button pagination-next" (click)="onNext()" [disabled]="lastPage()"><i
               class="fa fa-caret-right" aria-hidden="true"></i>&nbsp; {{ page == totalPage ? '' : page + 1 }}</button>
         </li>
         <li [hidden]='middlePg == 0'><span class="pagination-ellipsis">&hellip;</span></li>
         <li><a
-            class="{{(page === totalPage) ? 'button is-info is-small is-rounded' : 'button pagination-link is-rounded'}}"
+            class="{{(page === totalPage) ? 'button is-info is-small' : 'button pagination-link'}}"
             (click)="onLast()">{{totalPage}}</a></li>
       </ul>
     </div>

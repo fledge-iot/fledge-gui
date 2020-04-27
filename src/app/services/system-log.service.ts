@@ -15,8 +15,9 @@ export class SystemLogService {
   /**
    *  GET | fledge/syslog
    */
-  public getSysLogs(source: String, level: String) {
+  public getSysLogs(source: String, level: String, limit: Number = 0) {
     let params = new HttpParams();
+    params = params.set('limit', limit.toString());
     if (level.toString() !== '') {
       params = params.set('level', level.toString());
     }

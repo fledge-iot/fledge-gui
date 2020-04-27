@@ -3,8 +3,6 @@ import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, SystemLogService, PingService, SchedulesService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
-import Utils from '../../../utils';
-import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-system-log',
@@ -197,11 +195,15 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.getSysLogs();
   }
 
+  capitalizeInitialWord(s: string) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
   public getSysLogs() {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.source, this.level).
+    this.systemLogService.getSysLogs(this.source, this.level, this.limit).
       subscribe(
         (data) => {
           const logs = [];

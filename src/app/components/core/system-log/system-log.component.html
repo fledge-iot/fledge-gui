@@ -18,7 +18,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('dropdown')">
-                  <span>{{source == ''? "All": source}}</span>
+                  <span>{{source == ''? "All": (source == 'storage'? capitalizeInitialWord(source): source)}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -45,7 +45,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('level-dropdown')">
-                  <span>{{level == ''? "Info and above": level.toUpperCase()}}</span>
+                  <span>{{level == ''? "Info and above": capitalizeInitialWord(level) + ' and above'}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -53,13 +53,13 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'INFO')">
+                  <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'Info')">
                     Info and above
                   </a>
-                  <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'WARNING')">
+                  <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'Warning')">
                     Warning and above
                   </a>
-                  <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'ERROR')">
+                  <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'Error')">
                     Error and above
                   </a>
                 </div>
