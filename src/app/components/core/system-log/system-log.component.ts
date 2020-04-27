@@ -11,8 +11,8 @@ import { POLLING_INTERVAL } from '../../../utils';
 })
 export class SystemLogComponent implements OnInit, OnDestroy {
   public logs: any;
-  public source: String = '';
-  public level: String = '';
+  public source = '';
+  public level = '';
   public totalCount: any;
   DEFAULT_LIMIT = 20;
   limit = this.DEFAULT_LIMIT;
