@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { AlertService, SystemLogService, PingService, SchedulesService } from '../../../services';
+import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
 
 @Component({
@@ -31,6 +31,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
     private alertService: AlertService,
+    public ngProgress: ProgressBarService,
     private ping: PingService) {
       this.isAlive = true;
       this.ping.pingIntervalChanged
@@ -49,7 +50,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
-        this.getSysLogs();
+        this.getSysLogs(true);
         this.getSchedules();
       });
   }
@@ -202,13 +203,19 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-  public getSysLogs() {
+  public getSysLogs(autoRefresh = false) {
+    if (autoRefresh === false) {
+      this.ngProgress.start();
+    }
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
     this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.tempOffset).
       subscribe(
         (data) => {
+          if (autoRefresh === false) {
+            this.ngProgress.done();
+          }
           const logs = [];
           data['logs'].forEach(l => {
             let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
@@ -217,13 +224,15 @@ export class SystemLogComponent implements OnInit, OnDestroy {
             fl = fl.replace('EXCEPTION:', '<span class="tag is-danger tag-syslog">EXCEPTION:</span>');
             logs.push(fl);
           });
-
           this.logs = logs.reverse();
           this.totalCount = data['count'];
           this.recordCount = this.totalCount;
           this.totalPages();
         },
         error => {
+          if (autoRefresh === false) {
+            this.ngProgress.done();
+          }
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

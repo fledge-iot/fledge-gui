@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { AlertService, AuditService, PingService } from '../../../services';
+import { AlertService, AuditService, PingService, ProgressBarService } from '../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 
 @Component({
@@ -32,6 +32,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
 
   constructor(private auditService: AuditService,
     private alertService: AlertService,
+    public ngProgress: ProgressBarService,
     private ping: PingService) {
       this.isAlive = true;
       this.ping.pingIntervalChanged
@@ -50,7 +51,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
-        this.getAuditLogs();
+        this.getAuditLogs(true);
       });
   }
 
@@ -177,11 +178,11 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     this.getAuditLogs();
   }
 
-  public getAuditLogs(): void {
+  public getAuditLogs(autoRefresh = false): void {
     if (this.limit == null) {
       this.limit = 0;
     }
-    this.auditLogSubscriber();
+    this.auditLogSubscriber(autoRefresh);
   }
 
   public filterSource(type: string, code: string) {
@@ -201,22 +202,31 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     this.auditLogSubscriber();
   }
 
-  auditLogSubscriber() {
+  auditLogSubscriber(autoRefresh = false) {
     let sourceCode = this.source;
     if (this.source.length === 0) {
       const codes = this.logSourceList.map(s => s.code);
       sourceCode = codes.toString();
     }
+    if (autoRefresh === false) {
+      this.ngProgress.start();
+    }
     this.auditService.getAuditLogs(this.limit, this.tempOffset, sourceCode, this.severity)
     .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
+          if (autoRefresh === false) {
+            this.ngProgress.done();
+          }
           this.audit = data.audit.filter((log: any) => !(/NTF/.test(log.source)));
           this.totalCount = data.totalCount;
           this.recordCount = this.totalCount;
           this.totalPages();
         },
         error => {
+          if (autoRefresh === false) {
+            this.ngProgress.done();
+          }
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
