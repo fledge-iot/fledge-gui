@@ -58,7 +58,7 @@
               </div>
             </div>
           </div>
-          <div class="column">
+          <div class="column" *ngIf="notificationLogs?.length > 0">
             <label class="label is-small">Search</label>
             <input #nameField type="text" class="input is-fullwidth is-small" placeholder="Name"
               [(ngModel)]="searchTerm" />
@@ -66,7 +66,7 @@
         </div>
       </div>
       <ng-container *ngIf="notificationLogs?.length > 0; else no_data_div">
-        <table class="table is-narrow is-responsive is-hoverable" cellpadding="0" cellspacing="0">
+        <table *ngIf="(notificationLogs | SearchPipe: searchTerm)?.length !== 0" class="table is-narrow is-responsive is-hoverable" cellpadding="0" cellspacing="0">
           <thead>
             <tr>
               <th>Timestamp</th>
@@ -86,15 +86,20 @@
             </tr>
           </tbody>
         </table>
-        <div>
+        <div *ngIf="(notificationLogs | SearchPipe: searchTerm)?.length !== 0; else no_matching_entry">
           <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount'
             (onRangeChange)="resetLimitPerPage($event)" (goPrev)="onPrev()" (goNext)="onNext()" (goFirst)="onFirst()"
             (goLast)="onLast()" (goPage)="goToPage($event)">
           </app-pagination>
         </div>
       </ng-container>
+      <ng-template #no_matching_entry>
+        <div class="card-content">
+          <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No Matching Log Entry Found</small></div>
+        </div>
+      </ng-template>
       <ng-template #no_data_div>
-        <div class="has-text-centered"><small class="text-secondary"> No Notification Logs Found </small></div>
+        <div class="has-text-centered"><small class="text-secondary has-text-grey-light"> No Notification Logs Found </small></div>
       </ng-template>
     </div>
   </div>

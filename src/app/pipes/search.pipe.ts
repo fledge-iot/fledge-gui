@@ -7,7 +7,11 @@ export class SearchPipe implements PipeTransform {
     if (searchText) {
       searchText = searchText.toLowerCase();
       return items.filter((item: any) => {
-        return item.toLowerCase().indexOf(searchText) > -1;
+        if (items && items[0].details) {
+          return item.details.name.toLowerCase().indexOf(searchText) > -1;
+        } else {
+          return item.toLowerCase().indexOf(searchText) > -1;
+        }
       });
     }
     return items;
