@@ -18,7 +18,7 @@ export class SystemLogService {
   public getSysLogs(source: String, level: String, limit: Number = 0, offset: Number = 0) {
     let params = new HttpParams();
     params = params.set('limit', limit.toString());
-    params = params.set('skip', offset.toString());
+    params = params.set('offset', offset.toString());
     if (level.toString() !== '') {
       params = params.set('level', level.toString());
     }

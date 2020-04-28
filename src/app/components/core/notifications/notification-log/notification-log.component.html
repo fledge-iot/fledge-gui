@@ -58,9 +58,9 @@
               </div>
             </div>
           </div>
-          <div class="column" *ngIf="notificationLogs?.length > 0">
+          <div class="column">
             <label class="label is-small">Search</label>
-            <input #nameField type="search" class="input is-fullwidth is-small" placeholder="Name"
+            <input [disabled]="notificationLogs?.length < 2" #nameField type="search" class="input is-fullwidth is-small" placeholder="search text by name"
               [(ngModel)]="searchTerm" />
           </div>
         </div>
