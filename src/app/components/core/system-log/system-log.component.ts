@@ -1,33 +1,92 @@
-import { Component, OnInit } from '@angular/core';
-
-import { AlertService, SystemLogService, ProgressBarService } from '../../../services';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { interval, Subject } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
+import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../services';
+import { POLLING_INTERVAL } from '../../../utils';
 
 @Component({
   selector: 'app-system-log',
   templateUrl: './system-log.component.html',
   styleUrls: ['./system-log.component.css']
 })
-export class SystemLogComponent implements OnInit {
+export class SystemLogComponent implements OnInit, OnDestroy {
   public logs: any;
-  public source: String = '';
-  public level: String = '';
+  public source = '';
+  public level = '';
   public totalCount: any;
   DEFAULT_LIMIT = 50;
   limit = this.DEFAULT_LIMIT;
-  offset = 0;
+  public isAlive: boolean;
+  public scheduleData = [];
+
+  public refreshInterval = POLLING_INTERVAL;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   page = 1;
   recordCount = 0;
   tempOffset = 0;
   totalPagesCount = 0;
+  searchTerm = '';
 
   constructor(private systemLogService: SystemLogService,
+    private schedulesService: SchedulesService,
     private alertService: AlertService,
-    public ngProgress: ProgressBarService
-  ) { }
+    public ngProgress: ProgressBarService,
+    private ping: PingService) {
+      this.isAlive = true;
+      this.ping.pingIntervalChanged
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((timeInterval: number) => {
+          if (timeInterval === -1) {
+            this.isAlive = false;
+          }
+          this.refreshInterval = timeInterval;
+        });
+    }
 
   ngOnInit() {
     this.getSysLogs();
+    this.getSchedules();
+    interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getSysLogs(true);
+        this.getSchedules();
+      });
+  }
+
+  public getSchedules(): void {
+    this.scheduleData = [];
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          const south_c = [];
+          const notification_c = [];
+          const north_c = [];
+          const north = [];
+          data.schedules.forEach(sch => {
+            if ('south_c'.includes(sch.processName)) {
+              south_c.push(sch);
+            }
+            if ('notification_c'.includes(sch.processName)) {
+              notification_c.push(sch);
+            }
+            if ('north_c'.includes(sch.processName)) {
+              north_c.push(sch);
+            }
+            if ('north'.includes(sch.processName)) {
+              north.push(sch);
+            }
+          });
+          this.scheduleData = south_c.concat(notification_c, north_c, north);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
@@ -65,7 +124,6 @@ export class SystemLogComponent implements OnInit {
     this.limit = 0;
     if (this.page !== 1) {
       this.page = 1;
-      this.tempOffset = this.offset;
     }
     if (limit === '' || limit === 0 || limit === null || limit === undefined) {
       limit = this.DEFAULT_LIMIT;
@@ -83,9 +141,6 @@ export class SystemLogComponent implements OnInit {
     if (offset === null || offset === undefined) {
       offset = 0;
     }
-    this.offset = offset;
-    console.log('Offset: ', this.offset);
-    this.tempOffset = offset;
     this.totalPages();
     this.getSysLogs();
   }
@@ -114,11 +169,7 @@ export class SystemLogComponent implements OnInit {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    if (this.offset > 0) {
-      this.tempOffset = (((this.page) - 1) * this.limit) + this.offset;
-    } else {
-      this.tempOffset = ((this.page) - 1) * this.limit;
-    }
+    this.tempOffset = (((this.page) - 1) * this.limit);
     this.getSysLogs();
   }
 
@@ -135,31 +186,36 @@ export class SystemLogComponent implements OnInit {
 
   public filterData(filter: string, value: string) {
     this.limit = 0;
-    this.offset = 0;
     this.tempOffset = 0;
     this.recordCount = 0;
     if (this.page !== 1) {
       this.page = 1;
     }
     if (filter === 'source') {
-      this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim().toLowerCase();
+      this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim();
     } else {
       this.level = value.trim().toLowerCase() === 'info' ? '' : value.trim().toLowerCase();
     }
     this.getSysLogs();
   }
 
-  public getSysLogs() {
-    /** request started */
-    this.ngProgress.start();
+  capitalizeInitialWord(s: string) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+  public getSysLogs(autoRefresh = false) {
+    if (autoRefresh === false) {
+      this.ngProgress.start();
+    }
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.limit, this.tempOffset, this.source, this.level).
+    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.tempOffset).
       subscribe(
         (data) => {
-          /** request completed */
-          this.ngProgress.done();
+          if (autoRefresh === false) {
+            this.ngProgress.done();
+          }
           const logs = [];
           data['logs'].forEach(l => {
             let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
@@ -168,25 +224,26 @@ export class SystemLogComponent implements OnInit {
             fl = fl.replace('EXCEPTION:', '<span class="tag is-danger tag-syslog">EXCEPTION:</span>');
             logs.push(fl);
           });
-
           this.logs = logs.reverse();
           this.totalCount = data['count'];
-          // console.log('System Logs', this.logs, 'Total count', this.totalCount);
-          if (this.offset !== 0) {
-            this.recordCount = this.totalCount - this.offset;
-          } else {
-            this.recordCount = this.totalCount;
-          }
+          this.recordCount = this.totalCount;
           this.totalPages();
         },
         error => {
-          /** request completed */
-          this.ngProgress.done();
+          if (autoRefresh === false) {
+            this.ngProgress.done();
+          }
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
