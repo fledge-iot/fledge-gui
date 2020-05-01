@@ -2,8 +2,8 @@
   <nav class="navbar pagination columns is-small is-right" role="navigation" aria-label="pagination">
     <div class="column is-4">
       <div *ngIf="count > 10" class="select is-pulled-left">
-        <select (change)="setPagination($event.target.value.substring(0, 2))">
-          <option *ngFor="let range of paginationRange" [selected]="range === perPage">
+        <select (change)="setPagination($event.target.value)">
+          <option *ngFor="let range of paginationRange" [value]="range" [selected]="range === perPage">
             {{range}} Per Page</option>
         </select>
       </div>
