@@ -22,7 +22,7 @@ export class PaginationComponent implements OnInit, OnChanges {
 
   middlePg: any;
 
-  paginationRange = ['10 Per Page', '20 Per Page', '30 Per Page', '50 Per Page'];
+  paginationRange = [10, 20, 30, 50];
 
   constructor() { }
 
@@ -33,12 +33,8 @@ export class PaginationComponent implements OnInit, OnChanges {
   }
 
   setPagination(value) {
-    this.perPage = this.changeStringToNumber(value);
+    this.perPage = value;
     this.onRangeChange.emit(this.perPage);
-  }
-
-  changeStringToNumber(value) {
-    return Number(value.substring(0, 2));
   }
 
   onPage(n: number): void {
