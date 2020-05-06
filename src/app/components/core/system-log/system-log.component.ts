@@ -221,6 +221,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
             let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
             fl = fl.replace('WARNING:', '<span class="tag is-warning tag-syslog">WARNING:</span>');
             fl = fl.replace('ERROR:', '<span class="tag is-danger tag-syslog">ERROR:</span>');
+            fl = fl.replace('FATAL:', '<span class="tag is-danger tag-syslog">FATAL:</span>');
             fl = fl.replace('EXCEPTION:', '<span class="tag is-danger tag-syslog">EXCEPTION:</span>');
             logs.push(fl);
           });
