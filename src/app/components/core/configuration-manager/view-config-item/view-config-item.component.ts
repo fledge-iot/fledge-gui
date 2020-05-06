@@ -416,7 +416,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
           config.forEach(el => {
             const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
             if (regex.test(data[k].validityExpression)) {
-              data[k].validityExpression = data[k].validityExpression.replace(`${el.key}`, `"${el.value}"`);
+              data[k].validityExpression = data[k].validityExpression.split(`${el.key}`).join(`"${el.value}"`);
             }
           });
         }
@@ -429,11 +429,13 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
               try {
                 // tslint:disable-next-line: no-eval
                 const e = eval(data[k].validityExpression);
+                // console.log('Validity expression', data[k].validityExpression)
                 if (typeof (e) !== 'boolean') {
                   console.log('Validity expression', data[k].validityExpression, 'for', k, 'evlauted to non-boolean value ', e);
                 }
                 data[k].editable = e === false ? false : true;
               } catch (e) {
+                console.log(e)
                 data[k].editable = true;
               }
             }
@@ -466,7 +468,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
           const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
           if (regex.test(expression)) {
             expression = expression
-              .replace(new RegExp(`${el.key.trim()}+(?=.*=)`), `"${el.value !== undefined ? el.value : el.default}"`);
+              .split(new RegExp(`${el.key.trim()}+(?=.*=)`)).join(`"${el.value !== undefined ? el.value : el.default}"`);
           }
         });
         cnf.validityExpression = expression;
