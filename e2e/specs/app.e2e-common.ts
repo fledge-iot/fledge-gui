@@ -50,21 +50,15 @@ describe('Fledge gui', () => {
     it('Should Display Audits Logs', () => {
       skipLogin.navToAuditLogs();
       expect(skipLogin.getAuditLogsTitle()).toEqual('Audit Logs');
-      expect(skipLogin.auditLogCount()).toContain('Count');
-      expect(skipLogin.isAuditLogRefreshIcon()).toEqual(true);
       expect(skipLogin.isAuditLogsSourceDropdownPresent()).toEqual(true);
       expect(skipLogin.isAuditLogsSeverityDropdownPresent()).toEqual(true);
-      expect(skipLogin.getAuditLogsInputTag()).toEqual(2);
     });
 
     it('Should Display System Logs', () => {
       skipLogin.navToSystemLogs();
       expect(skipLogin.getSystemLogTitle()).toEqual('System Logs');
-      expect(skipLogin.systemLogCount()).toContain('Count');
-      expect(skipLogin.getSysLogRefreshButton()).toEqual(true);
       expect(skipLogin.isSystemLogDropDownPresent()).toEqual(true);
       expect(skipLogin.isSystemLogLevelDropdownPresent()).toEqual(true);
-      expect(skipLogin.getSystemLogInputTag()).toEqual(2);
     });
 
     it('Should Display Scheduled Tasks', () => {

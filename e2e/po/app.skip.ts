@@ -117,16 +117,6 @@ export class SkipLogin {
     return element(by.css('#card-title .card-header-title')).getText();
   }
 
-  isAuditLogRefreshIcon() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-sync')).isDisplayed();
-  }
-
-  auditLogCount() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .card-subtitle small')).getText();
-  }
-
   isAuditLogsSourceDropdownPresent() {
     browser.ignoreSynchronization = true;
     return element(by.css('.card #dropdown')).isDisplayed();
@@ -135,11 +125,6 @@ export class SkipLogin {
   isAuditLogsSeverityDropdownPresent() {
     browser.ignoreSynchronization = true;
     return element(by.css('.card #severity-dropdown')).isDisplayed();
-  }
-
-  getAuditLogsInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-audit-log input')).count();
   }
 
   navToSystemLogs() {
@@ -151,16 +136,6 @@ export class SkipLogin {
     return element(by.css('#card-title .card-header-title')).getText();
   }
 
-  getSysLogRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .fa.fa-sync')).isDisplayed();
-  }
-
-  systemLogCount() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .card-subtitle small')).getText();
-  }
-
   isSystemLogDropDownPresent() {
     browser.ignoreSynchronization = true;
     return element(by.css('#dropdown')).isDisplayed();
@@ -169,11 +144,6 @@ export class SkipLogin {
   isSystemLogLevelDropdownPresent() {
     browser.ignoreSynchronization = true;
     return element(by.css('#level-dropdown')).isDisplayed();
-  }
-
-  getSystemLogInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-system-log input')).count();
   }
 
   navigateToConfig() {
