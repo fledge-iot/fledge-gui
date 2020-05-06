@@ -59,6 +59,7 @@ describe('Fledge gui', () => {
       expect(skipLogin.getSystemLogTitle()).toEqual('System Logs');
       expect(skipLogin.isSystemLogDropDownPresent()).toEqual(true);
       expect(skipLogin.isSystemLogLevelDropdownPresent()).toEqual(true);
+      expect(skipLogin.getSystemLogInputTag()).toEqual(1);
     });
 
     it('Should Display Scheduled Tasks', () => {

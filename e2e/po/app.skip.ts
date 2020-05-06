@@ -174,6 +174,11 @@ export class SkipLogin {
     return element(by.css('app-list-schedules .card-header .button.is-light')).getText();
   }
 
+  getSystemLogInputTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-system-log input')).count();
+  }
+
   closeAlert() {
     browser.ignoreSynchronization = true;
     element(by.css('#alert > button.delete')).click();
