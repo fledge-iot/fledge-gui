@@ -146,6 +146,11 @@ export class SkipLogin {
     return element(by.css('#level-dropdown')).isDisplayed();
   }
 
+  getSystemLogInputTag() {
+    browser.ignoreSynchronization = true;
+    return element.all(by.css('app-system-log input')).count();
+  }
+
   navigateToConfig() {
     return browser.get('/#/configuration');
   }
@@ -172,11 +177,6 @@ export class SkipLogin {
   getCreateScheduleButton() {
     browser.ignoreSynchronization = true;
     return element(by.css('app-list-schedules .card-header .button.is-light')).getText();
-  }
-
-  getSystemLogInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-system-log input')).count();
   }
 
   closeAlert() {
