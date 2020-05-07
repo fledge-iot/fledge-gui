@@ -42,9 +42,9 @@
                         <input #pwd (click)="showConfirmPassword()" (focus)="showConfirmPassword()"
                           (input)="checkValidityOnChange(configItem.value.key, $event.target.value)" name="{{configItem.value.key}}"
                           class="input is-fullwidth is-small" type="password" onPaste="return false"
-                          (focus)="pwd.value='';passwordMatched=false;" [ngModel]="setConfigValue(configItem.value)"
+                          (focus)="pwd.value='';onPasswordFocus(configItem.value.key, false)" [ngModel]="setConfigValue(configItem.value)"
                           [attr.maxLength]="configItem?.value?.length" placeholder="password"
-                          (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)"
+                          (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value, configItem.value.key)"
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </div>
                       <div class="control" *ngIf="configItem?.value?.hasOwnProperty('editable') && configItem?.value?.editable">
@@ -64,11 +64,11 @@
                               [value]='setConfigValue(confirmPwd.value)' [attr.maxLength]="configItem?.value?.length"
                               placeholder="confirm password"
                               [hidden]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
-                              (ngModelChange)="checkPasswords(pwd.nativeElement.value, confirmPwd.value)" />
+                              (ngModelChange)="checkPasswords(f?.controls[configItem.value.key]?.value, confirmPwd.value, configItem.value.key)" />
                           </div>
                         </div>
                       </div>
-                      <p *ngIf="!passwordMatched" class="help is-danger">
+                      <p *ngIf="passwordMatched.value == false && passwordMatched.key === configItem.value.key" class="help is-danger">
                         <sup>*</sup>Password mismatch</p>
                     </div>
 

@@ -47,7 +47,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(NgForm, { static: false }) form;
 
   public passwordOnChangeFired = false;
-  public passwordMatched = true;
+  public passwordMatched = {
+    key: '',
+    value: false
+  };
 
   public JSON;
 
@@ -135,12 +138,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   public saveConfiguration(form: NgForm) {
     this.isValidForm = true;
-    if (!form.valid || !this.passwordMatched) {
+    if (!form.valid || this.passwordMatched.value === false) {
       this.isValidForm = false;
       return;
     }
 
-    if (this.passwordMatched) {
+    if (this.passwordMatched.value === true) {
       this.passwordOnChangeFired = false;
       form.control.removeControl('confirm-password');
     }
@@ -383,14 +386,18 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     this.passwordOnChangeFired = true;
   }
 
+  onPasswordFocus(key, value) {
+    this.passwordMatched = { key, value };
+  }
+
   togglePassword(input: any): any {
     input.type = input.type === 'password' ? 'text' : 'password';
   }
 
-  checkPasswords(password: string, confirmPassword: string) {
-    this.passwordMatched = true;
+  checkPasswords(password: string, confirmPassword: string, key) {
+    this.passwordMatched = { key: key, value: true };
     if (password !== confirmPassword) {
-      this.passwordMatched = false;
+      this.passwordMatched = { key: key, value: false };
     }
   }
 
@@ -435,7 +442,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
                 }
                 data[k].editable = e === false ? false : true;
               } catch (e) {
-                console.log(e)
+                console.log(e);
                 data[k].editable = true;
               }
             }
@@ -449,7 +456,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
       this.categoryConfiguration.map(obj => {
         if (obj.type === 'password' && obj.editable === false) {
-          this.passwordMatched = true;
+          this.passwordMatched = { key: obj.key, value: true };
         }
       });
     }
@@ -498,8 +505,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
     this.categoryConfiguration.map(obj => {
-      if (obj.type === 'password' && obj.editable === false) {
-        this.passwordMatched = true;
+      if (obj.type === 'password' && obj.editable === false && obj.key === key) {
+        this.passwordMatched = { key: obj.key, value: true };
       }
     });
   }
