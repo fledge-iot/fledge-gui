@@ -30,9 +30,10 @@
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                       [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                     <ng-container *ngSwitchCase="'RAW_TEXT'">
-                      <ngx-codemirror name="{{configItem.value.key}}"
-                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true" (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
-                        [ngModel]="setConfigValue(configItem.value)" [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                      <ngx-codemirror name="{{configItem.value.key}}" [options]="setEditorConfig(configItem.value.type)"
+                        [autoFocus]="true" (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                        [ngModel]="setConfigValue(configItem.value)"
+                        [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </ngx-codemirror>
@@ -40,14 +41,15 @@
                     <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
                       <div class="control">
                         <input #pwd (click)="showConfirmPassword()" (focus)="showConfirmPassword()"
-                          (input)="checkValidityOnChange(configItem.value.key, $event.target.value)" name="{{configItem.value.key}}"
-                          class="input is-fullwidth is-small" type="password" onPaste="return false"
-                          (focus)="pwd.value='';passwordMatched=false;" [ngModel]="setConfigValue(configItem.value)"
-                          [attr.maxLength]="configItem?.value?.length" placeholder="password"
-                          (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value)"
+                          name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
+                          onPaste="return false" (focus)="pwd.value='';onPasswordFocus(configItem.value.key, false)"
+                          [ngModel]="setConfigValue(configItem.value)" [attr.maxLength]="configItem?.value?.length"
+                          placeholder="password"
+                          (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value, configItem.value.key)"
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </div>
-                      <div class="control" *ngIf="configItem?.value?.hasOwnProperty('editable') && configItem?.value?.editable">
+                      <div class="control"
+                        *ngIf="configItem?.value?.hasOwnProperty('editable') && configItem?.value?.editable">
                         <a class="button is-small">
                           <span class="icon is-small" (click)="togglePassword(pwd)">
                             <i class="{{pwd.type === 'password'? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
@@ -55,7 +57,8 @@
                         </a>
                       </div>
                     </div>
-                    <div class="field" *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD' && passwordOnChangeFired">
+                    <div class="field"
+                      *ngIf="getConfigAttributeType(configItem.value.type) === 'PASSWORD' && passwordOnChangeFired">
                       <div class="control">
                         <div id="confirm-password" class="field has-addons">
                           <div class="control">
@@ -64,12 +67,16 @@
                               [value]='setConfigValue(confirmPwd.value)' [attr.maxLength]="configItem?.value?.length"
                               placeholder="confirm password"
                               [hidden]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
-                              (ngModelChange)="checkPasswords(pwd.nativeElement.value, confirmPwd.value)" />
+                              (ngModelChange)="checkPasswords(f?.controls[configItem.value.key]?.value, confirmPwd.value, configItem.value.key)" />
                           </div>
                         </div>
                       </div>
-                      <p *ngIf="!passwordMatched" class="help is-danger">
-                        <sup>*</sup>Password mismatch</p>
+                      <ng-container *ngIf="configItem?.value?.hasOwnProperty('editable') &&
+                      configItem?.value?.editable">
+                        <p *ngIf="passwordMatched.value == false &&
+                      passwordMatched.key === configItem.value.key" class="help is-danger">
+                          <sup>*</sup>Password mismatch</p>
+                      </ng-container>
                     </div>
 
                     <input *ngSwitchCase="'INTEGER'" name="{{configItem.value.key}}" type="number"
@@ -93,15 +100,19 @@
                     <ng-container *ngSwitchCase="'LONG_TEXT'">
                       <ngx-codemirror #jsoneditor name="{{configItem.value.key}}"
                         [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true" [jsonValue]="isValidJson"
-                        [ngModel]="JSON.parse(setConfigValue(configItem.value)) | json " (ngModelChange)="checkValidJson(configItem.value.key, jsoneditor.value)">
+                        [ngModel]="JSON.parse(setConfigValue(configItem.value)) | json "
+                        (ngModelChange)="checkValidJson(configItem.value.key, jsoneditor.value)">
                       </ngx-codemirror>
                     </ng-container>
 
                     <div *ngSwitchCase="'SCRIPT'">
-                      <ngx-codemirror [ngClass]="{'readonly-editor': !isFileUploaded, 'dark-bg-color': !isFileUploaded && selectedTheme === 'darcula'}" name="{{configItem.value.key}}"
-                        [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true"
-                        (ngModelChange)="getFileName(configItem?.value?.file)" (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
-                        [ngModel]="fileContent || setConfigValue(configItem.value)" [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)"
+                      <ngx-codemirror
+                        [ngClass]="{'readonly-editor': !isFileUploaded, 'dark-bg-color': !isFileUploaded && selectedTheme === 'darcula'}"
+                        name="{{configItem.value.key}}" [options]="setEditorConfig(configItem.value.type)"
+                        [autoFocus]="true" (ngModelChange)="getFileName(configItem?.value?.file)"
+                        (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                        [ngModel]="fileContent || setConfigValue(configItem.value)"
+                        [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
                         {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
                       </ngx-codemirror>
@@ -137,7 +148,7 @@
                       [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                   </div>
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('required')" class="help is-danger">
-                      <sup>*</sup>required
+                    <sup>*</sup>required
                   </span>
                   <span *ngIf="f?.controls[configItem.value.key]?.hasError('minValue')" class="help is-danger">
                     <sup>*</sup>Value should not be less than {{configItem?.value?.minimum}}.
