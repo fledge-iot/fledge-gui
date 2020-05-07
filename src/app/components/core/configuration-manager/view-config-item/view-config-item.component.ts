@@ -49,7 +49,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public passwordOnChangeFired = false;
   public passwordMatched = {
     key: '',
-    value: false
+    value: true
   };
 
   public JSON;
