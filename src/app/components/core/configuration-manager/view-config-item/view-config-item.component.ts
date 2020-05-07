@@ -505,7 +505,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
     this.categoryConfiguration.map(obj => {
-      if (obj.type === 'password' && obj.editable === false && obj.key === key) {
+      if (obj.type === 'password' && obj.editable === false) {
         this.passwordMatched = { key: obj.key, value: true };
       }
     });
