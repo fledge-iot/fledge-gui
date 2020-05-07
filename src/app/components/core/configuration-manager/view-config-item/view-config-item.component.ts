@@ -463,7 +463,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   checkValidityOnChange(key: string, configValue: string) {
-
     this.categoryConfiguration.forEach(cnf => {
       if (cnf.hasOwnProperty('validity')) {
         let expression = cnf.validity;
@@ -504,6 +503,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     });
+
     this.categoryConfiguration.map(obj => {
       if (obj.type === 'password' && obj.editable === false) {
         this.passwordMatched = { key: obj.key, value: true };
