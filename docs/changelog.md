@@ -8,11 +8,11 @@
 * Log link in alert for packages logs
 * Support for mandatory attribute of config item
 * Better control to Add, Enable / Disable the Notification Service
+* Filtering by service and task in System logs page, and local search facility
 
 #### Changed
 * Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
-* Improved Notification logs
-* Improved audit log page
+* Improved Notification and Audit Logs
 
 #### Fixed 
 * Fixed deletion of filter from pipeline on north instances
