@@ -1,4 +1,4 @@
-## v1.7.0next [2020-xx-xx]
+## v1.8.0 [2020-05-08]
 
 #### Added
 * Python editor with light and dark mode support for `script` & `code` types
@@ -12,6 +12,7 @@
 #### Changed
 * Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
 * Improved Notification logs
+* Improved audit log page
 
 #### Fixed 
 * Fixed deletion of filter from pipeline on north instances
