@@ -21,7 +21,7 @@
 
 set -e
 
-__version__="1.8.0"
+__version__="1.8.0next"
 if [ -f "package.json" ];
   then
 	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
@@ -166,7 +166,7 @@ install () {
   # sudo sed -i 's/dist/\/usr\/share\/nginx\/html/g' ${DOC_ROOT}/nginx.conf
   sudo cp ${DOC_ROOT}/fledge.html ${DOC_ROOT}/index.html
   restorecon -v ${DOC_ROOT}/* | grep fledge.html
-  
+
   sudo systemctl start nginx
   sudo systemctl status nginx | grep "Active:"
 
