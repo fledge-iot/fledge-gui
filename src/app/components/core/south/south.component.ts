@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
-import { takeWhile } from 'rxjs/operators';
-import { interval, Subscription } from 'rxjs';
+import { takeWhile, takeUntil } from 'rxjs/operators';
+import { interval, Subscription, Subject } from 'rxjs';
 
 import { PingService, ServicesApiService, ProgressBarService, SharedService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
@@ -28,6 +28,8 @@ export class SouthComponent implements OnInit, OnDestroy {
   @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
   @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private servicesApiService: ServicesApiService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
@@ -35,40 +37,45 @@ export class SouthComponent implements OnInit, OnDestroy {
     private ping: PingService,
     private sharedService: SharedService) {
     this.isAlive = true;
-    this.ping.pingIntervalChanged.subscribe((timeInterval: number) => {
-      if (timeInterval === -1) {
-        this.isAlive = false;
-      }
-      this.refreshSouthboundServiceInterval = timeInterval;
-    });
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.refreshSouthboundServiceInterval = timeInterval;
+      });
   }
 
   ngOnInit() {
     this.showLoadingSpinner();
     this.getSouthboundServices(false);
     interval(this.refreshSouthboundServiceInterval)
-      .pipe(takeWhile(() => this.isAlive)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getSouthboundServices(true);
       });
-      this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
-      if (showPackageLogs.isSubscribed) {
-        // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
-        // if (closeBtn) {
-        //   closeBtn.click();
-        // }
-        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
-        showPackageLogs.isSubscribed = false;
-      }
-    });
-    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
-      this.viewPort = viewport;
-    });
+    this.subscription = this.sharedService.showLogs
+      .subscribe(showPackageLogs => {
+        if (showPackageLogs.isSubscribed) {
+          // const closeBtn = <HTMLDivElement>document.querySelector('.modal .delete');
+          // if (closeBtn) {
+          //   closeBtn.click();
+          // }
+          this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+          showPackageLogs.isSubscribed = false;
+        }
+      });
+    this.viewPortSubscription = this.sharedService.viewport
+      .subscribe(viewport => {
+        this.viewPort = viewport;
+      });
   }
 
   public getSouthboundServices(caching: boolean) {
-    this.servicesApiService.getSouthServices(caching).
-      subscribe(
+    this.servicesApiService.getSouthServices(caching)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data: any) => {
           this.southboundServices = data['services'];
           this.southboundServices = sortBy(this.southboundServices, function (svc) {
@@ -115,5 +122,7 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.isAlive = false;
     this.subscription.unsubscribe();
     this.viewPortSubscription.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, HostListener, Input, OnChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { User } from '../../../../models';
@@ -9,18 +9,18 @@ import { AlertService, UserService } from '../../../../services';
   templateUrl: './create-user.component.html',
   styleUrls: ['./create-user.component.css']
 })
-export class CreateUserComponent implements OnInit {
+export class CreateUserComponent implements OnInit, OnChanges {
   model: User;
   isUpdateForm = false;
   userRole = [];
   selectedRole = 'user'; // set "user" as a default role
+  @Input() userRoles: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private userService: UserService,
     private alertService: AlertService) { }
 
   ngOnInit() {
-    this.getRole();
     this.model = {
       userId: 0,
       username: '',
@@ -28,6 +28,10 @@ export class CreateUserComponent implements OnInit {
       confirmPassword: '',
       role_id: 2   // set "user" as a default role
     };
+  }
+
+  ngOnChanges(): void {
+    this.userRole = this.userRoles;
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -72,24 +76,9 @@ export class CreateUserComponent implements OnInit {
         });
   }
 
-  getRole() {
-    this.userService.getRole()
-      .subscribe(
-        (roleRecord) => {
-          this.userRole = roleRecord['roles'];
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
   public resetCreateUserForm(form: NgForm) {
     form.resetForm();
-    this.getRole();
+    this.selectedRole = 'user';
   }
 
   setRole(role: any) {

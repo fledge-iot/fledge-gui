@@ -46,6 +46,7 @@ table.scroll tbody {
 
 .fixed-overflow {
   overflow-x: hidden;
+  height: 100%;
 }
 
 .sidebar {
@@ -198,11 +199,19 @@ table.scroll tbody {
   table.scroll {
     max-height: 72vh;
   }
+
+  .page-container {
+    min-height: 93%;
+  }
 }
 
 @media screen and (min-height: 800px) and (max-height: 955px) {
   table.scroll {
     max-height: 70vh;
+  }
+
+  .page-container {
+    min-height: 92%;
   }
 }
 
@@ -210,15 +219,38 @@ table.scroll tbody {
   table.scroll {
     max-height: 62vh;
   }
+
+  .page-container {
+    min-height: 89%;
+  }
 }
 
 @media screen and (max-height: 600px) {
   table.scroll {
     max-height: 49vh;
   }
+
+  .page-container {
+    min-height: 87%;
+  }
 }
 
+.page-container {
+  margin-bottom: -144px; 
+}
 
+.page-container:after {
+  content: "";
+  display: block;
+}
+
+.footer, .page-container:after {
+  height: 144px; 
+}
+
+.footer {
+  padding: 6rem 1.5rem 6rem !important;
+}
 
 /**
 Custom css for bulma dropdown

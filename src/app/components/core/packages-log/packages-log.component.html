@@ -5,41 +5,46 @@
         <p class="card-header-title">Package Logs
           <button (click)="getPackagesLog()" class="button is-small" id="refresh-check">
             <i class="fa fa-sync" aria-hidden="true"></i>
-          </button>  
+          </button>
         </p>
       </div>
     </header>
     <div class="card-content">
-      <table class="table is-striped is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let log of logList">
-            <td style="vertical-align: middle;">
-              <small>
-                {{ log.timestamp }}
-              </small>
-            </td>
-            <td style="vertical-align: middle;">
-              {{ log.name ? log.name : '' }}
-            </td>
-            <td style="vertical-align: middle;">
-              <a (click)="showLogs(log.filename)" class="button is-text">
-                view
-              </a>
-            </td>
-            <td style="vertical-align: middle;">
-              <a (click)="downloadLogs(log.filename)" class="button is-text">
-                download
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <ng-container *ngIf="logList?.length > 0; else no_data_div">
+        <table class="table is-striped is-narrow scroll is-responsive is-hoverable" cellpadding="0" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of logList">
+              <td style="vertical-align: middle;">
+                <small>
+                  {{ log.timestamp }}
+                </small>
+              </td>
+              <td style="vertical-align: middle;">
+                {{ log.name ? log.name : '' }}
+              </td>
+              <td style="vertical-align: middle;">
+                <a (click)="showLogs(log.filename)" class="button is-text">
+                  view
+                </a>
+              </td>
+              <td style="vertical-align: middle;">
+                <a (click)="downloadLogs(log.filename)" class="button is-text">
+                  download
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+      <ng-template #no_data_div>
+        <div class="has-text-centered"><small class="text-secondary has-text-grey-light"> No Package Logs Found</small></div>
+      </ng-template>
     </div>
   </div>
 </div>

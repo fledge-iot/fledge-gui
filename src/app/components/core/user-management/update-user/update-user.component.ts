@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, HostListener, Input, OnChanges } from '@angular/core';
 
 import { User } from '../../../../models';
 import { AlertService, UserService } from '../../../../services';
@@ -8,10 +8,12 @@ import { AlertService, UserService } from '../../../../services';
   templateUrl: './update-user.component.html',
   styleUrls: ['./update-user.component.css']
 })
-export class UpdateUserComponent implements OnInit {
+export class UpdateUserComponent implements OnInit, OnChanges {
   public userRecord: User;
   userRole = [];
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+  @Input() userRoles: any;
+
   showRoleSection = false;
   selectedRole = 'user'; // set "user" as a default role
 
@@ -23,7 +25,6 @@ export class UpdateUserComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getRole();
     this.userRecord = {
       userId: 0,
       username: '',
@@ -32,6 +33,12 @@ export class UpdateUserComponent implements OnInit {
       role_id: 0   // set "user" as a default role
     };
   }
+
+  ngOnChanges(): void {
+    this.userRole = this.userRoles;
+  }
+
+
 
   /**
    * TO get data from parent component
@@ -66,24 +73,6 @@ export class UpdateUserComponent implements OnInit {
     if (activeDropDown.length > 0) {
       activeDropDown[0].classList.remove('is-active');
     }
-  }
-
-  /**
-   *  Get all roles
-   */
-  getRole() {
-    this.userService.getRole()
-      .subscribe(
-        (roleRecord) => {
-          this.userRole = roleRecord['roles'];
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
   }
 
   /**

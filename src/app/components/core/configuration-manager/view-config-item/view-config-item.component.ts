@@ -47,7 +47,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(NgForm, { static: false }) form;
 
   public passwordOnChangeFired = false;
-  public passwordMatched = true;
+  public passwordMatched = {
+    key: '',
+    value: true
+  };
 
   public JSON;
 
@@ -135,12 +138,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   public saveConfiguration(form: NgForm) {
     this.isValidForm = true;
-    if (!form.valid || !this.passwordMatched) {
+    if (!form.valid || this.passwordMatched.value === false) {
       this.isValidForm = false;
       return;
     }
 
-    if (this.passwordMatched) {
+    if (this.passwordMatched.value === true) {
       this.passwordOnChangeFired = false;
       form.control.removeControl('confirm-password');
     }
@@ -191,7 +194,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       return true;
     } catch (e) {
       this.isValidJson = false;
-      this.form.controls[key].setErrors({'jsonValue': true});
+      this.form.controls[key].setErrors({ 'jsonValue': true });
       return false;
     }
   }
@@ -383,14 +386,18 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     this.passwordOnChangeFired = true;
   }
 
+  onPasswordFocus(key, value) {
+    this.passwordMatched = { key, value };
+  }
+
   togglePassword(input: any): any {
     input.type = input.type === 'password' ? 'text' : 'password';
   }
 
-  checkPasswords(password: string, confirmPassword: string) {
-    this.passwordMatched = true;
+  checkPasswords(password: string, confirmPassword: string, key) {
+    this.passwordMatched = { key: key, value: true };
     if (password !== confirmPassword) {
-      this.passwordMatched = false;
+      this.passwordMatched = { key: key, value: false };
     }
   }
 
@@ -410,15 +417,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       for (const k in data) {
-        if (data.hasOwnProperty(k)) {
-          data[k].key = k;
-          if (data[k].hasOwnProperty('validity')) {
-            data[k].validityExpression = data[k].validity;
-            config.forEach(element => {
-              data[k].validityExpression = data[k].validityExpression.includes(element.key) ? data[k].validityExpression
-                .replace(new RegExp(element.key, 'g'), `'${element.value}'`) : data[k].validityExpression;
-            });
-          }
+        data[k].key = k;
+        if (data[k].hasOwnProperty('validity')) {
+          data[k].validityExpression = data[k].validity;
+          config.forEach(el => {
+            const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
+            if (regex.test(data[k].validityExpression)) {
+              data[k].validityExpression = data[k].validityExpression.split(`${el.key}`).join(`"${el.value}"`);
+            }
+          });
         }
       }
 
@@ -429,11 +436,13 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
               try {
                 // tslint:disable-next-line: no-eval
                 const e = eval(data[k].validityExpression);
+                // console.log('Validity expression', data[k].validityExpression)
                 if (typeof (e) !== 'boolean') {
                   console.log('Validity expression', data[k].validityExpression, 'for', k, 'evlauted to non-boolean value ', e);
                 }
                 data[k].editable = e === false ? false : true;
               } catch (e) {
+                console.log(e);
                 data[k].editable = true;
               }
             }
@@ -447,23 +456,33 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
       this.categoryConfiguration.map(obj => {
         if (obj.type === 'password' && obj.editable === false) {
-          this.passwordMatched = true;
+          this.passwordMatched = { key: obj.key, value: true };
         }
       });
     }
   }
 
   checkValidityOnChange(key: string, configValue: string) {
-    this.categoryConfiguration.map(configItem => {
-      if (configItem.hasOwnProperty('validity')) {
-        if (configItem.validity.includes(key)) {
-          configItem.validityExpression = configItem.validity
-            .replace(new RegExp(key, 'g'), `'${configValue}'`);
-        }
+    this.categoryConfiguration.forEach(cnf => {
+      if (cnf.hasOwnProperty('validity')) {
+        let expression = cnf.validity;
+        this.categoryConfiguration.forEach(el => {
+          if (el.key === key) {
+            el.value = configValue;
+          }
+
+          const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
+          if (regex.test(expression)) {
+            expression = expression
+              .split(new RegExp(`${el.key.trim()}+(?=.*=)`)).join(`"${el.value !== undefined ? el.value : el.default}"`);
+          }
+        });
+        cnf.validityExpression = expression;
       }
-      if (configItem.hasOwnProperty('mandatory') && configItem['key'] === key) {
-        if (configItem['mandatory'] === 'true' && configValue.trim().length === 0) {
-         this.form.controls[key].setErrors({'required': true});
+
+      if (cnf.hasOwnProperty('mandatory') && cnf['key'] === key) {
+        if (cnf['mandatory'] === 'true' && configValue.trim().length === 0) {
+          this.form.controls[key].setErrors({ 'required': true });
         }
       }
     });
@@ -484,9 +503,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     });
+
     this.categoryConfiguration.map(obj => {
       if (obj.type === 'password' && obj.editable === false) {
-        this.passwordMatched = true;
+        this.passwordMatched = { key: obj.key, value: true };
       }
     });
   }

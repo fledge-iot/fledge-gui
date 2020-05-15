@@ -1,3 +1,5 @@
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -50,6 +52,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private servicesApiService: ServicesApiService,
     private status: ConnectedServiceStatus,
@@ -62,24 +65,28 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router) {
     // Subscribe to automatically update
     // "isUserLoggedIn" whenever a change to the subject is made.
-    this.sharedService.isUserLoggedIn.subscribe(value => {
-      this.isUserLoggedIn = value.loggedIn;
-      this.userName = value.userName;
-      this.isAuthOptional = value.isAuth;
-      this.pingService();
-    });
+    this.sharedService.isUserLoggedIn
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(value => {
+        this.isUserLoggedIn = value.loggedIn;
+        this.userName = value.userName;
+        this.isAuthOptional = value.isAuth;
+        this.pingService();
+      });
   }
 
   ngOnInit() {
     this.getServiceStatus();
     this.pingService();
-    this.ping.pingIntervalChanged.subscribe((pingTime: number) => {
-      if (pingTime === -1) {
-        this.stop();
-      } else {
-        this.start(pingTime);
-      }
-    });
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pingTime: number) => {
+        if (pingTime === -1) {
+          this.stop();
+        } else {
+          this.start(pingTime);
+        }
+      });
     this.onResize();
   }
 
@@ -120,6 +127,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public getServiceStatus() {
     this.showLoadingSpinner();
     this.servicesApiService.getAllServices()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
           this.servicesRecord = [];
@@ -242,6 +250,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     /** request started */
     this.ngProgress.start();
     this.ping.restart()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
           /** request completed */
@@ -264,6 +273,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     /** request started */
     this.ngProgress.start();
     this.ping.shutdown()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
           /** request completed */
@@ -295,6 +305,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     clearInterval(this.timer);
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   toggleClick() {
@@ -337,8 +349,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
      */
   logout() {
     this.ngProgress.start();
-    this.authService.logout().
-      subscribe(
+    this.authService.logout()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         () => {
           this.servicesRecord = [];
           sessionStorage.clear();

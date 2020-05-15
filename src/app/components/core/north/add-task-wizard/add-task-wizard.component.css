@@ -1,3 +1,7 @@
 .description {
   flex-shrink:initial !important;
 }
+
+.container.is-fluid {
+  margin-top: 10px;
+}

@@ -1,40 +1,45 @@
-<div class="columns is-mobile">
-  <div class="column">
-    <div class="field-body is-pulled-right">
-      <div id="time-dropdown" class="dropdown is-left">
-        <div class="dropdown-trigger">
-          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropDown('time-dropdown')">
-            <span>{{optedTime}} minutes</span>
-            <span class="icon is-small">
-              <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </span>
-          </button>
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-          <div class="dropdown-content">
+<div class="container is-fluid">
+  <div class="columns is-mobile dropdown-columns">
+    <div class="column dropdown-column">
+      <div class="field-body is-pulled-right">
+        <div id="time-dropdown" class="dropdown is-left">
+          <div class="dropdown-trigger">
+            <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu"
+              (click)="toggleDropDown('time-dropdown')">
+              <span>{{optedTime}} minutes</span>
+              <span class="icon is-small">
+                <i class="fa fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
               <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(10)">10 minutes</a>
               <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(30)">30 minutes</a>
               <a class="dropdown-item" (click)="toggleDropDown('time-dropdown');getStatisticsHistory(60)">60 minutes</a>
+            </div>
           </div>
         </div>
-      </div>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div id="graph-key-dropdown" class="dropdown is-right">
-        <div class="dropdown-trigger">
-          <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropDown('graph-key-dropdown')">
-            <span>Select Graphs</span>
-            <span class="icon is-small">
-              <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </span>
-          </button>
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-          <div class="dropdown-content">
-            <div *ngFor="let data of statisticsKeys" class="dropdown-item">
-              <div class="field is-grouped">
-                <div class="control checkbox">
-                  <input [value]='data.key' type="checkbox" [checked]='data.checked' (click)="checkedGraph('graph-key-dropdown',$event)">
-                  {{data.key}}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div id="graph-key-dropdown" class="dropdown is-right">
+          <div class="dropdown-trigger">
+            <button class="button is-rounded" aria-haspopup="true" aria-controls="dropdown-menu"
+              (click)="toggleDropDown('graph-key-dropdown')">
+              <span>Select Graphs</span>
+              <span class="icon is-small">
+                <i class="fa fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <div *ngFor="let data of statisticsKeys" class="dropdown-item">
+                <div class="field is-grouped">
+                  <div class="control checkbox">
+                    <input [value]='data.key' type="checkbox" [checked]='data.checked'
+                      (click)="checkedGraph('graph-key-dropdown',$event)">
+                    {{data.key}}
+                  </div>
                 </div>
               </div>
             </div>
@@ -43,20 +48,21 @@
       </div>
     </div>
   </div>
-</div>
-<div class="columns is-mobile">
-  <div class="column">
-    <div class="columns is-multiline">
-      <div class="column columns-content is-half" *ngFor="let statistic of graphsToShow">
-        <div *ngIf="statistic != undefined" class="box">
-          <h6 class="subtitle is-6">{{ statistic.description }}</h6>
-          <br />
-          <app-chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></app-chart>
-          <br />
-          <h6>Total since startup:
-            <b> {{ statistic.value | number }} </b>
-          </h6>
+  <div class="columns is-mobile">
+    <div class="column">
+      <div class="columns is-multiline">
+        <div class="column columns-content is-half" *ngFor="let statistic of graphsToShow">
+          <div *ngIf="statistic != undefined" class="box">
+            <h6 class="subtitle is-6">{{ statistic.description }}</h6>
+            <br />
+            <app-chart [type]="statistic.chartType" [data]="statistic.chartValue" [options]="chartOptions"></app-chart>
+            <br />
+            <h6>Total since startup:
+              <b> {{ statistic.value | number }} </b>
+            </h6>
+          </div>
         </div>
       </div>
     </div>
   </div>
+</div>

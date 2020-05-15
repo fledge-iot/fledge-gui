@@ -23,7 +23,7 @@
     </div>
     <div *ngIf="!pingInfo.isAlive" class="navbar-item">
       <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-        <i class="fa fa-circle"> </i>
+        <i class="fa fa-circle parent-icon"> </i>
       </span>
       <b style="color:gray;">&nbsp;DOWN</b>
     </div>
@@ -34,7 +34,7 @@
         <div class="dropdown-trigger">
           <a id="hover-link" (click)="getServiceStatus()">
             <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-              <i class="fa fa-circle"> </i>
+              <i class="fa fa-circle parent-icon"> </i>
             </span>
             <b
               *ngIf="pingData['hostName'] && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
@@ -80,7 +80,7 @@
                   <tr *ngFor="let s of servicesRecord">
                     <td class="has-text-left">
                       <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                        <i class="fa fa-circle"></i>
+                        <i class="fa fa-circle child-icon"></i>
                       </span>
                       {{s.name}}&nbsp;
                     </td>
@@ -106,7 +106,7 @@
             <div class="dropdown-trigger">
               <a id="hover-link" (click)="getServiceStatus()">
                 <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-                  <i class="fa fa-circle"> </i>
+                  <i class="fa fa-circle parent-icon"> </i>
                 </span>
                 <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0,
                   8)}}/{{pingData['serviceName'].substr(0, 8)}}</b>
@@ -154,7 +154,7 @@
                       <tr *ngFor="let s of servicesRecord">
                         <td class="has-text-left">
                           <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                            <i class="fa fa-circle"></i>
+                            <i class="fa fa-circle child-icon"></i>
                           </span>
                           {{s.name.length <= 18 ? s.name :  s.name.substr(0,18) + '..'}}&nbsp;
                         </td>
@@ -185,7 +185,7 @@
               <div class="dropdown-trigger">
                 <a id="hover-link" (mouseover)="getServiceStatus()">
                   <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-                    <i class="fa fa-circle"> </i>
+                    <i class="fa fa-circle parent-icon"> </i>
                   </span>
                   <b
                     *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
@@ -206,7 +206,7 @@
                         <tr *ngFor="let s of servicesRecord">
                           <td class="has-text-left">
                             <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                              <i class="fa fa-circle"></i>
+                              <i class="fa fa-circle child-icon"></i>
                             </span>
                             {{s.name}}&nbsp;
                           </td>
