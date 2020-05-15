@@ -53,9 +53,9 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 ## Supported/ Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
-Safari (mac)  | 12.1.x   | latest 1
-Chrome  | 76.0.x (64-bit) | latest 2
-Firefox | 68.0.x (64-bit) | latest 2
+Safari (mac)  | 13.0.x   | latest 1
+Chrome  | 81.0.x (64-bit) | latest 2
+Firefox | 76.0.x (64-bit) | latest 2
 
 
 [Changelog](docs/changelog.md)
