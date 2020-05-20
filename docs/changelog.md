@@ -1,3 +1,8 @@
+## v1.8.0next [2020-xx-xx]
+
+#### Fixed
+* Password view option with validation message on confirm password in South Pages
+
 ## v1.8.0 [2020-05-08]
 
 #### Added
