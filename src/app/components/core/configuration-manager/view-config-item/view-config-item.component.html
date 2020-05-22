@@ -40,11 +40,10 @@
                     </ng-container>
                     <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
                       <div class="control">
-                        <input #pwd (click)="showConfirmPassword()" (focus)="showConfirmPassword()"
+                        <input #pwd
                           name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
-                          onPaste="return false" (focus)="pwd.value='';onPasswordFocus(configItem.value.key, false)"
-                          [ngModel]="setConfigValue(configItem.value)" [attr.maxLength]="configItem?.value?.length"
-                          placeholder="password"
+                          onPaste="return false" [ngModel]="setConfigValue(configItem.value)"
+                          [attr.maxLength]="configItem?.value?.length" placeholder="password"
                           (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value, configItem.value.key)"
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </div>
