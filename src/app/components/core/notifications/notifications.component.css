@@ -39,3 +39,7 @@ button {
 .message.is-warning {
   margin-top: 10px;
 }
+
+.fade {
+  background-color:#f5f5f5
+}
