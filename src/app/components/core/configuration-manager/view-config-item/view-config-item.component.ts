@@ -382,19 +382,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     return { script: file };
   }
 
-  showConfirmPassword() {
-    this.passwordOnChangeFired = true;
-  }
-
-  onPasswordFocus(key, value) {
-    this.passwordMatched = { key, value };
-  }
-
   togglePassword(input: any): any {
     input.type = input.type === 'password' ? 'text' : 'password';
   }
 
   checkPasswords(password: string, confirmPassword: string, key) {
+    this.passwordOnChangeFired = true;
     this.passwordMatched = { key: key, value: true };
     if (password !== confirmPassword) {
       this.passwordMatched = { key: key, value: false };
@@ -406,6 +399,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   checkValidityOnPageLoad() {
+    // reset password match condition
+    this.passwordOnChangeFired = false;
+    this.passwordMatched.value = true;
     if (!isEmpty(this.categoryConfigurationData)) {
       const data = this.categoryConfigurationData.value[0];
       const config = [];
