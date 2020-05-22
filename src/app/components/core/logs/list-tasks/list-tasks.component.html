@@ -16,24 +16,27 @@
             <th></th>
           </tr>
         </thead>
-        <tr *ngFor="let task of tasksData" [ngClass]="{'fade': (task.state == 'Complete')}">
-          <td>
-            <small>{{task.name}}</small>
-          </td>
-          <td>
-            <small>{{task.state}}</small>
-          </td>
-          <td>
-            <small>{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
-          </td>
-          <td>
-            <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss')
+        <tbody>
+          <tr *ngFor="let task of tasksData" [ngClass]="{'fade': (task.state == 'Complete')}">
+            <td>
+              <small>{{task.name}}</small>
+            </td>
+            <td>
+              <small>{{task.state}}</small>
+            </td>
+            <td>
+              <small>{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
+            </td>
+            <td>
+              <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss')
               : task.endTime}}</small>
-          </td>
-          <td>
-            <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small" (click)="cancelRunningTask(task.id)">Cancel</button>
-          </td>
-        </tr>
+            </td>
+            <td>
+              <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small"
+                (click)="cancelRunningTask(task.id)">Cancel</button>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
