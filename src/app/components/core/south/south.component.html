@@ -22,7 +22,7 @@
             <small class="no-rec">No Record</small>
           </div>
           <ng-container *ngIf="southboundServices!= undefined && southboundServices.length > 0">
-            <table id="south-service-list" class="table is-fullwidth scroll is-responsive" cellpadding="0"
+            <table id="south-service-list" class="table is-fullwidth scroll is-responsive is-hoverable" cellpadding="0"
               cellspacing="0">
               <thead>
                 <tr>
@@ -41,7 +41,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let svc of southboundServices">
+                <tr *ngFor="let svc of southboundServices" [ngClass]="{'fade': (svc.schedule_enabled === false)}">
                   <td class="align-content">
                     <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
                   </td>
@@ -65,7 +65,7 @@
                   </td>
                   <td class="align-content">
                     <table class="table is-narrow is-responsive">
-                      <tr *ngFor='let data of svc.assets'>
+                      <tr *ngFor='let data of svc.assets' [ngClass]="{'fade': (svc.schedule_enabled === false)}">
                         <td>
                           <small>{{data.asset}}</small>
                         </td>

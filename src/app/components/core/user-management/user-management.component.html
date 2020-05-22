@@ -25,7 +25,7 @@
       </header>
       <div class="card-content">
         <div *ngIf="seletedTab == 1" id="user-management" #management>
-          <table class="table scroll is-responsive">
+          <table class="table scroll is-responsive is-hoverable">
             <thead id="head">
               <tr>
                 <th>ID</th>
@@ -37,49 +37,52 @@
                 <th></th>
               </tr>
             </thead>
-            <tr *ngFor="let user of userRecord">
-              <td style="vertical-align: middle;">{{user.userId}}</td>
-              <td style="vertical-align: middle;">
-                {{user.userName}}
-              </td>
-              <td style="vertical-align: middle;">
-                {{user.roleName}}
-              </td>
-              <td>
-                <ng-container *ngIf='user.userId != uid && user.userId != 1'>
-                  <a (click)="openUpdateUserModal(user, 'role')" class="button is-text">
-                    <p *ngIf="viewPort !== 'mobile'">change role</p>
-                    <i *ngIf="viewPort == 'mobile'" class="fa fa-user-tag" aria-hidden="true"></i>
-                  </a>
-                </ng-container>
-                <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>
-                <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
-              </td>
-              <td>
-                <ng-container *ngIf='user.userId != uid && user.userId != 1'>
-                  <a (click)="openUpdateUserModal(user, 'password')" class="button is-text">
-                    <p *ngIf="viewPort !== 'mobile'">reset password</p>
-                    <i *ngIf="viewPort == 'mobile'" class="fa fa-key" aria-hidden="true"></i>
-                  </a>
-                </ng-container>
-              </td>
-              <td>
-                <ng-container *ngIf='user.userId != uid && user.userId != 1'>
-                  <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')"
+            <tbody>
+              <tr *ngFor="let user of userRecord">
+                <td style="vertical-align: middle;">{{user.userId}}</td>
+                <td style="vertical-align: middle;">
+                  {{user.userName}}
+                </td>
+                <td style="vertical-align: middle;">
+                  {{user.roleName}}
+                </td>
+                <td>
+                  <ng-container *ngIf='user.userId != uid && user.userId != 1'>
+                    <a (click)="openUpdateUserModal(user, 'role')" class="button is-text">
+                      <p *ngIf="viewPort !== 'mobile'">change role</p>
+                      <i *ngIf="viewPort == 'mobile'" class="fa fa-user-tag" aria-hidden="true"></i>
+                    </a>
+                  </ng-container>
+                  <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>
+                  <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
+                </td>
+                <td>
+                  <ng-container *ngIf='user.userId != uid && user.userId != 1'>
+                    <a (click)="openUpdateUserModal(user, 'password')" class="button is-text">
+                      <p *ngIf="viewPort !== 'mobile'">reset password</p>
+                      <i *ngIf="viewPort == 'mobile'" class="fa fa-key" aria-hidden="true"></i>
+                    </a>
+                  </ng-container>
+                </td>
+                <td>
+                  <ng-container *ngIf='user.userId != uid && user.userId != 1'>
+                    <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')"
+                      class="button is-text">
+                      <p *ngIf="viewPort !== 'mobile'">delete</p>
+                      <i *ngIf="viewPort == 'mobile'" class="fa fa-trash-alt" aria-hidden="true"></i>
+                    </a>
+                  </ng-container>
+                </td>
+                <td>
+                  <span *ngIf='user.userId != uid && user.userId != 1'
+                    (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')"
                     class="button is-text">
-                    <p *ngIf="viewPort !== 'mobile'">delete</p>
-                    <i *ngIf="viewPort == 'mobile'" class="fa fa-trash-alt" aria-hidden="true"></i>
-                  </a>
-                </ng-container>
-              </td>
-              <td>
-                <span *ngIf='user.userId != uid && user.userId != 1' (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')"
-                  class="button is-text">
-                  <p *ngIf="viewPort !== 'mobile'">logout active sessions</p>
-                  <i *ngIf="viewPort == 'mobile'" class="fa fa-sign-out-alt" aria-hidden="true"></i>
-                </span>
-              </td>
-            </tr>
+                    <p *ngIf="viewPort !== 'mobile'">logout active sessions</p>
+                    <i *ngIf="viewPort == 'mobile'" class="fa fa-sign-out-alt" aria-hidden="true"></i>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
         <div *ngIf="seletedTab == 2">
