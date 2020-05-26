@@ -83,7 +83,7 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
  Angular CLI  | 8.3.14         |        8.3.14          | MIT
  TypeScript   | 3.5.3         |        3.6.3          | Apache 2.0
  rxjs         | 6.5.2         |        6.5.2          | Apache 2.0
- Bulma css    | 0.7.5         |        0.7.5          | MIT
+ Bulma css    | 0.8.2         |        0.8.2          | MIT
 
 #### Dev
  Library         |   Version     | Latest Stable (? Y/n) | License
