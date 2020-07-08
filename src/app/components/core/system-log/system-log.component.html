@@ -4,7 +4,7 @@
       <div id="card-title" class="card-content">
         <p class="card-header-title">System Logs
           <button *ngIf="!isAlive" (click)="getSysLogs()" class="button is-small" id="refresh-check">
-            <i class="fa fa-sync" aria-hidden="true"></i>
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </p>
       </div>
@@ -20,7 +20,7 @@
                   (click)="toggleDropDown('dropdown')">
                   <span>{{source == ''? "All": (source == 'storage'? capitalizeInitialWord(source): source)}}</span>
                   <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
                 </button>
               </div>
@@ -48,7 +48,7 @@
                   (click)="toggleDropDown('level-dropdown')">
                   <span>{{level == ''? "Info and above": capitalizeInitialWord(level) + ' and above'}}</span>
                   <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
                 </button>
               </div>

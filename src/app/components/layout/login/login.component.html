@@ -8,7 +8,7 @@
               <input type="text" class="input" name="username" [(ngModel)]="model.username" #username="ngModel"
                 placeholder="username" required />
               <span class="icon is-small is-left">
-                <i class="fa fa-user"></i>
+                <i class="fa fa-sm fa-user"></i>
               </span>
             </div>
             <div *ngIf="f.submitted && !username.valid" class="help is-danger level-left">Username is required</div>
@@ -19,7 +19,7 @@
               <input type="password" class="input" name="password" [(ngModel)]="model.password" #password="ngModel"
                 placeholder="password" autocomplete="password" required />
               <span class="icon is-small is-left">
-                <i class="fa fa-lock"></i>
+                <i class="fa fa-sm fa-lock"></i>
               </span>
             </div>
             <div *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required</div>
