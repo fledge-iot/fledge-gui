@@ -17,7 +17,7 @@
             <li style="position: absolute;right: 0;">
               <a class="is-light" (click)="openCreateUserModal()" style="border-bottom-width: 0">
                 <p *ngIf="viewPort !== 'mobile'">&nbsp; Add User &nbsp;</p>
-                <i class="fa fa-user" aria-hidden="true"></i>
+                <i class="fa fa-sm fa-user" aria-hidden="true"></i>
               </a>
             </li>
           </ul>
@@ -50,7 +50,7 @@
                   <ng-container *ngIf='user.userId != uid && user.userId != 1'>
                     <a (click)="openUpdateUserModal(user, 'role')" class="button is-text">
                       <p *ngIf="viewPort !== 'mobile'">change role</p>
-                      <i *ngIf="viewPort == 'mobile'" class="fa fa-user-tag" aria-hidden="true"></i>
+                      <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-user-tag" aria-hidden="true"></i>
                     </a>
                   </ng-container>
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>
@@ -60,7 +60,7 @@
                   <ng-container *ngIf='user.userId != uid && user.userId != 1'>
                     <a (click)="openUpdateUserModal(user, 'password')" class="button is-text">
                       <p *ngIf="viewPort !== 'mobile'">reset password</p>
-                      <i *ngIf="viewPort == 'mobile'" class="fa fa-key" aria-hidden="true"></i>
+                      <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-key" aria-hidden="true"></i>
                     </a>
                   </ng-container>
                 </td>
@@ -69,7 +69,7 @@
                     <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')"
                       class="button is-text">
                       <p *ngIf="viewPort !== 'mobile'">delete</p>
-                      <i *ngIf="viewPort == 'mobile'" class="fa fa-trash-alt" aria-hidden="true"></i>
+                      <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-trash-alt" aria-hidden="true"></i>
                     </a>
                   </ng-container>
                 </td>
@@ -78,7 +78,7 @@
                     (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')"
                     class="button is-text">
                     <p *ngIf="viewPort !== 'mobile'">logout active sessions</p>
-                    <i *ngIf="viewPort == 'mobile'" class="fa fa-sign-out-alt" aria-hidden="true"></i>
+                    <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>
                   </span>
                 </td>
               </tr>
