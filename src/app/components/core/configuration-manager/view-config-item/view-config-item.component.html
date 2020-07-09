@@ -40,21 +40,21 @@
                     </ng-container>
                     <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
                       <div class="control">
-                        <input #pwd (click)="showConfirmPassword()" (focus)="showConfirmPassword()"
+                        <input #pwd
                           name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
-                          onPaste="return false" (focus)="pwd.value='';onPasswordFocus(configItem.value.key, false)"
-                          [ngModel]="setConfigValue(configItem.value)" [attr.maxLength]="configItem?.value?.length"
-                          placeholder="password"
+                          onPaste="return false" [ngModel]="setConfigValue(configItem.value)"
+                          [attr.maxLength]="configItem?.value?.length" placeholder="password"
+                          [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                           (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value, configItem.value.key)"
-                          [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
+                          [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" trim="blur" />
                       </div>
-                      <div class="control"
-                        *ngIf="configItem?.value?.hasOwnProperty('editable') && configItem?.value?.editable">
-                        <a class="button is-small">
-                          <span class="icon is-small" (click)="togglePassword(pwd)">
+                      <div class="control">
+                        <button type="button" class="button is-small" (click)="togglePassword(pwd)"
+                          [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable">
+                          <span class="icon is-small">
                             <i class="{{pwd.type === 'password'? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
                           </span>
-                        </a>
+                        </button>
                       </div>
                     </div>
                     <div class="field"
@@ -71,12 +71,9 @@
                           </div>
                         </div>
                       </div>
-                      <ng-container *ngIf="configItem?.value?.hasOwnProperty('editable') &&
-                      configItem?.value?.editable">
-                        <p *ngIf="passwordMatched.value == false &&
+                      <p *ngIf="passwordMatched.value == false &&
                       passwordMatched.key === configItem.value.key" class="help is-danger">
-                          <sup>*</sup>Password mismatch</p>
-                      </ng-container>
+                        <sup>*</sup>Password mismatch</p>
                     </div>
 
                     <input *ngSwitchCase="'INTEGER'" name="{{configItem.value.key}}" type="number"

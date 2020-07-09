@@ -9,7 +9,7 @@
       </p>
     </header>
     <div class="card-content">
-      <table class="table scroll is-responsive">
+      <table class="table scroll is-responsive is-hoverable">
         <thead id="head">
           <tr>
             <th>Name</th>
@@ -18,20 +18,22 @@
             <th></th>
           </tr>
         </thead>
-        <tr *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}" id={{schedule.name}}>
-          <td>
-            {{schedule.name}}
-          </td>
-          <td><small>{{schedule.type}}</small></td>
-          <td>
-            <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
-          </td>
-          <td>
-            <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
-              <i class="fa fa-edit" aria-hidden="true"></i>
-            </a>
-          </td>
-        </tr>
+        <tbody>
+          <tr *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}" id={{schedule.name}}>
+            <td>
+              {{schedule.name}}
+            </td>
+            <td><small>{{schedule.type}}</small></td>
+            <td>
+              <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
+            </td>
+            <td>
+              <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
+                <i class="fa fa-edit" aria-hidden="true"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
