@@ -53,7 +53,7 @@
                       <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-user-tag" aria-hidden="true"></i>
                     </a>
                   </ng-container>
-                  <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>
+                  <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
                   <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
                 </td>
                 <td>
@@ -77,7 +77,7 @@
                   <span *ngIf='user.userId != uid && user.userId != 1'
                     (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')"
                     class="button is-text text-btn">
-                    <p *ngIf="viewPort !== 'mobile'">logout active sessions</p>
+                    <p *ngIf="viewPort !== 'mobile'">log out active sessions</p>
                     <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>
                   </span>
                 </td>

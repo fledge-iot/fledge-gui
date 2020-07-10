@@ -294,3 +294,11 @@ a.dropdown-item:hover {
 .text-btn {
   font-size: 0.85rem;
 }
+
+.select::after {
+  font-size: x-small;
+}
+
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: grey !important;
+}
