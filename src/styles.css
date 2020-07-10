@@ -290,3 +290,7 @@ a.dropdown-item:hover {
   background: none;
   border: none;
 }
+
+.text-btn {
+  font-size: 0.85rem;
+}

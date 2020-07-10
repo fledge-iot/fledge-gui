@@ -11,3 +11,11 @@
 .tooltip.is-tooltip-multiline::before {
   min-width: 16rem !important;
 }
+
+.select::after {
+  font-size: x-small;
+}
+
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: grey !important;
+}
