@@ -301,4 +301,6 @@ a.dropdown-item:hover {
 
 .select:not(.is-multiple):not(.is-loading)::after {
   border-color: grey !important;
+  border-width: 2.25px !important;
+  border-radius: 1px !important;
 }
