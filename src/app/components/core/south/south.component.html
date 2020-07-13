@@ -51,7 +51,7 @@
                         <span class="tag">disabled</span> <!-- This also take care of shutdown status-->
                       </ng-container>
                       <ng-container *ngIf="svc.schedule_enabled">
-                        <span *ngIf="svc.status == 'running'" class="tag is-success is-light">enabled</span>
+                        <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
                         <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
                         <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
                       </ng-container>
