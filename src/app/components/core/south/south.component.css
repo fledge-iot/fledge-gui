@@ -30,3 +30,11 @@
 .fade {
   background-color:#f5f5f5 !important;
 }
+
+.readings-count {
+  vertical-align: middle;
+}
+
+.service-name {
+  padding-top: 0;
+}

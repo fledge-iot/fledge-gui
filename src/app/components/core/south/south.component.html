@@ -6,7 +6,7 @@
       </div>
       <a id="add_south_service" class="fix-pad button is-light" (click)="addSouthService()">
         <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
-        <i class="fa fa-plus" aria-hidden="true"></i>
+        <i class="fa fa-sm fa-plus" aria-hidden="true"></i>
       </a>
     </header>
     <div class="card-content">
@@ -43,7 +43,7 @@
               <tbody>
                 <tr *ngFor="let svc of southboundServices" [ngClass]="{'fade': (svc.schedule_enabled === false)}">
                   <td class="align-content">
-                    <a class="button is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                    <a class="button is-text service-name" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
                   </td>
                   <td class="align-content content-pad">
                     <div class="tags has-addons">
@@ -69,7 +69,7 @@
                         <td>
                           <small>{{data.asset}}</small>
                         </td>
-                        <td>
+                        <td class="readings-count">
                           <small class="level-right">{{data.count | number}}</small>
                         </td>
                       </tr>

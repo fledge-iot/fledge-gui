@@ -14,7 +14,7 @@
           Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable
               now</strong></a>
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
-            <i class="fa fa-sync" aria-hidden="true"></i>
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </div>
       </article>
@@ -27,7 +27,7 @@
           Notifications
           <a class="button is-small" (click)="getNotificationInstance()" id="refresh-check">
             <span class="icon is-small">
-              <i class="fa fa-sync"></i>
+              <i class="fa fa-sm fa-sync"></i>
             </span>
           </a>
         </p>
@@ -35,11 +35,11 @@
       <button [disabled]="!isNotificationServiceEnabled" id="add_notification_instance" class="button is-light"
         (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'">Create Notification Instance &nbsp;</p>
-        <i class="fa fa-plus" aria-hidden="true"></i>
+        <i class="fa fa-sm fa-plus" aria-hidden="true"></i>
       </button>
       <a class="button" (click)="openNotificationServiceModal()" id="refresh-check">
         <span class="icon">
-          <i class="fa fa-cog" aria-hidden="true"></i>
+          <i class="fa fa-sm fa-cog" aria-hidden="true"></i>
         </span>
       </a>
     </header>

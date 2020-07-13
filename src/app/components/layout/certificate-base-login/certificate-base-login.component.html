@@ -26,8 +26,8 @@
                     <label class="file-label">
                       <span class="file-cta is-fullwidth">
                         <span class="file-icon">
-                          <i *ngIf="showBrowseCertificate" class="fa fa-upload"></i>
-                          <i *ngIf="!showBrowseCertificate" class="fa fa-upload disabled"></i>
+                          <i *ngIf="showBrowseCertificate" class="fa fa-sm fa-upload"></i>
+                          <i *ngIf="!showBrowseCertificate" class="fa fa-sm fa-upload disabled"></i>
                         </span>
                         <input type="file" required id="certificate" (change)="onCertificateChange($event)"
                           formControlName="certificate" #fileInput>

@@ -100,7 +100,7 @@
               <div class="field">
                 <div class="control">
                   <ng-container *ngIf="notificationRulePlugins.length">
-                    <a id="avail-plugin" class="button is-text" (click)="openPluginModal(true, 'Rule')">available plugins</a>
+                    <a id="avail-plugin" class="button is-text text-btn" (click)="openPluginModal(true, 'Rule')">available plugins</a>
                   </ng-container>
                   <app-plugin-modal *ngIf="pluginData?.modalState && pluginData?.type?.toLowerCase() === 'rule' "
                     (notify)="onNotify($event)" [data]="pluginData"></app-plugin-modal>
@@ -150,7 +150,7 @@
               <div class="field">
                 <div class="control">
                   <ng-container *ngIf="notificationDeliveryPlugins.length">
-                    <a id="avail-plugin" class="button is-text" (click)="openPluginModal(true, 'Notify')">available plugins</a>
+                    <a id="avail-plugin" class="button is-text text-btn" (click)="openPluginModal(true, 'Notify')">available plugins</a>
                   </ng-container>
                   <app-plugin-modal *ngIf="pluginData?.modalState && pluginData?.type?.toLowerCase() === 'notify'"
                     (notify)="onNotify($event)" [data]="pluginData"></app-plugin-modal>
@@ -176,7 +176,7 @@
                     (click)="toggleDropDown('notify-type-dropdown')">
                     <span>{{notificationType}}</span>
                     <span class="icon is-small">
-                      <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                     </span>
                   </button>
                 </div>

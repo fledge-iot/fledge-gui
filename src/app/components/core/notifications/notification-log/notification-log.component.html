@@ -4,7 +4,7 @@
       <div id="card-title" class="card-content">
         <p class="card-header-title">Notification Logs
           <button *ngIf="!isAlive" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
-            <i class="fa fa-sync" aria-hidden="true"></i>
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </p>
       </div>
@@ -20,7 +20,7 @@
                   (click)="toggleDropDown('dropdown')">
                   <span>{{source == ''? "ALL": source.toUpperCase()}}</span>
                   <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
                 </button>
               </div>
@@ -44,7 +44,7 @@
                   (click)="toggleDropDown('severity-dropdown')">
                   <span>{{severity.toUpperCase()}}</span>
                   <span class="icon is-small">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
                 </button>
               </div>

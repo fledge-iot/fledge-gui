@@ -290,3 +290,17 @@ a.dropdown-item:hover {
   background: none;
   border: none;
 }
+
+.text-btn {
+  font-size: 0.85rem;
+}
+
+.select::after {
+  font-size: x-small;
+}
+
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: grey !important;
+  border-width: 2.25px !important;
+  border-radius: 1px !important;
+}
