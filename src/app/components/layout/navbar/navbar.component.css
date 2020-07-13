@@ -69,7 +69,9 @@
 
 .navbar-link:not(.is-arrowless)::after {
   border-color: gray !important;
-  right: 1.25em !important;
+  right: 1.75em !important;
+  border-width: 2.5px !important;
+  font-size: small !important;
 }
 
 .parent-icon {

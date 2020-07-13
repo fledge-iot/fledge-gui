@@ -32,5 +32,9 @@
 }
 
 .readings-count {
-  vertical-align: bottom;
+  vertical-align: middle;
+}
+
+.service-name {
+  padding-top: 0;
 }
