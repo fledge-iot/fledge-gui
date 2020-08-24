@@ -168,14 +168,21 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     }
   }
 
+  getRepeatTime() {
+    if (this.selectedScheduleTypeIndex === 1 || this.selectedScheduleTypeIndex === 4) {
+      return 0;
+    }
+    const repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
+      this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
+    return repeatTime;
+  }
+
   public updateSchedule() {
     if (!this.form.dirty && !this.form.touched) {
       this.toggleModal(false);
       return false;
     }
-    const repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
-      this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
-
+    const repeatTime = this.getRepeatTime();
     this.selectedScheduleTypeIndex = this.setScheduleTypeKey(this.selectedScheduleTypeName);
 
     let time;
