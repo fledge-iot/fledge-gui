@@ -15,6 +15,7 @@
             <th>Name</th>
             <th>Type</th>
             <th>Interval</th>
+            <th>Time</th>
             <th></th>
           </tr>
         </thead>
@@ -25,7 +26,10 @@
             </td>
             <td><small>{{schedule.type}}</small></td>
             <td>
-              <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
+              <small *ngIf="schedule.repeat.trim() !== '00:00:00' && schedule.type !== 'TIMED'"> {{schedule.repeat.trim()}}</small>
+            </td>
+            <td>
+              <small *ngIf="schedule.type == 'TIMED'"> {{schedule.scheduleDay + ', ' + schedule.time }} </small>
             </td>
             <td>
               <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>

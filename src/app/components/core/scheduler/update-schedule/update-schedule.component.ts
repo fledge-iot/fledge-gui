@@ -169,11 +169,13 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   }
 
   getRepeatTime() {
-    if (this.selectedScheduleTypeIndex === 1 || this.selectedScheduleTypeIndex === 4) {
-      return 0;
+    let repeatTime;
+    if (this.selectedScheduleTypeIndex === 3) {
+      repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
+        this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
+    } else {
+      repeatTime = 0;
     }
-    const repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
-      this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
     return repeatTime;
   }
 
