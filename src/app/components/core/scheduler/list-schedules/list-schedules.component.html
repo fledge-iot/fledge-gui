@@ -30,7 +30,7 @@
             </td>
             <td>
               <ng-container *ngIf="schedule.type == 'TIMED'">
-              <small *ngIf="schedule.scheduleDay !== 'None'"> {{schedule.scheduleDay + ', '}} </small>
+              <small *ngIf="schedule.dayName !== 'None'"> {{schedule.dayName + ', '}} </small>
               <small>{{ schedule.time }}</small>
             </ng-container>
             </td>

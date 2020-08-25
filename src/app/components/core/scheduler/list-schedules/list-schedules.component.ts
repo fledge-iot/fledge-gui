@@ -120,7 +120,7 @@ export class ListSchedulesComponent implements OnInit {
               element.repeat = repeatTimeObj.time;
             }
             element.time = Utils.secondsToDhms(element.time).time;
-            element.scheduleDay = weekDays[element.day];
+            element.dayName = weekDays[element.day];
           });
           this.scheduleData = sortBy(this.scheduleData, function (obj) {
             return !obj.enabled + obj.name.toLowerCase();
