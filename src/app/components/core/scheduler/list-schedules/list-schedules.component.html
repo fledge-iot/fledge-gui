@@ -29,7 +29,10 @@
               <small *ngIf="schedule.repeat.trim() !== '00:00:00' && schedule.type !== 'TIMED'"> {{schedule.repeat.trim()}}</small>
             </td>
             <td>
-              <small *ngIf="schedule.type == 'TIMED'"> {{schedule.scheduleDay + ', ' + schedule.time }} </small>
+              <ng-container *ngIf="schedule.type == 'TIMED'">
+              <small *ngIf="schedule.scheduleDay !== 'None'"> {{schedule.scheduleDay + ', '}} </small>
+              <small>{{ schedule.time }}</small>
+            </ng-container>
             </td>
             <td>
               <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
