@@ -170,6 +170,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
   getRepeatTime() {
     let repeatTime = 0;
+    // If schedule type is Interval
     if (this.selectedScheduleTypeIndex === 3) {
       repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
         this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
