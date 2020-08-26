@@ -76,7 +76,8 @@
         </div>
         <div class="columns">
           <div class="column">
-            <div class="field">
+            <!-- Show "Repeat (Interval)" field for "Interval" type schedule-->
+            <div *ngIf="selectedScheduleTypeIndex == 3" class="field">
               <label class="label is-small">Repeat (Interval)</label>
               <div class="columns">
                 <div class="column is-fullwidth">
@@ -95,6 +96,7 @@
         </div>
         <div class="columns is-mobile">
           <div class="column">
+            <!-- Show "Day" field for "Timed" type schedule-->
             <div *ngIf="selectedScheduleTypeIndex == 2" class="field">
               <label class="label is-small">Day &nbsp;
                 <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (1-7 Mon-Sun)">
@@ -125,6 +127,7 @@
             </div>
           </div>
           <div class="column">
+            <!-- Show "Time" field for "Timed" type schedule-->
             <div *ngIf="selectedScheduleTypeIndex == 2" class="field">
               <label class="label is-small">Time</label>
               <p class="control is-fullwidth">

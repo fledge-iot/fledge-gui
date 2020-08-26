@@ -7,6 +7,7 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
 
 enum weekDays {
+  None = null,
   Monday = 1,
   Tuesday = 2,
   Wednesday = 3,
@@ -49,7 +50,6 @@ export class ListSchedulesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
     this.getScheduleType();
     this.getSchedulesProcesses();
 
@@ -120,6 +120,7 @@ export class ListSchedulesComponent implements OnInit {
               element.repeat = repeatTimeObj.time;
             }
             element.time = Utils.secondsToDhms(element.time).time;
+            element.dayName = weekDays[element.day];
           });
           this.scheduleData = sortBy(this.scheduleData, function (obj) {
             return !obj.enabled + obj.name.toLowerCase();
