@@ -76,7 +76,8 @@
         </div>
         <div class="columns">
           <div class="column">
-            <div class="field">
+            <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule-->
+            <div *ngIf="selectedScheduleTypeIndex == 2 || selectedScheduleTypeIndex == 3" class="field">
               <label class="label is-small">Repeat (Interval)</label>
               <div class="columns">
                 <div class="column is-fullwidth">
