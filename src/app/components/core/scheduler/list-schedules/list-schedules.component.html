@@ -26,7 +26,7 @@
             </td>
             <td><small>{{schedule.type}}</small></td>
             <td>
-              <small *ngIf="schedule.type == 'INTERVAL' && schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
+              <small *ngIf="schedule.repeat.trim() !== '00:00:00'"> {{schedule.repeat.trim()}}</small>
             </td>
             <td>
               <ng-container *ngIf="schedule.type == 'TIMED'">
