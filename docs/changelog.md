@@ -1,4 +1,4 @@
-## v1.8.1next [2020-xx-xx]
+## v1.8.2next [2020-xx-xx]
 
 #### Added
 
@@ -6,6 +6,9 @@
 
 #### Fixed
 
+## v1.8.2 [2020-11-03]
+
+This release is to keep versions in sync with Fledge core. There are no functional/visual changes or any bug fix.
 
 ## v1.8.1 [2020-07-08]
 
