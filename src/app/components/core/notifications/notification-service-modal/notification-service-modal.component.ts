@@ -103,7 +103,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.btnText = 'Save';
           this.toggleModal(false);
           setTimeout(() => {
-            this.notifyServiceEmitter.next({isAddDeleteAction: true});
+            this.notifyServiceEmitter.next({ isAddDeleteAction: true });
           }, 2000);
         },
         (error) => {
@@ -118,7 +118,6 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   monitorNotificationServiceInstallationStatus(data: any, pluginName: string) {
-    console.log('Data', data);
     this.service.monitorPluginInstallationStatus(data.statusLink)
       .pipe(
         take(1),
@@ -163,6 +162,7 @@ export class NotificationServiceModalComponent implements OnChanges {
         this.ngProgress.done();
         this.alertService.closeMessage();
         this.alertService.success('Notification service added successfully.', true);
+        this.addNotificationService();
       });
   }
 
@@ -229,8 +229,6 @@ export class NotificationServiceModalComponent implements OnChanges {
             }
             this.alertService.error(errorText);
           }
-        }, () => {
-          this.addNotificationService();
         });
   }
 
