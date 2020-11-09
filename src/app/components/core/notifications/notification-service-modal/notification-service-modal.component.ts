@@ -1,12 +1,16 @@
 import { Component, EventEmitter, Output, OnChanges, Input, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
-import { ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
-  ConfigurationService } from '../../../../services';
+import {
+  ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
+  ConfigurationService
+} from '../../../../services';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty } from 'lodash';
+import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import { of, throwError, timer } from 'rxjs';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -27,9 +31,15 @@ export class NotificationServiceModalComponent implements OnChanges {
   showDeleteBtn = true;
   public notificationServiceRecord;
 
+  increment = 1;
+  maxRetry = 15;
+  initialDelay = 1000;
+
   @Output() notifyServiceEmitter: EventEmitter<any> = new EventEmitter<any>();
-  @Input() notificationServiceData: { notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
-    notificationServiceName: string };
+  @Input() notificationServiceData: {
+    notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
+    notificationServiceName: string
+  };
   @ViewChild('notificationConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild('fg', { static: false }) form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
@@ -37,7 +47,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   constructor(public fb: FormBuilder, public ngProgress: ProgressBarService,
     private configService: ConfigurationService, public schedulesService: SchedulesService,
     public servicesApiService: ServicesApiService, public alertService: AlertService,
-    private notificationService: NotificationsService) { }
+    private notificationService: NotificationsService, private service: ServicesApiService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['notificationServiceData']) {
@@ -107,6 +117,56 @@ export class NotificationServiceModalComponent implements OnChanges {
         });
   }
 
+  monitorNotificationServiceInstallationStatus(data: any, pluginName: string) {
+    console.log('Data', data);
+    this.service.monitorPluginInstallationStatus(data.statusLink)
+      .pipe(
+        take(1),
+        // checking the response object for plugin.
+        // if pacakge.status === 'in-progress' then
+        // throw an error to re-fetch:
+        tap((response: any) => {
+          if (response.packageStatus[0].status === 'in-progress') {
+            this.increment++;
+            throw response;
+          }
+        }),
+        retryWhen(result =>
+          result.pipe(
+            // only if a server returned an error, stop trying and pass the error down
+            tap(installStatus => {
+              if (installStatus.error) {
+                this.ngProgress.done();
+                this.alertService.closeMessage();
+                throw installStatus.error;
+              }
+            }),
+            delayWhen(() => {
+              const delay = this.increment * this.initialDelay;     // incremental
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);
+              return timer(delay);
+            }), // delay between api calls
+            // Set the number of attempts.
+            take(this.maxRetry),
+            // Throw error after exceed number of attempts
+            concatMap(o => {
+              if (this.increment > this.maxRetry) {
+                this.ngProgress.done();
+                this.alertService.closeMessage();
+                // tslint:disable-next-line: max-line-length
+                return throwError(`Failed to get expected results in ${this.maxRetry} attempts, tried with incremental time delay starting with 2s, for installing plugin ${pluginName}`);
+              }
+              return of(o);
+            }),
+          ))
+      ).subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.closeMessage();
+        this.alertService.success('Notification service added successfully.', true);
+      });
+  }
+
+
   /**
    * Open delete modal
    */
@@ -153,10 +213,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     this.servicesApiService.installService(servicePayload).
       subscribe(
         (data: any) => {
-          /** request done */
-          this.ngProgress.done();
-          this.alertService.closeMessage();
-          this.alertService.success(data.message, true);
+          this.monitorNotificationServiceInstallationStatus(data, name);
         },
         error => {
           /** request done */
@@ -220,7 +277,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isNotificationServiceEnabled = true;
-          this.notifyServiceEmitter.next({isEnabled: this.isNotificationServiceEnabled});
+          this.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */
@@ -243,7 +300,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isNotificationServiceEnabled = false;
-          this.notifyServiceEmitter.next({isEnabled: this.isNotificationServiceEnabled});
+          this.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */
@@ -263,7 +320,7 @@ export class NotificationServiceModalComponent implements OnChanges {
         (data: any) => {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
-          this.notifyServiceEmitter.next({isAddDeleteAction: true});
+          this.notifyServiceEmitter.next({ isAddDeleteAction: true });
           this.toggleModal(false);
           this.form.reset();
         },
@@ -310,7 +367,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
     this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('hidden-save').click();
-    this.notifyServiceEmitter.next({isConfigChanged: true});
+    this.notifyServiceEmitter.next({ isConfigChanged: true });
   }
 
   /**
