@@ -283,8 +283,6 @@ export class AddFilterWizardComponent implements OnInit {
       subscribe(
         (data: any) => {
           /** request done */
-          this.ngProgress.done();
-          this.alertService.closeMessage();
           this.monitorFilterPluginInstallationStatus(data, pluginName);
         },
         error => {
@@ -302,7 +300,6 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   monitorFilterPluginInstallationStatus(data: any, pluginName: string) {
-    console.log('Data', data);
     this.installPluginSub = this.service.monitorPluginInstallationStatus(data.statusLink)
       .pipe(
         take(1),
