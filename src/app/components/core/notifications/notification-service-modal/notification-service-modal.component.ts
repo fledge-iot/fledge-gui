@@ -10,7 +10,7 @@ import {
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
-import { of, throwError, timer } from 'rxjs';
+import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -34,6 +34,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   increment = 1;
   maxRetry = 15;
   initialDelay = 1000;
+  state$ = new BehaviorSubject<any>(null);
 
   @Output() notifyServiceEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Input() notificationServiceData: {
@@ -71,25 +72,28 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   public toggleModal(isOpen: Boolean) {
     const notificationServiceModal = <HTMLDivElement>document.getElementById('notification-service-modal');
-    if (isOpen) {
-      if (this.form.controls['notificationServiceName'] !== undefined) {
-        this.form.controls['notificationServiceName'].markAsPristine();
-        this.form.controls['enabled'].markAsUntouched();
-        this.form.controls['notificationServiceName'].reset();
+    if (notificationServiceModal) {
+      if (isOpen) {
+        if (this.form.controls['notificationServiceName'] !== undefined) {
+          this.form.controls['notificationServiceName'].markAsPristine();
+          this.form.controls['enabled'].markAsUntouched();
+          this.form.controls['notificationServiceName'].reset();
+        }
+        notificationServiceModal.classList.add('is-active');
+        return;
       }
-      notificationServiceModal.classList.add('is-active');
-      return;
+      notificationServiceModal.classList.remove('is-active');
+      this.category = '';
     }
-    notificationServiceModal.classList.remove('is-active');
-    this.category = '';
   }
 
   addNotificationService() {
-    const name = this.form.controls['notificationServiceName'].value;
+    const formValues = this.state$.getValue() || {};
+    const name = formValues.notificationServiceName;
     const payload = {
       name: name,
       type: 'notification',
-      enabled: this.form.controls['enabled'].value
+      enabled: formValues.enabled
     };
     /** request start */
     this.ngProgress.start();
@@ -134,6 +138,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           result.pipe(
             // only if a server returned an error, stop trying and pass the error down
             tap(installStatus => {
+              this.ngProgress.start();
               if (installStatus.error) {
                 this.ngProgress.done();
                 this.alertService.closeMessage();
@@ -342,6 +347,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   saveChanges() {
+    this.state$.next(this.form.value);
     if (!this.isNotificationServiceAvailable) {
       this.addServiceEvent();
     } else {
