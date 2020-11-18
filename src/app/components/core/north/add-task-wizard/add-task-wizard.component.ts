@@ -442,12 +442,14 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   selectInstalledPlugin() {
     const select = <HTMLSelectElement>document.getElementById('pluginSelect');
-    for (let i = 0, j = select.options.length; i < j; ++i) {
-      if (select.options[i].innerText.toLowerCase() === this.pluginData.pluginName.toLowerCase()) {
-        this.taskForm.controls['plugin'].setValue([this.plugins[i].name]);
-        select.selectedIndex = i;
-        select.dispatchEvent(new Event('change'));
-        break;
+    if (select) {
+      for (let i = 0, j = select.options.length; i < j; ++i) {
+        if (select.options[i].innerText.toLowerCase() === this.pluginData.pluginName.toLowerCase()) {
+          this.taskForm.controls['plugin'].setValue([this.plugins[i].name]);
+          select.selectedIndex = i;
+          select.dispatchEvent(new Event('change'));
+          break;
+        }
       }
     }
   }
