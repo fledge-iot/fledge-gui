@@ -32,6 +32,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   public notificationServiceRecord: any;
   public availableServices = [];
   private subscription: Subscription;
+  private modalSub: Subscription;
   private viewPortSubscription: Subscription;
   public showSpinner = false;
   public notificationServiceData = {};
@@ -51,6 +52,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private sharedService: SharedService) { }
 
   ngOnInit() {
+    this.onNotifySettingModal();
     this.checkNotificationServiceStatus();
     this.getNotificationInstance();
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
@@ -126,18 +128,22 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }, 2000);
   }
 
-  onNotifySettingModal(event: any) {
-    if (event.isEnabled !== undefined) {
-      this.isNotificationServiceEnabled = event.isEnabled;
-    }
-    if (event.isAddDeleteAction !== undefined) {
-      setTimeout(() => {
-        this.checkNotificationServiceStatus(true);
-      }, 2000);
-    }
-    if (event.isConfigChanged !== undefined) {
-      this.checkServiceStatus();
-    }
+  onNotifySettingModal() {
+    this.modalSub = this.notificationService.notifyServiceEmitter
+      .subscribe(event => {
+        if (event === null) { return; }
+        if (event.isEnabled !== undefined) {
+          this.isNotificationServiceEnabled = event.isEnabled;
+        }
+        if (event.isAddDeleteAction !== undefined) {
+          setTimeout(() => {
+            this.checkNotificationServiceStatus(true);
+          }, 2000);
+        }
+        if (event.isConfigChanged !== undefined) {
+          this.checkServiceStatus();
+        }
+      });
   }
 
   public showLoadingSpinner() {
@@ -263,6 +269,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.modalSub) {
+      this.modalSub.unsubscribe();
+    }
     this.subscription.unsubscribe();
     this.viewPortSubscription.unsubscribe();
   }

@@ -36,7 +36,6 @@ export class NotificationServiceModalComponent implements OnChanges {
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
 
-  @Output() notifyServiceEmitter: EventEmitter<any> = new EventEmitter<any>();
   @Input() notificationServiceData: {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
@@ -107,7 +106,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.btnText = 'Save';
           this.toggleModal(false);
           setTimeout(() => {
-            this.notifyServiceEmitter.next({ isAddDeleteAction: true });
+            this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
           }, 2000);
         },
         (error) => {
@@ -280,7 +279,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isNotificationServiceEnabled = true;
-          this.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
+          this.notificationService.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */
@@ -303,7 +302,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isNotificationServiceEnabled = false;
-          this.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
+          this.notificationService.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */
@@ -323,7 +322,7 @@ export class NotificationServiceModalComponent implements OnChanges {
         (data: any) => {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
-          this.notifyServiceEmitter.next({ isAddDeleteAction: true });
+          this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
           this.toggleModal(false);
           this.form.reset();
         },
@@ -371,7 +370,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
     this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('hidden-save').click();
-    this.notifyServiceEmitter.next({ isConfigChanged: true });
+    this.notificationService.notifyServiceEmitter.next({ isConfigChanged: true });
   }
 
   /**
