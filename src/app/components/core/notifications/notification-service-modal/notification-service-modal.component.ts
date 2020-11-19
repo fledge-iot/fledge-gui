@@ -86,7 +86,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
   }
 
-  addNotificationService() {
+  addNotificationService(installationState = false) {
     const formValues = this.state$.getValue() || {};
     const name = formValues.notificationServiceName;
     const payload = {
@@ -95,8 +95,9 @@ export class NotificationServiceModalComponent implements OnChanges {
       enabled: formValues.enabled
     };
     /** request start */
-    this.ngProgress.start();
-
+    if (!installationState) {
+      this.ngProgress.start();
+    }
     this.servicesApiService.addService(payload)
       .subscribe(
         () => {
@@ -107,7 +108,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.toggleModal(false);
           setTimeout(() => {
             this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
-          }, 2000);
+          }, 1000);
         },
         (error) => {
           /** request done */
@@ -137,7 +138,6 @@ export class NotificationServiceModalComponent implements OnChanges {
           result.pipe(
             // only if a server returned an error, stop trying and pass the error down
             tap(installStatus => {
-              this.ngProgress.start();
               if (installStatus.error) {
                 this.ngProgress.done();
                 this.alertService.closeMessage();
@@ -165,8 +165,7 @@ export class NotificationServiceModalComponent implements OnChanges {
       ).subscribe(() => {
         this.ngProgress.done();
         this.alertService.closeMessage();
-        this.alertService.success('Notification service added successfully.', true);
-        this.addNotificationService();
+        this.addNotificationService(true);
       });
   }
 
@@ -341,7 +340,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     if (!this.availableServices.includes('notification')) {
       this.installNotificationService();
     } else {
-      this.addNotificationService();
+      this.addNotificationService(false);
     }
   }
 
@@ -356,8 +355,8 @@ export class NotificationServiceModalComponent implements OnChanges {
       if (!this.isNotificationServiceEnabled && this.form.controls['enabled'].value) {
         this.enableNotificationService();
       }
+      this.toggleModal(false);
     }
-    this.toggleModal(false);
   }
 
   proxy() {
