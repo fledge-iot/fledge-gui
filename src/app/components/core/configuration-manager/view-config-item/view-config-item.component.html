@@ -1,4 +1,7 @@
 <div class="view-content columns">
+    <span *ngIf="pluginInfo?.type === 'South' || pluginInfo?.type === 'North' || pluginInfo?.type === 'Filter'" class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="navToLink()">
+      <i class="fas fa-question-circle"></i>
+    </span>
   <div class="column">
     <form name="form" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
       <ng-container *ngIf="categoryConfiguration && hasEditableConfigItems">
