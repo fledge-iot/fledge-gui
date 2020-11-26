@@ -53,12 +53,14 @@
       <hr class="hr-text" data-content="">
       <div class="columns">
         <div class="column">
-          <div class="field is-grouped is-pulled-right">
-            <p class="control">
+          <div class="field is-pulled-left">
+            <p *ngIf="!isNotificationServiceAvailable" class="control">
               <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
                 <i class="far fa-question-circle"></i>
               </span>
             </p>
+          </div>
+          <div class="field is-grouped is-pulled-right">
             <p class="control">
               <button class="button is-small" id="cancel" (click)="toggleModal(false)">Cancel</button>
             </p>
