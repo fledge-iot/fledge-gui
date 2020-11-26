@@ -1,6 +1,6 @@
 <div class="view-content columns">
-    <span *ngIf="pluginInfo?.type === 'South' || pluginInfo?.type === 'North' || pluginInfo?.type === 'Filter'" class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="navToLink()">
-      <i class="fas fa-question-circle"></i>
+    <span *ngIf="['south', 'north', 'filter', 'rule', 'notify'].includes(pluginInfo?.type.toLowerCase());" class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="navToLink()">
+      <i class="far fa-question-circle"></i>
     </span>
   <div class="column">
     <form name="form" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>

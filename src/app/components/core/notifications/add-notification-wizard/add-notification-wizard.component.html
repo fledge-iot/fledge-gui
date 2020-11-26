@@ -111,6 +111,7 @@
         </div>
         <div class="box step-content" id="c-3">
           <app-view-config-item #ruleConfigView [categoryConfigurationData]="rulePluginConfigurationData"
+          [pluginInfo]="{name: payload?.rule,  type:'rule'}"
           [useRuleProxy]="useRuleProxy" (onConfigChanged)="getPluginChangedConfig($event, 'rule')" [pageId]="'wizard'">
           </app-view-config-item>
         </div>
@@ -161,7 +162,9 @@
         </div>
         <div class="box step-content" id="c-5">
           <app-view-config-item #deliveryConfigView [categoryConfigurationData]="deliveryPluginConfigurationData"
-            [useDeliveryProxy]="useDeliveryProxy" (onConfigChanged)="getPluginChangedConfig($event, 'delivery')" [pageId]="'wizard'">
+            [useDeliveryProxy]="useDeliveryProxy"
+            [pluginInfo]="{name: payload?.channel,  type:'notify'}"
+             (onConfigChanged)="getPluginChangedConfig($event, 'delivery')" [pageId]="'wizard'">
           </app-view-config-item>
         </div>
         <div class="box step-content" id="c-6">
