@@ -5,6 +5,9 @@
         <div class="message-body">
           Notification service is not added
           and enabled.&nbsp; <a (click)="openNotificationServiceModal()"><strong>add & enable now</strong></a>
+          <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+            <i class="far fa-question-circle"></i>
+          </span>
         </div>
       </article>
     </ng-container>
@@ -16,6 +19,9 @@
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
+          <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+            <i class="far fa-question-circle"></i>
+          </span>
         </div>
       </article>
     </ng-container>

@@ -82,3 +82,7 @@
 [hidden] {
   display: none !important;
 }
+
+.is-hovered {
+cursor: pointer !important;
+}

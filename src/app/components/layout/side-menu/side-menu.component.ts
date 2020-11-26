@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { DocService } from '../../../services/doc.service';
 import { SharedService } from '../../../services/shared.service';
 
 @Component({
@@ -13,7 +13,11 @@ export class SideMenuComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
 
   isAdmin = false;
-  constructor(private router: Router, private sharedService: SharedService) { }
+  constructor(
+    private router: Router,
+    private docService: DocService,
+    private sharedService: SharedService
+  ) { }
   ngOnInit() {
     this.sharedService.isAdmin.subscribe(value => {
       this.isAdmin = value;
@@ -31,5 +35,9 @@ export class SideMenuComponent implements OnInit {
     this.step = step;
     this.router.navigate([step]);
     this.toggle.emit();
+  }
+
+  goToLink() {
+    this.docService.goToLink();
   }
 }

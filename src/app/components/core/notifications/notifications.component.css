@@ -18,6 +18,12 @@
   display: none;
 }
 
+.is-hovered {
+  cursor: pointer !important;
+  margin-top: 7px;
+  margin-right: -14px;
+}
+
 .disable-tag {
  opacity: 0.5;
  filter: alpha(opacity=50);
