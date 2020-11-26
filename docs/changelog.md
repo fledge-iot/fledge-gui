@@ -1,6 +1,7 @@
 ## v1.8.2next [2020-xx-xx]
 
 #### Added
+* Documentation help links added
 
 #### Changed
 

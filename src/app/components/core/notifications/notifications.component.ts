@@ -12,6 +12,7 @@ import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.com
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
 import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
+import { DocService } from '../../../services/doc.service';
 
 @Component({
   selector: 'app-notifications',
@@ -41,13 +42,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
   @ViewChild(NotificationServiceModalComponent, { static: true }) notificationServiceModal: NotificationServiceModalComponent;
 
-  constructor(public servicesApiService: ServicesApiService,
+  constructor(
+    public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
     public notificationService: NotificationsService,
     public ngProgress: ProgressBarService,
     public alertService: AlertService,
     private route: ActivatedRoute,
     public router: Router,
+    public docService: DocService,
     private sharedService: SharedService) { }
 
   ngOnInit() {
@@ -260,6 +263,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       notificationServiceName: this.notificationServiceName
     };
     this.notificationServiceModal.toggleModal(true);
+  }
+
+  goToLink() {
+    this.docService.goToNotificationDocLink();
   }
 
   ngOnDestroy() {

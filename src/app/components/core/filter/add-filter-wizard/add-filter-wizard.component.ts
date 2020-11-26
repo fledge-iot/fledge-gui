@@ -22,6 +22,7 @@ export class AddFilterWizardComponent implements OnInit {
   public isValidName = true;
   public payload: any;
   public selectedPluginDescription = '';
+  public plugin:any;
   public pluginData = [];
   public filesToUpload = [];
   public requestInProgress = false;
@@ -305,8 +306,8 @@ export class AddFilterWizardComponent implements OnInit {
     } else {
       this.isSinglePlugin = true;
       this.isValidPlugin = true;
-      const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
     }
   }
 
