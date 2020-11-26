@@ -5,7 +5,7 @@
       <p *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
         Notification Service</p>
       <p *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button [disabled]="pluginInstallationState" class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <form name="notification-form" id="notificationForm" #fg="ngForm" (ngSubmit)="fg.form.valid && saveChanges()"
@@ -62,10 +62,10 @@
           </div>
           <div class="field is-grouped is-pulled-right">
             <p class="control">
-              <button class="button is-small" id="cancel" (click)="toggleModal(false)">Cancel</button>
+              <button [disabled]="pluginInstallationState" class="button is-small" id="cancel" (click)="toggleModal(false)">Cancel</button>
             </p>
             <p class="control">
-              <button class="button is-small is-link" (click)="proxy()">{{btnText}}</button>
+              <button [disabled]="pluginInstallationState" class="button is-small is-link" (click)="proxy()">{{btnText}}</button>
             </p>
           </div>
         </div>

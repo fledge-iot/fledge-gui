@@ -32,6 +32,8 @@ export class NotificationServiceModalComponent implements OnChanges {
   showDeleteBtn = true;
   public notificationServiceRecord;
 
+  pluginInstallationState = false;
+
   increment = 1;
   maxRetry = 15;
   initialDelay = 1000;
@@ -76,6 +78,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   public toggleModal(isOpen: Boolean) {
+    this.pluginInstallationState = false;
     const notificationServiceModal = <HTMLDivElement>document.getElementById('notification-service-modal');
     if (notificationServiceModal) {
       if (isOpen) {
@@ -160,6 +163,7 @@ export class NotificationServiceModalComponent implements OnChanges {
             // Throw error after exceed number of attempts
             concatMap(o => {
               if (this.increment > this.maxRetry) {
+                this.pluginInstallationState = false;
                 this.ngProgress.done();
                 this.alertService.closeMessage();
                 // tslint:disable-next-line: max-line-length
@@ -170,7 +174,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        this.alertService.closeMessage();
+        this.pluginInstallationState = false;
         this.addNotificationService(true);
       });
   }
@@ -210,6 +214,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   installNotificationService() {
+    this.pluginInstallationState = true;
     const servicePayload = {
       format: 'repository',
       name: this.notificationServicePackageName,
@@ -226,6 +231,7 @@ export class NotificationServiceModalComponent implements OnChanges {
         },
         error => {
           /** request done */
+          this.pluginInstallationState = false;
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
