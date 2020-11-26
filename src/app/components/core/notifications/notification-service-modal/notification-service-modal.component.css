@@ -38,3 +38,8 @@ hr {
     color: #818078;
     background-color: #fff;
 }
+
+.is-hovered {
+  cursor: pointer !important;
+  margin-top: 7px;
+}

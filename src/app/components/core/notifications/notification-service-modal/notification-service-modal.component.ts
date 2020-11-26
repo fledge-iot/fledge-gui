@@ -11,6 +11,7 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { isEmpty } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -44,10 +45,15 @@ export class NotificationServiceModalComponent implements OnChanges {
   @ViewChild('fg', { static: false }) form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
-  constructor(public fb: FormBuilder, public ngProgress: ProgressBarService,
-    private configService: ConfigurationService, public schedulesService: SchedulesService,
-    public servicesApiService: ServicesApiService, public alertService: AlertService,
-    private notificationService: NotificationsService, private service: ServicesApiService) { }
+  constructor(
+    public fb: FormBuilder,
+    public ngProgress: ProgressBarService,
+    private configService: ConfigurationService,
+    public schedulesService: SchedulesService,
+    public servicesApiService: ServicesApiService,
+    public alertService: AlertService,
+    private docService: DocService,
+    private notificationService: NotificationsService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['notificationServiceData']) {
@@ -122,7 +128,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   monitorNotificationServiceInstallationStatus(data: any, pluginName: string) {
-    this.service.monitorPluginInstallationStatus(data.statusLink)
+    this.servicesApiService.monitorPluginInstallationStatus(data.statusLink)
       .pipe(
         take(1),
         // checking the response object for plugin.
@@ -413,5 +419,9 @@ export class NotificationServiceModalComponent implements OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  goToLink() {
+    this.docService.goToNotificationDocLink();
   }
 }

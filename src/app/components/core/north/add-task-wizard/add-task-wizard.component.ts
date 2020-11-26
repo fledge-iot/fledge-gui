@@ -30,6 +30,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public payload: any;
   public schedulesName = [];
   public selectedPluginDescription = '';
+  public plugin: any;
   public showSpinner = false;
   private subscription: Subscription;
 
@@ -383,8 +384,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     } else {
       this.isSinglePlugin = true;
       this.isValidPlugin = true;
-      const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
     }
   }
 

@@ -22,6 +22,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   public isValidPlugin = true;
   public isSinglePlugin = true;
   public selectedPluginDescription = '';
+  public plugin: any;
   public isValidName = true;
   public serviceType = 'South';
   public isScheduleEnabled = true;
@@ -121,8 +122,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     } else {
       this.isSinglePlugin = true;
       this.isValidPlugin = true;
-      const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+       this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
     }
   }
 
@@ -185,9 +186,9 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         this.getConfiguration();
         break;
       case 2:
-          if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
-            return;
-          }
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+          return;
+        }
         this.viewConfigItemComponent.callFromWizard();
         document.getElementById('vci-proxy').click();
         nxtButton.textContent = 'Done';

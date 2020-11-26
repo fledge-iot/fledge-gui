@@ -129,7 +129,8 @@
       </div>
       <div class="box step-content" id="c-2">
         <app-view-config-item [hidden]="!configurationData" [categoryConfigurationData]="configurationData"
-          [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'wizard'"></app-view-config-item>
+        [pluginInfo]="{name: payload?.plugin,  type:'Filter'}"
+        [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'wizard'"></app-view-config-item>
       </div>
     </form>
   </div>

@@ -1,12 +1,14 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit,
-  Output, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy
+  ChangeDetectorRef, Component,
+  ElementRef, EventEmitter, Input, OnChanges,
+  OnDestroy, OnInit,
+  Output, ViewChild
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { differenceWith, sortBy, isEqual, isEmpty, cloneDeep, has, map, assign, find } from 'lodash';
+import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
-
 import { AlertService, ConfigurationService, ProgressBarService, SharedService } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
 import ConfigTypeValidation from '../configuration-type-validation';
 
 @Component({
@@ -23,6 +25,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @Input() useDeliveryProxy = 'false';
   @Input() formId = '';
   @Input() pageId = 'page';
+  @Input() pluginInfo: any;
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration: any;
@@ -54,11 +57,13 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   public JSON;
 
-  constructor(private configService: ConfigurationService,
+  constructor(
+    private configService: ConfigurationService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private cdRef: ChangeDetectorRef,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private docService: DocService
   ) {
     this.JSON = JSON;
   }
@@ -505,5 +510,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         this.passwordMatched = { key: obj.key, value: true };
       }
     });
+  }
+
+  goToLink() {
+    this.docService.goToPluginLink(this.pluginInfo);
   }
 }
