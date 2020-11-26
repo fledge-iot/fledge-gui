@@ -74,7 +74,9 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.toggleModal(false);
+    if (!this.pluginInstallationState) {
+      this.toggleModal(false);
+    }
   }
 
   public toggleModal(isOpen: Boolean) {
