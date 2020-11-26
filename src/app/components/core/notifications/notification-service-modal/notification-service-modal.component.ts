@@ -1,12 +1,15 @@
 import { Component, EventEmitter, Output, OnChanges, Input, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
-import { ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
-  ConfigurationService } from '../../../../services';
+import {
+  ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
+  ConfigurationService
+} from '../../../../services';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty } from 'lodash';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -28,15 +31,22 @@ export class NotificationServiceModalComponent implements OnChanges {
   public notificationServiceRecord;
 
   @Output() notifyServiceEmitter: EventEmitter<any> = new EventEmitter<any>();
-  @Input() notificationServiceData: { notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
-    notificationServiceName: string };
+  @Input() notificationServiceData: {
+    notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
+    notificationServiceName: string
+  };
   @ViewChild('notificationConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild('fg', { static: false }) form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
-  constructor(public fb: FormBuilder, public ngProgress: ProgressBarService,
-    private configService: ConfigurationService, public schedulesService: SchedulesService,
-    public servicesApiService: ServicesApiService, public alertService: AlertService,
+  constructor(
+    public fb: FormBuilder,
+    public ngProgress: ProgressBarService,
+    private configService: ConfigurationService,
+    public schedulesService: SchedulesService,
+    public servicesApiService: ServicesApiService,
+    public alertService: AlertService,
+    private docService: DocService,
     private notificationService: NotificationsService) { }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -93,7 +103,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.btnText = 'Save';
           this.toggleModal(false);
           setTimeout(() => {
-            this.notifyServiceEmitter.next({isAddDeleteAction: true});
+            this.notifyServiceEmitter.next({ isAddDeleteAction: true });
           }, 2000);
         },
         (error) => {
@@ -220,7 +230,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isNotificationServiceEnabled = true;
-          this.notifyServiceEmitter.next({isEnabled: this.isNotificationServiceEnabled});
+          this.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */
@@ -243,7 +253,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isNotificationServiceEnabled = false;
-          this.notifyServiceEmitter.next({isEnabled: this.isNotificationServiceEnabled});
+          this.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */
@@ -263,7 +273,7 @@ export class NotificationServiceModalComponent implements OnChanges {
         (data: any) => {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
-          this.notifyServiceEmitter.next({isAddDeleteAction: true});
+          this.notifyServiceEmitter.next({ isAddDeleteAction: true });
           this.toggleModal(false);
           this.form.reset();
         },
@@ -310,7 +320,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
     this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('hidden-save').click();
-    this.notifyServiceEmitter.next({isConfigChanged: true});
+    this.notifyServiceEmitter.next({ isConfigChanged: true });
   }
 
   /**
@@ -354,5 +364,9 @@ export class NotificationServiceModalComponent implements OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  goToLink() {
+    this.docService.goToNotificationDocLink();
   }
 }

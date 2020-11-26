@@ -7,8 +7,8 @@ import {
 import { NgForm } from '@angular/forms';
 import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
-import { name, version } from '../../../../../../package.json';
 import { AlertService, ConfigurationService, ProgressBarService, SharedService } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
 import ConfigTypeValidation from '../configuration-type-validation';
 
 @Component({
@@ -57,11 +57,13 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   public JSON;
 
-  constructor(private configService: ConfigurationService,
+  constructor(
+    private configService: ConfigurationService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private cdRef: ChangeDetectorRef,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private docService: DocService
   ) {
     this.JSON = JSON;
   }
@@ -510,13 +512,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  navToLink() {
-    const v = version.includes('next') ? 'develop' : `v${version}`;
-    const p = `${name === 'fledge' ? 'fledge' : 'foglamp'}-${this.pluginInfo.type.toLowerCase()}-${this.pluginInfo.name.toLowerCase()}`;
-    if (name === 'fledge') {
-      window.open(`https://fledge-iot.readthedocs.io/en/${v}/plugins/${p}/index.html`, '_blank');
-    } else {
-      window.open(`https://foglamp-foglamp-documentation.readthedocs-hosted.com/en/${v}/plugins/${p}/index.html`, '_blank');
-    }
+  goToLink() {
+    this.docService.goToPluginLink(this.pluginInfo);
   }
 }

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { name, version } from '../../../../../package.json';
+import { DocService } from '../../../services/doc.service';
 import { SharedService } from '../../../services/shared.service';
 
 @Component({
@@ -13,7 +13,11 @@ export class SideMenuComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
 
   isAdmin = false;
-  constructor(private router: Router, private sharedService: SharedService) { }
+  constructor(
+    private router: Router,
+    private docService: DocService,
+    private sharedService: SharedService
+  ) { }
   ngOnInit() {
     this.sharedService.isAdmin.subscribe(value => {
       this.isAdmin = value;
@@ -34,11 +38,6 @@ export class SideMenuComponent implements OnInit {
   }
 
   goToLink() {
-    const v = version.includes('next') ? 'develop' : `v${version}`;
-    if (name === 'fledge') {
-      window.open(`https://fledge-iot.readthedocs.io/en/${v}`, '_blank');
-    } else {
-      window.open(`https://foglamp-foglamp-documentation.readthedocs-hosted.com/en/${v}`, '_blank');
-    }
+    this.docService.goToLink();
   }
 }
