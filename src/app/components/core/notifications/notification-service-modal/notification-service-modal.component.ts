@@ -32,6 +32,8 @@ export class NotificationServiceModalComponent implements OnChanges {
   showDeleteBtn = true;
   public notificationServiceRecord;
 
+  pluginInstallationState = false;
+
   increment = 1;
   maxRetry = 15;
   initialDelay = 1000;
@@ -72,10 +74,13 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.toggleModal(false);
+    if (!this.pluginInstallationState) {
+      this.toggleModal(false);
+    }
   }
 
   public toggleModal(isOpen: Boolean) {
+    this.pluginInstallationState = false;
     const notificationServiceModal = <HTMLDivElement>document.getElementById('notification-service-modal');
     if (notificationServiceModal) {
       if (isOpen) {
@@ -92,7 +97,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
   }
 
-  addNotificationService() {
+  addNotificationService(installationState = false) {
     const formValues = this.state$.getValue() || {};
     const name = formValues.notificationServiceName;
     const payload = {
@@ -101,8 +106,9 @@ export class NotificationServiceModalComponent implements OnChanges {
       enabled: formValues.enabled
     };
     /** request start */
-    this.ngProgress.start();
-
+    if (!installationState) {
+      this.ngProgress.start();
+    }
     this.servicesApiService.addService(payload)
       .subscribe(
         () => {
@@ -113,7 +119,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.toggleModal(false);
           setTimeout(() => {
             this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
-          }, 2000);
+          }, 1000);
         },
         (error) => {
           /** request done */
@@ -143,7 +149,6 @@ export class NotificationServiceModalComponent implements OnChanges {
           result.pipe(
             // only if a server returned an error, stop trying and pass the error down
             tap(installStatus => {
-              this.ngProgress.start();
               if (installStatus.error) {
                 this.ngProgress.done();
                 this.alertService.closeMessage();
@@ -160,6 +165,7 @@ export class NotificationServiceModalComponent implements OnChanges {
             // Throw error after exceed number of attempts
             concatMap(o => {
               if (this.increment > this.maxRetry) {
+                this.pluginInstallationState = false;
                 this.ngProgress.done();
                 this.alertService.closeMessage();
                 // tslint:disable-next-line: max-line-length
@@ -170,9 +176,8 @@ export class NotificationServiceModalComponent implements OnChanges {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        this.alertService.closeMessage();
-        this.alertService.success('Notification service added successfully.', true);
-        this.addNotificationService();
+        this.pluginInstallationState = false;
+        this.addNotificationService(true);
       });
   }
 
@@ -211,6 +216,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   installNotificationService() {
+    this.pluginInstallationState = true;
     const servicePayload = {
       format: 'repository',
       name: this.notificationServicePackageName,
@@ -227,6 +233,7 @@ export class NotificationServiceModalComponent implements OnChanges {
         },
         error => {
           /** request done */
+          this.pluginInstallationState = false;
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -347,7 +354,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     if (!this.availableServices.includes('notification')) {
       this.installNotificationService();
     } else {
-      this.addNotificationService();
+      this.addNotificationService(false);
     }
   }
 
@@ -362,8 +369,8 @@ export class NotificationServiceModalComponent implements OnChanges {
       if (!this.isNotificationServiceEnabled && this.form.controls['enabled'].value) {
         this.enableNotificationService();
       }
+      this.toggleModal(false);
     }
-    this.toggleModal(false);
   }
 
   proxy() {
