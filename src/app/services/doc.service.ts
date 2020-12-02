@@ -7,18 +7,18 @@ import { version, doc_url } from '../../../package.json';
 export class DocService {
 
   goToLink() {
-    const v = version.includes('next') ? 'develop' : `v${version}`;
+    const v = version.includes('next') ? 'fogl-4745' : `v${version}`;
     window.open(`${doc_url}${v}`, '_blank');
   }
 
   goToPluginLink(pluginInfo: any) {
-    const v = version.includes('next') ? 'develop' : `v${version}`;
+    const v = version.includes('next') ? 'fogl-4745' : `v${version}`;
     const p = `fledge-${pluginInfo.type.toLowerCase()}-${pluginInfo.name.toLowerCase()}`;
     window.open(`${doc_url}${v}/plugins/${p}/index.html`, '_blank');
   }
 
   goToNotificationDocLink() {
-    const v = version.includes('next') ? 'develop' : `v${version}`;
+    const v = version.includes('next') ? 'fogl-4745' : `v${version}`;
     window.open(`${doc_url}${v}/notifications.html`, '_blank');
   }
 
