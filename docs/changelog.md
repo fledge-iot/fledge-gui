@@ -1,11 +1,16 @@
 ## v1.8.2next [2020-xx-xx]
 
 #### Added
-* Documentation help links added
+* [FOGL-4704] Added documentation help links (#39)
 
 #### Changed
+* Type handling for Notification plugins
 
 #### Fixed
+* [FOGL-4420] Removed repeat field for manual and startup schedule (#29)
+
+#### Others
+* Updated bulma css framework to 0.8.2 (#18)
 
 ## v1.8.2 [2020-11-03]
 
