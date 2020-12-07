@@ -2,9 +2,11 @@
 
 #### Added
 * [FOGL-4704] Added documentation help links (#39)
+* [FOGL-xxxx] Northbound always on services support in North pages  (#xx)
 
 #### Changed
-* Type handling for Notification plugins
+* [FOGL-4779] Type handling for Notification plugins (#41)
+* [FOGL-4586] Package installation mechanism, using asynchronous API support (#38)
 
 #### Fixed
 * [FOGL-4420] Removed repeat field for manual and startup schedule (#29)
