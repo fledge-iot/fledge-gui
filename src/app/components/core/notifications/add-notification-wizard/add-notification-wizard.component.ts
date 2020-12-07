@@ -351,7 +351,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
     const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-    if (pluginType === 'notificationRule') {
+    if (pluginType === 'rule') {
       this.selectedRulePluginDescription = this.notificationRulePlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
     } else {
