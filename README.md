@@ -22,7 +22,7 @@ cd fledge-gui
 
 Run `yarn install && yarn start` & Navigate to http://localhost:4200/
 
-To allow access on other browser devices, over the same network, you can set the host to 0.0.0.0/IP address of the development machine. You can also set a different web port, default port is 4200.
+To allow access on other browser devices, over the same network, you can set host to `0.0.0.0`/IP address of the development machine. You can also set a different web port, default port is 4200.
 i.e. `yarn install && yarn start --host 0.0.0.0 --port <PORT>` `http://<IP OF HOST MACHINE>:<PORT>/`
 
 > The app will automatically reload if you change any of the source files.
