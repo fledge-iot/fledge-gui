@@ -251,18 +251,16 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.toggleModal(false);
       return false;
     }
-    let repeatInterval;
-    let exclusiveValue;
-    if (this.task['processName'] !== 'north_C') {
-      repeatInterval = form.controls['repeatTime'].value !== ('None' || undefined) ? Utils.convertTimeToSec(
-        form.controls['repeatTime'].value, form.controls['repeatDays'].value) : 0;
-      exclusiveValue = form.controls['exclusive'].value;
-    }
-    const updatePayload = {
-      'repeat': repeatInterval,
-      'enabled': form.controls['enabled'].value,
-      'exclusive': exclusiveValue
+    const updatePayload: any = {
+      'enabled': form.controls['enabled'].value
     };
+
+    if (this.task['processName'] !== 'north_C') {
+      updatePayload.repeat = form.controls['repeatTime'].value !== ('None' || undefined) ? Utils.convertTimeToSec(
+        form.controls['repeatTime'].value, form.controls['repeatDays'].value) : 0;
+      updatePayload.exclusive = form.controls['exclusive'].value;  
+    }
+    
     /** request started */
     this.ngProgress.start();
     this.schedulesService.updateSchedule(this.task['id'], updatePayload).

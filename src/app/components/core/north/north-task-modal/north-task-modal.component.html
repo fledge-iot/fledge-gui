@@ -34,7 +34,8 @@
                     </div>
                   </div>
                 </div>
-                <div *ngIf="task?.processName !== 'north_C'" class="field is-horizontal">
+                <ng-container *ngIf="task?.processName !== 'north_C'">
+                <div  class="field is-horizontal">
                   <div class="field-label has-text-left">
                     <label class="label">Exclusive</label>
                   </div>
@@ -45,7 +46,7 @@
                     </div>
                   </div>
                 </div>
-                <div *ngIf="task?.processName !== 'north_C'" class="field is-horizontal">
+                <div class="field is-horizontal">
                   <div class="field-label has-text-left">
                     <label class="label">Interval</label>
                   </div>
@@ -64,6 +65,7 @@
                     </div>
                   </div>
                 </div>
+              </ng-container>
               </div>
             </div>
             <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="taskForm">Save</button>

@@ -170,7 +170,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           return formValues['name'].trim() === item.name;
         });
         if (isServiceNameExist) {
-          this.alertService.error('A south service or north task instance already exists with this name.');
+          this.alertService.error('A service/task already exists with this name.');
           return false;
         }
 
