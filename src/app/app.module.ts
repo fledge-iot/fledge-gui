@@ -38,7 +38,7 @@ import {
   ServicesApiService,
   SupportService,
   SystemLogService,
-  UserService,
+  UserService
 } from './services';
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';

@@ -5,3 +5,7 @@
 .container.is-fluid {
   margin-top: 10px;
 }
+
+.service-checkbox {
+  padding-top: 0.4rem;
+}
