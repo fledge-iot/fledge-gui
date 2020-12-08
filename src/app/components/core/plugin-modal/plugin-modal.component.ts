@@ -72,7 +72,6 @@ export class PluginModalComponent implements OnInit, OnChanges {
     this.service.getAvailablePlugins(type).
       subscribe(
         (data: any) => {
-          this.installButtonEnabled = true;
           this.plugins = data['plugins'].map((p: string) => p.replace(`fledge-${this.data.type.toLowerCase()}-`, ''));
           this.placeholderText = 'Select Plugin';
           if (isEmpty(this.plugins)) {
@@ -117,7 +116,6 @@ export class PluginModalComponent implements OnInit, OnChanges {
     this.service.installPlugin(pluginData).
       subscribe(
         (data: any) => {
-          this.toggleModal(false);
           this.monitorPluginInstallationStatus(data, pluginName);
         },
         error => {
@@ -181,17 +179,18 @@ export class PluginModalComponent implements OnInit, OnChanges {
             }),
           ))
       ).subscribe(() => {
+        this.toggleModal(false);
+        this.ngProgress.done();
+        this.alertService.closeMessage();
+        this.alertService.success(`Plugin ${pluginName} installed successfully.`);
+        this.installButtonEnabled = true;
+        this.pluginForm.controls.pluginName.enable();
         this.notify.emit({
           modalState: false,
           pluginInstall: true,
           type: this.data.type.toLowerCase(),
           name: pluginName
         });
-        this.ngProgress.done();
-        this.alertService.closeMessage();
-        this.alertService.success(`Plugin ${pluginName} installed successfully.`);
-        this.installButtonEnabled = false;
-        this.pluginForm.controls.pluginName.enable();
       });
   }
 }
