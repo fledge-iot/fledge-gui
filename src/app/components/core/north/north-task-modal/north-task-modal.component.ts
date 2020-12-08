@@ -256,8 +256,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     };
 
     if (this.task['processName'] !== 'north_C') {
-      updatePayload.repeat = form.controls['repeatTime'].value !== ('None' || undefined) ? Utils.convertTimeToSec(
-        form.controls['repeatTime'].value, form.controls['repeatDays'].value) : 0;
+      updatePayload.repeat = 0;
+      if(form.controls['repeatTime'].value !== ('None' || undefined)) {
+        updatePayload.repeat = Utils.convertTimeToSec(form.controls['repeatTime'].value, form.controls['repeatDays'].value);
+      }
       updatePayload.exclusive = form.controls['exclusive'].value;  
     }
     
