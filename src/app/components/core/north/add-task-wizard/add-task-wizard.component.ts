@@ -182,7 +182,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           return formValues['name'].trim() === item.name;
         });
         if (isTaskNameExist) {
-          this.alertService.error('A north task instance or south service already exists with this name.');
+          this.alertService.error('A service/task already exists with this name.');
           return false;
         }
 
@@ -209,10 +209,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         break;
       case 3:
         if (this.isService) {
-          this.payload.schedule_repeat = '';
-          this.payload.schedule_type = '1';
-          this.payload.enabled = this.isScheduleEnabled;
+          delete this.payload.schedule_repeat;
+          delete this.payload.schedule_type;
           delete this.payload.schedule_enabled;
+          this.payload.enabled = this.isScheduleEnabled;
           this.addService(this.payload);
         } else {
           this.addScheduledTask(this.payload);
@@ -331,10 +331,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     this.ngProgress.start();
     this.servicesApiService.addService(payload)
       .subscribe(
-        () => {
+        (response) => {
           /** request done */
           this.ngProgress.done();
-          this.alertService.success('Service added successfully.', true);
+          this.alertService.success(response['name'] + ' service added successfully.', true);
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -424,20 +424,12 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   onCheckboxClicked(event) {
-    if (event.target.checked) {
-      this.isScheduleEnabled = true;
-    } else {
-      this.isScheduleEnabled = false;
-    }
+    this.isScheduleEnabled = event.target.checked ? true : false;
     this.payload.schedule_enabled = this.isScheduleEnabled;
   }
 
   onServiceCheckboxClicked(event) {
-    if (event.target.checked) {
-      this.isService = true;
-    } else {
-      this.isService = false;
-    }
+    this.isService = event.target.checked ? true : false;
   }
 
   public getSchedules(): void {
