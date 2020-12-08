@@ -26,6 +26,7 @@
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th></th>
                   <th>Status</th>
                   <th>Plugin</th>
                   <th>Version</th>
@@ -36,6 +37,9 @@
                 <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
                   <td class="align-content">
                     <a class="button is-text" (click)="openNorthTaskModal(t)">{{t.name}}</a>
+                  </td>
+                  <td class="align-content">
+                    <span *ngIf="t?.processName === 'north_C'" class="tag is-light is-rounded">Service</span>
                   </td>
                   <td>
                     <span *ngIf="t.enabled == true" class="tag is-success">enabled</span>

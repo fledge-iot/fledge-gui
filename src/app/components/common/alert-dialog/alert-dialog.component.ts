@@ -68,9 +68,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       }
     }
     if (this.deleteTaskData) {
-      if (this.deleteTaskData.key === 'deleteTask') {
-        this.deleteTaskData.headerTextValue = 'Delete Instance';
-      }
+      this.deleteTaskData.headerTextValue = this.deleteTaskData.key === 'deleteTask' ? 'Delete Instance' : 'Delete Service';
     }
     if (this.notificationRecord) {
       if (this.notificationRecord.key === 'deleteNotification') {
@@ -164,7 +162,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       }
     }
     if (this.deleteTaskData) {
-      if (this.deleteTaskData.key === 'deleteTask') {
+      if (this.deleteTaskData.key === 'deleteTask' || this.deleteTaskData.key === 'deleteService') {
         this.deleteTask.emit({
           name: this.deleteTaskData.name
         });
