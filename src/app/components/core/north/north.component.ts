@@ -79,7 +79,7 @@ export class NorthComponent implements OnInit, OnDestroy {
         (data) => {
           this.tasks = data;
           this.tasks = sortBy(this.tasks, function (obj) {
-            return !obj.enabled + obj.processName.toLowerCase();
+            return !obj.enabled + obj.name.toLowerCase();
           });
           this.hideLoadingSpinner();
         },
