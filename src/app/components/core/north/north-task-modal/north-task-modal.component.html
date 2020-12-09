@@ -2,7 +2,8 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head" style="flex-grow:0;">
-      <p *ngIf="task != undefined" class="modal-card-title is-size-5">{{task.name}}</p>
+      <p *ngIf="task != undefined" class="modal-card-title is-size-5">{{task.name}}
+      <span *ngIf="task?.processName === 'north_C'" class="tag is-white is-rounded">Service</span></p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -33,7 +34,8 @@
                     </div>
                   </div>
                 </div>
-                <div class="field is-horizontal">
+                <ng-container *ngIf="task?.processName !== 'north_C'">
+                <div  class="field is-horizontal">
                   <div class="field-label has-text-left">
                     <label class="label">Exclusive</label>
                   </div>
@@ -63,6 +65,7 @@
                     </div>
                   </div>
                 </div>
+              </ng-container>
               </div>
             </div>
             <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="taskForm">Save</button>
@@ -124,8 +127,8 @@
           <div class="field">
             <div class="field has-text-right">
               <button *ngIf="task != undefined"
-                (click)="openDeleteModal(task.name,'Deleting this instance can not be undone. Continue?', 'deleteTask')"
-                class="button is-small">Delete Instance</button>
+                (click)="openDeleteModal(task.name, 'Deleting this ' + btnTxt + ' can not be undone. Continue?')"
+                class="button is-small">Delete {{btnTxt}}</button>
             </div>
           </div>
         </div>
@@ -137,7 +140,7 @@
       </ng-container>
     </section>
   </div>
-  <app-alert-dialog (deleteTask)='deleteTask($event)' [deleteTaskData]='deleteTaskData'></app-alert-dialog>
+  <app-alert-dialog (deleteTask)='onDelete($event)' [deleteTaskData]='deleteTaskData'></app-alert-dialog>
   <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>

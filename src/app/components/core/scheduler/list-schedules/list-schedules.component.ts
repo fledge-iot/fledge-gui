@@ -105,8 +105,9 @@ export class ListSchedulesComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+          // north_c - North C tasks, north_C - Northbound C Services
           data.schedules.forEach(sch => {
-            if (!['south_c', 'north_c', 'south', 'north', 'notification_c'].includes(sch.processName)) {
+            if (!['south_c', 'north_c', 'north_C', 'south', 'north', 'notification_c'].includes(sch.processName)) {
               this.scheduleData.push(sch);
             }
           });
