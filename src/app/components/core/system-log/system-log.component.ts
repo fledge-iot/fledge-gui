@@ -63,6 +63,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           const south_c = [];
           const notification_c = [];
           const north_c = [];
+          // processName north_C represents Northbound services
           const north_C = [];
           const north = [];
           data.schedules.forEach(sch => {
