@@ -71,5 +71,7 @@ Firefox | 83.0.x (64-bit) | latest 2
 
 [Developer's Guide](docs/developers-guide.md)
 
+## Contributing to Fledge
+See [Contributing Statement](CONTRIBUTING.md)
 
 > &copy; 2020 DIANOMIC SYSTEMS, INC. All Rights Reserved.
