@@ -4,6 +4,7 @@
 * [FOGL-4704] Added documentation help links (#39)
 * [FOGL-4721] Northbound always on services support in North pages (#42)
 * [FOGL-4119] Contribution statement
+
 #### Changed
 * [FOGL-4779] Type handling for Notification plugins (#41)
 * [FOGL-4586] Package installation mechanism, using asynchronous API support (#38)
