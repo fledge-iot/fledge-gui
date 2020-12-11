@@ -63,7 +63,7 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 Browser | Tested Version | Supported
 --------|-------- |-------
 Safari (mac)  | 14.0.x   | latest 1
-Chrome  | 86.0.x (64-bit) | latest 2
+Chrome  | 87.0.x (64-bit) | latest 2
 Firefox | 83.0.x (64-bit) | latest 2
 
 
