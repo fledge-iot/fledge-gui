@@ -2,7 +2,7 @@
 
 #### Added
 * [FOGL-4704] Added documentation help links (#39)
-* [FOGL-xxxx] Northbound always on services support in North pages  (#xx)
+* [FOGL-4721] Northbound always on services support in North pages (#42)
 
 #### Changed
 * [FOGL-4779] Type handling for Notification plugins (#41)
