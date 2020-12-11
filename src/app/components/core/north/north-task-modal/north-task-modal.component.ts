@@ -7,7 +7,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
 
 import {
-  AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService
+  AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService, ServicesApiService
 } from '../../../../services';
 import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
@@ -47,6 +47,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   public advanceConfigButtonText = 'Show Advanced Config';
   public isAdvanceConfig = false;
+  public btnTxt = '';
 
   @ViewChild('fg', { static: false }) form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
@@ -74,6 +75,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private validateFormService: ValidateFormService,
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
+    private servicesApiService: ServicesApiService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -90,6 +92,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.getCategory();
       this.checkIfAdvanceConfig(this.task['name']);
       this.getFilterPipeline();
+      this.btnTxt = this.task['processName'] === 'north_C' ? 'Service' : 'Instance';
     }
   }
 
@@ -248,13 +251,18 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.toggleModal(false);
       return false;
     }
-    const repeatInterval = form.controls['repeatTime'].value !== ('None' || undefined) ? Utils.convertTimeToSec(
-      form.controls['repeatTime'].value, form.controls['repeatDays'].value) : 0;
-    const updatePayload = {
-      'repeat': repeatInterval,
-      'exclusive': form.controls['exclusive'].value,
+    const updatePayload: any = {
       'enabled': form.controls['enabled'].value
     };
+
+    if (this.task['processName'] !== 'north_C') {
+      updatePayload.repeat = 0;
+      if(form.controls['repeatTime'].value !== ('None' || undefined)) {
+        updatePayload.repeat = Utils.convertTimeToSec(form.controls['repeatTime'].value, form.controls['repeatDays'].value);
+      }
+      updatePayload.exclusive = form.controls['exclusive'].value;  
+    }
+    
     /** request started */
     this.ngProgress.start();
     this.schedulesService.updateSchedule(this.task['id'], updatePayload).
@@ -312,14 +320,22 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   * @param message   message to show on alert
   * @param action here action is 'deleteTask'
   */
-  openDeleteModal(name, message, action) {
+  openDeleteModal(name, message) {
     this.deleteTaskData = {
       name: name,
       message: message,
-      key: action
+      key: this.task['processName'] === 'north_C' ? 'deleteService' : 'deleteTask'
     };
     // call child component method to toggle modal
     this.child.toggleModal(true);
+  }
+
+  onDelete(payload) {
+    if (this.task['processName'] === 'north_C') {
+      this.deleteService(payload);
+    } else {
+      this.deleteTask(payload);
+    }
   }
 
   public deleteTask(task: any) {
@@ -330,6 +346,31 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
     this.ngProgress.start();
     this.northService.deleteTask(task.name)
+      .subscribe(
+        (data) => {
+          this.ngProgress.done();
+          this.alertService.success(data['result'], true);
+          this.toggleModal(false);
+          this.notify.emit();
+        },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  deleteService(svc: any) {
+    // check if user deleting service without saving previous changes in filters
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.isFilterOrderChanged = false;
+      this.isFilterDeleted = false;
+    }
+    this.ngProgress.start();
+    this.servicesApiService.deleteService(svc.name)
       .subscribe(
         (data) => {
           this.ngProgress.done();

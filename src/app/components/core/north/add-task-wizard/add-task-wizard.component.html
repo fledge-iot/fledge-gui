@@ -90,6 +90,18 @@
           </div>
           <div *ngIf="plugins.length > 0" class="field is-horizontal form-group">
             <div class="field-label is-normal">
+              <label class="label">Add as a Service</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control service-checkbox">
+                  <input class="checkbox" type="checkbox" (click)="onServiceCheckboxClicked($event)">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="plugins.length > 0 && isService === false" class="field is-horizontal form-group">
+            <div class="field-label is-normal">
               <label class="label">Repeat (Interval)</label>
             </div>
             <div class="field-body">

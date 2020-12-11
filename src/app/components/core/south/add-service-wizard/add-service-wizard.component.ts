@@ -170,7 +170,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           return formValues['name'].trim() === item.name;
         });
         if (isServiceNameExist) {
-          this.alertService.error('A south service or north task instance already exists with this name.');
+          this.alertService.error('A service/task already exists with this name.');
           return false;
         }
 
@@ -282,18 +282,16 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   /**
    * Method to add service
    * @param payload  to pass in request
-   * @param nxtButton button to go next
-   * @param previousButton button to go previous
    */
   public addService(payload) {
     /** request started */
     this.ngProgress.start();
     this.servicesApiService.addService(payload)
       .subscribe(
-        () => {
+        (response) => {
           /** request done */
           this.ngProgress.done();
-          this.alertService.success('Service added successfully.', true);
+          this.alertService.success(response['name'] + ' service added successfully.', true);
           this.router.navigate(['/south']);
         },
         (error) => {
