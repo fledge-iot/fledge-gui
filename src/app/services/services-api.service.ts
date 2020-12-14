@@ -91,4 +91,10 @@ export class ServicesApiService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  monitorPluginInstallationStatus(statusURI: string) {
+    return this.http.get(`${environment.BASE_URL}${statusURI.substr(statusURI.indexOf('package'))}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
 }
