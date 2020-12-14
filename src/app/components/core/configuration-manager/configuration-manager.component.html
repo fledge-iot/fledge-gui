@@ -26,9 +26,7 @@
           </div>
         </div>
         <div *ngIf="!isChild" class="panel-block no-cat">
-          <div class="has-text-centered">
-            <small class="no-rec">No Sub-categories</small>
-          </div>
+          <small class="no-rec">No Sub-categories</small>
         </div>
         <div id="root-children" class="panel-block" [ngClass]="{'empty-tree': !isChild}">
           <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)"
