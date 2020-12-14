@@ -134,18 +134,30 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           const servicesData = data.services;
           const coreService = servicesData.filter((el => (el.type === 'Core')));
           const storageService = servicesData.filter((el => (el.type === 'Storage')));
-          const notificationService = servicesData.filter((el => (el.type === 'Notification')));
           let southboundServices = servicesData.filter((el => (el.type === 'Southbound')));
           southboundServices = sortBy(southboundServices, function (obj) {
             return obj.name.toLowerCase();
           });
+          let northboundServices = servicesData.filter((el => (el.type === 'Northbound')));
+          northboundServices = sortBy(northboundServices, function (obj) {
+            return obj.name.toLowerCase();
+          });
+          const notificationService = servicesData.filter((el => (el.type === 'Notification')));
+          const managementService = servicesData.filter((el => (el.type === 'Management')));
+
           this.servicesRecord.push(coreService[0], storageService[0]);
-          if (notificationService.length) {
-            this.servicesRecord.push(notificationService[0]);
-          }
           southboundServices.forEach(service => {
             this.servicesRecord.push(service);
           });
+          northboundServices.forEach(service => {
+            this.servicesRecord.push(service);
+          });
+          if (notificationService.length) {
+            this.servicesRecord.push(notificationService[0]);
+          }
+          if (managementService.length) {
+            this.servicesRecord.push(managementService[0]);
+          }
           this.hideLoadingSpinner();
         },
         (error) => {
