@@ -25,12 +25,12 @@
             </div>
           </div>
         </div>
-        <div *ngIf="!isChild" class="panel-block">
-          <button class="button is-rounded is-fullwidth is-small" disabled>
-            no sub-category
-          </button>
+        <div *ngIf="!isChild" class="panel-block no-cat">
+          <div class="has-text-centered">
+            <small class="no-rec">No Sub-categories</small>
+          </div>
         </div>
-        <div id="root-children" class="panel-block">
+        <div id="root-children" class="panel-block" [ngClass]="{'empty-tree': !isChild}">
           <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)"
             (activate)="onNodeActive($event)"></tree-root>
         </div>

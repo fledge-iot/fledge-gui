@@ -18,3 +18,11 @@
   border-left: 1px solid #dbdbdb;
   border-right: 1px solid #dbdbdb;
 }
+
+.no-cat {
+  justify-content: center;
+}
+
+.empty-tree {
+  display: none;
+}
