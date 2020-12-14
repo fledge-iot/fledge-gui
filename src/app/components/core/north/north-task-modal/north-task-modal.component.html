@@ -2,8 +2,14 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head" style="flex-grow:0;">
-      <p *ngIf="task != undefined" class="modal-card-title is-size-5">{{task.name}}
-      <span *ngIf="task?.processName === 'north_C'" class="tag is-white is-rounded">Service</span></p>
+      <p *ngIf="task != undefined" class="modal-card-title is-size-5">
+        <ng-container *ngIf="task?.processName === 'north_C'; else nTask">
+          {{task.name}} North Service
+        </ng-container>
+      <ng-template #nTask>
+        {{task.name}}
+      </ng-template>
+      </p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -124,6 +130,19 @@
             </div>
           </div>
           <hr>
+          <!-- Note: task here is old variable name retained; if processName is north_C task represents a Northbound service -->
+          <div *ngIf="task?.processName === 'north_C' && task?.enabled" class="field is-horizontal">
+            <div class="field-label has-text-left">
+              <label class="label">Service Info</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <ng-container *ngIf="task.protocol && task.address && task.management_port">
+                  <small>{{task.protocol}}://{{task.address}}:{{task.management_port}}</small>
+                </ng-container>
+              </div>
+            </div>
+          </div>
           <div class="field">
             <div class="field has-text-right">
               <button *ngIf="task != undefined"

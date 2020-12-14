@@ -63,6 +63,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           const south_c = [];
           const notification_c = [];
           const north_c = [];
+          // processName north_C represents Northbound services
+          const north_C = [];
           const north = [];
           data.schedules.forEach(sch => {
             if ('south_c'.includes(sch.processName)) {
@@ -74,11 +76,14 @@ export class SystemLogComponent implements OnInit, OnDestroy {
             if ('north_c'.includes(sch.processName)) {
               north_c.push(sch);
             }
+            if ('north_C'.includes(sch.processName)) {
+              north_C.push(sch);
+            }
             if ('north'.includes(sch.processName)) {
               north.push(sch);
             }
           });
-          this.scheduleData = south_c.concat(notification_c, north_c, north);
+          this.scheduleData = south_c.concat(notification_c, north_c, north_C, north);
         },
         error => {
           if (error.status === 0) {
