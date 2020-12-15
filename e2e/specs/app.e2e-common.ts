@@ -95,14 +95,16 @@ describe('Fledge gui', () => {
         'Status'
       ];
       skipLogin.navToBackupRestore();
-      skipLogin.clickRequestBackup();
+
       expect(skipLogin.getBackupRestoreTitle()).toContain('Backups');
       for (const ColumnName in ColumnsName) {
         expect(skipLogin.getBackupRestoreColNames()).toContain(ColumnsName[ColumnName]);
       }
+      expect(skipLogin.noBackupRecord()).toContain('No Record');
       expect(skipLogin.getRequestBackup()).toContain('Create New');
+
+      skipLogin.clickRequestBackup();
       expect(skipLogin.getCreatedBackupRow()).toContain('COMPLETED');
-      // Delete backup
       skipLogin.deleteBackup();
       expect(skipLogin.noBackupRecord()).toContain('No Record');
     });
