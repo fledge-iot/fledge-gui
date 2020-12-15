@@ -101,6 +101,7 @@ describe('Fledge gui', () => {
         expect(skipLogin.getBackupRestoreColNames()).toContain(ColumnsName[ColumnName]);
       }
       expect(skipLogin.getRequestBackup()).toContain('Create New');
+      expect(skipLogin.getCreatedBackupRow()).toContain('COMPLETED');
       // Delete backup
       skipLogin.deleteBackup();
       expect(skipLogin.noBackupRecord()).toContain('No Record');
