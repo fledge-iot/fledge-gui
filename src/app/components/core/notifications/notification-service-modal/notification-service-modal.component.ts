@@ -9,6 +9,8 @@ import {
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty } from 'lodash';
+import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
@@ -30,7 +32,13 @@ export class NotificationServiceModalComponent implements OnChanges {
   showDeleteBtn = true;
   public notificationServiceRecord;
 
-  @Output() notifyServiceEmitter: EventEmitter<any> = new EventEmitter<any>();
+  pluginInstallationState = false;
+
+  increment = 1;
+  maxRetry = 15;
+  initialDelay = 1000;
+  state$ = new BehaviorSubject<any>(null);
+
   @Input() notificationServiceData: {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
@@ -66,34 +74,41 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.toggleModal(false);
+    if (!this.pluginInstallationState) {
+      this.toggleModal(false);
+    }
   }
 
   public toggleModal(isOpen: Boolean) {
+    this.pluginInstallationState = false;
     const notificationServiceModal = <HTMLDivElement>document.getElementById('notification-service-modal');
-    if (isOpen) {
-      if (this.form.controls['notificationServiceName'] !== undefined) {
-        this.form.controls['notificationServiceName'].markAsPristine();
-        this.form.controls['enabled'].markAsUntouched();
-        this.form.controls['notificationServiceName'].reset();
+    if (notificationServiceModal) {
+      if (isOpen) {
+        if (this.form.controls['notificationServiceName'] !== undefined) {
+          this.form.controls['notificationServiceName'].markAsPristine();
+          this.form.controls['enabled'].markAsUntouched();
+          this.form.controls['notificationServiceName'].reset();
+        }
+        notificationServiceModal.classList.add('is-active');
+        return;
       }
-      notificationServiceModal.classList.add('is-active');
-      return;
+      notificationServiceModal.classList.remove('is-active');
+      this.category = '';
     }
-    notificationServiceModal.classList.remove('is-active');
-    this.category = '';
   }
 
-  addNotificationService() {
-    const name = this.form.controls['notificationServiceName'].value;
+  addNotificationService(installationState = false) {
+    const formValues = this.state$.getValue() || {};
+    const name = formValues.notificationServiceName;
     const payload = {
       name: name,
       type: 'notification',
-      enabled: this.form.controls['enabled'].value
+      enabled: formValues.enabled
     };
     /** request start */
-    this.ngProgress.start();
-
+    if (!installationState) {
+      this.ngProgress.start();
+    }
     this.servicesApiService.addService(payload)
       .subscribe(
         () => {
@@ -103,8 +118,8 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.btnText = 'Save';
           this.toggleModal(false);
           setTimeout(() => {
-            this.notifyServiceEmitter.next({ isAddDeleteAction: true });
-          }, 2000);
+            this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
+          }, 1000);
         },
         (error) => {
           /** request done */
@@ -116,6 +131,56 @@ export class NotificationServiceModalComponent implements OnChanges {
           }
         });
   }
+
+  monitorNotificationServiceInstallationStatus(data: any, pluginName: string) {
+    this.servicesApiService.monitorPluginInstallationStatus(data.statusLink)
+      .pipe(
+        take(1),
+        // checking the response object for plugin.
+        // if pacakge.status === 'in-progress' then
+        // throw an error to re-fetch:
+        tap((response: any) => {
+          if (response.packageStatus[0].status === 'in-progress') {
+            this.increment++;
+            throw response;
+          }
+        }),
+        retryWhen(result =>
+          result.pipe(
+            // only if a server returned an error, stop trying and pass the error down
+            tap(installStatus => {
+              if (installStatus.error) {
+                this.ngProgress.done();
+                this.alertService.closeMessage();
+                throw installStatus.error;
+              }
+            }),
+            delayWhen(() => {
+              const delay = this.increment * this.initialDelay;     // incremental
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);
+              return timer(delay);
+            }), // delay between api calls
+            // Set the number of attempts.
+            take(this.maxRetry),
+            // Throw error after exceed number of attempts
+            concatMap(o => {
+              if (this.increment > this.maxRetry) {
+                this.pluginInstallationState = false;
+                this.ngProgress.done();
+                this.alertService.closeMessage();
+                // tslint:disable-next-line: max-line-length
+                return throwError(`Failed to get expected results in ${this.maxRetry} attempts, tried with incremental time delay starting with 2s, for installing plugin ${pluginName}`);
+              }
+              return of(o);
+            }),
+          ))
+      ).subscribe(() => {
+        this.ngProgress.done();
+        this.pluginInstallationState = false;
+        this.addNotificationService(true);
+      });
+  }
+
 
   /**
    * Open delete modal
@@ -151,6 +216,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   installNotificationService() {
+    this.pluginInstallationState = true;
     const servicePayload = {
       format: 'repository',
       name: this.notificationServicePackageName,
@@ -163,13 +229,11 @@ export class NotificationServiceModalComponent implements OnChanges {
     this.servicesApiService.installService(servicePayload).
       subscribe(
         (data: any) => {
-          /** request done */
-          this.ngProgress.done();
-          this.alertService.closeMessage();
-          this.alertService.success(data.message, true);
+          this.monitorNotificationServiceInstallationStatus(data, name);
         },
         error => {
           /** request done */
+          this.pluginInstallationState = false;
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -182,8 +246,6 @@ export class NotificationServiceModalComponent implements OnChanges {
             }
             this.alertService.error(errorText);
           }
-        }, () => {
-          this.addNotificationService();
         });
   }
 
@@ -230,7 +292,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isNotificationServiceEnabled = true;
-          this.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
+          this.notificationService.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */
@@ -253,7 +315,7 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isNotificationServiceEnabled = false;
-          this.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
+          this.notificationService.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */
@@ -273,7 +335,7 @@ export class NotificationServiceModalComponent implements OnChanges {
         (data: any) => {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
-          this.notifyServiceEmitter.next({ isAddDeleteAction: true });
+          this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
           this.toggleModal(false);
           this.form.reset();
         },
@@ -292,11 +354,12 @@ export class NotificationServiceModalComponent implements OnChanges {
     if (!this.availableServices.includes('notification')) {
       this.installNotificationService();
     } else {
-      this.addNotificationService();
+      this.addNotificationService(false);
     }
   }
 
   saveChanges() {
+    this.state$.next(this.form.value);
     if (!this.isNotificationServiceAvailable) {
       this.addServiceEvent();
     } else {
@@ -306,8 +369,8 @@ export class NotificationServiceModalComponent implements OnChanges {
       if (!this.isNotificationServiceEnabled && this.form.controls['enabled'].value) {
         this.enableNotificationService();
       }
+      this.toggleModal(false);
     }
-    this.toggleModal(false);
   }
 
   proxy() {
@@ -320,7 +383,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
     this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('hidden-save').click();
-    this.notifyServiceEmitter.next({ isConfigChanged: true });
+    this.notificationService.notifyServiceEmitter.next({ isConfigChanged: true });
   }
 
   /**
