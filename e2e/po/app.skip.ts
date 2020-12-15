@@ -236,7 +236,8 @@ export class SkipLogin {
     browser.ignoreSynchronization = true;
     element(by.css('app-backup-restore .fix-pad')).click();
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore table thead tr'))), 15000);
+    browser.driver.sleep(15000);
+    browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore table thead tr'))), 1000);
   }
 
   getBackupRestoreTitle() {
