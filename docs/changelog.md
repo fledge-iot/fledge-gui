@@ -1,11 +1,19 @@
 ## v1.8.2next [2020-xx-xx]
 
 #### Added
-* Documentation help links added
+* [FOGL-4704] Added documentation help links (#39)
+* [FOGL-4721] Northbound always on services support in North pages (#42)
+* [FOGL-4119] Contribution statement
 
 #### Changed
+* [FOGL-4779] Type handling for Notification plugins (#41)
+* [FOGL-4586] Package installation mechanism, using asynchronous API support (#38)
 
 #### Fixed
+* [FOGL-4420] Removed repeat field for manual and startup schedule (#29)
+
+#### Others
+* Updated bulma css framework to 0.8.2 (#18)
 
 ## v1.8.2 [2020-11-03]
 
