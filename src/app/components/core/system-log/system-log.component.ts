@@ -12,7 +12,7 @@ import { POLLING_INTERVAL } from '../../../utils';
 export class SystemLogComponent implements OnInit, OnDestroy {
   public logs: any;
   public source = '';
-  public level = '';
+  public level = 'info';
   public totalCount: any;
   DEFAULT_LIMIT = 50;
   limit = this.DEFAULT_LIMIT;
@@ -199,7 +199,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (filter === 'source') {
       this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim();
     } else {
-      this.level = value.trim().toLowerCase() === 'info' ? '' : value.trim().toLowerCase();
+      this.level = value.trim().toLowerCase() === 'debug' ? '' : value.trim().toLowerCase();
     }
     this.getSysLogs();
   }
@@ -223,7 +223,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           }
           const logs = [];
           data['logs'].forEach(l => {
-            let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
+            let fl = l.replace('DEBUG:', '<span class="tag is-light tag-syslog">DEBUG:</span>');
+            fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
             fl = fl.replace('WARNING:', '<span class="tag is-warning tag-syslog">WARNING:</span>');
             fl = fl.replace('ERROR:', '<span class="tag is-danger tag-syslog">ERROR:</span>');
             fl = fl.replace('FATAL:', '<span class="tag is-danger tag-syslog">FATAL:</span>');
