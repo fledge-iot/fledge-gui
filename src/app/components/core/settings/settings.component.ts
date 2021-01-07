@@ -22,7 +22,7 @@ export class SettingsComponent implements OnInit {
   serviceUrl = '';
   selectedTheme: string;
   version;
-  scheme;
+  isServiceUp = false;
 
   constructor(private pingService: PingService, private sharedService: SharedService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
@@ -37,6 +37,10 @@ export class SettingsComponent implements OnInit {
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
+    this.sharedService.isServiceUp.subscribe(isServiceUp => {
+      this.isServiceUp = isServiceUp;
+    }
+    );
     this.getPingData();
   }
 
@@ -113,10 +117,9 @@ export class SettingsComponent implements OnInit {
   public getPingData() {
     this.pingService.pingService().then(data => {
       this.version = data.version;
-      this.scheme = localStorage.getItem('CONNECTED_PROTOCOL');
     },
-    (error) => {
-      console.log('service down ', error);
-    });
+      (error) => {
+        console.log('service down ', error);
+      });
   }
 }
