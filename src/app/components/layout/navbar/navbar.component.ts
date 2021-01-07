@@ -197,7 +197,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.sharedService.isAdmin.next(JSON.parse(sessionStorage.getItem('isAdmin')));
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
-      this.sharedService.isServiceUp.next(true);
     })
       .catch((error) => {
         this.pingData = [];
@@ -207,11 +206,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.sharedService.isServiceUp.next(true);
           this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
           version: this.pingData['version'] };
         } else {
-          this.sharedService.isServiceUp.next(false);
           this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
         }
       });
