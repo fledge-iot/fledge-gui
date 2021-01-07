@@ -21,6 +21,7 @@ export class SettingsComponent implements OnInit {
   refreshInterval: string;
   serviceUrl = '';
   selectedTheme: string;
+  version;
 
   constructor(private pingService: PingService, private sharedService: SharedService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
@@ -35,6 +36,7 @@ export class SettingsComponent implements OnInit {
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
+    this.getPingData();
   }
 
   public testServiceConnection(): void {
@@ -105,5 +107,14 @@ export class SettingsComponent implements OnInit {
     this.refreshInterval = time;
     localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
     this.pingService.refreshIntervalChanged.next(+time);
+  }
+
+  public getPingData() {
+    this.pingService.pingService().then(data => {
+      this.version = data.version;
+    },
+    (error) => {
+      console.log('service down ', error);
+    });
   }
 }
