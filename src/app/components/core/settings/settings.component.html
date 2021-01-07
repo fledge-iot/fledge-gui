@@ -48,7 +48,7 @@
             </div>
           </div>
           <div class="column is-2"></div>
-          <div *ngIf="version" class="column no-rec"><small>Connected to {{protocol}}://{{host}}:{{servicePort}}/fledge version {{version}}</small></div>
+          <div *ngIf="version" class="column info no-rec"><small><b>Connected to</b> {{scheme}}://{{host}}:{{servicePort}}/fledge <b>version {{version}}</b>.</small></div>
         </div>
       </div>
     </div>

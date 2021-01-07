@@ -22,6 +22,7 @@ export class SettingsComponent implements OnInit {
   serviceUrl = '';
   selectedTheme: string;
   version;
+  scheme;
 
   constructor(private pingService: PingService, private sharedService: SharedService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
@@ -112,6 +113,7 @@ export class SettingsComponent implements OnInit {
   public getPingData() {
     this.pingService.pingService().then(data => {
       this.version = data.version;
+      this.scheme = localStorage.getItem('CONNECTED_PROTOCOL');
     },
     (error) => {
       console.log('service down ', error);
