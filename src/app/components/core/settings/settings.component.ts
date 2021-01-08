@@ -31,7 +31,7 @@ export class SettingsComponent implements OnInit {
     this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
     this.servicePort = localStorage.getItem('CONNECTED_PORT') != null ? localStorage.getItem('CONNECTED_PORT') : 8081;
     // Check whether the service is up or not
-    this.sharedService.isServiceUp.subscribe(isServiceUp => {
+    this.sharedService.showConnectionInfo.subscribe(isServiceUp => {
       this.isServiceUp = isServiceUp;
     });
   }
