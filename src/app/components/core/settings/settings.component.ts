@@ -31,8 +31,10 @@ export class SettingsComponent implements OnInit {
     this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
     this.servicePort = localStorage.getItem('CONNECTED_PORT') != null ? localStorage.getItem('CONNECTED_PORT') : 8081;
     // Check whether the service is up or not
-    this.sharedService.showConnectionInfo.subscribe(isServiceUp => {
-      this.isServiceUp = isServiceUp;
+    this.sharedService.connectionInfo.subscribe(info => {
+      this.isServiceUp = info.isServiceUp;
+      this.version = info.version;
+      this.scheme = localStorage.getItem('CONNECTED_PROTOCOL');
     });
   }
 
@@ -42,7 +44,6 @@ export class SettingsComponent implements OnInit {
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
-    this.getPingData();
   }
 
   public testServiceConnection(): void {
@@ -113,15 +114,5 @@ export class SettingsComponent implements OnInit {
     this.refreshInterval = time;
     localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
     this.pingService.refreshIntervalChanged.next(+time);
-  }
-
-  public getPingData() {
-    this.pingService.pingService().then(data => {
-      this.version = data.version;
-      this.scheme = localStorage.getItem('CONNECTED_PROTOCOL');
-    },
-      (error) => {
-        console.log('service down ', error);
-      });
   }
 }
