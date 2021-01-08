@@ -10,8 +10,8 @@
         <div class="fledge-logo"></div>
           &nbsp;&nbsp;
           <b>
-            <a *ngIf="!pingInfo.isAlive" href="/" style="color: #363636;">Fledge</a>
-            <a *ngIf="pingInfo.isAlive" id="hover-link" class="tooltip is-tooltip-bottom" [attr.data-tooltip]="'v'+pingInfo.version" href="/" style="color: #363636;">Fledge</a>
+            <a *ngIf="!pingInfo.version" href="/" style="color: #363636;">Fledge</a>
+            <a *ngIf="pingInfo.version" id="hover-link" class="tooltip is-tooltip-bottom" [attr.data-tooltip]="'v'+pingInfo.version" href="/" style="color: #363636;">Fledge</a>
           </b>
           &nbsp;&nbsp;&nbsp;&nbsp;
       </div>
