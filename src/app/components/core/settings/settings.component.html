@@ -47,6 +47,9 @@
               <!-- <button id="discover-fledge-btn" class="button is-text is-small" (click)="openServiceDiscoveryModal()">Discover Fledge Instances</button> -->
             </div>
           </div>
+          <ng-container *ngIf="isServiceUp">
+            <div class="column conn-info"><b>Connected to</b> {{scheme}}://{{host}}:{{servicePort}}/fledge <b>version {{version}}</b>.</div>
+          </ng-container>
         </div>
       </div>
     </div>

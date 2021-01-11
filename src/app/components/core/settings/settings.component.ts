@@ -21,12 +21,21 @@ export class SettingsComponent implements OnInit {
   refreshInterval: string;
   serviceUrl = '';
   selectedTheme: string;
+  isServiceUp = false;
+  version;
+  scheme;
 
   constructor(private pingService: PingService, private sharedService: SharedService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
       localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
     this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
     this.servicePort = localStorage.getItem('CONNECTED_PORT') != null ? localStorage.getItem('CONNECTED_PORT') : 8081;
+    // Check whether the service is up or not
+    this.sharedService.connectionInfo.subscribe(info => {
+      this.isServiceUp = info.isServiceUp;
+      this.version = info.version;
+      this.scheme = localStorage.getItem('CONNECTED_PROTOCOL');
+    });
   }
 
   ngOnInit() {

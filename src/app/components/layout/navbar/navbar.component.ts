@@ -32,7 +32,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public timer: any = '';
   public pingData = {};
   public servicesRecord = [];
-  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '' };
+  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
   public shutDownData = {
     key: '',
     message: ''
@@ -187,7 +187,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
       }
-      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
+      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
+      version: this.pingData['version'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -196,6 +197,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.sharedService.isAdmin.next(JSON.parse(sessionStorage.getItem('isAdmin')));
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
+      this.sharedService.connectionInfo.next({'version': this.pingData['version'], 'isServiceUp': true});
     })
       .catch((error) => {
         this.pingData = [];
@@ -205,9 +207,12 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (error.status === 403) {
           sessionStorage.clear();
-          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
+          this.sharedService.connectionInfo.next({version: this.pingData['version'], isServiceUp: true});
+          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
+          version: this.pingData['version'] };
         } else {
-          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '' };
+          this.sharedService.connectionInfo.next({version: '', isServiceUp: false});
+          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
         }
       });
   }
