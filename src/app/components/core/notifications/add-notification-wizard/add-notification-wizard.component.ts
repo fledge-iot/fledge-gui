@@ -84,7 +84,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       description: ['', Validators.required],
       rule: ['', Validators.required],
       delivery: ['', Validators.required],
-      retriggerTime: ['', Validators.required]
+      retriggerTime: ['60', Validators.required]
     });
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
@@ -296,6 +296,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         this.payload.enabled = this.isNotificationEnabled;
         this.payload.retrigger_time = this.retriggerTime.nativeElement.value;
+        if (this.payload.retrigger_time < 0) {
+          return;
+        }
         this.addNotificationInstance(this.payload);
         break;
       default:
