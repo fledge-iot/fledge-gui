@@ -170,7 +170,7 @@
         <div class="box step-content" id="c-6">
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline" data-tooltip="One Shot: only trigger once while in triggered state. Re-Triggered: trigger at every polling while in triggered state. Toggled: trigger once when triggered, and again when cleared.">Trigger</label>
+              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline" data-tooltip="Type of notification">Type</label>
             </div>
             <div class="field-body">
               <div id="notify-type-dropdown" class="dropdown notification-type">
@@ -196,7 +196,23 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline" data-tooltip="Enable this rule. Note that for debugging, a rule can be enabled while the notification is disabled.">Enabled</label>
+              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline" data-tooltip="Retrigger time in seconds for sending a new notification.">Retrigger Time</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input class="input is-small retrigger-time" #retriggerTime type='number' appNumberOnly min="0" placeholder="Retrigger Time"
+                  formControlName="retriggerTime">
+                  <span *ngIf="payload?.retrigger_time < 1" class="help is-danger">
+                    <sup>*</sup>Invalid Retrigger time.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline" data-tooltip="Enabled">Enabled</label>
             </div>
             <div class="field-body">
               <div class="field">
