@@ -296,7 +296,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         this.payload.enabled = this.isNotificationEnabled;
         this.payload.retrigger_time = this.retriggerTime.nativeElement.value;
-        if (this.payload.retrigger_time < 0) {
+        if (this.payload.retrigger_time < 1) {
           return;
         }
         this.addNotificationInstance(this.payload);

@@ -203,8 +203,8 @@
                 <div class="control">
                   <input class="input is-small retrigger-time" #retriggerTime type='number' appNumberOnly min="0" placeholder="Retrigger Time"
                   formControlName="retriggerTime">
-                  <span *ngIf="payload?.retrigger_time < 0" class="help is-danger">
-                    <sup>*</sup>Mininum value of Retrigger time is 0.
+                  <span *ngIf="payload?.retrigger_time < 1" class="help is-danger">
+                    <sup>*</sup>Invalid Retrigger time.
                   </span>
                 </div>
               </div>
