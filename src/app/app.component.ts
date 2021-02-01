@@ -39,6 +39,9 @@ export class AppComponent implements OnInit {
         this.isActive(event.url);
       }
     });
+    if (location.href.includes('/login')) {
+      this.isLoginView = true;
+    }
     this.setPingIntervalOnAppLaunch();
     this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
     this.onLaunchAppRedirect();

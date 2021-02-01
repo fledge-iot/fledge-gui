@@ -205,11 +205,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         if (pingManually === true) {
           this.ngProgress.done();
         }
-        if (error.status === 403) {
-          sessionStorage.clear();
-          this.sharedService.connectionInfo.next({version: this.pingData['version'], isServiceUp: true});
-          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
-          version: this.pingData['version'] };
+        if (error.status !== 0) {
+          this.pingInfo.isAlive = true;
+          this.pingInfo.isAuth = true;
         } else {
           this.sharedService.connectionInfo.next({version: '', isServiceUp: false});
           this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
