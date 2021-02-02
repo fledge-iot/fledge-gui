@@ -27,7 +27,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         return event;
       }), catchError((err: any) => {
         if (err instanceof HttpErrorResponse) {
-          if (err.status === 401) {
+          if (err.status === 401 && !location.href.includes('/setting?id=1')) {
             sessionStorage.clear();
             this.router.navigate(['/login']);
           }
