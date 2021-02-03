@@ -56,7 +56,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     })
     .catch(error => {
       console.log('error: ', error);
-      if (error.status !== 0) {
+      if (error.status !== 0 && error.status !== undefined) {
         sharedService.isServiceUp.next(true);
       } else {
         sharedService.isServiceUp.next(false);

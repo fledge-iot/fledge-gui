@@ -205,7 +205,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         if (pingManually === true) {
           this.ngProgress.done();
         }
-        if (error.status !== 0) {
+        if (error.status !== 0 && error.status !== undefined) {
           this.pingInfo.isAlive = true;
           this.pingInfo.isAuth = true;
         } else {
