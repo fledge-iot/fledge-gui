@@ -206,7 +206,7 @@
             <div class="control">
               <div class="dropdown is-hoverable" id="fledge-info">
                 <div class="dropdown-trigger">
-                  <a id="hover-link" (mouseover)="getServiceStatus()">
+                  <a id="hover-link" (mouseover)="getServiceStatus()" [ngClass]="{'default-cursor': this.servicesRecord.length === 0}">
                     <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                       <i class="fa fa-sm fa-circle parent-icon"> </i>
                     </span>
