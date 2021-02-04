@@ -59,9 +59,24 @@ export class AppComponent implements OnInit {
     }
   }
 
+  /**
+   * Returns isLoginView by setting it's value
+   *
+   * @remarks
+   * In this method, we set the value of isLoginView variable
+   * Set true, if route is without sidebar OR token is missing when auth is mandatory, otherwise set it to false
+   *
+   * Here-
+   * URL having /setting?id=1 means Settings page without sidebar
+   * URL having user/reset-password is to handle password expiry
+   * @param href - URL of the page
+   * @returns isLoginView
+   *
+   */
   isActive(href) {
-    if (href === '/login' || href === '/setting?id=1' || href.indexOf('user/reset-password') >= 0 ||
-    (sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED')))) {
+    const withoutSidebarRoutes = (href === '/login' || href === '/setting?id=1' || href.indexOf('user/reset-password') >= 0);
+    const tokenMissingWhenAuthMandatory = sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
+    if (withoutSidebarRoutes || tokenMissingWhenAuthMandatory) {
       return this.isLoginView = true;
     } else {
       return this.isLoginView = false;
