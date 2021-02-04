@@ -60,7 +60,8 @@ export class AppComponent implements OnInit {
   }
 
   isActive(href) {
-    if (href === '/login' || href === '/setting?id=1' || href.indexOf('user/reset-password') >= 0) {
+    if (href === '/login' || href === '/setting?id=1' || href.indexOf('user/reset-password') >= 0 ||
+    (sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED')))) {
       return this.isLoginView = true;
     } else {
       return this.isLoginView = false;
