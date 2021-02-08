@@ -14,6 +14,7 @@ export class ServiceResolver implements Resolve<any> {
     return this.service.getAllServices().pipe(
       catchError(error => {
         console.error(error);
+        // In case of error, return null
         return of(null);
       }));
   }
