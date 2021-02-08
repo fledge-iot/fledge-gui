@@ -40,7 +40,7 @@ export class AlertService {
 
   error(message: string, keepAfterNavigationChange = false) {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
-    this.subject.next({ type: 'error', text: message });
+    this.subject.next({ type: 'error', text: message ? message : 'Failed to connect'});
     setTimeout(function () {
       this.closeMessage();
     }.bind(this), 15000);
