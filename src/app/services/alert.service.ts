@@ -26,6 +26,9 @@ export class AlertService {
 
   // TODO: Fix delete button
   success(message: string, keepAfterNavigationChange = false) {
+    if (!message) {
+      return;
+    }
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({ type: 'success', text: message });
     setTimeout(function () {
@@ -39,14 +42,20 @@ export class AlertService {
   }
 
   error(message: string, keepAfterNavigationChange = false) {
+    if (!message) {
+      return;
+    }
     this.keepAfterNavigationChange = keepAfterNavigationChange;
-    this.subject.next({ type: 'error', text: message ? message : 'Failed to connect'});
+    this.subject.next({ type: 'error', text: message });
     setTimeout(function () {
       this.closeMessage();
     }.bind(this), 15000);
   }
 
   warning(message: string, keepAfterNavigationChange = false) {
+    if (!message) {
+      return;
+    }
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({ type: 'warning', text: message });
     setTimeout(function () {
@@ -55,6 +64,9 @@ export class AlertService {
   }
 
   info(message: string, keepAfterNavigationChange = false) {
+    if (!message) {
+      return;
+    }
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({ type: 'info', text: message });
     setTimeout(function () {

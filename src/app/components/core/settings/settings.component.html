@@ -33,8 +33,11 @@
           </div>
           <div class="column">
             <label class="label is-small is-fullwidth">Port</label>
-            <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081"
-              [ngModel]="servicePort">
+            <input name="service_port" id='service_port' class="input" type="number" [minValue]="0" [maxValue]="65535" placeholder="8081"
+              [ngModel]="servicePort" #service_port="ngModel">
+            <span *ngIf="service_port.invalid" class="help is-danger">
+              <sup>*</sup>Port must be in range 0 - 65535.
+            </span>
           </div>
         </div>
         <div class="columns">
