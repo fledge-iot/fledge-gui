@@ -205,7 +205,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         if (pingManually === true) {
           this.ngProgress.done();
         }
-        if (error.status !== 0 && error.status !== undefined) {
+        // If response code is non zero and not undefined, set isAlive and isAuth to true,
+        // else set service to down and pingInfo accordingly
+        if (error && error.status && error.status !== 0) {
           this.pingInfo.isAlive = true;
           this.pingInfo.isAuth = true;
         } else {
