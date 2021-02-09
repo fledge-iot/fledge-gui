@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { AlertService } from '.';
+import { AlertService } from './alert.service';
 
 export const InterceptorSkipHeader = 'X-Skip-Interceptor';
 
