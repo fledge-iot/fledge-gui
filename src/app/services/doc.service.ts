@@ -13,7 +13,7 @@ export class DocService {
 
   goToPluginLink(pluginInfo: any) {
     const v = version.includes('next') ? 'develop' : `v${version}`;
-    const p = `fledge-${pluginInfo.type.toLowerCase()}-${pluginInfo.name.toLowerCase()}`;
+    const p = `fledge-${pluginInfo.type.toLowerCase()}-${pluginInfo.name}`;
     window.open(`${doc_url}${v}/plugins/${p}/index.html`, '_blank');
   }
 
