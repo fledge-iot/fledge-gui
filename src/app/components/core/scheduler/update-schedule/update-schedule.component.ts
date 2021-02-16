@@ -79,13 +79,13 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     dropDown.classList.toggle('is-active');
   }
 
-  getChangedRepeatInterval(event: any) {
-    const repeatValue: string = event.target.value;
-    if (repeatValue.trim().match(this.regExp)) {
-      this.form.controls['repeat'].setErrors(null);
-      this.form.patchValue({ repeat: repeatValue });
+  matchTimeTypeField(event: any, fieldName) {
+    const fieldValue: string = event.target.value;
+    if (fieldValue.trim().match(this.regExp)) {
+      this.form.controls[fieldName].setErrors(null);
+      this.form.patchValue({ fieldName: fieldValue });
     } else {
-      this.form.controls['repeat'].setErrors({ 'invalid': true });
+      this.form.controls[fieldName].setErrors({ invalid: true });
     }
   }
 
