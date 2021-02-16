@@ -63,7 +63,7 @@
                     </div>
                     <div class="field">
                       <input class="input is-small" name="repeatTime" type="text" [pattern]='regExp'
-                        placeholder="hh:mm:ss" mask="00:00:00" [(ngModel)]="repeatTime" required
+                        placeholder="HH:mm:ss" mask="00:00:00" [(ngModel)]="repeatTime" required
                         (change)="getTimeIntervalValue($event)">
                       <span *ngIf="fg?.controls['repeatTime']?.invalid" class="help is-danger">
                         <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.

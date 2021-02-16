@@ -117,7 +117,7 @@
                       </span>
                     </div>
                     <div class="column">
-                      <input class="input" type='text' placeholder="hh:mm:ss" formControlName="repeatTime"
+                      <input class="input" type='text' placeholder="HH:mm:ss" formControlName="repeatTime"
                         mask='00:00:00' (input)="setRepeatIntervalValue($event)" [pattern]='regExp'
                         (change)="validateRepeatTime($event)">
 
