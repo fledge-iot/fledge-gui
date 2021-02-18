@@ -33,14 +33,17 @@
           </div>
           <div class="column">
             <label class="label is-small is-fullwidth">Port</label>
-            <input id='service_port' class="input" type="number" appNumberOnly min="0" maxlength="4" placeholder="8081"
-              [ngModel]="servicePort">
+            <input name="service_port" id='service_port' class="input" type="number" [minValue]="0" [maxValue]="65535" placeholder="8081" required
+              [ngModel]="servicePort" #service_port="ngModel">
+            <span class="help is-danger" [ngClass]="{'is-invisible' : !service_port.invalid}">
+              <sup>*</sup>Port must be in range 0 - 65535.
+            </span>
           </div>
         </div>
         <div class="columns">
           <div class="column">
             <div class="field">
-              <button id="set-url-restart-btn" class="button is-info is-pulled-left is-small"
+              <button id="set-url-restart-btn" [disabled]="service_port.invalid" class="button is-info is-pulled-left is-small"
                 (click)="resetEndPoint()">Set
                 the URL &amp; Restart</button>
               <!-- <button id="test-connection-btn" class="button is-text is-small" (click)="testServiceConnection()">Test Connection</button> -->

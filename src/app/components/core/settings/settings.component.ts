@@ -71,7 +71,7 @@ export class SettingsComponent implements OnInit {
   setProtocol(httpProtocol: string) {
     this.protocol = httpProtocol;
   }
-
+  
   protected setServiceUrl() {
     const hostField = <HTMLInputElement>document.getElementById('host');
     const servicePortField = <HTMLInputElement>document.getElementById('service_port');

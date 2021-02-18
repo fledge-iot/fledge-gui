@@ -81,3 +81,7 @@
 .child-icon {
   font-size: 0.7rem;
 }
+
+.default-cursor {
+  cursor: default;
+}
