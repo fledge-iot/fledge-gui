@@ -1,4 +1,4 @@
-## v1.9.0 [2021-02-10]
+## v1.9.0 [2021-02-17]
 
 #### Added
 * [FOGL-3921] Connected Fledge version information on navbar brand name hover & on settings page (#52)
