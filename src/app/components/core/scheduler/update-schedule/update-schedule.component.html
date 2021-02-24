@@ -57,7 +57,7 @@
                       (click)="toggleDropDown('type-dropdown')">
                       <span>{{selectedScheduleTypeName}}</span>
                       <span class="icon is-small">
-                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                       </span>
                     </button>
                   </div>
@@ -74,9 +74,10 @@
             </div>
           </div>
         </div>
-        <div class="columns">
+        <div *ngIf="selectedScheduleTypeIndex == 2 || selectedScheduleTypeIndex == 3" class="columns">
+          <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule -->
           <div class="column">
-            <div class="field">
+            <div  class="field">
               <label class="label is-small">Repeat (Interval)</label>
               <div class="columns">
                 <div class="column is-fullwidth">
@@ -93,12 +94,13 @@
             </div>
           </div>
         </div>
-        <div class="columns is-mobile">
+        <div *ngIf="selectedScheduleTypeIndex == 2" class="columns is-mobile">
+          <!-- Show Day & Time field for "Timed" type schedule -->
           <div class="column">
-            <div *ngIf="selectedScheduleTypeIndex == 2" class="field">
+            <div class="field">
               <label class="label is-small">Day &nbsp;
                 <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (1-7 Mon-Sun)">
-                  <i class="fa fa-info-circle"></i>
+                  <i class="far fa-sm fa-question-circle"></i>
                 </span>
               </label>
               <div class="control">
@@ -108,7 +110,7 @@
                       (click)="toggleDropDown('day-dropdown')">
                       <span>{{selectedDayName}}</span>
                       <span class="icon is-small">
-                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                       </span>
                     </button>
                   </div>
@@ -125,7 +127,7 @@
             </div>
           </div>
           <div class="column">
-            <div *ngIf="selectedScheduleTypeIndex == 2" class="field">
+            <div class="field">
               <label class="label is-small">Time</label>
               <p class="control is-fullwidth">
                 <input class="input is-small" type='text' placeholder="hh:mm:ss" mask="00:00:00" formControlName="time">

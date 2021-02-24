@@ -4,7 +4,7 @@
       <div id="card-title" class="card-content">
         <p class="card-header-title">Package Logs
           <button (click)="getPackagesLog()" class="button is-small" id="refresh-check">
-            <i class="fa fa-sync" aria-hidden="true"></i>
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </p>
       </div>
@@ -29,12 +29,12 @@
                 {{ log.name ? log.name : '' }}
               </td>
               <td style="vertical-align: middle;">
-                <a (click)="showLogs(log.filename)" class="button is-text">
+                <a (click)="showLogs(log.filename)" class="button is-text text-btn">
                   view
                 </a>
               </td>
               <td style="vertical-align: middle;">
-                <a (click)="downloadLogs(log.filename)" class="button is-text">
+                <a (click)="downloadLogs(log.filename)" class="button is-text text-btn">
                   download
                 </a>
               </td>

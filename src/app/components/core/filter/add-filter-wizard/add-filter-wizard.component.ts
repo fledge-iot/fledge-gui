@@ -5,6 +5,8 @@ import { assign, reduce, sortBy, isEmpty } from 'lodash';
 import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import { of, Subscription, throwError, timer } from 'rxjs';
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -22,6 +24,7 @@ export class AddFilterWizardComponent implements OnInit {
   public isValidName = true;
   public payload: any;
   public selectedPluginDescription = '';
+  public plugin:any;
   public pluginData = [];
   public filesToUpload = [];
   public requestInProgress = false;
@@ -29,6 +32,12 @@ export class AddFilterWizardComponent implements OnInit {
   public stopLoading = false;
   public placeholderText = 'fetching available plugins...';
   public disabledBtn = false;
+
+  increment = 1;
+  maxRetry = 15;
+  initialDelay = 1000;
+
+  installPluginSub: Subscription;
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -54,8 +63,8 @@ export class AddFilterWizardComponent implements OnInit {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
       name: ['', Validators.required],
-      plugin: [{value: '', disabled: false}, Validators.required],
-      pluginToInstall: [{value: null, disabled: false}, Validators.required]
+      plugin: [{ value: '', disabled: false }, Validators.required],
+      pluginToInstall: [{ value: null, disabled: false }, Validators.required]
     });
     this.getInstalledFilterPlugins();
   }
@@ -275,13 +284,7 @@ export class AddFilterWizardComponent implements OnInit {
       subscribe(
         (data: any) => {
           /** request done */
-          this.ngProgress.done();
-          this.alertService.closeMessage();
-          this.alertService.success(data.message, true);
-          this.getInstalledFilterPlugins(true);
-          this.serviceForm.controls.pluginToInstall.enable();
-          this.serviceForm.controls.plugin.enable();
-          this.disabledBtn = false;
+          this.monitorFilterPluginInstallationStatus(data, pluginName);
         },
         error => {
           /** request done */
@@ -297,6 +300,58 @@ export class AddFilterWizardComponent implements OnInit {
         });
   }
 
+  monitorFilterPluginInstallationStatus(data: any, pluginName: string) {
+    this.installPluginSub = this.service.monitorPluginInstallationStatus(data.statusLink)
+      .pipe(
+        take(1),
+        // checking the response object for plugin.
+        // if pacakge.status === 'in-progress' then
+        // throw an error to re-fetch:
+        tap((response: any) => {
+          if (response.packageStatus[0].status === 'in-progress') {
+            this.increment++;
+            throw response;
+          }
+        }),
+        retryWhen(result =>
+          result.pipe(
+            // only if a server returned an error, stop trying and pass the error down
+            tap(installStatus => {
+              if (installStatus.error) {
+                this.ngProgress.done();
+                this.alertService.closeMessage();
+                throw installStatus.error;
+              }
+            }),
+            delayWhen(() => {
+              const delay = this.increment * this.initialDelay;     // incremental
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);
+              return timer(delay);
+            }), // delay between api calls
+            // Set the number of attempts.
+            take(this.maxRetry),
+            // Throw error after exceed number of attempts
+            concatMap(o => {
+              if (this.increment > this.maxRetry) {
+                this.ngProgress.done();
+                this.alertService.closeMessage();
+                // tslint:disable-next-line: max-line-length
+                return throwError(`Failed to get expected results in ${this.maxRetry} attempts, tried with incremental time delay starting with 2s, for installing plugin ${pluginName}`);
+              }
+              return of(o);
+            }),
+          ))
+      ).subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.closeMessage();
+        this.alertService.success(`Plugin ${pluginName} installed successfully.`);
+        this.getInstalledFilterPlugins(true);
+        this.serviceForm.controls.pluginToInstall.enable();
+        this.serviceForm.controls.plugin.enable();
+        this.disabledBtn = false;
+      });
+  }
+
   getDescription(selectedPlugin) {
     if (selectedPlugin === '') {
       this.isValidPlugin = false;
@@ -305,8 +360,8 @@ export class AddFilterWizardComponent implements OnInit {
     } else {
       this.isSinglePlugin = true;
       this.isValidPlugin = true;
-      const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
     }
   }
 

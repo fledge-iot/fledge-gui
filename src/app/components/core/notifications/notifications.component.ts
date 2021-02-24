@@ -12,6 +12,7 @@ import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.com
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
 import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
+import { DocService } from '../../../services/doc.service';
 
 @Component({
   selector: 'app-notifications',
@@ -32,6 +33,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   public notificationServiceRecord: any;
   public availableServices = [];
   private subscription: Subscription;
+  private modalSub: Subscription;
   private viewPortSubscription: Subscription;
   public showSpinner = false;
   public notificationServiceData = {};
@@ -41,16 +43,19 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
   @ViewChild(NotificationServiceModalComponent, { static: true }) notificationServiceModal: NotificationServiceModalComponent;
 
-  constructor(public servicesApiService: ServicesApiService,
+  constructor(
+    public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
     public notificationService: NotificationsService,
     public ngProgress: ProgressBarService,
     public alertService: AlertService,
     private route: ActivatedRoute,
     public router: Router,
+    public docService: DocService,
     private sharedService: SharedService) { }
 
   ngOnInit() {
+    this.onNotifySettingModal();
     this.checkNotificationServiceStatus();
     this.getNotificationInstance();
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
@@ -126,18 +131,22 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }, 2000);
   }
 
-  onNotifySettingModal(event: any) {
-    if (event.isEnabled !== undefined) {
-      this.isNotificationServiceEnabled = event.isEnabled;
-    }
-    if (event.isAddDeleteAction !== undefined) {
-      setTimeout(() => {
-        this.checkNotificationServiceStatus(true);
-      }, 2000);
-    }
-    if (event.isConfigChanged !== undefined) {
-      this.checkServiceStatus();
-    }
+  onNotifySettingModal() {
+    this.modalSub = this.notificationService.notifyServiceEmitter
+      .subscribe(event => {
+        if (event === null) { return; }
+        if (event.isEnabled !== undefined) {
+          this.isNotificationServiceEnabled = event.isEnabled;
+        }
+        if (event.isAddDeleteAction !== undefined) {
+          setTimeout(() => {
+            this.checkNotificationServiceStatus(true);
+          }, 2000);
+        }
+        if (event.isConfigChanged !== undefined) {
+          this.checkServiceStatus();
+        }
+      });
   }
 
   public showLoadingSpinner() {
@@ -262,7 +271,14 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.notificationServiceModal.toggleModal(true);
   }
 
+  goToLink() {
+    this.docService.goToNotificationDocLink();
+  }
+
   ngOnDestroy() {
+    if (this.modalSub) {
+      this.modalSub.unsubscribe();
+    }
     this.subscription.unsubscribe();
     this.viewPortSubscription.unsubscribe();
   }

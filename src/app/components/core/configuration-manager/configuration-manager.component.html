@@ -10,7 +10,7 @@
                 (click)=toggleDropDown()>
                 <span>{{selectedRootCategory}}</span>
                 <span class="icon is-small">
-                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                 </span>
               </button>
             </div>
@@ -25,12 +25,10 @@
             </div>
           </div>
         </div>
-        <div *ngIf="!isChild" class="panel-block">
-          <button class="button is-rounded is-fullwidth is-small" disabled>
-            no sub-category
-          </button>
+        <div *ngIf="!isChild" class="panel-block no-cat">
+          <small class="no-rec">No Sub-categories</small>
         </div>
-        <div id="root-children" class="panel-block">
+        <div id="root-children" class="panel-block" [ngClass]="{'empty-tree': !isChild}">
           <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)"
             (activate)="onNodeActive($event)"></tree-root>
         </div>
@@ -45,7 +43,7 @@
                 <p class="subtitle is-6">{{ category.description }}
                   <button class="button is-small" id="refresh-check" (click)="refreshCategory(category.key, category.description)">
                     <span class="icon is-small">
-                      <i class="fa fa-sync"></i>
+                      <i class="fa fa-sm fa-sync"></i>
                     </span>
                   </button>
                 </p>

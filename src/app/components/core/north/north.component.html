@@ -5,8 +5,8 @@
         North Instances
       </div>
       <a id="add_task" class="fix-pad button is-light" (click)="addNorthInstance()">
-        <p *ngIf="viewPort !== 'mobile'">Create North Instance &nbsp;</p>
-        <i class="fa fa-plus" aria-hidden="true"></i>
+        <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
+        <i class="fa fa-sm fa-plus" aria-hidden="true"></i>
       </a>
     </header>
     <div class="card-content">
@@ -25,7 +25,8 @@
             <table class="table is-fullwidth scroll is-responsive is-hoverable">
               <thead>
                 <tr>
-                  <th>Process</th>
+                  <th>Name</th>
+                  <th></th>
                   <th>Status</th>
                   <th>Plugin</th>
                   <th>Version</th>
@@ -36,6 +37,9 @@
                 <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
                   <td class="align-content">
                     <a class="button is-text" (click)="openNorthTaskModal(t)">{{t.name}}</a>
+                  </td>
+                  <td class="align-content">
+                    <span *ngIf="t?.processName === 'north_C'" class="tag is-light is-rounded">Service</span>
                   </td>
                   <td>
                     <span *ngIf="t.enabled == true" class="tag is-success">enabled</span>

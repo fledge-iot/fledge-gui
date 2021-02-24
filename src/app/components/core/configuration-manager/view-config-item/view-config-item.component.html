@@ -1,4 +1,7 @@
 <div class="view-content columns">
+    <span *ngIf="['south', 'north', 'filter', 'rule', 'notify'].includes(pluginInfo?.type.toLowerCase());" class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+      <i class="far fa-question-circle"></i>
+    </span>
   <div class="column">
     <form name="form" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
       <ng-container *ngIf="categoryConfiguration && hasEditableConfigItems">
@@ -52,7 +55,7 @@
                         <button type="button" class="button is-small" (click)="togglePassword(pwd)"
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable">
                           <span class="icon is-small">
-                            <i class="{{pwd.type === 'password'? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
+                            <i class="{{pwd.type === 'password'? 'fa fa-sm fa-eye-slash' : 'fa fa-sm fa-eye'}}"></i>
                           </span>
                         </button>
                       </div>

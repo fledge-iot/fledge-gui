@@ -22,6 +22,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   public isValidPlugin = true;
   public isSinglePlugin = true;
   public selectedPluginDescription = '';
+  public plugin: any;
   public isValidName = true;
   public serviceType = 'South';
   public isScheduleEnabled = true;
@@ -121,8 +122,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     } else {
       this.isSinglePlugin = true;
       this.isValidPlugin = true;
-      const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+       this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
     }
   }
 
@@ -169,7 +170,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           return formValues['name'].trim() === item.name;
         });
         if (isServiceNameExist) {
-          this.alertService.error('A south service or north task instance already exists with this name.');
+          this.alertService.error('A service/task already exists with this name.');
           return false;
         }
 
@@ -185,9 +186,9 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         this.getConfiguration();
         break;
       case 2:
-          if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
-            return;
-          }
+        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
+          return;
+        }
         this.viewConfigItemComponent.callFromWizard();
         document.getElementById('vci-proxy').click();
         nxtButton.textContent = 'Done';
@@ -281,18 +282,16 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   /**
    * Method to add service
    * @param payload  to pass in request
-   * @param nxtButton button to go next
-   * @param previousButton button to go previous
    */
   public addService(payload) {
     /** request started */
     this.ngProgress.start();
     this.servicesApiService.addService(payload)
       .subscribe(
-        () => {
+        (response) => {
           /** request done */
           this.ngProgress.done();
-          this.alertService.success('Service added successfully.', true);
+          this.alertService.success(response['name'] + ' service added successfully.', true);
           this.router.navigate(['/south']);
         },
         (error) => {

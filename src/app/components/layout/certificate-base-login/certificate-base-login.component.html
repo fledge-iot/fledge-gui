@@ -26,8 +26,8 @@
                     <label class="file-label">
                       <span class="file-cta is-fullwidth">
                         <span class="file-icon">
-                          <i *ngIf="showBrowseCertificate" class="fa fa-upload"></i>
-                          <i *ngIf="!showBrowseCertificate" class="fa fa-upload disabled"></i>
+                          <i *ngIf="showBrowseCertificate" class="fa fa-sm fa-upload"></i>
+                          <i *ngIf="!showBrowseCertificate" class="fa fa-sm fa-upload disabled"></i>
                         </span>
                         <input type="file" required id="certificate" (change)="onCertificateChange($event)"
                           formControlName="certificate" #fileInput>
@@ -57,7 +57,7 @@
     </section>
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-      <button id="save" type="submit" form="ngForm" class="button is-info is-small">Login</button>
+      <button id="save" type="submit" form="ngForm" class="button is-info is-small">Log In</button>
     </footer>
   </div>
 </div>

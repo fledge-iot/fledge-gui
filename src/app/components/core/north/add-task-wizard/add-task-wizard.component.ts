@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 import { Subscription } from 'rxjs';
 
-import { AlertService, SchedulesService, SharedService, PluginService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
+  ServicesApiService} from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
@@ -30,7 +31,9 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public payload: any;
   public schedulesName = [];
   public selectedPluginDescription = '';
+  public plugin: any;
   public showSpinner = false;
+  public isService = false;
   private subscription: Subscription;
 
   public taskType = 'North';
@@ -59,7 +62,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private router: Router,
     private ngProgress: ProgressBarService,
     private validateFormService: ValidateFormService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private servicesApiService: ServicesApiService
   ) { }
 
   ngOnInit() {
@@ -178,7 +182,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           return formValues['name'].trim() === item.name;
         });
         if (isTaskNameExist) {
-          this.alertService.error('A north task instance or south service already exists with this name.');
+          this.alertService.error('A service/task already exists with this name.');
           return false;
         }
 
@@ -204,7 +208,15 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         previousButton.textContent = 'Previous';
         break;
       case 3:
-        this.addScheduledTask(this.payload);
+        if (this.isService) {
+          delete this.payload.schedule_repeat;
+          delete this.payload.schedule_type;
+          delete this.payload.schedule_enabled;
+          this.payload.enabled = this.isScheduleEnabled;
+          this.addService(this.payload);
+        } else {
+          this.addScheduledTask(this.payload);
+        }
         break;
       default:
         break;
@@ -313,6 +325,29 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         });
   }
 
+  public addService(payload) {
+    this.taskForm.get('name').markAsTouched();
+    /** request started */
+    this.ngProgress.start();
+    this.servicesApiService.addService(payload)
+      .subscribe(
+        (response) => {
+          /** request done */
+          this.ngProgress.done();
+          this.alertService.success(response['name'] + ' service added successfully.', true);
+          this.router.navigate(['/north']);
+        },
+        (error) => {
+          /** request done */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
@@ -383,18 +418,18 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     } else {
       this.isSinglePlugin = true;
       this.isValidPlugin = true;
-      const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === plugin).description;
+      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
     }
   }
 
   onCheckboxClicked(event) {
-    if (event.target.checked) {
-      this.isScheduleEnabled = true;
-    } else {
-      this.isScheduleEnabled = false;
-    }
+    this.isScheduleEnabled = event.target.checked ? true : false;
     this.payload.schedule_enabled = this.isScheduleEnabled;
+  }
+
+  onServiceCheckboxClicked(event) {
+    this.isService = event.target.checked ? true : false;
   }
 
   public getSchedules(): void {
@@ -442,12 +477,14 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   selectInstalledPlugin() {
     const select = <HTMLSelectElement>document.getElementById('pluginSelect');
-    for (let i = 0, j = select.options.length; i < j; ++i) {
-      if (select.options[i].innerText.toLowerCase() === this.pluginData.pluginName.toLowerCase()) {
-        this.taskForm.controls['plugin'].setValue([this.plugins[i].name]);
-        select.selectedIndex = i;
-        select.dispatchEvent(new Event('change'));
-        break;
+    if (select) {
+      for (let i = 0, j = select.options.length; i < j; ++i) {
+        if (select.options[i].innerText.toLowerCase() === this.pluginData.pluginName.toLowerCase()) {
+          this.taskForm.controls['plugin'].setValue([this.plugins[i].name]);
+          select.selectedIndex = i;
+          select.dispatchEvent(new Event('change'));
+          break;
+        }
       }
     }
   }

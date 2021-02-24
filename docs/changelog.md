@@ -1,3 +1,24 @@
+## v1.9.0 [2021-02-17]
+
+#### Added
+* [FOGL-3921] Connected Fledge version information on navbar brand name hover & on settings page (#52)
+* [FOGL-4704] Documentation help links (#39)
+* [FOGL-4721] Northbound always on services support in North pages (#42)
+* [FOGL-4119] Contribution statement
+* [FOGL-4815] System logs severity filter option "Debug and above" added, default level set to "Info and above" (#51)
+
+#### Changed
+* [FOGL-4779] Type handling for Notification plugins (#41)
+* [FOGL-4586] Package installation mechanism, using asynchronous API support (#38)
+
+#### Fixed
+* [FOGL-4420] Removed repeat field for manual and startup schedule (#29)
+* [FOGL-4863] Allow to set retrigger time while adding a notification instance (#53)
+
+
+#### Others
+* Updated bulma css framework to 0.8.2 (#18)
+
 ## v1.8.2 [2020-11-03]
 
 This release is to keep versions in sync with Fledge core. There are no functional/visual changes or any bug fix.

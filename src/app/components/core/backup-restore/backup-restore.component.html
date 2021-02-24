@@ -7,7 +7,7 @@
       <div>
         <a class="button is-light fix-pad" (click)="requestBackup()">
           <p *ngIf="viewPort !== 'mobile'">Create New &nbsp;</p>
-          <i class="fa fa-file-archive" aria-hidden="true"></i>
+          <i class="fa fa-sm fa-file-archive" aria-hidden="true"></i>
         </a>
       </div>
     </header>
@@ -42,16 +42,16 @@
                   <small>{{ backup.status }}</small>
                 </td>
                 <td class="align-content">
-                  <a *ngIf="backup.status != 'RUNNING'" class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
+                  <a *ngIf="backup.status != 'RUNNING'" class="button is-text text-btn" (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
                   </a>
                 </td>
                 <td class="align-content">
-                  <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="button is-text" (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
+                  <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="button is-text text-btn" (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
                   </a>
                 </td>
                 <td class="align-content">
                   <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" (click)="downloadBackup(backup)"
-                    class="button is-text">
+                    class="button is-text text-btn">
                     download
                   </a>
                 </td>

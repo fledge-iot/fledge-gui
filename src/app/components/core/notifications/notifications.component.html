@@ -5,6 +5,9 @@
         <div class="message-body">
           Notification service is not added
           and enabled.&nbsp; <a (click)="openNotificationServiceModal()"><strong>add & enable now</strong></a>
+          <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+            <i class="far fa-question-circle"></i>
+          </span>
         </div>
       </article>
     </ng-container>
@@ -14,8 +17,11 @@
           Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable
               now</strong></a>
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
-            <i class="fa fa-sync" aria-hidden="true"></i>
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
+          <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+            <i class="far fa-question-circle"></i>
+          </span>
         </div>
       </article>
     </ng-container>
@@ -27,7 +33,7 @@
           Notifications
           <a class="button is-small" (click)="getNotificationInstance()" id="refresh-check">
             <span class="icon is-small">
-              <i class="fa fa-sync"></i>
+              <i class="fa fa-sm fa-sync"></i>
             </span>
           </a>
         </p>
@@ -35,11 +41,11 @@
       <button [disabled]="!isNotificationServiceEnabled" id="add_notification_instance" class="button is-light"
         (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'">Create Notification Instance &nbsp;</p>
-        <i class="fa fa-plus" aria-hidden="true"></i>
+        <i class="fa fa-sm fa-plus" aria-hidden="true"></i>
       </button>
       <a class="button" (click)="openNotificationServiceModal()" id="refresh-check">
         <span class="icon">
-          <i class="fa fa-cog" aria-hidden="true"></i>
+          <i class="fa fa-sm fa-cog" aria-hidden="true"></i>
         </span>
       </a>
     </header>
@@ -100,4 +106,4 @@
 </div>
 <app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>
 <app-view-logs></app-view-logs>
-<app-notification-service-modal (notifyServiceEmitter)='onNotifySettingModal($event)' [notificationServiceData]="notificationServiceData"></app-notification-service-modal>
+<app-notification-service-modal [notificationServiceData]="notificationServiceData"></app-notification-service-modal>

@@ -64,7 +64,7 @@
               <div class="field">
                 <div class="control">
                   <ng-container *ngIf="plugins.length">
-                    <a id="avail-plugin" class="button is-text" (click)="openPluginModal(true)">available plugins</a>
+                    <a id="avail-plugin" class="button is-text text-btn" (click)="openPluginModal(true)">available plugins</a>
                   </ng-container>
                   <app-plugin-modal *ngIf="pluginData.modalState" (notify)="onNotify($event)" [data]="pluginData">
                   </app-plugin-modal>
@@ -89,6 +89,18 @@
             </div>
           </div>
           <div *ngIf="plugins.length > 0" class="field is-horizontal form-group">
+            <div class="field-label is-normal">
+              <label class="label">Add as a Service</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control service-checkbox">
+                  <input class="checkbox" type="checkbox" (click)="onServiceCheckboxClicked($event)">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="plugins.length > 0 && isService === false" class="field is-horizontal form-group">
             <div class="field-label is-normal">
               <label class="label">Repeat (Interval)</label>
             </div>
@@ -121,7 +133,7 @@
         </div>
 
         <div class="box step-content" id="c-2">
-          <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
+          <app-view-config-item [pluginInfo]="{name: plugin,  type:taskType}" [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
             (onConfigChanged)="getChangedConfig($event)" [pageId]="'wizard'"></app-view-config-item>
         </div>
 

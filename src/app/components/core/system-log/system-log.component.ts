@@ -12,7 +12,7 @@ import { POLLING_INTERVAL } from '../../../utils';
 export class SystemLogComponent implements OnInit, OnDestroy {
   public logs: any;
   public source = '';
-  public level = '';
+  public level = 'info';
   public totalCount: any;
   DEFAULT_LIMIT = 50;
   limit = this.DEFAULT_LIMIT;
@@ -63,6 +63,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           const south_c = [];
           const notification_c = [];
           const north_c = [];
+          // processName north_C represents Northbound services
+          const north_C = [];
           const north = [];
           data.schedules.forEach(sch => {
             if ('south_c'.includes(sch.processName)) {
@@ -74,11 +76,14 @@ export class SystemLogComponent implements OnInit, OnDestroy {
             if ('north_c'.includes(sch.processName)) {
               north_c.push(sch);
             }
+            if ('north_C'.includes(sch.processName)) {
+              north_C.push(sch);
+            }
             if ('north'.includes(sch.processName)) {
               north.push(sch);
             }
           });
-          this.scheduleData = south_c.concat(notification_c, north_c, north);
+          this.scheduleData = south_c.concat(notification_c, north_c, north_C, north);
         },
         error => {
           if (error.status === 0) {
@@ -194,7 +199,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (filter === 'source') {
       this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim();
     } else {
-      this.level = value.trim().toLowerCase() === 'info' ? '' : value.trim().toLowerCase();
+      this.level = value.trim().toLowerCase() === 'debug' ? '' : value.trim().toLowerCase();
     }
     this.getSysLogs();
   }
@@ -218,11 +223,12 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           }
           const logs = [];
           data['logs'].forEach(l => {
-            let fl = l.replace('INFO:', '<span class="tag is-light tag-syslog">INFO:</span>'); // is-info
-            fl = fl.replace('WARNING:', '<span class="tag is-warning tag-syslog">WARNING:</span>');
-            fl = fl.replace('ERROR:', '<span class="tag is-danger tag-syslog">ERROR:</span>');
-            fl = fl.replace('FATAL:', '<span class="tag is-danger tag-syslog">FATAL:</span>');
-            fl = fl.replace('EXCEPTION:', '<span class="tag is-danger tag-syslog">EXCEPTION:</span>');
+            let fl = l.replace('DEBUG:', '<span class="tag is-light tag-syslog">DEBUG:</span>');
+            fl = l.replace('INFO:', '<span class="tag is-white tag-syslog">INFO:</span>'); // is-info
+            fl = fl.replace('WARNING:', '<span class="tag is-light is-warning tag-syslog">WARNING:</span>');
+            fl = fl.replace('ERROR:', '<span class="tag is-light is-danger tag-syslog">ERROR:</span>');
+            fl = fl.replace('FATAL:', '<span class="tag is-light is-danger tag-syslog">FATAL:</span>');
+            fl = fl.replace('EXCEPTION:', '<span class="tag is-light is-danger tag-syslog">EXCEPTION:</span>');
             logs.push(fl);
           });
           this.logs = logs.reverse();

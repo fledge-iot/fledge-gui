@@ -20,13 +20,13 @@
         <li [hidden]='middlePg == 0'><span class="pagination-ellipsis">&hellip;</span></li>
         <li>
           <button class="button pagination-previous" (click)="onPrev()"
-            [disabled]="page === 1">{{ page ==1 ? '': page-1 }}&nbsp;<i class="fa fa-caret-left"
+            [disabled]="page === 1">{{ page ==1 ? '': page-1 }}&nbsp;<i class="fa fa-sm fa-caret-left"
               aria-hidden="true"></i></button>
         </li>
         <li [hidden]='page == 0'><a class="button is-info is-small">{{page}}</a></li>
         <li>
           <button class="button pagination-next" (click)="onNext()" [disabled]="lastPage()"><i
-              class="fa fa-caret-right" aria-hidden="true"></i>&nbsp; {{ page == totalPage ? '' : page + 1 }}</button>
+              class="fa fa-sm fa-caret-right" aria-hidden="true"></i>&nbsp; {{ page == totalPage ? '' : page + 1 }}</button>
         </li>
         <li [hidden]='middlePg == 0'><span class="pagination-ellipsis">&hellip;</span></li>
         <li><a

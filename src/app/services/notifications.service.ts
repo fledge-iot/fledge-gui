@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 @Injectable()
 export class NotificationsService {
+  notifyServiceEmitter = new BehaviorSubject<any>(null);
+
   private GET_NOTIFICATION_URL = environment.BASE_URL + 'notification';
 
   constructor(private http: HttpClient) { }
