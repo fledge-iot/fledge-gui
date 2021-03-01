@@ -132,8 +132,8 @@
               <p class="control is-fullwidth">
                 <input class="input is-small" type='text' placeholder="HH:mm:ss" mask="00:00:00" formControlName="time" (input)="matchTimeTypeField($event, 'time')">
               </p>
-              <small *ngIf="!form.controls.time.valid" class="help is-danger level-left">&nbsp; Time must be in range
-                00:00:00 - 23:59:59</small>
+              <small *ngIf="!form.controls.time.valid || form.controls.time.value === '00:00:00'" class="help is-danger level-left">&nbsp; Time must be in range
+                00:00:01 - 23:59:59</small>
             </div>
           </div>
         </div>

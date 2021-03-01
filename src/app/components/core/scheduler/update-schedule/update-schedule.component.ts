@@ -44,7 +44,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       exclusive: [Validators.required],
       process_name: [Validators.required],
       day: [Validators.required],
-      time: [Validators.required, Validators.pattern(this.regExp)],
+      time: ['', Validators.required],
       enabled: [Validators.required]
     });
 
@@ -81,7 +81,8 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
   matchTimeTypeField(event: any, fieldName) {
     const fieldValue: string = event.target.value;
-    if (fieldValue.trim().match(this.regExp)) {
+    const time = Utils.convertTimeToSec(this.form.get('time').value);
+    if (fieldValue.trim().match(this.regExp) && !(fieldName === 'time' && time === 0)) {
       this.form.controls[fieldName].setErrors(null);
       this.form.patchValue({ fieldName: fieldValue });
     } else {
@@ -144,6 +145,9 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
             time: time.time,
             enabled: data['enabled']
           });
+          if (this.form.get('time').value === '00:00:00') {
+            this.form.controls['time'].setErrors({ invalid: true });
+          }
         },
         error => {
           if (error.status === 0) {
@@ -190,6 +194,9 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     let dayIndex;
     if (this.selectedScheduleTypeIndex === 2) {   // If Type is TIMED == 2
       time = Utils.convertTimeToSec(this.form.get('time').value);
+      if (time === 0) {
+        return;
+      }
       const dayValue = this.selectedDayName;
       dayIndex = dayValue !== undefined && dayValue !== 'None' ? (this.days.indexOf(this.selectedDayName) + 1) : '';
     } else {
