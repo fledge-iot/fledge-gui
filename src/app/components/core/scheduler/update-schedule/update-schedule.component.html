@@ -83,8 +83,8 @@
                 <div class="column is-fullwidth">
                   <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365"
                     placeholder="days" formControlName="repeatDay" required>
-                  <input id="repeat_time" class="input is-small" type='text' placeholder="hh:mm:ss"
-                    formControlName="repeat" mask='00:00:00' (input)="getChangedRepeatInterval($event)" required>
+                  <input id="repeat_time" class="input is-small" type='text' placeholder="HH:mm:ss"
+                    formControlName="repeat" mask='00:00:00' (input)="matchTimeTypeField($event, 'repeat')" required>
                 </div>
               </div>
               <small *ngIf="form.controls.repeatDay.invalid" class="help is-danger level-left">&nbsp; Repeat days must
@@ -130,10 +130,10 @@
             <div class="field">
               <label class="label is-small">Time</label>
               <p class="control is-fullwidth">
-                <input class="input is-small" type='text' placeholder="hh:mm:ss" mask="00:00:00" formControlName="time">
+                <input class="input is-small" type='text' placeholder="HH:mm:ss" mask="00:00:00" formControlName="time" (input)="matchTimeTypeField($event, 'time')">
               </p>
               <small *ngIf="!form.controls.time.valid" class="help is-danger level-left">&nbsp; Time must be in range
-                00:00:01 - 23:59:59</small>
+                00:00:00 - 23:59:59</small>
             </div>
           </div>
         </div>
