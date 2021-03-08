@@ -18,10 +18,19 @@
   display: none;
 }
 
+.custom-pad {
+ margin-top: 7px;
+ margin-right: -14px;
+}
+
+.tooltip {
+  padding-right: 1rem;
+  padding-left: 1rem;
+  padding-top: 1rem !important;
+}
+
 .is-hovered {
   cursor: pointer !important;
-  margin-top: 7px;
-  margin-right: -14px;
 }
 
 .disable-tag {

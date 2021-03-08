@@ -6,6 +6,15 @@
   padding: 0% !important;
 }
 
+.custom-col {
+  padding-right: 1.0rem !important;
+  padding-top: 1.0rem !important;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+  }
+
 .dropdown-content {
   width: auto;
   height: auto;

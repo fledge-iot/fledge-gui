@@ -271,8 +271,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.notificationServiceModal.toggleModal(true);
   }
 
-  goToLink() {
-    this.docService.goToNotificationDocLink();
+  goToLink(urlSlug: string) {
+    this.docService.goToNotificationDocLink(urlSlug);
   }
 
   ngOnDestroy() {
