@@ -19,12 +19,12 @@
 }
 
 .custom-pad {
-  margin-top: 7px;
+  margin-top: 6px;
 }
 
 .notification-help-pad {
   margin-top: 1.25rem;
-  margin-right: 0.5rem;
+  margin-right: 0.7rem;
 }
 
 .is-hovered {
@@ -58,5 +58,6 @@ button {
 }
 
 .message-body {
-  padding-right: 0.5rem !important;
+  padding-right: 0.7rem !important;
+  padding-left: 1.2rem !important;
 }

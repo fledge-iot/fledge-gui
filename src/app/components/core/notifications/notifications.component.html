@@ -48,7 +48,7 @@
           <i class="fa fa-sm fa-cog" aria-hidden="true"></i>
         </span>
       </a>
-      <span class="icon is-small tooltip is-pulled-right is-hovered notification-help-pad" data-tooltip="Help" (click)="goToLink('using-the-notification-service')">
+      <span *ngIf="isNotificationServiceEnabled" class="icon is-small tooltip is-pulled-right is-hovered notification-help-pad" data-tooltip="Help" (click)="goToLink('using-the-notification-service')">
         <i class="far fa-question-circle"></i>
       </span>
     </header>
