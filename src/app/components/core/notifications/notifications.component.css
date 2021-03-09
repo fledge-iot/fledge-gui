@@ -19,14 +19,12 @@
 }
 
 .custom-pad {
- margin-top: 7px;
- margin-right: -14px;
+  margin-top: 7px;
 }
 
-.tooltip {
-  padding-right: 1rem;
-  padding-left: 1rem;
-  padding-top: 1rem !important;
+.notification-help-pad {
+  margin-top: 1.25rem;
+  margin-right: 0.5rem;
 }
 
 .is-hovered {
@@ -34,8 +32,8 @@
 }
 
 .disable-tag {
- opacity: 0.5;
- filter: alpha(opacity=50);
+  opacity: 0.5;
+  filter: alpha(opacity=50);
 }
 
 button {
@@ -56,5 +54,9 @@ button {
 }
 
 .fade {
-  background-color:#f5f5f5 !important
+  background-color: #f5f5f5 !important;
+}
+
+.message-body {
+  padding-right: 0.5rem !important;
 }

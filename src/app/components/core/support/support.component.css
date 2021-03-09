@@ -4,7 +4,11 @@
 
 .tooltip {
   padding-right: 1rem;
-  padding-top: 1rem !important;
+  padding-top: 1.7rem !important;
+}
+
+.fix-pad {
+  padding-top: 1.2rem;
 }
 
 .is-hovered {
