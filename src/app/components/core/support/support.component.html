@@ -8,10 +8,19 @@
         </button>
       </p>
       <div>
-        <a class="button is-light fix-pad" (click)="requestNewBundle()">
-          <p *ngIf="viewPort !== 'mobile'">Request New &nbsp;</p>
-          <i class="fa fa-sm fa-file-archive" aria-hidden="true"></i>
-        </a>
+        <div class="columns">
+          <div class="column fix-pad">
+            <a class="button is-light" (click)="requestNewBundle()">
+              <p *ngIf="viewPort !== 'mobile'">Request New &nbsp;</p>
+              <i class="fa fa-sm fa-file-archive" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="column help-pad">
+            <span class="icon is-small tooltip is-tooltip-left is-hovered" data-tooltip="Help" (click)="goToLink()">
+              <i class="far fa-question-circle"></i>
+            </span>
+          </div>
+        </div>
       </div>
     </header>
     <div class="card-content">

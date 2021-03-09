@@ -25,3 +25,12 @@
     max-height: 55vh;
   }
 }
+
+.tooltip {
+  padding-right: 1.0rem;
+  padding-top: 1.0rem !important;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+  }
