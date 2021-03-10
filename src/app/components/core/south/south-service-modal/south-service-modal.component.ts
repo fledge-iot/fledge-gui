@@ -49,6 +49,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public isWizard;
   // Object to hold data of south service to delete
   public serviceRecord;
+  public selectedFilter;
 
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
@@ -510,7 +511,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   setFilterConfiguration(filterName: string) {
     const catName = this.service['name'] + '_' + filterName;
-    return this.filterConfiguration.find(f => f.key === catName);
+    const filterConfig = this.filterConfiguration.find(f => f.key === catName);
+    this.selectedFilter = filterConfig !== undefined ? filterConfig.value[0].plugin.value : '';
+    return filterConfig;
   }
 
   deleteFilterReference(filter) {

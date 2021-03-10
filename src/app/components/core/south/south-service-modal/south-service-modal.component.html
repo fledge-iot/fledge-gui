@@ -9,7 +9,7 @@
       <ng-container *ngIf="!isWizard">
         <div class="box">
           <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
-            [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
+            [useProxy]="useProxy" [pageId]="'modal'" [pluginInfo]="{name: service['plugin']?.name,  type:'South'}"></app-view-config-item>
           <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right"
             style="margin-bottom: -1%;">
             <button class="button is-small is-text"
@@ -60,7 +60,7 @@
                     <div class="content" *ngIf="filterConfiguration">
                       <app-view-config-item #filterConfigView
                         [categoryConfigurationData]="setFilterConfiguration(filter)" [useFilterProxy]="useFilterProxy"
-                        [formId]="item"></app-view-config-item>
+                        [formId]="item" [pluginInfo]="{name: selectedFilter, type: 'Filter'}"></app-view-config-item>
                       <div class="field is-pulled-right">
                         <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span
                             class="icon is-medium"><i class="fa fa-sm fa-trash-alt fa-lg"

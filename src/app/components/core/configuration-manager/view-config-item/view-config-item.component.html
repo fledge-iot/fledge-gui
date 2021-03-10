@@ -1,5 +1,5 @@
 <div class="view-content columns">
-    <span *ngIf="['south', 'north', 'filter', 'rule', 'notify'].includes(pluginInfo?.type.toLowerCase());" class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+    <span *ngIf="['south', 'north', 'filter', 'rule', 'notify'].includes(pluginInfo?.type.toLowerCase()) && pluginInfo?.name !== '';" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
       <i class="far fa-question-circle"></i>
     </span>
   <div class="column">
