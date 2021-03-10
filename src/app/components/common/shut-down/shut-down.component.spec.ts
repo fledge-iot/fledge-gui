@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ShutdownModalComponent } from './shutdown-modal.component';
 
@@ -6,7 +6,7 @@ describe('ShutdownModalComponent', () => {
   let component: ShutdownModalComponent;
   let fixture: ComponentFixture<ShutdownModalComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ShutdownModalComponent ]
     })
