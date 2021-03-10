@@ -23,7 +23,7 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/angular-tree-component/dist/angular-tree-component.css",
+              "./node_modules/@circlon/angular-tree-component/css/angular-tree-component.css",
               "./node_modules/animate.css/animate.css",
               "./node_modules/@ng-select/ng-select/themes/default.theme.css",
               "src/assets/css/bulma.min.css",
@@ -135,12 +135,13 @@
   },
   "defaultProject": "fledge",
   "cli": {
-    "packageManager": "yarn"
+    "packageManager": "yarn",
+    "analytics": false
   },
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "styleext": "css"
+      "style": "css"
     },
     "@schematics/angular:directive": {
       "prefix": "app"

@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Array of Statistics Keys (["BUFFERED", "DISCARDED", "PURGED", ....])
   statisticsKeys = [];
 
-  selectedGraphsList = [] =
+  selectedGraphsList =
     [{ key: 'READINGS', checked: true },
     { key: 'Readings Sent', checked: true }];
 

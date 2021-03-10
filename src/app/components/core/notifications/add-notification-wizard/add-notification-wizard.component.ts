@@ -20,9 +20,9 @@ import { ValidateFormService } from '../../../../services/validate-form.service'
   styleUrls: ['./add-notification-wizard.component.css']
 })
 export class AddNotificationWizardComponent implements OnInit, OnDestroy {
-  @ViewChild('desc', { static: false }) description: ElementRef;
-  @ViewChild('name', { static: false }) name: ElementRef;
-  @ViewChild('retriggerTime', { static: false }) retriggerTime: ElementRef;
+  @ViewChild('desc') description: ElementRef;
+  @ViewChild('name') name: ElementRef;
+  @ViewChild('retriggerTime') retriggerTime: ElementRef;
 
   public notificationRulePlugins = [];
   public notificationDeliveryPlugins = [];
@@ -57,8 +57,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     retriggerTime: new FormControl()
   });
 
-  @ViewChild('ruleConfigView', { static: false }) ruleViewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild('deliveryConfigView', { static: false }) deliveryViewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('ruleConfigView') ruleViewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('deliveryConfigView') deliveryViewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ViewLogsComponent, { static: true }) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {

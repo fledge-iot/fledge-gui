@@ -49,16 +49,16 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public isAdvanceConfig = false;
   public btnTxt = '';
 
-  @ViewChild('fg', { static: false }) form: NgForm;
+  @ViewChild('fg') form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
 
   @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('taskConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('taskConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
-  @ViewChild(FilterAlertComponent, { static: false }) filterAlert: FilterAlertComponent;
-  @ViewChild(ConfigChildrenComponent, { static: false }) configChildrenComponent: ConfigChildrenComponent;
+  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
+  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
 
   // Object to hold data of north task to delete
   public deleteTaskData = {

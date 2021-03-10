@@ -39,8 +39,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   public notificationServiceData = {};
 
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
-  @ViewChild(AlertDialogComponent, { static: false }) child: AlertDialogComponent;
-  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
   @ViewChild(NotificationServiceModalComponent, { static: true }) notificationServiceModal: NotificationServiceModalComponent;
 
   constructor(

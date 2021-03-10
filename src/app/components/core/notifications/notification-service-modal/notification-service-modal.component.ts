@@ -43,8 +43,8 @@ export class NotificationServiceModalComponent implements OnChanges {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
   };
-  @ViewChild('notificationConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild('fg', { static: false }) form: NgForm;
+  @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
   constructor(

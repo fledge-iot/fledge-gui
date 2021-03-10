@@ -38,7 +38,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   @Input() categoryConfigurationData;
   @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
     modalState: false,
