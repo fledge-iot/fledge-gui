@@ -229,7 +229,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     this.servicesApiService.installService(servicePayload).
       subscribe(
         (data: any) => {
-          this.monitorNotificationServiceInstallationStatus(data, name);
+          this.monitorNotificationServiceInstallationStatus(data, servicePayload.name);
         },
         error => {
           /** request done */

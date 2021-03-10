@@ -11,6 +11,11 @@
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "chart.js",
+              "@ctrl/ngx-codemirror"
+            ],
             "customWebpackConfig": {
               "path": "./extra-webpack.config.js"
             },
