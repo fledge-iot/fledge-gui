@@ -86,3 +86,8 @@ a { color: black; }
 .columns {
   display: block;
 }
+
+.help-icon {
+  cursor: pointer !important;
+  padding-top: 1.5rem;
+}

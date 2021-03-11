@@ -17,6 +17,7 @@ import {
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -76,7 +77,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private validateFormService: ValidateFormService,
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
-    private servicesApiService: ServicesApiService
+    private servicesApiService: ServicesApiService,
+    private docService: DocService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -546,6 +548,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  goToLink(pluginInfo) {
+    this.docService.goToPluginLink(pluginInfo);
   }
 
   discardChanges() {
