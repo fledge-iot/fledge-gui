@@ -14,7 +14,8 @@
             "allowedCommonJsDependencies": [
               "lodash",
               "chart.js",
-              "@ctrl/ngx-codemirror"
+              "@ctrl/ngx-codemirror",
+              "codemirror"
             ],
             "customWebpackConfig": {
               "path": "./extra-webpack.config.js"
