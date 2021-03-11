@@ -65,4 +65,8 @@ hr {
     background-color: #fff;
 }
 
+.help-icon {
+  cursor: pointer !important;
+  padding-top: 1rem;
+}
 

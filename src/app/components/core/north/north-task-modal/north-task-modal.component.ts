@@ -49,7 +49,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public advanceConfigButtonText = 'Show Advanced Config';
   public isAdvanceConfig = false;
   public btnTxt = '';
-  public selectedFilter;
+  public selectedFilterPlugin;
 
   @ViewChild('fg', { static: false }) form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
@@ -395,6 +395,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     const catName = this.task['name'] + '_' + filterName;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
+        this.selectedFilterPlugin = data.plugin.value;
         this.filterConfiguration.push({ key: catName, 'value': [data] });
       },
         error => {
@@ -408,9 +409,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   setFilterConfiguration(filterName: string) {
     const catName = this.task['name'] + '_' + filterName;
-    const filterConfig = this.filterConfiguration.find(f => f.key === catName);
-    this.selectedFilter = filterConfig !== undefined ? filterConfig.value[0].plugin.value : '';
-    return filterConfig;
+    return this.filterConfiguration.find(f => f.key === catName);
   }
 
   openAddFilterModal(isWizard) {
