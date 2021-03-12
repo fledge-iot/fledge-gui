@@ -9,3 +9,7 @@
 .service-checkbox {
   padding-top: 0.375rem;
 }
+
+.help-icon {
+  cursor: pointer !important;
+}
