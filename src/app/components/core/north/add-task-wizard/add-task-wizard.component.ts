@@ -10,6 +10,7 @@ import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-add-task-wizard',
@@ -63,7 +64,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private ngProgress: ProgressBarService,
     private validateFormService: ValidateFormService,
     private sharedService: SharedService,
-    private servicesApiService: ServicesApiService
+    private servicesApiService: ServicesApiService,
+    private docService: DocService
   ) { }
 
   ngOnInit() {
@@ -495,6 +497,14 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  goToLink() {
+    const pluginInfo = {
+      name: this.plugin,
+      type: 'North'
+    };
+    this.docService.goToPluginLink(pluginInfo);
   }
 
   ngOnDestroy() {
