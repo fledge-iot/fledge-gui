@@ -10,6 +10,7 @@ import {
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-notification-modal',
@@ -43,7 +44,8 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private notificationService: NotificationsService,
     private validateFormService: ValidateFormService,
-    public ngProgress: ProgressBarService) { }
+    public ngProgress: ProgressBarService,
+    private docService: DocService) { }
 
   ngOnInit() { }
 
@@ -204,5 +206,10 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     }
     this.notify.emit();
     this.toggleModal(false);
+  }
+
+  goToLink() {
+    const urlSlug = 'editing-notifications';
+    this.docService.goToNotificationDocLink(urlSlug);
   }
 }

@@ -45,6 +45,11 @@
         </div>
         <hr class="hr-text" data-content="">
         <ng-container *ngIf="notification != undefined">
+          <p class="buttons is-pulled-left">
+            <span class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help" (click)="goToLink()">
+              <i class="far fa-question-circle"></i>
+            </span>
+          </p>
           <p class="buttons is-pulled-right">
             <button (click)="openDeleteModal(notification.name)" class="button is-small" [disabled]="!notification.notificationEnabled ? 'disabled' : null">Delete Instance</button>
           </p>

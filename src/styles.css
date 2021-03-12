@@ -304,3 +304,7 @@ a.dropdown-item:hover {
   border-width: 2.25px !important;
   border-radius: 1px !important;
 }
+
+.icon:hover {
+  opacity: 0.8;
+}
