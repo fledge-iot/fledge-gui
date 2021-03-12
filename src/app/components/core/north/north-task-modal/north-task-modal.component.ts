@@ -17,6 +17,7 @@ import {
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -48,6 +49,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public advanceConfigButtonText = 'Show Advanced Config';
   public isAdvanceConfig = false;
   public btnTxt = '';
+  public selectedFilterPlugin;
 
   @ViewChild('fg', { static: false }) form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
@@ -75,7 +77,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private validateFormService: ValidateFormService,
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
-    private servicesApiService: ServicesApiService
+    private servicesApiService: ServicesApiService,
+    private docService: DocService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -392,6 +395,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     const catName = this.task['name'] + '_' + filterName;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
+        this.selectedFilterPlugin = data.plugin.value;
         this.filterConfiguration.push({ key: catName, 'value': [data] });
       },
         error => {
@@ -543,6 +547,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  goToLink(pluginInfo) {
+    this.docService.goToPluginLink(pluginInfo);
   }
 
   discardChanges() {
