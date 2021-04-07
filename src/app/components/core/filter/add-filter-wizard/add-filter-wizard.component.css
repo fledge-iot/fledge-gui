@@ -22,3 +22,8 @@
 .steps {
   overflow-y: visible;
 }
+
+.is-vertical-center {
+  display: flex;
+  align-items: center;
+}

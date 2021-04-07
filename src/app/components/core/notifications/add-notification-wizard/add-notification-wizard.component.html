@@ -78,21 +78,29 @@
               <label class="label">Rule Plugin</label>
             </div>
             <div class="field-body">
-              <div class="select is-multiple">
-                <select multiple name="type" #selectedPlugin formControlName="rule" id="rule"
-                  (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)" required>
-                  <option *ngFor="let p of notificationRulePlugins" [value]="p.name"> {{ p.name }}</option>
-                </select>
+              <div class="column is-vertical-center">
+                <div class="select is-multiple">
+                  <select multiple name="type" #selectedPlugin formControlName="rule" id="rule"
+                    (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)" required>
+                    <option *ngFor="let p of notificationRulePlugins" [value]="p.name"> {{ p.name }}</option>
+                  </select>
+                </div>
+                &nbsp;
+                <small *ngIf="selectedRulePluginDescription && notificationRulePlugins.length > 0"
+                  class="help description level-left">
+                  {{selectedRulePluginDescription }}</small>
+                <small *ngIf="!isRulePlugin" class="help is-danger">* Please select a valid plugin</small>
+                <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
-              &nbsp;
-              <small *ngIf="selectedRulePluginDescription && notificationRulePlugins.length > 0"
-                class="help description level-left">
-                {{selectedRulePluginDescription }}</small>
-              <small *ngIf="!isRulePlugin" class="help is-danger level-left">* Please select a valid plugin</small>
-              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+              <div *ngIf="selectedRulePlugin" class="column is-1">
+                <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+                  data-tooltip="Help" (click)="goToLink(selectedRulePlugin, notificationRulePlugins[0].type)">
+                  <i class="far fa-question-circle"></i>
+                </span>
+              </div>
             </div>
           </div>
-          <div class="field is-horizontal form-group is-right">
+          <div class="field is-horizontal form-group">
             <div class="field-label is-normal">
               <label class="label"></label>
             </div>
@@ -100,7 +108,8 @@
               <div class="field">
                 <div class="control">
                   <ng-container *ngIf="notificationRulePlugins.length">
-                    <a id="avail-plugin" class="button is-text text-btn" (click)="openPluginModal(true, 'Rule')">available plugins</a>
+                    <a class="button is-text text-btn"
+                      (click)="openPluginModal(true, 'Rule')">available plugins</a>
                   </ng-container>
                   <app-plugin-modal *ngIf="pluginData?.modalState && pluginData?.type?.toLowerCase() === 'rule' "
                     (notify)="onNotify($event)" [data]="pluginData"></app-plugin-modal>
@@ -111,8 +120,8 @@
         </div>
         <div class="box step-content" id="c-3">
           <app-view-config-item #ruleConfigView [categoryConfigurationData]="rulePluginConfigurationData"
-          [pluginInfo]="{name: payload?.rule,  type:'rule'}"
-          [useRuleProxy]="useRuleProxy" (onConfigChanged)="getPluginChangedConfig($event, 'rule')" [pageId]="'wizard'">
+            [pluginInfo]="{name: payload?.rule,  type:'rule'}" [useRuleProxy]="useRuleProxy"
+            (onConfigChanged)="getPluginChangedConfig($event, 'rule')" [pageId]="'wizard'">
           </app-view-config-item>
         </div>
         <div class="box step-content" id="c-4">
@@ -128,9 +137,10 @@
               <label class="label">Delivery Plugin</label>
             </div>
             <div class="field-body">
+              <div class="column is-vertical-center">
               <div class="select is-multiple">
-                <select multiple name="type" #selectedDeliveryPlugin formControlName="delivery" id="notify"
-                  (change)="isPluginSelected(selectedDeliveryPlugin.value, notificationDeliveryPlugins[0].type)"
+                <select multiple name="type" #deliveryPlugin formControlName="delivery" id="notify"
+                  (change)="isPluginSelected(deliveryPlugin.value, notificationDeliveryPlugins[0].type)"
                   required>
                   <option *ngFor="let d of notificationDeliveryPlugins" [value]="d.name"> {{ d.name }}</option>
                 </select>
@@ -142,6 +152,13 @@
               <small *ngIf="!isDeliveryPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
               <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
             </div>
+            <div *ngIf="selectedDeliveryPlugin" class="column is-1">
+              <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+                data-tooltip="Help" (click)="goToLink(selectedDeliveryPlugin, notificationDeliveryPlugins[0].type)">
+                <i class="far fa-question-circle"></i>
+              </span>
+            </div>
+            </div>
           </div>
           <div class="field is-horizontal form-group is-right">
             <div class="field-label is-normal">
@@ -151,7 +168,8 @@
               <div class="field">
                 <div class="control">
                   <ng-container *ngIf="notificationDeliveryPlugins.length">
-                    <a id="avail-plugin" class="button is-text text-btn" (click)="openPluginModal(true, 'Notify')">available plugins</a>
+                    <a class="button is-text text-btn"
+                      (click)="openPluginModal(true, 'Notify')">available plugins</a>
                   </ng-container>
                   <app-plugin-modal *ngIf="pluginData?.modalState && pluginData?.type?.toLowerCase() === 'notify'"
                     (notify)="onNotify($event)" [data]="pluginData"></app-plugin-modal>
@@ -162,15 +180,15 @@
         </div>
         <div class="box step-content" id="c-5">
           <app-view-config-item #deliveryConfigView [categoryConfigurationData]="deliveryPluginConfigurationData"
-            [useDeliveryProxy]="useDeliveryProxy"
-            [pluginInfo]="{name: payload?.channel,  type:'notify'}"
-             (onConfigChanged)="getPluginChangedConfig($event, 'delivery')" [pageId]="'wizard'">
+            [useDeliveryProxy]="useDeliveryProxy" [pluginInfo]="{name: payload?.channel,  type:'notify'}"
+            (onConfigChanged)="getPluginChangedConfig($event, 'delivery')" [pageId]="'wizard'">
           </app-view-config-item>
         </div>
         <div class="box step-content" id="c-6">
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline" data-tooltip="Type of notification">Type</label>
+              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+                data-tooltip="Type of notification">Type</label>
             </div>
             <div class="field-body">
               <div id="notify-type-dropdown" class="dropdown notification-type">
@@ -196,13 +214,14 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline" data-tooltip="Retrigger time in seconds for sending a new notification.">Retrigger Time</label>
+              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+                data-tooltip="Retrigger time in seconds for sending a new notification.">Retrigger Time</label>
             </div>
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input is-small retrigger-time" #retriggerTime type='number' appNumberOnly min="0" placeholder="Retrigger Time"
-                  formControlName="retriggerTime">
+                  <input class="input is-small retrigger-time" #retriggerTime type='number' appNumberOnly min="0"
+                    placeholder="Retrigger Time" formControlName="retriggerTime">
                   <span *ngIf="payload?.retrigger_time < 1" class="help is-danger">
                     <sup>*</sup>Invalid Retrigger time.
                   </span>
@@ -212,7 +231,8 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline" data-tooltip="Enabled">Enabled</label>
+              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+                data-tooltip="Enabled">Enabled</label>
             </div>
             <div class="field-body">
               <div class="field">

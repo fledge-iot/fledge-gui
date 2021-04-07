@@ -2,6 +2,11 @@
   display: none !important;
 }
 
+.is-vertical-center {
+  display: flex;
+  align-items: center;
+}
+
 .description {
   flex-shrink:initial !important;
 }

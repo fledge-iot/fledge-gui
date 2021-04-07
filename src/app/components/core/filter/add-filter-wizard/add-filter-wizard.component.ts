@@ -7,6 +7,7 @@ import { ViewConfigItemComponent } from '../../configuration-manager/view-config
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -24,7 +25,7 @@ export class AddFilterWizardComponent implements OnInit {
   public isValidName = true;
   public payload: any;
   public selectedPluginDescription = '';
-  public plugin:any;
+  public plugin: any;
   public pluginData = [];
   public filesToUpload = [];
   public requestInProgress = false;
@@ -56,6 +57,7 @@ export class AddFilterWizardComponent implements OnInit {
     private configService: ConfigurationService,
     private alertService: AlertService,
     private service: ServicesApiService,
+    private docService: DocService,
     private validateFormService: ValidateFormService,
     private ngProgress: ProgressBarService) { }
 
@@ -509,5 +511,18 @@ export class AddFilterWizardComponent implements OnInit {
     } else {
       this.serviceForm.controls.pluginToInstall.reset();
     }
+  }
+
+  /**
+   * Open readthedocs.io documentation of filter plugins
+   * @param selectedPlugin Selected filter plugin 
+   * 
+   */
+  goToLink(selectedPlugin: string) {
+    const pluginInfo = {
+      name: selectedPlugin,
+      type: 'filter'
+    };
+    this.docService.goToPluginLink(pluginInfo);
   }
 }
