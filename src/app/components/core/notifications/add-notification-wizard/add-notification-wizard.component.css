@@ -22,3 +22,7 @@
 .container.is-fluid {
   margin-top: 10px;
 }
+
+.is-hovered {
+  cursor: pointer !important;
+}
