@@ -13,6 +13,7 @@ import { ViewConfigItemComponent } from '../../configuration-manager/view-config
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-add-notification-wizard',
@@ -42,6 +43,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   public deliveryPluginChangedConfig: any;
   public selectedRulePluginDescription: string;
   public selectedDeliveryPluginDescription: string;
+
+  public selectedRulePlugin: string;
+  public selectedDeliveryPlugin: string;
 
   public useRuleProxy: string;
   public useDeliveryProxy: string;
@@ -74,6 +78,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     private configService: ConfigurationService,
     private sharedService: SharedService,
     private validateFormService: ValidateFormService,
+    private docService: DocService,
     private router: Router) { }
 
   ngOnInit() {
@@ -359,9 +364,11 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     this.isDeliveryPlugin = true;
     const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     if (pluginType === 'rule') {
+      this.selectedRulePlugin = plugin;
       this.selectedRulePluginDescription = this.notificationRulePlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
     } else {
+      this.selectedDeliveryPlugin = plugin;
       this.selectedDeliveryPluginDescription = this.notificationDeliveryPlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
     }
@@ -533,6 +540,19 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         break;
       }
     }
+  }
+
+  /**
+   * Open readthedocs.io documentation of notification plugins
+   * @param selectedPlugin Selected rule/delivery  plugin 
+   * @param pluginType Type of the plugin (e.g. rule/notify)
+   */
+  goToLink(selectedPlugin: string, pluginType: string) {
+    const pluginInfo = {
+      name: selectedPlugin,
+      type: pluginType
+    };
+    this.docService.goToPluginLink(pluginInfo);
   }
 
   ngOnDestroy() {

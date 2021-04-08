@@ -2,6 +2,11 @@
   display: none !important;
 }
 
+.is-vertical-center {
+  display: flex;
+  align-items: center;
+}
+
 .description {
   flex-shrink:initial !important;
 }
@@ -16,4 +21,8 @@
 
 .container.is-fluid {
   margin-top: 10px;
+}
+
+.is-hovered {
+  cursor: pointer !important;
 }
