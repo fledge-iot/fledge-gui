@@ -23,8 +23,8 @@ export class DocService {
   }
 
   goToViewQuickStartLink(slug: string) {
-    const v = version.includes('next') ? 'develop' : `v${version}`;
-    window.open(`${doc_url}${v}/quick_start.html#${slug}`, '_blank');
+    let v = version.includes('next') ? 'develop' : `v${version}`;
+    window.open(`${doc_url}${v}/quick_start/${slug}`, '_blank');
   }
 
 }
