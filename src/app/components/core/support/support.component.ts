@@ -76,7 +76,7 @@ export class SupportComponent implements OnInit, OnDestroy {
   }
 
   goToLink() {
-    const urlSlug = 'troubleshooting-and-support-information'
+    const urlSlug = 'support.html'
     this.docService.goToViewQuickStartLink(urlSlug);
   }
 
