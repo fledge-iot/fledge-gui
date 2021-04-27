@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">Create User</p>
+      <p class="modal-card-title is-size-5">Add New User</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false, f)"></button>
     </header>
     <section class="modal-card-body">
@@ -10,7 +10,7 @@
         <form name="form" id="ngForm" (ngSubmit)="createUser(f)" #f="ngForm" novalidate>
           <div class="columns">
             <div class="column">
-              <label class="label">Role</label>
+              <label class="label is-small">Role</label>
               <div id="create-user-dropdown" class="dropdown">
                   <div class="dropdown-trigger">
                     <button type="button" class="button is-fullwidth is-small" aria-haspopup="true"
@@ -62,8 +62,8 @@
         </form>
       </div>
     </section>
-    <footer class="modal-card-foot">
-      <button id="save" type="submit" form="ngForm" class="button is-info is-small">Save</button>
+    <footer class="modal-card-foot user-card-footer">
+      <button id="save" type="submit" form="ngForm" class="button is-info is-small">Add</button>
     </footer>
   </div>
 </div>
