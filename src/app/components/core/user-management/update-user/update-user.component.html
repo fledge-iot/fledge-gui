@@ -10,7 +10,7 @@
       <form name="form" id="updateForm" (ngSubmit)="updateUser()" #f="ngForm" novalidate>
         <div class="columns">
           <div class="column is-6">
-            <label class="label">Username</label>
+            <label class="label is-small">Username</label>
             <p class="control is-fullwidth">
               <input [disabled]='true' type="text" class="input is-small" placeholder="username" name='username'
                 [(ngModel)]="userRecord.username" #username="ngModel" minlength="4" maxlength="8" required />
@@ -19,7 +19,7 @@
         </div>
         <div *ngIf="showRoleSection" class="columns">
           <div class="column is-6">
-            <label class="label">Role</label>
+            <label class="label is-small">Role</label>
             <div id="update-user-dropdown" class="dropdown is-up">
               <div class="dropdown-trigger">
                 <button type="button" class="button is-fullwidth is-small" aria-haspopup="true"
