@@ -34,6 +34,30 @@
           </div>
           <div class="columns">
             <div class="column">
+              <label class="label is-small">Access Method</label>
+              <div id="access-method-dropdown" class="dropdown">
+                  <div class="dropdown-trigger">
+                    <button type="button" class="button is-fullwidth is-small" aria-haspopup="true"
+                      aria-controls="dropdown-menu" (click)="toggleDropDown('access-method-dropdown')">
+                      <span>{{selectedAuthMethod}}</span>
+                      <span class="icon is-small">
+                        <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                    <div class="dropdown-content">
+                      <a class="dropdown-item" *ngFor="let loginMethod of loginMethods"
+                        (click)="toggleDropDown('access-method-dropdown');setAccessMethod(loginMethod)">
+                        {{loginMethod}}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
               <p class="control is-fullwidth">
                 <input type="text" class="input is-small" placeholder="username" name='username' [(ngModel)]="model.username" #username="ngModel"
                   minlength="4" maxlength="8" required/>
@@ -44,10 +68,17 @@
           <div class="columns">
             <div class="column">
               <p class="control is-fullwidth">
+                <input type="text" class="input is-small" placeholder="realname" name='real_name' [(ngModel)]="model.real_name" #realname="ngModel">
+              </p>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
+              <p class="control is-fullwidth">
                 <input type="password" class="input is-small" placeholder="password" name='password' [(ngModel)]="model.password" #password="ngModel"
                   validateEqual="confirmPassword" reverse="true" required />
               </p>
-              <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minium 6 character)</small>
+              <small *ngIf="f.submitted && !password.valid && selectedAuthMethod === 'pwd'" class="help is-danger level-left">Password is required(minium 6 character)</small>
             </div>
           </div>
           <div class="columns">
@@ -56,7 +87,7 @@
                 <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword' [(ngModel)]="model.confirmPassword"
                   #confirmPassword="ngModel" validateEqual="password" required />
               </p>
-              <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
+              <small *ngIf="f.submitted && !confirmPassword.valid && selectedAuthMethod === 'pwd'" class="help is-danger level-left">Password mismatch</small>
             </div>
           </div>
         </form>

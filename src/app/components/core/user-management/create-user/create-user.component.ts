@@ -14,6 +14,9 @@ export class CreateUserComponent implements OnInit, OnChanges {
   isUpdateForm = false;
   userRole = [];
   selectedRole = 'user'; // set "user" as a default role
+  selectedAuthMethod = 'any';
+  loginMethods = [];
+
   @Input() userRoles: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
@@ -24,10 +27,13 @@ export class CreateUserComponent implements OnInit, OnChanges {
     this.model = {
       userId: 0,
       username: '',
+      real_name: '',
+      access_method: 'any',
       password: '',
       confirmPassword: '',
       role_id: 2   // set "user" as a default role
     };
+    this.loginMethods = ['any', 'pwd', 'cert'];
   }
 
   ngOnChanges(): void {
@@ -57,6 +63,10 @@ export class CreateUserComponent implements OnInit, OnChanges {
   }
 
   public createUser(form: NgForm) {
+    if (this.selectedAuthMethod !== 'pwd' && this.model.password === '' && this.model.confirmPassword === '') {
+      delete this.model.password;
+      delete this.model.confirmPassword;
+    }
     this.userService.createUser(this.model).
       subscribe(
         (data) => {
@@ -85,6 +95,11 @@ export class CreateUserComponent implements OnInit, OnChanges {
     this.selectedRole = role.name;
     const selectedRole = this.userRole.find(r => r.id = role.id);
     if (role) { this.model.role_id = selectedRole.id; }
+  }
+
+  setAccessMethod(accessMethod: any) {
+    this.selectedAuthMethod = accessMethod;
+    if (accessMethod) { this.model.access_method = accessMethod; }
   }
 
   public toggleDropDown(id: string) {
