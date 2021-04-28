@@ -66,6 +66,14 @@
                 </td>
                 <td>
                   <ng-container *ngIf='user.userId != uid && user.userId != 1'>
+                    <a (click)="openUpdateUserModal(user, 'auth')" class="button is-text text-btn">
+                      <p *ngIf="viewPort !== 'mobile'">change auth method</p>
+                      <i *ngIf="viewPort == 'mobile'" class="fa fa-xs fa-edit" aria-hidden="true"></i>
+                    </a>
+                  </ng-container>
+                </td>
+                <td>
+                  <ng-container *ngIf='user.userId != uid && user.userId != 1'>
                     <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')"
                       class="button is-text text-btn">
                       <p *ngIf="viewPort !== 'mobile'">delete</p>

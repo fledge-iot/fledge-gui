@@ -93,6 +93,16 @@ export class UserService {
       catchError(error => throwError(error)));
   }
 
+  updateAccessMethod(data) {
+    const payload: any = {
+      accessMethod: data.access_method,
+      description: data.description
+    };
+    return this.http.put(this.USER_URL + '/' + data.userId, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   /**
   * change user password
   *

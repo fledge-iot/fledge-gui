@@ -4,6 +4,7 @@ export class User {
     real_name: string;
     access_method: string;
     password: string;
+    description: string;
     confirmPassword: string;
     role_id: number;
 }

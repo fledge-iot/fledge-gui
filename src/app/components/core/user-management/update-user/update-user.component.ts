@@ -13,9 +13,12 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   userRole = [];
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @Input() userRoles: any;
+  loginMethods = [];
 
   showRoleSection = false;
+  updateSection = 'pwd';
   selectedRole = 'user'; // set "user" as a default role
+  selectedAuthMethod;
 
   constructor(private alertService: AlertService,
     private userService: UserService) { }
@@ -28,17 +31,19 @@ export class UpdateUserComponent implements OnInit, OnChanges {
     this.userRecord = {
       userId: 0,
       username: '',
+      description: '',
       password: '',
+      real_name: '',
+      access_method: '',
       confirmPassword: '',
       role_id: 0   // set "user" as a default role
     };
+    this.loginMethods = ['any', 'pwd', 'cert'];
   }
 
   ngOnChanges(): void {
     this.userRole = this.userRoles;
   }
-
-
 
   /**
    * TO get data from parent component
@@ -47,19 +52,25 @@ export class UpdateUserComponent implements OnInit, OnChanges {
    */
   public setUser(userRecord, key) {
     this.setUserRole({ id: userRecord.roleId, name: userRecord.roleName });
-    this.showRoleSection = false;
+    this.setAccessMethod(userRecord.accessMethod);
+    // this.showRoleSection = false;
+    this.updateSection = 'password';
     this.userRecord = {
       userId: userRecord.userId,
       username: userRecord.userName,
+      real_name: userRecord.realName,
+      access_method: userRecord.accessMethod,
+      description: userRecord.description,
       password: '',
       confirmPassword: '',
       role_id: userRecord.roleId  // to set default value in role option
     };
 
     // To handle section on UI
-    if (key === 'role') {
-      this.showRoleSection = true;
-    }
+    // if (key === 'role') {
+    //   this.showRoleSection = true;
+    // }
+    this.updateSection = key;
   }
 
   public toggleModal(isOpen: Boolean) {
@@ -79,11 +90,35 @@ export class UpdateUserComponent implements OnInit, OnChanges {
    *  To handle role and password change method call
    */
   updateUser() {
-    if (this.showRoleSection) {
-      this.updateRole();
-    } else {
-      this.resetPassword();
+    switch (this.updateSection) {
+      case 'password':
+        this.resetPassword();
+        break;
+      case 'role':
+        this.updateRole();
+        break;
+      case 'auth':
+        this.updateAuthMethod();
+        break;
+      default:
+        break;
     }
+  }
+
+  updateAuthMethod() {
+    this.userService.updateAccessMethod(this.userRecord).
+    subscribe(() => {
+        this.notify.emit();
+        this.toggleModal(false);
+        this.alertService.success('User updated successfully');
+      },
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   /**
@@ -141,5 +176,10 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   public setUserRole(role: any) {
     this.selectedRole = role.name;
     this.userRecord.role_id = role.id;
+  }
+
+  public setAccessMethod(auth: any) {
+    this.selectedAuthMethod = auth;
+    this.userRecord.access_method = auth;
   }
 }

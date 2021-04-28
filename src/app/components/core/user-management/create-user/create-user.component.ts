@@ -30,6 +30,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
       real_name: '',
       access_method: 'any',
       password: '',
+      description: '',
       confirmPassword: '',
       role_id: 2   // set "user" as a default role
     };

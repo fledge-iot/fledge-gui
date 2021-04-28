@@ -2,8 +2,9 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="showRoleSection" class="modal-card-title is-size-5">Update User Role</p>
-      <p *ngIf="!showRoleSection" class="modal-card-title is-size-5">Update User Password</p>
+      <p *ngIf="updateSection === 'role'" class="modal-card-title is-size-5">Update User Role</p>
+      <p *ngIf="updateSection === 'password'" class="modal-card-title is-size-5">Update User Password</p>
+      <p *ngIf="updateSection === 'auth'" class="modal-card-title is-size-5">Update Auth Method</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -17,7 +18,7 @@
             </p>
           </div>
         </div>
-        <div *ngIf="showRoleSection" class="columns">
+        <div *ngIf="updateSection === 'role'" class="columns">
           <div class="column is-6">
             <label class="label is-small">Role</label>
             <div id="update-user-dropdown" class="dropdown is-up">
@@ -41,7 +42,41 @@
             </div>
           </div>
         </div>
-        <div *ngIf="!showRoleSection" class="columns">
+        <ng-container *ngIf="updateSection === 'auth'">
+        <div class="columns">
+          <div class="column is-6">
+            <label class="label is-small">Auth Method</label>
+            <div id="update-auth-dropdown" class="dropdown is-up">
+              <div class="dropdown-trigger">
+                <button type="button" class="button is-fullwidth is-small" aria-haspopup="true"
+                  aria-controls="dropdown-menu" (click)="toggleDropDown('update-auth-dropdown')">
+                  <span>{{selectedAuthMethod}}</span>
+                  <span class="icon is-small">
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item" *ngFor="let loginMethod of loginMethods"
+                    (click)="toggleDropDown('update-auth-dropdown');setAccessMethod(loginMethod)">
+                    {{loginMethod}}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-6">
+            <p class="control is-fullwidth">
+              <input type="text" class="input is-small" placeholder="description" name='description'
+                [(ngModel)]="userRecord.description" #description="ngModel"/>
+            </p>
+          </div>
+        </div>
+      </ng-container>
+        <div *ngIf="updateSection === 'password'" class="columns">
           <div class="column is-6">
             <p class="control is-fullwidth">
               <input type="password" class="input is-small" placeholder="password" name='password'
@@ -52,7 +87,7 @@
               6 character)</small>
           </div>
         </div>
-        <div *ngIf="!showRoleSection" class="columns">
+        <div *ngIf="updateSection === 'password'" class="columns">
           <div class="column is-6">
             <p class="control is-fullwidth">
               <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword'
