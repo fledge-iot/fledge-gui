@@ -17,6 +17,14 @@
           </div>
           <div class="columns">
             <div class="column is-6">
+              <label class="label">Realname</label>
+              <p class="control is-fullwidth">
+                  <input type="text" class="input" placeholder="realname" name='realname' [(ngModel)]="userRecord.realname"/>
+              </p>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column is-6">
               <label class="label">Role</label>
               <p class="control is-fullwidth">
                   <input [disabled]='true' type="text" class="input" placeholder="role" name='role' [(ngModel)]="userRecord.roleName">
@@ -26,6 +34,13 @@
           <div class="columns">
             <div class="column is-6">
               <a (click)="toggleModal(true)">change password</a>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column is-3">
+              <div class="control">
+                <span (click)="update()" class="button is-info is-small">Update</span>
+              </div>
             </div>
           </div>
           <div class="columns">

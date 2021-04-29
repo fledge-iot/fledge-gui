@@ -148,6 +148,43 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         });
   }
 
+  // TODO: FOGL-5381
+  // enableUser(userId) {
+  //   const payload = {
+  //     enabled: true
+  //   };
+  //   /** request started */
+  //   this.ngProgress.start();
+  //   this.userService.enableUser(userId, payload).
+  //     subscribe(
+  //       (data) => {
+  //         /** request completed */
+  //         this.ngProgress.done();
+  //         this.alertService.success(data['message']);
+  //         this.getUsers();
+  //       },
+  //       error => {
+  //         /** request completed */
+  //         this.ngProgress.done();
+  //         if (error.status === 0) {
+  //           console.log('service down ', error);
+  //         } else {
+  //           this.alertService.error(error.statusText);
+  //         }
+  //       });
+  // }
+
+  public toggleDropdown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
+    const dropDown = document.querySelector(`#${id}`);
+    dropDown.classList.toggle('is-active');
+  }
+
   /**
      *  Sign Out
      */

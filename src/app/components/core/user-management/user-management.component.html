@@ -34,7 +34,6 @@
                 <th></th>
                 <th></th>
                 <th></th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -47,47 +46,50 @@
                   {{user.roleName}}
                 </td>
                 <td>
-                  <ng-container *ngIf='user.userId != uid && user.userId != 1'>
-                    <a (click)="openUpdateUserModal(user, 'role')" class="button is-text text-btn">
-                      <p *ngIf="viewPort !== 'mobile'">change role</p>
-                      <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-user-tag" aria-hidden="true"></i>
-                    </a>
-                  </ng-container>
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
                   <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
                 </td>
+                <td></td>
                 <td>
-                  <ng-container *ngIf='user.userId != uid && user.userId != 1'>
-                    <a (click)="openUpdateUserModal(user, 'password')" class="button is-text text-btn">
-                      <p *ngIf="viewPort !== 'mobile'">reset password</p>
-                      <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-key" aria-hidden="true"></i>
-                    </a>
-                  </ng-container>
-                </td>
-                <td>
-                  <ng-container *ngIf='user.userId != uid && user.userId != 1'>
-                    <a (click)="openUpdateUserModal(user, 'auth')" class="button is-text text-btn">
-                      <p *ngIf="viewPort !== 'mobile'">change auth method</p>
-                      <i *ngIf="viewPort == 'mobile'" class="fa fa-xs fa-edit" aria-hidden="true"></i>
-                    </a>
-                  </ng-container>
-                </td>
-                <td>
-                  <ng-container *ngIf='user.userId != uid && user.userId != 1'>
-                    <a (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')"
-                      class="button is-text text-btn">
-                      <p *ngIf="viewPort !== 'mobile'">delete</p>
-                      <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-trash-alt" aria-hidden="true"></i>
-                    </a>
-                  </ng-container>
-                </td>
-                <td>
-                  <span *ngIf='user.userId != uid && user.userId != 1'
-                    (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')"
-                    class="button is-text text-btn">
-                    <p *ngIf="viewPort !== 'mobile'">log out active sessions</p>
-                    <i *ngIf="viewPort == 'mobile'" class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>
-                  </span>
+                  <div id="dropdown" class="dropdown is-left" *ngIf="user.userId != uid && user.userId != 1">
+                    <div class="dropdown-trigger">
+                      <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu"
+                        (click)="toggleDropdown('dropdown')">
+                        <span class="icon is-small">
+                          <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-600"></i>
+                        </span>
+                      </a>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class="dropdown-content">
+                        <a class="dropdown-item" (click)="openUpdateUserModal(user, 'role')">
+                          <i class="fa fa-sm fa-user-tag" aria-hidden="true"></i>
+                          change role
+                        </a>
+                        <a class="dropdown-item" (click)="openUpdateUserModal(user, 'password')">
+                          <i class="fa fa-sm fa-key" aria-hidden="true"></i>
+                          reset password
+                        </a>                        
+                        <a class="dropdown-item" (click)="openUpdateUserModal(user, 'auth')">
+                          <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
+                          change auth method
+                        </a>
+                        <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')">
+                          <i class="fa fa-sm fa-trash-alt" aria-hidden="true"></i>
+                          delete
+                        </a>
+                        <!-- TODO: FOGL-5381
+                        <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'enableUser', 'Are you sure, you want to enable the user')">
+                          <i class="far fa-check-circle fa-fw fa-sm" aria-hidden="true"></i>
+                          enable
+                        </a> -->
+                        <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')">
+                          <i class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>
+                          log out active sessions
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -112,7 +114,7 @@
       </div>
     </div>
   </div>
-  <app-alert-dialog (deleteUserService)='deleteUser($event)' (logoutAllUserSessionsService)='clearAllSessions($event)'
+  <app-alert-dialog (enabledService)='enableUser($event)' (deleteUserService)='deleteUser($event)' (logoutAllUserSessionsService)='clearAllSessions($event)'
     [childData]='childData'></app-alert-dialog>
   <app-create-user [userRoles]="roles" (notify)='onNotify()'></app-create-user>
   <app-update-user [userRoles]="roles" (notify)='onNotify()'></app-update-user>

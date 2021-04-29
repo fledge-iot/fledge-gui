@@ -50,6 +50,7 @@ export class UserProfileComponent implements OnInit {
                 this.userRecord = {
                   userId: userData['userId'],
                   userName: userData['userName'],
+                  realname: userData['realName'],
                   roleId: userData['roleId'],
                   roleName: userData['roleName'],
                 };
@@ -153,6 +154,23 @@ export class UserProfileComponent implements OnInit {
             console.log('service down', error);
           } else if (error.status === 404) {
             this.alertService.error('No active session found');
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  update() {
+    this.ngProgress.start();
+    this.userService.updateUser(this.userRecord).
+      subscribe(
+        () => {
+          this.ngProgress.done();
+          this.alertService.success('User updated successfully');
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
           }

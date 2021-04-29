@@ -13,3 +13,7 @@
 .column {
     padding-top: 0px;
 }
+
+.context-menu {
+    border: none;
+}

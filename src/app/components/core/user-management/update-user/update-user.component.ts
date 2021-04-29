@@ -53,7 +53,6 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   public setUser(userRecord, key) {
     this.setUserRole({ id: userRecord.roleId, name: userRecord.roleName });
     this.setAccessMethod(userRecord.accessMethod);
-    // this.showRoleSection = false;
     this.updateSection = 'password';
     this.userRecord = {
       userId: userRecord.userId,
@@ -65,11 +64,6 @@ export class UpdateUserComponent implements OnInit, OnChanges {
       confirmPassword: '',
       role_id: userRecord.roleId  // to set default value in role option
     };
-
-    // To handle section on UI
-    // if (key === 'role') {
-    //   this.showRoleSection = true;
-    // }
     this.updateSection = key;
   }
 
@@ -106,7 +100,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   }
 
   updateAuthMethod() {
-    this.userService.updateAccessMethod(this.userRecord).
+    this.userService.updateUser(this.userRecord).
     subscribe(() => {
         this.notify.emit();
         this.toggleModal(false);

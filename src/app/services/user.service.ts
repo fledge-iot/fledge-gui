@@ -66,6 +66,19 @@ export class UserService {
   }
 
   /**
+   * enable/disable user
+   *
+   * PUT  | /fledge/admin/{id}/enabled
+   *
+   * @param payload = > {"enabled": boolean}
+   */
+   enableUser(id, payload) {
+    return this.http.put(this.ADMIN_URL + '/' + id + '/enabled', payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  /**
   * Create user
   *
   * POST  | fledge/admin/user
@@ -93,10 +106,11 @@ export class UserService {
       catchError(error => throwError(error)));
   }
 
-  updateAccessMethod(data) {
+  updateUser(data) {
     const payload: any = {
-      accessMethod: data.access_method,
-      description: data.description
+      access_method: data.access_method,
+      description: data.description,
+      real_name: data.realname
     };
     return this.http.put(this.USER_URL + '/' + data.userId, payload).pipe(
       map(response => response),
