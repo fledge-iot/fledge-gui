@@ -64,6 +64,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   }
 
   public createUser(form: NgForm) {
+    // TODO: Add proper validation once FOGL-5386 done
     if (this.selectedAuthMethod !== 'pwd' && this.model.password === '' && this.model.confirmPassword === '') {
       delete this.model.password;
       delete this.model.confirmPassword;
