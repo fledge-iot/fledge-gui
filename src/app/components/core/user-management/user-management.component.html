@@ -30,7 +30,9 @@
               <tr>
                 <th>ID</th>
                 <th>Username</th>
-                <th>Role</th>
+                <th>Role</th>        
+                <th>Authentication Method</th>
+                <th>Description</th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -38,25 +40,27 @@
             </thead>
             <tbody>
               <tr *ngFor="let user of userRecord">
-                <td style="vertical-align: middle;">{{user.userId}}</td>
-                <td style="vertical-align: middle;">
+                <td class="user-col">{{user.userId}}</td>
+                <td class="user-col">
                   {{user.userName}}
                 </td>
-                <td style="vertical-align: middle;">
+                <td class="user-col">
                   {{user.roleName}}
                 </td>
+                <td class="user-col">{{user.accessMethod}}</td>
+                <td class="user-col">{{user.description}}</td>
+                <td></td>
                 <td>
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
                   <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
                 </td>
-                <td></td>
                 <td>
                   <div id="dropdown" class="dropdown is-left" *ngIf="user.userId != uid && user.userId != 1">
                     <div class="dropdown-trigger">
                       <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu"
                         (click)="toggleDropdown('dropdown')">
                         <span class="icon is-small">
-                          <i class="fas fa-ellipsis-h fa-sm fa-fw text-gray-600"></i>
+                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
                         </span>
                       </a>
                     </div>
@@ -64,19 +68,19 @@
                       <div class="dropdown-content">
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'role')">
                           <i class="fa fa-sm fa-user-tag" aria-hidden="true"></i>
-                          change role
+                          Change Role
                         </a>
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'password')">
                           <i class="fa fa-sm fa-key" aria-hidden="true"></i>
-                          reset password
+                          Reset Password
                         </a>                        
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'auth')">
                           <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
-                          change auth method
+                          Change Auth Method
                         </a>
                         <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')">
                           <i class="fa fa-sm fa-trash-alt" aria-hidden="true"></i>
-                          delete
+                          Delete
                         </a>
                         <!-- TODO: FOGL-5381
                         <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'enableUser', 'Are you sure, you want to enable the user')">
@@ -85,7 +89,7 @@
                         </a> -->
                         <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')">
                           <i class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>
-                          log out active sessions
+                          Logout Active Sessions
                         </a>
                       </div>
                     </div>

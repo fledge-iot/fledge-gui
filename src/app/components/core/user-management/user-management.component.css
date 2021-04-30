@@ -17,3 +17,7 @@
 .context-menu {
     border: none;
 }
+
+.user-col {
+    vertical-align: middle;
+}

@@ -45,7 +45,7 @@
         <ng-container *ngIf="updateSection === 'auth'">
         <div class="columns">
           <div class="column is-6">
-            <label class="label is-small">Auth Method</label>
+            <label class="label is-small">Authentication Method</label>
             <div id="update-auth-dropdown" class="dropdown is-up">
               <div class="dropdown-trigger">
                 <button type="button" class="button is-fullwidth is-small" aria-haspopup="true"
@@ -69,15 +69,17 @@
         </div>
         <div class="columns">
           <div class="column is-6">
+            <label class="label is-small">Description</label>
             <p class="control is-fullwidth">
-              <input type="text" class="input is-small" placeholder="description" name='description'
-                [(ngModel)]="userRecord.description" #description="ngModel"/>
+              <textarea rows="3" type="text" class="textarea is-small" placeholder="description" name='description'
+                [(ngModel)]="userRecord.description" #description="ngModel"></textarea>
             </p>
           </div>
         </div>
       </ng-container>
         <div *ngIf="updateSection === 'password'" class="columns">
           <div class="column is-6">
+            <label class="label is-small">Password</label>
             <p class="control is-fullwidth">
               <input type="password" class="input is-small" placeholder="password" name='password'
                 [(ngModel)]="userRecord.password" #password="ngModel" validateEqual="confirmPassword" reverse="true"
@@ -89,6 +91,7 @@
         </div>
         <div *ngIf="updateSection === 'password'" class="columns">
           <div class="column is-6">
+            <label class="label is-small">Confirm Password</label>
             <p class="control is-fullwidth">
               <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword'
                 [(ngModel)]="userRecord.confirmPassword" #confirmPassword="ngModel" validateEqual="password" required />
