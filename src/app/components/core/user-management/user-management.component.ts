@@ -175,7 +175,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     //     });
   }
 
-  public toggleDropdown(id: string) {
+  public toggleDropdown(contextMenu) {
+    const id = 'dropdown-' + contextMenu;
     const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
     if (activeDropDowns.length > 0) {
       if (activeDropDowns[0].id !== id) {
