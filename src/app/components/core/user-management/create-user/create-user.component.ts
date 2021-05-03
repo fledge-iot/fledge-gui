@@ -64,7 +64,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   }
 
   public createUser(form: NgForm) {
-    if (this.selectedAuthMethod.value !== 'cert' && (this.model.password !== this.model.confirmPassword)) {
+    if (this.selectedAuthMethod !== 'cert' && (this.model.password !== this.model.confirmPassword)) {
       return;
     }
     this.userService.createUser(this.model).
