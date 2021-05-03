@@ -14,7 +14,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   isUpdateForm = false;
   userRole = [];
   selectedRole = 'user'; // set "user" as a default role
-  selectedAuthMethod = 'any';
+  selectedAuthMethod = 'Any';
   loginMethods = [];
 
   @Input() userRoles: any;
@@ -34,7 +34,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
       confirmPassword: '',
       role_id: 2   // set "user" as a default role
     };
-    this.loginMethods = ['any', 'pwd', 'cert'];
+    this.loginMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
   }
 
   ngOnChanges(): void {
@@ -64,7 +64,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   }
 
   public createUser(form: NgForm) {
-    if (this.selectedAuthMethod !== 'cert' && (this.model.password !== this.model.confirmPassword)) {
+    if (this.selectedAuthMethod.value !== 'cert' && (this.model.password !== this.model.confirmPassword)) {
       return;
     }
     this.userService.createUser(this.model).
@@ -98,9 +98,9 @@ export class CreateUserComponent implements OnInit, OnChanges {
   }
 
   setAccessMethod(accessMethod: any) {
-    this.selectedAuthMethod = accessMethod;
-    if (accessMethod) { this.model.access_method = accessMethod; }
-    if (accessMethod === 'cert') {
+    this.selectedAuthMethod = accessMethod.text;
+    if (accessMethod) { this.model.access_method = accessMethod.value; }
+    if (accessMethod.value === 'cert') {
       this.model.password = '';
       this.model.confirmPassword = '';
     }

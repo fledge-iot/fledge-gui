@@ -38,7 +38,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
       confirmPassword: '',
       role_id: 0   // set "user" as a default role
     };
-    this.loginMethods = ['any', 'pwd', 'cert'];
+    this.loginMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
   }
 
   ngOnChanges(): void {
@@ -52,7 +52,8 @@ export class UpdateUserComponent implements OnInit, OnChanges {
    */
   public setUser(userRecord, key) {
     this.setUserRole({ id: userRecord.roleId, name: userRecord.roleName });
-    this.setAccessMethod(userRecord.accessMethod);
+    const accessMethod = this.loginMethods.find(object => object.value === userRecord.accessMethod);
+    this.setAccessMethod(accessMethod);
     this.updateSection = 'password';
     this.userRecord = {
       userId: userRecord.userId,
@@ -173,7 +174,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   }
 
   public setAccessMethod(auth: any) {
-    this.selectedAuthMethod = auth;
-    this.userRecord.access_method = auth;
+    this.selectedAuthMethod = auth.text;
+    this.userRecord.access_method = auth.value;
   }
 }

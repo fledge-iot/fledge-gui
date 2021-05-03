@@ -60,7 +60,7 @@
                 <div class="dropdown-content">
                   <a class="dropdown-item" *ngFor="let loginMethod of loginMethods"
                     (click)="toggleDropDown('update-auth-dropdown');setAccessMethod(loginMethod)">
-                    {{loginMethod}}
+                    {{loginMethod.text}}
                   </a>
                 </div>
               </div>

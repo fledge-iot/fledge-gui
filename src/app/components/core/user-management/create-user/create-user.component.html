@@ -57,7 +57,7 @@
                     <div class="dropdown-content">
                       <a class="dropdown-item" *ngFor="let loginMethod of loginMethods"
                         (click)="toggleDropDown('access-method-dropdown');setAccessMethod(loginMethod)">
-                        {{loginMethod}}
+                        {{loginMethod.text}}
                       </a>
                     </div>
                   </div>
@@ -74,7 +74,7 @@
               <small *ngIf="f.submitted && !username.valid" class="help is-danger level-left"> Username is required (minimum 4 characters)</small>
             </div>
           </div>
-          <ng-container *ngIf="selectedAuthMethod !== 'cert'">   
+          <ng-container *ngIf="selectedAuthMethod !== 'Certificate'">   
             <div class="columns">
               <div class="column">
                 <label class="label is-small">Password</label>
@@ -82,7 +82,7 @@
                   <input type="password" class="input is-small" placeholder="password" name='password' [(ngModel)]="model.password" #password="ngModel"
                     validateEqual="confirmPassword" reverse="true" required />
                 </p>
-                <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required (minium 6 character)</small>
+                <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required (minimum 6 character)</small>
               </div>
             </div>         
             <div class="columns">
