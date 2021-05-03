@@ -64,10 +64,8 @@ export class CreateUserComponent implements OnInit, OnChanges {
   }
 
   public createUser(form: NgForm) {
-    // TODO: Add proper validation once FOGL-5386 done
-    if (this.selectedAuthMethod !== 'pwd' && this.model.password === '' && this.model.confirmPassword === '') {
-      delete this.model.password;
-      delete this.model.confirmPassword;
+    if (this.selectedAuthMethod !== 'cert' && (this.model.password !== this.model.confirmPassword)) {
+      return;
     }
     this.userService.createUser(this.model).
       subscribe(
@@ -102,6 +100,10 @@ export class CreateUserComponent implements OnInit, OnChanges {
   setAccessMethod(accessMethod: any) {
     this.selectedAuthMethod = accessMethod;
     if (accessMethod) { this.model.access_method = accessMethod; }
+    if (accessMethod === 'cert') {
+      this.model.password = '';
+      this.model.confirmPassword = '';
+    }
   }
 
   public toggleDropDown(id: string) {
