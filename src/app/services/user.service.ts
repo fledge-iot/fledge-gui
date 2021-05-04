@@ -120,11 +120,11 @@ export class UserService {
   /**
   * change user password
   *
-  * PUT  | /fledge/user/{username}/password
+  * PUT  | /fledge/user/{userId}/password
   * @param Object payload  => {"current_password": "F0gl@mp!", "new_password": "F0gl@mp1"}
   */
-  changePassword(payload, userName) {
-    return this.http.put(this.USER_URL + '/' + userName + '/password', payload).pipe(
+  changePassword(payload, userId) {
+    return this.http.put(this.USER_URL + '/' + userId + '/password', payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

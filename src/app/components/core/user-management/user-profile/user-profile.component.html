@@ -33,7 +33,23 @@
           </div>
           <div class="columns">
             <div class="column is-6">
-              <a (click)="toggleModal(true)">change password</a>
+              <label class="label">Authentication Method</label>
+              <p class="control is-fullwidth">
+                  <input [disabled]='true' type="text" class="input" placeholder="accessMethod" name='accessMethod' [(ngModel)]="userRecord.accessMethod">
+              </p>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column is-6">
+              <label class="label">Description</label>
+              <p class="control is-fullwidth">
+                  <textarea [disabled]='true' type="text" class="textarea" placeholder="description" name='description' [(ngModel)]="userRecord.description"></textarea>
+              </p>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column is-3">
+              <a (click)="toggleModal(true)">Change Password</a>
             </div>
           </div>
           <div class="columns">
@@ -42,8 +58,6 @@
                 <span (click)="update()" class="button is-info is-small">Update</span>
               </div>
             </div>
-          </div>
-          <div class="columns">
             <div class="column is-3">
               <div class="control">
                 <span (click)="openModal(userRecord.userId, '', 'clearSessions', 'Are you sure, You want to clear your all active sessions')"
@@ -64,7 +78,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" id="ngForm" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userName)" #f="ngForm" novalidate>
+      <form name="form" id="ngForm" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userId)" #f="ngForm" novalidate>
         <div class="columns">
           <div class="column is-6">
             <label class="label is-small">Current Password</label>
@@ -78,7 +92,7 @@
             <input type="password" class="input is-small" placeholder="new password" name='password' [(ngModel)]="userRecord.password" #password="ngModel"
               validateEqual="confirmPassword" reverse="true" required />
           </div>
-          <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minium 6 character)</small>
+          <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minimum 6 character)</small>
         </div>
         <div class="columns">
           <div class="column is-6">

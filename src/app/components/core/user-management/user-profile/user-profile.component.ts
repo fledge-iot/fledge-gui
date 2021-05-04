@@ -53,6 +53,8 @@ export class UserProfileComponent implements OnInit {
                   realname: userData['realName'],
                   roleId: userData['roleId'],
                   roleName: userData['roleName'],
+                  accessMethod: userData['accessMethod'],
+                  description: userData['description']
                 };
               },
               error => {
@@ -91,13 +93,13 @@ export class UserProfileComponent implements OnInit {
     userProfileModal.classList.remove('is-active');
   }
 
-  public changePassword(form: NgForm, userName) {
+  public changePassword(form: NgForm, userId) {
     const passwordPayload: any = {
       current_password: form.controls['currentPassword'].value,
       new_password: form.controls['password'].value
     };
     this.ngProgress.start();
-    this.userService.changePassword(passwordPayload, userName).
+    this.userService.changePassword(passwordPayload, userId).
       subscribe(
         (data) => {
           this.ngProgress.done();
