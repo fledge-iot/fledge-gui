@@ -67,12 +67,14 @@
       <form name="form" id="ngForm" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userName)" #f="ngForm" novalidate>
         <div class="columns">
           <div class="column is-6">
+            <label class="label is-small">Current Password</label>
             <input type="password" class="input is-small" placeholder="current password" name='currentPassword' [(ngModel)]="userRecord.currentPassword" #currentPassword="ngModel" required/>
           </div>
           <small *ngIf="f.submitted && !currentPassword.valid" class="help is-danger level-left">Wrong password</small>
         </div>
         <div class="columns">
           <div class="column is-6">
+            <label class="label is-small">New Password</label>
             <input type="password" class="input is-small" placeholder="new password" name='password' [(ngModel)]="userRecord.password" #password="ngModel"
               validateEqual="confirmPassword" reverse="true" required />
           </div>
@@ -80,6 +82,7 @@
         </div>
         <div class="columns">
           <div class="column is-6">
+            <label class="label is-small">Confirm Password</label>
             <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword' [(ngModel)]="userRecord.confirmPassword"
               #confirmPassword="ngModel" validateEqual="password" required />
           </div>
