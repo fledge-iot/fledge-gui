@@ -25,3 +25,7 @@
 .context-menu:hover {
     background-color: lightgrey
 }
+
+.user-table, .card-data {
+    overflow: visible;
+}

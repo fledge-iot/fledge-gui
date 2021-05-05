@@ -13,7 +13,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   userRole = [];
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @Input() userRoles: any;
-  loginMethods = [];
+  authMethods = [];
 
   showRoleSection = false;
   updateSection = 'pwd';
@@ -33,12 +33,12 @@ export class UpdateUserComponent implements OnInit, OnChanges {
       username: '',
       description: '',
       password: '',
-      real_name: '',
-      access_method: '',
+      realName: '',
+      authMethod: '',
       confirmPassword: '',
-      role_id: 0   // set "user" as a default role
+      roleId: 0   // set "user" as a default role
     };
-    this.loginMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
+    this.authMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
   }
 
   ngOnChanges(): void {
@@ -52,18 +52,18 @@ export class UpdateUserComponent implements OnInit, OnChanges {
    */
   public setUser(userRecord, key) {
     this.setUserRole({ id: userRecord.roleId, name: userRecord.roleName });
-    const accessMethod = this.loginMethods.find(object => object.value === userRecord.accessMethod);
-    this.setAccessMethod(accessMethod);
+    const authMethod = this.authMethods.find(object => object.value === userRecord.authMethod);
+    this.setAuthMethod(authMethod);
     this.updateSection = 'password';
     this.userRecord = {
       userId: userRecord.userId,
       username: userRecord.userName,
-      real_name: userRecord.realName,
-      access_method: userRecord.accessMethod,
+      realName: userRecord.realName,
+      authMethod: userRecord.authMethod,
       description: userRecord.description,
       password: '',
       confirmPassword: '',
-      role_id: userRecord.roleId  // to set default value in role option
+      roleId: userRecord.roleId  // to set default value in role option
     };
     this.updateSection = key;
   }
@@ -170,11 +170,11 @@ export class UpdateUserComponent implements OnInit, OnChanges {
 
   public setUserRole(role: any) {
     this.selectedRole = role.name;
-    this.userRecord.role_id = role.id;
+    this.userRecord.roleId = role.id;
   }
 
-  public setAccessMethod(auth: any) {
+  public setAuthMethod(auth: any) {
     this.selectedAuthMethod = auth.text;
-    this.userRecord.access_method = auth.value;
+    this.userRecord.authMethod = auth.value;
   }
 }

@@ -53,7 +53,7 @@ export class UserProfileComponent implements OnInit {
                   realname: userData['realName'],
                   roleId: userData['roleId'],
                   roleName: userData['roleName'],
-                  accessMethod: userData['accessMethod'],
+                  authMethod: userData['authMethod'],
                   description: userData['description']
                 };
               },

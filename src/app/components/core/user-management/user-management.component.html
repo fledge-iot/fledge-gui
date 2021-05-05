@@ -22,10 +22,10 @@
         </ul>
       </div>
     </header>
-    <div class="card-content">
+    <div class="card-content card-data">
       <div *ngIf="seletedTab == 1" id="user-management" #management>
         <div class="is-responsive">
-        <table class="table scroll is-hoverable">
+        <table class="table is-hoverable user-table">
           <thead id="head">
             <tr>
               <th>ID</th>
@@ -51,7 +51,7 @@
               <td class="user-col">
                 {{user.roleName}}
               </td>
-              <td class="user-col">{{user.accessMethod}}</td>
+              <td class="user-col">{{user.authMethod}}</td>
               <td class="user-col">{{user.description}}</td>
               <td></td>
               <td>

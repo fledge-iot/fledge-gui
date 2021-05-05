@@ -83,7 +83,7 @@ export class UserService {
   *
   * POST  | fledge/admin/user
   *
-  *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "role_id": 1}
+  *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "roleId": 1}
   */
   createUser(user) {
     return this.http.post(this.ADMIN_URL + '/user', user).pipe(
@@ -95,11 +95,11 @@ export class UserService {
   /**
    * Update user role
    *
-   * @param Object payload = > {"role_id": "1"}
+   * @param Object payload = > {"roleId": "1"}
    */
   updateRole(data) {
     const payload: any = {
-      role_id: data.role_id
+      role_id: data.roleId
     };
     return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload).pipe(
       map(response => response),
@@ -108,9 +108,9 @@ export class UserService {
 
   updateUser(data) {
     const payload: any = {
-      access_method: data.access_method,
+      access_method: data.authMethod,
       description: data.description,
-      real_name: data.realname
+      real_name: data.realName
     };
     return this.http.put(this.USER_URL + '/' + data.userId, payload).pipe(
       map(response => response),

@@ -15,7 +15,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   userRole = [];
   selectedRole = 'user'; // set "user" as a default role
   selectedAuthMethod = 'Any';
-  loginMethods = [];
+  authMethods = [];
 
   @Input() userRoles: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -27,14 +27,14 @@ export class CreateUserComponent implements OnInit, OnChanges {
     this.model = {
       userId: 0,
       username: '',
-      real_name: '',
-      access_method: 'any',
+      realName: '',
+      authMethod: 'any',
       password: '',
       description: '',
       confirmPassword: '',
-      role_id: 2   // set "user" as a default role
+      roleId: 2   // set "user" as a default role
     };
-    this.loginMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
+    this.authMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
   }
 
   ngOnChanges(): void {
@@ -94,13 +94,13 @@ export class CreateUserComponent implements OnInit, OnChanges {
   setRole(role: any) {
     this.selectedRole = role.name;
     const selectedRole = this.userRole.find(r => r.id = role.id);
-    if (role) { this.model.role_id = selectedRole.id; }
+    if (role) { this.model.roleId = selectedRole.id; }
   }
 
-  setAccessMethod(accessMethod: any) {
-    this.selectedAuthMethod = accessMethod.text;
-    if (accessMethod) { this.model.access_method = accessMethod.value; }
-    if (accessMethod.value === 'cert') {
+  setAuthMethod(authMethod: any) {
+    this.selectedAuthMethod = authMethod.text;
+    if (authMethod) { this.model.authMethod = authMethod.value; }
+    if (authMethod.value === 'cert') {
       this.model.password = '';
       this.model.confirmPassword = '';
     }

@@ -11,7 +11,7 @@
           <div class="column is-6">
             <label class="label">Name</label>
             <p class="control is-fullwidth">
-              <input type="text" class="input" placeholder="realname" name='realname'
+              <input type="text" class="input" placeholder="Real Name" name='realname'
                 [(ngModel)]="userRecord.realname" />
             </p>
           </div>
@@ -38,12 +38,12 @@
           <div class="column is-6">
             <label class="label">Authentication Method</label>
             <p class="control is-fullwidth">
-              <input [disabled]='true' type="text" class="input" placeholder="authentication method" name='accessMethod'
-                [(ngModel)]="userRecord.accessMethod">
+              <input [disabled]='true' type="text" class="input" placeholder="authentication method" name='authMethod'
+                [(ngModel)]="userRecord.authMethod">
             </p>
           </div>
         </div>
-        <div class="columns">
+        <div *ngIf="userRecord.roleName === 'admin'" class="columns">
           <div class="column is-6">
             <label class="label">Description</label>
             <p class="control is-fullwidth">
@@ -101,7 +101,7 @@
         </div>
         <div class="columns">
           <div class="column is-6">
-            <label class="label is-small">Confirm Password</label>
+            <label class="label is-small">Confirm New Password</label>
             <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword'
               [(ngModel)]="userRecord.confirmPassword" #confirmPassword="ngModel" validateEqual="password" required />
           </div>

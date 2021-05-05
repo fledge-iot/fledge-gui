@@ -12,7 +12,7 @@
             <div class="column">
               <label class="label is-small">Name</label>
               <p class="control is-fullwidth">
-                <input type="text" class="input is-small" placeholder="realname" name='real_name' [(ngModel)]="model.real_name" #realname="ngModel">
+                <input type="text" class="input is-small" placeholder="Real Name" name='realName' [(ngModel)]="model.realName" #realname="ngModel">
               </p>
             </div>
           </div>
@@ -55,9 +55,9 @@
                   </div>
                   <div class="dropdown-menu" id="dropdown-menu" role="menu">
                     <div class="dropdown-content">
-                      <a class="dropdown-item" *ngFor="let loginMethod of loginMethods"
-                        (click)="toggleDropDown('access-method-dropdown');setAccessMethod(loginMethod)">
-                        {{loginMethod.text}}
+                      <a class="dropdown-item" *ngFor="let authMethod of authMethods"
+                        (click)="toggleDropDown('access-method-dropdown');setAuthMethod(authMethod)">
+                        {{authMethod.text}}
                       </a>
                     </div>
                   </div>
