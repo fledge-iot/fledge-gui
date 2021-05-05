@@ -52,7 +52,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
    */
   public setUser(userRecord, key) {
     this.setUserRole({ id: userRecord.roleId, name: userRecord.roleName });
-    const authMethod = this.authMethods.find(object => object.value === userRecord.authMethod);
+    const authMethod = this.authMethods.find(object => object.value === userRecord.accessMethod);
     this.setAuthMethod(authMethod);
     this.updateSection = 'password';
     this.userRecord = {
