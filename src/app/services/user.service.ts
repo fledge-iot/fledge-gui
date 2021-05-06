@@ -86,6 +86,7 @@ export class UserService {
   *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "roleId": 1}
   */
   createUser(user) {
+    delete user['confirmPassword'];
     return this.http.post(this.ADMIN_URL + '/user', user).pipe(
       map(response => response),
       catchError(error => throwError(error)));
@@ -108,7 +109,7 @@ export class UserService {
 
   updateUser(data) {
     const payload: any = {
-      access_method: data.authMethod,
+      access_method: data.access_method,
       description: data.description,
       real_name: data.real_name
     };

@@ -73,7 +73,6 @@ export class CreateUserComponent implements OnInit, OnChanges {
     if (this.selectedAuthMethod === 'Certificate') {
       delete this.model.password;
     }
-    delete this.model.confirmPassword;
     this.userService.createUser(this.model).
       subscribe(
         (data) => {
