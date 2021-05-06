@@ -110,7 +110,7 @@ export class UserService {
     const payload: any = {
       access_method: data.authMethod,
       description: data.description,
-      real_name: data.realName
+      real_name: data.real_name
     };
     return this.http.put(this.USER_URL + '/' + data.userId, payload).pipe(
       map(response => response),

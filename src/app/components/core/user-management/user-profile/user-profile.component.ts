@@ -50,10 +50,10 @@ export class UserProfileComponent implements OnInit {
                 this.userRecord = {
                   userId: userData['userId'],
                   userName: userData['userName'],
-                  realname: userData['realName'],
+                  real_name: userData['realName'],
                   roleId: userData['roleId'],
                   roleName: userData['roleName'],
-                  authMethod: userData['authMethod'],
+                  authMethod: userData['accessMethod'],
                   description: userData['description']
                 };
               },

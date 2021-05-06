@@ -27,8 +27,8 @@ export class CreateUserComponent implements OnInit, OnChanges {
     this.model = {
       userId: 0,
       username: '',
-      realName: '',
-      authMethod: 'any',
+      real_name: '',
+      access_method: 'any',
       password: '',
       description: '',
       confirmPassword: '',
@@ -67,9 +67,13 @@ export class CreateUserComponent implements OnInit, OnChanges {
     if (form.invalid === true) {
       return;
     }
-    if (this.selectedAuthMethod !== 'cert' && (this.model.password !== this.model.confirmPassword)) {
+    if (this.selectedAuthMethod !== 'Certificate' && (this.model.password !== this.model.confirmPassword)) {
       return;
     }
+    if (this.selectedAuthMethod === 'Certificate') {
+      delete this.model.password;
+    }
+    delete this.model.confirmPassword;
     this.userService.createUser(this.model).
       subscribe(
         (data) => {
@@ -102,7 +106,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
 
   setAuthMethod(authMethod: any) {
     this.selectedAuthMethod = authMethod.text;
-    if (authMethod) { this.model.authMethod = authMethod.value; }
+    if (authMethod) { this.model.access_method = authMethod.value; }
     if (authMethod.value === 'cert') {
       this.model.password = '';
       this.model.confirmPassword = '';

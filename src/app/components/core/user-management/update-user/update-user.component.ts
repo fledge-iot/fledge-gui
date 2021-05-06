@@ -33,8 +33,8 @@ export class UpdateUserComponent implements OnInit, OnChanges {
       username: '',
       description: '',
       password: '',
-      realName: '',
-      authMethod: '',
+      real_name: '',
+      access_method: '',
       confirmPassword: '',
       roleId: 0   // set "user" as a default role
     };
@@ -58,8 +58,8 @@ export class UpdateUserComponent implements OnInit, OnChanges {
     this.userRecord = {
       userId: userRecord.userId,
       username: userRecord.userName,
-      realName: userRecord.realName,
-      authMethod: userRecord.authMethod,
+      real_name: userRecord.realName,
+      access_method: userRecord.authMethod,
       description: userRecord.description,
       password: '',
       confirmPassword: '',
@@ -175,6 +175,6 @@ export class UpdateUserComponent implements OnInit, OnChanges {
 
   public setAuthMethod(auth: any) {
     this.selectedAuthMethod = auth.text;
-    this.userRecord.authMethod = auth.value;
+    this.userRecord.access_method = auth.value;
   }
 }
