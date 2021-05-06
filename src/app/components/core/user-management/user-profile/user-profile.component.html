@@ -85,8 +85,8 @@
             <label class="label is-small">Current Password</label>
             <input type="password" class="input is-small" placeholder="current password" name='currentPassword'
               [(ngModel)]="userRecord.currentPassword" #currentPassword="ngModel" required />
-          </div>
-          <small *ngIf="f.submitted && !currentPassword.valid" class="help is-danger level-left">Wrong password</small>
+            <small *ngIf="f.submitted && !currentPassword.valid" class="help is-danger level-left">Wrong password</small>
+          </div>         
         </div>
         <div class="columns">
           <div class="column is-6">
@@ -94,18 +94,18 @@
             <input type="password" class="input is-small" placeholder="new password" name='password'
               [(ngModel)]="userRecord.password" #password="ngModel" validateEqual="confirmPassword" reverse="true"
               required />
-          </div>
-          <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minimum 6
-            character)</small>
+            <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minimum 6
+              character)</small>
+          </div>        
         </div>
         <div class="columns">
           <div class="column is-6">
             <label class="label is-small">Confirm New Password</label>
             <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword'
               [(ngModel)]="userRecord.confirmPassword" #confirmPassword="ngModel" validateEqual="password" required />
-          </div>
-          <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password
-            mismatch</small>
+            <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password
+              mismatch</small>
+            </div>         
         </div>
       </form>
     </section>

@@ -26,6 +26,12 @@
     background-color: lightgrey
 }
 
-.user-table, .card-data {
-    overflow: visible;
+@media only screen and (min-width: 1024px) {
+    .user-table, .card-data {
+        overflow: visible;
+    }
+}
+
+.tags-groups {
+    white-space: nowrap;
 }
