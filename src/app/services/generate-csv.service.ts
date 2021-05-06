@@ -64,7 +64,9 @@ export class GenerateCsvService {
         keys.push(key);
       }
     }
+
     const uniqueKeys = uniq(keys);
+    let i = 1
     const csvContent =
       uniqueKeys.join(',') +
       '\n' +
@@ -72,7 +74,7 @@ export class GenerateCsvService {
         return uniqueKeys.map(k => {
           const cell = k === 'timestamp' ? asset.timestamp :
             (asset.reading[k] === null || asset.reading[k] === undefined ? '' :
-              (asset.reading[k] instanceof Array ? '"' + asset.reading[k].join() + '"' : asset.reading[k]));
+              (asset.reading[k] instanceof Array ? '"' + asset.reading[k].join() + '"' : asset.reading[k] instanceof Object ? JSON.stringify(asset.reading[k]) : asset.reading[k]));
           return cell;
         }).join(',');
       }).join('\n');
