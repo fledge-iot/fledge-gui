@@ -66,7 +66,6 @@ export class GenerateCsvService {
     }
 
     const uniqueKeys = uniq(keys);
-    let i = 1
     const csvContent =
       uniqueKeys.join(',') +
       '\n' +
