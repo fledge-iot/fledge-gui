@@ -95,6 +95,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   public resetCreateUserForm(form: NgForm) {
     form.resetForm();
     this.selectedRole = 'user';
+    this.selectedAuthMethod = 'Any';
   }
 
   setRole(role: any) {

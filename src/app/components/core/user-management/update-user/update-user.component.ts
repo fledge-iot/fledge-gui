@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output, HostListener, Input, OnChanges } from '@angular/core';
+import { NgForm } from '@angular/forms';
 
 import { User } from '../../../../models';
 import { AlertService, UserService } from '../../../../services';
@@ -19,6 +20,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   updateSection = 'pwd';
   selectedRole = 'user'; // set "user" as a default role
   selectedAuthMethod;
+  isFieldChanged = false;
 
   constructor(private alertService: AlertService,
     private userService: UserService) { }
@@ -51,6 +53,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
    * @param key  key to show/hide particular section on UI
    */
   public setUser(userRecord, key) {
+    this.isFieldChanged = false;
     this.setUserRole({ id: userRecord.roleId, name: userRecord.roleName });
     const authMethod = this.authMethods.find(object => object.value === userRecord.accessMethod);
     this.setAuthMethod(authMethod);
@@ -68,13 +71,18 @@ export class UpdateUserComponent implements OnInit, OnChanges {
     this.updateSection = key;
   }
 
-  public toggleModal(isOpen: Boolean) {
+  public resetUserForm(form: NgForm) {
+    form.reset();
+  }
+
+  public toggleModal(isOpen: Boolean, form: NgForm = null) {
     const updateUserModal = <HTMLDivElement>document.getElementById('update_user_modal');
     if (isOpen) {
       updateUserModal.classList.add('is-active');
       return;
     }
     updateUserModal.classList.remove('is-active');
+    this.resetUserForm(form);
     const activeDropDown = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
     if (activeDropDown.length > 0) {
       activeDropDown[0].classList.remove('is-active');
@@ -84,27 +92,27 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   /**
    *  To handle role and password change method call
    */
-  updateUser() {
+  updateUser(form: NgForm) {
     switch (this.updateSection) {
       case 'password':
-        this.resetPassword();
+        this.resetPassword(form);
         break;
       case 'role':
-        this.updateRole();
+        this.updateRole(form);
         break;
       case 'auth':
-        this.updateAuthMethod();
+        this.updateAuthMethod(form);
         break;
       default:
         break;
     }
   }
 
-  updateAuthMethod() {
+  updateAuthMethod(form: NgForm) {
     this.userService.updateUser(this.userRecord).
     subscribe(() => {
         this.notify.emit();
-        this.toggleModal(false);
+        this.toggleModal(false, form);
         this.alertService.success('User updated successfully');
       },
       error => {
@@ -119,12 +127,12 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   /**
    *  To update user role by admin
    */
-  updateRole() {
+  updateRole(form: NgForm) {
     this.userService.updateRole(this.userRecord).
       subscribe(
         (data) => {
           this.notify.emit();
-          this.toggleModal(false);
+          this.toggleModal(false, form);
           this.alertService.success(data['message']);
         },
         error => {
@@ -136,16 +144,18 @@ export class UpdateUserComponent implements OnInit, OnChanges {
         });
   }
 
-
   /**
     *  To reset user password by admin
     */
-  resetPassword() {
+  resetPassword(form: NgForm) {
+    if (this.userRecord.password !== this.userRecord.confirmPassword) {
+      return;
+    }
     this.userService.resetPassword(this.userRecord).
       subscribe(
         (data) => {
           this.notify.emit();
-          this.toggleModal(false);
+          this.toggleModal(false, form);
           this.alertService.success(data['message']);
         },
         error => {
@@ -158,6 +168,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   }
 
   public toggleDropDown(id: string) {
+    this.isFieldChanged = true;
     const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
     if (activeDropDowns.length > 0) {
       if (activeDropDowns[0].id !== id) {

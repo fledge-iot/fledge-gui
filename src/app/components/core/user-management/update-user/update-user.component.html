@@ -5,10 +5,10 @@
       <p *ngIf="updateSection === 'role'" class="modal-card-title is-size-5">Update User Role</p>
       <p *ngIf="updateSection === 'password'" class="modal-card-title is-size-5">Update User Password</p>
       <p *ngIf="updateSection === 'auth'" class="modal-card-title is-size-5">Update User Details</p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" (click)="toggleModal(false, f)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" id="updateForm" (ngSubmit)="updateUser()" #f="ngForm" novalidate>
+      <form name="form" id="updateForm" (ngSubmit)="updateUser(f)" #f="ngForm" novalidate>
         <div class="columns">
           <div class="column is-6">
             <label class="label is-small">Username</label>
@@ -94,7 +94,7 @@
                 [(ngModel)]="userRecord.password" #password="ngModel" validateEqual="confirmPassword" reverse="true"
                 required />
             </p>
-            <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minimum
+            <small *ngIf="f.submitted && !password.valid && !f.pristine" class="help is-danger level-left">Password is required(minimum
               6 character)</small>
           </div>
         </div>
@@ -105,14 +105,14 @@
               <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword'
                 [(ngModel)]="userRecord.confirmPassword" #confirmPassword="ngModel" validateEqual="password" required />
             </p>
-            <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left is-small">Password
+            <small *ngIf="f.submitted && !confirmPassword.valid && !f.pristine" class="help is-danger level-left is-small">Password
               mismatch</small>
           </div>
         </div>
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="update" form="updateForm" type="submit" class="button is-info is-small">Update</button>
+      <button [disabled]="f.pristine && !isFieldChanged" id="update" form="updateForm" type="submit" class="button is-info is-small">Update</button>
     </footer>
   </div>
 </div>
