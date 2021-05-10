@@ -35,3 +35,7 @@
 .tags-groups {
     white-space: nowrap;
 }
+
+.desc-col {
+    max-width: 18rem;
+}

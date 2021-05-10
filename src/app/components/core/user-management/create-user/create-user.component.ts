@@ -24,16 +24,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
     private alertService: AlertService) { }
 
   ngOnInit() {
-    this.model = {
-      userId: 0,
-      username: '',
-      real_name: '',
-      access_method: 'any',
-      password: '',
-      description: '',
-      confirmPassword: '',
-      roleId: 2   // set "user" as a default role
-    };
+    this.setModel();
     this.authMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
   }
 
@@ -51,6 +42,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
     }
     const createUserModal = <HTMLDivElement>document.getElementById('user_modal');
     if (isOpen) {
+      this.setModel();
       createUserModal.classList.add('is-active');
       return;
     }
@@ -61,6 +53,19 @@ export class CreateUserComponent implements OnInit, OnChanges {
     if (activeDropDown.length > 0) {
       activeDropDown[0].classList.remove('is-active');
     }
+  }
+
+  public setModel() {
+    this.model = {
+      userId: 0,
+      username: '',
+      real_name: '',
+      access_method: 'any',
+      password: '',
+      description: '',
+      confirmPassword: '',
+      roleId: 2   // set "user" as a default role
+    };
   }
 
   public createUser(form: NgForm) {
