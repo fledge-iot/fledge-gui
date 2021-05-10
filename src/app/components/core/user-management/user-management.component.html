@@ -31,9 +31,10 @@
               <!-- <th>ID</th> -->
               <th>Name</th>
               <th>Username</th>
-              <th>Role</th>                     
-              <th>Description</th>
+              <th>Role</th>        
               <th>Authentication Method</th>
+              <th>Description</th>
+              <th></th>
               <th></th>
             </tr>
           </thead>
@@ -49,10 +50,12 @@
               <td class="user-col">
                 {{user.roleName}}
               </td>
+              <td class="user-col">{{user.accessMethod}}</td>
               <td class="user-col desc-col">{{user.description}}</td>
-              <td class="user-col">{{user.accessMethod}}&nbsp;
+              <td class="tags-groups">
                 <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
-                <span *ngIf='user.userId == uid' class="tag is-rounded">active</span></td>        
+                <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
+              </td>
               <td>
                 <div id="dropdown-{{i}}" class="dropdown is-left" *ngIf="user.userId != uid && user.userId != 1">
                   <div class="dropdown-trigger">

@@ -22,8 +22,13 @@
     vertical-align: middle;
 }
 
-.context-menu:hover {
+/* .context-menu:hover {
     background-color: lightgrey
+} */
+
+context-menu:hover {
+    background-color: whitesmoke !important;
+    border-radius: 3em !important;
 }
 
 @media only screen and (min-width: 1024px) {
@@ -32,10 +37,18 @@
     }
 }
 
+.user-table {
+    width: 90%;
+}
+
 .tags-groups {
     white-space: nowrap;
 }
 
 .desc-col {
     max-width: 18rem;
+}
+
+.is-hoverable.user-table tr:hover .context-menu {
+    background-color: #fafafa; 
 }
