@@ -12,7 +12,7 @@
             <div class="column">
               <label class="label is-small">Name</label>
               <p class="control is-fullwidth">
-                <input type="text" class="input is-small" placeholder="Real Name" name='real_name' [(ngModel)]="model.real_name" #realname="ngModel">
+                <input type="text" class="input is-small" placeholder="Real Name" name='real_name' [(ngModel)]="model.real_name" trim="blur" #realname="ngModel">
               </p>
             </div>
           </div>
@@ -69,9 +69,9 @@
               <label class="label is-small">Username</label>
               <p class="control is-fullwidth">
                 <input type="text" class="input is-small" placeholder="username" name='username' [(ngModel)]="model.username" #username="ngModel"
-                  minlength="4" maxlength="8" required/>
+                  minlength="4" maxlength="8" required trim="blur"/>
               </p>
-              <small *ngIf="f.submitted && !username.valid" class="help is-danger level-left"> Username is required (minimum 4 characters)</small>
+              <small *ngIf="f.submitted && !username.valid" class="help is-danger level-left"> Username is required (minimum 4 characters, maximum 8 characters)</small>
             </div>
           </div>
           <ng-container *ngIf="selectedAuthMethod !== 'Certificate'">   
@@ -80,7 +80,7 @@
                 <label class="label is-small">Password</label>
                 <p class="control is-fullwidth">
                   <input type="password" class="input is-small" placeholder="password" name='password' [(ngModel)]="model.password" #password="ngModel"
-                    validateEqual="confirmPassword" reverse="true" required />
+                    validateEqual="confirmPassword" reverse="true" trim="blur" required />
                 </p>
                 <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required (minimum 6 character)</small>
               </div>
@@ -90,7 +90,7 @@
                 <label class="label is-small">Confirm Password</label>
                 <p class="control is-fullwidth">
                   <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword' [(ngModel)]="model.confirmPassword"
-                    #confirmPassword="ngModel" validateEqual="password" required />
+                    #confirmPassword="ngModel" validateEqual="password" trim="blur" required />
                 </p>
                 <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
               </div>
@@ -100,7 +100,7 @@
             <div class="column">
               <label class="label is-small">Description</label>
               <p class="control is-fullwidth">
-                <textarea rows="3" type="text" class="textarea is-small" placeholder="description" name='description' [(ngModel)]="model.description" #description="ngModel"></textarea>
+                <textarea rows="3" type="text" class="textarea is-small" placeholder="description" name='description' [(ngModel)]="model.description" trim="blur" #description="ngModel"></textarea>
               </p>
             </div>
           </div>
