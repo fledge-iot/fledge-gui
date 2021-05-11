@@ -22,15 +22,6 @@
     vertical-align: middle;
 }
 
-/* .context-menu:hover {
-    background-color: lightgrey
-} */
-
-context-menu:hover {
-    background-color: whitesmoke !important;
-    border-radius: 3em !important;
-}
-
 @media only screen and (min-width: 1024px) {
     .user-table, .card-data {
         overflow: visible;
@@ -38,7 +29,7 @@ context-menu:hover {
 }
 
 .user-table {
-    width: 90%;
+    width: 92%;
 }
 
 .tags-groups {

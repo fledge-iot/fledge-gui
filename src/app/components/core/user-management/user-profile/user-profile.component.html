@@ -95,7 +95,7 @@
               [(ngModel)]="userRecord.password" #password="ngModel" validateEqual="confirmPassword" reverse="true"
               required />
             <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minimum 6
-              character)</small>
+              characters)</small>
           </div>        
         </div>
         <div class="columns">

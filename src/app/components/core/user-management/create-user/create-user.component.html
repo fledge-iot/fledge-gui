@@ -82,7 +82,7 @@
                   <input type="password" class="input is-small" placeholder="password" name='password' [(ngModel)]="model.password" #password="ngModel"
                     validateEqual="confirmPassword" reverse="true" trim="blur" required />
                 </p>
-                <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required (minimum 6 character)</small>
+                <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required (minimum 6 characters)</small>
               </div>
             </div>         
             <div class="columns">
