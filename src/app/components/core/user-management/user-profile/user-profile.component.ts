@@ -50,8 +50,11 @@ export class UserProfileComponent implements OnInit {
                 this.userRecord = {
                   userId: userData['userId'],
                   userName: userData['userName'],
+                  real_name: userData['realName'],
                   roleId: userData['roleId'],
                   roleName: userData['roleName'],
+                  access_method: userData['accessMethod'],
+                  description: userData['description']
                 };
               },
               error => {
@@ -90,13 +93,13 @@ export class UserProfileComponent implements OnInit {
     userProfileModal.classList.remove('is-active');
   }
 
-  public changePassword(form: NgForm, userName) {
+  public changePassword(form: NgForm, userId) {
     const passwordPayload: any = {
       current_password: form.controls['currentPassword'].value,
       new_password: form.controls['password'].value
     };
     this.ngProgress.start();
-    this.userService.changePassword(passwordPayload, userName).
+    this.userService.changePassword(passwordPayload, userId).
       subscribe(
         (data) => {
           this.ngProgress.done();
@@ -153,6 +156,23 @@ export class UserProfileComponent implements OnInit {
             console.log('service down', error);
           } else if (error.status === 404) {
             this.alertService.error('No active session found');
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  update() {
+    this.ngProgress.start();
+    this.userService.updateUser(this.userRecord).
+      subscribe(
+        () => {
+          this.ngProgress.done();
+          this.alertService.success('User updated successfully');
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
           }

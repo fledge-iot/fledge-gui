@@ -84,5 +84,9 @@
 }
 
 .is-hovered {
-cursor: pointer !important;
+  cursor: pointer !important;
+}
+
+.config-label {
+  font-weight: 500;
 }

@@ -66,13 +66,27 @@ export class UserService {
   }
 
   /**
+   * enable/disable user
+   *
+   * PUT  | /fledge/admin/{id}/enabled
+   *
+   * @param payload = > {"enabled": boolean}
+   */
+   enableUser(id, payload) {
+    return this.http.put(this.ADMIN_URL + '/' + id + '/enabled', payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  /**
   * Create user
   *
   * POST  | fledge/admin/user
   *
-  *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "role_id": 1}
+  *  @param Object User  => {"username": "admin1", "password": "F0gl@mp!", "roleId": 1}
   */
   createUser(user) {
+    delete user['confirmPassword'];
     return this.http.post(this.ADMIN_URL + '/user', user).pipe(
       map(response => response),
       catchError(error => throwError(error)));
@@ -82,13 +96,24 @@ export class UserService {
   /**
    * Update user role
    *
-   * @param Object payload = > {"role_id": "1"}
+   * @param Object payload = > {"roleId": "1"}
    */
   updateRole(data) {
     const payload: any = {
-      role_id: data.role_id
+      role_id: data.roleId
     };
     return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  updateUser(data) {
+    const payload: any = {
+      access_method: data.access_method,
+      description: data.description,
+      real_name: data.real_name
+    };
+    return this.http.put(this.USER_URL + '/' + data.userId, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
@@ -96,11 +121,11 @@ export class UserService {
   /**
   * change user password
   *
-  * PUT  | /fledge/user/{username}/password
+  * PUT  | /fledge/user/{userId}/password
   * @param Object payload  => {"current_password": "F0gl@mp!", "new_password": "F0gl@mp1"}
   */
-  changePassword(payload, userName) {
-    return this.http.put(this.USER_URL + '/' + userName + '/password', payload).pipe(
+  changePassword(payload, userId) {
+    return this.http.put(this.USER_URL + '/' + userId + '/password', payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
