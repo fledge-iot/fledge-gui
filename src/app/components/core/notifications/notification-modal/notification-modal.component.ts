@@ -36,9 +36,9 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   notificationChangedConfig = [];
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild('notificationConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild('ruleConfigView', { static: false }) ruleConfigView: ViewConfigItemComponent;
-  @ViewChild('deliveryConfigView', { static: false }) deliveryConfigView: ViewConfigItemComponent;
+  @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('ruleConfigView') ruleConfigView: ViewConfigItemComponent;
+  @ViewChild('deliveryConfigView') deliveryConfigView: ViewConfigItemComponent;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,

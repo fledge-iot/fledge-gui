@@ -43,11 +43,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public isValidExtension = true;
   private subscription: Subscription;
 
-  @ViewChild('codeeditor', { static: false }) codeeditor: ElementRef;
-  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-  @ViewChild('jsoneditor', { static: false }) jsoneditor: ElementRef;
-  @ViewChild('pwd', { static: false }) pwd: ElementRef;
-  @ViewChild(NgForm, { static: false }) form;
+  @ViewChild('codeeditor') codeeditor: ElementRef;
+  @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('jsoneditor') jsoneditor: ElementRef;
+  @ViewChild('pwd') pwd: ElementRef;
+  @ViewChild(NgForm) form;
 
   public passwordOnChangeFired = false;
   public passwordMatched = {

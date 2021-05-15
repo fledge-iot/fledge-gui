@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { sortBy } from 'lodash';
 import { interval, Subject } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
-
-import { AlertService, PingService, SchedulesService, ProgressBarService } from '../../../../services';
+import { takeUntil, takeWhile } from 'rxjs/operators';
+import { AlertService, PingService, ProgressBarService, SchedulesService } from '../../../../services';
 import { POLLING_INTERVAL } from '../../../../utils';
 
 @Component({

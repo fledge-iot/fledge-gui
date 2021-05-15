@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RestartModalComponent } from './restart-modal.component';
 
@@ -6,7 +6,7 @@ describe('RestartModalComponent', () => {
   let component: RestartModalComponent;
   let fixture: ComponentFixture<RestartModalComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RestartModalComponent ]
     })

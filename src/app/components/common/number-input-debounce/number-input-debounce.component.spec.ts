@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NumberInputDebounceComponent } from './number-input-debounce.component';
 
@@ -6,7 +6,7 @@ describe('NumberInputDebounceComponent', () => {
   let component: NumberInputDebounceComponent;
   let fixture: ComponentFixture<NumberInputDebounceComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ NumberInputDebounceComponent ]
     })

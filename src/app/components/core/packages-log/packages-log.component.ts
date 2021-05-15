@@ -11,7 +11,7 @@ import { ViewLogsComponent } from './view-logs/view-logs.component';
 export class PackagesLogComponent implements OnInit {
   public logList = [];
 
-  @ViewChild(ViewLogsComponent, { static: false }) viewLogsModal: ViewLogsComponent;
+  @ViewChild(ViewLogsComponent) viewLogsModal: ViewLogsComponent;
 
   constructor(private packagesLogService: PackagesLogService,
     private ngProgress: ProgressBarService,

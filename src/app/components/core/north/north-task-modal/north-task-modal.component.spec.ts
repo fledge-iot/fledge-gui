@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NorthTaskModalComponent } from './north-task-modal.component';
 
@@ -6,7 +6,7 @@ describe('NorthTaskModalComponent', () => {
   let component: NorthTaskModalComponent;
   let fixture: ComponentFixture<NorthTaskModalComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ NorthTaskModalComponent ]
     })

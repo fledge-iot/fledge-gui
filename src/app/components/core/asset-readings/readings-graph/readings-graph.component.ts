@@ -41,8 +41,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   public isModalOpened = false;
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('assetChart', { static: false }) assetChart: Chart;
-  @ViewChild('3DGraph', { static: false }) Graph: ElementRef;
+  @ViewChild('assetChart') assetChart: Chart;
+  @ViewChild('3DGraph') Graph: ElementRef;
 
   public numberTypeReadingsList = [];
   public stringTypeReadingsList: any;
