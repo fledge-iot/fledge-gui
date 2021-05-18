@@ -224,27 +224,32 @@ export class ReadingsGraphComponent implements OnDestroy {
             key: k,
             read: { x: r.timestamp, y: value }
           });
-        }
-        if (typeof value === 'string') {
+        } else if (typeof value === 'string') {
           strReadings.push({
             key: k,
             timestamp: r.timestamp,
             data: value
           });
-        }
-        if (Array.isArray(value)) {
+        } else if (Array.isArray(value)) {
           arrReadings.push({
             key: k,
             read: value
           });
+        } else if (typeof value === 'object') {
+          strReadings.push({
+            key: k,
+            data: JSON.stringify(value)
+          });
+        }
+        else {
+          console.log('Failed to parse reading', value, 'for key', k);
         }
       });
     }
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
-    this.stringTypeReadingsList = strReadings;
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
-    this.stringTypeReadingsList = mapValues(groupBy(this.stringTypeReadingsList,
-      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss:SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
+    this.stringTypeReadingsList = mapValues(groupBy(strReadings,
+      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
 
