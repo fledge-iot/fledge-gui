@@ -242,7 +242,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           });
         }
         else {
-          console.log('Failed to parse reading', value, 'for key', k);
+          console.log('Failed to parse reading ', value, ' for key ', k);
         }
       });
     }
