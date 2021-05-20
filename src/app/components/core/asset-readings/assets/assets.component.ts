@@ -154,7 +154,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   goToLink() {
-    const urlSlug = 'viewing.html'
+    const urlSlug = 'viewing.html';
     this.docService.goToViewQuickStartLink(urlSlug);
   }
 

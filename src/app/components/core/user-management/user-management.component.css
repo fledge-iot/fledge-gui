@@ -13,3 +13,33 @@
 .column {
     padding-top: 0px;
 }
+
+.context-menu {
+    border: none;
+}
+
+.user-col {
+    vertical-align: middle;
+}
+
+@media only screen and (min-width: 1024px) {
+    .user-table, .card-data {
+        overflow: visible;
+    }
+}
+
+.user-table {
+    width: 92%;
+}
+
+.tags-groups {
+    white-space: nowrap;
+}
+
+.desc-col {
+    max-width: 18rem;
+}
+
+.is-hoverable.user-table tr:hover .context-menu {
+    background-color: #fafafa; 
+}

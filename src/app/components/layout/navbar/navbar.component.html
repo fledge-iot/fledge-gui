@@ -275,7 +275,7 @@
     </div>
   </div>
   <div class="navbar-end">
-    <div *ngIf='isUserLoggedIn' class="navbar-item">
+    <div *ngIf='isUserLoggedIn' class="navbar-item user-dropdown">
       <div [ngClass]="{'is-hoverable': viewPort == 'desktop'}" class="dropdown is-right" id="dropdown-box"
         (click)="viewPort !== 'desktop'? toggleDropdown(): false">
         <div class="dropdown-trigger">
