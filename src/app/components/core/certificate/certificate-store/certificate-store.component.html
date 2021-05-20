@@ -21,18 +21,25 @@
             <tr>
               <th>Key</th>
               <th>Extension</th>
-              <th></th>
+              <ng-container *ngIf="allowDelete">
+                <th></th>
+              </ng-container>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let key of keys">
               <td class="showInCenter">{{getName(key)}}</td>
               <td class="showInCenter">{{key.split(".")[1]}}</td>
-              <td class="showInCenter"><a *ngIf="getName(key) != 'fledge'"
-                  (click)="openDeleteModal(key, 'Are you sure, you want to delete the key', 'deleteKey')"
-                  class="button is-text text-btn">
-                  delete
-                </a></td>
+              <ng-container *ngIf="allowDelete">
+                <td class="showInCenter">
+                  <!-- TODO: check configured for TLS instead of default check `fledge`, CA and self username-->
+                  <a *ngIf="getName(key) != 'fledge'"
+                    (click)="openDeleteModal(key, 'Are you sure, you want to delete the key', 'deleteKey')"
+                    class="button is-text text-btn">
+                    delete
+                  </a>
+                </td>
+              </ng-container>
             </tr>
           </tbody>
         </table>
@@ -43,18 +50,25 @@
             <tr>
               <th>Certificate</th>
               <th>Extension</th>
-              <th></th>
+              <ng-container *ngIf="allowDelete">
+                <th></th>
+              </ng-container>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let cert of certificates">
               <td class="showInCenter">{{getName(cert)}}</td>
               <td class="showInCenter">{{cert.split(".")[1]}}</td>
-              <td class="showInCenter"><a *ngIf="getName(cert) != 'fledge'"
-                  (click)="openDeleteModal(cert, 'Are you sure, you want to delete the certificate', 'deleteCertificate')"
-                  class="button is-text text-btn">
-                  delete
-                </a></td>
+              <ng-container *ngIf="allowDelete">
+                <td class="showInCenter">
+                  <!-- TODO: check configured for TLS instead of default check `fledge`, CA and self username-->
+                  <a *ngIf="getName(cert) != 'fledge'"
+                    (click)="openDeleteModal(cert, 'Are you sure, you want to delete the certificate', 'deleteCertificate')"
+                    class="button is-text text-btn">
+                    delete
+                  </a>
+                </td>
+              </ng-container>
             </tr>
           </tbody>
         </table>
