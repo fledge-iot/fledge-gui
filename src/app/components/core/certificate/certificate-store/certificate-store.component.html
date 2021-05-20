@@ -32,9 +32,7 @@
               <td class="showInCenter">{{key.split(".")[1]}}</td>
               <ng-container *ngIf="allowDelete">
                 <td class="showInCenter">
-                  <!-- TODO: check configured for TLS instead of default check `fledge`, CA and self username-->
-                  <a *ngIf="getName(key) != 'fledge' && getName(key) !== 'admin'"
-                    (click)="openDeleteModal(key, 'Are you sure, you want to delete the key', 'deleteKey')"
+                  <a (click)="openDeleteModal(key, 'Are you sure, you want to delete the key', 'deleteKey')"
                     class="button is-text text-btn">
                     delete
                   </a>
@@ -61,9 +59,7 @@
               <td class="showInCenter">{{cert.split(".")[1]}}</td>
               <ng-container *ngIf="allowDelete">
                 <td class="showInCenter">
-                  <!-- TODO: check configured for TLS instead of default check `fledge`, CA and self username-->
-                  <a *ngIf="getName(cert) != 'fledge' && getName(cert) !== 'admin'"
-                    (click)="openDeleteModal(cert, 'Are you sure, you want to delete the certificate', 'deleteCertificate')"
+                  <a (click)="openDeleteModal(cert, 'Are you sure, you want to delete the certificate', 'deleteCertificate')"
                     class="button is-text text-btn">
                     delete
                   </a>
