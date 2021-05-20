@@ -40,15 +40,6 @@
         <div class="columns is-mobile">
           <div class="column">
             <div class="field">
-              <label class="label is-small">Process</label>
-              <div class="control">
-                <input formControlName="process_name" [attr.disabled]="true" type="text" class="input is-small"
-                  placeholder="process" />
-              </div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="field">
               <label class="label is-small">Type</label>
               <div class="control">
                 <div id="type-dropdown" class="dropdown">
@@ -73,24 +64,13 @@
               </div>
             </div>
           </div>
-        </div>
-        <div *ngIf="selectedScheduleTypeIndex == 2 || selectedScheduleTypeIndex == 3" class="columns">
-          <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule -->
           <div class="column">
-            <div  class="field">
-              <label class="label is-small">Repeat (Interval)</label>
-              <div class="columns">
-                <div class="column is-fullwidth">
-                  <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365"
-                    placeholder="days" formControlName="repeatDay" required>
-                  <input id="repeat_time" class="input is-small" type='text' placeholder="HH:mm:ss"
-                    formControlName="repeat" mask='00:00:00' (input)="matchTimeTypeField($event, 'repeat')" required>
-                </div>
+            <div class="field">
+              <label class="label is-small">Process</label>
+              <div class="control">
+                <input formControlName="process_name" [attr.disabled]="true" type="text" class="input is-small"
+                  placeholder="process" />
               </div>
-              <small *ngIf="form.controls.repeatDay.invalid" class="help is-danger level-left">&nbsp; Repeat days must
-                be in range 0 - 365</small>
-              <small *ngIf="form.controls.repeat.invalid" class="help is-danger level-left">&nbsp; Repeat hours must be
-                in range 00:00:00 - 23:59:59</small>
             </div>
           </div>
         </div>
@@ -98,8 +78,9 @@
           <!-- Show Day & Time field for "Timed" type schedule -->
           <div class="column">
             <div class="field">
-              <label class="label is-small">Day &nbsp;
-                <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (1-7 Mon-Sun)">
+              <label class="label is-small">Day 
+                <!-- &nbsp; -->
+                <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (Monday-Sunday/1-7)">
                   <i class="far fa-sm fa-question-circle"></i>
                 </span>
               </label>
@@ -134,6 +115,32 @@
               </p>
               <small *ngIf="!form.controls.time.valid" class="help is-danger level-left">&nbsp; Time must be in range
                 00:00:00 - 23:59:59</small>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="selectedScheduleTypeIndex == 2 || selectedScheduleTypeIndex == 3" class="columns">
+          <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule -->
+          <div class="column">
+            <div  class="field">
+              <label class="label is-small">Repeat Interval
+                <!-- &nbsp; -->
+                <span class="tooltip is-tooltip-right" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                  <i class="far fa-sm fa-question-circle"></i>
+                </span>
+              </label>
+              <div class="columns">
+                <div class="column">
+                  <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365"
+                    placeholder="days" formControlName="repeatDay" required>
+                  <input id="repeat_time" class="input is-small" type='text' placeholder="HH:mm:ss"
+                    formControlName="repeat" mask='00:00:00' (input)="matchTimeTypeField($event, 'repeat')" required>
+                </div>
+                <div class="column"></div>
+              </div>
+              <small *ngIf="form.controls.repeatDay.invalid" class="help is-danger level-left">&nbsp; Repeat days must
+                be in range 0 - 365</small>
+              <small *ngIf="form.controls.repeat.invalid" class="help is-danger level-left">&nbsp; Repeat hours must be
+                in range 00:00:00 - 23:59:59</small>
             </div>
           </div>
         </div>
