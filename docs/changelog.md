@@ -1,8 +1,8 @@
-## v1.9.1 [2021-05-24]
+## v1.9.0next [2021-05-24]
 
 #### Added
 * [FOGL-5097]: Added documentation links for online help on various screens (#71)
-* Show refresh icon next to 'add & enable now' link on notification page (#75)
+* Show refresh icon next to 'add & enable now' link on Notification page (#75)
 * [FOGL-5260]: Added filter to see foglamp-service-management logs (#79)
 
 #### Changed
