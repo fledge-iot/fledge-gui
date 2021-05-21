@@ -11,8 +11,8 @@
 
 #### Fixed
 * [FOGL-5027]: Fixed update schedule issue which was due to time field (#69)
-* [FOGL-5198]: Fixed nested readings data parsing issue (#82)
-* Fixed South page to list services sorted by name. (#70)
+* [FOGL-5198]: Fixed nested readings data parsing issue for tabular data display & CSV download (#82)
+* Fixed South page to list services sorted by name (#70)
 
 ## v1.9.0 [2021-02-17]
 
