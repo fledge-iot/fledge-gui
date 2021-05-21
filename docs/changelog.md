@@ -1,3 +1,19 @@
+## v1.9.0next [2021-05-24]
+
+#### Added
+* [FOGL-5097]: Added documentation links for online help on various screens (#71, #73, #77)
+* Show refresh icon next to 'add & enable now' link on Notification page (#75)
+* [FOGL-5260]: Added filter to see externally added services logs (#79)
+
+#### Changed
+* [FOGL-4434]: Improvements have been made in the user management screens (#80)
+* [FOGL-5403]: Removed delete option in certificate store page for non-admin user (#88)
+
+#### Fixed
+* [FOGL-5027]: Fixed update schedule issue which was due to time field (#69)
+* Fixed South page to list services sorted by name (#70)
+* [FOGL-5198]: Fixed nested readings data parsing issue for tabular data display & CSV download (#82)
+
 ## v1.9.0 [2021-02-17]
 
 #### Added

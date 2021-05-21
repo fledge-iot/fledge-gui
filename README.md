@@ -62,9 +62,9 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 ## Supported/ Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
-Safari (mac)  | 14.0.x   | latest 1
-Chrome  | 87.0.x (64-bit) | latest 2
-Firefox | 83.0.x (64-bit) | latest 2
+Safari (macOS)  | 14.1.x   | latest 1
+Chrome  | 90.0.x (64-bit) | latest 2
+Firefox | 88.0.x (64-bit) | latest 2
 
 
 [Changelog](docs/changelog.md)
@@ -74,4 +74,4 @@ Firefox | 83.0.x (64-bit) | latest 2
 ## Contributing to Fledge
 See [Contributing Statement](CONTRIBUTING.md)
 
-> &copy; 2020 DIANOMIC SYSTEMS, INC. All Rights Reserved.
+> &copy; 2021 DIANOMIC SYSTEMS, INC. All Rights Reserved.
