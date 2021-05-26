@@ -55,7 +55,7 @@ export class UserService {
   /**
    * delete user
    *
-   * DELETE  | /fledge/admin/{id}/delete
+   * DELETE  | /fledge/admin/{user_id}/delete
    *
    * @param Number id
    */
@@ -68,7 +68,7 @@ export class UserService {
   /**
    * enable/disable user
    *
-   * PUT  | /fledge/admin/{id}/enable
+   * PUT  | /fledge/admin/{user_id}/enable
    *
    * @param payload = > {"enabled": boolean}
    */
