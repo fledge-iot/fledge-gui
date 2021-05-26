@@ -68,12 +68,12 @@ export class UserService {
   /**
    * enable/disable user
    *
-   * PUT  | /fledge/admin/{id}/enabled
+   * PUT  | /fledge/admin/{id}/enable
    *
    * @param payload = > {"enabled": boolean}
    */
    enableUser(id, payload) {
-    return this.http.put(this.ADMIN_URL + '/' + id + '/enabled', payload).pipe(
+    return this.http.put(this.ADMIN_URL + '/' + id + '/enable', payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
@@ -113,7 +113,16 @@ export class UserService {
       description: data.description,
       real_name: data.real_name
     };
-    return this.http.put(this.USER_URL + '/' + data.userId, payload).pipe(
+    return this.http.put(this.ADMIN_URL + '/' + data.userId, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  updateMe(data) {
+    const payload: any = {
+      real_name: data.real_name
+    };
+    return this.http.put(this.USER_URL, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

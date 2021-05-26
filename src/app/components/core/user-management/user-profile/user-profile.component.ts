@@ -164,7 +164,7 @@ export class UserProfileComponent implements OnInit {
 
   update() {
     this.ngProgress.start();
-    this.userService.updateUser(this.userRecord).
+    this.userService.updateMe(this.userRecord).
       subscribe(
         () => {
           this.ngProgress.done();
