@@ -9,3 +9,7 @@
 .container.is-fluid {
   margin-top: 10px;
 }
+
+.help-icon {
+  cursor: pointer !important;
+}

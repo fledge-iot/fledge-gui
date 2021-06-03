@@ -205,11 +205,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         if (pingManually === true) {
           this.ngProgress.done();
         }
-        if (error.status === 403) {
-          sessionStorage.clear();
-          this.sharedService.connectionInfo.next({version: this.pingData['version'], isServiceUp: true});
-          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
-          version: this.pingData['version'] };
+        // If response code is non zero and not undefined, set isAlive and isAuth to true,
+        // else set service to down and pingInfo accordingly
+        if (error && error.status && error.status !== 0) {
+          this.pingInfo.isAlive = true;
+          this.pingInfo.isAuth = true;
         } else {
           this.sharedService.connectionInfo.next({version: '', isServiceUp: false});
           this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
@@ -370,20 +370,25 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         () => {
-          this.servicesRecord = [];
-          sessionStorage.clear();
+          this.clearUserSession();
           this.ngProgress.done();
-          this.router.navigate(['/login'], { replaceUrl: true });
           this.alertService.success('You have been successfully logged out!');
         },
         error => {
           this.ngProgress.done();
+          this.clearUserSession();
           if (error.status === 0) {
             console.log('service down', error);
           } else {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  clearUserSession() {
+    sessionStorage.clear();
+    this.servicesRecord = [];
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   public showLoadingSpinner() {

@@ -21,6 +21,9 @@
     <div class="steps-content">
       <form [formGroup]="taskForm" validate>
         <div class="box step-content is-active" id="c-1">
+          <span *ngIf="plugin" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help" (click)="goToLink()">
+            <i class="far fa-question-circle"></i>
+          </span>
           <div *ngIf="showSpinner" class="app-loading">
             &nbsp;
             <svg class="spinner" viewBox="0 0 100 100">
@@ -102,7 +105,11 @@
           </div>
           <div *ngIf="plugins.length > 0 && isService === false" class="field is-horizontal form-group">
             <div class="field-label is-normal">
-              <label class="label">Repeat (Interval)</label>
+              <label class="label">Repeat Interval 
+                <span class="tooltip is-tooltip-right" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                  <i class="far fa-xs fa-question-circle"></i>
+                </span>
+              </label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -117,7 +124,7 @@
                       </span>
                     </div>
                     <div class="column">
-                      <input class="input" type='text' placeholder="hh:mm:ss" formControlName="repeatTime"
+                      <input class="input" type='text' placeholder="HH:mm:ss" formControlName="repeatTime"
                         mask='00:00:00' (input)="setRepeatIntervalValue($event)" [pattern]='regExp'
                         (change)="validateRepeatTime($event)">
 

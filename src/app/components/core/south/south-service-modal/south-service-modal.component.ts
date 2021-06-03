@@ -21,6 +21,7 @@ import {
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -49,6 +50,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public isWizard;
   // Object to hold data of south service to delete
   public serviceRecord;
+  public selectedFilterPlugin;
 
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
@@ -69,7 +71,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public generateCsv: GenerateCsvService,
     private servicesApiService: ServicesApiService,
     private validateFormService: ValidateFormService,
-    private schedulesService: SchedulesService) { }
+    private schedulesService: SchedulesService,
+    private docService: DocService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
@@ -498,6 +501,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
         this.filterConfiguration.push({ key: catName, 'value': [data] });
+        this.selectedFilterPlugin = data.plugin.value;
       },
         error => {
           if (error.status === 0) {
@@ -570,6 +574,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  goToLink(pluginInfo) {
+    this.docService.goToPluginLink(pluginInfo);
   }
 
   discardChanges() {

@@ -33,16 +33,16 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private ping: PingService) {
-      this.isAlive = true;
-      this.ping.pingIntervalChanged
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((timeInterval: number) => {
-          if (timeInterval === -1) {
-            this.isAlive = false;
-          }
-          this.refreshInterval = timeInterval;
-        });
-    }
+    this.isAlive = true;
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.refreshInterval = timeInterval;
+      });
+  }
 
   ngOnInit() {
     this.getSysLogs();
@@ -66,24 +66,33 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           // processName north_C represents Northbound services
           const north_C = [];
           const north = [];
+          const management = [];
+          const dispatcher_c = [];
+
           data.schedules.forEach(sch => {
-            if ('south_c'.includes(sch.processName)) {
+            if ('south_c' === sch.processName) {
               south_c.push(sch);
             }
-            if ('notification_c'.includes(sch.processName)) {
+            if ('notification_c' === sch.processName) {
               notification_c.push(sch);
             }
-            if ('north_c'.includes(sch.processName)) {
+            if ('north_c' === sch.processName) {
               north_c.push(sch);
             }
-            if ('north_C'.includes(sch.processName)) {
+            if ('north_C' === sch.processName) {
               north_C.push(sch);
             }
-            if ('north'.includes(sch.processName)) {
+            if ('north' === sch.processName) {
               north.push(sch);
             }
+            if ('management' === sch.processName) {
+              management.push(sch);
+            }
+            if ('dispatcher_c' === sch.processName) {
+              dispatcher_c.push(sch);
+            }
           });
-          this.scheduleData = south_c.concat(notification_c, north_c, north_C, north);
+          this.scheduleData = south_c.concat(notification_c, north_c, north_C, north, management, dispatcher_c);
         },
         error => {
           if (error.status === 0) {
@@ -206,7 +215,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   capitalizeInitialWord(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1);
-}
+  }
 
   public getSysLogs(autoRefresh = false) {
     if (autoRefresh === false) {

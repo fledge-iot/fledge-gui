@@ -1,5 +1,8 @@
 <div class="container is-fluid">
   <div class="card">
+    <span class="icon is-small tooltip is-tooltip-left is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+      <i class="far fa-question-circle"></i>
+    </span>
     <div class="card-content">
       <div class="content">
         <div *ngIf="showSpinner" class="app-loading">

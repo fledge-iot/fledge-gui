@@ -23,7 +23,7 @@ export class SettingsComponent implements OnInit {
   selectedTheme: string;
   isServiceUp = false;
   version;
-  scheme;
+  scheme; // default protocol
 
   constructor(private pingService: PingService, private sharedService: SharedService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
@@ -34,7 +34,8 @@ export class SettingsComponent implements OnInit {
     this.sharedService.connectionInfo.subscribe(info => {
       this.isServiceUp = info.isServiceUp;
       this.version = info.version;
-      this.scheme = localStorage.getItem('CONNECTED_PROTOCOL');
+      this.scheme = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
+        localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
     });
   }
 

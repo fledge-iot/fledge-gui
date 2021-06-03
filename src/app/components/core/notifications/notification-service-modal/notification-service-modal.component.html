@@ -54,7 +54,7 @@
       <div class="columns">
         <div class="column">
           <div class="field is-pulled-left">
-            <p *ngIf="!isNotificationServiceAvailable" class="control">
+            <p *ngIf="!isNotificationServiceAvailable || !showDeleteBtn" class="control">
               <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
                 <i class="far fa-question-circle"></i>
               </span>
@@ -73,6 +73,13 @@
       <hr *ngIf="isNotificationServiceAvailable && showDeleteBtn" class="hr-text" data-content="">
       <div *ngIf="isNotificationServiceAvailable && showDeleteBtn" class="columns">
         <div class="column">
+          <div class="field is-grouped is-pulled-left">
+            <p class="control">
+              <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+                <i class="far fa-question-circle"></i>
+              </span>
+            </p>
+          </div>
           <div class="field is-grouped is-pulled-right">
             <p class="control">
               <button (click)="openDeleteModal(notificationServiceName)" class="button is-small">Delete

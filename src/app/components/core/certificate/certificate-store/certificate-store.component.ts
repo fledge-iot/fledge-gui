@@ -28,13 +28,17 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(UploadCertificateComponent, { static: true }) uploadModal: UploadCertificateComponent;
-
+  
+  allowDelete = true;
   constructor(private certService: CertificateService,
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
     private sharedService: SharedService) { }
 
   ngOnInit() {
+    this.sharedService.isAdmin.subscribe(_isAdmin => {
+      this.allowDelete = _isAdmin || JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
+    });
     this.getCertificates();
     this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
       this.viewPort = viewport;

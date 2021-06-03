@@ -430,6 +430,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   goToLink() {
-    this.docService.goToNotificationDocLink();
+    const urlSlug = 'configuring-the-notification-service';
+    this.docService.goToNotificationDocLink(urlSlug);
   }
 }

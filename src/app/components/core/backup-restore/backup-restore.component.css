@@ -5,3 +5,15 @@
 .card-header-title {
   padding: 0.75rem 1.5rem;
 }
+
+.fix-margin {
+  margin-top: 4px;
+}
+
+.help-pad {
+  margin-right: 0.7rem;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+}

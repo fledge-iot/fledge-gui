@@ -5,6 +5,7 @@ import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, StatisticsService } from '../../../services';
+import { DocService } from '../../../services/doc.service';
 import { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
 
 @Component({
@@ -40,6 +41,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private statisticsService: StatisticsService,
     private alertService: AlertService,
     private dateFormatter: DateFormatterPipe,
+    private docService: DocService,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.refreshIntervalChanged
@@ -262,6 +264,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
     this.showGraph(data);
     this.toggleDropDown(id);
+  }
+
+  goToLink() {
+    const urlSlug = 'gui.html#fledge-dashboard'
+    this.docService.goToViewQuickStartLink(urlSlug);
   }
 
   public ngOnDestroy(): void {

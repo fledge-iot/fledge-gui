@@ -5,10 +5,19 @@
         Backups
       </p>
       <div>
-        <a class="button is-light fix-pad" (click)="requestBackup()">
-          <p *ngIf="viewPort !== 'mobile'">Create New &nbsp;</p>
-          <i class="fa fa-sm fa-file-archive" aria-hidden="true"></i>
-        </a>
+        <div class="columns is-vcentered">
+          <div class="column">
+            <a class="button is-light fix-margin" (click)="requestBackup()">
+              <p *ngIf="viewPort !== 'mobile'">Create New &nbsp;</p>
+              <i class="fa fa-sm fa-file-archive" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="column help-pad">
+            <span class="icon is-small tooltip is-tooltip-left is-hovered" data-tooltip="Help" (click)="goToLink()">
+              <i class="far fa-question-circle"></i>
+            </span>
+          </div>
+        </div>
       </div>
     </header>
     <div class="card-content">
@@ -42,16 +51,18 @@
                   <small>{{ backup.status }}</small>
                 </td>
                 <td class="align-content">
-                  <a *ngIf="backup.status != 'RUNNING'" class="button is-text text-btn" (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
+                  <a *ngIf="backup.status != 'RUNNING'" class="button is-text text-btn"
+                    (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
                   </a>
                 </td>
                 <td class="align-content">
-                  <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="button is-text text-btn" (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
+                  <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="button is-text text-btn"
+                    (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
                   </a>
                 </td>
                 <td class="align-content">
-                  <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" (click)="downloadBackup(backup)"
-                    class="button is-text text-btn">
+                  <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'"
+                    (click)="downloadBackup(backup)" class="button is-text text-btn">
                     download
                   </a>
                 </td>
@@ -62,6 +73,6 @@
       </ng-container>
     </div>
   </div>
-  <app-alert-dialog (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)' (deleteBackup)='deleteBackup($event)'
-    [childData]='childData'></app-alert-dialog>
+  <app-alert-dialog (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)'
+    (deleteBackup)='deleteBackup($event)' [childData]='childData'></app-alert-dialog>
 </div>
