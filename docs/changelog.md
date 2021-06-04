@@ -1,4 +1,4 @@
-## v1.9.0next [2021-05-24]
+## v1.9.1 [2021-05-27]
 
 #### Added
 * [FOGL-5097]: Added documentation links for online help on various screens (#71, #73, #77)
