@@ -4,6 +4,7 @@ import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { AlertService, AssetsService, PingService, GenerateCsvService } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
 
@@ -29,6 +30,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   constructor(private assetService: AssetsService,
     private alertService: AlertService,
     private generateCsvService: GenerateCsvService,
+    private docService: DocService,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -149,6 +151,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getAsset();
       });
+  }
+
+  goToLink() {
+    const urlSlug = 'viewing.html';
+    this.docService.goToViewQuickStartLink(urlSlug);
   }
 
   public ngOnDestroy(): void {

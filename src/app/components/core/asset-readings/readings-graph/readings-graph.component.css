@@ -56,10 +56,6 @@ table.is-borderless tr {
   vertical-align: middle;
 }
 
-tbody {
-  line-height: 0.5;
-}
-
 .data-table {
   width: 100%;
 }

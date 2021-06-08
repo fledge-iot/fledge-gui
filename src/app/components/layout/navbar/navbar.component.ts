@@ -32,7 +32,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public timer: any = '';
   public pingData = {};
   public servicesRecord = [];
-  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '' };
+  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
   public shutDownData = {
     key: '',
     message: ''
@@ -134,18 +134,30 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           const servicesData = data.services;
           const coreService = servicesData.filter((el => (el.type === 'Core')));
           const storageService = servicesData.filter((el => (el.type === 'Storage')));
-          const notificationService = servicesData.filter((el => (el.type === 'Notification')));
           let southboundServices = servicesData.filter((el => (el.type === 'Southbound')));
           southboundServices = sortBy(southboundServices, function (obj) {
             return obj.name.toLowerCase();
           });
+          let northboundServices = servicesData.filter((el => (el.type === 'Northbound')));
+          northboundServices = sortBy(northboundServices, function (obj) {
+            return obj.name.toLowerCase();
+          });
+          const notificationService = servicesData.filter((el => (el.type === 'Notification')));
+          const managementService = servicesData.filter((el => (el.type === 'Management')));
+
           this.servicesRecord.push(coreService[0], storageService[0]);
-          if (notificationService.length) {
-            this.servicesRecord.push(notificationService[0]);
-          }
           southboundServices.forEach(service => {
             this.servicesRecord.push(service);
           });
+          northboundServices.forEach(service => {
+            this.servicesRecord.push(service);
+          });
+          if (notificationService.length) {
+            this.servicesRecord.push(notificationService[0]);
+          }
+          if (managementService.length) {
+            this.servicesRecord.push(managementService[0]);
+          }
           this.hideLoadingSpinner();
         },
         (error) => {
@@ -175,7 +187,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
       }
-      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
+      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
+      version: this.pingData['version'] };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -184,6 +197,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.sharedService.isAdmin.next(JSON.parse(sessionStorage.getItem('isAdmin')));
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
+      this.sharedService.connectionInfo.next({'version': this.pingData['version'], 'isServiceUp': true});
     })
       .catch((error) => {
         this.pingData = [];
@@ -191,11 +205,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         if (pingManually === true) {
           this.ngProgress.done();
         }
-        if (error.status === 403) {
-          sessionStorage.clear();
-          this.pingInfo = { isAlive: true, isAuth: true, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'] };
+        // If response code is non zero and not undefined, set isAlive and isAuth to true,
+        // else set service to down and pingInfo accordingly
+        if (error && error.status && error.status !== 0) {
+          this.pingInfo.isAlive = true;
+          this.pingInfo.isAuth = true;
         } else {
-          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '' };
+          this.sharedService.connectionInfo.next({version: '', isServiceUp: false});
+          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
         }
       });
   }
@@ -353,20 +370,25 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         () => {
-          this.servicesRecord = [];
-          sessionStorage.clear();
+          this.clearUserSession();
           this.ngProgress.done();
-          this.router.navigate(['/login'], { replaceUrl: true });
           this.alertService.success('You have been successfully logged out!');
         },
         error => {
           this.ngProgress.done();
+          this.clearUserSession();
           if (error.status === 0) {
             console.log('service down', error);
           } else {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  clearUserSession() {
+    sessionStorage.clear();
+    this.servicesRecord = [];
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   public showLoadingSpinner() {

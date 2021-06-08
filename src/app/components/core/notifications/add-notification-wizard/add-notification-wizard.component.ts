@@ -13,6 +13,7 @@ import { ViewConfigItemComponent } from '../../configuration-manager/view-config
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-add-notification-wizard',
@@ -22,6 +23,7 @@ import { ValidateFormService } from '../../../../services/validate-form.service'
 export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   @ViewChild('desc', { static: false }) description: ElementRef;
   @ViewChild('name', { static: false }) name: ElementRef;
+  @ViewChild('retriggerTime', { static: false }) retriggerTime: ElementRef;
 
   public notificationRulePlugins = [];
   public notificationDeliveryPlugins = [];
@@ -42,6 +44,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   public selectedRulePluginDescription: string;
   public selectedDeliveryPluginDescription: string;
 
+  public selectedRulePlugin: string;
+  public selectedDeliveryPlugin: string;
+
   public useRuleProxy: string;
   public useDeliveryProxy: string;
 
@@ -52,7 +57,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     name: new FormControl(),
     description: new FormControl(),
     rule: new FormControl(),
-    delivery: new FormControl()
+    delivery: new FormControl(),
+    retriggerTime: new FormControl()
   });
 
   @ViewChild('ruleConfigView', { static: false }) ruleViewConfigItemComponent: ViewConfigItemComponent;
@@ -72,6 +78,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     private configService: ConfigurationService,
     private sharedService: SharedService,
     private validateFormService: ValidateFormService,
+    private docService: DocService,
     private router: Router) { }
 
   ngOnInit() {
@@ -81,7 +88,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       description: ['', Validators.required],
       rule: ['', Validators.required],
-      delivery: ['', Validators.required]
+      delivery: ['', Validators.required],
+      retriggerTime: ['60', Validators.required]
     });
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
@@ -292,6 +300,10 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
           this.payload.notification_type = this.notificationType;
         }
         this.payload.enabled = this.isNotificationEnabled;
+        this.payload.retrigger_time = this.retriggerTime.nativeElement.value;
+        if (this.payload.retrigger_time < 1) {
+          return;
+        }
         this.addNotificationInstance(this.payload);
         break;
       default:
@@ -351,10 +363,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
     const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-    if (pluginType === 'notificationRule') {
+    if (pluginType === 'rule') {
+      this.selectedRulePlugin = plugin;
       this.selectedRulePluginDescription = this.notificationRulePlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
     } else {
+      this.selectedDeliveryPlugin = plugin;
       this.selectedDeliveryPluginDescription = this.notificationDeliveryPlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
     }
@@ -526,6 +540,19 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         break;
       }
     }
+  }
+
+  /**
+   * Open readthedocs.io documentation of notification plugins
+   * @param selectedPlugin Selected rule/delivery  plugin 
+   * @param pluginType Type of the plugin (e.g. rule/notify)
+   */
+  goToLink(selectedPlugin: string, pluginType: string) {
+    const pluginInfo = {
+      name: selectedPlugin,
+      type: pluginType
+    };
+    this.docService.goToPluginLink(pluginInfo);
   }
 
   ngOnDestroy() {

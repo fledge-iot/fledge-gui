@@ -92,7 +92,6 @@ export class CertificateBaseLoginComponent implements OnInit {
           sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
           this.getUser(data['uid']);
           this.router.navigate([''], { replaceUrl: true });
-          this.alertService.success(data['message'], true);
         },
         error => {
           /** request completed */

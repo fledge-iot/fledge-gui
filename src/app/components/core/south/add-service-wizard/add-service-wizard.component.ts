@@ -8,6 +8,7 @@ import { AlertService, SchedulesService, SharedService, ServicesApiService, Plug
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -53,7 +54,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService,
     private ngProgress: ProgressBarService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private docService: DocService
   ) { }
 
   ngOnInit() {
@@ -170,7 +172,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           return formValues['name'].trim() === item.name;
         });
         if (isServiceNameExist) {
-          this.alertService.error('A south service or north task instance already exists with this name.');
+          this.alertService.error('A service/task already exists with this name.');
           return false;
         }
 
@@ -282,18 +284,16 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   /**
    * Method to add service
    * @param payload  to pass in request
-   * @param nxtButton button to go next
-   * @param previousButton button to go previous
    */
   public addService(payload) {
     /** request started */
     this.ngProgress.start();
     this.servicesApiService.addService(payload)
       .subscribe(
-        () => {
+        (response) => {
           /** request done */
           this.ngProgress.done();
-          this.alertService.success('Service added successfully.', true);
+          this.alertService.success(response['name'] + ' service added successfully.', true);
           this.router.navigate(['/south']);
         },
         (error) => {
@@ -400,6 +400,14 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  goToLink() {
+    const pluginInfo = {
+      name: this.plugin,
+      type: 'South'
+    };
+    this.docService.goToPluginLink(pluginInfo);
   }
 
   ngOnDestroy() {

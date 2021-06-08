@@ -13,13 +13,20 @@ This is a GUI for Fledge
 
 To update yarn, Run `sudo npm i -g yarn`
 
-`git clone https://github.com/fledge/fledge-gui.git`
-
-`cd  fledge-gui`
+```
+git clone https://github.com/fledge/fledge-gui.git
+cd fledge-gui
+```
 
 ## Development Server
 
-Run `yarn install && yarn start` or `yarn install && yarn start --host [ip_address of host machine]` (to allow access on same network but another machine) for a dev server. Navigate to `http://localhost:4200/` or `http://<ip_address>:4200/`. 
+Run `yarn install && yarn start` & Navigate to http://localhost:4200/
+
+To allow access on other browser devices, over the same network, you can set host to `0.0.0.0`/IP address of the development machine. You can also set a different web port, default port is 4200.
+
+`yarn install && yarn start --host 0.0.0.0 --port <PORT>` 
+
+`http://<IP OF HOST MACHINE>:<PORT>/`
 
 > The app will automatically reload if you change any of the source files.
 
@@ -27,7 +34,9 @@ Run `yarn install && yarn start` or `yarn install && yarn start --host [ip_addre
 
 Run `./build --clean-start` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory (and may be you want to use provided `nginx.conf`, to avoid changes in default nginx config); Make sure you have nginx(-light) installed on the deployment machine.
+To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory (and, you may want to use provided `nginx.conf`; to avoid changes in default nginx config). 
+
+> Make sure you have nginx(-light) installed on the deployment machine.
 
 ### Starting with nginx
 
@@ -53,14 +62,16 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 ## Supported/ Tested Browser Version
 Browser | Tested Version | Supported
 --------|-------- |-------
-Safari (mac)  | 13.0.x   | latest 1
-Chrome  | 81.0.x (64-bit) | latest 2
-Firefox | 76.0.x (64-bit) | latest 2
+Safari (macOS)  | 14.1.x   | latest 1
+Chrome  | 90.0.x (64-bit) | latest 2
+Firefox | 88.0.x (64-bit) | latest 2
 
 
 [Changelog](docs/changelog.md)
 
 [Developer's Guide](docs/developers-guide.md)
 
+## Contributing to Fledge
+See [Contributing Statement](CONTRIBUTING.md)
 
-> &copy; 2020 DIANOMIC SYSTEMS, INC. All Rights Reserved.
+> &copy; 2021 DIANOMIC SYSTEMS, INC. All Rights Reserved.

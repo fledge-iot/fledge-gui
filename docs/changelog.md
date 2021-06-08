@@ -1,11 +1,48 @@
-## v1.8.2next [2020-xx-xx]
+## v1.9.1next [2021-xx-xx]
 
 #### Added
-* Documentation help links added
 
 #### Changed
 
 #### Fixed
+
+
+## v1.9.1 [2021-05-27]
+
+#### Added
+* [FOGL-5097]: Added documentation links for online help on various screens (#71, #73, #77)
+* Show refresh icon next to 'add & enable now' link on Notification page (#75)
+* [FOGL-5260]: Added filter to see externally added services logs (#79)
+
+#### Changed
+* [FOGL-4434]: Improvements have been made in the user management screens (#80)
+* [FOGL-5403]: Removed delete option in certificate store page for non-admin user (#88)
+
+#### Fixed
+* [FOGL-5027]: Fixed update schedule issue which was due to time field (#69)
+* Fixed South page to list services sorted by name (#70)
+* [FOGL-5198]: Fixed nested readings data parsing issue for tabular data display & CSV download (#82)
+
+## v1.9.0 [2021-02-17]
+
+#### Added
+* [FOGL-3921] Connected Fledge version information on navbar brand name hover & on settings page (#52)
+* [FOGL-4704] Documentation help links (#39)
+* [FOGL-4721] Northbound always on services support in North pages (#42)
+* [FOGL-4119] Contribution statement
+* [FOGL-4815] System logs severity filter option "Debug and above" added, default level set to "Info and above" (#51)
+
+#### Changed
+* [FOGL-4779] Type handling for Notification plugins (#41)
+* [FOGL-4586] Package installation mechanism, using asynchronous API support (#38)
+
+#### Fixed
+* [FOGL-4420] Removed repeat field for manual and startup schedule (#29)
+* [FOGL-4863] Allow to set retrigger time while adding a notification instance (#53)
+
+
+#### Others
+* Updated bulma css framework to 0.8.2 (#18)
 
 ## v1.8.2 [2020-11-03]
 

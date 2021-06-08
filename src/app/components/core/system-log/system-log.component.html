@@ -46,7 +46,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('level-dropdown')">
-                  <span>{{level == ''? "Info and above": capitalizeInitialWord(level) + ' and above'}}</span>
+                  <span>{{level == ''? "Debug and above": capitalizeInitialWord(level) + ' and above'}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -54,6 +54,9 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
+                  <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'Debug')">
+                    Debug and above
+                  </a>
                   <a class="dropdown-item" (click)="toggleDropDown('level-dropdown');filterData('level', 'Info')">
                     Info and above
                   </a>

@@ -68,6 +68,7 @@
               <label class="label">Plugin</label>
             </div>
             <div class="field-body">
+              <div class="column is-vertical-center">
               <div class="select is-multiple">
                 <select #selectedPlugin multiple name="type" formControlName="plugin"
                   (change)="getDescription(selectedPlugin.value)" required>
@@ -78,6 +79,13 @@
               <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin"
                 class="help description level-left">{{ selectedPluginDescription }}</small>
               <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+            </div>
+            </div>
+            <div *ngIf="plugin" class="column is-1">
+              <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+                data-tooltip="Help" (click)="goToLink(plugin)">
+                <i class="far fa-question-circle"></i>
+              </span>
             </div>
           </div>
 

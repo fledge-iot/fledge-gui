@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AlertService, SupportService, ProgressBarService, SharedService } from '../../../services';
 import { Subscription } from 'rxjs';
+import { DocService } from '../../../services/doc.service';
 
 @Component({
   selector: 'app-support',
@@ -15,6 +16,7 @@ export class SupportComponent implements OnInit, OnDestroy {
   constructor(private supportBundleService: SupportService,
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
+    private docService: DocService,
     private sharedService: SharedService) { }
 
   ngOnInit() {
@@ -71,6 +73,11 @@ export class SupportComponent implements OnInit, OnDestroy {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }
+
+  goToLink() {
+    const urlSlug = 'support.html'
+    this.docService.goToViewQuickStartLink(urlSlug);
   }
 
   public ngOnDestroy(): void {

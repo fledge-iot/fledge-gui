@@ -22,3 +22,12 @@
 .steps {
   overflow-y: visible;
 }
+
+.is-vertical-center {
+  display: flex;
+  align-items: center;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+}

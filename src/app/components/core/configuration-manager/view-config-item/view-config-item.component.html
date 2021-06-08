@@ -1,5 +1,5 @@
 <div class="view-content columns">
-    <span *ngIf="['south', 'north', 'filter', 'rule', 'notify'].includes(pluginInfo?.type.toLowerCase());" class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+    <span *ngIf="['south', 'north', 'filter', 'rule', 'notify'].includes(pluginInfo?.type.toLowerCase())" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
       <i class="far fa-question-circle"></i>
     </span>
   <div class="column">
@@ -10,7 +10,7 @@
           <div class="config-div" *ngIf="configItem.value.readonly != 'true'">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
-                <label class="label tooltip is-tooltip-right is-tooltip-multiline"
+                <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label"
                   [attr.data-tooltip]="configItem.value.description">
                   {{setDisplayName(configItem.value)}}
                 </label>
