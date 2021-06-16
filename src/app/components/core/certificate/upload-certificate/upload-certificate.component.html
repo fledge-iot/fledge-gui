@@ -6,72 +6,79 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-        <form [formGroup]="form" id="ngForm" (ngSubmit)="uploadCertificate()" novalidate>
-          <div class="columns">
-            <div class="column">
-              <div class="field is-horizontal">
-                <div class="field-label has-text-left">
-                  <label class="label">Key</label>
-                </div>
-                <div class="field-body">
-                  <div class="field is-narrow">
-                    <div class="file">
-                      <label class="file-label">
-                        <span class="file-cta">
-                          <span class="file-icon">
-                            <i class="fa fa-sm fa-upload"></i>
-                          </span>
-                          <input type="file" required id="key" (change)="onKeyChange($event)" formControlName="key" #fileInput>
+      <form [formGroup]="form" id="ngForm" (ngSubmit)="uploadCertificate()" novalidate>
+        <div class="columns">
+          <div class="column">
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label">Key</label>
+              </div>
+              <div class="field-body">
+                <div class="field is-narrow">
+                  <div class="file">
+                    <label class="file-label">
+                      <span class="file-cta">
+                        <span class="file-icon">
+                          <i class="fa fa-sm fa-upload"></i>
                         </span>
-                      </label>
-                    </div>
+                        <input type="file" required id="key" (change)="onKeyChange($event)" formControlName="key"
+                          #fileInput>
+                      </span>
+                    </label>
                   </div>
                 </div>
               </div>
-              <small *ngIf="!keyExtension && form.controls['key'].touched && form.controls['key'].value" class="help is-danger level-left">should be a .key or .pem file</small>
             </div>
+            <small *ngIf="!keyExtension && form.controls['key'].touched && form.controls['key'].value"
+              class="help is-danger level-left">should be a .key or .pem file</small>
           </div>
-          <div class="columns">
-            <div class="column">
-              <div class="field is-horizontal">
-                <div class="field-label has-text-left">
-                  <label class="label">Certificate</label>
-                </div>
-                <div class="field-body">
-                  <div class="field is-narrow">
-                    <div class="file">
-                      <label class="file-label">
-                        <span class="file-cta">
-                          <span class="file-icon">
-                            <i class="fa fa-sm fa-upload"></i>
-                          </span>
-                          <input type="file" required id="cert" (change)="onCertChange($event)" formControlName="cert" #fileInput>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label">Certificate</label>
+              </div>
+              <div class="field-body">
+                <div class="field is-narrow">
+                  <div class="file">
+                    <label class="file-label">
+                      <span class="file-cta">
+                        <span class="file-icon">
+                          <i class="fa fa-sm fa-upload"></i>
                         </span>
-                      </label>
-                    </div>
+                        <input type="file" required id="cert" (change)="onCertChange($event)" formControlName="cert"
+                          #fileInput>
+                      </span>
+                    </label>
                   </div>
                 </div>
               </div>
-              <small *ngIf="!certExtension && form.controls['cert'].touched && form.controls['cert'].value" class="help is-danger level-left">should be a .cert, .cer, .crt, .pem or .json file</small>
             </div>
+            <small *ngIf="!certExtension && form.controls['cert'].touched && form.controls['cert'].value"
+              class="help is-danger level-left">should be a .cert, .cer, .crt, .pem, .csr, .crl, .p12, .pfx, .der or
+              .json file</small>
           </div>
-          <div class="columns">
-            <div class="column">
-              <div class="field">
-                <div class="control">
-                  <label class="checkbox">
-                    <input *ngIf="overwrite == '1'" checked type="checkbox" ng-model="overwrite" (change)="onOverwriteChange($event)">
-                    <input *ngIf="overwrite == '0'" type="checkbox" ng-model="overwrite" (change)="onOverwriteChange($event)"> Overwrite
-                  </label>
-                </div>
-                <p class="help">Overwrite allows to replace the existing key or certificate</p>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <div class="control">
+                <label class="checkbox">
+                  <input *ngIf="overwrite == '1'" checked type="checkbox" ng-model="overwrite"
+                    (change)="onOverwriteChange($event)">
+                  <input *ngIf="overwrite == '0'" type="checkbox" ng-model="overwrite"
+                    (change)="onOverwriteChange($event)"> Overwrite
+                </label>
               </div>
+              <p class="help">Overwrite allows to replace the existing key or certificate</p>
             </div>
           </div>
-        </form>
+        </div>
+      </form>
     </section>
     <footer class="modal-card-foot">
-        <button id="save" type="submit" form="ngForm" class="button is-info is-small">Import</button>
-      </footer>
+      <button id="save" type="submit" form="ngForm" class="button is-info is-small">Import</button>
+    </footer>
   </div>
 </div>
