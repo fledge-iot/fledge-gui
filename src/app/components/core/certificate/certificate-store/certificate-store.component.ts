@@ -28,7 +28,7 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(UploadCertificateComponent, { static: true }) uploadModal: UploadCertificateComponent;
-  
+
   allowDelete = true;
   constructor(private certService: CertificateService,
     public ngProgress: ProgressBarService,
@@ -65,7 +65,7 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
           this.keys = sortBy(data['keys'], function (obj) {
             return obj.split('.')[1] + obj.substr(0, obj.indexOf('.'));
           });
-          const certExtensions = ['cert', 'cer', 'crt', 'pem', 'json'];
+          const certExtensions = ['cert', 'cer', 'crt', 'csr', 'crl', 'pem', 'json', 'p12', 'pfx','der'];
           for (let i = 0; i < certExtensions.length; i++) {
             let certificates = [];
             data['certs'].forEach(c => {
