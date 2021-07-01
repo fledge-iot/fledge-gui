@@ -274,7 +274,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
       if (item.type === 'script') {
-        this.filesToUpload = item.value;
+        this.filesToUpload = item;
       } else {
         finalConfig.push({
           [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
@@ -316,9 +316,9 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   public uploadScript() {
     this.filesToUpload.forEach(data => {
-      let configItem: any;
-      configItem = data.key;
-      const file = data.value[0];
+   
+      const configItem = data.key;
+      const file = data.value[0].script;
       const formData = new FormData();
       formData.append('script', file);
       this.configService.uploadFile(this.payload.name, configItem, formData)
