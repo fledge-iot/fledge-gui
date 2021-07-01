@@ -316,7 +316,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   public uploadScript() {
     this.filesToUpload.forEach(data => {
-   
       const configItem = data.key;
       const file = data.value[0].script;
       const formData = new FormData();
