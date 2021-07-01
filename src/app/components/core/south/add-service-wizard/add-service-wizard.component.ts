@@ -274,7 +274,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
       if (item.type === 'script') {
-        this.filesToUpload = item;
+        this.filesToUpload.push(item);
       } else {
         finalConfig.push({
           [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
