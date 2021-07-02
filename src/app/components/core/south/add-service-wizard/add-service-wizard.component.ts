@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 
-import { AlertService, SchedulesService, SharedService, ServicesApiService, PluginService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, SharedService, ServicesApiService, PluginService, ProgressBarService, ConfigurationService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
@@ -31,6 +31,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   public schedulesName = [];
   public showSpinner = false;
   private subscription: Subscription;
+  private filesToUpload = []
 
   serviceForm = new FormGroup({
     name: new FormControl(),
@@ -55,7 +56,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private schedulesService: SchedulesService,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
-    private docService: DocService
+    private docService: DocService,
+    private configService: ConfigurationService
   ) { }
 
   ngOnInit() {
@@ -263,7 +265,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     matchedConfigCopy.forEach(e => {
       changedConfig.forEach(c => {
         if (e.key === c.key) {
-          e.value = c.value.toString();
+          e.value = c.type === 'script'? c.value : c.value.toString();
         }
       });
     });
@@ -271,9 +273,13 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     // final array to hold changed configuration
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
-      finalConfig.push({
-        [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
-      });
+      if (item.type === 'script') {
+        this.filesToUpload.push(item);
+      } else {
+        finalConfig.push({
+          [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
+        });
+      }
     });
 
     // convert finalConfig array in object of objects to pass in add service
@@ -294,6 +300,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
+          this.uploadScript();
           this.router.navigate(['/south']);
         },
         (error) => {
@@ -305,6 +312,28 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public uploadScript() {
+    this.filesToUpload.forEach(data => {
+      const configItem = data.key;
+      const file = data.value[0].script;
+      const formData = new FormData();
+      formData.append('script', file);
+      this.configService.uploadFile(this.payload.name, configItem, formData)
+        .subscribe(() => {
+          this.filesToUpload = [];
+          this.alertService.success('Script uploaded successfully.');
+        },
+          error => {
+            this.filesToUpload = [];
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    });
   }
 
   validateServiceName(event) {
