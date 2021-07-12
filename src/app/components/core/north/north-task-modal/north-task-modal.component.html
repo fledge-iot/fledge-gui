@@ -31,7 +31,7 @@
               <div class="column">
                 <div class="field is-horizontal">
                   <div class="field-label has-text-left">
-                    <label class="label">Enabled</label>
+                    <label class="label config-label">Enabled</label>
                   </div>
                   <div class="field-body">
                     <div class="field">
@@ -43,7 +43,7 @@
                 <ng-container *ngIf="task?.processName !== 'north_C'">
                 <div  class="field is-horizontal">
                   <div class="field-label has-text-left">
-                    <label class="label">Exclusive</label>
+                    <label class="label config-label">Exclusive</label>
                   </div>
                   <div class="field-body">
                     <div class="field">
@@ -54,7 +54,7 @@
                 </div>
                 <div class="field is-horizontal">
                   <div class="field-label has-text-left">
-                    <label class="label">Interval</label>
+                    <label class="label config-label">Interval</label>
                   </div>
                   <div class="field-body">
                     <div class="field">
@@ -149,7 +149,7 @@
           <!-- Note: task here is old variable name retained; if processName is north_C task represents a Northbound service -->
           <div *ngIf="task?.processName === 'north_C' && task?.enabled" class="field is-horizontal">
             <div class="field-label has-text-left">
-              <label class="label">Service Info</label>
+              <label class="label config-label">Service Info</label>
             </div>
             <div class="field-body">
               <div class="field">

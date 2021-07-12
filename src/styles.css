@@ -308,3 +308,9 @@ a.dropdown-item:hover {
 .icon:hover {
   opacity: 0.8;
 }
+
+.config-label {
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  padding-top: 2px !important;
+}

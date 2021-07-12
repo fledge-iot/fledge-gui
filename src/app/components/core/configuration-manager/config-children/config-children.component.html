@@ -4,7 +4,7 @@
       <div class="config-div" *ngIf="!configItem.readonly">
         <div class="field is-horizontal">
           <div class="field-label has-text-left">
-            <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.description">
+            <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label" [attr.data-tooltip]="configItem.description">
               {{setDisplayName(configItem)}}
             </label>
           </div>

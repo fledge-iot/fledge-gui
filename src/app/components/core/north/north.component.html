@@ -19,7 +19,7 @@
         </div>
         <ng-container *ngIf="!showSpinner">
           <div class="has-text-centered" *ngIf="tasks != undefined && tasks.length === 0">
-            <small class="no-rec">No Record</small>
+            <small class="no-rec">No Northbound services/tasks configured</small>
           </div>
           <ng-container *ngIf="tasks!= undefined && tasks.length > 0">
             <table class="table is-fullwidth scroll is-responsive is-hoverable">
@@ -42,7 +42,7 @@
                     <span *ngIf="t?.processName === 'north_C'" class="tag is-light is-rounded">Service</span>
                   </td>
                   <td>
-                    <span *ngIf="t.enabled == true" class="tag is-success">enabled</span>
+                    <span *ngIf="t.enabled == true" class="tag is-success is-light">enabled</span>
                     <span *ngIf="t.enabled == false" class="tag">disabled</span>
                   </td>
                   <td>

@@ -97,8 +97,8 @@ describe('Fledge gui', () => {
       skipLogin.navToBackupRestore();
 
       expect(skipLogin.getBackupRestoreTitle()).toContain('Backups');
-      
-      expect(skipLogin.noBackupRecord()).toContain('No Record');
+
+      expect(skipLogin.noBackupRecord()).toContain('No Backup found');
       expect(skipLogin.getRequestBackup()).toContain('Create New');
 
       skipLogin.clickRequestBackup();
@@ -107,7 +107,7 @@ describe('Fledge gui', () => {
       }
       expect(skipLogin.getCreatedBackupRow()).toContain('COMPLETED');
       skipLogin.deleteBackup();
-      expect(skipLogin.noBackupRecord()).toContain('No Record');
+      expect(skipLogin.noBackupRecord()).toContain('No Backup found');
     });
 
     it('Should Display Support Bundles', () => {
