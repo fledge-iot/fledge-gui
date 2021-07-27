@@ -33,4 +33,4 @@ start_nginx () {
 }
 
 cp /var/www/html/fledge.html /var/www/html/index.html
-start_nginx
+if [ $ENV != "docker" ]; then start_nginx; else echo "Skipping nginx start..."; fi
