@@ -29,8 +29,8 @@ set -e
 
 start_nginx () {
   service nginx start
-  service nginx status | grep "Active:"
+  systemctl is-active nginx
 }
 
-cp /var/www/html/fledge.html /var/www/html/index.html
+cp --remove-destination /var/www/html/fledge.html /var/www/html/index.html
 start_nginx

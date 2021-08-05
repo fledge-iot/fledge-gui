@@ -34,10 +34,10 @@ set -e
 
 start_nginx () {
   systemctl start nginx
-  systemctl status nginx | grep "Active:"
+  systemctl is-active nginx
 }
 
-cp /usr/share/nginx/html/fledge.html /usr/share/nginx/html/index.html
+cp --remove-destination /usr/share/nginx/html/fledge.html /usr/share/nginx/html/index.html
 start_nginx
 
 %postun
