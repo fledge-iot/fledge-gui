@@ -37,7 +37,7 @@ start_nginx () {
   systemctl is-active nginx
 }
 
-cp /usr/share/nginx/html/fledge.html /usr/share/nginx/html/index.html
+cp --remove-destination /usr/share/nginx/html/fledge.html /usr/share/nginx/html/index.html
 start_nginx
 
 %postun
