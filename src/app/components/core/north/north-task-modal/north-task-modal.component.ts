@@ -263,9 +263,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       if(form.controls['repeatTime'].value !== ('None' || undefined)) {
         updatePayload.repeat = Utils.convertTimeToSec(form.controls['repeatTime'].value, form.controls['repeatDays'].value);
       }
-      updatePayload.exclusive = form.controls['exclusive'].value;  
+      updatePayload.exclusive = form.controls['exclusive'].value;
     }
-    
+
     /** request started */
     this.ngProgress.start();
     this.schedulesService.updateSchedule(this.task['id'], updatePayload).
@@ -415,6 +415,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   openAddFilterModal(isWizard) {
     this.isWizard = isWizard;
     this.category = '';
+    this.isFilterOrderChanged = false;
+    this.isFilterDeleted = false;
+    this.deletedFilterPipeline = [];
   }
 
   onNotify() {
