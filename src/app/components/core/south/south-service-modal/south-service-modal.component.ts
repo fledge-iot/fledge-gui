@@ -445,6 +445,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   openAddFilterModal(isWizard) {
     this.isWizard = isWizard;
     this.category = '';
+    this.isFilterOrderChanged = false;
+    this.isFilterDeleted = false;
+    this.deletedFilterPipeline = [];
   }
 
   onNotify() {
