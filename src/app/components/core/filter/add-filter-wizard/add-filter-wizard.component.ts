@@ -27,7 +27,6 @@ export class AddFilterWizardComponent implements OnInit {
   public selectedPluginDescription = '';
   public plugin: any;
   public pluginData = [];
-  public filesToUpload = [];
   public requestInProgress = false;
   public show = false;
   public stopLoading = false;
@@ -389,13 +388,9 @@ export class AddFilterWizardComponent implements OnInit {
     // final array to hold changed configuration
     let finalConfig = [];
     changedConfig.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload = item.value;
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-        });
-      }
+      finalConfig.push({
+        [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
+      });
     });
 
     // convert finalConfig array in object of objects to pass in add service
@@ -403,65 +398,9 @@ export class AddFilterWizardComponent implements OnInit {
     this.payload.filter_config = finalConfig;
   }
 
-  /**
-   * Method to add filter
-   * @param payload  to pass in request
-   */
+  // notify parent component for the new filter addition
   public addFilter(payload) {
-    this.filterService.saveFilter(payload)
-      .subscribe(
-        (data: any) => {
-          this.alertService.success(data.filter + ' filter added successfully.', true);
-          this.addFilterPipeline({ 'pipeline': [payload.name] });
-        },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  public uploadScript() {
-    this.filesToUpload.forEach(data => {
-      let configItem: any;
-      configItem = Object.keys(data)[0];
-      const file = data[configItem];
-      const formData = new FormData();
-      formData.append('script', file);
-      this.configService.uploadFile(this.configurationData.key, configItem, formData)
-        .subscribe(() => {
-          this.filesToUpload = [];
-          this.alertService.success('configuration updated successfully.');
-        },
-          error => {
-            this.filesToUpload = [];
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
-    });
-  }
-
-
-  public addFilterPipeline(payload) {
-    this.filterService.addFilterPipeline(payload, this.serviceName)
-      .subscribe((data: any) => {
-        this.notify.emit(data);
-        if (this.filesToUpload !== []) {
-          this.uploadScript();
-        }
-      },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.notify.emit(payload);
   }
 
   validateServiceName(event) {
@@ -515,8 +454,8 @@ export class AddFilterWizardComponent implements OnInit {
 
   /**
    * Open readthedocs.io documentation of filter plugins
-   * @param selectedPlugin Selected filter plugin 
-   * 
+   * @param selectedPlugin Selected filter plugin
+   *
    */
   goToLink(selectedPlugin: string) {
     const pluginInfo = {

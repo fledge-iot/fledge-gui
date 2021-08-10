@@ -1,16 +1,16 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, ViewChildren, QueryList
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { isEmpty } from 'lodash';
-
+import { isEmpty, omit } from 'lodash';
+import { forkJoin } from 'rxjs';
 import {
-  AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
-  ServicesApiService,
-  ProgressBarService,
-  GenerateCsvService
+  AlertService, AssetsService, ConfigurationService, FilterService, GenerateCsvService, ProgressBarService, SchedulesService,
+  ServicesApiService
 } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import {
@@ -20,8 +20,7 @@ import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { DocService } from '../../../../services/doc.service';
+
 
 @Component({
   selector: 'app-south-service-modal',
@@ -31,8 +30,8 @@ import { DocService } from '../../../../services/doc.service';
 export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public category: any;
-  public useProxy: 'true';
-  public useFilterProxy: 'true';
+  public useProxy = 'true';
+  public useFilterProxy = 'true';
   public isEnabled = false;
   public isAdvanceConfig = false;
   public advanceConfigButtonText = 'Show Advanced Config';
@@ -43,11 +42,17 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public deletedFilterPipeline = [];
   public filterConfiguration = [];
 
+  public newFilters = [];
+  public isnewFilterAdded = false;
+  public filesToUpload = [];
+
   public isFilterOrderChanged = false;
   public isFilterDeleted = false;
+
   assetReadings = [];
   public filterItemIndex;
   public isWizard;
+
   // Object to hold data of south service to delete
   public serviceRecord;
   public selectedFilterPlugin;
@@ -55,7 +60,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
 
-  @Input() service: { service: any };
+  @Input() service: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('serviceConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
@@ -99,16 +104,21 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (event.previousIndex === event.currentIndex) {
       return;
     }
+
     moveItemInArray(this.filterPipeline, event.previousIndex, event.currentIndex);
     this.isFilterOrderChanged = true;
   }
 
-  public toggleModal(isOpen: Boolean) {
-    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+  closeModel() {
+    if (this.isFilterOrderChanged || this.isFilterDeleted || this.isnewFilterAdded) {
       this.showConfirmationDialog();
       return;
+    } else {
+      this.toggleModal(false);
     }
+  }
 
+  public toggleModal(isOpen: Boolean) {
     const activeFilterTab = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
     if (activeFilterTab !== undefined) {
       const activeContentBody = <HTMLElement>activeFilterTab.getElementsByClassName('card-content')[0];
@@ -219,11 +229,16 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   saveChanges(serviceName) {
-    if (this.isFilterDeleted) {
+    if (this.isnewFilterAdded) {
+      const calls = [];
+      this.newFilters.forEach(f => {
+        calls.push(this.filterService.saveFilter(f));
+      });
+      this.addFilter(calls);
+    } else if (this.isFilterDeleted) {
       this.deleteFilter();
-    }
-    if (this.isFilterOrderChanged) {
-      this.updateFilterPipeline(this.filterPipeline);
+    } else if (this.isFilterOrderChanged) {
+      this.updateFilterPipeline(this.filterPipeline.map(f => f.name));
     }
     this.changeServiceStatus(serviceName);
     this.toggleModal(false);
@@ -270,6 +285,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
+    console.log('changedConfig', changedConfig);
+
     if (isEmpty(changedConfig)) {
       return;
     }
@@ -299,7 +316,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (this.useProxy) {
+    if (this.useProxy === 'true') {
       document.getElementById('vci-proxy').click();
     }
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
@@ -444,24 +461,106 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   openAddFilterModal(isWizard) {
     this.isWizard = isWizard;
-    this.category = '';
-    this.isFilterOrderChanged = false;
-    this.isFilterDeleted = false;
-    this.deletedFilterPipeline = [];
   }
 
-  onNotify() {
-    this.getCategory();
+  onNotify(newFilter) {
+    if (newFilter) {
+      this.isnewFilterAdded = true;
+      if ('script' in newFilter.filter_config) {
+        const key = this.service.name + '_' + newFilter.name;
+        this.filesToUpload.push({ key: key, script: newFilter.filter_config['script'] });
+        newFilter.filter_config = omit(newFilter.filter_config, 'script')
+      }
+
+      this.newFilters.push(newFilter);
+      this.filterPipeline.push({ name: newFilter.name, isFilterSaved: false })
+    }
+
     this.isWizard = false;
-    this.getFilterPipeline();
+    this.useProxy = 'true';
     this.isAdvanceConfig = false;
     this.advanceConfigButtonText = 'Show Advanced Config';
+  }
+
+  /**
+   * Add filter
+   * @param payload  to pass in request
+   */
+  public addFilter(calls) {
+    // to manage added filter locally
+    this.ngProgress.start();
+    forkJoin(calls)
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.isnewFilterAdded = false;
+        this.newFilters = [];
+        data.forEach(d => {
+          this.alertService.success(`${d.filter} filter added successfully.`, true);
+        });
+
+        const pipeline = data.map(d => d.filter);
+        this.addFilterPipeline({ 'pipeline': pipeline });
+      }, error => {
+        this.ngProgress.done();
+        this.isnewFilterAdded = false;
+        this.newFilters = [];
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  public addFilterPipeline(payload) {
+    this.filterService.addFilterPipeline(payload, this.service.name).
+      subscribe(() => {
+        if (!isEmpty(this.filesToUpload)) {
+          this.uploadScript();
+        }
+        // reflect delete or reorder filter changes once add filter complete
+        if (this.isFilterDeleted) {
+          this.deleteFilter();
+        }
+
+        if (this.isFilterOrderChanged) {
+          this.updateFilterPipeline(this.filterPipeline.map(f => f.name));
+        }
+      }, error => {
+        this.filesToUpload = [];
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  public uploadScript() {
+    this.filesToUpload.forEach((fl: any) => {
+      const file = fl.script[0]['script'];
+      const formData = new FormData();
+      formData.append('script', file);
+      this.configService.uploadFile(fl.key, 'script', formData)
+        .subscribe(() => {
+          this.filesToUpload = [];
+        },
+          error => {
+            this.filesToUpload = [];
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    });
   }
 
   getFilterPipeline() {
     this.filterService.getFilterPipeline(this.service['name'])
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline;
+        this.filterPipeline = this.filterPipeline.map(f => ({ name: f, isFilterSaved: true }))
       },
         error => {
           if (error.status === 404) {
@@ -522,16 +621,18 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   deleteFilterReference(filter) {
     this.deletedFilterPipeline.push(filter);
-    this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
+    this.filterPipeline = this.filterPipeline.filter(f => f.name !== filter);
     this.isFilterDeleted = true;
+    this.useProxy = 'true';
     this.isFilterOrderChanged = false;
   }
 
-
   deleteFilter() {
     this.isFilterDeleted = false;
+    let pipeline = this.filterPipeline.map(f => f.name);
+    pipeline = pipeline.filter(f => this.deletedFilterPipeline.find(df => df !== f));
     this.ngProgress.start();
-    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service['name'])
+    this.filterService.updateFilterPipeline({ 'pipeline': pipeline }, this.service['name'])
       .subscribe(() => {
         this.deletedFilterPipeline.forEach((filter, index) => {
           this.filterService.deleteFilter(filter).subscribe((data: any) => {
@@ -586,7 +687,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   discardChanges() {
     this.isFilterOrderChanged = false;
     this.isFilterDeleted = false;
+    this.isnewFilterAdded = false;
     this.deletedFilterPipeline = [];
+    this.newFilters = [];
     this.toggleModal(false);
   }
 }

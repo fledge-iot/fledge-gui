@@ -45,7 +45,7 @@ export class FilterService {
    * @param payload  {"pipeline":["S3"]}
    * @param serviceName service name
    */
-  public addFilterPipeline(payload, serviceName) {
+  public addFilterPipeline(payload: any, serviceName: string) {
     return this.http.put(this.FILTER_URL + '/' + encodeURIComponent(serviceName)
       + '/pipeline?allow_duplicates=true&append_filter=true', payload).pipe(
         map(response => response),

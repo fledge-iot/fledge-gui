@@ -10,7 +10,7 @@
         {{task.name}}
       </ng-template>
       </p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" (click)="closeModel()"></button>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
@@ -92,7 +92,7 @@
           <div *ngIf="filterPipeline != undefined" class="view-content columns">
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
-                <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
+                <div  [ngClass]="{'disabled': !filter?.isFilterSaved }" class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
                   [cdkDragDisabled]="filterPipeline.length < 2"
                   [ngClass]="{'cursor-pointer': filterPipeline.length < 2}">
                   <header class="card-header" cdkDragHandle
@@ -101,9 +101,9 @@
                       <ng-container *ngIf="filterPipeline.length > 1">
                         <i class="fa fa-sm fa-bars"></i>&nbsp;
                       </ng-container>
-                      {{filter}}
+                      {{filter?.name}}
                     </p>
-                    <a (click)="toggleAccordion(i, filter)" class="card-header-icon">
+                    <a *ngIf="filter?.isFilterSaved" (click)="toggleAccordion(i, filter?.name)" class="card-header-icon">
                       <span class="icon">
                         <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                       </span>
@@ -112,7 +112,7 @@
                   <div class="card-content" hidden>
                     <div class="content" *ngIf="filterConfiguration">
                       <app-view-config-item #filterConfigView
-                        [categoryConfigurationData]="setFilterConfiguration(filter)" [useFilterProxy]="useFilterProxy"
+                        [categoryConfigurationData]="setFilterConfiguration(filter?.name)" [useFilterProxy]="useFilterProxy"
                         [formId]="item"></app-view-config-item>
                         <div class="field">
                           <div class="field has-text-left">
@@ -121,7 +121,7 @@
                             </span>
                           </div>
                           <div class="field is-pulled-right">
-                            <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span
+                            <button class="button is-light btnDelete" (click)="deleteFilterReference(filter?.name)"><span
                                 class="icon is-medium"><i class="fa fa-sm fa-trash-alt fa-lg"
                                   aria-hidden="true"></i></span></button>
                           </div>
@@ -137,7 +137,7 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+                  <button class="button is-small" (click)="closeModel()">Cancel</button>
                 </p>
                 <p class="control">
                   <button class="button is-small is-link" (click)="proxy()">Save</button>
@@ -181,6 +181,6 @@
     </section>
   </div>
   <app-alert-dialog (deleteTask)='onDelete($event)' [deleteTaskData]='deleteTaskData'></app-alert-dialog>
-  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
+  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted || isnewFilterAdded" (discardChanges)="discardChanges()"
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
