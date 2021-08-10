@@ -91,3 +91,9 @@ a { color: black; }
   cursor: pointer !important;
   padding-top: 1rem;
 }
+
+.disabled {
+  text-decoration:none;
+  cursor:default;
+  pointer-events:none;
+}

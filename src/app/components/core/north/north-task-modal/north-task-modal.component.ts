@@ -4,7 +4,7 @@ import {
 import { FormBuilder, NgForm } from '@angular/forms';
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { isEmpty } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 
 import {
   AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService, ServicesApiService
@@ -18,6 +18,7 @@ import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.com
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -26,8 +27,8 @@ import { DocService } from '../../../../services/doc.service';
 })
 export class NorthTaskModalComponent implements OnInit, OnChanges {
   category: any;
-  useProxy: 'true';
-  useFilterProxy: 'true';
+  useProxy = 'true';
+  useFilterProxy = 'true';
 
   enabled: Boolean;
   exclusive: Boolean;
@@ -46,6 +47,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public childConfiguration: any;
   public changedChildConfig = [];
 
+  public newFilters = [];
+  public isnewFilterAdded = false;
+  public filesToUpload = [];
+
   public advanceConfigButtonText = 'Show Advanced Config';
   public isAdvanceConfig = false;
   public btnTxt = '';
@@ -54,7 +59,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @ViewChild('fg', { static: false }) form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
 
-  @Input() task: { task: any };
+  @Input() task: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('taskConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
@@ -125,12 +130,16 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
   }
 
-  public toggleModal(isOpen: Boolean) {
-    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+  closeModel() {
+    if (this.isFilterOrderChanged || this.isFilterDeleted || this.isnewFilterAdded) {
       this.showConfirmationDialog();
       return;
+    } else {
+      this.toggleModal(false);
     }
+  }
 
+  public toggleModal(isOpen: Boolean) {
     const activeFilterTab = <HTMLElement>document.getElementsByClassName('accordion is-active')[0];
     if (activeFilterTab !== undefined) {
       const activeContentBody = <HTMLElement>activeFilterTab.getElementsByClassName('card-content')[0];
@@ -242,12 +251,18 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public saveScheduleFields(form: NgForm) {
-    if (this.isFilterDeleted) {
+    if (this.isnewFilterAdded) {
+      const calls = [];
+      this.newFilters.forEach(f => {
+        calls.push(this.filterService.saveFilter(f));
+      });
+      this.addFilter(calls);
+    } else if (this.isFilterDeleted) {
       this.deleteFilter();
+    } else if (this.isFilterOrderChanged) {
+      this.updateFilterPipeline(this.filterPipeline.map(f => f.name));
     }
-    if (this.isFilterOrderChanged) {
-      this.updateFilterPipeline(this.filterPipeline);
-    }
+
     // 'touched' means the user has entered the form
     // 'dirty' / '!pristine' means the user has made a modification
     if (!form.dirty && !form.touched) {
@@ -260,7 +275,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
     if (this.task['processName'] !== 'north_C') {
       updatePayload.repeat = 0;
-      if(form.controls['repeatTime'].value !== ('None' || undefined)) {
+      if (form.controls['repeatTime'].value !== ('None' || undefined)) {
         updatePayload.repeat = Utils.convertTimeToSec(form.controls['repeatTime'].value, form.controls['repeatDays'].value);
       }
       updatePayload.exclusive = form.controls['exclusive'].value;
@@ -414,16 +429,33 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   openAddFilterModal(isWizard) {
     this.isWizard = isWizard;
-    this.category = '';
-    this.isFilterOrderChanged = false;
-    this.isFilterDeleted = false;
-    this.deletedFilterPipeline = [];
+    // this.category = '';
+    // this.isFilterOrderChanged = false;
+    // this.isFilterDeleted = false;
+    // this.deletedFilterPipeline = [];
   }
 
-  onNotify() {
-    this.getCategory();
+  onNotify(newFilter) {
+    // this.getCategory();
+    // this.isWizard = false;
+    // this.getFilterPipeline();
+    // this.isAdvanceConfig = false;
+    // this.advanceConfigButtonText = 'Show Advanced Config';
+    if (newFilter) {
+      this.isnewFilterAdded = true;
+      if ('script' in newFilter.filter_config) {
+        const key = this.task.name + '_' + newFilter.name;
+        this.filesToUpload.push({ key: key, script: newFilter.filter_config['script'] });
+        newFilter.filter_config = omit(newFilter.filter_config, 'script')
+      }
+      this.newFilters.push(newFilter);
+      this.filterPipeline.push({ name: newFilter.name, isFilterSaved: false })
+    }
+
+    // this.getCategory();
     this.isWizard = false;
-    this.getFilterPipeline();
+    this.useProxy = 'true';
+    // this.getFilterPipeline();
     this.isAdvanceConfig = false;
     this.advanceConfigButtonText = 'Show Advanced Config';
   }
@@ -432,6 +464,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.filterService.getFilterPipeline(this.task['name'])
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline;
+        this.filterPipeline = this.filterPipeline.map(f => ({ name: f, isFilterSaved: true }))
       },
         error => {
           if (error.status === 404) {
@@ -442,18 +475,95 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
   }
 
+  /**
+   * Method to add filter
+   * @param payload  to pass in request
+   */
+  public addFilter(calls) {
+    // to manage added filter locally
+    this.ngProgress.start();
+    forkJoin(calls)
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.isnewFilterAdded = false;
+        this.newFilters = [];
+        data.forEach(d => {
+          this.alertService.success(`${d.filter} filter added successfully.`, true);
+        });
+
+        const pipeline = data.map(d => d.filter);
+        this.addFilterPipeline({ 'pipeline': pipeline });
+      }, error => {
+        this.ngProgress.done();
+        this.isnewFilterAdded = false;
+        this.newFilters = [];
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  public addFilterPipeline(payload) {
+    this.filterService.addFilterPipeline(payload, this.task.name).
+      subscribe(() => {
+        if (!isEmpty(this.filesToUpload)) {
+          this.uploadScript();
+        }
+        // reflect delete or reorder filter changes once add filter complete
+        if (this.isFilterDeleted) {
+          this.deleteFilter();
+        }
+
+        if (this.isFilterOrderChanged) {
+          this.updateFilterPipeline(this.filterPipeline.map(f => f.name));
+        }
+      },
+        error => {
+          this.filesToUpload = [];
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public uploadScript() {
+    this.filesToUpload.forEach((fl: any) => {
+      const file = fl.script[0]['script'];
+      const formData = new FormData();
+      formData.append('script', file);
+      this.configService.uploadFile(fl.key, 'script', formData)
+        .subscribe(() => {
+          this.filesToUpload = [];
+        },
+          error => {
+            this.filesToUpload = [];
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    });
+  }
+
   deleteFilterReference(filter) {
     this.deletedFilterPipeline.push(filter);
-    this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
+    this.filterPipeline = this.filterPipeline.filter(f => f.name !== filter);
     this.isFilterDeleted = true;
+    this.useProxy = 'true';
     this.isFilterOrderChanged = false;
   }
 
-
   deleteFilter() {
     this.isFilterDeleted = false;
+    let pipeline = this.filterPipeline.map(f => f.name);
+    pipeline = pipeline.filter(f => this.deletedFilterPipeline.find(df => df !== f));
     this.ngProgress.start();
-    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.task['name'])
+    this.filterService.updateFilterPipeline({ 'pipeline': pipeline }, this.task['name'])
       .subscribe(() => {
         this.deletedFilterPipeline.forEach((filter, index) => {
           this.filterService.deleteFilter(filter).subscribe((data: any) => {

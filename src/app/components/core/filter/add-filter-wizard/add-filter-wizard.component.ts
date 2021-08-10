@@ -389,13 +389,9 @@ export class AddFilterWizardComponent implements OnInit {
     // final array to hold changed configuration
     let finalConfig = [];
     changedConfig.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload = item.value;
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-        });
-      }
+      finalConfig.push({
+        [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
+      });
     });
 
     // convert finalConfig array in object of objects to pass in add service
@@ -408,19 +404,22 @@ export class AddFilterWizardComponent implements OnInit {
    * @param payload  to pass in request
    */
   public addFilter(payload) {
-    this.filterService.saveFilter(payload)
-      .subscribe(
-        (data: any) => {
-          this.alertService.success(data.filter + ' filter added successfully.', true);
-          this.addFilterPipeline({ 'pipeline': [payload.name] });
-        },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    // to manage added filter locally
+
+    this.notify.emit(payload);
+    // this.filterService.saveFilter(payload)
+    //   .subscribe(
+    //     (data: any) => {
+    //       this.alertService.success(data.filter + ' filter added successfully.', true);
+    //       this.addFilterPipeline({ 'pipeline': [payload.name] });
+    //     },
+    //     (error) => {
+    //       if (error.status === 0) {
+    //         console.log('service down ', error);
+    //       } else {
+    //         this.alertService.error(error.statusText);
+    //       }
+    //     });
   }
 
   public uploadScript() {
@@ -515,8 +514,8 @@ export class AddFilterWizardComponent implements OnInit {
 
   /**
    * Open readthedocs.io documentation of filter plugins
-   * @param selectedPlugin Selected filter plugin 
-   * 
+   * @param selectedPlugin Selected filter plugin
+   *
    */
   goToLink(selectedPlugin: string) {
     const pluginInfo = {
