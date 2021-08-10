@@ -1,24 +1,23 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, QueryList, ViewChildren
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
-
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty, omit } from 'lodash';
-
+import { forkJoin } from 'rxjs';
 import {
-  AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService, ServicesApiService
+  AlertService, ConfigurationService, FilterService, NorthService, ProgressBarService, SchedulesService, ServicesApiService
 } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { DocService } from '../../../../services/doc.service';
-import { forkJoin } from 'rxjs';
+
 
 @Component({
   selector: 'app-north-task-modal',
@@ -429,18 +428,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   openAddFilterModal(isWizard) {
     this.isWizard = isWizard;
-    // this.category = '';
-    // this.isFilterOrderChanged = false;
-    // this.isFilterDeleted = false;
-    // this.deletedFilterPipeline = [];
   }
 
-  onNotify(newFilter) {
-    // this.getCategory();
-    // this.isWizard = false;
-    // this.getFilterPipeline();
-    // this.isAdvanceConfig = false;
-    // this.advanceConfigButtonText = 'Show Advanced Config';
+  onNotify(newFilter:any) {
     if (newFilter) {
       this.isnewFilterAdded = true;
       if ('script' in newFilter.filter_config) {
@@ -452,10 +442,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.filterPipeline.push({ name: newFilter.name, isFilterSaved: false })
     }
 
-    // this.getCategory();
     this.isWizard = false;
     this.useProxy = 'true';
-    // this.getFilterPipeline();
     this.isAdvanceConfig = false;
     this.advanceConfigButtonText = 'Show Advanced Config';
   }

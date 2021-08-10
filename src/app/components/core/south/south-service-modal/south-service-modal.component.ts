@@ -1,16 +1,16 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, ViewChildren, QueryList
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty, omit } from 'lodash';
-
+import { forkJoin } from 'rxjs';
 import {
-  AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
-  ServicesApiService,
-  ProgressBarService,
-  GenerateCsvService
+  AlertService, AssetsService, ConfigurationService, FilterService, GenerateCsvService, ProgressBarService, SchedulesService,
+  ServicesApiService
 } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import {
@@ -20,9 +20,7 @@ import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { DocService } from '../../../../services/doc.service';
-import { forkJoin } from 'rxjs';
+
 
 @Component({
   selector: 'app-south-service-modal',
@@ -54,6 +52,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   assetReadings = [];
   public filterItemIndex;
   public isWizard;
+
   // Object to hold data of south service to delete
   public serviceRecord;
   public selectedFilterPlugin;
@@ -462,10 +461,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   openAddFilterModal(isWizard) {
     this.isWizard = isWizard;
-    // this.category = '';
-    // this.isFilterOrderChanged = false;
-    // this.isFilterDeleted = false;
-    // this.deletedFilterPipeline = [];
   }
 
   onNotify(newFilter) {
@@ -481,16 +476,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.filterPipeline.push({ name: newFilter.name, isFilterSaved: false })
     }
 
-    // this.getCategory();
     this.isWizard = false;
     this.useProxy = 'true';
-    // this.getFilterPipeline();
     this.isAdvanceConfig = false;
     this.advanceConfigButtonText = 'Show Advanced Config';
   }
 
   /**
-   * Method to add filter
+   * Add filter
    * @param payload  to pass in request
    */
   public addFilter(calls) {
