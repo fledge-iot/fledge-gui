@@ -13,16 +13,25 @@ export class PingService {
   private REQUEST_TIMEOUT_INTERVAL = 5000;
   pingIntervalChanged: BehaviorSubject<number> = new BehaviorSubject(0);
   refreshIntervalChanged: BehaviorSubject<number> = new BehaviorSubject(GRAPH_REFRESH_INTERVAL);
+  pingResponse: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   constructor(private http: HttpClient) { }
 
   /**
    *  GET  | /fledge/ping
    */
-  pingService(): Promise<any> {
+   pingService(): Promise<any> {
     return this.http.get(this.GET_PING_URL)
       .pipe(timeout(this.REQUEST_TIMEOUT_INTERVAL))
       .toPromise()
-      .catch(err => Promise.reject(err));
+      .then((res) => {
+        this.pingResponse.next(true);
+        return Promise.resolve(res);
+        })
+      .catch(err => {
+        this.pingResponse.next(false);
+        return Promise.reject(err);
+      }
+      );
   }
 
   /**
