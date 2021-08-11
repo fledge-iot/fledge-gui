@@ -45,6 +45,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public isFilterOrderChanged = false;
   public isFilterDeleted = false;
+  public applicationTagClicked = false;
+
   assetReadings = [];
   public filterItemIndex;
   public isWizard;
@@ -104,6 +106,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public toggleModal(isOpen: Boolean) {
+    this.applicationTagClicked = false;
     if (this.isFilterOrderChanged || this.isFilterDeleted) {
       this.showConfirmationDialog();
       return;
@@ -360,7 +363,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.confirmationDialogData = {
       id: '',
       name: '',
-      message: 'Do you want to discard unsaved changes',
+      message: 'Do you want to discard unsaved changes?',
       key: 'unsavedConfirmation'
     };
     this.filterAlert.toggleModal(true);
@@ -442,8 +445,13 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  openAddFilterModal(isWizard) {
-    this.isWizard = isWizard;
+  openAddFilterModal(isClicked: boolean) {
+    this.applicationTagClicked = isClicked;
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.showConfirmationDialog();
+      return;
+    }
+    this.isWizard = isClicked;
     this.category = '';
     this.isFilterOrderChanged = false;
     this.isFilterDeleted = false;
@@ -587,6 +595,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.isFilterOrderChanged = false;
     this.isFilterDeleted = false;
     this.deletedFilterPipeline = [];
+    if (this.applicationTagClicked) {
+      this.isWizard = this.applicationTagClicked;
+      return;
+    }
     this.toggleModal(false);
   }
 }
