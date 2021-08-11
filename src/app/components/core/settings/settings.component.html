@@ -1,8 +1,8 @@
 <div class="container is-fluid">
   <article class="message is-warning alert-box">
     <div *ngIf="protocol === 'https' && !isPingFailed()" class="message-body">
-      You are trying to connect a Fledge secured with HTTPS, you must provide your own valid TLS certificate for
-      production operation. A self-signed certificate is included within Fledge , and you will need to configure your
+      You are trying to connect an instance secured with HTTPS, you must provide your own valid TLS certificate for
+      production operation. A self-signed certificate is included within Fledge, and you will need to configure your
       browser to
       accept it as valid. To do this, click this <a (click)="openSSLCertWarningPage()"
         class="alert-link"><u>link</u></a> and in that page accept
@@ -59,13 +59,6 @@
               the URL &amp; Restart</button>
             <!-- <button id="test-connection-btn" class="button is-text is-small" (click)="testServiceConnection()">Test Connection</button> -->
             <!-- <button id="discover-fledge-btn" class="button is-text is-small" (click)="openServiceDiscoveryModal()">Discover Fledge Instances</button> -->
-          </div>
-        </div>
-        <div *ngIf="showInsecureConnLink" class="column">
-          <div class="field">
-            <button id="set-url-restart-btn" [disabled]="service_port.invalid"
-              class="button is-text is-pulled-left is-small" (click)="openSSLCertWarningPage()">Continue With Insecure
-              Certificate</button>
           </div>
         </div>
         <ng-container *ngIf="isServiceUp">
