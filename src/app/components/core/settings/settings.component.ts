@@ -28,6 +28,7 @@ export class SettingsComponent implements OnInit {
   isServiceUp = false;
   version;
   scheme; // default protocol
+  showAlertMessage = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -43,6 +44,7 @@ export class SettingsComponent implements OnInit {
       this.scheme = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
         localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
     });
+    this.showAlertToContinueWithInsecureCert();
   }
 
   ngOnInit() {
@@ -87,6 +89,7 @@ export class SettingsComponent implements OnInit {
     localStorage.setItem('CONNECTED_PORT', servicePortField.value);
     this.serviceUrl = this.protocol + '://' + hostField.value + ':'
       + servicePortField.value + '/fledge/';
+    this.showAlertToContinueWithInsecureCert();
   }
 
   public resetEndPoint() {
@@ -125,6 +128,10 @@ export class SettingsComponent implements OnInit {
 
   openSSLCertWarningPage() {
     window.open(`${this.API_URL}ping`, '_blank');
+  }
+
+  showAlertToContinueWithInsecureCert() {
+    this.showAlertMessage = localStorage.getItem('CONNECTED_PROTOCOL') === 'https' && !this.isPingFailed();
   }
 
   isPingFailed() {
