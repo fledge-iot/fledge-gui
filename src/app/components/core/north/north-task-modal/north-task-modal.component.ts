@@ -35,6 +35,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   repeatDays: any;
   name: string;
   isWizard = false;
+  public applicationTagClicked = false;
 
   public filterItemIndex;
   public isFilterOrderChanged = false;
@@ -126,6 +127,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   public toggleModal(isOpen: Boolean) {
+    this.applicationTagClicked = false;
     if (this.isFilterOrderChanged || this.isFilterDeleted) {
       this.showConfirmationDialog();
       return;
@@ -202,7 +204,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.confirmationDialogData = {
       id: '',
       name: '',
-      message: 'Do you want to discard unsaved changes',
+      message: 'Do you want to discard unsaved changes?',
       key: 'unsavedConfirmation'
     };
     this.filterAlert.toggleModal(true);
@@ -412,8 +414,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     return this.filterConfiguration.find(f => f.key === catName);
   }
 
-  openAddFilterModal(isWizard) {
-    this.isWizard = isWizard;
+  openAddFilterModal(isClicked) {
+    this.applicationTagClicked = isClicked;
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.showConfirmationDialog();
+      return;
+    }
+    this.isWizard = isClicked;
     this.category = '';
     this.isFilterOrderChanged = false;
     this.isFilterDeleted = false;
@@ -560,6 +567,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.isFilterOrderChanged = false;
     this.isFilterDeleted = false;
     this.deletedFilterPipeline = [];
+    if (this.applicationTagClicked) {
+      this.isWizard = this.applicationTagClicked;
+      return;
+    }
     this.toggleModal(false);
   }
 }
