@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { assign, reduce, sortBy, isEmpty } from 'lodash';
+import { assign, reduce, sortBy, isEmpty, cloneDeep } from 'lodash';
 
 import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
@@ -391,6 +391,11 @@ export class AddFilterWizardComponent implements OnInit {
       finalConfig.push({
         [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
       });
+     this.configurationData.value.map(c => {
+        const configItem = c[item.key];
+        configItem.value = item.value;
+        return configItem;
+      })
     });
 
     // convert finalConfig array in object of objects to pass in add service
@@ -400,6 +405,7 @@ export class AddFilterWizardComponent implements OnInit {
 
   // notify parent component for the new filter addition
   public addFilter(payload) {
+    payload.config = this.configurationData.value;
     this.notify.emit(payload);
   }
 

@@ -285,7 +285,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
-    console.log('changedConfig', changedConfig);
 
     if (isEmpty(changedConfig)) {
       return;
@@ -298,7 +297,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         [el.key]: el.value !== undefined ? el.value : el.default,
       };
     });
-
     changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
     this.changedChildConfig = changedConfig;
   }
@@ -319,10 +317,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (this.useProxy === 'true') {
       document.getElementById('vci-proxy').click();
     }
-    const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
-    for (const e of <any>el) {
-      e.click();
+
+    if (!this.isnewFilterAdded) {
+      const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
+      for (const e of <any>el) {
+        e.click();
+      }
     }
+
     this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
@@ -466,10 +468,22 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   onNotify(newFilter) {
     if (newFilter) {
       this.isnewFilterAdded = true;
+      const catName = this.service.name + '_' + newFilter.name;
+      this.selectedFilterPlugin = newFilter.plugin;
       if ('script' in newFilter.filter_config) {
-        const key = this.service.name + '_' + newFilter.name;
-        this.filesToUpload.push({ key: key, script: newFilter.filter_config['script'] });
+        let fileReader = new FileReader();
+        fileReader.onload = () => {
+          newFilter.config = newFilter.config.map(c => {
+            c['script'].value = fileReader.result;
+            return c;
+          });
+          this.filterConfiguration.push({ key: catName, 'value': newFilter.config });
+        }
+        fileReader.readAsText(newFilter.filter_config['script'][0]['script']);
+        this.filesToUpload.push({ key: catName, script: newFilter.filter_config['script'] });
         newFilter.filter_config = omit(newFilter.filter_config, 'script')
+      } else {
+        this.filterConfiguration.push({ key: catName, 'value': newFilter.config });
       }
 
       this.newFilters.push(newFilter);
@@ -571,7 +585,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  activeAccordion(id, filterName: string) {
+  activeAccordion(id, filter: any) {
     this.useFilterProxy = 'true';
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
@@ -584,7 +598,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
         nextActiveContentBody.hidden = false;
         next.setAttribute('class', 'accordion card is-active');
-        this.getFilterConfiguration(filterName);
+        this.getFilterConfiguration(filter.name);
       } else {
         last.classList.remove('is-active');
         lastActiveContentBody.hidden = true;
@@ -594,12 +608,15 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
       body.hidden = false;
       element.setAttribute('class', 'accordion card is-active');
-      this.getFilterConfiguration(filterName);
+      this.getFilterConfiguration(filter);
     }
   }
 
-  getFilterConfiguration(filterName: string) {
-    const catName = this.service['name'] + '_' + filterName;
+  getFilterConfiguration(filter: any) {
+    if (!filter.isFilterSaved) {
+      return;
+    }
+    const catName = this.service['name'] + '_' + filter.name;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
         this.filterConfiguration.push({ key: catName, 'value': [data] });

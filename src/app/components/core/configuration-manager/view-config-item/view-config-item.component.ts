@@ -26,6 +26,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @Input() formId = '';
   @Input() pageId = 'page';
   @Input() pluginInfo: any;
+
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
 
   public categoryConfiguration: any;
@@ -184,6 +185,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       this.onConfigChanged.emit(changedConfigValues);
       return;
     }
+
     if (changedConfigValues.length > 0) {
       this.updateConfiguration(this.categoryConfigurationData.key, changedConfigValues);
     }
