@@ -135,9 +135,9 @@ export class SettingsComponent implements OnInit {
   }
 
   /**
-   * Returns false if ping request is failed and if it is passed then, return true
+   * Check client instance is able to ping/connect the server instance for the configured host settings
    */
-   isPingSuccessResponse() {
+   canPing() {
     let pingResponse;
     this.pingService.pingResponse
     .pipe(takeUntil(this.destroy$))
