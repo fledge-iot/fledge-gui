@@ -28,7 +28,11 @@ export class PingService {
         return Promise.resolve(res);
         })
       .catch(err => {
-        this.pingResponse.next(false);
+        if (err.status === 0) {
+          this.pingResponse.next(false);
+        } else {
+          this.pingResponse.next(true);
+        }
         return Promise.reject(err);
       }
       );
