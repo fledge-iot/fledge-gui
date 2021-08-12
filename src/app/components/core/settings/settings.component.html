@@ -1,11 +1,11 @@
 <div class="container is-fluid">
   <article class="message is-warning alert-box">
-    <div *ngIf="showAlertMessage" class="message-body">
+    <div *ngIf="showAlertMessage && !isPingFailed()" class="message-body">
       You are trying to connect an instance secured with HTTPS, you must provide your own valid TLS certificate for
       production operation. A self-signed certificate is included within Fledge, and you will need to configure your
       browser to
       accept it as valid. To do this, click this <a (click)="openSSLCertWarningPage()"
-        class="alert-link"><u>link</u></a> and in that page accept
+        class="alert-link"><u><b>link</b></u></a> and in that page accept
       the certificate.
     </div>
   </article>

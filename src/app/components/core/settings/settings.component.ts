@@ -131,7 +131,7 @@ export class SettingsComponent implements OnInit {
   }
 
   showAlertToContinueWithInsecureCert() {
-    this.showAlertMessage = localStorage.getItem('CONNECTED_PROTOCOL') === 'https' && !this.isPingFailed();
+    this.showAlertMessage = localStorage.getItem('CONNECTED_PROTOCOL') === 'https';
   }
 
   isPingFailed() {
