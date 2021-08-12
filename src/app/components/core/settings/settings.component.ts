@@ -134,7 +134,10 @@ export class SettingsComponent implements OnInit {
     this.showAlertMessage = localStorage.getItem('CONNECTED_PROTOCOL') === 'https';
   }
 
-  isPingFailed() {
+  /**
+   * Returns false if ping request is failed and if it is passed then, return true
+   */
+   isPingSuccessResponse() {
     let pingResponse;
     this.pingService.pingResponse
     .pipe(takeUntil(this.destroy$))
