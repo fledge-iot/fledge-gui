@@ -1,7 +1,7 @@
 ## v1.9.1next [2021-xx-xx]
 
 #### Added
-* [FOGL-5722]: FogLAMP GUI should have an option to run ping against rest API to have browser prompt user to continue with insecure cert [#108](https://github.com/fledge-iot/fledge-gui/pull/108)
+* [FOGL-5722]: FogLAMP GUI should have an option to run ping against REST API to have browser prompt user to continue with insecure cert [#108](https://github.com/fledge-iot/fledge-gui/pull/108)
 
 #### Changed
 
