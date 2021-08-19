@@ -28,7 +28,7 @@ export class PingService {
         return Promise.resolve(res);
         })
       .catch(err => {
-        if (err.status === 0) {
+        if (err.status === 0 || err.status === 404) {
           this.pingResponse.next(false);
         } else {
           this.pingResponse.next(true);
