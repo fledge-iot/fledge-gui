@@ -207,7 +207,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         // If response code is non zero and not undefined, set isAlive and isAuth to true,
         // else set service to down and pingInfo accordingly
-        if (error && error.status && error.status !== 0) {
+        if (error && error.status && !(error.status === 0 || error.status === 404)) {
           this.pingInfo.isAlive = true;
           this.pingInfo.isAuth = true;
         } else {
