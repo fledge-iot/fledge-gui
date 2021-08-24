@@ -1,13 +1,17 @@
 ## v1.9.1next [2021-xx-xx]
 
 #### Added
-* [FOGL-5722]: FogLAMP GUI should have an option to run ping against REST API to have browser prompt user to continue with insecure cert [#108](https://github.com/fledge-iot/fledge-gui/pull/108)
+* [FOGL-5534] Ability to paste into password type fields [#100](https://github.com/fledge-iot/fledge-gui/pull/100)
+* [FOGL-5609]: Script upload feature for South & North plugins having script type configuration [#102](https://github.com/fledge-iot/fledge-gui/pull/102)
+* [FOGL-5722]: Prompt to accept the self-signed TLS certifcate and run ping against the configured Fledge host connection settings over HTTPS [#108](https://github.com/fledge-iot/fledge-gui/pull/108)
 
 #### Changed
+* [FOGL-5480]: Allowed more extensions for Certificate files store [#101](https://github.com/fledge-iot/fledge-gui/pull/101)
 
 #### Fixed
-* [FOGL-5609]: Fixed script upload issue for South & North plugins having script type configuration [#102](https://github.com/fledge-iot/fledge-gui/pull/102)
-* [FOGL-5523]: GUI: Fix/Remove API calls on Save applications when we delete filter and then re-add filter [#106](https://github.com/fledge-iot/fledge-gui/pull/106)
+* [FOGL-5142] Packaging improvements specifically for containerized environment [#105](https://github.com/fledge-iot/fledge-gui/pull/105/files)
+* [FOGL-5523]: Unexpected delete API call for a locally removed and re-added filter & Prompt to discard any local changes or save, while Adding filter through the wizard for South/North instances [#106](https://github.com/fledge-iot/fledge-gui/pull/106)
+* [FOGL-5832]: Ping issue & apperance of login screen, when configured host & port do not refer to a valid Fledge instance [#110](https://github.com/fledge-iot/fledge-gui/pull/110)
 
 
 ## v1.9.1 [2021-05-27]
