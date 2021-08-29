@@ -6,4 +6,8 @@ https://nodejs.org/en/download/
 
 ### Install yarn
 
-`brew install yarn`
+`$ brew install yarn`
+
+OR
+
+`$ sudo npm install --global yarn`
