@@ -1,3 +1,35 @@
+## v1.9.1next [2021-xx-xx]
+
+#### Added
+* [FOGL-5534] Ability to paste into password type fields [#100](https://github.com/fledge-iot/fledge-gui/pull/100)
+* [FOGL-5609] Script upload feature for South/North instances having script type configuration [#102](https://github.com/fledge-iot/fledge-gui/pull/102)
+* [FOGL-5722] Prompt to accept the self-signed TLS certifcate and run ping against the configured Fledge host connection settings over HTTPS [#108](https://github.com/fledge-iot/fledge-gui/pull/108)
+
+#### Changed
+* [FOGL-5480] Allowed more extensions for Certificate files store [#101](https://github.com/fledge-iot/fledge-gui/pull/101)
+
+#### Fixed
+* [FOGL-5142] Packaging improvements, specifically for containerized environment [#105](https://github.com/fledge-iot/fledge-gui/pull/105/files)
+* [FOGL-5523] Unexpected delete API call for a locally removed and re-added filter & Prompt to discard any local changes or save, while adding filter through wizard for South/North instances [#106](https://github.com/fledge-iot/fledge-gui/pull/106)
+* [FOGL-5832] Ping issue & apperance of login screen, when configured host & port do not refer to a valid Fledge instance [#110](https://github.com/fledge-iot/fledge-gui/pull/110)
+
+
+## v1.9.1 [2021-05-27]
+
+#### Added
+* [FOGL-5097]: Added documentation links for online help on various screens (#71, #73, #77)
+* Show refresh icon next to 'add & enable now' link on Notification page (#75)
+* [FOGL-5260]: Added filter to see externally added services logs (#79)
+
+#### Changed
+* [FOGL-4434]: Improvements have been made in the user management screens (#80)
+* [FOGL-5403]: Removed delete option in certificate store page for non-admin user (#88)
+
+#### Fixed
+* [FOGL-5027]: Fixed update schedule issue which was due to time field (#69)
+* Fixed South page to list services sorted by name (#70)
+* [FOGL-5198]: Fixed nested readings data parsing issue for tabular data display & CSV download (#82)
+
 ## v1.9.0 [2021-02-17]
 
 #### Added

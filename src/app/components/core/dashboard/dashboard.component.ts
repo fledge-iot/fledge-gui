@@ -267,7 +267,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   goToLink() {
-    const urlSlug = 'fledge-dashboard'
+    const urlSlug = 'gui.html#fledge-dashboard'
     this.docService.goToViewQuickStartLink(urlSlug);
   }
 

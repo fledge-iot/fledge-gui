@@ -105,7 +105,11 @@
           </div>
           <div *ngIf="plugins.length > 0 && isService === false" class="field is-horizontal form-group">
             <div class="field-label is-normal">
-              <label class="label">Repeat (Interval)</label>
+              <label class="label">Repeat Interval 
+                <span class="tooltip is-tooltip-right" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                  <i class="far fa-xs fa-question-circle"></i>
+                </span>
+              </label>
             </div>
             <div class="field-body">
               <div class="field">

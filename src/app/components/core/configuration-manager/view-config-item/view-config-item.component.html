@@ -10,7 +10,7 @@
           <div class="config-div" *ngIf="configItem.value.readonly != 'true'">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
-                <label class="label tooltip is-tooltip-right is-tooltip-multiline"
+                <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label"
                   [attr.data-tooltip]="configItem.value.description">
                   {{setDisplayName(configItem.value)}}
                 </label>
@@ -45,7 +45,7 @@
                       <div class="control">
                         <input #pwd
                           name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
-                          onPaste="return false" [ngModel]="setConfigValue(configItem.value)"
+                          [ngModel]="setConfigValue(configItem.value)"
                           [attr.maxLength]="configItem?.value?.length" placeholder="password"
                           [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                           (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value, configItem.value.key)"
@@ -66,7 +66,7 @@
                         <div id="confirm-password" class="field has-addons">
                           <div class="control">
                             <input #confirmPwd name="confirm-password" class="input is-fullwidth is-small"
-                              onPaste="return false" type="password" [ngModel]="setConfigValue(confirmPwd.value)"
+                              type="password" [ngModel]="setConfigValue(confirmPwd.value)"
                               [value]='setConfigValue(confirmPwd.value)' [attr.maxLength]="configItem?.value?.length"
                               placeholder="confirm password"
                               [hidden]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"

@@ -14,6 +14,9 @@ export class CreateUserComponent implements OnInit, OnChanges {
   isUpdateForm = false;
   userRole = [];
   selectedRole = 'user'; // set "user" as a default role
+  selectedAuthMethod = 'Any';
+  authMethods = [];
+
   @Input() userRoles: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
@@ -21,13 +24,8 @@ export class CreateUserComponent implements OnInit, OnChanges {
     private alertService: AlertService) { }
 
   ngOnInit() {
-    this.model = {
-      userId: 0,
-      username: '',
-      password: '',
-      confirmPassword: '',
-      role_id: 2   // set "user" as a default role
-    };
+    this.setModel();
+    this.authMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
   }
 
   ngOnChanges(): void {
@@ -44,6 +42,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
     }
     const createUserModal = <HTMLDivElement>document.getElementById('user_modal');
     if (isOpen) {
+      this.setModel();
       createUserModal.classList.add('is-active');
       return;
     }
@@ -56,7 +55,29 @@ export class CreateUserComponent implements OnInit, OnChanges {
     }
   }
 
+  public setModel() {
+    this.model = {
+      userId: 0,
+      username: '',
+      real_name: '',
+      access_method: 'any',
+      password: '',
+      description: '',
+      confirmPassword: '',
+      roleId: 2   // set "user" as a default role
+    };
+  }
+
   public createUser(form: NgForm) {
+    if (form.invalid === true) {
+      return;
+    }
+    if (this.selectedAuthMethod !== 'Certificate' && (this.model.password !== this.model.confirmPassword)) {
+      return;
+    }
+    if (this.selectedAuthMethod === 'Certificate') {
+      delete this.model.password;
+    }
     this.userService.createUser(this.model).
       subscribe(
         (data) => {
@@ -79,12 +100,22 @@ export class CreateUserComponent implements OnInit, OnChanges {
   public resetCreateUserForm(form: NgForm) {
     form.resetForm();
     this.selectedRole = 'user';
+    this.selectedAuthMethod = 'Any';
   }
 
   setRole(role: any) {
     this.selectedRole = role.name;
     const selectedRole = this.userRole.find(r => r.id = role.id);
-    if (role) { this.model.role_id = selectedRole.id; }
+    if (role) { this.model.roleId = selectedRole.id; }
+  }
+
+  setAuthMethod(authMethod: any) {
+    this.selectedAuthMethod = authMethod.text;
+    if (authMethod) { this.model.access_method = authMethod.value; }
+    if (authMethod.value === 'cert') {
+      this.model.password = '';
+      this.model.confirmPassword = '';
+    }
   }
 
   public toggleDropDown(id: string) {

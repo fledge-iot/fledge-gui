@@ -5,7 +5,7 @@ import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 import { Subscription } from 'rxjs';
 
 import { AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
-  ServicesApiService} from '../../../../services';
+  ServicesApiService, ConfigurationService} from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
@@ -36,6 +36,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   public isService = false;
   private subscription: Subscription;
+  private filesToUpload = []
 
   public taskType = 'North';
 
@@ -65,7 +66,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private validateFormService: ValidateFormService,
     private sharedService: SharedService,
     private servicesApiService: ServicesApiService,
-    private docService: DocService
+    private docService: DocService,
+    private configService: ConfigurationService
   ) { }
 
   ngOnInit() {
@@ -314,6 +316,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('North instance added successfully.', true);
+          this.uploadScript();
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -337,6 +340,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
+          this.uploadScript();
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -350,6 +354,27 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         });
   }
 
+  public uploadScript() {
+    this.filesToUpload.forEach(data => {
+      const configItem = data.key;
+      const file = data.value[0].script;
+      const formData = new FormData();
+      formData.append('script', file);
+      this.configService.uploadFile(this.payload.name, configItem, formData)
+        .subscribe(() => {
+          this.filesToUpload = [];
+          this.alertService.success('Script uploaded successfully.');
+        },
+          error => {
+            this.filesToUpload = [];
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    });
+  }
   /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
@@ -373,7 +398,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     matchedConfigCopy.forEach(e => {
       changedConfig.forEach(c => {
         if (e.key === c.key) {
-          e.value = c.value.toString();
+          e.value = c.type === 'script'? c.value : c.value.toString();
         }
       });
     });
@@ -381,9 +406,13 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     // final array to hold changed configuration
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
-      finalConfig.push({
-        [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
-      });
+      if (item.type === 'script') {
+        this.filesToUpload.push(item);
+      } else {
+        finalConfig.push({
+          [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
+        });
+      }
     });
 
     // convert finalConfig array in object of objects to pass in add task

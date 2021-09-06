@@ -7,7 +7,6 @@
     <section *ngIf="filerDialogData" class="modal-card-body">
       {{filerDialogData.message}}
       <span *ngIf="filerDialogData.name != ''" class="has-text-black has-text-weight-semibold">{{filerDialogData.name}}</span>
-      <span>?</span>
     </section>
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
