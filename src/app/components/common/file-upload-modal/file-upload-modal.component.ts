@@ -18,7 +18,7 @@ export class FileUploadModalComponent implements OnInit {
     public ngProgress: ProgressBarService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.toggleModal(false);
+    this.formReset();
   }
 
   ngOnInit() { }
