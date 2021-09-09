@@ -40,6 +40,7 @@ export class FileUploadModalComponent implements OnInit {
         const file = event.target.files[0];
         this.file = file;
       }
+      event.target.value = "";
     }
   }
 
