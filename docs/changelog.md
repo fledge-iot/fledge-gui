@@ -4,7 +4,7 @@
 * [FOGL-5534] Ability to paste into password type fields [#100](https://github.com/fledge-iot/fledge-gui/pull/100)
 * [FOGL-5609] Script upload feature for South/North instances having script type configuration [#102](https://github.com/fledge-iot/fledge-gui/pull/102)
 * [FOGL-5722] Prompt to accept the self-signed TLS certificate and run ping against the configured Fledge host connection settings over HTTPS [#108](https://github.com/fledge-iot/fledge-gui/pull/108)
-* [FOGL-5872] Add backup upload to Fledge GUI [#113](https://github.com/fledge-iot/fledge-gui/pull/113)
+* [FOGL-5872] Ability to upload a backup tarball for Fledge instance [#113](https://github.com/fledge-iot/fledge-gui/pull/113)
 
 #### Changed
 * [FOGL-5480] Allowed more extensions for Certificate files store [#101](https://github.com/fledge-iot/fledge-gui/pull/101)
