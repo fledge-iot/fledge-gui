@@ -1,14 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { interval, Subject } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
-
+import { interval, Subject, Subscription } from 'rxjs';
+import { takeUntil, takeWhile } from 'rxjs/operators';
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, ProgressBarService, SharedService } from '../../../services';
 import { BackupRestoreService } from '../../../services/backup-restore.service';
+import { DocService } from '../../../services/doc.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
-import { DocService } from '../../../services/doc.service';
 import { FileUploadModalComponent } from '../../common/file-upload-modal/file-upload-modal.component';
 
 @Component({
@@ -43,7 +41,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     public ngProgress: ProgressBarService,
     private dateFormatter: DateFormatterPipe,
-    private docService:DocService,
+    private docService: DocService,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
