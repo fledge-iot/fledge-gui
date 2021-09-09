@@ -9,6 +9,7 @@ import { BackupRestoreService } from '../../../services/backup-restore.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { DocService } from '../../../services/doc.service';
+import { FileUploadModalComponent } from '../../common/file-upload-modal/file-upload-modal.component';
 
 @Component({
   selector: 'app-backup-restore',
@@ -33,6 +34,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   viewPort: any = '';
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild(FileUploadModalComponent, { static: true }) fileUploadModal: FileUploadModalComponent;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -160,6 +162,10 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
           }
         }
       );
+  }
+
+  uploadBackup() {
+    this.fileUploadModal.toggleModal(true);
   }
 
   public async downloadBackup(backup): Promise<void> {

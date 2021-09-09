@@ -1,0 +1,32 @@
+<div id="fileUpload" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-6">Upload Backup</p>
+    </header>
+    <section class="modal-card-body">
+      <div class="file has-name is-small is-centered">
+        <label class="file-label">
+          <input class="file-input" type="file" name="resume" (change)="attachBackupFile($event)">
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Choose a file…
+            </span>
+          </span>
+          <span class="file-name">
+            {{fileName}}
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+      <button [disabled]="!fileName || progress || !file"  class="button is-small is-info" (click)="uploadBackup()">Upload</button>
+      <progress *ngIf="progress" class="progress is-small is-primary" max="100">15%</progress>
+    </footer>
+  </div>
+</div>
