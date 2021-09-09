@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AlertService, BackupRestoreService, ProgressBarService } from '../../../services';
 
 @Component({
@@ -32,9 +32,7 @@ export class FileUploadModalComponent implements OnInit {
     modalName.classList.remove('is-active');
   }
 
-
   attachBackupFile(event: any) {
-    console.log('event', event);
     if (event.target.files.length !== 0) {
       const fileName = event.target.files[0].name;
       this.fileName = fileName;
