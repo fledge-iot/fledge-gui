@@ -1,5 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { takeUntil } from 'rxjs/operators';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { AlertService, BackupRestoreService, ProgressBarService } from '../../../services';
 
 @Component({
@@ -9,7 +8,6 @@ import { AlertService, BackupRestoreService, ProgressBarService } from '../../..
 })
 export class FileUploadModalComponent implements OnInit {
 
-  @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   fileName = '';
   file: File = null;
   progress = false;
@@ -35,7 +33,7 @@ export class FileUploadModalComponent implements OnInit {
   }
 
 
-  attachBackupFile(event) {
+  attachBackupFile(event: any) {
     console.log('event', event);
     if (event.target.files.length !== 0) {
       const fileName = event.target.files[0].name;
@@ -76,6 +74,5 @@ export class FileUploadModalComponent implements OnInit {
     this.fileName = '';
     this.file = null;
   }
-
 }
 
