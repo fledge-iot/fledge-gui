@@ -5,17 +5,34 @@
         Backups
       </p>
       <div>
-        <div class="columns is-vcentered">
+        <div class="columns fix-margin">
           <div class="column">
-            <a class="button is-light fix-margin" (click)="requestBackup()">
-              <p *ngIf="viewPort !== 'mobile'">Create New &nbsp;</p>
-              <i class="fa fa-sm fa-file-archive" aria-hidden="true"></i>
-            </a>
-          </div>
-          <div class="column help-pad">
-            <span class="icon is-small tooltip is-tooltip-left is-hovered" data-tooltip="Help" (click)="goToLink()">
-              <i class="far fa-question-circle"></i>
-            </span>
+            <div class="dropdown is-hoverable is-right">
+              <div class="dropdown-trigger">
+                <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
+                  <span class="icon is-small">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item" (click)="requestBackup()">
+                    <i class="far fa-plus-square fa-sm fa-fw" aria-hidden="true"></i>
+                    <span> Create New</span>
+                  </a>
+                  <a class="dropdown-item" (click)="uploadBackup()">
+                    <i class="fas fa-paperclip fa-sm fa-fw" aria-hidden="true"></i>
+                    <span> Upload a Backup</span>
+                  </a>
+                  <hr class="dropdown-divider">
+                  <a class="dropdown-item" (click)="goToLink()">
+                    <i class="far fa-question-circle fa-sm fa-fw"></i>
+                    <span> Help</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -75,4 +92,5 @@
   </div>
   <app-alert-dialog (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)'
     (deleteBackup)='deleteBackup($event)' [childData]='childData'></app-alert-dialog>
-</div>
+    <app-file-upload-modal></app-file-upload-modal>
+  </div>
