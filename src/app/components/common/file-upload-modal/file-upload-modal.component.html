@@ -6,21 +6,8 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body">
-      <div class="container" appDnd (fileDropped)="onFileDropped($event)">
-        <input type="file" #fileDropRef id="fileDropRef" multiple (change)="fileBrowseHandler($event.target.files)" />
-        <span class="file-cta">
-          <span class="file-icon">
-            <i class="fas fa-upload"></i>
-          </span>
-          <span class="file-label">
-            Choose a file…
-          </span>
-        </span>
-        <h3>Drag and drop file here</h3>
-        <h3>or</h3>
-        <label for="fileDropRef">Browse for file</label>
-      </div>
-      <!-- <div class="file has-name is-boxed is-small is-centered">
+      <div class="file has-name is-boxed is-small is-centered"
+      (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
         <label class="file-label">
           <input class="file-input" type="file" (change)="attachBackupFile($event)">
           <span class="file-cta">
@@ -28,20 +15,19 @@
               <i class="fas fa-upload"></i>
             </span>
             <span class="file-label">
-              Choose a file…
+              Browse/Drag & drop file
             </span>
           </span>
           <span class="file-name">
             {{fileName}}
           </span>
         </label>
-      </div> -->
+      </div>
     </section>
 
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="formReset()">Cancel</button>
-      <button [disabled]="!fileName || progress || !file" class="button is-small is-info"
-        (click)="uploadBackup()">Upload</button>
+      <button [disabled]="!fileName || progress || !file"  class="button is-small is-info" (click)="uploadBackup()">Upload</button>
       <progress *ngIf="progress" class="progress is-small is-primary" max="100"></progress>
     </footer>
   </div>

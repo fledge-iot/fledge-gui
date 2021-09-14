@@ -33,15 +33,31 @@ export class FileUploadModalComponent implements OnInit {
   }
 
   attachBackupFile(event: any) {
-    if (event.target.files.length !== 0) {
-      const fileName = event.target.files[0].name;
+    this.onFileChange(event.target.files);
+    event.target.value = "";
+  }
+
+  // Read file
+  onFileChange(files: File[]) {
+    if (files.length !== 0) {
+      const fileName = files[0].name;
       this.fileName = fileName;
-      if (event.target.files.length > 0) {
-        const file = event.target.files[0];
+      if (files.length > 0) {
+        const file = files[0];
         this.file = file;
       }
-      event.target.value = "";
     }
+  }
+
+  // File drag
+  onDragOver(event: any) {
+    event.preventDefault();
+  }
+
+  // File drop success
+  onDropSuccess(event) {
+    event.preventDefault();
+    this.onFileChange(event.dataTransfer.files);
   }
 
   uploadBackup() {
