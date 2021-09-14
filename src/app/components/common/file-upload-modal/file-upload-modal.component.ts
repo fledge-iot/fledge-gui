@@ -56,8 +56,8 @@ export class FileUploadModalComponent implements OnInit {
           this.formReset();
         },
         error => {
-          this.ngProgress.done();
           this.progress = false;
+          this.ngProgress.done();
           this.formReset();
           if (error.status === 0) {
             console.log('service down ', error);

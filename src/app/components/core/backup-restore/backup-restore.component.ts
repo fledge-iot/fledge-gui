@@ -1,3 +1,4 @@
+import { orderBy } from 'lodash';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil, takeWhile } from 'rxjs/operators';
@@ -35,6 +36,8 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   @ViewChild(FileUploadModalComponent, { static: true }) fileUploadModal: FileUploadModalComponent;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+
+  ascSort = false;
 
   constructor(private backupRestoreService: BackupRestoreService,
     private alertService: AlertService,
@@ -80,6 +83,21 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     this.child.toggleModal(true);
   }
 
+  sort() {
+    this.ascSort = !this.ascSort;
+    this.sortBackups();
+  }
+
+  sortBackups() {
+    if(this.ascSort) {
+      // For ascending sort
+      this.backupData = this.backupData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    } else {
+      // For descending sort
+      this.backupData = this.backupData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }
+  }
+
 
   public getBackup() {
     this.backupRestoreService.get()
@@ -87,6 +105,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.backupData = data['backups'];
+          this.sortBackups();
           this.hideLoadingSpinner();
         },
         error => {

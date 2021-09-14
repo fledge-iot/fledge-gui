@@ -52,7 +52,13 @@
           <table class="table is-hoverable is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
             <thead>
               <tr>
-                <th>Date &amp; Time</th>
+                <th>
+                  <div id="sort-order" (click)="sort()">
+                    Date &amp; Time
+                    <i *ngIf="ascSort" #asc class="fas fa-caret-up" aria-hidden="true"></i>
+                    <i *ngIf="!ascSort" #desc class="fas fa-caret-down" aria-hidden="true"></i>
+                  </div>
+                </th>
                 <th>Status</th>
                 <th></th>
                 <th></th>
@@ -92,5 +98,5 @@
   </div>
   <app-alert-dialog (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)'
     (deleteBackup)='deleteBackup($event)' [childData]='childData'></app-alert-dialog>
-    <app-file-upload-modal></app-file-upload-modal>
-  </div>
+  <app-file-upload-modal></app-file-upload-modal>
+</div>
