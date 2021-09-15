@@ -18,4 +18,12 @@ export class ProgressBarService {
   done() {
     this.progressRef.complete();
   }
+
+  set(n?:number) {
+    this.progressRef.set(n);
+  }
+
+  inc(amount?:number) {
+    this.progressRef.inc(amount);
+  }
 }
