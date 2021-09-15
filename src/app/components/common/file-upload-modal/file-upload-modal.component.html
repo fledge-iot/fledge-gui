@@ -6,7 +6,8 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body">
-      <div class="file has-name is-boxed is-small is-centered">
+      <div class="file has-name is-boxed is-small is-centered"
+      (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
         <label class="file-label">
           <input class="file-input" type="file" (change)="attachBackupFile($event)">
           <span class="file-cta">
@@ -14,7 +15,7 @@
               <i class="fas fa-upload"></i>
             </span>
             <span class="file-label">
-              Choose a file…
+              Browse/Drag & drop the backup tarball
             </span>
           </span>
           <span class="file-name">

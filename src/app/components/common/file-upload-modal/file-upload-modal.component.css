@@ -1,3 +1,7 @@
 .modal-card-body {
   padding: 2rem 1.5rem;
 }
+
+.file-name {
+  max-width: 20rem !important;
+}
