@@ -83,8 +83,10 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   }
 
   sort() {
-    this.ascSort = !this.ascSort;
-    this.sortBackups();
+    if (this.backupData.length > 1) {
+      this.ascSort = !this.ascSort;
+      this.sortBackups();
+    }
   }
 
   sortBackups() {
@@ -171,7 +173,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
           // Remove from local array of backups
           this.backupData = this.backupData.filter(b => b.id !== id);
           // reset sort to default
-          if(this.backupData.length === 1){
+          if (this.backupData.length === 1) {
             this.ascSort = false;
           }
         },
