@@ -53,13 +53,17 @@
             <thead>
               <tr>
                 <th>
-                  <div id="sort-order" (click)="sort()">
+                  <div [ngClass]="{'sort-order': backupData.length > 1}"  (click)="sort()">
                     Date &amp; Time
-                    <i *ngIf="ascSort" #asc class="fas fa-caret-up" aria-hidden="true"></i>
-                    <i *ngIf="!ascSort" #desc class="fas fa-caret-down" aria-hidden="true"></i>
+                    <ng-container *ngIf="backupData.length > 1">
+                      <i *ngIf="!ascSort" #desc class="fas fa-caret-down" aria-hidden="true"></i>
+                      <i *ngIf="ascSort" #asc class="fas fa-caret-up" aria-hidden="true"></i>
+                    </ng-container>
                   </div>
                 </th>
-                <th>Status</th>
+                <th>
+                  Status
+                </th>
                 <th></th>
                 <th></th>
                 <th></th>

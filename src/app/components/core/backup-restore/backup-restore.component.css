@@ -19,7 +19,7 @@
   cursor: pointer !important;
 }
 
-#sort-order {
+.sort-order {
   display: inline-block;
   cursor: pointer !important;
 }

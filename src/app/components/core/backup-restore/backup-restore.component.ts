@@ -1,4 +1,3 @@
-import { orderBy } from 'lodash';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil, takeWhile } from 'rxjs/operators';
@@ -89,7 +88,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   }
 
   sortBackups() {
-    if(this.ascSort) {
+    if (this.ascSort) {
       // For ascending sort
       this.backupData = this.backupData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     } else {
@@ -98,14 +97,15 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     }
   }
 
-
   public getBackup() {
     this.backupRestoreService.get()
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
           this.backupData = data['backups'];
-          this.sortBackups();
+          if (this.backupData.length > 1) {
+            this.sortBackups();
+          }
           this.hideLoadingSpinner();
         },
         error => {
@@ -160,7 +160,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       );
   }
 
-  public deleteBackup(id) {
+  public deleteBackup(id: any) {
     this.ngProgress.start();
     this.backupRestoreService.deleteBackup(id)
       .pipe(takeUntil(this.destroy$))
@@ -168,7 +168,12 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
         (data) => {
           this.ngProgress.done();
           this.alertService.success(data['message']);
-          this.getBackup();
+          // Remove from local array of backups
+          this.backupData = this.backupData.filter(b => b.id !== id);
+          // reset sort to default
+          if(this.backupData.length === 1){
+            this.ascSort = false;
+          }
         },
         error => {
           this.ngProgress.done();
