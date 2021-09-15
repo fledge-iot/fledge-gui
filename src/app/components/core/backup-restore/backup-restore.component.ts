@@ -83,19 +83,19 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   }
 
   sort() {
-    if (this.backupData.length > 1) {
-      this.ascSort = !this.ascSort;
-      this.sortBackups();
-    }
+    this.ascSort = !this.ascSort;
+    this.sortBackups();
   }
 
   sortBackups() {
-    if (this.ascSort) {
-      // For ascending sort
-      this.backupData = this.backupData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    } else {
-      // For descending sort
-      this.backupData = this.backupData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    if (this.backupData.length > 1) {
+      if (this.ascSort) {
+        // For ascending sort
+        this.backupData = this.backupData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      } else {
+        // For descending sort
+        this.backupData = this.backupData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      }
     }
   }
 
@@ -105,9 +105,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.backupData = data['backups'];
-          if (this.backupData.length > 1) {
-            this.sortBackups();
-          }
+          this.sortBackups();
           this.hideLoadingSpinner();
         },
         error => {
