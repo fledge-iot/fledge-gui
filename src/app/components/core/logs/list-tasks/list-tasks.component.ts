@@ -15,7 +15,7 @@ export class ListTasksComponent implements OnInit, OnDestroy {
   public tasksData = [];
   public refreshInterval = POLLING_INTERVAL;
   private REQUEST_TIMEOUT_INTERVAL = 5000;
-  private isAlive: boolean;
+  isAlive: boolean;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -105,6 +105,17 @@ export class ListTasksComponent implements OnInit, OnDestroy {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  toggleAutoRefresh(event:any) {
+    this.isAlive = event.target.checked;
+    if(this.isAlive) {
+      interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getLatestTasks();
+      });
+    }
   }
 
   public ngOnDestroy(): void {

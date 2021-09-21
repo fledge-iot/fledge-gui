@@ -1,8 +1,17 @@
 <div class="container is-fluid">
   <div class="card">
     <header class="card-header">
-      <div id="card-title" class="card-content">
-        <p class="card-header-title">Tasks</p>
+      <div class="card-header-title">
+        <span>Tasks</span>
+        <button *ngIf="!isAlive" (click)="getLatestTasks()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="fix-pad auto-refresh">
+        <label class="checkbox">
+          <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
+          Auto Refresh
+        </label>
       </div>
     </header>
     <div class="card-content">
