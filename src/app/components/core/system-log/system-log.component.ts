@@ -267,8 +267,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.getSchedules();
       });
     }
-
-
   }
 
   public ngOnDestroy(): void {

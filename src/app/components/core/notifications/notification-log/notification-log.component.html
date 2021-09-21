@@ -1,13 +1,25 @@
 <div class="container is-fluid">
   <div class="card">
     <header class="card-header">
-      <div id="card-title" class="card-content">
+      <div class="card-header-title">
+        <span>Notification Logs</span>
+        <button *ngIf="!isAlive" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="fix-pad auto-refresh">
+        <label class="checkbox">
+          <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
+          Auto Refresh
+        </label>
+      </div>
+      <!-- <div id="card-title" class="card-content">
         <p class="card-header-title">Notification Logs
           <button *ngIf="!isAlive" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </p>
-      </div>
+      </div> -->
     </header>
     <div class="card-content">
       <div class="content">
@@ -95,7 +107,7 @@
       </ng-container>
       <ng-template #no_matching_entry>
         <div class="card-content">
-          <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No Matching Log Entry Found</small></div>
+          <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No matching log entries found.</small></div>
         </div>
       </ng-template>
       <ng-template #no_data_div>

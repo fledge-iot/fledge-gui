@@ -1,12 +1,17 @@
 <div class="container is-fluid">
   <div class="card">
     <header class="card-header">
-      <div id="card-title" class="card-content">
-        <p class="card-header-title">System Logs
-          <button *ngIf="!isAlive" (click)="getSysLogs()" class="button is-small" id="refresh-check">
-            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-          </button>
-        </p>
+      <div class="card-header-title">
+        <span>System Logs</span>
+        <button *ngIf="!isAlive" (click)="getSysLogs()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="fix-pad auto-refresh">
+        <label class="checkbox">
+          <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
+          Auto Refresh
+        </label>
       </div>
     </header>
     <div class="card-content">
@@ -75,15 +80,6 @@
             <input type="search" class="input is-fullwidth is-small" placeholder="search text on current page"
               [(ngModel)]="searchTerm" />
           </div>
-          <div class="column is-2">
-            <div class="auto-refresh">
-              <label class="checkbox">
-                <input type="checkbox" [checked]='isAlive'
-                (click)="toggleAutoRefresh($event)">
-                Auto Refresh
-              </label>
-            </div>
-          </div>
         </div>
       </div>
       <ng-container *ngFor="let log of logs | SearchPipe:searchTerm">
@@ -100,8 +96,7 @@
     </ng-container>
     <ng-template #no_data_div>
       <div class="card-content">
-        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No Matching Log Entry
-            Found</small></div>
+        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No matching log entries found.</small></div>
       </div>
     </ng-template>
   </div>
