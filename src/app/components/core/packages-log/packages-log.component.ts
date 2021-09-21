@@ -20,7 +20,6 @@ export class PackagesLogComponent implements OnInit, OnDestroy {
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
-
   constructor(private packagesLogService: PackagesLogService,
     private ngProgress: ProgressBarService,
     private alertService: AlertService,
