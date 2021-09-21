@@ -26,3 +26,10 @@
 #card-title {
   padding: 0.75rem 1.5rem;
 }
+
+.auto-refresh {
+  margin-top: 33px;
+  font-size: .75rem;
+  color: #363636;
+  font-weight: 700;
+}

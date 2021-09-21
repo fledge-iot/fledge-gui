@@ -72,7 +72,17 @@
           </div>
           <div class="column">
             <label class="label is-small">Search</label>
-            <input type="search" class="input is-fullwidth is-small" placeholder="search text on current page" [(ngModel)]="searchTerm" />
+            <input type="search" class="input is-fullwidth is-small" placeholder="search text on current page"
+              [(ngModel)]="searchTerm" />
+          </div>
+          <div class="column is-2">
+            <div class="auto-refresh">
+              <label class="checkbox">
+                <input type="checkbox" [checked]='isAlive'
+                (click)="toggleAutoRefresh($event)">
+                Auto Refresh
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -90,7 +100,8 @@
     </ng-container>
     <ng-template #no_data_div>
       <div class="card-content">
-        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No Matching Log Entry Found</small></div>
+        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No Matching Log Entry
+            Found</small></div>
       </div>
     </ng-template>
   </div>
