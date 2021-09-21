@@ -84,8 +84,11 @@ fi
 version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
 BUILD_ROOT="${GIT_ROOT}/packages/build"
 
+# Get git info
+git_tag_info=$(git describe --tags) && commit_count=$(echo ${git_tag_info} | cut -d- -f2)
+
 # Final package name
-package_name="fledge-gui-${version}"
+package_name="fledge-gui-${version}-${commit_count}"
 
 # Print the summary of findings
 echo "The package root directory is         : ${GIT_ROOT}"
@@ -120,7 +123,7 @@ mkdir "${package_name}"
 echo -n "Populating the package and updating version file..."
 cd "${package_name}"
 cp -R ${GIT_ROOT}/packages/Debian/* .
-sed -i "s/Version: 0.0.0/Version: ${version}/g" DEBIAN/control
+sed -i "s/Version: 0.0.0/Version: ${git_tag_info:1}/g" DEBIAN/control
 echo "Done."
 
 
