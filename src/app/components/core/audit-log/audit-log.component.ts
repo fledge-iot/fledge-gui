@@ -235,6 +235,17 @@ export class AuditLogComponent implements OnInit, OnDestroy {
         });
   }
 
+  toggleAutoRefresh(event:any) {
+    this.isAlive = event.target.checked;
+    if(this.isAlive) {
+      interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getAuditLogs(true);
+      });
+    }
+  }
+
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.destroy$.next(true);
