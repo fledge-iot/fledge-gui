@@ -1,43 +1,71 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertService, PackagesLogService, ProgressBarService } from '../../../services';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AlertService, PackagesLogService, PingService, ProgressBarService } from '../../../services';
 import { sortBy } from 'lodash';
 import { ViewLogsComponent } from './view-logs/view-logs.component';
+import { POLLING_INTERVAL } from '../../../utils';
+import { interval, Subject } from 'rxjs';
+import { takeUntil, takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-packages-log',
   templateUrl: './packages-log.component.html',
   styleUrls: ['./packages-log.component.css']
 })
-export class PackagesLogComponent implements OnInit {
+export class PackagesLogComponent implements OnInit, OnDestroy {
   public logList = [];
 
   @ViewChild(ViewLogsComponent, { static: false }) viewLogsModal: ViewLogsComponent;
 
+  public isAlive: boolean;
+  public refreshInterval = POLLING_INTERVAL;
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
+
   constructor(private packagesLogService: PackagesLogService,
     private ngProgress: ProgressBarService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private ping: PingService) {
+    this.isAlive = true;
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.refreshInterval = timeInterval;
+      });
+  }
 
   ngOnInit() {
     this.getPackagesLog();
+    interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getPackagesLog(true);
+      });
   }
 
-  public getPackagesLog() {
+  public getPackagesLog(autoRefresh = false) {
     /** request start */
-    this.ngProgress.start();
+    if (autoRefresh === false) {
+      this.ngProgress.start();
+    }
     this.packagesLogService.getPackageLogs().
-    subscribe(
-      (data) => {
-        this.ngProgress.done();
-        this.logList = sortBy(data['logs'], (obj) => obj.timestamp).reverse();
-      },
-      error => {
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+      subscribe(
+        (data) => {
+          if (autoRefresh === false) {
+            this.ngProgress.done();
+          }
+          this.logList = sortBy(data['logs'], (obj) => obj.timestamp).reverse();
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   public async downloadLogs(logLink: string): Promise<void> {
@@ -66,6 +94,23 @@ export class PackagesLogComponent implements OnInit {
    */
   onNotify() {
     this.getPackagesLog();
+  }
+
+  toggleAutoRefresh(event:any) {
+    this.isAlive = event.target.checked;
+    if(this.isAlive) {
+      interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getPackagesLog(true);
+      });
+    }
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
 }
