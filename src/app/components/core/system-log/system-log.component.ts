@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
@@ -21,6 +21,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
+  private subscription: Subscription;
 
   page = 1;
   recordCount = 0;
@@ -47,7 +48,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getSysLogs();
     this.getSchedules();
-    interval(this.refreshInterval)
+    this.subscription =  interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getSysLogs(true);
@@ -257,21 +258,35 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         });
   }
 
-  toggleAutoRefresh(event:any) {
+  toggleAutoRefresh(event: any) {
     this.isAlive = event.target.checked;
-    if(this.isAlive) {
-      interval(this.refreshInterval)
+
+    // clear interval subscription before initializing it again
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
+    /**
+     * Set refresh interval to default if Auto Refresh checked and
+     * pingInterval is set to manual on settings page
+     * */
+    if (this.isAlive && this.refreshInterval === -1) {
+      this.refreshInterval = POLLING_INTERVAL;
+    }
+
+    // start auto refresh
+    this.subscription = interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getSysLogs(true);
         this.getSchedules();
       });
-    }
   }
 
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+    this.subscription.unsubscribe();
   }
 }

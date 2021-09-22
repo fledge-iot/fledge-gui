@@ -3,7 +3,7 @@ import { AlertService, PackagesLogService, PingService, ProgressBarService } fro
 import { sortBy } from 'lodash';
 import { ViewLogsComponent } from './view-logs/view-logs.component';
 import { POLLING_INTERVAL } from '../../../utils';
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil, takeWhile } from 'rxjs/operators';
 
 @Component({
@@ -19,6 +19,7 @@ export class PackagesLogComponent implements OnInit, OnDestroy {
   public isAlive: boolean;
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
+  private subscription: Subscription;
 
   constructor(private packagesLogService: PackagesLogService,
     private ngProgress: ProgressBarService,
@@ -37,7 +38,7 @@ export class PackagesLogComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getPackagesLog();
-    interval(this.refreshInterval)
+    this.subscription = interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getPackagesLog(true);
@@ -95,21 +96,32 @@ export class PackagesLogComponent implements OnInit, OnDestroy {
     this.getPackagesLog();
   }
 
-  toggleAutoRefresh(event:any) {
+  toggleAutoRefresh(event: any) {
     this.isAlive = event.target.checked;
-    if(this.isAlive) {
-      interval(this.refreshInterval)
+    // clear interval subscription before initializing it again
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
+    /**
+     * Set refresh interval to default if Auto Refresh checked and
+     * pingInterval is set to manual on settings page
+     * */
+    if (this.isAlive && this.refreshInterval === -1) {
+      this.refreshInterval = POLLING_INTERVAL;
+    }
+    this.subscription = interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getPackagesLog(true);
       });
-    }
   }
 
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+    this.subscription.unsubscribe();
   }
 
 }
