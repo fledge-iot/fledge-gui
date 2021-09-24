@@ -9,6 +9,7 @@ import { PipesModule } from '../../../pipes/pipes.module';
 import { BackupRestoreComponent } from './backup-restore.component';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { DateFormatterPipe } from '../../../pipes';
+import { FileUploadModalComponent } from '../../common/file-upload-modal/file-upload-modal.component';
 
 const routes: Routes = [
   {
@@ -20,7 +21,8 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    BackupRestoreComponent
+    BackupRestoreComponent,
+    FileUploadModalComponent
   ],
   imports: [
     FormsModule,

@@ -17,7 +17,7 @@ export class BackupRestoreService {
   public get() {
     return this.http.get(this.BACKUP_URL).pipe(
       map(response => response),
-    catchError(error => throwError(error)));
+      catchError(error => throwError(error)));
   }
 
   /**
@@ -47,12 +47,19 @@ export class BackupRestoreService {
       catchError(error => throwError(error)));
   }
 
-
   public async downloadBackup(id): Promise<Blob> {
     const file = await this.http.get<Blob>(
       this.BACKUP_URL + '/' + id + '/download',
       { responseType: 'blob' as 'json' }).toPromise();
     return file;
+  }
+
+  public uploadBackup(file: File, fileName: string) {
+    const formData = new FormData();
+    formData.append('filename', file, fileName);
+    return this.http.post(`${this.BACKUP_URL}/upload`, formData).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
   }
 }
 

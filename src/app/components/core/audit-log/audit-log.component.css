@@ -11,14 +11,27 @@ table tbody {
 .card { overflow: visible;}
 .card-content { overflow: visible; }
 
-.card-header-title {
-  padding: unset;
-}
-
-#card-title {
-  padding: 0.75rem 1.5rem;
-}
-
 .dropdown-trigger > .button {
   width: 60%;
 }
+
+.card-header-title {
+  padding: 0.75rem 1.5rem;
+  max-height: 48px !important;
+}
+
+#refresh-check {
+  margin-left: 3px;
+}
+
+.auto-refresh {
+  margin-right: 30px;
+  font-size: 0.75rem;
+  color: #363636;
+  font-weight: 700;
+}
+
+.checkmark {
+  vertical-align: middle !important;
+}
+
