@@ -79,27 +79,27 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 8.2.12         |        8.2.12         | MIT
- Angular CLI  | 8.3.14         |        8.3.14          | MIT
- TypeScript   | 3.5.3         |        3.6.3          | Apache 2.0
- rxjs         | 6.5.2         |        6.5.2          | Apache 2.0
- Bulma css    | 0.8.2         |        0.8.2          | MIT
+ Angular      | 8.2.12        |        12.2.7         | MIT
+ Angular CLI  | 8.3.14        |        12.2.7         | MIT
+ TypeScript   | 3.5.3         |        4.4.3          | Apache 2.0
+ rxjs         | 6.5.2         |        7.3.0          | Apache 2.0
+ Bulma css    | 0.8.2         |        0.9.3          | MIT
 
 #### Dev
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
-chart.js         |  2.8.0        |        2.8.0          | MIT
-core-js          |  3.3.3        |        3.3.3          | MIT
-ng-sidebar       |  8.0.0        |        8.0.0          | MIT
-moment           |  2.24.0       |        2.24.0         | MIT
-@ngx-progressbar/core  |  5.3.2        |        5.3.2          | MIT
-protractor-beautiful-reporter |  1.2.8       |  1.2.8                | MIT
+chart.js         |  2.8.0        |        3.5.1          | MIT
+core-js          |  3.3.3        |        3.18.1         | MIT
+ng-sidebar       |  8.0.0        |        9.4.2          | MIT
+moment           |  2.24.0       |        2.29.1         | MIT
+@ngx-progressbar/core  |  5.3.2        |        6.1.1          | MIT
+protractor-beautiful-reporter |  1.2.8       |  1.3.3                | MIT
 node-git-describe | 4.0.4     | 4.0.4        | MIT
-plotly.js         | 1.50.1    | 1.50.1       | MIT
-@ctrl/ngx-codemirror | 2.2.0    | 2.2.0     | MIT
-codemirror    | 5.49.2 | 5.49.2 | MIT
-jsonlint-mod  | 1.7.5  | 1.7.5  | MIT
-@ng-select/ng-select | 3.3.0 | 3.3.0 | MIT
+plotly.js         | 1.50.1    | 2.5.1       | MIT
+@ctrl/ngx-codemirror | 2.2.0    | 5.0.1     | MIT
+codemirror    | 5.49.2 | 5.63.0 | MIT
+jsonlint-mod  | 1.7.5  | 1.7.6  | MIT
+@ng-select/ng-select | 3.3.0 | 7.3.0 | MIT
 
 ## Update Dependencies
 * `npm update`: By running this command, npm checks if there exist newer versions in the repository that satisfy specified semantic versioning ranges and installs them.
