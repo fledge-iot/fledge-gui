@@ -83,7 +83,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     const fieldValue: string = event.target.value;
     if (fieldValue.trim().match(this.regExp)) {
       this.form.controls[fieldName].setErrors(null);
-      this.form.patchValue({ fieldName: fieldValue });
+      this.form.controls[fieldName].patchValue(fieldValue);
     } else {
       this.form.controls[fieldName].setErrors({ invalid: true });
     }
