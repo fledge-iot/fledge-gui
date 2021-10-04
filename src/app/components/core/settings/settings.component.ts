@@ -3,6 +3,9 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { PingService, SharedService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
 import { ServiceDiscoveryComponent } from '../service-discovery';
+import { environment } from '../../../../environments/environment';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-settings',
@@ -14,6 +17,7 @@ export class SettingsComponent implements OnInit {
   @Input() navbarComponent: NavbarComponent;
   @ViewChild(ServiceDiscoveryComponent, { static: true }) serviceDiscoveryModal: ServiceDiscoveryComponent;
 
+  API_URL = environment.BASE_URL;
   protocol = 'http'; // default protocol
   host;
   servicePort;
@@ -24,6 +28,9 @@ export class SettingsComponent implements OnInit {
   isServiceUp = false;
   version;
   scheme; // default protocol
+  showAlertMessage = false;
+
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private pingService: PingService, private sharedService: SharedService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
@@ -37,6 +44,7 @@ export class SettingsComponent implements OnInit {
       this.scheme = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
         localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
     });
+    this.showAlertToContinueWithInsecureCert();
   }
 
   ngOnInit() {
@@ -81,6 +89,7 @@ export class SettingsComponent implements OnInit {
     localStorage.setItem('CONNECTED_PORT', servicePortField.value);
     this.serviceUrl = this.protocol + '://' + hostField.value + ':'
       + servicePortField.value + '/fledge/';
+    this.showAlertToContinueWithInsecureCert();
   }
 
   public resetEndPoint() {
@@ -115,5 +124,26 @@ export class SettingsComponent implements OnInit {
     this.refreshInterval = time;
     localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
     this.pingService.refreshIntervalChanged.next(+time);
+  }
+
+  openSSLCertWarningPage() {
+    window.open(`${this.API_URL}ping`, '_blank');
+  }
+
+  showAlertToContinueWithInsecureCert() {
+    this.showAlertMessage = localStorage.getItem('CONNECTED_PROTOCOL') === 'https';
+  }
+
+  /**
+   * Check client instance is able to ping/connect the server instance for the configured host settings
+   */
+   canPing() {
+    let pingResponse;
+    this.pingService.pingResponse
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res) => {
+      pingResponse = res;
+    });
+    return pingResponse;
   }
 }

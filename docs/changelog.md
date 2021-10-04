@@ -1,3 +1,21 @@
+## v1.9.2 [2021-09-29]
+
+#### Added
+* [FOGL-5534] Ability to paste into password type fields [#100](https://github.com/fledge-iot/fledge-gui/pull/100)
+* [FOGL-5609] Script upload feature for South/North instances having script type configuration [#102](https://github.com/fledge-iot/fledge-gui/pull/102)
+* [FOGL-5722] Prompt to accept the self-signed TLS certificate and run ping against the configured Fledge host connection settings over HTTPS [#108](https://github.com/fledge-iot/fledge-gui/pull/108)
+* [FOGL-5872] Ability to upload a backup tarball for Fledge instance [#113](https://github.com/fledge-iot/fledge-gui/pull/113)
+* [FOGL-5900]: Ability to have more granular control for auto refresh on log pages, for better filtering, search and text selection/copy experience
+
+#### Changed
+* [FOGL-5480] Allowed more extensions for Certificate files store [#101](https://github.com/fledge-iot/fledge-gui/pull/101)
+
+#### Fixed
+* [FOGL-5142] Packaging improvements, specifically for containerized environment [#105](https://github.com/fledge-iot/fledge-gui/pull/105/files)
+* [FOGL-5523] Unexpected delete API call for a locally removed and re-added filter & Prompt to discard any local changes or save, while adding filter through wizard for South/North instances [#106](https://github.com/fledge-iot/fledge-gui/pull/106)
+* [FOGL-5832] Ping issue & apperance of login screen, when configured host & port do not refer to a valid Fledge instance [#110](https://github.com/fledge-iot/fledge-gui/pull/110)
+
+
 ## v1.9.1 [2021-05-27]
 
 #### Added

@@ -1,14 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { interval, Subject } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
-
+import { interval, Subject, Subscription } from 'rxjs';
+import { takeUntil, takeWhile } from 'rxjs/operators';
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, ProgressBarService, SharedService } from '../../../services';
 import { BackupRestoreService } from '../../../services/backup-restore.service';
+import { DocService } from '../../../services/doc.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
-import { DocService } from '../../../services/doc.service';
+import { FileUploadModalComponent } from '../../common/file-upload-modal/file-upload-modal.component';
 
 @Component({
   selector: 'app-backup-restore',
@@ -33,15 +32,18 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   viewPort: any = '';
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild(FileUploadModalComponent, { static: true }) fileUploadModal: FileUploadModalComponent;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+
+  ascSort = false;
 
   constructor(private backupRestoreService: BackupRestoreService,
     private alertService: AlertService,
     private sharedService: SharedService,
     public ngProgress: ProgressBarService,
     private dateFormatter: DateFormatterPipe,
-    private docService:DocService,
+    private docService: DocService,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -80,6 +82,22 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     this.child.toggleModal(true);
   }
 
+  sort() {
+    this.ascSort = !this.ascSort;
+    this.sortBackups();
+  }
+
+  sortBackups() {
+    if (this.backupData.length > 1) {
+      if (this.ascSort) {
+        // For ascending sort
+        this.backupData = this.backupData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      } else {
+        // For descending sort
+        this.backupData = this.backupData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      }
+    }
+  }
 
   public getBackup() {
     this.backupRestoreService.get()
@@ -87,6 +105,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.backupData = data['backups'];
+          this.sortBackups();
           this.hideLoadingSpinner();
         },
         error => {
@@ -141,7 +160,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       );
   }
 
-  public deleteBackup(id) {
+  public deleteBackup(id: any) {
     this.ngProgress.start();
     this.backupRestoreService.deleteBackup(id)
       .pipe(takeUntil(this.destroy$))
@@ -149,7 +168,12 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
         (data) => {
           this.ngProgress.done();
           this.alertService.success(data['message']);
-          this.getBackup();
+          // Remove from local array of backups
+          this.backupData = this.backupData.filter(b => b.id !== id);
+          // reset sort to default
+          if (this.backupData.length === 1) {
+            this.ascSort = false;
+          }
         },
         error => {
           this.ngProgress.done();
@@ -160,6 +184,10 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
           }
         }
       );
+  }
+
+  uploadBackup() {
+    this.fileUploadModal.toggleModal(true);
   }
 
   public async downloadBackup(backup): Promise<void> {
