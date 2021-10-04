@@ -1,4 +1,13 @@
-## v1.9.1next [2021-xx-xx]
+## v1.9.2next [2021-xx-xx]
+
+ #### Added
+
+ #### Changed
+
+ #### Fixed
+
+
+## v1.9.2 [2021-09-29]
 
 #### Added
 * [FOGL-5534] Ability to paste into password type fields [#100](https://github.com/fledge-iot/fledge-gui/pull/100)
