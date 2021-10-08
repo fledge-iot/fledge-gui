@@ -1,4 +1,4 @@
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.4
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.4
 
 ## Code scaffolding
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
