@@ -79,9 +79,9 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 11.2.4        |        11.2.4         | MIT
- Angular CLI  | 11.2.3        |        11.2.3         | MIT
- TypeScript   | 4.1.0         |        4.2.0          | Apache 2.0
+ Angular      | 12.2.4        |        12.2.4         | MIT
+ Angular CLI  | 12.2.4        |        12.2.4         | MIT
+ TypeScript   | 4.3.5         |        4.3.5          | Apache 2.0
  rxjs         | 6.6.6         |        6.6.6          | Apache 2.0
  Bulma css    | 0.8.2         |        0.8.2          | MIT
 
@@ -92,8 +92,8 @@ chart.js         |  2.9.4        |        2.9.4          | MIT
 core-js          |  3.9.1        |        3.9.1          | MIT
 ng-sidebar       |  9.4.2        |        9.4.2          | MIT
 moment           |  2.29.1       |        2.29.1         | MIT
-@ngx-progressbar/core  |  5.3.2        |        5.3.2          | MIT
-protractor-beautiful-reporter |  1.3.6       |  1.3.6                | MIT
+ngx-progressbar  | 6.1.1         |        6.1.1          | MIT
+protractor-beautiful-reporter |  1.3.3       |  1.3.6                | MIT
 node-git-describe | 4.0.4     | 4.0.4        | MIT
 plotly.js         | 1.58.4    | 1.58.4       | MIT
 @ctrl/ngx-codemirror | 2.2.0    | 2.2.0     | MIT
