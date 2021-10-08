@@ -6,7 +6,11 @@ cd $(dirname $0)
 echo "Setting up the prerequisites..."
 echo
 
+# In case we have yum and apt-get installed on same machine then following command will cause issue
 PKG_MANAGER=$( command -v yum || command -v apt-get ) || echo "Check README and Prerequisite docs."
+OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
+PKG_MANAGER="apt-get"
+if [[ ${OS_NAME} == *"Red Hat"* || ${OS_NAME} == *"CentOS"* ]]; then PKG_MANAGER="yum"; fi
 echo
 
 install_nodejs () {
