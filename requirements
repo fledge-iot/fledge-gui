@@ -6,11 +6,11 @@ cd $(dirname $0)
 echo "Setting up the prerequisites..."
 echo
 
-# In case we have yum and apt-get installed on same machine then following command will cause issue
 PKG_MANAGER=$( command -v yum || command -v apt-get ) || echo "Check README and Prerequisite docs."
 OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
 PKG_MANAGER="apt-get"
 # Check if OS is RHEL/CentOS
+# In case we have yum and apt-get installed on same machine then set PKG_MANAGER based on OS
 if [[ ${OS_NAME} == *"Red Hat"* || ${OS_NAME} == *"CentOS"* ]]; then PKG_MANAGER="yum"; fi
 echo
 
@@ -58,13 +58,13 @@ install_yarn () {
 case $PKG_MANAGER in
   
   *yum*)
-    yum install -y curl nginx
+    yum install -y curl
     install_nodejs "yum"
     install_yarn
     ;;
 
   *apt*)
-    apt install -y curl nginx-light
+    apt install -y curl
     install_nodejs "apt"
     install_yarn
     ;;
@@ -75,6 +75,3 @@ esac
 echo "Node.js version: `node -v`"
 echo "npm version: `npm -v`"
 echo "yarn version: `yarn -v`"
-echo
-nginx -v
-echo "Nginx is not required on development machines."
