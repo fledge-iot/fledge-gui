@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd $(dirname $0)
+echo "Setting up the prerequisites..."
+echo
+
+PKG_MANAGER=$( command -v yum || command -v apt-get ) || echo "Check README and Prerequisite docs."
+echo
+
+install_nodejs () {
+  isNodeInstalled=`which node` || echo ''
+    if [ "$isNodeInstalled" != "" ]; then
+      # Check if nodejs version is < 14.x
+      currentNodeVer=`node -v`
+      requiredNodeVer="v14.15.5"
+      if [ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" = "$requiredNodeVer" ]; then
+        echo "nodejs version: ${currentNodeVer}"
+        echo "npm version: `npm -v`"
+      else
+        curl -L https://deb.nodesource.com/setup_14.x | sudo -E bash -
+        sudo $1 install -y nodejs
+      fi
+    else
+      curl -L https://deb.nodesource.com/setup_14.x | sudo -E bash -
+      sudo $1 install -y nodejs
+    fi
+}
+
+
+
+# Don't run yarn build as root; if you had done, reclaim ownership for ~/.npm and ~/.config
+# sudo chown -R $USER:$GROUP ~/.npm
+# sudo chown -R $USER:$GROUP ~/.config
+
+install_yarn () {
+    isYarnInstalled=`which yarn`|| echo ''
+    if [ "$isYarnInstalled" != "" ]; then
+      # Check if yarn version is < 1.21.x
+      currentYarnVer=`yarn -v`
+      requiredYarnVer="1.21.0"
+      if [ "$(printf '%s\n' "$requiredYarnVer" "$currentYarnVer" | sort -V | head -n1)" = "$requiredYarnVer" ]; then
+        echo "yarn version: ${currentYarnVer}"
+      else
+        sudo npm install -g yarn
+      fi
+    else
+      sudo npm install -g yarn
+    fi
+}
+
+case $PKG_MANAGER in
+  
+  *yum*)
+    yum install -y curl nginx
+    install_nodejs "yum"
+    install_yarn
+    ;;
+
+  *apt*)
+    apt install -y curl nginx-light
+    install_nodejs "apt"
+    install_yarn
+    ;;
+
+esac
+
+
+echo "Node.js version: `node -v`"
+echo "npm version: `npm -v`"
+echo "yarn version: `yarn -v`"
+echo
+nginx -v
+echo "Nginx is not required on development machines."
