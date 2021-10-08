@@ -17,12 +17,13 @@ echo
 install_nodejs () {
   isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
   requiredNodeVer="v14.15.5"
-  # Check if nodejs is installed or if installed version is < 14.x
+  node_pkg_type=$2
+  # Check if Node.js is installed or if installed version is < 14.x
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
-      curl -L https://deb.nodesource.com/setup_14.x | sudo -E bash -
+      curl -L https://${node_pkg_type}.nodesource.com/setup_14.x | sudo -E bash -
       sudo $1 install -y nodejs
   else
-    echo "nodejs version: ${currentNodeVer}"
+    echo "Node.js version: ${currentNodeVer}"
     echo "npm version: `npm -v`"
   fi
 }
@@ -47,14 +48,16 @@ install_yarn () {
 case $PKG_MANAGER in
   
   *yum*)
+    node_pkg_type="rpm"
     yum install -y curl
-    install_nodejs "yum"
+    install_nodejs "yum" ${node_pkg_type}
     install_yarn
     ;;
 
   *apt*)
+    node_pkg_type="deb"
     apt install -y curl
-    install_nodejs "apt"
+    install_nodejs "apt" ${node_pkg_type}
     install_yarn
     ;;
 
