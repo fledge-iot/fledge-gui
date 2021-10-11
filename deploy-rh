@@ -206,23 +206,14 @@ execute_command() {
   elif [[ "$OPTION" == "VERSION" ]]
   then
     echo $__version__
-
-  elif [[ "$OPTION" == "HEALTH" ]]
-  then
-    nginx_health
-
-  elif [[ "$OPTION" == "LOCAL" ]]
-  then
-    machine_details
-    ./build
-    install
-
   fi
 }
 
 start () {
   machine_details
   memory_footprints
+  ./requirements
+  ./build
   install
   memory_footprints
 }
@@ -241,14 +232,6 @@ then
 
       -v|--version)
         OPTION="VERSION"
-      ;;
-
-      -H|--health|--dry-run)
-        OPTION="HEALTH"
-      ;;
-
-      -L|--local)
-        OPTION="LOCAL"
       ;;
 
       *)
