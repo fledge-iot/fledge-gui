@@ -8,7 +8,7 @@ echo "Setting up the prerequisites..."
 echo
 
 OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
-PKG_MANAGER="apt-get"
+
 PKG_TYPE="deb"
 # Check if OS is RHEL/CentOS
 # In case we have yum and apt-get installed on same machine then set PKG_MANAGER based on OS
@@ -24,12 +24,6 @@ install_nodejs () {
       sudo $1 install -y nodejs
   fi
 }
-
-
-
-# Don't run yarn build as root; if you had done, reclaim ownership for .npm and .config files
-# sudo chown -R $USER:$GROUP $(sudo find / -type d -name .npm 2>/dev/null)
-# sudo chown -R $USER:$GROUP $(sudo find / -type d -name .config 2>/dev/null)
 
 install_yarn () {
     isYarnInstalled=`which yarn` && currentYarnVer=`yarn -v` || echo ''
@@ -55,6 +49,11 @@ case $PKG_MANAGER in
     ;;
 
 esac
+
+
+# Don't run yarn build as root; if you had done, reclaim ownership for .npm and .config files
+sudo chown -R $USER:$GROUP $(sudo find / -type d -name .npm 2>/dev/null)
+sudo chown -R $USER:$GROUP $(sudo find / -type d -name .config 2>/dev/null)
 
 
 echo "Node.js version: `node -v`"
