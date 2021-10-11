@@ -1,4 +1,4 @@
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.5
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.4
 
 ## Code scaffolding
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
@@ -79,27 +79,28 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 #### Core
  Library      |   Version     | Latest Stable (? Y/n) | License
 ------------- | ------------- | --------------------  | ------------
- Angular      | 8.2.12        |        12.2.7         | MIT
- Angular CLI  | 8.3.14        |        12.2.7         | MIT
- TypeScript   | 3.5.3         |        4.4.3          | Apache 2.0
- rxjs         | 6.5.2         |        7.3.0          | Apache 2.0
- Bulma css    | 0.8.2         |        0.9.3          | MIT
+ Angular      | 12.2.4        |        12.2.4         | MIT
+ Angular CLI  | 12.2.4        |        12.2.4         | MIT
+ TypeScript   | 4.3.5         |        4.3.5          | Apache 2.0
+ rxjs         | 6.6.6         |        6.6.6          | Apache 2.0
+ Bulma css    | 0.8.2         |        0.8.2          | MIT
 
 #### Dev
  Library         |   Version     | Latest Stable (? Y/n) | License
 ---------------- | ------------- | --------------------  | ------------
-chart.js         |  2.8.0        |        3.5.1          | MIT
-core-js          |  3.3.3        |        3.18.1         | MIT
-ng-sidebar       |  8.0.0        |        9.4.2          | MIT
-moment           |  2.24.0       |        2.29.1         | MIT
-@ngx-progressbar/core  |  5.3.2        |        6.1.1          | MIT
-protractor-beautiful-reporter |  1.2.8       |  1.3.3                | MIT
+chart.js         |  2.9.4        |        2.9.4          | MIT
+core-js          |  3.9.1        |        3.9.1          | MIT
+ng-sidebar       |  9.4.2        |        9.4.2          | MIT
+moment           |  2.29.1       |        2.29.1         | MIT
+ngx-progressbar  | 6.1.1         |        6.1.1          | MIT
+protractor-beautiful-reporter |  1.3.3       |  1.3.6                | MIT
 node-git-describe | 4.0.4     | 4.0.4        | MIT
-plotly.js         | 1.50.1    | 2.5.1       | MIT
-@ctrl/ngx-codemirror | 2.2.0    | 5.0.1     | MIT
-codemirror    | 5.49.2 | 5.63.0 | MIT
-jsonlint-mod  | 1.7.5  | 1.7.6  | MIT
-@ng-select/ng-select | 3.3.0 | 7.3.0 | MIT
+plotly.js         | 1.58.4    | 1.58.4       | MIT
+@ctrl/ngx-codemirror | 2.2.0    | 2.2.0     | MIT
+codemirror    | 5.59.4 | 5.49.4 | MIT
+jsonlint-mod  | 1.7.6  | 1.7.6  | MIT
+@ng-select/ng-select | 6.1.0 | 6.1.0 | MIT
+@circlon/angular-tree-component | 11.0.4 | 11.0.4 | MIT
 
 ## Update Dependencies
 * `npm update`: By running this command, npm checks if there exist newer versions in the repository that satisfy specified semantic versioning ranges and installs them.

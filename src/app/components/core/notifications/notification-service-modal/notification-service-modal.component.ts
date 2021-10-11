@@ -43,8 +43,8 @@ export class NotificationServiceModalComponent implements OnChanges {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
   };
-  @ViewChild('notificationConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild('fg', { static: false }) form: NgForm;
+  @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
   constructor(
@@ -229,7 +229,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     this.servicesApiService.installService(servicePayload).
       subscribe(
         (data: any) => {
-          this.monitorNotificationServiceInstallationStatus(data, name);
+          this.monitorNotificationServiceInstallationStatus(data, servicePayload.name);
         },
         error => {
           /** request done */

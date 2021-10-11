@@ -26,7 +26,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   viewPort: any = '';
 
   @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
-  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 

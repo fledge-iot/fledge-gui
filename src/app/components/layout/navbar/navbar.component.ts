@@ -1,5 +1,3 @@
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -9,13 +7,15 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
-import { sortBy } from 'lodash';
 import { Router } from '@angular/router';
+import { sortBy } from 'lodash';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {
-  AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesApiService,
-  ProgressBarService
+  AlertService, AuthService, ConnectedServiceStatus, PingService,
+  ProgressBarService, ServicesApiService
 } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';

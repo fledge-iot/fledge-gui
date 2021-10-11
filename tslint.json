@@ -13,6 +13,9 @@
     "curly": true,
     "eofline": true,
     "forin": false,
+    "deprecation": {
+      "severity": "warning"
+    },
     "import-blacklist": [
       true
     ],
@@ -59,7 +62,6 @@
       true,
       "ignore-params"
     ],
-    "no-unused-variable": true,
     "no-misused-new": true,
     "no-non-null-assertion": true,
     "no-shadowed-variable": true,
@@ -69,7 +71,6 @@
     "no-trailing-whitespace": true,
     "no-unnecessary-initializer": true,
     "no-unused-expression": true,
-    "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
     "one-line": [

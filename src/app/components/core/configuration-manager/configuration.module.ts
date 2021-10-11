@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { TreeModule } from 'angular-tree-component';
+import { TreeModule } from '@circlon/angular-tree-component';
 
 import { ConfigurationManagerComponent } from '.';
 import { DirectivesModule } from '../../../directives/directives.module';
@@ -28,7 +28,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     SharedModule,
     DirectivesModule,
-    TreeModule.forRoot()
+    TreeModule
   ],
   providers: [ConfigurationService],
 })

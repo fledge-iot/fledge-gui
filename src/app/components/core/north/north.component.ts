@@ -53,7 +53,7 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   @ViewChild(NorthTaskModalComponent, { static: true }) northTaskModal: NorthTaskModalComponent;
-  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   ngOnInit() {
     this.showLoadingSpinner();

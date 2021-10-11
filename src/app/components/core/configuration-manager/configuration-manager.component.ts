@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { TreeComponent } from 'angular-tree-component';
+import { TreeComponent } from '@circlon/angular-tree-component';
 import { isEmpty, findIndex } from 'lodash';
 
 import { AlertService, ConfigurationService, ProgressBarService } from '../../../services';
