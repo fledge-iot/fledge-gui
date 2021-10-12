@@ -19,7 +19,7 @@
         </div>
         <ng-container *ngIf="!showSpinner">
           <div class="has-text-centered" *ngIf="southboundServices != undefined && southboundServices.length === 0">
-            <small class="no-rec">No Record</small>
+            <small class="no-rec">No Southbound services configured</small>
           </div>
           <ng-container *ngIf="southboundServices!= undefined && southboundServices.length > 0">
             <table id="south-service-list" class="table is-fullwidth scroll is-responsive is-hoverable" cellpadding="0"
@@ -51,7 +51,7 @@
                         <span class="tag">disabled</span> <!-- This also take care of shutdown status-->
                       </ng-container>
                       <ng-container *ngIf="svc.schedule_enabled">
-                        <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
+                        <span *ngIf="svc.status == 'running'" class="tag is-success is-light">enabled</span>
                         <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
                         <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
                       </ng-container>
