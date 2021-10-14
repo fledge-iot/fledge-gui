@@ -3,7 +3,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { SidebarModule } from 'ng-sidebar';
-import { NgProgressModule } from '@ngx-progressbar/core';
+import { NgProgressModule } from 'ngx-progressbar';
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';

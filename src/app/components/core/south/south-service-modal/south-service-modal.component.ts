@@ -59,11 +59,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('serviceConfigView', { static: false }) viewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('serviceConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
-  @ViewChild(ConfigChildrenComponent, { static: false }) configChildrenComponent: ConfigChildrenComponent;
+  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild(FilterAlertComponent, { static: false }) filterAlert: FilterAlertComponent;
+  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,

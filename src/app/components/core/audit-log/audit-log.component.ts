@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, AuditService, PingService, ProgressBarService } from '../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
@@ -29,26 +29,27 @@ export class AuditLogComponent implements OnInit, OnDestroy {
 
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
+  private subscription: Subscription;
 
   constructor(private auditService: AuditService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private ping: PingService) {
-      this.isAlive = true;
-      this.ping.pingIntervalChanged
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((timeInterval: number) => {
-          if (timeInterval === -1) {
-            this.isAlive = false;
-          }
-          this.refreshInterval = timeInterval;
-        });
+    this.isAlive = true;
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.refreshInterval = timeInterval;
+      });
   }
 
   ngOnInit() {
     this.getLogSource();
     this.getLogSeverity();
-    interval(this.refreshInterval)
+    this.subscription =  interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getAuditLogs(true);
@@ -125,7 +126,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     this.getAuditLogs();
   }
 
-  resetLimitPerPage(value)  {
+  resetLimitPerPage(value) {
     this.setLimit(value);
   }
 
@@ -212,7 +213,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       this.ngProgress.start();
     }
     this.auditService.getAuditLogs(this.limit, this.tempOffset, sourceCode, this.severity)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
           if (autoRefresh === false) {
@@ -235,9 +236,33 @@ export class AuditLogComponent implements OnInit, OnDestroy {
         });
   }
 
+  toggleAutoRefresh(event: any) {
+    this.isAlive = event.target.checked;
+    // clear interval subscription before initializing it again
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
+    /**
+     * Set refresh interval to default if Auto Refresh checked and
+     * pingInterval is set to manual on settings page
+     * */
+    if (this.isAlive && this.refreshInterval === -1) {
+      this.refreshInterval = POLLING_INTERVAL;
+    }
+
+    this.subscription =  interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.getAuditLogs(true);
+      });
+
+  }
+
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+    this.subscription.unsubscribe();
   }
 }
