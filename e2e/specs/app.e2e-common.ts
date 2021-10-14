@@ -59,7 +59,7 @@ describe('Fledge gui', () => {
       expect(skipLogin.getSystemLogTitle()).toEqual('System Logs');
       expect(skipLogin.isSystemLogDropDownPresent()).toEqual(true);
       expect(skipLogin.isSystemLogLevelDropdownPresent()).toEqual(true);
-      expect(skipLogin.getSystemLogInputTag()).toEqual(1);
+      expect(skipLogin.getSystemLogInputTag()).toEqual(2);
     });
 
     it('Should Display Scheduled Tasks', () => {
@@ -97,7 +97,7 @@ describe('Fledge gui', () => {
       skipLogin.navToBackupRestore();
 
       expect(skipLogin.getBackupRestoreTitle()).toContain('Backups');
-      
+
       expect(skipLogin.noBackupRecord()).toContain('No Record');
       expect(skipLogin.getRequestBackup()).toContain('Create New');
 
