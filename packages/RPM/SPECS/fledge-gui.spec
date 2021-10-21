@@ -1,13 +1,14 @@
 Name:          fledge-gui
 Vendor:        Dianomic Systems Inc. <info@dianomic.com>
 Version:       __VERSION__
-Release:       1
+Release:       __RELEASE__
 BuildArch:     __ARCH__
 Summary:       Fledge GUI
 License:       Apache License
 Group:         IoT
 URL:           http://www.dianomic.com
 Requires:      nginx
+VCS:           __VCS__
 
 %description
 Fledge GUI
