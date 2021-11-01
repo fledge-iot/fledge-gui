@@ -87,9 +87,11 @@ fi
 
 version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
 BUILD_ROOT="${GIT_ROOT}/packages/build"
-
+git_tag_info=$(git describe --tags | sed 's/-/_/g') && commit_count=$(echo ${git_tag_info} | cut -d_ -f2) || { commit_count=$(git rev-list --count HEAD); git_tag_info="v$version_$commit_count_$(git rev-parse --short HEAD)"; }
+branch_name=$(git rev-parse --abbrev-ref HEAD)
+if [[ ${branch_name} = "main" ]] || [[ ${branch_name} =~ ^[0-9]+\.[0-9]+\.[0-9]+RC ]]; then commit_count=1; fi
 # Final package name
-package_name="fledge-gui-${version}"
+package_name="fledge-gui-${version}-${commit_count}"
 
 arch=`arch`
 
@@ -129,12 +131,14 @@ cd "${package_name}"
 cp -R ${GIT_ROOT}/packages/RPM/* .
 sed -i "s/__VERSION__/${version}/g" SPECS/fledge-gui.spec
 sed -i "s/__ARCH__/${arch}/g" SPECS/fledge-gui.spec
+sed -i "s/__RELEASE__/${commit_count}/g" SPECS/fledge-gui.spec
+sed -i "s/__VCS__/${git_tag_info:1}/g" SPECS/fledge-gui.spec
 echo "Done."
 
 mkdir BUILDROOT
 cd BUILDROOT
-mkdir -p ${package_name}-1.${arch}
-cd ${package_name}-1.${arch}
+mkdir -p ${package_name}.${arch}
+cd ${package_name}.${arch}
 
 # sed -i 's/dist/\/usr\/share\/nginx\/html/g' ${GIT_ROOT}/dist/nginx.conf
 
