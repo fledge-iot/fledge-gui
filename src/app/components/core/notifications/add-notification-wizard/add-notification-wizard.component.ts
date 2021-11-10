@@ -544,7 +544,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
   /**
    * Open readthedocs.io documentation of notification plugins
-   * @param selectedPlugin Selected rule/delivery  plugin 
+   * @param selectedPlugin Selected rule/delivery  plugin
    * @param pluginType Type of the plugin (e.g. rule/notify)
    */
   goToLink(selectedPlugin: string, pluginType: string) {
@@ -554,6 +554,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     };
     this.docService.goToPluginLink(pluginInfo);
   }
+
+  goToNotificationTypeLink() {
+    const urlSlug = 'notification-types';
+    this.docService.goToNotificationDocLink(urlSlug);
+  }
+
 
   ngOnDestroy() {
     this.subscription.unsubscribe();

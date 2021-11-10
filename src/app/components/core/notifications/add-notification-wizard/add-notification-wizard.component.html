@@ -108,8 +108,7 @@
               <div class="field">
                 <div class="control">
                   <ng-container *ngIf="notificationRulePlugins.length">
-                    <a class="button is-text text-btn"
-                      (click)="openPluginModal(true, 'Rule')">available plugins</a>
+                    <a class="button is-text text-btn" (click)="openPluginModal(true, 'Rule')">available plugins</a>
                   </ng-container>
                   <app-plugin-modal *ngIf="pluginData?.modalState && pluginData?.type?.toLowerCase() === 'rule' "
                     (notify)="onNotify($event)" [data]="pluginData"></app-plugin-modal>
@@ -138,26 +137,26 @@
             </div>
             <div class="field-body">
               <div class="column is-vertical-center">
-              <div class="select is-multiple">
-                <select multiple name="type" #deliveryPlugin formControlName="delivery" id="notify"
-                  (change)="isPluginSelected(deliveryPlugin.value, notificationDeliveryPlugins[0].type)"
-                  required>
-                  <option *ngFor="let d of notificationDeliveryPlugins" [value]="d.name"> {{ d.name }}</option>
-                </select>
+                <div class="select is-multiple">
+                  <select multiple name="type" #deliveryPlugin formControlName="delivery" id="notify"
+                    (change)="isPluginSelected(deliveryPlugin.value, notificationDeliveryPlugins[0].type)" required>
+                    <option *ngFor="let d of notificationDeliveryPlugins" [value]="d.name"> {{ d.name }}</option>
+                  </select>
+                </div>
+                &nbsp;
+                <small *ngIf="selectedDeliveryPluginDescription && notificationDeliveryPlugins.length > 0"
+                  class="help description level-left">
+                  {{selectedDeliveryPluginDescription }}</small>
+                <small *ngIf="!isDeliveryPlugin" class="help is-danger level-left">* Please select a valid
+                  plugin</small>
+                <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
-              &nbsp;
-              <small *ngIf="selectedDeliveryPluginDescription && notificationDeliveryPlugins.length > 0"
-                class="help description level-left">
-                {{selectedDeliveryPluginDescription }}</small>
-              <small *ngIf="!isDeliveryPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
-              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
-            </div>
-            <div *ngIf="selectedDeliveryPlugin" class="column is-1">
-              <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
-                data-tooltip="Help" (click)="goToLink(selectedDeliveryPlugin, notificationDeliveryPlugins[0].type)">
-                <i class="far fa-question-circle"></i>
-              </span>
-            </div>
+              <div *ngIf="selectedDeliveryPlugin" class="column is-1">
+                <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+                  data-tooltip="Help" (click)="goToLink(selectedDeliveryPlugin, notificationDeliveryPlugins[0].type)">
+                  <i class="far fa-question-circle"></i>
+                </span>
+              </div>
             </div>
           </div>
           <div class="field is-horizontal form-group is-right">
@@ -168,8 +167,7 @@
               <div class="field">
                 <div class="control">
                   <ng-container *ngIf="notificationDeliveryPlugins.length">
-                    <a class="button is-text text-btn"
-                      (click)="openPluginModal(true, 'Notify')">available plugins</a>
+                    <a class="button is-text text-btn" (click)="openPluginModal(true, 'Notify')">available plugins</a>
                   </ng-container>
                   <app-plugin-modal *ngIf="pluginData?.modalState && pluginData?.type?.toLowerCase() === 'notify'"
                     (notify)="onNotify($event)" [data]="pluginData"></app-plugin-modal>
@@ -209,6 +207,11 @@
                     </a>
                   </div>
                 </div>
+              </div>
+              <div
+                class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon notification-type-help"
+                data-tooltip="Help" (click)="goToNotificationTypeLink()">
+                <i class="far fa-question-circle"></i>
               </div>
             </div>
           </div>
