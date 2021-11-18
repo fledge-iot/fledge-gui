@@ -6,6 +6,7 @@ import { ServiceDiscoveryComponent } from '../service-discovery';
 import { environment } from '../../../../environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TimezoneService } from '../../../services/timezone.service';
 
 @Component({
   selector: 'app-settings',
@@ -32,7 +33,9 @@ export class SettingsComponent implements OnInit {
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private pingService: PingService, private sharedService: SharedService) {
+  constructor(private pingService: PingService,
+    private sharedService: SharedService,
+    public timezoneService: TimezoneService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
       localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
     this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
@@ -120,6 +123,10 @@ export class SettingsComponent implements OnInit {
     this.sharedService.theme.next(theme);
   }
 
+  public setTimeZone(timezone: string) {
+    this.timezoneService.setTimezone(timezone);
+  }
+
   setDashboardRefreshTime(time: string) {
     this.refreshInterval = time;
     localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
@@ -137,13 +144,13 @@ export class SettingsComponent implements OnInit {
   /**
    * Check client instance is able to ping/connect the server instance for the configured host settings
    */
-   canPing() {
+  canPing() {
     let pingResponse;
     this.pingService.pingResponse
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((res) => {
-      pingResponse = res;
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        pingResponse = res;
+      });
     return pingResponse;
   }
 }

@@ -215,7 +215,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     const numReadings = [];
     const strReadings = [];
     const arrReadings = [];
-    this.timestamps = readings.map((r: any) => r.timestamp);
+    this.timestamps = readings.reverse().map((r: any) => r.timestamp);
 
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
@@ -337,7 +337,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     return cc;
   }
 
-  private statsAssetReadingsGraph(assetReadings: any, timestamps: any): void {
+  private statsAssetReadingsGraph(assetReadings: any, ts: any): void {
+    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss'));
     const dataset = [];
     this.readKeyColorLabel = [];
     let count = 0;
@@ -384,7 +385,6 @@ export class ReadingsGraphComponent implements OnDestroy {
       },
       scales: {
         xAxes: [{
-          type: 'time',
           distribution: 'linear',
           time: {
             unit: 'second',

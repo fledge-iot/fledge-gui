@@ -48,7 +48,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getSysLogs();
     this.getSchedules();
-    this.subscription =  interval(this.refreshInterval)
+    this.subscription = interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getSysLogs(true);

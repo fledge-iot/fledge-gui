@@ -1,7 +1,8 @@
 <div class="container is-fluid">
   <article class="message is-warning alert-box">
     <div *ngIf="showAlertMessage && !canPing()" class="message-body">
-      You are trying to connect over HTTPS. To secure an instance, you must provide your own valid TLS certificate for production operations.
+      You are trying to connect over HTTPS. To secure an instance, you must provide your own valid TLS certificate for
+      production operations.
       A self-signed certificate is included within Fledge, and you will need to configure your browser to
       accept it as valid. To do this, click this <a (click)="openSSLCertWarningPage()"
         class="alert-link"><u><b>link</b></u></a> and in that page accept
@@ -76,7 +77,7 @@
     </header>
     <div id="settings-content" class="card-content">
       <div class="columns">
-        <div class="column is-4">
+        <div class="column is-3">
           <label class="label is-small"> Refresh Dashboard Graph</label>
           <div class="control">
             <div id="refresh-time-dropdown" class="dropdown">
@@ -108,7 +109,7 @@
           </div>
         </div>
 
-        <div class="column is-4">
+        <div class="column is-3">
           <label class="label is-small">Ping/Auto Refresh Interval</label>
           <div class="control">
             <div id="ping-interval-dropdown" class="dropdown">
@@ -138,7 +139,7 @@
             </div>
           </div>
         </div>
-        <div class="column is-4">
+        <div class="column is-3">
           <label class="label is-small">Editor Theme</label>
           <div class="control">
             <div id="theme-dropdown" class="dropdown">
@@ -156,6 +157,30 @@
                 <div class="dropdown-content">
                   <a class="dropdown-item" (click)="toggleDropDown('theme-dropdown');selectTheme('light')">Light</a>
                   <a class="dropdown-item" (click)="toggleDropDown('theme-dropdown');selectTheme('dark')">Dark</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="column is-3">
+          <label class="label is-small">Timestamps</label>
+          <div class="control">
+            <div id="timezone-dropdown" class="dropdown">
+              <div class="dropdown-trigger">
+                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                  (click)="toggleDropDown('timezone-dropdown')">
+                  <span *ngIf="timezoneService.getTimezone() === 'local'">Browser timezone</span>
+                  <span *ngIf="timezoneService.getTimezone() === 'utc'">UTC</span>
+                  <span class="icon is-small">
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item" (click)="toggleDropDown('timezone-dropdown');setTimeZone('local')">Browser
+                    timezone</a>
+                  <a class="dropdown-item" (click)="toggleDropDown('timezone-dropdown');setTimeZone('utc')">UTC</a>
                 </div>
               </div>
             </div>
