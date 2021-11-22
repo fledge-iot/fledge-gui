@@ -12,7 +12,7 @@ import { TimezoneService } from '../services/timezone.service';
 export class DateFormatterPipe implements PipeTransform {
   constructor(private timezoneService: TimezoneService) { }
   transform(value: string, arg: string): string {
-    if (value) {
+    if (value != '') {
       const timezone = this.timezoneService.getTimezone();
       const time = timezone === 'local' ? moment.utc(value).local().format(arg) : moment.utc(value).format(arg);
       return time;
