@@ -68,7 +68,7 @@
             <div class="field">
               <label class="label is-small">Process</label>
               <div class="control">
-                <input formControlName="process_name" [attr.disabled]="true" type="text" class="input is-small"
+                <input formControlName="process_name" readonly type="text" class="input is-small is-static"
                   placeholder="process" />
               </div>
             </div>
@@ -78,7 +78,7 @@
           <!-- Show Day & Time field for "Timed" type schedule -->
           <div class="column">
             <div class="field">
-              <label class="label is-small">Day 
+              <label class="label is-small">Day
                 <!-- &nbsp; -->
                 <span class="tooltip is-tooltip-right" data-tooltip="ISO Days (Monday-Sunday/1-7)">
                   <i class="far fa-sm fa-question-circle"></i>
@@ -111,7 +111,8 @@
             <div class="field">
               <label class="label is-small">Time</label>
               <p class="control is-fullwidth">
-                <input class="input is-small" type='text' placeholder="HH:mm:ss" mask="00:00:00" formControlName="time" (input)="matchTimeTypeField($event, 'time')">
+                <input class="input is-small" type='text' placeholder="HH:mm:ss" mask="00:00:00" formControlName="time"
+                  (input)="matchTimeTypeField($event, 'time')">
               </p>
               <small *ngIf="!form.controls.time.valid" class="help is-danger level-left">&nbsp; Time must be in range
                 00:00:00 - 23:59:59</small>
@@ -121,7 +122,7 @@
         <div *ngIf="selectedScheduleTypeIndex == 2 || selectedScheduleTypeIndex == 3" class="columns">
           <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule -->
           <div class="column">
-            <div  class="field">
+            <div class="field">
               <label class="label is-small">Repeat Interval
                 <!-- &nbsp; -->
                 <span class="tooltip is-tooltip-right" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
