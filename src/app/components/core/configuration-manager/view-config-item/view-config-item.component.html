@@ -1,7 +1,8 @@
 <div class="view-content columns">
-    <span *ngIf="['south', 'north', 'filter', 'rule', 'notify'].includes(pluginInfo?.type.toLowerCase())" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
-      <i class="far fa-question-circle"></i>
-    </span>
+  <span *ngIf="['south', 'north', 'filter', 'rule', 'notify'].includes(pluginInfo?.type.toLowerCase())"
+    class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+    <i class="far fa-question-circle"></i>
+  </span>
   <div class="column">
     <form name="form" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
       <ng-container *ngIf="categoryConfiguration && hasEditableConfigItems">
@@ -38,18 +39,19 @@
                         [ngModel]="setConfigValue(configItem.value)"
                         [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
-                        {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
+                        {{configItem?.value?.value != undefined ? configItem?.value?.value :
+                        configItem?.value?.default}}
                       </ngx-codemirror>
                     </ng-container>
                     <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
                       <div class="control">
-                        <input #pwd
-                          name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
-                          [ngModel]="setConfigValue(configItem.value)"
-                          [attr.maxLength]="configItem?.value?.length" placeholder="password"
+                        <input #pwd name="{{configItem.value.key}}" class="input is-fullwidth is-small" type="password"
+                          [ngModel]="setConfigValue(configItem.value)" [attr.maxLength]="configItem?.value?.length"
+                          placeholder="password"
                           [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                           (ngModelChange)="checkPasswords(pwd.value, f?.controls['confirm-password']?.value, configItem.value.key)"
-                          [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" trim="blur" />
+                          [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                          trim="blur" />
                       </div>
                       <div class="control">
                         <button type="button" class="button is-small" (click)="togglePassword(pwd)"
@@ -76,7 +78,8 @@
                       </div>
                       <p *ngIf="passwordMatched.value == false &&
                       passwordMatched.key === configItem.value.key" class="help is-danger">
-                        <sup>*</sup>Password mismatch</p>
+                        <sup>*</sup>Password mismatch
+                      </p>
                     </div>
 
                     <input *ngSwitchCase="'INTEGER'" name="{{configItem.value.key}}" type="number"
@@ -99,8 +102,10 @@
 
                     <ng-container *ngSwitchCase="'LONG_TEXT'">
                       <ngx-codemirror #jsoneditor name="{{configItem.value.key}}"
+                        [ngClass]="{'readonly-editor': configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable}"
                         [options]="setEditorConfig(configItem.value.type)" [autoFocus]="true" [jsonValue]="isValidJson"
                         [ngModel]="JSON.parse(setConfigValue(configItem.value)) | json "
+                        [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                         (ngModelChange)="checkValidJson(configItem.value.key, jsoneditor.value)">
                       </ngx-codemirror>
                     </ng-container>
@@ -114,7 +119,8 @@
                         [ngModel]="fileContent || setConfigValue(configItem.value)"
                         [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
-                        {{configItem?.value?.value != undefined ? configItem?.value?.value : configItem?.value?.default}}
+                        {{configItem?.value?.value != undefined ? configItem?.value?.value :
+                        configItem?.value?.default}}
                       </ngx-codemirror>
                       <input class="input" #codeeditor (click)="getFileName(configItem?.value?.file)" type="hidden" />
                       <p class="help">
