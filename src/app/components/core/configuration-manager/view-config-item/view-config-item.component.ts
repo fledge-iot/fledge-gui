@@ -423,16 +423,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
           data[k].validityExpression = data[k].validity;
           config.forEach(el => {
             const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
-            console.log('regex', regex, data[k].validityExpression);
             if (regex.test(data[k].validityExpression)) {
               data[k].validityExpression = data[k].validityExpression.split(`${el.key}`).join(`"${el.value}"`);
             }
           });
         }
       }
-
-
-      console.log('new config', data);
 
       for (const k in data) {
         if (data.hasOwnProperty(k)) {
@@ -441,7 +437,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
               try {
                 // tslint:disable-next-line: no-eval
                 const e = eval(data[k].validityExpression);
-                console.log('Validity expression', data[k].validityExpression)
+                // console.log('Validity expression', data[k].validityExpression)
                 if (typeof (e) !== 'boolean') {
                   console.log('Validity expression', data[k].validityExpression, 'for', k, 'evlauted to non-boolean value ', e);
                 }
