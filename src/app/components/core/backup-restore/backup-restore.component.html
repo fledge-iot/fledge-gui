@@ -53,7 +53,7 @@
             <thead>
               <tr>
                 <th>
-                  <div [ngClass]="{'sort-order': backupData.length > 1}"  (click)="sort()">
+                  <div [ngClass]="{'sort-order': backupData.length > 1}" (click)="sort()">
                     Date &amp; Time
                     <ng-container *ngIf="backupData.length > 1">
                       <i *ngIf="!ascSort" #desc class="fas fa-caret-down" aria-hidden="true"></i>
@@ -72,7 +72,7 @@
             <tbody>
               <tr *ngFor="let backup of backupData">
                 <td class="align-content">
-                  <small>{{ backup.date | dateparser:"YYYY-MM-DD hh:mm:ss"}}</small>
+                  <small>{{ backup.date | dateparser:"YYYY-MM-DD HH:mm:ss"}}</small>
                 </td>
                 <td class="align-content">
                   <small>{{ backup.status }}</small>

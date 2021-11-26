@@ -28,7 +28,7 @@ const routes: Routes = [
     FormsModule,
     CommonModule,
     NumberInputDebounceModule,
-    ChartModule,
+    ChartModule
   ],
   providers: [StatisticsService, DateFormatterPipe],
   exports: []

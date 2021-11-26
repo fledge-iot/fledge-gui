@@ -57,6 +57,7 @@ export class PackagesLogComponent implements OnInit, OnDestroy {
             this.ngProgress.done();
           }
           this.logList = sortBy(data['logs'], (obj) => obj.timestamp).reverse();
+
         },
         error => {
           this.ngProgress.done();
