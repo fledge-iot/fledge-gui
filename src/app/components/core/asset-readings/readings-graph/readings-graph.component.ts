@@ -5,7 +5,7 @@ import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
-import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import Utils, { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 
@@ -342,16 +342,17 @@ export class ReadingsGraphComponent implements OnDestroy {
     const dataset = [];
     this.readKeyColorLabel = [];
     let count = 0;
+
     for (const r of assetReadings) {
+      const dsColor = Utils.namedColor(dataset.length);
       const dt = {
         label: r.key,
         data: r.read,
         fill: false,
         lineTension: 0.1,
-        spanGaps: true,
         hidden: this.getLegendState(r.key),
-        backgroundColor: this.getColorCode(r.key.trim(), count, true),
-        borderColor: this.getColorCode(r.key.trim(), count, false)
+        backgroundColor: Utils.transparentize(dsColor, 0.9),
+        borderColor: dsColor
       };
       if (dt.data.length) {
         dataset.push(dt);
@@ -383,6 +384,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       elements: {
         point: { radius: 0 }
       },
+      // plugins: {
+      //   colorschemes: {
+      //     fillAlpha: 0.1,
+      //     scheme: Classic10,
+      //   }
+      // },
       scales: {
         xAxes: [{
           distribution: 'linear',

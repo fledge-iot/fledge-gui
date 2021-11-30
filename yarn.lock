@@ -1296,6 +1296,11 @@
     merge-source-map "^1.1.0"
     schema-utils "^2.7.0"
 
+"@kurkle/color@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.1.9.tgz#949ea1494581b15576fca50d8486e5816fccfd27"
+  integrity sha512-K3Aul4Ct6O48yWw0/az5rqk2K76oNXXX3Su32Xkh4SfMFvPt0QEkq0Q6+3icE5S3U2c88WAuq3Vh1Iaz4aUH+w==
+
 "@mapbox/geojson-rewind@^0.5.0":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@mapbox/geojson-rewind/-/geojson-rewind-0.5.1.tgz#adbe16dc683eb40e90934c51a5e28c7bbf44f4e1"

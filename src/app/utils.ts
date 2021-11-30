@@ -1,13 +1,47 @@
+import colorLib from '@kurkle/color';
+
 export const POLLING_INTERVAL = 5000;   // milliseconds
 export const MAX_INT_SIZE = 2147483647;
 export const GRAPH_REFRESH_INTERVAL = 5000; // milliseconds
 export const STATS_HISTORY_TIME_FILTER = '10'; // minutes
 export const ASSET_READINGS_TIME_FILTER = 600; // seconds
 export const COLOR_CODES = ['#3498DB', '#85C1E9', '#239B56', '#82E0AA', '#B03A2E', '#F1948A', '#FF8C00', '#FF0000',
-'#FF5733', '#34AEDB', '#FF6C32', '#8595E9', '#239B87', '#FF9D00', '#82D8E0', '#C79217', '#C75817',
-'#E058E5', '#A464A6', '#533754', '#1D081E', '#7C767C', '#937EE5', '#6442EC', '#5744A5', '#17112E', '#6B6A6E', '#251E40',
-'#5E8DBC', '#115DA9', '#0A7AE9', '#0ACCE9', '#1F6975', '#043840', '#C0F1F9', '#C0F9F1', '#137366', '#073731', '#637F7B',
-'#1EAC73', '#116644', '#DAF3E9', '#455F55', '#17A53D', '#09EE46', '#0C4B1D', '#272C28', '#9CBD16', '#D8FA4C', '#87954C',
+  '#FF5733', '#34AEDB', '#FF6C32', '#8595E9', '#239B87', '#FF9D00', '#82D8E0', '#C79217', '#C75817',
+  '#E058E5', '#A464A6', '#533754', '#1D081E', '#7C767C', '#937EE5', '#6442EC', '#5744A5', '#17112E', '#6B6A6E', '#251E40',
+  '#5E8DBC', '#115DA9', '#0A7AE9', '#0ACCE9', '#1F6975', '#043840', '#C0F1F9', '#C0F9F1', '#137366', '#073731', '#637F7B',
+  '#1EAC73', '#116644', '#DAF3E9', '#455F55', '#17A53D', '#09EE46', '#0C4B1D', '#272C28', '#9CBD16', '#D8FA4C', '#87954C',
+];
+
+const COLORS = [
+  '#4dc9f6',
+  '#f67019',
+  '#f53794',
+  '#537bc4',
+  '#acc236',
+  '#166a8f',
+  '#00a950',
+  '#58595b',
+  '#8549ba'
+];
+
+const CHART_COLORS = {
+  red: 'rgb(255, 99, 132)',
+  orange: 'rgb(255, 159, 64)',
+  yellow: 'rgb(255, 205, 86)',
+  green: 'rgb(75, 192, 192)',
+  blue: 'rgb(54, 162, 235)',
+  purple: 'rgb(153, 102, 255)',
+  grey: 'rgb(201, 203, 207)'
+};
+
+const NAMED_COLORS = [
+  CHART_COLORS.red,
+  CHART_COLORS.orange,
+  CHART_COLORS.yellow,
+  CHART_COLORS.green,
+  CHART_COLORS.blue,
+  CHART_COLORS.purple,
+  CHART_COLORS.grey,
 ];
 
 export default class Utils {
@@ -87,5 +121,19 @@ export default class Utils {
   public static getCurrentDate() {
     return Date.now();
   }
+
+  public static color(index) {
+    return COLORS[index % COLORS.length];
+  }
+
+  public static transparentize(value, opacity: number) {
+    var alpha = opacity === undefined ? 0.0 : 1 - opacity;
+    return colorLib(value).alpha(alpha).rgbString();
+  }
+
+  public static namedColor(index) {
+    return NAMED_COLORS[index % NAMED_COLORS.length];
+  }
+
 
 }
