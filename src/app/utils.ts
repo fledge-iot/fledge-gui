@@ -12,7 +12,7 @@ export const COLOR_CODES = ['#3498DB', '#85C1E9', '#239B56', '#82E0AA', '#B03A2E
   '#1EAC73', '#116644', '#DAF3E9', '#455F55', '#17A53D', '#09EE46', '#0C4B1D', '#272C28', '#9CBD16', '#D8FA4C', '#87954C',
 ];
 
-const CHART_COLORS = {
+export const CHART_COLORS = {
   blue: 'rgb(31, 119, 180)',
   tropicalblue: 'rgb(174, 199, 232)',
   orange: 'rgb(255, 127, 14)',

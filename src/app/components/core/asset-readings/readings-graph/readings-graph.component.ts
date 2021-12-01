@@ -5,7 +5,7 @@ import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
-import Utils, { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 
@@ -30,7 +30,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   public limit: number;
   public DEFAULT_LIMIT = 100;
   public optedTime = ASSET_READINGS_TIME_FILTER;
-  public readKeyColorLabel = [];
   private isAlive: boolean;
   public summaryLimit = 5;
   public buttonText = '';
@@ -93,7 +92,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.buttonText = '';
     this.assetReadingValues = [];
     this.summaryLimit = 5;
-    this.readKeyColorLabel = [];
     this.assetChartOptions = {};
     sessionStorage.removeItem(this.assetCode);
 
@@ -314,35 +312,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     }).value();
   }
 
-  getColorCode(readKey, cnt, fill) {
-    let cc = '';
-    if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
-      if (cnt >= 51) { // 50 is length of Utils' colorCodes array
-        cc = '#ad7ebf';
-      } else {
-        cc = COLOR_CODES[cnt];
-      }
-    }
-    if (readKey.toUpperCase() === 'RED' || readKey.toUpperCase() === 'R') {
-      cc = '#FF334C';
-    } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
-      cc = '#339FFF';
-    } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
-      cc = '#008000';
-    }
-
-    if (fill) {
-      this.readKeyColorLabel.push({ [readKey]: cc });
-    }
-    return cc;
-  }
-
   private statsAssetReadingsGraph(assetReadings: any, ts: any): void {
     const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss'));
     const dataset = [];
-    this.readKeyColorLabel = [];
-    let count = 0;
-
     for (const r of assetReadings) {
       const dsColor = Utils.namedColor(dataset.length);
       const dt = {
@@ -351,15 +323,30 @@ export class ReadingsGraphComponent implements OnDestroy {
         fill: false,
         lineTension: 0.1,
         hidden: this.getLegendState(r.key),
-        backgroundColor: dsColor, //Utils.transparentize(dsColor, 0),
-        borderColor: Utils.transparentize(dsColor, 0.4),
+        backgroundColor: dsColor,
+        borderColor: this.getColorCode(r.key.trim(), dsColor)
       };
       if (dt.data.length) {
         dataset.push(dt);
       }
-      count++;
     }
     this.setAssetReadingValues(dataset, timestamps);
+  }
+
+  getColorCode(readKey, dsColor) {
+    let cc = '';
+    if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
+      cc = Utils.transparentize(dsColor, 0.4);
+    }
+    if (readKey.toUpperCase() === 'RED' || readKey.toUpperCase() === 'R') {
+      cc = Utils.transparentize(CHART_COLORS.red, 0.4);  // '#FF334C';
+    } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
+      cc = Utils.transparentize(CHART_COLORS.blue, 0.4);   //'#339FFF';
+    } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
+      cc = Utils.transparentize(CHART_COLORS.green, 0.4) //'#008000';
+    }
+
+    return cc;
   }
 
   public getLegendState(key) {
@@ -379,19 +366,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       labels: timestamps,
       datasets: ds
     };
-    console.log(ds);
 
     this.assetChartType = 'line';
     this.assetChartOptions = {
       elements: {
         point: { radius: 0 }
       },
-      // plugins: {
-      //   colorschemes: {
-      //     fillAlpha: 0.1,
-      //     scheme: Classic10,
-      //   }
-      // },
       scales: {
         xAxes: [{
           distribution: 'linear',
