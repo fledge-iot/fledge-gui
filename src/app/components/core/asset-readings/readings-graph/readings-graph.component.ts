@@ -351,8 +351,8 @@ export class ReadingsGraphComponent implements OnDestroy {
         fill: false,
         lineTension: 0.1,
         hidden: this.getLegendState(r.key),
-        backgroundColor: Utils.transparentize(dsColor, 0.9),
-        borderColor: dsColor
+        backgroundColor: dsColor, //Utils.transparentize(dsColor, 0),
+        borderColor: Utils.transparentize(dsColor, 0.4),
       };
       if (dt.data.length) {
         dataset.push(dt);
@@ -379,6 +379,8 @@ export class ReadingsGraphComponent implements OnDestroy {
       labels: timestamps,
       datasets: ds
     };
+    console.log(ds);
+
     this.assetChartType = 'line';
     this.assetChartOptions = {
       elements: {
