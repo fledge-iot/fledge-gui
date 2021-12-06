@@ -14,10 +14,11 @@ import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ConfigChildrenComponent } from './components/core/configuration-manager/config-children/config-children.component';
 import { PluginModalComponent } from './components/core/plugin-modal/plugin-modal.component';
+import { TimeDropdownComponent } from './components/common/time-dropdown/time-dropdown.component';
 
 @NgModule({
   imports: [CommonModule, CodemirrorModule, PipesModule, FormsModule, DirectivesModule, NgSelectModule, ReactiveFormsModule],
-  declarations: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent],
-  exports: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent]
+  declarations: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent, TimeDropdownComponent],
+  exports: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent, TimeDropdownComponent]
 })
 export class SharedModule { }

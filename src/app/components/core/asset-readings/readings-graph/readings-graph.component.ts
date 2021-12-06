@@ -114,11 +114,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.optedTime = ASSET_READINGS_TIME_FILTER;
   }
 
-  getTimeBasedAssetReadingsAndSummary(time) {
+  getTimeBasedAssetReadingsAndSummary(time: number) {
     this.optedTime = time;
     this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-    this.toggleDropdown();
   }
 
   public getAssetCode(assetCode: string) {
@@ -414,16 +413,6 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
-  }
-
-  public toggleDropdown() {
-    const dropDown = document.querySelector('#time-dropdown');
-    dropDown.classList.toggle('is-active');
-    if (!dropDown.classList.contains('is-active')) {
-      this.timeDropDownOpened = false;
-    } else {
-      this.timeDropDownOpened = true;
-    }
   }
 
   create3DGraph(readings: any, ts: any) {

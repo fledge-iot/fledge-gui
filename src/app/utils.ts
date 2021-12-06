@@ -14,48 +14,28 @@ export const COLOR_CODES = ['#3498DB', '#85C1E9', '#239B56', '#82E0AA', '#B03A2E
 
 export const CHART_COLORS = {
   blue: 'rgb(31, 119, 180)',
-  tropicalblue: 'rgb(174, 199, 232)',
   orange: 'rgb(255, 127, 14)',
-  macaroniorange: 'rgb(255, 187, 120)',
   green: 'rgb(44, 160, 44)',
-  lightgreen: 'rgb(152, 223, 138)',
   red: 'rgb(214, 39, 40)',
-  monalisared: 'rgb(255, 152, 150)',
   purple: 'rgb(148, 103, 189)',
-  perfumepurple: 'rgb(197, 176, 213)',
   brown: 'rgb(140, 86, 75)',
-  lightbrown: 'rgb(196, 156, 148)',
   pink: 'rgb(227, 119, 194)',
-  cottoncandypink: 'rgb(247, 182, 210)',
   grey: 'rgb(127, 127, 127)',
-  lightgray: 'rgb(199, 199, 199)',
   olive: 'rgb(188, 189, 34)',
-  lightolive: 'rgb(219, 219, 141)',
   cyan: 'rgb(23, 190, 207)',
-  lightcyan: 'rgb(158,218, 229)'
 };
 
 const NAMED_COLORS = [
   CHART_COLORS.blue,
-  CHART_COLORS.tropicalblue,
   CHART_COLORS.orange,
-  CHART_COLORS.macaroniorange,
   CHART_COLORS.green,
-  CHART_COLORS.lightgreen,
   CHART_COLORS.red,
-  CHART_COLORS.monalisared,
   CHART_COLORS.purple,
-  CHART_COLORS.perfumepurple,
   CHART_COLORS.brown,
-  CHART_COLORS.lightbrown,
   CHART_COLORS.pink,
-  CHART_COLORS.cottoncandypink,
   CHART_COLORS.grey,
-  CHART_COLORS.lightgray,
   CHART_COLORS.olive,
-  CHART_COLORS.lightolive,
   CHART_COLORS.cyan,
-  CHART_COLORS.lightcyan,
 ];
 
 export default class Utils {
@@ -137,7 +117,7 @@ export default class Utils {
   }
 
   public static transparentize(value, opacity: number) {
-    let alpha = opacity === undefined ? 0.0 : 1 - opacity;
+    let alpha = opacity === undefined ? 1.0 : 1 - opacity;
     return colorLib(value).alpha(alpha).rgbString();
   }
 

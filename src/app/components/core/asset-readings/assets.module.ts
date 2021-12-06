@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AssetsService } from '../../../services';
+import { SharedModule } from '../../../shared.module';
 import { ChartModule } from '../../common/chart';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
@@ -33,7 +34,8 @@ const routes: Routes = [
     PipesModule,
     ChartModule,
     NumberInputDebounceModule,
-    PaginationModule
+    PaginationModule,
+    SharedModule
   ],
   providers: [AssetsService],
   exports: []
