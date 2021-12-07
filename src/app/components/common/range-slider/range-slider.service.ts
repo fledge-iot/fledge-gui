@@ -5,11 +5,15 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class RangeSliderService {
-  opacitySubject: BehaviorSubject<number> = new BehaviorSubject(0.5);
+  private alpha = 0.7 //default
+  alphaSubject: BehaviorSubject<number> = new BehaviorSubject(this.alpha);
   constructor() { }
 
+  getAlpha(): number {
+    return this.alpha;
+  }
 
-  setOpacity(opacity: number) {
-    this.opacitySubject.next(opacity);
+  setAlpha(alpha: number) {
+    this.alphaSubject.next(alpha);
   }
 }

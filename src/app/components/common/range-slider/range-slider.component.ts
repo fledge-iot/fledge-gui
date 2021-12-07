@@ -1,5 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { RangeSliderService } from './range-slider.service';
 
 @Component({
@@ -14,18 +13,18 @@ export class RangeSliderComponent implements OnInit {
         .addEventListener('input', (element: any) => { this.setBubble(element) });
     }
   }
-  constructor(private rangeSliderService: RangeSliderService) { }
+  constructor(public rangeSliderService: RangeSliderService) { }
 
   ngOnInit(): void {
-    // set default opacity on page load
-    this.rangeSliderService.setOpacity(0.5);
+    // set default color alpha to 0.7 on page load
+    this.rangeSliderService.setAlpha(this.rangeSliderService.getAlpha());
   }
 
   setBubble(range: any) {
     let bubble: HTMLElement = document.getElementById('bubble');
     let newPlace;
     const val = range.target.value;
-    this.rangeSliderService.setOpacity(val);
+    this.rangeSliderService.setAlpha(val);
     // Measure width of range input
     const sliderWidth = parseInt(range.target.offsetWidth, 10);
     const minValue = range.min ? range.min : 0;

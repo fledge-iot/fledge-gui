@@ -22,7 +22,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() { }
 
   ngOnChanges() {
-    this.setOpacity();
+    this.setAlpha();
     if (this.chart) {
       this.chart.destroy();
     }
@@ -35,18 +35,18 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Set graph line color opacity
+   * Set graph line color Alpha
    */
-  setOpacity() {
+  setAlpha() {
     if (this.data === undefined || this.data.length <= 0) {
       return;
     }
-    this.subscription = this.rangeSliderService.opacitySubject
-      .subscribe((opacity: number) => {
+    this.subscription = this.rangeSliderService.alphaSubject
+      .subscribe((alpha: number) => {
         this.data.datasets.map((d: any) => {
-          d.borderColor = Utils.transparentize(d.borderColor, opacity);
+          d.borderColor = Utils.transparentize(d.borderColor, alpha);
         })
-        if (this.chart) {
+        if (this.chart && this.chart.ctx != null) {
           this.chart.update(0);
         }
       });
