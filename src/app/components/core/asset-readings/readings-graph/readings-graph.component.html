@@ -64,8 +64,13 @@
               </ng-container>
               <ng-template #DataDiv>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
-                  <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
-                    [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+                  <div class="range-wrap is-pulled-right">
+                    <app-opacity-slider></app-opacity-slider>
+                  </div>
+                  <div>
+                    <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
+                      [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+                  </div>
                 </div>
                 <div *ngIf="selectedTab === 2 && arrayTypeReadingsList?.length > 0" data-content="2">
                   <div id="3d_graph" #3DGraph></div>
