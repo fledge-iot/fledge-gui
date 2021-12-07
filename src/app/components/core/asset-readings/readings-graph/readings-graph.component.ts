@@ -335,14 +335,14 @@ export class ReadingsGraphComponent implements OnDestroy {
   getColorCode(readKey, dsColor) {
     let cc = '';
     if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
-      cc = Utils.transparentize(dsColor, 0.4);
+      cc = dsColor;
     }
     if (readKey.toUpperCase() === 'RED' || readKey.toUpperCase() === 'R') {
-      cc = Utils.transparentize(CHART_COLORS.red, 0.4);  // '#FF334C';
+      cc = CHART_COLORS.red;
     } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
-      cc = Utils.transparentize(CHART_COLORS.blue, 0.4);   //'#339FFF';
+      cc = CHART_COLORS.blue;
     } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
-      cc = Utils.transparentize(CHART_COLORS.green, 0.4) //'#008000';
+      cc = CHART_COLORS.green
     }
 
     return cc;

@@ -15,11 +15,11 @@ import { PipesModule } from './pipes/pipes.module';
 import { ConfigChildrenComponent } from './components/core/configuration-manager/config-children/config-children.component';
 import { PluginModalComponent } from './components/core/plugin-modal/plugin-modal.component';
 import { TimeDropdownComponent } from './components/common/time-dropdown/time-dropdown.component';
-import { OpacitySliderComponent } from './components/common/opacity-slider/opacity-slider.component';
+import { RangeSliderComponent } from './components/common/range-slider/range-slider.component';
 
 @NgModule({
   imports: [CommonModule, CodemirrorModule, PipesModule, FormsModule, DirectivesModule, NgSelectModule, ReactiveFormsModule],
-  declarations: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent, TimeDropdownComponent, OpacitySliderComponent],
-  exports: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent, TimeDropdownComponent, OpacitySliderComponent]
+  declarations: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent, TimeDropdownComponent, RangeSliderComponent],
+  exports: [ViewConfigItemComponent, ConfigChildrenComponent, PluginModalComponent, ViewLogsComponent, TimeDropdownComponent, RangeSliderComponent]
 })
 export class SharedModule { }

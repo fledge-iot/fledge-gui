@@ -65,7 +65,7 @@
               <ng-template #DataDiv>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
                   <div class="range-wrap is-pulled-right">
-                    <app-opacity-slider></app-opacity-slider>
+                    <app-range-slider></app-range-slider>
                   </div>
                   <div>
                     <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"

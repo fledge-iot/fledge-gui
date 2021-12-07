@@ -116,8 +116,7 @@ export default class Utils {
     return Date.now();
   }
 
-  public static transparentize(value, opacity: number) {
-    let alpha = opacity === undefined ? 1.0 : 1 - opacity;
+  public static transparentize(value, alpha: number) {
     return colorLib(value).alpha(alpha).rgbString();
   }
 

@@ -1,5 +1,8 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Chart } from 'chart.js';
+import { Subscription } from 'rxjs';
+import Utils from '../../../utils';
+import { RangeSliderService } from '../range-slider/range-slider.service';
 
 @Component({
   selector: 'app-chart',
@@ -12,12 +15,14 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() type: string;
   @Input() data: any;
   @Input() options: any;
+  private subscription: Subscription;
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(private elementRef: ElementRef, private rangeSliderService: RangeSliderService) { }
 
   ngOnInit() { }
 
   ngOnChanges() {
+    this.setOpacity();
     if (this.chart) {
       this.chart.destroy();
     }
@@ -29,7 +34,26 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     this.chart.update(0);
   }
 
+  /**
+   * Set graph line color opacity
+   */
+  setOpacity() {
+    this.subscription = this.rangeSliderService.opacitySubject
+      .subscribe((opacity: number) => {
+        if (this.data.length <= 0) {
+          return;
+        }
+        this.data.datasets.map((d: any) => {
+          d.borderColor = Utils.transparentize(d.borderColor, opacity);
+        })
+        if (this.chart) {
+          this.chart.update(0);
+        }
+      });
+  }
+
   ngOnDestroy() {
+    this.subscription.unsubscribe();
     if (this.chart) {
       this.chart.destroy();
     }
