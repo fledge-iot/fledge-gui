@@ -38,11 +38,11 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
    * Set graph line color opacity
    */
   setOpacity() {
+    if (this.data === undefined || this.data.length <= 0) {
+      return;
+    }
     this.subscription = this.rangeSliderService.opacitySubject
       .subscribe((opacity: number) => {
-        if (this.data.length <= 0) {
-          return;
-        }
         this.data.datasets.map((d: any) => {
           d.borderColor = Utils.transparentize(d.borderColor, opacity);
         })
