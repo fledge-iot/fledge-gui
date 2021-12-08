@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class RangeSliderService {
-  private alpha = 0.7 //default
+  private alpha = 1 //default
   alphaSubject: BehaviorSubject<number> = new BehaviorSubject(this.alpha);
   constructor() { }
 

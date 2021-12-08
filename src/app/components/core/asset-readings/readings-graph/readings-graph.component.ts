@@ -5,7 +5,7 @@ import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
-import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import Utils, { ASSET_READINGS_TIME_FILTER, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 
@@ -19,7 +19,7 @@ declare var Plotly: any;
 export class ReadingsGraphComponent implements OnDestroy {
   public assetCode: string;
   public assetChartType: string;
-  public assetReadingValues: any;
+  public assetReadingValues = {};
   public assetChartOptions: any;
   public loadPage = true;
   public assetReadingSummary = [];
@@ -54,7 +54,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService, private dateFormatter: DateFormatterPipe) {
     this.assetChartType = 'line';
-    this.assetReadingValues = [];
+    this.assetReadingValues = {};
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((timeInterval: number) => {
@@ -90,7 +90,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     // reset all variable and array to default state
     this.assetReadingSummary = [];
     this.buttonText = '';
-    this.assetReadingValues = [];
+    this.assetReadingValues = {};
     this.summaryLimit = 5;
     this.assetChartOptions = {};
     sessionStorage.removeItem(this.assetCode);
@@ -315,7 +315,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss'));
     const dataset = [];
     for (const r of assetReadings) {
-      const dsColor = Utils.namedColor(dataset.length);
+      const dsColor = Utils.namedColor();
       const dt = {
         label: r.key,
         data: r.read,
@@ -338,11 +338,11 @@ export class ReadingsGraphComponent implements OnDestroy {
       cc = dsColor;
     }
     if (readKey.toUpperCase() === 'RED' || readKey.toUpperCase() === 'R') {
-      cc = CHART_COLORS.red;
+      cc = 'rgb(214, 39, 40)';
     } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
-      cc = CHART_COLORS.blue;
+      cc = 'rgb(31, 119, 180)';
     } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
-      cc = CHART_COLORS.green
+      cc = 'rgb(44, 160, 44)';
     }
     return cc;
   }

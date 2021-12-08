@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Chart } from 'chart.js';
 import { Subscription } from 'rxjs';
+import { isEmpty } from 'lodash';
 import Utils from '../../../utils';
 import { RangeSliderService } from '../range-slider/range-slider.service';
 
@@ -24,36 +25,50 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges() {
     this.setAlpha();
     if (this.chart) {
-      this.chart.destroy();
+      console.log('if');
+      if (!isEmpty(this.data)) {
+        console.log('this.chart.data', this.chart.data);
+        this.chart.data.datasets.forEach((dataset) => {
+          dataset.data = this.data.datasets.find(d => dataset.label === d.label).data;
+        });
+        this.chart.data.labels = this.data.labels;
+        this.chart.update(0);
+      }
+    } else {
+      console.log('else');
+      if (!isEmpty(this.data)) {
+        this.chart = new Chart(this.elementRef.nativeElement.querySelector('canvas'), {
+          type: this.type,
+          data: this.data,
+          options: this.options
+        });
+        this.chart.update(0);
+      }
     }
-    this.chart = new Chart(this.elementRef.nativeElement.querySelector('canvas'), {
-      type: this.type,
-      data: this.data,
-      options: this.options
-    });
-    this.chart.update(0);
   }
 
   /**
    * Set graph line color Alpha
    */
   setAlpha() {
-    if (this.data === undefined || this.data.length <= 0) {
+    if (isEmpty(this.data)) {
       return;
     }
     this.subscription = this.rangeSliderService.alphaSubject
       .subscribe((alpha: number) => {
-        this.data.datasets.map((d: any) => {
-          d.borderColor = Utils.transparentize(d.borderColor, alpha);
-        })
         if (this.chart && this.chart.ctx != null) {
+          this.chart.data.datasets.map((d: any) => {
+            d.borderColor = Utils.transparentize(d.borderColor, alpha);
+          })
           this.chart.update(0);
         }
       });
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
     if (this.chart) {
       this.chart.destroy();
     }
