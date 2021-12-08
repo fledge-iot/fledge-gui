@@ -12,9 +12,9 @@ export class TimeDropdownComponent implements OnInit {
     { key: '10 minutes', value: 600 },
     { key: '30 minutes', value: 1800 },
     { key: '1 hour', value: 3600 },
-    { key: '8 hour', value: 28800 },
+    { key: '8 hours', value: 28800 },
     { key: '1 day', value: 86400 },
-    { key: 'one week', value: 10080 }
+    { key: '1 week', value: 604800 }
   ];
 
   optedTime = this.graphTime[2].value; // Set graph optTime to default 10 minutes

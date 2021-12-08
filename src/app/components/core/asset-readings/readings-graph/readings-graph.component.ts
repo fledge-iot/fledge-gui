@@ -344,7 +344,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
       cc = CHART_COLORS.green
     }
-
     return cc;
   }
 
