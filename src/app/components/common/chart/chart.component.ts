@@ -12,7 +12,7 @@ import { RangeSliderService } from '../range-slider/range-slider.service';
 })
 export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   chart: any;
-
+  @Input() from: string;
   @Input() type: string;
   @Input() data: any;
   @Input() options: any;
@@ -23,11 +23,12 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() { }
 
   ngOnChanges() {
-    this.setAlpha();
+    // set alpha only for asset reading graphs
+    if (this.from && this.from !== 'dashboard') {
+      this.setAlpha();
+    }
     if (this.chart) {
-      console.log('if');
       if (!isEmpty(this.data)) {
-        console.log('this.chart.data', this.chart.data);
         this.chart.data.datasets.forEach((dataset) => {
           dataset.data = this.data.datasets.find(d => dataset.label === d.label).data;
         });
@@ -35,7 +36,6 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
         this.chart.update(0);
       }
     } else {
-      console.log('else');
       if (!isEmpty(this.data)) {
         this.chart = new Chart(this.elementRef.nativeElement.querySelector('canvas'), {
           type: this.type,

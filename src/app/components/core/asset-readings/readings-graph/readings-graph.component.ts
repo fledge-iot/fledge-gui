@@ -5,7 +5,7 @@ import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
-import Utils, { ASSET_READINGS_TIME_FILTER, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 
@@ -315,7 +315,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss'));
     const dataset = [];
     for (const r of assetReadings) {
-      const dsColor = Utils.namedColor();
+      const dsColor = Utils.namedColor(dataset.length);
       const dt = {
         label: r.key,
         data: r.read,
@@ -338,11 +338,11 @@ export class ReadingsGraphComponent implements OnDestroy {
       cc = dsColor;
     }
     if (readKey.toUpperCase() === 'RED' || readKey.toUpperCase() === 'R') {
-      cc = 'rgb(214, 39, 40)';
+      cc = CHART_COLORS.red;
     } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
-      cc = 'rgb(31, 119, 180)';
+      cc = CHART_COLORS.blue;
     } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
-      cc = 'rgb(44, 160, 44)';
+      cc = CHART_COLORS.green;
     }
     return cc;
   }

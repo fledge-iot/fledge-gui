@@ -68,8 +68,9 @@
                     <app-range-slider></app-range-slider>
                   </div>
                   <div>
-                    <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
-                      [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+                    <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [from]="'asset'"
+                      [type]="assetChartType" [data]="assetReadingValues" [options]="assetChartOptions" #assetChart>
+                    </app-chart>
                   </div>
                 </div>
                 <div *ngIf="selectedTab === 2 && arrayTypeReadingsList?.length > 0" data-content="2">

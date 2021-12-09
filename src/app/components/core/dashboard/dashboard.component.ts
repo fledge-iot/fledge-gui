@@ -191,9 +191,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
-          this.graphsToShow.map(statistics => {
+          this.graphsToShow.map((statistics, index) => {
             if (statistics.key === dt.key) {
-              statistics.chartValue = this.getChartValues(labels, record, Utils.namedColor());
+              statistics.chartValue = this.getChartValues(labels, record, Utils.namedColor(index));
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
             }
@@ -229,9 +229,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
-          this.graphsToShow.map(statistics => {
+          this.graphsToShow.map((statistics, index) => {
             if (statistics.key === dt.key) {
-              statistics.chartValue = this.getChartValues(labels, record, Utils.namedColor());
+              statistics.chartValue = this.getChartValues(labels, record, Utils.namedColor(index));
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
             }
