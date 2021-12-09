@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, ElementRef } from '@angular/core';
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
@@ -50,6 +50,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public timestamps = [];
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+  private subscription: Subscription;
 
   constructor(private assetService: AssetsService, private alertService: AlertService,
     private ping: PingService, private dateFormatter: DateFormatterPipe) {
@@ -100,6 +101,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       chart_modal.classList.add('is-active');
       return;
     }
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
     } else {
@@ -136,7 +141,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.autoRefresh = false;
       this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
     }
-    interval(this.graphRefreshInterval)
+    this.subscription = interval(this.graphRefreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.autoRefresh = true;
