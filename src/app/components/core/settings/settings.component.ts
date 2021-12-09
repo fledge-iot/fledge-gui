@@ -156,9 +156,7 @@ export class SettingsComponent implements OnInit {
     return pingResponse;
   }
 
-
-  setAlphControlStatus(event: any) {
-    const status = this.rangeSliderService.getAlphControlStatus();
-    this.rangeSliderService.alphaControl(event.target.checked);
+  setAlphControlStatus(status: any) {
+    this.rangeSliderService.alphaControl(status);
   }
 }

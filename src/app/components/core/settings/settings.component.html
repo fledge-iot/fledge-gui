@@ -140,14 +140,13 @@
           </div>
         </div>
         <div class="column is-4">
-          <label class="label is-small">Editor Theme</label>
+          <label class="label is-small">Show Readings Graph Alpha Control</label>
           <div class="control">
-            <div id="theme-dropdown" class="dropdown">
+            <div id="alpha-control-dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)="toggleDropDown('theme-dropdown')">
-                  <span *ngIf="selectedTheme === 'light'">Light</span>
-                  <span *ngIf="selectedTheme === 'dark'">Dark</span>
+                  (click)="toggleDropDown('alpha-control-dropdown')">
+                  <span>{{rangeSliderService.getAlphControlStatus() === true ? 'Show' : 'Hide'}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -155,8 +154,10 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="toggleDropDown('theme-dropdown');selectTheme('light')">Light</a>
-                  <a class="dropdown-item" (click)="toggleDropDown('theme-dropdown');selectTheme('dark')">Dark</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('alpha-control-dropdown');setAlphControlStatus(true)">Show</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('alpha-control-dropdown');setAlphControlStatus(false)">Hide</a>
                 </div>
               </div>
             </div>
@@ -189,12 +190,26 @@
           </div>
         </div>
         <div class="column is-4">
-          <div class="alpha-control control">
-            <label class="checkbox label is-small">
-              <input type="checkbox" [checked]='rangeSliderService.getAlphControlStatus()'
-                (click)="setAlphControlStatus($event)">&nbsp;Show Readings
-              Graph Alpha Control
-            </label>
+          <label class="label is-small">Editor Theme</label>
+          <div class="control">
+            <div id="theme-dropdown" class="dropdown">
+              <div class="dropdown-trigger">
+                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                  (click)="toggleDropDown('theme-dropdown')">
+                  <span *ngIf="selectedTheme === 'light'">Light</span>
+                  <span *ngIf="selectedTheme === 'dark'">Dark</span>
+                  <span class="icon is-small">
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item" (click)="toggleDropDown('theme-dropdown');selectTheme('light')">Light</a>
+                  <a class="dropdown-item" (click)="toggleDropDown('theme-dropdown');selectTheme('dark')">Dark</a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
