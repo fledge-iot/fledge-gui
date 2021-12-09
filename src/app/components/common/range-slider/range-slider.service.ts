@@ -9,11 +9,21 @@ export class RangeSliderService {
   alphaSubject: BehaviorSubject<number> = new BehaviorSubject(this.alpha);
   constructor() { }
 
-  getAlpha(): number {
+  public getAlpha(): number {
     return this.alpha;
   }
 
-  setAlpha(alpha: number) {
+  public setAlpha(alpha: number) {
     this.alphaSubject.next(alpha);
   }
+
+  public alphaControl(visible: boolean) {
+    localStorage.setItem('ALPHA_CONTROL', JSON.stringify(visible));
+  }
+
+  public getAlphControlStatus(): boolean {
+    const controlStatus: boolean = JSON.parse(localStorage.getItem('ALPHA_CONTROL'));
+    return controlStatus ? controlStatus : false;
+  }
+
 }

@@ -64,7 +64,7 @@
               </ng-container>
               <ng-template #DataDiv>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
-                  <div class="range-wrap is-pulled-right">
+                  <div *ngIf="rangeSliderService.getAlphControlStatus()" class="range-wrap is-pulled-right">
                     <app-range-slider></app-range-slider>
                   </div>
                   <div>

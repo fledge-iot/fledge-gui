@@ -8,6 +8,7 @@ import { AlertService, AssetsService, PingService } from '../../../../services';
 import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
+import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
 
 declare var Plotly: any;
 
@@ -52,8 +53,12 @@ export class ReadingsGraphComponent implements OnDestroy {
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
 
-  constructor(private assetService: AssetsService, private alertService: AlertService,
-    private ping: PingService, private dateFormatter: DateFormatterPipe) {
+  constructor(
+    private assetService: AssetsService,
+    private alertService: AlertService,
+    private ping: PingService,
+    private dateFormatter: DateFormatterPipe,
+    public rangeSliderService: RangeSliderService) {
     this.assetChartType = 'line';
     this.assetReadingValues = {};
     this.ping.pingIntervalChanged
