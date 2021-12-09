@@ -1,13 +1,14 @@
 import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, ElementRef } from '@angular/core';
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
-import { ASSET_READINGS_TIME_FILTER, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
+import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
 
 declare var Plotly: any;
 
@@ -19,7 +20,7 @@ declare var Plotly: any;
 export class ReadingsGraphComponent implements OnDestroy {
   public assetCode: string;
   public assetChartType: string;
-  public assetReadingValues: any;
+  public assetReadingValues = {};
   public assetChartOptions: any;
   public loadPage = true;
   public assetReadingSummary = [];
@@ -30,7 +31,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   public limit: number;
   public DEFAULT_LIMIT = 100;
   public optedTime = ASSET_READINGS_TIME_FILTER;
-  public readKeyColorLabel = [];
   private isAlive: boolean;
   public summaryLimit = 5;
   public buttonText = '';
@@ -51,11 +51,16 @@ export class ReadingsGraphComponent implements OnDestroy {
   public timestamps = [];
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+  private subscription: Subscription;
 
-  constructor(private assetService: AssetsService, private alertService: AlertService,
-    private ping: PingService, private dateFormatter: DateFormatterPipe) {
+  constructor(
+    private assetService: AssetsService,
+    private alertService: AlertService,
+    private ping: PingService,
+    private dateFormatter: DateFormatterPipe,
+    public rangeSliderService: RangeSliderService) {
     this.assetChartType = 'line';
-    this.assetReadingValues = [];
+    this.assetReadingValues = {};
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((timeInterval: number) => {
@@ -91,9 +96,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     // reset all variable and array to default state
     this.assetReadingSummary = [];
     this.buttonText = '';
-    this.assetReadingValues = [];
+    this.assetReadingValues = {};
     this.summaryLimit = 5;
-    this.readKeyColorLabel = [];
     this.assetChartOptions = {};
     sessionStorage.removeItem(this.assetCode);
 
@@ -102,6 +106,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       chart_modal.classList.add('is-active');
       return;
     }
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
     } else {
@@ -116,11 +124,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.optedTime = ASSET_READINGS_TIME_FILTER;
   }
 
-  getTimeBasedAssetReadingsAndSummary(time) {
+  getTimeBasedAssetReadingsAndSummary(time: number) {
     this.optedTime = time;
     this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-    this.toggleDropdown();
   }
 
   public getAssetCode(assetCode: string) {
@@ -139,7 +146,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.autoRefresh = false;
       this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
     }
-    interval(this.graphRefreshInterval)
+    this.subscription = interval(this.graphRefreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.autoRefresh = true;
@@ -314,51 +321,40 @@ export class ReadingsGraphComponent implements OnDestroy {
     }).value();
   }
 
-  getColorCode(readKey, cnt, fill) {
-    let cc = '';
-    if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
-      if (cnt >= 51) { // 50 is length of Utils' colorCodes array
-        cc = '#ad7ebf';
-      } else {
-        cc = COLOR_CODES[cnt];
-      }
-    }
-    if (readKey.toUpperCase() === 'RED' || readKey.toUpperCase() === 'R') {
-      cc = '#FF334C';
-    } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
-      cc = '#339FFF';
-    } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
-      cc = '#008000';
-    }
-
-    if (fill) {
-      this.readKeyColorLabel.push({ [readKey]: cc });
-    }
-    return cc;
-  }
-
   private statsAssetReadingsGraph(assetReadings: any, ts: any): void {
     const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss'));
     const dataset = [];
-    this.readKeyColorLabel = [];
-    let count = 0;
     for (const r of assetReadings) {
+      const dsColor = Utils.namedColor(dataset.length);
       const dt = {
         label: r.key,
         data: r.read,
         fill: false,
         lineTension: 0.1,
-        spanGaps: true,
         hidden: this.getLegendState(r.key),
-        backgroundColor: this.getColorCode(r.key.trim(), count, true),
-        borderColor: this.getColorCode(r.key.trim(), count, false)
+        backgroundColor: dsColor,
+        borderColor: this.getColorCode(r.key.trim(), dsColor)
       };
       if (dt.data.length) {
         dataset.push(dt);
       }
-      count++;
     }
     this.setAssetReadingValues(dataset, timestamps);
+  }
+
+  getColorCode(readKey, dsColor) {
+    let cc = '';
+    if (!['RED', 'GREEN', 'BLUE', 'R', 'G', 'B'].includes(readKey.toUpperCase())) {
+      cc = dsColor;
+    }
+    if (readKey.toUpperCase() === 'RED' || readKey.toUpperCase() === 'R') {
+      cc = CHART_COLORS.red;
+    } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
+      cc = CHART_COLORS.blue;
+    } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
+      cc = CHART_COLORS.green;
+    }
+    return cc;
   }
 
   public getLegendState(key) {
@@ -378,6 +374,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       labels: timestamps,
       datasets: ds
     };
+
     this.assetChartType = 'line';
     this.assetChartOptions = {
       elements: {
@@ -425,16 +422,6 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
-  }
-
-  public toggleDropdown() {
-    const dropDown = document.querySelector('#time-dropdown');
-    dropDown.classList.toggle('is-active');
-    if (!dropDown.classList.contains('is-active')) {
-      this.timeDropDownOpened = false;
-    } else {
-      this.timeDropDownOpened = true;
-    }
   }
 
   create3DGraph(readings: any, ts: any) {
