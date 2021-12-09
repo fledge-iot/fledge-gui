@@ -6,7 +6,7 @@ import { takeWhile, takeUntil } from 'rxjs/operators';
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, StatisticsService } from '../../../services';
 import { DocService } from '../../../services/doc.service';
-import { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
+import Utils, { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -191,9 +191,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
-          this.graphsToShow.map(statistics => {
+          this.graphsToShow.map((statistics, index) => {
             if (statistics.key === dt.key) {
-              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
+              statistics.chartValue = this.getChartValues(labels, record, Utils.namedColor(index));
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
             }
@@ -229,9 +229,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
-          this.graphsToShow.map(statistics => {
+          this.graphsToShow.map((statistics, index) => {
             if (statistics.key === dt.key) {
-              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
+              statistics.chartValue = this.getChartValues(labels, record, Utils.namedColor(index));
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
             }

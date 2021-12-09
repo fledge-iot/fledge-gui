@@ -7,11 +7,12 @@ import { environment } from '../../../../environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TimezoneService } from '../../../services/timezone.service';
+import { RangeSliderService } from '../../common/range-slider/range-slider.service';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css']
+  styleUrls: ['./settings.component.css'],
 })
 export class SettingsComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
@@ -35,6 +36,7 @@ export class SettingsComponent implements OnInit {
 
   constructor(private pingService: PingService,
     private sharedService: SharedService,
+    public rangeSliderService: RangeSliderService,
     public timezoneService: TimezoneService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
       localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
@@ -152,5 +154,9 @@ export class SettingsComponent implements OnInit {
         pingResponse = res;
       });
     return pingResponse;
+  }
+
+  setAlphControlStatus(status: boolean) {
+    this.rangeSliderService.alphaControl(status);
   }
 }

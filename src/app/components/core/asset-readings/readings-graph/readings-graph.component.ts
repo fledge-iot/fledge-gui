@@ -1,13 +1,14 @@
 import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, ElementRef } from '@angular/core';
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
-import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, COLOR_CODES, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
+import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
 
 declare var Plotly: any;
 
@@ -19,7 +20,7 @@ declare var Plotly: any;
 export class ReadingsGraphComponent implements OnDestroy {
   public assetCode: string;
   public assetChartType: string;
-  public assetReadingValues: any;
+  public assetReadingValues = {};
   public assetChartOptions: any;
   public loadPage = true;
   public assetReadingSummary = [];
@@ -50,11 +51,16 @@ export class ReadingsGraphComponent implements OnDestroy {
   public timestamps = [];
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+  private subscription: Subscription;
 
-  constructor(private assetService: AssetsService, private alertService: AlertService,
-    private ping: PingService, private dateFormatter: DateFormatterPipe) {
+  constructor(
+    private assetService: AssetsService,
+    private alertService: AlertService,
+    private ping: PingService,
+    private dateFormatter: DateFormatterPipe,
+    public rangeSliderService: RangeSliderService) {
     this.assetChartType = 'line';
-    this.assetReadingValues = [];
+    this.assetReadingValues = {};
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((timeInterval: number) => {
@@ -90,7 +96,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     // reset all variable and array to default state
     this.assetReadingSummary = [];
     this.buttonText = '';
-    this.assetReadingValues = [];
+    this.assetReadingValues = {};
     this.summaryLimit = 5;
     this.assetChartOptions = {};
     sessionStorage.removeItem(this.assetCode);
@@ -100,6 +106,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       chart_modal.classList.add('is-active');
       return;
     }
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
     } else {
@@ -136,7 +146,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.autoRefresh = false;
       this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
     }
-    interval(this.graphRefreshInterval)
+    this.subscription = interval(this.graphRefreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.autoRefresh = true;
@@ -342,7 +352,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else if (readKey.toUpperCase() === 'BLUE' || readKey.toUpperCase() === 'B') {
       cc = CHART_COLORS.blue;
     } else if (readKey.toUpperCase() === 'GREEN' || readKey.toUpperCase() === 'G') {
-      cc = CHART_COLORS.green
+      cc = CHART_COLORS.green;
     }
     return cc;
   }
