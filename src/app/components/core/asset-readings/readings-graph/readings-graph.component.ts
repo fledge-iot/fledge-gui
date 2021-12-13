@@ -324,6 +324,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   private statsAssetReadingsGraph(assetReadings: any, ts: any): void {
     const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss'));
     const dataset = [];
+    assetReadings = orderBy(assetReadings, [reading => reading.key.toLowerCase()], ['asc']);
+    console.log('assetReadings', assetReadings);
     for (const r of assetReadings) {
       const dsColor = Utils.namedColor(dataset.length);
       const dt = {
@@ -425,6 +427,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   create3DGraph(readings: any, ts: any) {
+    readings = orderBy(readings, [reading => reading.key.toLowerCase()], ['asc']);
     const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss:SSS'));
     this.polyGraphData = {
       data: [
