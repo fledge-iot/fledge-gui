@@ -71,5 +71,6 @@ table.is-borderless tr {
 .range-wrap {
   position: relative;
   margin: -30px 2px 0 0;
+  padding-right: 3px;
   top: 0;
 }
