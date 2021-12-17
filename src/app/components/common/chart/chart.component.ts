@@ -24,7 +24,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges() {
     // set alpha only for asset reading graphs
-    if (this.from && this.from !== 'dashboard') {
+    if (this.from && this.from !== 'dashboard' && this.rangeSliderService.getAlphControlStatus()) {
       this.setAlpha();
     }
     if (this.chart) {
