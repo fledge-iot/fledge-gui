@@ -1,0 +1,34 @@
+<div class="container is-fluid">
+  <div class="card">
+    <header>
+      <div class="tabs">
+        <ul>
+          <li [ngClass]="{'is-active': seletedTab == 1}">
+            <h6 class="is-6 has-text-weight-semibold">
+              <a (click)="showDiv(1)">Scripts</a>
+            </h6>
+          </li>
+          <li [ngClass]="{'is-active': seletedTab == 2}">
+            <h6 class="is-6 has-text-weight-semibold">
+              <a (click)="showDiv(2)">ACL</a>
+            </h6>
+          </li>
+          <li style="position: absolute;right: 0;">
+            <a class="is-light" style="border-bottom-width: 0">
+              <p *ngIf="viewPort !== 'mobile'">&nbsp; Add &nbsp;</p>
+              <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <div class="card-content card-data">
+      <div *ngIf="seletedTab == 1" id="script-steps" #steps>
+        <app-control-scripts></app-control-scripts>
+      </div>
+      <div *ngIf="seletedTab == 2">
+
+      </div>
+    </div>
+  </div>
+</div>

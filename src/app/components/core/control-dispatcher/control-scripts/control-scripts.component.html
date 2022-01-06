@@ -1,0 +1,16 @@
+<table class="table scroll is-responsive is-hoverable">
+  <thead>
+    <tr>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let script of controlScripts">
+      <td>
+        <a [routerLink]="['script', script?.name]">
+          {{script?.name}}
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
