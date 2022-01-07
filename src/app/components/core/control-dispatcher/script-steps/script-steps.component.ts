@@ -85,4 +85,8 @@ export class ScriptStepsComponent implements OnInit {
     }
   }
 
+  updateControlScript() {
+
+  }
+
 }

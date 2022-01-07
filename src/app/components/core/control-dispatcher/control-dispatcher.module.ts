@@ -11,6 +11,8 @@ import { ConfigControlComponent } from './script-steps/config-control/config-con
 import { PipesModule } from '../../../pipes/pipes.module';
 import { ControlScriptsComponent } from './control-scripts/control-scripts.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { TreeModule } from '@circlon/angular-tree-component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 const routes: Routes = [
 
@@ -42,6 +44,8 @@ const routes: Routes = [
     CommonModule,
     PipesModule,
     DragDropModule,
+    TreeModule,
+    NgSelectModule,
     RouterModule.forChild(routes),
   ]
 })
