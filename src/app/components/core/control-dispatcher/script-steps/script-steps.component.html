@@ -61,8 +61,8 @@
                           </header>
                           <div class="card-content step-content" hidden>
                             <div class="content">
-                              <app-write-control *ngIf="step?.key === 'write'" [config]="step?.value">
-                              </app-write-control>
+                              <app-write *ngIf="step?.key === 'write'" [config]="step?.value">
+                              </app-write>
                               <app-delay *ngIf="step?.key === 'delay'" [config]="step?.value">
                               </app-delay>
                               <app-config *ngIf="step?.key === 'configure'" [config]="step?.value">
