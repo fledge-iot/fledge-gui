@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertService, ProgressBarService } from '../../../../services';
-import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
+import { AlertService, ProgressBarService } from '../../../../../services';
+import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 
 @Component({
-  selector: 'app-control-scripts',
-  templateUrl: './control-scripts.component.html',
-  styleUrls: ['./control-scripts.component.css']
+  selector: 'app-control-scripts-list',
+  templateUrl: './control-scripts-list.component.html',
+  styleUrls: ['./control-scripts-list.component.css']
 })
-export class ControlScriptsComponent implements OnInit {
+export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
 
   constructor(

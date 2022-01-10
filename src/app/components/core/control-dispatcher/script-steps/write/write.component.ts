@@ -8,11 +8,10 @@ import { Component, Input, OnInit } from '@angular/core';
 export class WriteComponent implements OnInit {
   @Input() config: any;
   conditions = ['==', '!=', '<', '>', '<=', '>='] // supported conditions
-
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
+
 
   /**
    * To maintain default key-value order for condition object

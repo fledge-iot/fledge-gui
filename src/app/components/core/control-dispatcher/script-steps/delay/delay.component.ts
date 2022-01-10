@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class DelayComponent implements OnInit {
   @Input() config;
+
   constructor() { }
 
   ngOnInit(): void {

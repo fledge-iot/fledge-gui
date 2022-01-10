@@ -5,15 +5,17 @@ import { AlertService, ProgressBarService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 
 @Component({
-  selector: 'app-script-steps',
-  templateUrl: './script-steps.component.html',
-  styleUrls: ['./script-steps.component.css']
+  selector: 'app-script-details',
+  templateUrl: './script-details.component.html',
+  styleUrls: ['./script-details.component.css']
 })
-export class ScriptStepsComponent implements OnInit {
+export class ScriptDetailsComponent implements OnInit {
+
   scriptName: string;
   controlScript: any;
   steps: any = []
   constructor(
+
     private route: ActivatedRoute,
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
@@ -28,6 +30,7 @@ export class ScriptStepsComponent implements OnInit {
       }
     });
   }
+
 
   onDrop(event: CdkDragDrop<string[]>) {
     if (event.previousIndex === event.currentIndex) {
@@ -86,6 +89,8 @@ export class ScriptStepsComponent implements OnInit {
   }
 
   updateControlScript() {
+    //  console.log('form', this.scriptDetailsForm);
+
 
   }
 
