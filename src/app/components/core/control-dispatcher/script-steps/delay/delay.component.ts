@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-delay',
@@ -7,10 +7,17 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class DelayComponent implements OnInit {
   @Input() config;
-
+  @Output() update = new EventEmitter<any>();
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  getValue(value) {
+    console.log(this.config);
+    console.log('event', value);
+    this.config.value.duration = value
+    this.update.emit(this.config);
   }
 
 }

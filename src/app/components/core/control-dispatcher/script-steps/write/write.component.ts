@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-write',
@@ -8,6 +8,8 @@ import { Component, Input, OnInit } from '@angular/core';
 export class WriteComponent implements OnInit {
   @Input() config: any;
   conditions = ['==', '!=', '<', '>', '<=', '>='] // supported conditions
+
+  @Output() update = new EventEmitter<any>();
   constructor() { }
 
   ngOnInit(): void { }
@@ -27,9 +29,29 @@ export class WriteComponent implements OnInit {
   }
 
   setCondition(condition: string) {
-    this.config.condition['condition'] = condition;
+    this.config.value.condition['condition'] = condition;
     this.toggleDropDown();
-    console.log('conf', this.config);
+  }
+
+  updateKey(old: any, newKey: any) {
+    this.config.value.values[newKey] = this.config.value.values[old]
+    delete this.config.value.values[old];
+    this.update.emit(this.config);
+  }
+
+  updateValue(key: any, value: any) {
+    this.config.value.values[key] = value;
+    this.update.emit(this.config);
+  }
+
+  getValue(value: any) {
+    console.log('event', value);
+    this.update.emit(this.config);
+  }
+
+  updateCondition(key: any, value: any) {
+    this.config.value.condition[key] = value;
+    this.update.emit(this.config);
   }
 
 }

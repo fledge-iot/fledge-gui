@@ -1,6 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { cloneDeep } from 'lodash';
 import { AlertService, ProgressBarService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 
@@ -14,6 +15,8 @@ export class ScriptDetailsComponent implements OnInit {
   scriptName: string;
   controlScript: any;
   steps: any = []
+  controlScriptsCopy: any;
+
   constructor(
 
     private route: ActivatedRoute,
@@ -51,7 +54,7 @@ export class ScriptDetailsComponent implements OnInit {
         }
         data.steps = steps;
         this.controlScript = data;
-        console.log(this.controlScript);
+        this.controlScriptsCopy = cloneDeep(this.controlScript);
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -64,7 +67,6 @@ export class ScriptDetailsComponent implements OnInit {
   }
 
   toggleAccordion(id) {
-    // this.useFilterProxy = 'true';
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
       const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
@@ -89,8 +91,37 @@ export class ScriptDetailsComponent implements OnInit {
   }
 
   updateControlScript() {
-    //  console.log('form', this.scriptDetailsForm);
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.updateScript(this.scriptName, this.controlScriptsCopy)
+      .subscribe((data) => {
+        console.log('data', data);
+        /** request completed */
+        this.ngProgress.done();
 
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+
+  }
+
+  getUpdatedValue(config) {
+    this.controlScriptsCopy.steps.map(st => {
+      if (st.key === config.key) {
+        st.value = config.value;
+      }
+    })
+
+    this.controlScriptsCopy.steps =
+      this.controlScriptsCopy.steps.map((s: any) => {
+        return { [s.key]: s.value }
+      })[0]
 
   }
 

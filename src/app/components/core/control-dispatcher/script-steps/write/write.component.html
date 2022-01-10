@@ -5,7 +5,8 @@
   <div class="field-body">
     <div class="field">
       <div class="control">
-        <input class="input is-small name-control" type="text" placeholder="Name" [value]="config?.service">
+        <input class="input is-small name-control" type="text" placeholder="Name" [(ngModel)]="config.value.service"
+          (ngModelChange)="getValue($event)">
       </div>
     </div>
   </div>
@@ -16,17 +17,18 @@
   </div>
   <div class="field-body">
     <div class="field">
-      <ng-container *ngFor="let c of config?.values|keyvalue">
+      <ng-container *ngFor="let c of config?.value?.values|keyvalue">
         <div class="field is-horizontal">
           <div class="field">
             <div class="control">
-              <input class="input is-small" type="text" [value]="c?.key">
+              <input class="input is-small" type="text" [ngModel]="c.key" (ngModelChange)="updateKey(c.key,$event)">
             </div>
           </div>
           &nbsp;
           <div class="field">
             <div class="control">
-              <input class="input is-small" type="text" [value]="c?.value">
+              <input class="input is-small" type="text" [ngModel]="c.value"
+                (ngModelChange)="updateValue(c.key, $event)">
             </div>
           </div>
         </div>
@@ -41,13 +43,15 @@
   <div class="field-body">
     <div class="field">
       <div class="field is-horizontal">
-        <ng-container *ngFor="let c of config?.condition|keyvalue: returnZero">
+        <ng-container *ngFor="let c of config?.value?.condition|keyvalue: returnZero">
           <div class="field">
             <div class="control" *ngIf="c?.key==='key'">
-              <input placeholder="key" class="input is-small" type="text" [value]="c?.value">
+              <input placeholder="key" class="input is-small" type="text" [ngModel]="c.value"
+                (ngModelChange)="updateCondition(c.key, $event)">
             </div>
             <div class="control" *ngIf="c?.key==='value'">
-              <input placeholder="value" class="input is-small" type="text" [value]="c?.value">
+              <input placeholder="value" class="input is-small" type="text" [(ngModel)]="c.value"
+                (ngModelChange)="updateCondition(c.key, $event)">
             </div>
             <div class="control" *ngIf="c?.key==='condition'">
               <div id="condition-dropdown" class="dropdown is-left">

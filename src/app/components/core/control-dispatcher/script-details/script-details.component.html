@@ -62,9 +62,11 @@
                           </header>
                           <div class="card-content step-content" hidden>
                             <div class="content">
-                              <app-write *ngIf="step?.key === 'write'" [config]="step?.value">
+                              <app-write *ngIf="step?.key === 'write'" [config]="step"
+                                (update)="getUpdatedValue($event)">
                               </app-write>
-                              <app-delay *ngIf="step?.key === 'delay'" [config]="step?.value">
+                              <app-delay *ngIf="step?.key === 'delay'" [config]="step"
+                                (update)="getUpdatedValue($event)">
                               </app-delay>
                               <app-config *ngIf="step?.key === 'configure'" [config]="step?.value">
                               </app-config>
