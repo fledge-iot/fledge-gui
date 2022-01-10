@@ -1,0 +1,68 @@
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Name</label>
+  </div>
+  <div class="field-body">
+    <div class="field">
+      <div class="control">
+        <input class="input is-small name-control" type="text" placeholder="Name" [value]="config?.name">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Service</label>
+  </div>
+  <div class="field-body">
+    <div class="field">
+      <div class="field is-horizontal">
+        <div class="field">
+          <div class="control">
+            <div id="operation-dropdown" class="dropdown is-left">
+              <div class="dropdown-trigger">
+                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                  (click)="toggleDropDown('operation-dropdown')">
+                  <span>{{config?.service}}</span>
+                  <span class="icon is-small">
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a (click)="setService(service); toggleDropDown('operation-dropdown')"
+                    *ngFor="let service of services" class="dropdown-item">{{service.name}}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Parameters</label>
+  </div>
+  <div class="field-body">
+    <div class="field">
+      <ng-container *ngFor="let c of config?.parameters|keyvalue: returnZero">
+        <div class="field is-horizontal">
+          <div class="field">
+            <div class="control">
+              <input placeholder="key" class="input is-small" type="text" [value]="c?.key">
+            </div>
+          </div>
+          &nbsp;
+          <div class="field">
+            <div class="control">
+              <input placeholder="value" class="input is-small" type="text" [value]="c?.value">
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

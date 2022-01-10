@@ -4,15 +4,16 @@ import { ListControlDispatcherComponent } from './list-control-dispatcher/list-c
 import { RouterModule, Routes } from '@angular/router';
 import { AuthCheckGuard } from '../../../guards';
 import { ScriptStepsComponent } from './script-steps/script-steps.component';
-import { WriteControlComponent } from './script-steps/write-control/write-control.component';
-import { OperationControlComponent } from './script-steps/operation-control/operation-control.component';
-import { ScriptControlComponent } from './script-steps/script-control/script-control.component';
-import { ConfigControlComponent } from './script-steps/config-control/config-control.component';
+import { WriteComponent } from './script-steps/write/write.component';
+import { OperationComponent } from './script-steps/operation/operation.component';
+import { ScriptComponent } from './script-steps/script/script.component';
+import { ConfigComponent } from './script-steps/config/config.component';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { ControlScriptsComponent } from './control-scripts/control-scripts.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DelayComponent } from './script-steps/delay/delay.component';
 
 const routes: Routes = [
 
@@ -34,11 +35,12 @@ const routes: Routes = [
   declarations: [
     ListControlDispatcherComponent,
     ScriptStepsComponent,
-    WriteControlComponent,
-    OperationControlComponent,
-    ScriptControlComponent,
-    ConfigControlComponent,
-    ControlScriptsComponent
+    WriteComponent,
+    OperationComponent,
+    ScriptComponent,
+    ConfigComponent,
+    ControlScriptsComponent,
+    DelayComponent
   ],
   imports: [
     CommonModule,

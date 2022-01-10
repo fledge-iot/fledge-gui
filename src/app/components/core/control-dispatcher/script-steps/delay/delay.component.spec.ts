@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConfigControlComponent } from './config-control.component';
+import { DelayComponent } from './delay.component';
 
-describe('ConfigControlComponent', () => {
-  let component: ConfigControlComponent;
-  let fixture: ComponentFixture<ConfigControlComponent>;
+describe('DelayComponent', () => {
+  let component: DelayComponent;
+  let fixture: ComponentFixture<DelayComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ConfigControlComponent ]
+      declarations: [ DelayComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConfigControlComponent);
+    fixture = TestBed.createComponent(DelayComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

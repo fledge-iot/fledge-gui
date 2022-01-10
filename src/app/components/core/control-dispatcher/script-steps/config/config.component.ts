@@ -9,11 +9,11 @@ import {
 } from '../../../../../services';
 
 @Component({
-  selector: 'app-config-control',
-  templateUrl: './config-control.component.html',
-  styleUrls: ['./config-control.component.css']
+  selector: 'app-config',
+  templateUrl: './config.component.html',
+  styleUrls: ['./config.component.css']
 })
-export class ConfigControlComponent implements OnInit {
+export class ConfigComponent implements OnInit {
   @Input() config: any;
 
   public selectedCategory = 'General';

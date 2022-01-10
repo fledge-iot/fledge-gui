@@ -63,14 +63,14 @@
                             <div class="content">
                               <app-write-control *ngIf="step?.key === 'write'" [config]="step?.value">
                               </app-write-control>
-                              <app-operation-control *ngIf="step?.key === 'delay'" [config]="step?.value">
-                              </app-operation-control>
-                              <app-config-control *ngIf="step?.key === 'configure'" [config]="step?.value">
-                              </app-config-control>
-                              <app-operation-control *ngIf="step?.key === 'operation'" [config]="step?.value">
-                              </app-operation-control>
-                              <app-script-control *ngIf="step?.key === 'script'" [config]="step?.value">
-                              </app-script-control>
+                              <app-delay *ngIf="step?.key === 'delay'" [config]="step?.value">
+                              </app-delay>
+                              <app-config *ngIf="step?.key === 'configure'" [config]="step?.value">
+                              </app-config>
+                              <app-operation *ngIf="step?.key === 'operation'" [config]="step?.value">
+                              </app-operation>
+                              <app-script *ngIf="step?.key === 'script'" [config]="step?.value">
+                              </app-script>
                             </div>
                           </div>
                         </div>

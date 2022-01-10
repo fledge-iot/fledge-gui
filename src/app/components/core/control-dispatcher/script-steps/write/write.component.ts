@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-write-control',
-  templateUrl: './write-control.component.html',
-  styleUrls: ['./write-control.component.css']
+  selector: 'app-write',
+  templateUrl: './write.component.html',
+  styleUrls: ['./write.component.css']
 })
-export class WriteControlComponent implements OnInit {
+export class WriteComponent implements OnInit {
   @Input() config: any;
   conditions = ['==', '!=', '<', '>', '<=', '>='] // supported conditions
 
@@ -14,7 +14,10 @@ export class WriteControlComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  // to maintain default key-value order for condition object
+  /**
+   * To maintain default key-value order for condition object
+   * @returns 0;
+   */
   returnZero() {
     return 0
   }
