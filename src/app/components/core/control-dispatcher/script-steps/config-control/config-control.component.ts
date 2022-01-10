@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { TreeComponent } from '@circlon/angular-tree-component';
-import { isEmpty, findIndex, cloneDeep, sortBy } from 'lodash';
-import { forkJoin } from 'rxjs';
+import { TreeComponent, ITreeOptions, ITreeState } from '@circlon/angular-tree-component';
+import { isEmpty, sortBy } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
 import {
   AlertService,
@@ -16,16 +15,21 @@ import {
 })
 export class ConfigControlComponent implements OnInit {
   @Input() config: any;
-  public categoryData;
-  // public rootCategories = [];
-  // public JSON;
-  // public selectedRootCategory = 'General';
-  // public isChild = true;
 
-
+  public selectedCategory = 'General';
+  state: ITreeState;
   configItems: any;
   nodes = [];
-  options = {};
+  options: ITreeOptions = {
+    displayField: 'name',
+    isExpandedField: 'expanded',
+    hasChildrenField: 'nodes',
+    nodeHeight: 23,
+    levelPadding: 10,
+    animateExpand: true,
+    animateSpeed: 30,
+    animateAcceleration: 1.2,
+  }
 
   @ViewChild(TreeComponent, { static: true })
   private tree: TreeComponent;
@@ -37,8 +41,10 @@ export class ConfigControlComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.selectedCategory = this.config?.category;
     this.getCategories();
   }
+
 
   public getCategories() {
     this.ngProgress.start();
@@ -62,7 +68,9 @@ export class ConfigControlComponent implements OnInit {
                   return ca.name;
                 });
                 this.tree.treeModel.update();
-                if (this.tree.treeModel.getFirstRoot()) {
+                if (this.tree.treeModel.getNodeById(this.selectedCategory)) {
+                  this.tree.treeModel.getNodeById(this.selectedCategory).setActiveAndVisible(true);
+                } else {
                   this.tree.treeModel.getFirstRoot().setIsActive(true);
                 }
               })
@@ -77,75 +85,23 @@ export class ConfigControlComponent implements OnInit {
           });
   }
 
-
-  public onNodeToggleExpanded(event) {
-    event.node.data.children = [];
-    if (event.node.isExpanded) {
-      this.configurationService.getChildren(event.node.data.id).
-        subscribe(
-          (data) => {
-            data['categories'].forEach(element => {
-              if (element.hasOwnProperty('displayName')) {
-                event.node.data.children.push({
-                  id: element.key,
-                  name: element.displayName,
-                  description: element.description,
-                  hasChildren: true,
-                  children: []
-                });
-              } else {
-                event.node.data.children.push({
-                  id: element.key,
-                  name: element.description,
-                  description: element.description,
-                  hasChildren: true,
-                  children: []
-                });
-              }
-              this.tree.treeModel.update();
-            });
-          }, error => {
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
-    }
-  }
-
-  parseConfig() {
-    if (!isEmpty(this.categoryData)) {
-      let categoryConfiguration = cloneDeep(this.categoryData);
-      this.configItems = categoryConfiguration.value.map((el: any) => {
-        return Object.keys(el).map((key) => {
-          return {
-            key,
-            data: el[key]
-          }
-        });
-      })[0];
-    }
-  }
-
-  public onNodeActive(event) {
+  public onNodeActive(event: any) {
+    this.config.category = event.node.data.displayName;
     this.getCategoryData(event.node.data.id, event.node.data.description);
-    this.toggleCategoryDropDown()
   }
 
-  public toggleDropDown() {
-    const dropDown = document.querySelector('#config-dropdown');
-    dropDown.classList.toggle('is-active');
-  }
-
-  public toggleCategoryDropDown() {
-    const dropDown = document.querySelector('#category-dropdown');
-    dropDown.classList.toggle('is-active');
-  }
-
-  public resetAllFilters() {
-    // this.selectedRootCategory = 'General';
-    this.getCategories();
+  public toggleDropDown(id: string) {
+    const dropdowns = document.getElementsByClassName('dropdown');
+    for (let i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('is-active')) {
+        openDropdown.classList.toggle('is-active', false);
+      } else {
+        if (openDropdown.id === id) {
+          openDropdown.classList.toggle('is-active');
+        }
+      }
+    }
   }
 
   private getCategoryData(categoryKey: string, categoryDesc: string): void {
@@ -159,9 +115,10 @@ export class ConfigControlComponent implements OnInit {
           this.ngProgress.done();
           if (!isEmpty(data)) {
             categoryValues.push(data);
-            this.categoryData = { key: categoryKey, value: categoryValues, description: categoryDesc };
-            this.parseConfig();
           }
+          const categoryData = { key: categoryKey, value: categoryValues, description: categoryDesc };
+          this.parseConfig(categoryData);
+
         },
         error => {
           /** request completed */
@@ -174,45 +131,29 @@ export class ConfigControlComponent implements OnInit {
         });
   }
 
-  public refreshCategory(categoryKey: string, categoryDesc: string): void {
-    /** request started */
-    this.ngProgress.start();
-    const categoryValues = [];
-    this.configurationService.getCategory(categoryKey).
-      subscribe(
-        (data) => {
-          console.log('ddd', data);
-          console.log('desc', categoryDesc);
-          /** request completed */
-          this.ngProgress.done();
-          // categoryValues.push(data);
-          // const index = findIndex(this.categoryData, ['key', categoryKey]);
-          // this.categoryData[index] = { key: categoryKey, value: categoryValues, description: categoryDesc };
-          // this.parseConfig();
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
+  parseConfig(categoryData: any) {
+    if (categoryData?.value?.length > 0) {
+      this.configItems = categoryData.value.map((el: any) => {
+        return Object.keys(el).map((key) => {
+          return {
+            key,
+            data: el[key]
           }
         });
+        // set changed config item and value
+      })[0];
+      this.config.item = this.configItems[0].key;
+      this.config.value = this.configItems[0].data.value
+    } else {
+      // reset
+      this.config.item = '';
+      this.config.value = '';
+    }
   }
 
   chooseConfigItem(configuration: any) {
-    console.log(configuration);
+    this.config.item = configuration.key;
     this.config.value = configuration.data.value;
-    this.toggleDropDown()
   }
 
-  /**
-   * Check if object has a specific key
-   * @param o Object
-   * @param name key name
-   */
-  public hasProperty(o, name) {
-    return o.hasOwnProperty(name);
-  }
 }
