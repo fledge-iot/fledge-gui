@@ -91,11 +91,15 @@ export class ScriptDetailsComponent implements OnInit {
   }
 
   updateControlScript() {
+    // remove acl key from payload if empty value
+    if (this.controlScriptsCopy.acl === '') {
+      delete this.controlScriptsCopy.acl;
+    }
     /** request started */
     this.ngProgress.start();
     this.controlService.updateScript(this.scriptName, this.controlScriptsCopy)
-      .subscribe((data) => {
-        console.log('data', data);
+      .subscribe((data: any) => {
+        this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
 
@@ -122,7 +126,6 @@ export class ScriptDetailsComponent implements OnInit {
       this.controlScriptsCopy.steps.map((s: any) => {
         return { [s.key]: s.value }
       })[0]
-
   }
 
 }
