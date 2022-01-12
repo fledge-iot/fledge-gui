@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertService, ProgressBarService } from '../../../../../services';
+import { AlertService, ProgressBarService, ServicesApiService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 
 @Component({
@@ -10,7 +10,9 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 export class ScriptComponent implements OnInit {
   @Input() config: any;
   controlScripts = [];
-  constructor(private controlService: ControlDispatcherService,
+
+  constructor(
+    private controlService: ControlDispatcherService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService) { }
 
@@ -62,6 +64,5 @@ export class ScriptComponent implements OnInit {
       }
     }
   }
-
 
 }

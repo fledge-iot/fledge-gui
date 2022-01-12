@@ -10,7 +10,8 @@ export class OperationComponent implements OnInit {
   @Input() config: any;
   services = [];
 
-  constructor(private servicesApiService: ServicesApiService,
+  constructor(
+    private servicesApiService: ServicesApiService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService) { }
 
@@ -56,7 +57,6 @@ export class OperationComponent implements OnInit {
 
   setService(service: any) {
     console.log(service);
-
     this.config.service = service.name;
 
   }

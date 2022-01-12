@@ -15,6 +15,11 @@ import { TreeModule } from '@circlon/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DelayComponent } from './script-steps/delay/delay.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AddControlScriptComponent } from './add-control-script/add-control-script.component';
+import { AddStepComponent } from './add-control-script/add-step/add-step.component';
+import { AddWriteComponent } from './add-control-script/add-step/add-write/add-write.component';
+import { AddStepConditionComponent } from './add-control-script/add-step/add-step-condition/add-step-condition.component';
+import { AddStepValueComponent } from './add-control-script/add-step/add-step-value/add-step-value.component';
 
 const routes: Routes = [
 
@@ -23,7 +28,8 @@ const routes: Routes = [
     component: ListControlDispatcherComponent,
   },
   {
-    path: 'add',
+    path: 'script/add',
+    component: AddControlScriptComponent,
     canActivate: [AuthCheckGuard]
   },
   {
@@ -41,7 +47,12 @@ const routes: Routes = [
     ScriptComponent,
     ConfigComponent,
     ControlScriptsListComponent,
-    DelayComponent
+    DelayComponent,
+    AddControlScriptComponent,
+    AddStepComponent,
+    AddWriteComponent,
+    AddStepConditionComponent,
+    AddStepValueComponent
   ],
   imports: [
     FormsModule,

@@ -14,7 +14,8 @@
             </h6>
           </li>
           <li style="position: absolute;right: 0;">
-            <a class="is-light" style="border-bottom-width: 0">
+            <a [routerLink]="seletedTab === 1 ? ['script/add']:['acl/add']" class="is-light"
+              style="border-bottom-width: 0">
               <p *ngIf="viewPort !== 'mobile'">&nbsp; Add &nbsp;</p>
               <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>

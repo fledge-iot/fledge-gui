@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 export class ControlDispatcherService {
 
   private CONTROL_SERVICE_URL = environment.BASE_URL + 'control/script';
-  // private CATEGORY_URL = environment.BASE_URL + 'category';
+  private ACL_URL = environment.BASE_URL + 'ACL';
 
   constructor(private http: HttpClient) { }
 
@@ -31,6 +31,11 @@ export class ControlDispatcherService {
     return this.http.put(`${this.CONTROL_SERVICE_URL}/${name}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
+  }
 
+  fetchAllACL() {
+    return this.http.get(this.ACL_URL).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
   }
 }

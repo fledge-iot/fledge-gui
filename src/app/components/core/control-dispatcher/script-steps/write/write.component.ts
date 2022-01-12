@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AlertService, ServicesApiService } from '../../../../../services';
 
 @Component({
   selector: 'app-write',
@@ -10,9 +11,17 @@ export class WriteComponent implements OnInit {
   conditions = ['==', '!=', '<', '>', '<=', '>='] // supported conditions
 
   @Output() update = new EventEmitter<any>();
-  constructor() { }
 
-  ngOnInit(): void { }
+  services = [];
+  constructor(
+    private servicesApiService: ServicesApiService,
+    private alertService: AlertService) { }
+
+  ngOnInit(): void {
+    console.log('write config', this.config);
+
+    this.getAllServices();
+  }
 
 
   /**
@@ -23,14 +32,36 @@ export class WriteComponent implements OnInit {
     return 0
   }
 
-  public toggleDropDown() {
-    const dropDown = document.querySelector('#condition-dropdown');
-    dropDown.classList.toggle('is-active');
+  public getAllServices() {
+    this.servicesApiService.getAllServices()
+      .subscribe((res: any) => {
+        this.services = res.services;
+      },
+        (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public toggleDropDown(id: string) {
+    const dropdowns = document.getElementsByClassName('dropdown');
+    for (let i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('is-active')) {
+        openDropdown.classList.toggle('is-active', false);
+      } else {
+        if (openDropdown.id === id) {
+          openDropdown.classList.toggle('is-active');
+        }
+      }
+    }
   }
 
   setCondition(condition: string) {
     this.config.value.condition['condition'] = condition;
-    this.toggleDropDown();
   }
 
   updateKey(old: any, newKey: any) {
@@ -52,6 +83,11 @@ export class WriteComponent implements OnInit {
   updateCondition(key: any, value: any) {
     this.config.value.condition[key] = value;
     this.update.emit(this.config);
+  }
+
+  setService(service: any) {
+    console.log(service);
+    this.config.value.service = service.name;
   }
 
 }

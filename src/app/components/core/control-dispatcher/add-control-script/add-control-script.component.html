@@ -1,0 +1,110 @@
+<div class="container is-fluid">
+  <div class="card">
+    <header class="card-header">
+      <div class="card-header-title">
+        <span>Add Control Script</span>
+      </div>
+    </header>
+    <div class="card-content step-content">
+      <form (ngSubmit)="onSubmit(scriptForm)" #scriptForm="ngForm">
+        <div class="column is-four-fifths">
+          <div class="field is-horizontal">
+            <div class="field-label is-small">
+              <label class="label">Name</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input #name=ngModel name="name" class="input is-small" type="text" placeholder="Name" required
+                    [(ngModel)]="scriptPayload.name">
+                </div>
+                <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
+                  <div *ngIf="name.errors?.['required']">
+                    Name is required.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-small">
+              <label class="label">Steps</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <ng-container *ngFor="let control of stepControls; let i = index">
+                  <div class="box">
+                    <div class="columns">
+                      <div class="column">
+                        <app-add-step (stepEvent)="setStep($event)" [controlIndex]="i" [payload]="scriptPayload">
+                        </app-add-step>
+                      </div>
+                      <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">
+                        <div class="field">
+                          <div *ngIf="i > 0">
+                            <button (click)="deleteStepControl()" class="delete is-small">
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-small">
+              <label class="label"></label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <button (click)="addStepControl()" class="button is-small ">Add new step</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-small">
+              <label class="label">ACL</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <div id="acl-dropdown" class="dropdown is-left">
+                    <div class="dropdown-trigger">
+                      <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                        (click)=toggleDropdown()>
+                        <span>{{selectedACL}}</span>
+                        <span class="icon is-small">
+                          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class="dropdown-content">
+                        <a (click)="selectACL(acl);toggleDropdown()" *ngFor="let acl of acls"
+                          class="dropdown-item">{{acl?.name}}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="column is-four-fifths">
+          <div class="field is-grouped is-pulled-right">
+            <p class="control">
+              <button [routerLink]="['/control-dispatcher']" class="button is-small">Cancel</button>
+            </p>
+            <p class="control">
+              <button type="submit" class="button is-small is-link">Save</button>
+            </p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
