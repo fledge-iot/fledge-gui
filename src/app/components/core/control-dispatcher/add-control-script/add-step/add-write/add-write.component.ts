@@ -51,14 +51,14 @@ export class AddWriteComponent implements OnInit {
       this.writeGroup = this.control.controls['write'] as FormGroup;
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       //  this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
-      console.log(this.stepsGroup);
+      // console.log(this.stepsGroup);
 
       this.writeGroup.addControl('service', new FormControl(''))
       this.writeGroup.addControl('values', this.valuesCtrl.control);
       this.writeGroup.addControl('condition', this.conditionCtrl.control);
-      console.log('write group ', this.writeGroup);
+      // console.log('write group ', this.writeGroup);
       this.stepsGroup.addControl('write', this.writeGroup);
-      console.log('step group ', this.stepsGroup);
+      //  console.log('step group ', this.stepsGroup);
       this.writeEvent.emit(this.writeGroup);
       this.valuesCtrl.control.valueChanges
         .pipe(debounceTime(300))
@@ -108,14 +108,14 @@ export class AddWriteComponent implements OnInit {
   }
 
   setService(service: any) {
-    console.log(service);
+    // console.log(service);
     this.selectedService = service.name;
     this.writePayload.service = service.name;
     this.writeGroup.controls['service'].setValue(service.name)
   }
 
   getWriteValues() {
-    console.log(this.writePayload);
+    // console.log(this.writePayload);
     this.writeEvent.emit(this.writePayload);
   }
 

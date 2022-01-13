@@ -47,7 +47,7 @@ export class AddStepComponent implements OnInit {
 
   getControl(control: FormGroup) {
     this.stepsGroup.addControl(this.selectedStep, control);
-    console.log('step', this.stepsGroup);
+    // console.log('step', this.stepsGroup);
   }
 
 }

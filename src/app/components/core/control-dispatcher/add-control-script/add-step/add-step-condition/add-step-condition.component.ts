@@ -10,6 +10,8 @@ import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms
 export class AddStepConditionComponent implements OnInit {
 
   conditionGroup: FormGroup;
+  stepTypeGroup: FormGroup;
+
   @Input() from;
   @Input() index;
 
@@ -29,14 +31,26 @@ export class AddStepConditionComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+    // setTimeout(() => {
+    //   this.conditionGroup = this.control.controls['condition'] as FormGroup;
+    //   this.conditionGroup.addControl('key', new FormControl(''))
+    //   this.conditionGroup.addControl('condition', new FormControl(this.selectedCondition))
+    //   this.conditionGroup.addControl('value', new FormControl(''))
+    //   // console.log('condition ', this.control.controls['condition']);
+    //   // console.log('write group inside condtion', this.control.controls['write']);
+    // }, 0);
     setTimeout(() => {
-      this.conditionGroup = this.control.controls['condition'] as FormGroup;
+      console.log(this.from, 'index', this.index);
+      const stepsControl = this.control.controls[`step-${this.index}`] as FormGroup;
+      console.log('stepsControl', stepsControl.controls);
+      this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
+      this.conditionGroup = this.stepTypeGroup.controls['condition'] as FormGroup;
+      console.log('condition', this.conditionGroup);
+      // this.valuesGroup = this.control.controls['values'] as FormGroup;
       this.conditionGroup.addControl('key', new FormControl(''))
       this.conditionGroup.addControl('condition', new FormControl(this.selectedCondition))
       this.conditionGroup.addControl('value', new FormControl(''))
-      // console.log('condition ', this.control.controls['condition']);
-      // console.log('write group inside condtion', this.control.controls['write']);
-    }, 0);
+    }, 300);
   }
 
   public toggleDropDown(id: string) {
@@ -57,7 +71,7 @@ export class AddStepConditionComponent implements OnInit {
     this.selectedCondition = condition;
     this.conditionPayload.condition = condition;
     this.conditionGroup.controls['condition'].setValue(condition)
-    console.log(this.control);
+    this.conditionGroup.removeControl('condition');
   }
 
   addConditionControl() {

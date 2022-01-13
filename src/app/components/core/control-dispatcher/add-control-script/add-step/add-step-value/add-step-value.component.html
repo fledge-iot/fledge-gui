@@ -4,12 +4,17 @@
   </div>
   <div class="field-body">
     <div class="field">
-      <ng-container *ngFor="let control of valueControls; let i = index">
+      <ng-container *ngFor="let control of valueControlsList; let i = index">
         <div class="field is-horizontal">
           <div class="field">
             <div class="control">
               <input placeholder="key" class="input is-small" required type="text" #control="ngModel" name="key-{{i}}"
                 [ngModel]="parameters.key" (ngModelChange)="setKey(i, $event)">
+            </div>
+            <div *ngIf="control.invalid && (control.dirty || control.touched)" class="help is-danger">
+              <div *ngIf="control.errors?.['required']">
+                Key is required.
+              </div>
             </div>
           </div>
           &nbsp;

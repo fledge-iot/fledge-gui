@@ -101,7 +101,8 @@
               <button [routerLink]="['/control-dispatcher']" class="button is-small">Cancel</button>
             </p>
             <p class="control">
-              <button (click)="onSubmit(scriptForm)" type="button" class="button is-small is-link">Save</button>
+              <button [disabled]="!scriptForm.valid" (click)="onSubmit(scriptForm)" type="button"
+                class="button is-small is-link">Save</button>
             </p>
           </div>
         </div>

@@ -39,18 +39,18 @@ export class AddOperationComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      console.log('controlIndex', this.controlIndex);
-      console.log('control group ', this.control);
+      // console.log('controlIndex', this.controlIndex);
+      // console.log('control group ', this.control);
       this.operationGroup = this.control.controls['operation'] as FormGroup;
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      console.log('step group ', this.stepsGroup);
+      // console.log('step group ', this.stepsGroup);
 
       this.operationGroup.addControl('service', new FormControl(''))
       this.operationGroup.addControl('parameters', this.parameterCtrl.control);
       this.operationGroup.addControl('condition', this.conditionCtrl.control);
-      console.log('write group ', this.operationGroup);
+      // console.log('write group ', this.operationGroup);
       this.stepsGroup.addControl('operation', this.operationGroup);
-      console.log('step group ', this.stepsGroup);
+      // console.log('step group ', this.stepsGroup);
       this.parameterCtrl.control.valueChanges
         .pipe(debounceTime(300))
         .subscribe(
@@ -64,8 +64,8 @@ export class AddOperationComponent implements OnInit {
               }
               return false;
             }));
-            console.log('merged', merged);
-            console.log(this.operationGroup.value);
+            // console.log('merged', merged);
+            // console.log(this.operationGroup.value);
           });
     }, 0);
   }
@@ -99,7 +99,7 @@ export class AddOperationComponent implements OnInit {
   }
 
   setService(service: any) {
-    console.log(service);
+    // console.log(service);
     this.selectedService = service.name;
     this.operationGroup.controls['service'].setValue(service.name)
   }
