@@ -20,6 +20,7 @@ import { AddStepComponent } from './add-control-script/add-step/add-step.compone
 import { AddWriteComponent } from './add-control-script/add-step/add-write/add-write.component';
 import { AddStepConditionComponent } from './add-control-script/add-step/add-step-condition/add-step-condition.component';
 import { AddStepValueComponent } from './add-control-script/add-step/add-step-value/add-step-value.component';
+import { AddOperationComponent } from './add-control-script/add-step/add-operation/add-operation.component';
 
 const routes: Routes = [
 
@@ -52,7 +53,8 @@ const routes: Routes = [
     AddStepComponent,
     AddWriteComponent,
     AddStepConditionComponent,
-    AddStepValueComponent
+    AddStepValueComponent,
+    AddOperationComponent
   ],
   imports: [
     FormsModule,

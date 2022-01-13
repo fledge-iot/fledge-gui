@@ -36,8 +36,8 @@
                   <div class="box">
                     <div class="columns">
                       <div class="column">
-                        <app-add-step ngModelGroup="steps" #stepCtrl="ngModelGroup" (stepEvent)="setStep($event)"
-                          [controlIndex]="i" [payload]="scriptPayload">
+                        <app-add-step #{{i}} [ngModelGroup]="'step-'+i" #stepCtrl="ngModelGroup"
+                          (stepEvent)="setStep($event)" [controlIndex]="i" [payload]="scriptPayload">
                         </app-add-step>
                       </div>
                       <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">

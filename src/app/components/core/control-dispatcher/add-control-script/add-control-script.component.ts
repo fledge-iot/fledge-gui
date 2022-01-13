@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { ControlContainer, NgForm } from '@angular/forms';
+import { range } from 'lodash';
 import { AlertService, ProgressBarService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
-import { range } from 'lodash';
-import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-add-control-script',
   templateUrl: './add-control-script.component.html',
-  styleUrls: ['./add-control-script.component.css']
+  styleUrls: ['./add-control-script.component.css'],
+  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class AddControlScriptComponent implements OnInit {
   submitted = false;
@@ -18,7 +19,7 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   stepControlCount = 1; //default one step control visible
-  stepControls = range(this.stepControlCount);
+  stepControls = []; //range(this.stepControlCount);
 
   stepData = [];
   acls = [];
@@ -28,8 +29,12 @@ export class AddControlScriptComponent implements OnInit {
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
+    this.stepControls = range(1);
+    console.log(this.stepControls);
     this.getAllACL();
   }
+
+
 
   onClick() {
 
@@ -67,7 +72,7 @@ export class AddControlScriptComponent implements OnInit {
 
   addStepControl() {
     this.stepControlCount += 1;
-    this.stepControls = range(this.stepControlCount);
+    this.stepControls.push(this.stepControlCount);
   }
 
   deleteStepControl() {
@@ -80,33 +85,66 @@ export class AddControlScriptComponent implements OnInit {
 
   }
 
+  flattenPayload(payload: any) {
+    console.log('pppp', payload);
+    payload.steps = payload.steps.map(val => {
+      let values;
+      if ('write' in val) {
+        values = val['write'].values;
+        console.log('write val', values);
+      } else if ('operation' in val) {
+        values = val['operation'].parameters;
+        console.log('operation val', values);
+      }
+      values =
+        Object.values(values)
+          .filter((f: any) => (f.hasOwnProperty('key')))
+          .map((v: any) => {
+            return { [v.key]: v.value };
+          }).reduce((r, c) => ({ ...r, ...c }), {})
+
+      if ('write' in val) {
+        val['write'] = values;
+      } else if ('operation' in val) {
+        val['operation'] = values;
+      }
+      return val;
+    });
+
+    // change steps from array to object
+    payload['steps'] = Object.assign({}, ...payload['steps']);
+    return payload;
+  }
+
   onSubmit(form: NgForm) {
+    console.log('ngForm', form);
     this.submitted = true;
-    console.log('ngform', form.value);
-    let { name, steps } = form.value;
-    let payload = { name, steps };
-    payload.steps.writes.values =
-      Object.values(payload.steps.writes.values)
-        .filter((f: any) => (f.hasOwnProperty('key')))
-        .map((v: any) => {
-          return { [v.key]: v.value };
-        })
+    console.log(Object.values(form.value));
+    let payload = {};
+    payload['steps'] = Object.keys(form.value).map((key, i) => {
+      form.value[key];
+      return form.value[`step-${i}`];
+    }).filter(v => v).map(v => v);
+
+    let { name } = form.value;
+    payload['name'] = name;
+    payload = this.flattenPayload(payload);
+
     payload['acl'] = this.selectedACL;
-    console.log('name', payload);
+    console.log('payload', payload);
 
-
-    this.controlService.addControlScript(payload)
-      .subscribe((res: any) => {
-        this.ngProgress.done();
-        console.log('res', res);
-        this.alertService.error(res.message);
-      }, error => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+    // this.controlService.addControlScript(payload)
+    //   .subscribe((res: any) => {
+    //     this.ngProgress.done();
+    //     console.log('res', res);
+    //     this.alertService.error(res.message);
+    //   }, error => {
+    //     if (error.status === 0) {
+    //       console.log('service down ', error);
+    //     } else {
+    //       this.alertService.error(error.statusText);
+    //     }
+    //   });
   }
 
 }

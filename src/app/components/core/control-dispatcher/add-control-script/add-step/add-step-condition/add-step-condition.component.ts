@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
 
 @Component({
@@ -10,6 +10,8 @@ import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms
 export class AddStepConditionComponent implements OnInit {
 
   conditionGroup: FormGroup;
+  @Input() from;
+  @Input() index;
 
   conditions = ['==', '!=', '<', '>', '<=', '>='] // supported conditions
   selectedCondition = '==';

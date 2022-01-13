@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ControlContainer, NgForm } from '@angular/forms';
+import { ControlContainer, FormGroup, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-add-step',
@@ -10,14 +10,22 @@ import { ControlContainer, NgForm } from '@angular/forms';
 export class AddStepComponent implements OnInit {
   scriptSteps = ['configure', 'delay', 'operation', 'script', 'write'];
   selectedStep;
+  stepsGroup: FormGroup;
 
   @Input() controlIndex;
   @Input() payload;
   @Output() stepEvent = new EventEmitter<any>();
-
-  constructor() { }
+  constructor(private control: NgForm) { }
 
   ngOnInit(): void { }
+
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.stepsGroup = this.control.controls['steps'] as FormGroup;
+    }, 0);
+  }
+
 
   public toggleDropDown(id: string) {
     const dropdowns = document.getElementsByClassName('dropdown');
@@ -37,9 +45,9 @@ export class AddStepComponent implements OnInit {
     this.selectedStep = step;
   }
 
-  getStepConfig(data) {
-    // console.log('step data', data);
-    this.stepEvent.emit(data)
+  getControl(control: FormGroup) {
+    this.stepsGroup.addControl(this.selectedStep, control);
+    console.log('step', this.stepsGroup);
   }
 
 }

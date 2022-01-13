@@ -1,37 +1,28 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { ControlContainer, FormControl, FormGroup, NgForm, NgModelGroup } from '@angular/forms';
+import { FormGroup, NgModelGroup, NgForm, FormControl, ControlContainer } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';
 import { ServicesApiService, AlertService } from '../../../../../../services';
 import { uniqWith, cloneDeep } from 'lodash';
-import { debounceTime } from 'rxjs/operators';
+
 @Component({
-  selector: 'app-add-write',
-  templateUrl: './add-write.component.html',
-  styleUrls: ['./add-write.component.css'],
+  selector: 'app-add-operation',
+  templateUrl: './add-operation.component.html',
+  styleUrls: ['./add-operation.component.css'],
   viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
-export class AddWriteComponent implements OnInit {
+export class AddOperationComponent implements OnInit {
+
   services = [];
   selectedService;
-  writePayload: any = {
-    key: 'write',
-    order: 1,
-    service: "",
-    values: {},
-    condition: {
-      key: "",
-      condition: "",
-      value: ""
-    }
-  };
 
   @Input() controlIndex;
   @Input() step;
 
   @Output() writeEvent = new EventEmitter<any>();
-  writeGroup: FormGroup;
+  operationGroup: FormGroup;
   stepsGroup: FormGroup;
 
-  @ViewChild('valuesCtrl', { static: true }) valuesCtrl: NgModelGroup;
+  @ViewChild('parameterCtrl', { static: true }) parameterCtrl: NgModelGroup;
   @ViewChild('conditionCtrl', { static: true }) conditionCtrl: NgModelGroup;
   values = [];
   constructor(
@@ -48,19 +39,19 @@ export class AddWriteComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.writeGroup = this.control.controls['write'] as FormGroup;
+      console.log('controlIndex', this.controlIndex);
+      console.log('control group ', this.control);
+      this.operationGroup = this.control.controls['operation'] as FormGroup;
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      //  this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
-      console.log(this.stepsGroup);
-
-      this.writeGroup.addControl('service', new FormControl(''))
-      this.writeGroup.addControl('values', this.valuesCtrl.control);
-      this.writeGroup.addControl('condition', this.conditionCtrl.control);
-      console.log('write group ', this.writeGroup);
-      this.stepsGroup.addControl('write', this.writeGroup);
       console.log('step group ', this.stepsGroup);
-      this.writeEvent.emit(this.writeGroup);
-      this.valuesCtrl.control.valueChanges
+
+      this.operationGroup.addControl('service', new FormControl(''))
+      this.operationGroup.addControl('parameters', this.parameterCtrl.control);
+      this.operationGroup.addControl('condition', this.conditionCtrl.control);
+      console.log('write group ', this.operationGroup);
+      this.stepsGroup.addControl('operation', this.operationGroup);
+      console.log('step group ', this.stepsGroup);
+      this.parameterCtrl.control.valueChanges
         .pipe(debounceTime(300))
         .subscribe(
           (value: any) => {
@@ -73,8 +64,8 @@ export class AddWriteComponent implements OnInit {
               }
               return false;
             }));
-            // console.log('merged', merged);
-            // console.log(this.writeGroup.value);
+            console.log('merged', merged);
+            console.log(this.operationGroup.value);
           });
     }, 0);
   }
@@ -110,13 +101,11 @@ export class AddWriteComponent implements OnInit {
   setService(service: any) {
     console.log(service);
     this.selectedService = service.name;
-    this.writePayload.service = service.name;
-    this.writeGroup.controls['service'].setValue(service.name)
+    this.operationGroup.controls['service'].setValue(service.name)
   }
 
   getWriteValues() {
-    console.log(this.writePayload);
-    this.writeEvent.emit(this.writePayload);
+    // console.log(this.writePayload);
+    // this.writeEvent.emit(this.writePayload);
   }
-
 }
