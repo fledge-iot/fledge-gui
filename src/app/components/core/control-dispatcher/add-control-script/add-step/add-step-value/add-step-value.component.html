@@ -8,20 +8,20 @@
         <div class="field is-horizontal">
           <div class="field">
             <div class="control">
-              <input placeholder="key" class="input is-small" required type="text" #key="ngModel" name="key"
-                [(ngModel)]="keys">
+              <input placeholder="key" class="input is-small" required type="text" #control="ngModel" name="key-{{i}}"
+                [ngModel]="parameters.key" (ngModelChange)="setKey(i, $event)">
             </div>
           </div>
           &nbsp;
           <div class="field">
             <div class="control">
-              <input placeholder="value" class="input is-small" type="text" required #val="ngModel" name="val"
-                [(ngModel)]="values">
+              <input placeholder="value" class="input is-small" type="text" required #control="ngModel" name="val-{{i}}"
+                [ngModel]="parameters.value" (ngModelChange)="setValue(i, $event)">
             </div>
           </div>
           &nbsp;
           <div *ngIf="i > 0" class="field">
-            <button (click)="deleteControl()" class="delete is-small">
+            <button (click)="deleteControl(i)" class="delete is-small">
             </button>
           </div>
         </div>

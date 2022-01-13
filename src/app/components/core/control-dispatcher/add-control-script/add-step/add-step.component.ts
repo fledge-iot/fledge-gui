@@ -17,8 +17,7 @@ export class AddStepComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   public toggleDropDown(id: string) {
     const dropdowns = document.getElementsByClassName('dropdown');
@@ -34,13 +33,12 @@ export class AddStepComponent implements OnInit {
     }
   }
 
-
   selectStep(step: string) {
     this.selectedStep = step;
   }
 
   getStepConfig(data) {
-    console.log('step data', data);
+    // console.log('step data', data);
     this.stepEvent.emit(data)
   }
 

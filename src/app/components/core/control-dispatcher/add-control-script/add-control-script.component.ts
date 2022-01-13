@@ -77,12 +77,36 @@ export class AddControlScriptComponent implements OnInit {
 
   selectACL(acl) {
     this.selectedACL = acl.name;
+
   }
 
   onSubmit(form: NgForm) {
     this.submitted = true;
-    console.log('ngform', form);
+    console.log('ngform', form.value);
+    let { name, steps } = form.value;
+    let payload = { name, steps };
+    payload.steps.writes.values =
+      Object.values(payload.steps.writes.values)
+        .filter((f: any) => (f.hasOwnProperty('key')))
+        .map((v: any) => {
+          return { [v.key]: v.value };
+        })
+    payload['acl'] = this.selectedACL;
+    console.log('name', payload);
 
+
+    this.controlService.addControlScript(payload)
+      .subscribe((res: any) => {
+        this.ngProgress.done();
+        console.log('res', res);
+        this.alertService.error(res.message);
+      }, error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
 }

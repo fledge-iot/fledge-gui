@@ -27,6 +27,12 @@ export class ControlDispatcherService {
       catchError(error => throwError(error)));
   }
 
+  addControlScript(payload: any) {
+    return this.http.post(`${this.CONTROL_SERVICE_URL}`, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   updateScript(name: string, payload: any) {
     return this.http.put(`${this.CONTROL_SERVICE_URL}/${name}`, payload).pipe(
       map(response => response),

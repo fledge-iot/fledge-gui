@@ -27,6 +27,6 @@
   </div>
 </div>
 <div>
-  <app-add-step-value [index]="controlIndex" [Name]="controlIndex"></app-add-step-value>
-  <app-add-step-condition></app-add-step-condition>
+  <app-add-step-value [index]="controlIndex" ngModelGroup="values" #valuesCtrl="ngModelGroup"></app-add-step-value>
+  <app-add-step-condition ngModelGroup="condition" #conditionCtrl="ngModelGroup"></app-add-step-condition>
 </div>

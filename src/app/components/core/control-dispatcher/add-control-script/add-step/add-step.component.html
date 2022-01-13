@@ -27,6 +27,7 @@
   </div>
 </div>
 <div class="field">
-  <app-add-write [controlIndex]="controlIndex" *ngIf="selectedStep === 'write'" (writeEvent)="getStepConfig($event)">
+  <app-add-write ngModelGroup="write" #writeCtrl="ngModelGroup" [controlIndex]="controlIndex"
+    *ngIf="selectedStep === 'write'" (writeEvent)="getStepConfig($event)">
   </app-add-write>
 </div>

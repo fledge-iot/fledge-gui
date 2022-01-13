@@ -6,7 +6,7 @@
       </div>
     </header>
     <div class="card-content step-content">
-      <form (ngSubmit)="onSubmit(scriptForm)" #scriptForm="ngForm">
+      <form #scriptForm="ngForm">
         <div class="column is-four-fifths">
           <div class="field is-horizontal">
             <div class="field-label is-small">
@@ -36,7 +36,8 @@
                   <div class="box">
                     <div class="columns">
                       <div class="column">
-                        <app-add-step (stepEvent)="setStep($event)" [controlIndex]="i" [payload]="scriptPayload">
+                        <app-add-step ngModelGroup="steps" #stepCtrl="ngModelGroup" (stepEvent)="setStep($event)"
+                          [controlIndex]="i" [payload]="scriptPayload">
                         </app-add-step>
                       </div>
                       <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">
@@ -100,7 +101,7 @@
               <button [routerLink]="['/control-dispatcher']" class="button is-small">Cancel</button>
             </p>
             <p class="control">
-              <button type="submit" class="button is-small is-link">Save</button>
+              <button (click)="onSubmit(scriptForm)" type="button" class="button is-small is-link">Save</button>
             </p>
           </div>
         </div>
