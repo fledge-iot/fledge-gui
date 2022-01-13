@@ -25,7 +25,12 @@
         <div class="field">
           <div class="control">
             <input placeholder="key" class="input is-small" type="text" name='key' #key="ngModel"
-              [ngModel]="conditionPayload.key" (ngModelChange)="setConditionKey($event)">
+              [ngModel]="conditionPayload.key" (ngModelChange)="setConditionKey($event)" required>
+          </div>
+          <div *ngIf="key.invalid && (key.dirty || key.touched)" class="help is-danger">
+            <div *ngIf="key.errors?.['required']">
+              Key is required.
+            </div>
           </div>
         </div>
         &nbsp;
@@ -54,7 +59,12 @@
         <div class="field">
           <div class="control">
             <input placeholder="value" class="input is-small" type="text" name='value' #val="ngModel"
-              [ngModel]="conditionPayload.value" (ngModelChange)="setConditionValue($event)">
+              [ngModel]="conditionPayload.value" (ngModelChange)="setConditionValue($event)" required>
+          </div>
+          <div *ngIf="val.invalid && (val.dirty || val.touched)" class="help is-danger">
+            <div *ngIf="val.errors?.['required']">
+              value is required.
+            </div>
           </div>
         </div>
         &nbsp;

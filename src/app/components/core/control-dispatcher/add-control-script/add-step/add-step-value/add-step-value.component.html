@@ -8,11 +8,11 @@
         <div class="field is-horizontal">
           <div class="field">
             <div class="control">
-              <input placeholder="key" class="input is-small" required type="text" #control="ngModel" name="key-{{i}}"
+              <input placeholder="key" class="input is-small" required type="text" #key="ngModel" name="key-{{i}}"
                 [ngModel]="parameters.key" (ngModelChange)="setKey(i, $event)">
             </div>
-            <div *ngIf="control.invalid && (control.dirty || control.touched)" class="help is-danger">
-              <div *ngIf="control.errors?.['required']">
+            <div *ngIf="key.invalid && (key.dirty || key.touched)" class="help is-danger">
+              <div *ngIf="key.errors?.['required']">
                 Key is required.
               </div>
             </div>
@@ -20,8 +20,13 @@
           &nbsp;
           <div class="field">
             <div class="control">
-              <input placeholder="value" class="input is-small" type="text" required #control="ngModel" name="val-{{i}}"
+              <input placeholder="value" class="input is-small" type="text" required #val="ngModel" name="val-{{i}}"
                 [ngModel]="parameters.value" (ngModelChange)="setValue(i, $event)">
+            </div>
+            <div *ngIf="val.invalid && (val.dirty || val.touched)" class="help is-danger">
+              <div *ngIf="val.errors?.['required']">
+                Value is required.
+              </div>
             </div>
           </div>
           &nbsp;

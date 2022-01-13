@@ -30,28 +30,16 @@ export class AddStepConditionComponent implements OnInit {
 
   }
 
-  ngAfterViewInit() {
-    // setTimeout(() => {
-    //   this.conditionGroup = this.control.controls['condition'] as FormGroup;
-    //   this.conditionGroup.addControl('key', new FormControl(''))
-    //   this.conditionGroup.addControl('condition', new FormControl(this.selectedCondition))
-    //   this.conditionGroup.addControl('value', new FormControl(''))
-    //   // console.log('condition ', this.control.controls['condition']);
-    //   // console.log('write group inside condtion', this.control.controls['write']);
-    // }, 0);
-    setTimeout(() => {
-      console.log(this.from, 'index', this.index);
-      const stepsControl = this.control.controls[`step-${this.index}`] as FormGroup;
-      console.log('stepsControl', stepsControl.controls);
-      this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
-      this.conditionGroup = this.stepTypeGroup.controls['condition'] as FormGroup;
-      console.log('condition', this.conditionGroup);
-      // this.valuesGroup = this.control.controls['values'] as FormGroup;
-      this.conditionGroup.addControl('key', new FormControl(''))
-      this.conditionGroup.addControl('condition', new FormControl(this.selectedCondition))
-      this.conditionGroup.addControl('value', new FormControl(''))
-    }, 300);
-  }
+  // ngAfterViewInit() {
+  //   // setTimeout(() => {
+  //   //   this.conditionGroup = this.control.controls['condition'] as FormGroup;
+  //   //   this.conditionGroup.addControl('key', new FormControl(''))
+  //   //   this.conditionGroup.addControl('condition', new FormControl(this.selectedCondition))
+  //   //   this.conditionGroup.addControl('value', new FormControl(''))
+  //   //   // console.log('condition ', this.control.controls['condition']);
+  //   //   // console.log('write group inside condtion', this.control.controls['write']);
+  //   // }, 0);
+  // }
 
   public toggleDropDown(id: string) {
     const dropdowns = document.getElementsByClassName('dropdown');
@@ -76,6 +64,15 @@ export class AddStepConditionComponent implements OnInit {
 
   addConditionControl() {
     this.showConditionControl = true;
+    setTimeout(() => {
+      const stepsControl = this.control.controls[`step-${this.index}`] as FormGroup;
+      this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
+      this.stepTypeGroup.addControl('condition', new FormGroup({}))
+      this.conditionGroup = this.stepTypeGroup.controls['condition'] as FormGroup;
+      this.conditionGroup.addControl('key', new FormControl(''));
+      this.conditionGroup.addControl('condition', new FormControl(this.selectedCondition));
+      this.conditionGroup.addControl('value', new FormControl(''));
+    }, 300);
   }
 
   deleteControl() {
@@ -83,6 +80,10 @@ export class AddStepConditionComponent implements OnInit {
     this.conditionPayload.key = '';
     this.conditionPayload.condition = '';
     this.conditionPayload.value = '';
+    this.conditionGroup.removeControl('key');
+    this.conditionGroup.removeControl('condition');
+    this.conditionGroup.removeControl('value');
+    this.stepTypeGroup.removeControl('condition');
   }
 
   setConditionValue(value) {

@@ -112,8 +112,6 @@ export class AddControlScriptComponent implements OnInit {
       } else if ('operation' in val) {
         val['operation'].values = values;
       }
-      console.log('val of', val);
-
       return val;
     });
     console.log(test);
