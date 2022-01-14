@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
-import { AlertService, ProgressBarService } from '../../../../../../services';
+import { AlertService } from '../../../../../../services';
 import { ControlDispatcherService } from '../../../../../../services/control-dispatcher.service';
 
 @Component({

@@ -36,10 +36,10 @@
         &nbsp;
         <div class="field">
           <div class="control">
-            <div id="condition-dropdown" class="dropdown is-left">
+            <div #conditionCtrl id="condition-dropdown-{{index}}" class="dropdown is-left">
               <div class="dropdown-trigger">
                 <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)="toggleDropDown('condition-dropdown')">
+                  (click)="toggleDropDown(conditionCtrl.id)">
                   <span>{{selectedCondition}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>

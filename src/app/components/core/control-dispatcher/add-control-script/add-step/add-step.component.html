@@ -38,4 +38,11 @@
   <app-add-script [step]="'script'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'script'"
     (event)="getControl($event)">
   </app-add-script>
+
+  <app-add-configure [step]="'configure'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'configure'"
+    (event)="getControl($event)">
+  </app-add-configure>
+
+  <app-add-delay [step]="'delay'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'delay'"
+    (event)="getControl($event)"></app-add-delay>
 </div>

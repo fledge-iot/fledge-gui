@@ -83,8 +83,11 @@ export class AddControlScriptComponent implements OnInit {
 
   flattenPayload(payload: any) {
     payload.steps.map(val => {
+      console.log(val);
       let values;
-      if ('write' in val) {
+      if ('configure' in val || 'delay' in val) {
+        values = val;
+      } else if ('write' in val) {
         values = val['write'].values;
       } else if ('operation' in val) {
         values = val['operation'].parameters;

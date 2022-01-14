@@ -1,13 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { range, cloneDeep, uniqWith } from 'lodash';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-step-value',
   templateUrl: './add-step-value.component.html',
-  styleUrls: ['./add-step-value.component.css'],
-  // viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
+  styleUrls: ['./add-step-value.component.css']
 })
 export class AddStepValueComponent implements OnInit {
   @Input() index;

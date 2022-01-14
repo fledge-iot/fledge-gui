@@ -1,0 +1,15 @@
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Duration</label>
+  </div>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <div class="control">
+        <input class="input is-small name-control" type="text" placeholder="duration"
+          (change)="setDuration($event.target.value)">
+      </div>
+    </div>
+  </div>
+</div>
+<app-add-step-condition #delayCondition [from]='step' [index]="controlIndex">
+</app-add-step-condition>
