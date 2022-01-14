@@ -21,6 +21,7 @@ import { AddWriteComponent } from './add-control-script/add-step/add-write/add-w
 import { AddStepConditionComponent } from './add-control-script/add-step/add-step-condition/add-step-condition.component';
 import { AddStepValueComponent } from './add-control-script/add-step/add-step-value/add-step-value.component';
 import { AddOperationComponent } from './add-control-script/add-step/add-operation/add-operation.component';
+import { AddScriptComponent } from './add-control-script/add-step/add-script/add-script.component';
 
 const routes: Routes = [
 
@@ -54,7 +55,8 @@ const routes: Routes = [
     AddWriteComponent,
     AddStepConditionComponent,
     AddStepValueComponent,
-    AddOperationComponent
+    AddOperationComponent,
+    AddScriptComponent
   ],
   imports: [
     FormsModule,

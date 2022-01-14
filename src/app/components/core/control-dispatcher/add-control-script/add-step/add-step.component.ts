@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ControlContainer, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormGroup, NgForm, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-add-step',
   templateUrl: './add-step.component.html',
   styleUrls: ['./add-step.component.css'],
-  // viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class AddStepComponent implements OnInit {
   scriptSteps = ['configure', 'delay', 'operation', 'script', 'write'];
@@ -19,7 +18,6 @@ export class AddStepComponent implements OnInit {
 
   ngOnInit(): void { }
 
-
   ngAfterViewInit() {
     setTimeout(() => {
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
@@ -27,7 +25,6 @@ export class AddStepComponent implements OnInit {
       this.stepsGroup.updateValueAndValidity();
     }, 300);
   }
-
 
   public toggleDropDown(id: string) {
     const dropdowns = document.getElementsByClassName('dropdown');

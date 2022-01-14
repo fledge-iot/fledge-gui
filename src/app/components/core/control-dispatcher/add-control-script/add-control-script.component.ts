@@ -88,6 +88,8 @@ export class AddControlScriptComponent implements OnInit {
         values = val['write'].values;
       } else if ('operation' in val) {
         values = val['operation'].parameters;
+      } else if ('script' in val) {
+        values = val['script'].parameters;
       }
       values =
         Object.values(values)
@@ -100,6 +102,8 @@ export class AddControlScriptComponent implements OnInit {
         val['write'].values = values;
       } else if ('operation' in val) {
         val['operation'].parameters = values;
+      } else if ('script' in val) {
+        val['script'].parameters = values;
       }
       return val;
     });
@@ -111,6 +115,7 @@ export class AddControlScriptComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     const formData = cloneDeep(form.value);
+    console.log('formData', formData);
     this.submitted = true;
     let payload = {};
     payload['steps'] = Object.keys(formData).map((key, i) => {

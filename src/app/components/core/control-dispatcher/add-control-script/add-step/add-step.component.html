@@ -35,7 +35,7 @@
     (event)="getControl($event)">
   </app-add-operation>
 
-  <app-add-operation [step]="'script'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'script'"
+  <app-add-script [step]="'script'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'script'"
     (event)="getControl($event)">
-  </app-add-operation>
+  </app-add-script>
 </div>

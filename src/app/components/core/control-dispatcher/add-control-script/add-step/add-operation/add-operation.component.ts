@@ -1,8 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormGroup, NgModelGroup, NgForm, FormControl, ControlContainer, Validators } from '@angular/forms';
-import { debounceTime } from 'rxjs/operators';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, NgForm, FormControl, ControlContainer, Validators } from '@angular/forms';
 import { ServicesApiService, AlertService } from '../../../../../../services';
-import { uniqWith, cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-add-operation',
@@ -17,19 +15,13 @@ export class AddOperationComponent implements OnInit {
 
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
-
-  operationGroup: FormGroup;
   stepsGroup: FormGroup;
 
-  // @ViewChild('parameterCtrl', { static: true }) parameterCtrl: NgModelGroup;
-  // @ViewChild('conditionCtrl', { static: true }) conditionCtrl: NgModelGroup;
   values = [];
   constructor(
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
-    private control: NgForm) {
-
-  }
+    private control: NgForm) { }
 
   ngOnInit(): void {
     this.getAllServices(false);
@@ -37,31 +29,12 @@ export class AddOperationComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.operationGroup = this.control.controls['operation'] as FormGroup;
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       this.stepsGroup.addControl('operation', new FormGroup({
         service: new FormControl('', Validators.required),
         parameters: new FormGroup({}),
         condition: new FormGroup({}),
       }));
-      // this.operationGroup.addControl('service', new FormControl('', Validators.required))
-      // this.operationGroup.addControl('parameters', this.parameterCtrl.control);
-      // this.operationGroup.addControl('condition', this.conditionCtrl.control);
-      // this.stepsGroup.addControl('operation', this.operationGroup);
-      // this.parameterCtrl.control.valueChanges
-      //   .pipe(debounceTime(300))
-      //   .subscribe(
-      //     (value: any) => {
-      //       let vl = Object.keys(value).map(k => value[k]);
-      //       let merged = cloneDeep(uniqWith(vl, (pre, cur) => {
-      //         if (pre.index == cur.index) {
-      //           cur.value = pre.value ? pre.value : cur.value;
-      //           cur.key = cur.key ? cur.key : pre.key;
-      //           return true;
-      //         }
-      //         return false;
-      //       }));
-      //     });
     }, 0);
   }
 
