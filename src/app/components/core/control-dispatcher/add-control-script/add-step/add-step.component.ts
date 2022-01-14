@@ -9,7 +9,7 @@ import { FormGroup, NgForm, Validators } from '@angular/forms';
 export class AddStepComponent implements OnInit {
   scriptSteps = ['configure', 'delay', 'operation', 'script', 'write'];
   selectedStep;
-  stepsGroup: FormGroup;
+  // stepsGroup: FormGroup;
 
   @Input() controlIndex;
   @Input() payload;
@@ -20,9 +20,9 @@ export class AddStepComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      this.stepsGroup.setValidators(Validators.requiredTrue);
-      this.stepsGroup.updateValueAndValidity();
+      // this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
+      this.stepControlGroup().setValidators(Validators.requiredTrue);
+      this.stepControlGroup().updateValueAndValidity();
     }, 300);
   }
 
@@ -40,14 +40,25 @@ export class AddStepComponent implements OnInit {
     }
   }
 
+  stepControlGroup(): FormGroup {
+    return this.control.controls[`step-${this.controlIndex}`] as FormGroup;
+  }
+
   selectStep(step: string) {
+    // delete old step from  step form group
+    const size = Object.keys(this.stepControlGroup().controls).length;
+    if (size > 0) {
+      const key = Object.keys(this.stepControlGroup().controls)[0];
+      this.stepControlGroup().removeControl(key);
+    }
+    // add new step in step form group
     this.selectedStep = step;
-    this.stepsGroup.removeValidators(Validators.requiredTrue);
-    this.stepsGroup.updateValueAndValidity();
+    this.stepControlGroup().removeValidators(Validators.requiredTrue);
+    this.stepControlGroup().updateValueAndValidity();
   }
 
   getControl(control: FormGroup) {
-    this.stepsGroup.addControl(this.selectedStep, control);
+    this.stepControlGroup().addControl(this.selectedStep, control);
   }
 
 }

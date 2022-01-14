@@ -118,7 +118,6 @@ export class AddControlScriptComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     const formData = cloneDeep(form.value);
-    console.log('formData', formData);
     this.submitted = true;
     let payload = {};
     payload['steps'] = Object.keys(formData).map((key, i) => {
@@ -130,12 +129,14 @@ export class AddControlScriptComponent implements OnInit {
     payload['name'] = name;
     payload = this.flattenPayload(payload);
     payload['acl'] = this.selectedACL;
+    this.ngProgress.start();
     this.controlService.addControlScript(payload)
       .subscribe((res: any) => {
         this.ngProgress.done();
         this.alertService.success('script created successfully.');
         this.alertService.error(res.message);
       }, error => {
+        this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -143,5 +144,4 @@ export class AddControlScriptComponent implements OnInit {
         }
       });
   }
-
 }
