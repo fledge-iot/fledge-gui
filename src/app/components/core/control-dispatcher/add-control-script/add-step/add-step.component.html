@@ -27,11 +27,15 @@
   </div>
 </div>
 <div class="field">
-  <app-add-write [step]="'write'" ngModelGroup="write" #writeCtrl="ngModelGroup" [controlIndex]="controlIndex"
-    *ngIf="selectedStep === 'write'" (event)="getControl($event)">
+  <app-add-write [step]="'write'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'write'"
+    (event)="getControl($event)">
   </app-add-write>
 
-  <app-add-operation [step]="'operation'" ngModelGroup="operation" #operationCtrl="ngModelGroup"
-    [controlIndex]="controlIndex" *ngIf="selectedStep === 'operation'" (event)="getControl($event)">
+  <app-add-operation [step]="'operation'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'operation'"
+    (event)="getControl($event)">
+  </app-add-operation>
+
+  <app-add-operation [step]="'script'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'script'"
+    (event)="getControl($event)">
   </app-add-operation>
 </div>

@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { ControlContainer, FormControl, FormGroup, NgForm, NgModelGroup } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ControlContainer, FormControl, FormGroup, NgForm, NgModelGroup, Validators } from '@angular/forms';
 import { ServicesApiService, AlertService } from '../../../../../../services';
 import { uniqWith, cloneDeep } from 'lodash';
 import { debounceTime } from 'rxjs/operators';
@@ -10,74 +10,72 @@ import { debounceTime } from 'rxjs/operators';
   viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class AddWriteComponent implements OnInit {
-  services = [];
-  selectedService;
-  writePayload: any = {
-    key: 'write',
-    order: 1,
-    service: "",
-    values: {},
-    condition: {
-      key: "",
-      condition: "",
-      value: ""
-    }
-  };
+  services = []; // south services list
+  selectedService = ''; // selected service
 
-  @Input() controlIndex;
-  @Input() step;
 
-  @Output() writeEvent = new EventEmitter<any>();
-  writeGroup: FormGroup;
+  @Input() controlIndex; // position
+  @Input() step; // step type
+
+  // writeGroup: FormGroup;
   stepsGroup: FormGroup;
 
-  @ViewChild('valuesCtrl', { static: true }) valuesCtrl: NgModelGroup;
-  @ViewChild('conditionCtrl', { static: true }) conditionCtrl: NgModelGroup;
+  // @ViewChild('valuesCtrl', { static: true }) valuesCtrl: NgModelGroup;
+  // @ViewChild('conditionCtrl', { static: true }) conditionCtrl: NgModelGroup;
+  serviceControl: FormControl;
+
   values = [];
   constructor(
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
-    private control: NgForm) {
-
-  }
+    private control: NgForm) { }
 
   ngOnInit(): void {
-    // console.log('ng control write', this.valuesCtrl);
+    console.log('existing write control', this.control);
+
     this.getAllServices(false);
   }
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.writeGroup = this.control.controls['write'] as FormGroup;
+      console.log('write page', this.controlIndex, this.control);
+      // this.writeGroup = this.control.controls['write'] as FormGroup;
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      //  this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
-      // console.log(this.stepsGroup);
+      this.stepsGroup.addControl('write', new FormGroup({
+        service: new FormControl('', Validators.required),
+        values: new FormGroup({}),
+        condition: new FormGroup({}),
+      }));
+      console.log('this.stepsGroup', this.stepsGroup);
 
-      this.writeGroup.addControl('service', new FormControl(''))
-      this.writeGroup.addControl('values', this.valuesCtrl.control);
-      this.writeGroup.addControl('condition', this.conditionCtrl.control);
-      // console.log('write group ', this.writeGroup);
-      this.stepsGroup.addControl('write', this.writeGroup);
-      //  console.log('step group ', this.stepsGroup);
-      this.writeEvent.emit(this.writeGroup);
-      this.valuesCtrl.control.valueChanges
-        .pipe(debounceTime(300))
-        .subscribe(
-          (value: any) => {
-            let vl = Object.keys(value).map(k => value[k]);
-            let merged = cloneDeep(uniqWith(vl, (pre, cur) => {
-              if (pre.index == cur.index) {
-                cur.value = pre.value ? pre.value : cur.value;
-                cur.key = cur.key ? cur.key : pre.key;
-                return true;
-              }
-              return false;
-            }));
-            // console.log('merged', merged);
-            // console.log(this.writeGroup.value);
-          });
+      // this.writeGroup.addControl('service', new FormControl('', Validators.required))
+      // this.writeGroup.addControl('values', this.valuesCtrl.control);
+      // this.writeGroup.addControl('condition', this.conditionCtrl.control);
+      // this.stepsGroup.addControl('write', this.writeGroup);
+      // this.valuesCtrl.control.valueChanges
+      //   .pipe(debounceTime(300))
+      //   .subscribe(
+      //     (value: any) => {
+      //       let vl = Object.keys(value).map(k => value[k]);
+      //       let merged = cloneDeep(uniqWith(vl, (pre, cur) => {
+      //         if (pre.index == cur.index) {
+      //           cur.value = pre.value ? pre.value : cur.value;
+      //           cur.key = cur.key ? cur.key : pre.key;
+      //           return true;
+      //         }
+      //         return false;
+      //       }));
+      //     });
     }, 0);
   }
+
+  writeControlGroup(): FormGroup {
+    return this.stepsGroup.controls['write'] as FormGroup;
+  }
+
+  // valuesControlGroup(): FormGroup {
+  //   return this.writeControlGroup().controls['values'] as FormGroup;
+  // }
 
   public getAllServices(caching: boolean) {
     this.servicesApiService.getSouthServices(caching)
@@ -108,15 +106,7 @@ export class AddWriteComponent implements OnInit {
   }
 
   setService(service: any) {
-    // console.log(service);
     this.selectedService = service.name;
-    this.writePayload.service = service.name;
-    this.writeGroup.controls['service'].setValue(service.name)
+    this.writeControlGroup().controls['service'].setValue(service.name);
   }
-
-  getWriteValues() {
-    // console.log(this.writePayload);
-    this.writeEvent.emit(this.writePayload);
-  }
-
 }

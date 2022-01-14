@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ControlContainer, FormGroup, NgForm } from '@angular/forms';
+import { ControlContainer, FormGroup, NgForm, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-add-step',
   templateUrl: './add-step.component.html',
   styleUrls: ['./add-step.component.css'],
-  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
+  // viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class AddStepComponent implements OnInit {
   scriptSteps = ['configure', 'delay', 'operation', 'script', 'write'];
@@ -22,8 +22,12 @@ export class AddStepComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.stepsGroup = this.control.controls['steps'] as FormGroup;
-    }, 0);
+      console.log('step page', this.controlIndex, this.control);
+      // console.log('this.control.controls', this.controlIndex, this.control.controls);
+      this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
+      this.stepsGroup.setValidators(Validators.requiredTrue);
+      this.stepsGroup.updateValueAndValidity();
+    }, 300);
   }
 
 
@@ -43,6 +47,8 @@ export class AddStepComponent implements OnInit {
 
   selectStep(step: string) {
     this.selectedStep = step;
+    this.stepsGroup.removeValidators(Validators.requiredTrue);
+    this.stepsGroup.updateValueAndValidity();
   }
 
   getControl(control: FormGroup) {

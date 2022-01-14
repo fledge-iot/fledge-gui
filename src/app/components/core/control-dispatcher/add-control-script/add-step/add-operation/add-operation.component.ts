@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormGroup, NgModelGroup, NgForm, FormControl, ControlContainer } from '@angular/forms';
+import { FormGroup, NgModelGroup, NgForm, FormControl, ControlContainer, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { ServicesApiService, AlertService } from '../../../../../../services';
 import { uniqWith, cloneDeep } from 'lodash';
@@ -12,18 +12,17 @@ import { uniqWith, cloneDeep } from 'lodash';
 })
 export class AddOperationComponent implements OnInit {
 
-  services = [];
-  selectedService;
+  services = [];  // list of south services
+  selectedService = ''; // selected list in the dropdown
 
-  @Input() controlIndex;
-  @Input() step;
+  @Input() controlIndex; // position of the control in the dom
+  @Input() step; // type of step
 
-  @Output() writeEvent = new EventEmitter<any>();
   operationGroup: FormGroup;
   stepsGroup: FormGroup;
 
-  @ViewChild('parameterCtrl', { static: true }) parameterCtrl: NgModelGroup;
-  @ViewChild('conditionCtrl', { static: true }) conditionCtrl: NgModelGroup;
+  // @ViewChild('parameterCtrl', { static: true }) parameterCtrl: NgModelGroup;
+  // @ViewChild('conditionCtrl', { static: true }) conditionCtrl: NgModelGroup;
   values = [];
   constructor(
     private servicesApiService: ServicesApiService,
@@ -33,41 +32,41 @@ export class AddOperationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // console.log('ng control write', this.valuesCtrl);
     this.getAllServices(false);
   }
 
   ngAfterViewInit() {
     setTimeout(() => {
-      // console.log('controlIndex', this.controlIndex);
-      // console.log('control group ', this.control);
       this.operationGroup = this.control.controls['operation'] as FormGroup;
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      // console.log('step group ', this.stepsGroup);
-
-      this.operationGroup.addControl('service', new FormControl(''))
-      this.operationGroup.addControl('parameters', this.parameterCtrl.control);
-      this.operationGroup.addControl('condition', this.conditionCtrl.control);
-      // console.log('write group ', this.operationGroup);
-      this.stepsGroup.addControl('operation', this.operationGroup);
-      // console.log('step group ', this.stepsGroup);
-      this.parameterCtrl.control.valueChanges
-        .pipe(debounceTime(300))
-        .subscribe(
-          (value: any) => {
-            let vl = Object.keys(value).map(k => value[k]);
-            let merged = cloneDeep(uniqWith(vl, (pre, cur) => {
-              if (pre.index == cur.index) {
-                cur.value = pre.value ? pre.value : cur.value;
-                cur.key = cur.key ? cur.key : pre.key;
-                return true;
-              }
-              return false;
-            }));
-            // console.log('merged', merged);
-            // console.log(this.operationGroup.value);
-          });
+      this.stepsGroup.addControl('operation', new FormGroup({
+        service: new FormControl('', Validators.required),
+        parameters: new FormGroup({}),
+        condition: new FormGroup({}),
+      }));
+      // this.operationGroup.addControl('service', new FormControl('', Validators.required))
+      // this.operationGroup.addControl('parameters', this.parameterCtrl.control);
+      // this.operationGroup.addControl('condition', this.conditionCtrl.control);
+      // this.stepsGroup.addControl('operation', this.operationGroup);
+      // this.parameterCtrl.control.valueChanges
+      //   .pipe(debounceTime(300))
+      //   .subscribe(
+      //     (value: any) => {
+      //       let vl = Object.keys(value).map(k => value[k]);
+      //       let merged = cloneDeep(uniqWith(vl, (pre, cur) => {
+      //         if (pre.index == cur.index) {
+      //           cur.value = pre.value ? pre.value : cur.value;
+      //           cur.key = cur.key ? cur.key : pre.key;
+      //           return true;
+      //         }
+      //         return false;
+      //       }));
+      //     });
     }, 0);
+  }
+
+  operationControlGroup(): FormGroup {
+    return this.stepsGroup.controls['operation'] as FormGroup;
   }
 
   public getAllServices(caching: boolean) {
@@ -99,13 +98,8 @@ export class AddOperationComponent implements OnInit {
   }
 
   setService(service: any) {
-    // console.log(service);
     this.selectedService = service.name;
-    this.operationGroup.controls['service'].setValue(service.name)
+    this.operationControlGroup().controls['service'].setValue(service.name)
   }
 
-  getWriteValues() {
-    // console.log(this.writePayload);
-    // this.writeEvent.emit(this.writePayload);
-  }
 }
