@@ -111,7 +111,6 @@ export class AddControlScriptComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     const formData = cloneDeep(form.value);
-    console.log('formData', formData);
     this.submitted = true;
     let payload = {};
     payload['steps'] = Object.keys(formData).map((key, i) => {

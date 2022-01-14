@@ -9,7 +9,7 @@
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(serviceDropDown.id)" class="button is-small" aria-haspopup="true"
               aria-controls="dropdown-menu">
-              <span>{{selectedService? selectedService : 'Select Service'}}</span>
+              <span>{{selectedService? selectedService : 'Select south service'}}</span>
               <span class="icon is-small">
                 <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
               </span>
@@ -29,6 +29,6 @@
 <div>
   <app-add-step-value [from]='step' [index]="controlIndex">
   </app-add-step-value>
-  <app-add-step-condition [from]='step' [index]="controlIndex">
+  <app-add-step-condition #writeCondition [from]='step' [index]="controlIndex">
   </app-add-step-condition>
 </div>

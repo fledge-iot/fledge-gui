@@ -22,8 +22,6 @@ export class AddStepComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      console.log('step page', this.controlIndex, this.control);
-      // console.log('this.control.controls', this.controlIndex, this.control.controls);
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       this.stepsGroup.setValidators(Validators.requiredTrue);
       this.stepsGroup.updateValueAndValidity();
@@ -53,7 +51,6 @@ export class AddStepComponent implements OnInit {
 
   getControl(control: FormGroup) {
     this.stepsGroup.addControl(this.selectedStep, control);
-    // console.log('step', this.stepsGroup);
   }
 
 }

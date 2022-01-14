@@ -31,25 +31,15 @@ export class AddStepValueComponent implements OnInit {
 
   ngOnInit(): void {
     this.valueControlsList = range(1);
-    // console.log(this.valueControls);
-
   }
 
   ngAfterViewInit() {
     setTimeout(() => {
-      console.log('values page', this.index, this.control);
-      // console.log(this.from);
       const stepsControl = this.control.controls[`step-${this.index}`] as FormGroup;
-      console.log('stepsControl', stepsControl.controls);
       this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
-      console.log('stepTypeGroup', this.stepTypeGroup);
-
       this.valuesGroup = this.stepTypeGroup.controls[this.from === 'write' ? 'values' : 'parameters'] as FormGroup;
-      console.log('this.valuesGroup', this.valuesGroup);
-      // this.valuesGroup = this.control.controls['values'] as FormGroup;
       this.valuesGroup.addControl(`${this.from}-key-${this.valueControlCount}`, new FormControl({ index: this.valueControlCount, key: '', value: '' }));
       this.valuesGroup.addControl(`${this.from}-val-${this.valueControlCount}`, new FormControl({ index: this.valueControlCount, key: '', value: '' }));
-
       this.valuesGroup.valueChanges
         .pipe(debounceTime(300))
         .subscribe(
@@ -71,15 +61,10 @@ export class AddStepValueComponent implements OnInit {
     this.valueControlCount += 1;
     this.valueControlsList.push(this.valueControlCount);
     const stepsControl = this.control.controls[`step-${this.index}`] as FormGroup;
-    console.log('stepsControl', stepsControl.controls);
     const stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
     this.valuesGroup = stepTypeGroup.controls[this.from === 'write' ? 'values' : 'parameters'] as FormGroup;
-    // console.log('addValueControl', this.valueControls);
     this.valuesGroup.addControl(`${this.from}-key-${this.valueControlCount}`, new FormControl({ index: this.valueControlCount, key: '', value: '' }));
     this.valuesGroup.addControl(`${this.from}-val-${this.valueControlCount}`, new FormControl({ index: this.valueControlCount, key: '', value: '' }));
-    console.log('value group', stepTypeGroup);
-    // console.log('from  group', this.from);
-
   }
 
   deleteControl(index) {
@@ -90,19 +75,12 @@ export class AddStepValueComponent implements OnInit {
   }
 
   setValue(index, value) {
-    console.log('index', index);
-    console.log('value', value);
-    console.log('val con', this.valuesGroup.controls[`${this.from}-val-${index}`]);
     this.valuesGroup.controls[`${this.from}-val-${index}`].setValue({ index, value })
 
   }
 
   setKey(index, key) {
-    // console.log('index', index);
-    // console.log('value', key);
-    // console.log('key con', this.valuesGroup.controls[`key-${index + 1}`]);
     this.valuesGroup.controls[`${this.from}-key-${index}`].setValue({ index, key })
-
   }
 
 }
