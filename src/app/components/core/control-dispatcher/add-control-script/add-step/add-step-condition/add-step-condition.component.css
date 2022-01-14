@@ -1,3 +1,11 @@
 .delete {
   vertical-align: middle !important;
 }
+
+.button.is-light.like-link {
+  background-color: white;
+}
+
+.button.is-light.like-link:hover {
+  font-style: bold;
+}
