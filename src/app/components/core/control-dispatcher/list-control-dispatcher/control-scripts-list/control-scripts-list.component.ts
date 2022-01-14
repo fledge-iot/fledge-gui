@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertService, ProgressBarService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
+import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
+import { DialogService } from '../../confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-control-scripts-list',
@@ -9,10 +11,12 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 })
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
-
+  @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
+  script;
   constructor(
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
+    private dialogService: DialogService,
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
@@ -26,8 +30,6 @@ export class ControlScriptsListComponent implements OnInit {
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.controlScripts = data.scripts;
-        console.log(this.controlScripts);
-
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -39,4 +41,36 @@ export class ControlScriptsListComponent implements OnInit {
       });
   }
 
+  setScript(script: any) {
+    this.script = script.name;
+  }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
+  }
+
+  deleteScript(script) {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.deleteScript(script)
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.alertService.success(data.message);
+        // close modal
+        this.closeModal('confirmation-dialog');
+        this.showControlDispatcherService();
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
 }

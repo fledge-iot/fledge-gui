@@ -44,4 +44,10 @@ export class ControlDispatcherService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  deleteScript(name: string) {
+    return this.http.delete(`${this.CONTROL_SERVICE_URL}/${name}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
 }

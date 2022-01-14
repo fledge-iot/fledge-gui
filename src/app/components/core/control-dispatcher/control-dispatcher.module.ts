@@ -24,6 +24,7 @@ import { AddOperationComponent } from './add-control-script/add-step/add-operati
 import { AddScriptComponent } from './add-control-script/add-step/add-script/add-script.component';
 import { AddConfigureComponent } from './add-control-script/add-step/add-configure/add-configure.component';
 import { AddDelayComponent } from './add-control-script/add-step/add-delay/add-delay.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 const routes: Routes = [
 
@@ -60,7 +61,8 @@ const routes: Routes = [
     AddOperationComponent,
     AddScriptComponent,
     AddConfigureComponent,
-    AddDelayComponent
+    AddDelayComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     FormsModule,
@@ -70,7 +72,7 @@ const routes: Routes = [
     DragDropModule,
     TreeModule,
     NgSelectModule,
-    RouterModule.forChild(routes),
+    RouterModule.forChild(routes)
   ]
 })
 export class ControlDispatcherModule { }
