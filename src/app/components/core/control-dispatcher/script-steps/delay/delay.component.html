@@ -5,8 +5,8 @@
   <div class="field-body">
     <div class="field is-narrow">
       <div class="control">
-        <input class="input is-small name-control" type="text" placeholder="duration"
-          [(ngModel)]="config.value.duration" (ngModelChange)="getValue($event)">
+        <input class="input is-small name-control" type="number" placeholder="duration"
+          [(ngModel)]="config.value.duration" (ngModelChange)="getValue($event)" appNumberOnly>
       </div>
     </div>
   </div>

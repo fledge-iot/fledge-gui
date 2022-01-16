@@ -25,6 +25,7 @@ import { AddScriptComponent } from './add-control-script/add-step/add-script/add
 import { AddConfigureComponent } from './add-control-script/add-step/add-configure/add-configure.component';
 import { AddDelayComponent } from './add-control-script/add-step/add-delay/add-delay.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { DirectivesModule } from '../../../directives/directives.module';
 
 const routes: Routes = [
 
@@ -72,6 +73,7 @@ const routes: Routes = [
     DragDropModule,
     TreeModule,
     NgSelectModule,
+    DirectivesModule,
     RouterModule.forChild(routes)
   ]
 })
