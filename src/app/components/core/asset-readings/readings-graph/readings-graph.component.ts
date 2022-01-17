@@ -305,7 +305,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     if (this.selectedTab === 1 && this.numberTypeReadingsList.length > 0) {
-      this.statsAssetReadingsGraph(this.numberTypeReadingsList, this.timestamps);
+      this.statsAssetReadingsGraph(this.numberTypeReadingsList);
     } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
     }
@@ -321,8 +321,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }).value();
   }
 
-  private statsAssetReadingsGraph(assetReadings: any, ts: any): void {
-    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss'));
+  private statsAssetReadingsGraph(assetReadings: any): void {
     const dataset = [];
     assetReadings = orderBy(assetReadings, [reading => reading.key.toLowerCase()], ['asc']);
     for (const r of assetReadings) {
@@ -340,7 +339,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         dataset.push(dt);
       }
     }
-    this.setAssetReadingValues(dataset, timestamps);
+    this.setAssetReadingValues(dataset);
   }
 
   getColorCode(readKey, dsColor) {
@@ -370,9 +369,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  private setAssetReadingValues(ds: any, timestamps) {
+  private setAssetReadingValues(ds: any) {
     this.assetReadingValues = {
-      labels: timestamps,
       datasets: ds
     };
 
@@ -384,6 +382,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       scales: {
         xAxes: [{
           distribution: 'linear',
+          type: 'time',
           time: {
             unit: 'second',
             tooltipFormat: 'HH:mm:ss:SSS',
