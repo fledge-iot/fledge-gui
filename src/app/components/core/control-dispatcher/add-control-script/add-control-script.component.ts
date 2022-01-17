@@ -1,6 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NgForm, NgModelGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { range, cloneDeep } from 'lodash';
 import { Observable, of } from 'rxjs';
 import { AlertService, ProgressBarService } from '../../../../services';
@@ -30,7 +31,8 @@ export class AddControlScriptComponent implements OnInit {
 
   constructor(private controlService: ControlDispatcherService,
     private alertService: AlertService,
-    private ngProgress: ProgressBarService) { }
+    private ngProgress: ProgressBarService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.stepControlsList = range(1);
@@ -141,10 +143,12 @@ export class AddControlScriptComponent implements OnInit {
     payload['acl'] = this.selectedACL;
     this.ngProgress.start();
     this.controlService.addControlScript(payload)
-      .subscribe((res: any) => {
+      .subscribe(() => {
         this.ngProgress.done();
         this.alertService.success('script created successfully.');
-        this.alertService.error(res.message);
+        setTimeout(() => {
+          this.router.navigate(['control-dispatcher']);
+        }, 1000);
       }, error => {
         this.ngProgress.done();
         if (error.status === 0) {
