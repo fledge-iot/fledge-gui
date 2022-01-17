@@ -14,7 +14,6 @@ export class ControlDispatcherService {
 
   constructor(private http: HttpClient) { }
 
-
   fetchControlServiceScripts() {
     return this.http.get(this.CONTROL_SERVICE_URL).pipe(
       map(response => response),

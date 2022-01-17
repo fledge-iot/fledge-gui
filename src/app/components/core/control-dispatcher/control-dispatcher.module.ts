@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthCheckGuard } from '../../../guards';
 import { ScriptDetailsComponent } from './script-details/script-details.component';
 import { WriteComponent } from './script-steps/write/write.component';
 import { OperationComponent } from './script-steps/operation/operation.component';
@@ -26,6 +25,7 @@ import { AddConfigureComponent } from './add-control-script/add-step/add-configu
 import { AddDelayComponent } from './add-control-script/add-step/add-delay/add-delay.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { DirectivesModule } from '../../../directives/directives.module';
+import { AdminGuard, AuthGuard } from '../../../guards';
 
 const routes: Routes = [
 
@@ -36,7 +36,7 @@ const routes: Routes = [
   {
     path: 'script/add',
     component: AddControlScriptComponent,
-    canActivate: [AuthCheckGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'script/:name',
@@ -75,6 +75,7 @@ const routes: Routes = [
     NgSelectModule,
     DirectivesModule,
     RouterModule.forChild(routes)
-  ]
+  ],
+  providers: [AuthGuard, AdminGuard]
 })
 export class ControlDispatcherModule { }

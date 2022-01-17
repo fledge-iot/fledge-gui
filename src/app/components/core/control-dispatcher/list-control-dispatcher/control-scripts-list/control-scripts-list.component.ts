@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertService, ProgressBarService } from '../../../../../services';
+import { Subscription } from 'rxjs';
+import { AlertService, ProgressBarService, SharedService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
@@ -13,13 +14,19 @@ export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   script;
+  private subscription: Subscription;
+  isAdmin = false;
   constructor(
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
     private dialogService: DialogService,
+    private sharedService: SharedService,
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
+    this.subscription = this.sharedService.isAdmin.subscribe(value => {
+      this.isAdmin = value;
+    });
     this.showControlDispatcherService();
   }
 
@@ -72,5 +79,11 @@ export class ControlScriptsListComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  public ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 }
