@@ -47,7 +47,7 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
-              <a (click)="setItem($event); toggleDropDown('config-dropdown')" *ngFor="let c of configItems"
+              <a (click)="setItem(c); toggleDropDown('config-dropdown')" *ngFor="let c of configItems"
                 class="dropdown-item">{{c.key}}</a>
             </div>
           </div>

@@ -32,25 +32,28 @@
             </div>
             <div class="field-body">
               <div class="field">
-                <ng-container *ngFor="let control of stepControlsList; let i = index">
-                  <div class="box">
-                    <div class="columns">
-                      <div class="column">
-                        <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
-                          (stepEvent)="setStep($event)" [controlIndex]="control" [payload]="scriptPayload">
-                        </app-add-step>
-                      </div>
-                      <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">
-                        <div class="field">
-                          <div *ngIf="i > 0">
-                            <button (click)="deleteStepControl(control)" class="delete is-small">
-                            </button>
+                <div class="steps-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
+                  <div *ngFor="let control of stepControls()| async; let i = index" cdkDrag
+                    [cdkDragDisabled]="stepControlsList?.length < 2">
+                    <div class="box" cdkDragHandle>
+                      <div class="columns">
+                        <div class="column">
+                          <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
+                            (stepEvent)="setStep($event)" [controlIndex]="control">
+                          </app-add-step>
+                        </div>
+                        <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">
+                          <div class="field">
+                            <div *ngIf="i > 0">
+                              <button (click)="deleteStepControl(control)" class="delete is-small">
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </ng-container>
+                </div>
               </div>
             </div>
           </div>

@@ -1,6 +1,8 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NgForm, NgModelGroup } from '@angular/forms';
 import { range, cloneDeep } from 'lodash';
+import { Observable, of } from 'rxjs';
 import { AlertService, ProgressBarService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 
@@ -18,7 +20,7 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   stepControlCount = 0; //default one step control visible
-  stepControlsList = []; //range(this.stepControlCount);
+  stepControlsList = [];
 
   stepData = [];
   acls = [{ name: 'None' }];
@@ -40,7 +42,6 @@ export class AddControlScriptComponent implements OnInit {
     dropDown.classList.toggle('is-active');
   }
 
-
   getAllACL() {
     this.controlService.fetchAllACL()
       .subscribe((data: any) => {
@@ -53,6 +54,10 @@ export class AddControlScriptComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  stepControls(): Observable<any> {
+    return of(this.stepControlsList);
   }
 
   setStep(data) {
@@ -82,8 +87,7 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   flattenPayload(payload: any) {
-    payload.steps.map(val => {
-      console.log(val);
+    payload.steps.map((val) => {
       let values;
       if ('configure' in val || 'delay' in val) {
         values = val;
@@ -110,6 +114,12 @@ export class AddControlScriptComponent implements OnInit {
       }
       return val;
     });
+
+    this.stepControlsList.map((value, index) => {
+      for (const key in payload['steps'][value]) {
+        payload['steps'][value][key]['order'] = index;
+      }
+    })
 
     // change steps from array to object
     payload['steps'] = Object.assign({}, ...payload['steps']);
@@ -144,4 +154,13 @@ export class AddControlScriptComponent implements OnInit {
         }
       });
   }
+
+
+  onDrop(event: CdkDragDrop<string[]>) {
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
+    moveItemInArray(this.stepControlsList, event.previousIndex, event.currentIndex);
+  }
+
 }

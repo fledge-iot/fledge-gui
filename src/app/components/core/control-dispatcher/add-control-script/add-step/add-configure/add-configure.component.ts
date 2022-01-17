@@ -151,9 +151,9 @@ export class AddConfigureComponent implements OnInit {
   }
 
 
-  setItem(value: any) {
-    this.selectedConfigItem = value;
-    this.scriptControlGroup().controls['item'].setValue(value);
+  setItem(config: any) {
+    this.selectedConfigItem = config.value;
+    this.scriptControlGroup().controls['item'].setValue(config.value);
   }
 
   setValue(value: any) {
