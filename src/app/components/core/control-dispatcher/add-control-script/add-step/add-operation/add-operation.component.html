@@ -1,5 +1,18 @@
 <div class="field is-horizontal">
   <div class="field-label is-small">
+    <label class="label">Name</label>
+  </div>
+  <div class="field-body">
+    <div class="field">
+      <div class="control">
+        <input class="input is-small name-control" type="text" placeholder="Name"
+          (change)="setName($event.target.value)">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="field is-horizontal">
+  <div class="field-label is-small">
     <label class="label">Service</label>
   </div>
   <div class="field-body">

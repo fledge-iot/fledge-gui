@@ -31,6 +31,7 @@ export class AddOperationComponent implements OnInit {
     setTimeout(() => {
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       this.stepsGroup.addControl('operation', new FormGroup({
+        name: new FormControl(''),
         service: new FormControl('', Validators.required),
         parameters: new FormGroup({}),
         condition: new FormGroup({}),
@@ -68,6 +69,10 @@ export class AddOperationComponent implements OnInit {
         }
       }
     }
+  }
+
+  setName(name: string) {
+    this.operationControlGroup().controls['name'].setValue(name)
   }
 
   setService(service: any) {
