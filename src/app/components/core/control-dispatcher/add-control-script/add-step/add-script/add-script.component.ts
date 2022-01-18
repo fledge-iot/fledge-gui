@@ -41,7 +41,6 @@ export class AddScriptComponent implements OnInit {
       }));
 
       if (this.config && this.config.key === this.step) {
-        console.log('script config', this.config);
         this.setScript(this.config.value.name);
       }
     }, 0);
@@ -79,8 +78,6 @@ export class AddScriptComponent implements OnInit {
   }
 
   setScript(script: any) {
-    console.log('script', script);
-
     this.selectedScript = script;
     this.scriptControlGroup().controls['name'].setValue(script)
   }

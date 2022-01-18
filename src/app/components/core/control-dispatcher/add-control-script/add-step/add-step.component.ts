@@ -9,7 +9,7 @@ import { FormGroup, NgForm, Validators } from '@angular/forms';
 export class AddStepComponent implements OnInit {
   scriptSteps = ['configure', 'delay', 'operation', 'script', 'write'];
   selectedStep;
-  // stepsGroup: FormGroup;
+  @Input() addStepClicked = false;
   @Input() config;
   @Input() controlIndex;
   @Input() payload;
@@ -20,14 +20,15 @@ export class AddStepComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      // this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       if (this.stepControlGroup()) {
         this.stepControlGroup().setValidators(Validators.requiredTrue);
         this.stepControlGroup().updateValueAndValidity();
       }
 
-      if (this.config) {
-        console.log('config', this.config.key);
+      console.log('add step ', this.addStepClicked, this.controlIndex);
+
+
+      if (this.config && !this.addStepClicked) {
         this.selectStep(this.config.key);
       }
     }, 300);
@@ -52,8 +53,6 @@ export class AddStepComponent implements OnInit {
   }
 
   selectStep(step: string) {
-    console.log('config', this.config);
-
     // delete old step from  step form group
     const size = Object.keys(this.stepControlGroup().controls).length;
     if (size > 0) {

@@ -2,7 +2,7 @@
   <div class="card">
     <header class="card-header">
       <div class="card-header-title">
-        <span>Add Control Script</span>
+        <span> {{update ? 'Update Control Script': 'Add Control Script'}}</span>
       </div>
     </header>
     <div class="card-content step-content">
@@ -16,7 +16,7 @@
               <div class="field">
                 <div class="control">
                   <input #name=ngModel name="name" class="input is-small" type="text" placeholder="Name" required
-                    [(ngModel)]="scriptName">
+                    [(ngModel)]="controlScript.name">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                   <div *ngIf="name.errors?.['required']">
@@ -39,7 +39,8 @@
                       <div class="columns">
                         <div class="column">
                           <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
-                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(control)">
+                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(control)"
+                            [addStepClicked]="addStep">
                           </app-add-step>
                         </div>
                         <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">

@@ -38,7 +38,6 @@ export class AddWriteComponent implements OnInit {
       }));
 
       if (this.config) {
-        console.log('write config', this.config);
         this.setService(this.config.value.service);
       }
     }, 0);

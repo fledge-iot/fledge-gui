@@ -42,8 +42,6 @@ export class AddDelayComponent implements OnInit {
   setDuration(value: any) {
     this.duration = value;
     this.scriptControlGroup().controls['duration'].setValue(value);
-    console.log(this.control.controls);
-
   }
 
 }

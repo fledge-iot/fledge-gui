@@ -34,8 +34,8 @@ export class AddStepValueComponent implements OnInit {
 
 
       for (let i = 0; i < this.parameters.length; i++) {
-        this.getValueControlGroup().addControl(`${this.from}-key-${i}`, new FormControl({ index: i, key: '', value: '' }));
-        this.getValueControlGroup().addControl(`${this.from}-val-${i}`, new FormControl({ index: i, key: '', value: '' }));
+        this.getValueControlGroup().addControl(`${this.from}-key-${i}`, new FormControl({ index: i, key: this.parameters[i].key, value: this.parameters[i].value }));
+        this.getValueControlGroup().addControl(`${this.from}-val-${i}`, new FormControl({ index: i, key: this.parameters[i].key, value: this.parameters[i].value }));
       }
       this.getValueControlGroup().valueChanges
         .pipe(debounceTime(300))
@@ -76,17 +76,11 @@ export class AddStepValueComponent implements OnInit {
   }
 
   setValue(index, value) {
-    this.getValueControlGroup().controls[`${this.from}-val-${index}`].setValue({ index, value })
+    this.getValueControlGroup().controls[`${this.from}-val-${index}`].setValue({ index, value });
   }
 
   setKey(index, key) {
-    console.log(index, key);
-
-    console.log(this.getValueControlGroup().controls);
-
-    this.getValueControlGroup().controls[`${this.from}-key-${index}`].setValue({ index, key })
-    // this.getValueControlGroup().controls[`${this.from}-key-${index}`].updateValueAndValidity({ onlySelf: true });
-    // return key;
+    this.getValueControlGroup().controls[`${this.from}-key-${index}`].setValue({ index, key });
   }
 
 }

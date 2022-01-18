@@ -40,7 +40,6 @@ export class AddOperationComponent implements OnInit {
         condition: new FormGroup({}),
       }));
       if (this.config && this.config.key === this.step) {
-        console.log('operation config', this.config);
         this.setService(this.config.value.service);
         this.setName(this.config.value.name);
       }

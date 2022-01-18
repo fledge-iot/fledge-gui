@@ -14,13 +14,6 @@ import { ControlDispatcherService } from '../../../../services/control-dispatche
 })
 export class AddControlScriptComponent implements OnInit {
   submitted = false;
-
-  scriptPayload = {
-    name: '',
-    acl: ''
-  }
-
-  stepControlCount = 0; //default one step control visible
   stepControlsList = [];
 
   stepData = [];
@@ -28,12 +21,14 @@ export class AddControlScriptComponent implements OnInit {
   selectedACL = 'None';
   @ViewChild('scriptForm') scriptForm: NgForm;
   @ViewChildren('stepCtrl') stepCtrl: QueryList<NgModelGroup>;
-
-  controlScript
-
+  controlScript = {
+    name: '',
+    steps: [],
+    acls: ''
+  }
   update = false;
-
   scriptName = '';
+  addStep = false;
   constructor(
     private route: ActivatedRoute,
     private controlService: ControlDispatcherService,
@@ -43,14 +38,14 @@ export class AddControlScriptComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      console.log('script', params);
       this.scriptName = params['name'];
       if (this.scriptName) {
         this.update = true;
         this.getControlScript(this.scriptName);
+      } else {
+        this.stepControlsList = range(1);
       }
     });
-    this.stepControlsList = range(1);
     this.getAllACL();
   }
 
@@ -67,14 +62,10 @@ export class AddControlScriptComponent implements OnInit {
         }
         data.steps = steps;
         this.controlScript = data;
-        console.log('this.controlScript', this.controlScript);
         this.stepControlsList = [];
         this.controlScript.steps.map(step => {
           this.stepControlsList.push(step.value.order);
         })
-        // this.stepControlsList = range(this.controlScript.steps.length);
-        console.log('stepControlsList', this.stepControlsList);
-
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -90,6 +81,14 @@ export class AddControlScriptComponent implements OnInit {
     const dropDown = document.querySelector('#acl-dropdown');
     dropDown.classList.toggle('is-active');
   }
+
+  onDrop(event: CdkDragDrop<string[]>) {
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
+    moveItemInArray(this.stepControlsList, event.previousIndex, event.currentIndex);
+  }
+
 
   getAllACL() {
     this.controlService.fetchAllACL()
@@ -121,12 +120,12 @@ export class AddControlScriptComponent implements OnInit {
 
 
   addStepControl() {
-    this.stepControlCount += 1;
-    this.stepControlsList.push(this.stepControlCount);
+    this.addStep = true;
+    this.stepControlsList.push(this.stepControlsList.length);
+    console.log(this.stepControlsList);
   }
 
   deleteStepControl(index: number) {
-    this.stepControlCount -= 1;
     this.stepControlsList = this.stepControlsList.filter(c => c !== index);
     this.stepCtrl.map(ctl => {
       if (ctl.name === `step-${index}`) {
@@ -182,6 +181,7 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
+    console.log('form.value', form.value);
     const formData = cloneDeep(form.value);
     this.submitted = true;
     let payload = {};
@@ -194,15 +194,44 @@ export class AddControlScriptComponent implements OnInit {
     payload['name'] = name;
     payload = this.flattenPayload(payload);
     payload['acl'] = this.selectedACL;
+    console.log('payload', payload);
+    if (this.update) {
+      this.updateControlScript(payload)
+    } else {
+
+
+      this.ngProgress.start();
+      this.controlService.addControlScript(payload)
+        .subscribe(() => {
+          this.ngProgress.done();
+          this.alertService.success('script created successfully.');
+          setTimeout(() => {
+            this.router.navigate(['control-dispatcher']);
+          }, 1000);
+        }, error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+    }
+  }
+
+
+
+  updateControlScript(payload) {
+    /** request started */
     this.ngProgress.start();
-    this.controlService.addControlScript(payload)
-      .subscribe(() => {
+    this.controlService.updateScript(this.scriptName, payload)
+      .subscribe((data: any) => {
+        this.alertService.success(data.message, true)
+        /** request completed */
         this.ngProgress.done();
-        this.alertService.success('script created successfully.');
-        setTimeout(() => {
-          this.router.navigate(['control-dispatcher']);
-        }, 1000);
+
       }, error => {
+        /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
@@ -210,14 +239,7 @@ export class AddControlScriptComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
-  }
 
-
-  onDrop(event: CdkDragDrop<string[]>) {
-    if (event.previousIndex === event.currentIndex) {
-      return;
-    }
-    moveItemInArray(this.stepControlsList, event.previousIndex, event.currentIndex);
   }
 
 }
