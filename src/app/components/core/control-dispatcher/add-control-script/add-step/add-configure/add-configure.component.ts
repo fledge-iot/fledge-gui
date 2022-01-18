@@ -168,6 +168,7 @@ export class AddConfigureComponent implements OnInit {
         this.scriptControlGroup().controls['item'].setValue(item.key);
       } else {
         this.selectedConfigItem = this.configItems[0].data.displayName;
+        this.configValue = this.configItems[0].data.value;
         this.scriptControlGroup().controls['item'].setValue(this.configItems[0].key);
       }
     }
@@ -176,6 +177,7 @@ export class AddConfigureComponent implements OnInit {
 
   setItem(config: any) {
     this.selectedConfigItem = config.data.displayName;
+    this.configValue = config.data.value;
     this.scriptControlGroup().controls['item'].setValue(config.key);
   }
 

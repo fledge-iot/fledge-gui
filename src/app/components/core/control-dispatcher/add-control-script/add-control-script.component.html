@@ -94,7 +94,7 @@
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                       <div class="dropdown-content">
-                        <a (click)="selectACL(acl);toggleDropdown()" *ngFor="let acl of acls"
+                        <a (click)="selectACL(acl.name);toggleDropdown()" *ngFor="let acl of acls"
                           class="dropdown-item">{{acl?.name}}</a>
                       </div>
                     </div>

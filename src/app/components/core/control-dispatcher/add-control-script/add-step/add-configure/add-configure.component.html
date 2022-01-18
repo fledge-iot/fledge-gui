@@ -30,7 +30,7 @@
   <div class="field-label is-small">
     <label class="label">Item</label>
   </div>
-  <div class="field-body">
+  <div class="field-body" *ngIf="configItems?.length > 0 else noconfig">
     <div class="field is-narrow">
       <div class="control">
         <div #configItem id="config-dropdown" class="dropdown is-left">
@@ -59,6 +59,14 @@
       </div>
     </div>
   </div>
+  <ng-template #noconfig>
+    <div class="field-body">
+      <div class="field is-narrow">
+        <small class="text-secondary has-text-grey-light">No configuration found for the selected
+          category.</small>
+      </div>
+    </div>
+  </ng-template>
 </div>
 <app-add-step-condition #configureCondition [from]='step' [index]="controlIndex" [condition]="config?.value?.condition">
 </app-add-step-condition>

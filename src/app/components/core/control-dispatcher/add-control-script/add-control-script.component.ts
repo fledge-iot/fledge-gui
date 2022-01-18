@@ -63,6 +63,7 @@ export class AddControlScriptComponent implements OnInit {
         data.steps = steps;
         this.controlScript = data;
         this.stepControlsList = [];
+        this.selectACL(data.acl);
         this.controlScript.steps.map(step => {
           this.stepControlsList.push(step.value.order);
         })
@@ -137,7 +138,7 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   selectACL(acl) {
-    this.selectedACL = acl.name;
+    this.selectedACL = acl;
   }
 
   flattenPayload(payload: any) {
