@@ -5,8 +5,8 @@
   <div class="field-body">
     <div class="field">
       <div class="control">
-        <input class="input is-small name-control" type="text" placeholder="Name"
-          (change)="setName($event.target.value)">
+        <input class="input is-small name-control" type="text" placeholder="Name" name="name" [ngModel]="operationName"
+          (ngModelChange)="setName($event)">
       </div>
     </div>
   </div>
@@ -30,7 +30,7 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
-              <a (click)="setService(service);toggleDropDown('service-dropdown')" *ngFor="let service of services"
+              <a (click)="setService(service.name);toggleDropDown('service-dropdown')" *ngFor="let service of services"
                 class="dropdown-item">{{service.name}}</a>
             </div>
           </div>
@@ -40,7 +40,7 @@
   </div>
 </div>
 <div>
-  <app-add-step-value [from]='step' [index]="controlIndex">
+  <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters">
   </app-add-step-value>
   <app-add-step-condition #operationCondition [from]='step' [index]="controlIndex">
   </app-add-step-condition>

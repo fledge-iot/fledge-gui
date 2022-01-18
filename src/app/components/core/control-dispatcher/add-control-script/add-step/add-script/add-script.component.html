@@ -17,7 +17,7 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
-              <a (click)="setScript(script);toggleDropDown('script-dropdown')" *ngFor="let script of scripts"
+              <a (click)="setScript(script.name);toggleDropDown('script-dropdown')" *ngFor="let script of scripts"
                 class="dropdown-item">{{script.name}}</a>
             </div>
           </div>
@@ -27,7 +27,7 @@
   </div>
 </div>
 <div>
-  <app-add-step-value [from]='step' [index]="controlIndex"></app-add-step-value>
+  <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters"></app-add-step-value>
   <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex">
   </app-add-step-condition>
 </div>

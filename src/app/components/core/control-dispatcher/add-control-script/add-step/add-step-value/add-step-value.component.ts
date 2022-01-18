@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
-import { range, cloneDeep, uniqWith } from 'lodash';
 import { debounceTime } from 'rxjs/operators';
+import { cloneDeep, uniqWith } from 'lodash';
 
 @Component({
   selector: 'app-add-step-value',
@@ -11,35 +11,33 @@ import { debounceTime } from 'rxjs/operators';
 export class AddStepValueComponent implements OnInit {
   @Input() index;
   @Input() from;
+  @Input() values;
 
-
-  valueControlCount = 0; //default one value control visible
-  valueControlsList = [];
   keys;
-  parameters = {
-    index: 0,
-    key: '',
-    value: ''
-  }
-
-  // values = [];
-  stepTypeGroup: FormGroup;
-  valuesGroup: FormGroup;
+  parameters = [];
 
   constructor(private control: NgForm) { }
 
-  ngOnInit(): void {
-    this.valueControlsList = range(1);
-  }
+  ngOnInit(): void { }
 
   ngAfterViewInit() {
     setTimeout(() => {
-      const stepsControl = this.control.controls[`step-${this.index}`] as FormGroup;
-      this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
-      this.valuesGroup = this.stepTypeGroup.controls[this.from === 'write' ? 'values' : 'parameters'] as FormGroup;
-      this.valuesGroup.addControl(`${this.from}-key-${this.valueControlCount}`, new FormControl({ index: this.valueControlCount, key: '', value: '' }));
-      this.valuesGroup.addControl(`${this.from}-val-${this.valueControlCount}`, new FormControl({ index: this.valueControlCount, key: '', value: '' }));
-      this.valuesGroup.valueChanges
+      if (this.values) {
+        if (Object.keys(this.values).length > 0) {
+          Object.keys(this.values).map((k, i) => {
+            this.parameters.push({ index: i, key: k, value: this.values[k] });
+          })
+        }
+      } else {
+        this.parameters.push({ index: 0, key: '', value: '' });
+      }
+
+
+      for (let i = 0; i < this.parameters.length; i++) {
+        this.getValueControlGroup().addControl(`${this.from}-key-${i}`, new FormControl({ index: i, key: '', value: '' }));
+        this.getValueControlGroup().addControl(`${this.from}-val-${i}`, new FormControl({ index: i, key: '', value: '' }));
+      }
+      this.getValueControlGroup().valueChanges
         .pipe(debounceTime(300))
         .subscribe(
           (value: any) => {
@@ -54,32 +52,41 @@ export class AddStepValueComponent implements OnInit {
             }));
           });
     }, 300);
+
+
   }
 
   addValueControl() {
-    this.valueControlCount += 1;
-    this.valueControlsList.push(this.valueControlCount);
+    const index = this.parameters.length;
+    this.parameters.push({ index: this.parameters.length, key: '', value: '' });
+    this.getValueControlGroup().addControl(`${this.from}-key-${index}`, new FormControl({ index, key: '', value: '' }));
+    this.getValueControlGroup().addControl(`${this.from}-val-${index}`, new FormControl({ index, key: '', value: '' }));
+  }
+
+  getValueControlGroup(): FormGroup {
     const stepsControl = this.control.controls[`step-${this.index}`] as FormGroup;
     const stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
-    this.valuesGroup = stepTypeGroup.controls[this.from === 'write' ? 'values' : 'parameters'] as FormGroup;
-    this.valuesGroup.addControl(`${this.from}-key-${this.valueControlCount}`, new FormControl({ index: this.valueControlCount, key: '', value: '' }));
-    this.valuesGroup.addControl(`${this.from}-val-${this.valueControlCount}`, new FormControl({ index: this.valueControlCount, key: '', value: '' }));
+    return stepTypeGroup.controls[this.from === 'write' ? 'values' : 'parameters'] as FormGroup;
   }
 
   deleteControl(index) {
-    this.valueControlCount -= 1;
-    this.valueControlsList = this.valueControlsList.filter(c => c !== index);
-    this.valuesGroup.removeControl(`${this.from}-key-${index}`);
-    this.valuesGroup.removeControl(`${this.from}-val-${index}`);
+    this.parameters = this.parameters.filter(c => c.index !== index);
+    this.getValueControlGroup().removeControl(`${this.from}-key-${index}`);
+    this.getValueControlGroup().removeControl(`${this.from}-val-${index}`);
   }
 
   setValue(index, value) {
-    this.valuesGroup.controls[`${this.from}-val-${index}`].setValue({ index, value })
-
+    this.getValueControlGroup().controls[`${this.from}-val-${index}`].setValue({ index, value })
   }
 
   setKey(index, key) {
-    this.valuesGroup.controls[`${this.from}-key-${index}`].setValue({ index, key })
+    console.log(index, key);
+
+    console.log(this.getValueControlGroup().controls);
+
+    this.getValueControlGroup().controls[`${this.from}-key-${index}`].setValue({ index, key })
+    // this.getValueControlGroup().controls[`${this.from}-key-${index}`].updateValueAndValidity({ onlySelf: true });
+    // return key;
   }
 
 }

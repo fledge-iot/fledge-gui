@@ -16,7 +16,10 @@ export class AddScriptComponent implements OnInit {
 
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
+  @Input() config; // type of step
+
   stepsGroup: FormGroup;
+
 
   values = [];
   constructor(
@@ -32,10 +35,15 @@ export class AddScriptComponent implements OnInit {
     setTimeout(() => {
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       this.stepsGroup.addControl('script', new FormGroup({
-        name: new FormControl('', Validators.required),
+        name: new FormControl(''),
         parameters: new FormGroup({}),
         condition: new FormGroup({}),
       }));
+
+      if (this.config && this.config.key === this.step) {
+        console.log('script config', this.config);
+        this.setScript(this.config.value.name);
+      }
     }, 0);
   }
 
@@ -71,8 +79,10 @@ export class AddScriptComponent implements OnInit {
   }
 
   setScript(script: any) {
-    this.selectedScript = script.name;
-    this.scriptControlGroup().controls['name'].setValue(script.name)
+    console.log('script', script);
+
+    this.selectedScript = script;
+    this.scriptControlGroup().controls['name'].setValue(script)
   }
 
 }

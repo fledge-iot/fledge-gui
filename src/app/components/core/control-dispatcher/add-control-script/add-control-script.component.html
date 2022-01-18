@@ -16,7 +16,7 @@
               <div class="field">
                 <div class="control">
                   <input #name=ngModel name="name" class="input is-small" type="text" placeholder="Name" required
-                    [(ngModel)]="scriptPayload.name">
+                    [(ngModel)]="scriptName">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                   <div *ngIf="name.errors?.['required']">
@@ -39,7 +39,7 @@
                       <div class="columns">
                         <div class="column">
                           <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
-                            (stepEvent)="setStep($event)" [controlIndex]="control">
+                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(control)">
                           </app-add-step>
                         </div>
                         <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">

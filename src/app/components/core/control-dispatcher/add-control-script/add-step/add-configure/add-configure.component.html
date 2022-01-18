@@ -33,8 +33,6 @@
   <div class="field-body">
     <div class="field is-narrow">
       <div class="control">
-        <!-- <input class="input is-small name-control" name="item" type="text" placeholder="item"
-          (change)="setItem($event.target.value)"> -->
         <div #configItem id="config-dropdown" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(configItem.id)" class="button is-small" aria-haspopup="true"
@@ -48,7 +46,7 @@
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
               <a (click)="setItem(c); toggleDropDown('config-dropdown')" *ngFor="let c of configItems"
-                class="dropdown-item">{{c.key}}</a>
+                class="dropdown-item">{{c?.data?.displayName}}</a>
             </div>
           </div>
         </div>
@@ -56,8 +54,8 @@
     </div>
     <div class="field is-narrow">
       <div class="control">
-        <input class="input is-small name-control" name="name" type="text" placeholder="value"
-          (change)="setValue($event.target.value)">
+        <input class="input is-small name-control" name="value" type="text" placeholder="value"
+          (ngModelChange)="setValue($event)" [ngModel]="configValue">
       </div>
     </div>
   </div>

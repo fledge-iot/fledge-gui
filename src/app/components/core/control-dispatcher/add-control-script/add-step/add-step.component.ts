@@ -10,7 +10,7 @@ export class AddStepComponent implements OnInit {
   scriptSteps = ['configure', 'delay', 'operation', 'script', 'write'];
   selectedStep;
   // stepsGroup: FormGroup;
-
+  @Input() config;
   @Input() controlIndex;
   @Input() payload;
   @Output() stepEvent = new EventEmitter<any>();
@@ -21,8 +21,15 @@ export class AddStepComponent implements OnInit {
   ngAfterViewInit() {
     setTimeout(() => {
       // this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      this.stepControlGroup().setValidators(Validators.requiredTrue);
-      this.stepControlGroup().updateValueAndValidity();
+      if (this.stepControlGroup()) {
+        this.stepControlGroup().setValidators(Validators.requiredTrue);
+        this.stepControlGroup().updateValueAndValidity();
+      }
+
+      if (this.config) {
+        console.log('config', this.config.key);
+        this.selectStep(this.config.key);
+      }
     }, 300);
   }
 
@@ -45,6 +52,8 @@ export class AddStepComponent implements OnInit {
   }
 
   selectStep(step: string) {
+    console.log('config', this.config);
+
     // delete old step from  step form group
     const size = Object.keys(this.stepControlGroup().controls).length;
     if (size > 0) {

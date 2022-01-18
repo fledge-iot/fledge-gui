@@ -16,9 +16,12 @@ export class AddConfigureComponent implements OnInit {
 
   scripts = [];  // list of south services
   selectedConfigItem = ''; // selected list in the dropdown
-
+  configValue = '';
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
+  @Input() config;
+
+
   stepsGroup: FormGroup;
 
   values = [];
@@ -48,6 +51,7 @@ export class AddConfigureComponent implements OnInit {
   ngOnInit(): void { }
 
   ngAfterViewInit() {
+    this.getCategories();
     setTimeout(() => {
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       this.stepsGroup.addControl('configure', new FormGroup({
@@ -56,7 +60,6 @@ export class AddConfigureComponent implements OnInit {
         value: new FormControl(''),
         condition: new FormGroup({})
       }));
-      this.getCategories();
     }, 0);
   }
 
@@ -97,6 +100,10 @@ export class AddConfigureComponent implements OnInit {
                 this.nodes = sortBy(this.nodes, (ca: any) => {
                   return ca.name;
                 });
+
+                if (this.config && this.config.key === this.step) {
+                  this.setCategory(this.config.value.category);
+                }
                 this.tree.treeModel.update();
               })
           },
@@ -113,6 +120,16 @@ export class AddConfigureComponent implements OnInit {
     this.selectedCategory = event.node.data.displayName;
     this.scriptControlGroup().controls['category'].setValue(event.node.data.key);
     this.getCategoryData(event.node.data.id, event.node.data.description);
+  }
+
+  setCategory(id) {
+    if (this.tree.treeModel.getNodeById(id)) {
+      const node = this.tree.treeModel.getNodeById(id);
+      this.selectedCategory = node.data.displayName;
+      this.scriptControlGroup().controls['category'].setValue(node.data.key);
+      this.getCategoryData(node.data.id, node.data.description);
+      this.setValue(this.config.value.value);
+    }
   }
 
   private getCategoryData(categoryKey: string, categoryDesc: string): void {
@@ -145,18 +162,25 @@ export class AddConfigureComponent implements OnInit {
           }
         });
       })[0];
-      this.selectedConfigItem = this.configItems[0].key;
-      this.scriptControlGroup().controls['item'].setValue(this.configItems[0].key);
+      if (this.config && this.config.key === this.step) {
+        const item = this.configItems.find(c => c.key === this.config.value.item);
+        this.selectedConfigItem = item.data.displayName;
+        this.scriptControlGroup().controls['item'].setValue(item.key);
+      } else {
+        this.selectedConfigItem = this.configItems[0].data.displayName;
+        this.scriptControlGroup().controls['item'].setValue(this.configItems[0].key);
+      }
     }
   }
 
 
   setItem(config: any) {
-    this.selectedConfigItem = config.value;
-    this.scriptControlGroup().controls['item'].setValue(config.value);
+    this.selectedConfigItem = config.data.displayName;
+    this.scriptControlGroup().controls['item'].setValue(config.key);
   }
 
   setValue(value: any) {
+    this.configValue = value;
     this.scriptControlGroup().controls['value'].setValue(value);
   }
 

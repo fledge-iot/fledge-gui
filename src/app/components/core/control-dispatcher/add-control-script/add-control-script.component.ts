@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NgForm, NgModelGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { range, cloneDeep } from 'lodash';
 import { Observable, of } from 'rxjs';
 import { AlertService, ProgressBarService } from '../../../../services';
@@ -29,14 +29,61 @@ export class AddControlScriptComponent implements OnInit {
   @ViewChild('scriptForm') scriptForm: NgForm;
   @ViewChildren('stepCtrl') stepCtrl: QueryList<NgModelGroup>;
 
-  constructor(private controlService: ControlDispatcherService,
+  controlScript
+
+  update = false;
+
+  scriptName = '';
+  constructor(
+    private route: ActivatedRoute,
+    private controlService: ControlDispatcherService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private router: Router) { }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      console.log('script', params);
+      this.scriptName = params['name'];
+      if (this.scriptName) {
+        this.update = true;
+        this.getControlScript(this.scriptName);
+      }
+    });
     this.stepControlsList = range(1);
     this.getAllACL();
+  }
+
+
+  getControlScript(scriptName: string) {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.fetchControlServiceScriptByName(scriptName)
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        const steps = [];
+        for (const [key, value] of Object.entries(data.steps)) {
+          steps.push({ key, value })
+        }
+        data.steps = steps;
+        this.controlScript = data;
+        console.log('this.controlScript', this.controlScript);
+        this.stepControlsList = [];
+        this.controlScript.steps.map(step => {
+          this.stepControlsList.push(step.value.order);
+        })
+        // this.stepControlsList = range(this.controlScript.steps.length);
+        console.log('stepControlsList', this.stepControlsList);
+
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public toggleDropdown() {
@@ -56,6 +103,12 @@ export class AddControlScriptComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  getConfig(control) {
+    if (this.controlScript) {
+      return this.controlScript.steps.find(step => (step.value.order === control));
+    }
   }
 
   stepControls(): Observable<any> {

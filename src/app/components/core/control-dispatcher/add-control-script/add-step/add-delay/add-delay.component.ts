@@ -11,7 +11,11 @@ export class AddDelayComponent implements OnInit {
 
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
+  @Input() config;
+
   stepsGroup: FormGroup;
+  duration = '';
+
 
   constructor(private control: NgForm) { }
 
@@ -24,6 +28,10 @@ export class AddDelayComponent implements OnInit {
         duration: new FormControl(''),
         condition: new FormGroup({})
       }));
+
+      if (this.config) {
+        this.setDuration(this.config.value.duration);
+      }
     }, 0);
   }
 
@@ -32,7 +40,10 @@ export class AddDelayComponent implements OnInit {
   }
 
   setDuration(value: any) {
+    this.duration = value;
     this.scriptControlGroup().controls['duration'].setValue(value);
+    console.log(this.control.controls);
+
   }
 
 }

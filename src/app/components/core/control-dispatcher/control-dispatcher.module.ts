@@ -40,7 +40,8 @@ const routes: Routes = [
   },
   {
     path: 'script/:name',
-    component: ScriptDetailsComponent
+    // component: ScriptDetailsComponent
+    component: AddControlScriptComponent
   }
 ];
 
