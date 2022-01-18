@@ -13,7 +13,8 @@ export class AddScriptComponent implements OnInit {
 
   scripts = [];  // list of south services
   selectedScript = ''; // selected list in the dropdown
-
+  execution = [{ name: 'blocking', value: '' }, { name: 'non blocking', value: 'background' }];
+  selectedExecution = '';
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
   @Input() config; // type of step
@@ -36,12 +37,14 @@ export class AddScriptComponent implements OnInit {
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       this.stepsGroup.addControl('script', new FormGroup({
         name: new FormControl(''),
+        execution: new FormControl(''),
         parameters: new FormGroup({}),
         condition: new FormGroup({}),
       }));
 
       if (this.config && this.config.key === this.step) {
         this.setScript(this.config.value.name);
+        this.setExecution(this.config.value.execution === 'background' ? this.execution[1] : this.execution[0]);
       }
     }, 0);
   }
@@ -80,6 +83,11 @@ export class AddScriptComponent implements OnInit {
   setScript(script: any) {
     this.selectedScript = script;
     this.scriptControlGroup().controls['name'].setValue(script)
+  }
+
+  setExecution(item: any) {
+    this.selectedExecution = item.name;
+    this.scriptControlGroup().controls['execution'].setValue(item.value)
   }
 
 }
