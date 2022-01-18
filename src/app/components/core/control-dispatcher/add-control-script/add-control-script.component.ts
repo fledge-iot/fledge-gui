@@ -2,7 +2,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NgForm, NgModelGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { range, cloneDeep } from 'lodash';
+import { range, cloneDeep, isEmpty } from 'lodash';
 import { Observable, of } from 'rxjs';
 import { AlertService, ProgressBarService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
@@ -141,8 +141,17 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   flattenPayload(payload: any) {
-    payload.steps.map((val) => {
+    payload.steps.map((val: any) => {
       let values;
+      for (const key in val) {
+        const element = val[key];
+        if ('condition' in element) {
+          if (isEmpty(element['condition'])) {
+            delete element['condition'];
+          }
+        }
+      }
+
       if ('configure' in val || 'delay' in val) {
         values = val;
       } else if ('write' in val) {
@@ -183,6 +192,7 @@ export class AddControlScriptComponent implements OnInit {
   onSubmit(form: NgForm) {
     console.log('form.value', form.value);
     const formData = cloneDeep(form.value);
+
     this.submitted = true;
     let payload = {};
     payload['steps'] = Object.keys(formData).map((key, i) => {

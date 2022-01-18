@@ -28,6 +28,6 @@
 </div>
 <div>
   <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters"></app-add-step-value>
-  <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex">
+  <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex" [condition]="config?.value?.condition">
   </app-add-step-condition>
 </div>
