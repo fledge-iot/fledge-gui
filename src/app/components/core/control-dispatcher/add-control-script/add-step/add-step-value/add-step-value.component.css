@@ -13,3 +13,7 @@
 .button.is-light.like-link:hover {
   font-style: bold;
 }
+
+.field-label {
+  text-align: left;
+}

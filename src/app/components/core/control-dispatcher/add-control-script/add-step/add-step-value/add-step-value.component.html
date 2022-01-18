@@ -1,6 +1,6 @@
 <div class="field is-horizontal">
   <div class="field-label is-small">
-    <label class="label">Values</label>
+    <label class="label">{{from === 'write' ? 'Values' : 'Parameters' }}</label>
   </div>
   <div class="field-body">
     <div class="field">
@@ -11,11 +11,6 @@
               <input placeholder="key" class="input is-small" type="text" name="key-{{control.index}}"
                 [ngModel]="control.key" (ngModelChange)="setKey(control.index, $event)">
             </div>
-            <!-- <div *ngIf="key.invalid && (key.dirty || key.touched)" class="help is-danger">
-              <div *ngIf="key.errors?.['required']">
-                Key is required.
-              </div>
-            </div> -->
           </div>
           &nbsp;
           <div class="field">
@@ -23,11 +18,6 @@
               <input placeholder="value" class="input is-small" type="text" required name="val-{{control.index}}"
                 [ngModel]="control.value" (ngModelChange)="setValue(control.index, $event)">
             </div>
-            <!-- <div *ngIf="val.invalid && (val.dirty || val.touched)" class="help is-danger">
-              <div *ngIf="val.errors?.['required']">
-                Value is required.
-              </div>
-            </div> -->
           </div>
           &nbsp;
           <div *ngIf="i > 0" class="field">

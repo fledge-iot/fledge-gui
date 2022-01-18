@@ -33,7 +33,7 @@ export class ControlDispatcherService {
   }
 
   updateScript(name: string, payload: any) {
-    return this.http.put(`${this.CONTROL_SERVICE_URL}/${name}`, payload).pipe(
+    return this.http.put(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(name)}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
