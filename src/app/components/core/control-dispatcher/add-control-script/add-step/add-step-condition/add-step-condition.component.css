@@ -13,3 +13,11 @@
 .field-label {
   text-align: left;
 }
+
+.btn-condition {
+  font-weight: 600;
+}
+
+.btn-field-body {
+  margin-left: -12px;
+}

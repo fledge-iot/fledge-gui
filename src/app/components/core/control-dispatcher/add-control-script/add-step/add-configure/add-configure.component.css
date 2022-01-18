@@ -5,3 +5,7 @@
 .field-label {
   text-align: left;
 }
+
+.tree-dropdown {
+  padding-left: 5px;
+}

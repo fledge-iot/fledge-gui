@@ -16,7 +16,7 @@
             </button>
           </div>
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
-            <div class="dropdown-content">
+            <div class="dropdown-content tree-dropdown">
               <tree-root #tree [nodes]="nodes" [options]="options"
                 (activate)="onNodeActive($event); toggleDropDown('configure-dropdown')"></tree-root>
             </div>
