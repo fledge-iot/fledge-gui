@@ -2,7 +2,7 @@
   <div class="card">
     <header class="card-header">
       <div class="card-header-title">
-        <span> {{update ? 'Update Control Script': 'Add Control Script'}}</span>
+        <span> {{update?controlScript?.name + ' Script' : 'Add Control Script'}}</span>
       </div>
     </header>
     <div class="card-content step-content">

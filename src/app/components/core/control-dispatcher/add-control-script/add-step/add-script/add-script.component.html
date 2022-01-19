@@ -17,7 +17,7 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
-              <a class="dropdown-item" *ngIf="scripts.length === 0"><small>No script found</small></a>
+              <a class="dropdown-item" *ngIf="scripts.length === 0"><small>No scripts found</small></a>
               <a (click)="setScript(script.name);toggleDropDown('script-dropdown')" *ngFor="let script of scripts"
                 class="dropdown-item">{{script.name}}</a>
             </div>
