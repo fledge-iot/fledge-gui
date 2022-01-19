@@ -1,10 +1,11 @@
 <div class="field is-horizontal">
   <div class="field-label is-small">
     <label class="label">Step</label>
+
   </div>
   <div class="field-body">
     <div class="field">
-      <div class="control">
+      <div class="control" *ngIf="constrolStatus?.update=== 'false'; else staticStep">
         <div #ctlDiv [id]="'step-dropdown-' + controlIndex" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -23,6 +24,11 @@
           </div>
         </div>
       </div>
+      <ng-template #staticStep>
+        <div class="control">
+          <input name="step" class="input is-small is-static" type="text" [value]="selectedStep| titlecase" required>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>

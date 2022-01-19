@@ -15,9 +15,14 @@ export class AddStepComponent implements OnInit {
   @Input() update;
   @Input() payload;
   @Output() stepEvent = new EventEmitter<any>();
+
+  // To hold update form status
+  constrolStatus = { index: 0, update: 'false' };
   constructor(private control: NgForm) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.constrolStatus = { index: this.controlIndex, update: 'false' };
+  }
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -27,6 +32,7 @@ export class AddStepComponent implements OnInit {
       }
 
       if (this.config && !this.addStepClicked) {
+        this.constrolStatus = { index: this.controlIndex, update: this.update };
         this.selectStep(this.config.key);
       }
     }, 300);
