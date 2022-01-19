@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, NgForm, FormControl, ControlContainer } from '@angular/forms';
 import { AlertService, ConfigurationService } from '../../../../../../services';
-import { TreeComponent, ITreeOptions, ITreeState } from '@circlon/angular-tree-component';
+import { TreeComponent, ITreeOptions, ITreeState, } from '@circlon/angular-tree-component';
 import { sortBy, isEmpty } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
 
@@ -85,7 +85,14 @@ export class AddConfigureComponent implements OnInit {
     this.configurationService.getRootCategories().
       pipe(
         map((data: any) => data.categories),
-        mergeMap(result => result)).subscribe(
+        mergeMap((result) => {
+          if (this.config) {
+            this.scriptControlGroup().controls['category'].setValue(this.config.value.category);
+            this.getCategoryData(this.config.value.category);
+          }
+          return result;
+        }
+        )).subscribe(
           (category: any) => {
             this.configurationService.getChildren(category.key)
               .subscribe((data: any) => {
@@ -100,12 +107,8 @@ export class AddConfigureComponent implements OnInit {
                 this.nodes = sortBy(this.nodes, (ca: any) => {
                   return ca.name;
                 });
-
-                if (this.config && this.config.key === this.step) {
-                  this.setCategory(this.config.value.category);
-                }
                 this.tree.treeModel.update();
-              })
+              });
           },
           error => {
             if (error.status === 0) {
@@ -119,20 +122,10 @@ export class AddConfigureComponent implements OnInit {
   public onNodeActive(event: any) {
     this.selectedCategory = event.node.data.displayName;
     this.scriptControlGroup().controls['category'].setValue(event.node.data.key);
-    this.getCategoryData(event.node.data.id, event.node.data.description);
+    this.getCategoryData(event.node.data.id, true);
   }
 
-  setCategory(id) {
-    if (this.tree.treeModel.getNodeById(id)) {
-      const node = this.tree.treeModel.getNodeById(id);
-      this.selectedCategory = node.data.displayName;
-      this.scriptControlGroup().controls['category'].setValue(node.data.key);
-      this.getCategoryData(node.data.id, node.data.description);
-      this.setValue(this.config.value.value);
-    }
-  }
-
-  private getCategoryData(categoryKey: string, categoryDesc: string): void {
+  private getCategoryData(categoryKey: string, isNodeClicked = false): void {
     const categoryValues = [];
     this.configurationService.getCategory(categoryKey).
       subscribe(
@@ -140,8 +133,8 @@ export class AddConfigureComponent implements OnInit {
           if (!isEmpty(data)) {
             categoryValues.push(data);
           }
-          const categoryData = { key: categoryKey, value: categoryValues, description: categoryDesc };
-          this.parseConfig(categoryData);
+          const configData = { key: categoryKey, value: categoryValues };
+          this.parseConfig(configData, isNodeClicked);
         },
         error => {
           if (error.status === 0) {
@@ -152,7 +145,8 @@ export class AddConfigureComponent implements OnInit {
         });
   }
 
-  parseConfig(categoryData: any) {
+  parseConfig(categoryData: any, isNodeClicked = false) {
+    this.configItems = [];
     if (categoryData?.value?.length > 0) {
       this.configItems = categoryData.value.map((el: any) => {
         return Object.keys(el).map((key) => {
@@ -162,23 +156,55 @@ export class AddConfigureComponent implements OnInit {
           }
         });
       })[0];
-      if (this.config && this.config.key === this.step) {
-        const item = this.configItems.find(c => c.key === this.config.value.item);
-        this.selectedConfigItem = item.data.displayName;
-        this.scriptControlGroup().controls['item'].setValue(item.key);
+
+      let item;
+      if (isNodeClicked) {
+        item = this.configItems[0];
       } else {
-        this.selectedConfigItem = this.configItems[0].data.displayName;
-        this.configValue = this.configItems[0].data.value;
-        this.scriptControlGroup().controls['item'].setValue(this.configItems[0].key);
+        // set category name
+        setTimeout(() => {
+          const category = this.tree.treeModel.nodes.find(r => {
+            if (r.key === this.config.value.category) {
+              return r;
+            } else {
+              r = r.children.find(child => (child.key === this.config.value.category))
+              return r;
+            }
+          });
+          if (this.config.value.category in category) {
+            this.selectedCategory = category.displayName ? category.displayName : category.description;
+          } else {
+            const cat = category.children.find(child => (child.key === this.config.value.category));
+            this.selectedCategory = cat.displayName ? cat.displayName : cat.description;
+          }
+        }, 1000);
+        item = this.configItems.find(c => {
+          if (this.config && this.config.value.item === c.key) {
+            c.data.value = this.config.value.value;
+            return c;
+          }
+        })
       }
+      this.selectedConfigItem = item.data.displayName ? item.data.displayName : item.data.description;
+      this.configValue = item.data.value;
+      this.scriptControlGroup().controls['item'].setValue(item.key);
+      this.scriptControlGroup().controls['value'].setValue(item.data.value);
+      return;
     }
+    this.selectedConfigItem = '';
+    this.configValue = '';
+    this.scriptControlGroup().controls['item'].setValue('');
+    this.scriptControlGroup().controls['value'].setValue('');
+
   }
 
 
   setItem(config: any) {
-    this.selectedConfigItem = config.data.displayName;
+    this.selectedConfigItem = config.data.displayName ? config.data.displayName : (config.data.description.length <= 30 ?
+      config.data.description : `${config.data.description.slice(0, 30)}...`);
     this.configValue = config.data.value;
     this.scriptControlGroup().controls['item'].setValue(config.key);
+    this.scriptControlGroup().controls['value'].setValue(config.data.value);
   }
 
   setValue(value: any) {

@@ -18,7 +18,8 @@
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content tree-dropdown">
               <tree-root #tree [nodes]="nodes" [options]="options"
-                (activate)="onNodeActive($event); toggleDropDown('configure-dropdown')"></tree-root>
+                (activate)="onNodeActive($event); toggleDropDown('configure-dropdown')">
+              </tree-root>
             </div>
           </div>
         </div>
@@ -28,7 +29,7 @@
 </div>
 <div *ngIf="selectedCategory" class="field is-horizontal">
   <div class="field-label is-small">
-    <label class="label">Item</label>
+    <label class="label">Configuration Item</label>
   </div>
   <div class="field-body" *ngIf="configItems?.length > 0 else noconfig">
     <div class="field is-narrow">
@@ -46,7 +47,8 @@
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
               <a (click)="setItem(c); toggleDropDown('config-dropdown')" *ngFor="let c of configItems"
-                class="dropdown-item">{{c?.data?.displayName}}</a>
+                class="dropdown-item">{{c.data.displayName ? c.data.displayName : (c.data.description.length <= 30 ?
+                  c.data.description : (c.data.description|slice:0:30)+'...') }}</a>
             </div>
           </div>
         </div>

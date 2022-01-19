@@ -12,6 +12,7 @@ export class AddStepComponent implements OnInit {
   @Input() addStepClicked = false;
   @Input() config;
   @Input() controlIndex;
+  @Input() update;
   @Input() payload;
   @Output() stepEvent = new EventEmitter<any>();
   constructor(private control: NgForm) { }
@@ -24,9 +25,6 @@ export class AddStepComponent implements OnInit {
         this.stepControlGroup().setValidators(Validators.requiredTrue);
         this.stepControlGroup().updateValueAndValidity();
       }
-
-      console.log('add step ', this.addStepClicked, this.controlIndex);
-
 
       if (this.config && !this.addStepClicked) {
         this.selectStep(this.config.key);

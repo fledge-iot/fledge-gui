@@ -40,12 +40,12 @@
                         <div class="column">
                           <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
                             (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(control)"
-                            [addStepClicked]="addStep">
+                            [addStepClicked]="addStep" [update]="update">
                           </app-add-step>
                         </div>
-                        <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">
+                        <div class="column is-narrow" [ngClass]="{'close-btn': i > 0 || update}">
                           <div class="field">
-                            <div *ngIf="i > 0">
+                            <div *ngIf=" i > 0 || update">
                               <button (click)="deleteStepControl(control)" class="delete is-small">
                               </button>
                             </div>
