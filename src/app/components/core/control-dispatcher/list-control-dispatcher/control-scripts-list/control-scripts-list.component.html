@@ -1,4 +1,4 @@
-<table class="table scroll is-responsive is-hoverable">
+<table class="table scroll is-responsive is-hoverable" *ngIf="controlScripts.length > 0; else noscript">
   <thead>
     <tr>
       <th>Name</th>
@@ -23,6 +23,13 @@
     </tr>
   </tbody>
 </table>
+<ng-template #noscript>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <small class="text-secondary has-text-grey-light"> No contol script found.</small>
+    </div>
+  </div>
+</ng-template>
 <app-confirmation-dialog id="confirmation-dialog">
   <section class="modal-card-body">
     Are you sure, you want to delete the script <b>{{script}}</b>?

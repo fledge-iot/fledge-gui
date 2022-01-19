@@ -17,6 +17,7 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
+              <a class="dropdown-item" *ngIf="scripts.length === 0"><small>No script found</small></a>
               <a (click)="setScript(script.name);toggleDropDown('script-dropdown')" *ngFor="let script of scripts"
                 class="dropdown-item">{{script.name}}</a>
             </div>
@@ -26,36 +27,39 @@
     </div>
   </div>
 </div>
-<div class="field is-horizontal">
-  <div class="field-label is-small">
-    <label class="label">Execution</label>
-  </div>
-  <div class="field-body">
-    <div class="field is-narrow">
-      <div class="control">
-        <div #executionDropDown id="execution-dropdown-{{controlIndex}}" class="dropdown is-left">
-          <div class="dropdown-trigger">
-            <button (click)="toggleDropDown(executionDropDown.id)" class="button is-small" aria-haspopup="true"
-              aria-controls="dropdown-menu">
-              <span>{{selectedExecution? (selectedExecution| titlecase) : 'Select execution'}}</span>
-              <span class="icon is-small">
-                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-              </span>
-            </button>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-              <a (click)="setExecution(e);toggleDropDown(executionDropDown.id)" *ngFor="let e of execution"
-                class="dropdown-item">{{e.name | titlecase}}</a>
+<ng-container *ngIf="scripts.length > 0">
+  <div class="field is-horizontal">
+    <div class="field-label is-small">
+      <label class="label">Execution</label>
+    </div>
+    <div class="field-body">
+      <div class="field is-narrow">
+        <div class="control">
+          <div #executionDropDown id="execution-dropdown-{{controlIndex}}" class="dropdown is-left">
+            <div class="dropdown-trigger">
+              <button (click)="toggleDropDown(executionDropDown.id)" class="button is-small" aria-haspopup="true"
+                aria-controls="dropdown-menu">
+                <span>{{selectedExecution? (selectedExecution| titlecase) : 'Select execution type'}}</span>
+                <span class="icon is-small">
+                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <a (click)="setExecution(e);toggleDropDown(executionDropDown.id)" *ngFor="let e of execution"
+                  class="dropdown-item">{{e.name | titlecase}}</a>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<div>
-  <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters"></app-add-step-value>
-  <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex" [condition]="config?.value?.condition">
-  </app-add-step-condition>
-</div>
+  <div>
+    <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters"></app-add-step-value>
+    <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex"
+      [condition]="config?.value?.condition">
+    </app-add-step-condition>
+  </div>
+</ng-container>
