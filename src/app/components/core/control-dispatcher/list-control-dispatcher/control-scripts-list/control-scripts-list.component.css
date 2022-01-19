@@ -1,0 +1,8 @@
+.btn-delete {
+  border-color: transparent !important;
+  opacity: 0;
+}
+
+tr:hover .btn-delete {
+  opacity: 1;
+}

@@ -2,7 +2,7 @@
   <div class="card">
     <header class="card-header">
       <div class="card-header-title">
-        <span>Add Control Script</span>
+        <span> {{update?controlScript?.name + ' Script' : 'Add Control Script'}}</span>
       </div>
     </header>
     <div class="card-content step-content">
@@ -16,7 +16,7 @@
               <div class="field">
                 <div class="control">
                   <input #name=ngModel name="name" class="input is-small" type="text" placeholder="Name" required
-                    [(ngModel)]="scriptPayload.name">
+                    [(ngModel)]="controlScript.name">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                   <div *ngIf="name.errors?.['required']">
@@ -39,12 +39,13 @@
                       <div class="columns">
                         <div class="column">
                           <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
-                            (stepEvent)="setStep($event)" [controlIndex]="control">
+                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(control)"
+                            [addStepClicked]="addStep" [update]="update">
                           </app-add-step>
                         </div>
-                        <div class="column is-narrow" [ngClass]="{'close-btn': i > 0}">
+                        <div class="column is-narrow" [ngClass]="{'close-btn': i > 0 || update}">
                           <div class="field">
-                            <div *ngIf="i > 0">
+                            <div *ngIf=" i > 0 || update">
                               <button (click)="deleteStepControl(control)" class="delete is-small">
                               </button>
                             </div>
@@ -93,7 +94,7 @@
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                       <div class="dropdown-content">
-                        <a (click)="selectACL(acl);toggleDropdown()" *ngFor="let acl of acls"
+                        <a (click)="selectACL(acl.name);toggleDropdown()" *ngFor="let acl of acls"
                           class="dropdown-item">{{acl?.name}}</a>
                       </div>
                     </div>

@@ -9,20 +9,32 @@ import { FormGroup, NgForm, Validators } from '@angular/forms';
 export class AddStepComponent implements OnInit {
   scriptSteps = ['configure', 'delay', 'operation', 'script', 'write'];
   selectedStep;
-  // stepsGroup: FormGroup;
-
+  @Input() addStepClicked = false;
+  @Input() config;
   @Input() controlIndex;
+  @Input() update;
   @Input() payload;
   @Output() stepEvent = new EventEmitter<any>();
+
+  // To hold update form status
+  constrolStatus = { index: 0, update: 'false' };
   constructor(private control: NgForm) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.constrolStatus = { index: this.controlIndex, update: 'false' };
+  }
 
   ngAfterViewInit() {
     setTimeout(() => {
-      // this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      this.stepControlGroup().setValidators(Validators.requiredTrue);
-      this.stepControlGroup().updateValueAndValidity();
+      if (this.stepControlGroup()) {
+        this.stepControlGroup().setValidators(Validators.requiredTrue);
+        this.stepControlGroup().updateValueAndValidity();
+      }
+
+      if (this.config && !this.addStepClicked) {
+        this.constrolStatus = { index: this.controlIndex, update: this.update };
+        this.selectStep(this.config.key);
+      }
     }, 300);
   }
 

@@ -15,9 +15,12 @@ export class AddOperationComponent implements OnInit {
 
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
+  @Input() config;
+
   stepsGroup: FormGroup;
 
   values = [];
+  operationName = '';
   constructor(
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
@@ -32,10 +35,14 @@ export class AddOperationComponent implements OnInit {
       this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
       this.stepsGroup.addControl('operation', new FormGroup({
         name: new FormControl(''),
-        service: new FormControl('', Validators.required),
+        service: new FormControl(''),
         parameters: new FormGroup({}),
         condition: new FormGroup({}),
       }));
+      if (this.config && this.config.key === this.step) {
+        this.setService(this.config.value.service);
+        this.setName(this.config.value.name);
+      }
     }, 0);
   }
 
@@ -72,12 +79,13 @@ export class AddOperationComponent implements OnInit {
   }
 
   setName(name: string) {
+    this.operationName = name;
     this.operationControlGroup().controls['name'].setValue(name)
   }
 
   setService(service: any) {
-    this.selectedService = service.name;
-    this.operationControlGroup().controls['service'].setValue(service.name)
+    this.selectedService = service;
+    this.operationControlGroup().controls['service'].setValue(service)
   }
 
 }

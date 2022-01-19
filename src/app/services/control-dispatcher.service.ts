@@ -21,7 +21,7 @@ export class ControlDispatcherService {
   }
 
   fetchControlServiceScriptByName(name: string) {
-    return this.http.get(`${this.CONTROL_SERVICE_URL}/${name}`).pipe(
+    return this.http.get(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(name)}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
@@ -33,7 +33,7 @@ export class ControlDispatcherService {
   }
 
   updateScript(name: string, payload: any) {
-    return this.http.put(`${this.CONTROL_SERVICE_URL}/${name}`, payload).pipe(
+    return this.http.put(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(name)}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
@@ -45,7 +45,7 @@ export class ControlDispatcherService {
   }
 
   deleteScript(name: string) {
-    return this.http.delete(`${this.CONTROL_SERVICE_URL}/${name}`).pipe(
+    return this.http.delete(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(name)}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

@@ -1,10 +1,11 @@
 <div class="field is-horizontal">
   <div class="field-label is-small">
     <label class="label">Step</label>
+
   </div>
   <div class="field-body">
     <div class="field">
-      <div class="control">
+      <div class="control" *ngIf="constrolStatus?.update=== 'false'; else staticStep">
         <div #ctlDiv [id]="'step-dropdown-' + controlIndex" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -23,26 +24,31 @@
           </div>
         </div>
       </div>
+      <ng-template #staticStep>
+        <div class="control">
+          <input name="step" class="input is-small is-static" type="text" [value]="selectedStep| titlecase" readonly>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>
 <div class="field">
   <app-add-write [step]="'write'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'write'"
-    (event)="getControl($event)">
+    (event)="getControl($event)" [config]="config">
   </app-add-write>
 
   <app-add-operation [step]="'operation'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'operation'"
-    (event)="getControl($event)">
+    (event)="getControl($event)" [config]="config">
   </app-add-operation>
 
   <app-add-script [step]="'script'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'script'"
-    (event)="getControl($event)">
+    (event)="getControl($event)" [config]="config">
   </app-add-script>
 
   <app-add-configure [step]="'configure'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'configure'"
-    (event)="getControl($event)">
+    (event)="getControl($event)" [config]="config">
   </app-add-configure>
 
   <app-add-delay [step]="'delay'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'delay'"
-    (event)="getControl($event)"></app-add-delay>
+    (event)="getControl($event)" [config]="config"></app-add-delay>
 </div>

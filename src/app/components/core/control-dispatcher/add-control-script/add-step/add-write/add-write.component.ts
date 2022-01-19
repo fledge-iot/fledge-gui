@@ -11,7 +11,7 @@ export class AddWriteComponent implements OnInit {
   services = []; // south services list
   selectedService = ''; // selected service
 
-
+  @Input() config;
   @Input() controlIndex; // position
   @Input() step; // step type
 
@@ -36,6 +36,10 @@ export class AddWriteComponent implements OnInit {
         values: new FormGroup({}),
         condition: new FormGroup({}),
       }));
+
+      if (this.config) {
+        this.setService(this.config.value.service);
+      }
     }, 0);
   }
 
@@ -71,8 +75,8 @@ export class AddWriteComponent implements OnInit {
     }
   }
 
-  setService(service: any) {
-    this.selectedService = service.name;
-    this.writeControlGroup().controls['service'].setValue(service.name);
+  setService(service: string) {
+    this.selectedService = service;
+    this.writeControlGroup().controls['service'].setValue(service);
   }
 }

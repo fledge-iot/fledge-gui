@@ -1,3 +1,7 @@
 .field-body .field {
   margin-bottom: 5px;
 }
+
+.field-label {
+  text-align: left;
+}

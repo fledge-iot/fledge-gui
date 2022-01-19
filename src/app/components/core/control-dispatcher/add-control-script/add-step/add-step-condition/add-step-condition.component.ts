@@ -13,6 +13,7 @@ export class AddStepConditionComponent implements OnInit {
 
   @Input() from;
   @Input() index;
+  @Input() condition;
 
   conditions = ['==', '!=', '<', '>', '<=', '>='] // supported conditions
   selectedCondition = '==';
@@ -32,6 +33,16 @@ export class AddStepConditionComponent implements OnInit {
       this.showConditionControl = false;
       const stepsControl = this.control.controls[`step-${this.index}`] as FormGroup;
       this.stepTypeGroup = stepsControl.controls[this.from] as FormGroup;
+      if (this.condition) {
+        this.showConditionControl = true;
+        if (Object.keys(this.condition).length > 0) {
+          this.conditionPayload = this.condition;
+          this.selectedCondition = this.conditionPayload.condition;
+          Object.keys(this.condition).map((k) => {
+            this.conditionControls().addControl(k, new FormControl(this.condition[k]));
+          })
+        }
+      }
     }, 300);
   }
 

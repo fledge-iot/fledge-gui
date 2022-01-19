@@ -5,11 +5,11 @@
   <div class="field-body">
     <div class="field is-narrow">
       <div class="control">
-        <input class="input is-small name-control" type="text" placeholder="duration"
-          (change)="setDuration($event.target.value)" appNumberOnly>
+        <input class="input is-small name-control" type="text" placeholder="duration" [value]="duration" appNumberOnly
+          (change)="setDuration($event.target.value)">
       </div>
     </div>
   </div>
 </div>
-<app-add-step-condition #delayCondition [from]='step' [index]="controlIndex">
+<app-add-step-condition #delayCondition [from]='step' [index]="controlIndex" [condition]="config?.value?.condition">
 </app-add-step-condition>
