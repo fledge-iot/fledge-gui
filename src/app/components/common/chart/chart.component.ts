@@ -23,16 +23,9 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() { }
 
   ngOnChanges() {
-    // set alpha only for asset reading graphs
-    if (this.from && this.from !== 'dashboard' && this.rangeSliderService.getAlphControlStatus()) {
-      this.setAlpha();
-    }
     if (this.chart) {
       if (!isEmpty(this.data)) {
-        this.chart.data.datasets.forEach((dataset) => {
-          dataset.data = this.data.datasets.find(d => dataset.label === d.label).data;
-        });
-        this.chart.data.labels = this.data.labels;
+        this.chart.data = this.data;
         this.chart.update(0);
       }
     } else {
@@ -44,6 +37,10 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
         });
         this.chart.update(0);
       }
+    }
+    // set alpha only for asset reading graphs
+    if (this.from && this.from !== 'dashboard' && this.rangeSliderService.getAlphControlStatus()) {
+      this.setAlpha();
     }
   }
 
