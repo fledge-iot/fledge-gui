@@ -42,7 +42,7 @@
                       <div class="columns">
                         <div class="column">
                           <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
-                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(control)"
+                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(i)"
                             [addStepClicked]="addStep" [update]="update">
                           </app-add-step>
                         </div>
