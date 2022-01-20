@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { FormGroup, NgForm, FormControl, ControlContainer, Validators } from '@angular/forms';
 import { ServicesApiService, AlertService } from '../../../../../../services';
 
@@ -25,6 +25,14 @@ export class AddOperationComponent implements OnInit {
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
     private control: NgForm) { }
+
+  ngOnChanges(simpleChange: SimpleChange) {
+    if (!simpleChange['config'].firstChange) {
+      this.config = simpleChange['config'].currentValue;
+      this.setService(this.config.value.service);
+      this.setName(this.config.value.name);
+    }
+  }
 
   ngOnInit(): void {
     this.getAllServices(false);

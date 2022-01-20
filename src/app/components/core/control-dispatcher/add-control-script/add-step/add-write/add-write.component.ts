@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ControlContainer, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Component, Input, OnInit, SimpleChange } from '@angular/core';
+import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
 import { ServicesApiService, AlertService } from '../../../../../../services';
+
 @Component({
   selector: 'app-add-write',
   templateUrl: './add-write.component.html',
@@ -23,6 +24,13 @@ export class AddWriteComponent implements OnInit {
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
     private control: NgForm) { }
+
+  ngOnChanges(simpleChange: SimpleChange) {
+    if (!simpleChange['config'].firstChange) {
+      this.config = simpleChange['config'].currentValue;
+      this.setService(this.config.value.service);
+    }
+  }
 
   ngOnInit(): void {
     this.getAllServices(false);

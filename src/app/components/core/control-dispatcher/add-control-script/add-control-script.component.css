@@ -10,6 +10,10 @@
   padding: 0 0 0 8px !important;
 }
 
+#refresh-check {
+  margin-left: 3px;
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;

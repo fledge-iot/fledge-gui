@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
 
 @Component({
@@ -16,8 +16,15 @@ export class AddDelayComponent implements OnInit {
   stepsGroup: FormGroup;
   duration = '';
 
-
   constructor(private control: NgForm) { }
+
+  ngOnChanges(simpleChange: SimpleChange) {
+    if (!simpleChange['config'].firstChange) {
+      this.config = simpleChange['config'].currentValue;
+      this.duration = this.config.value.duration;
+      this.setDuration(this.duration);
+    }
+  }
 
   ngOnInit(): void { }
 
@@ -40,8 +47,8 @@ export class AddDelayComponent implements OnInit {
   }
 
   setDuration(value: any) {
-    this.duration = value;
-    this.scriptControlGroup().controls['duration'].setValue(value);
+    this.duration = value ? value : '';
+    this.scriptControlGroup().controls['duration'].setValue(this.duration);
   }
 
 }

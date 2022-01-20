@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { AlertService } from '../../../../../../services';
 import { ControlDispatcherService } from '../../../../../../services/control-dispatcher.service';
@@ -21,12 +21,19 @@ export class AddScriptComponent implements OnInit {
 
   stepsGroup: FormGroup;
 
-
   values = [];
   constructor(
     private alertService: AlertService,
     private controlService: ControlDispatcherService,
     private control: NgForm) { }
+
+  ngOnChanges(simpleChange: SimpleChange) {
+    if (!simpleChange['config'].firstChange) {
+      this.config = simpleChange['config'].currentValue;
+      this.setScript(this.config.value.name);
+      this.setExecution(this.config.value.execution === 'background' ? this.execution[1] : this.execution[0]);
+    }
+  }
 
   ngOnInit(): void {
     this.getScripts();

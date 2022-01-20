@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { cloneDeep, uniqWith } from 'lodash';
@@ -18,6 +18,20 @@ export class AddStepValueComponent implements OnInit {
 
   constructor(private control: NgForm) { }
 
+  ngOnChanges(simpleChange: SimpleChange) {
+    if (!simpleChange['values'].firstChange) {
+      this.values = simpleChange['values'].currentValue;
+      this.parameters = [];
+      if (this.values) {
+        if (Object.keys(this.values).length > 0) {
+          Object.keys(this.values).map((k, i) => {
+            this.parameters.push({ index: i, key: k, value: this.values[k] });
+          });
+        }
+      }
+    }
+  }
+
   ngOnInit(): void { }
 
   ngAfterViewInit() {
@@ -31,7 +45,6 @@ export class AddStepValueComponent implements OnInit {
       } else {
         this.parameters.push({ index: 0, key: '', value: '' });
       }
-
 
       for (let i = 0; i < this.parameters.length; i++) {
         this.getValueControlGroup().addControl(`${this.from}-key-${i}`, new FormControl({ index: i, key: this.parameters[i].key, value: this.parameters[i].value }));
@@ -52,8 +65,6 @@ export class AddStepValueComponent implements OnInit {
             }));
           });
     }, 300);
-
-
   }
 
   addValueControl() {

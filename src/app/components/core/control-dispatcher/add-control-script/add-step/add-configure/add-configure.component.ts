@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, SimpleChange, ViewChild } from '@angular/core';
 import { FormGroup, NgForm, FormControl, ControlContainer } from '@angular/forms';
 import { AlertService, ConfigurationService } from '../../../../../../services';
 import { TreeComponent, ITreeOptions, ITreeState, } from '@circlon/angular-tree-component';
@@ -47,6 +47,14 @@ export class AddConfigureComponent implements OnInit {
     private alertService: AlertService,
     private configurationService: ConfigurationService,
     private control: NgForm) { }
+
+  ngOnChanges(simpleChange: SimpleChange) {
+    if (!simpleChange['config'].firstChange) {
+      this.config = simpleChange['config'].currentValue;
+      this.nodes = [];
+      this.getCategories();
+    }
+  }
 
   ngOnInit(): void { }
 
@@ -171,9 +179,10 @@ export class AddConfigureComponent implements OnInit {
               return r;
             }
           });
-          if (this.config.value.category in category) {
+          if (this.config.value.category === category.key) {
             this.selectedCategory = category.displayName ? category.displayName : category.description;
           } else {
+
             const cat = category.children.find(child => (child.key === this.config.value.category));
             this.selectedCategory = cat.displayName ? cat.displayName : cat.description;
           }
