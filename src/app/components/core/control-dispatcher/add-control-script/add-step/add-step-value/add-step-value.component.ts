@@ -22,8 +22,8 @@ export class AddStepValueComponent implements OnInit {
   ngOnChanges(simpleChange: SimpleChange) {
     if (!simpleChange['values'].firstChange) {
       this.values = simpleChange['values'].currentValue;
-      this.parameters = [];
       if (this.values) {
+        this.parameters = [];
         if (Object.keys(this.values).length > 0) {
           Object.keys(this.values).map((k, i) => {
             this.parameters.push({ index: i, key: k, value: this.values[k] });

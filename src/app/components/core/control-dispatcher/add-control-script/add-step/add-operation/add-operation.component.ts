@@ -26,7 +26,7 @@ export class AddOperationComponent implements OnInit {
     private control: NgForm) { }
 
   ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['config'].firstChange) {
+    if (!simpleChange['config'].firstChange && this.config) {
       this.config = simpleChange['config'].currentValue;
       this.setService(this.config.value.service);
       this.setName(this.config.value.name);

@@ -2,7 +2,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NgForm, NgModelGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { range, cloneDeep, isEmpty } from 'lodash';
+import { cloneDeep, isEmpty, range } from 'lodash';
 import { Observable, of } from 'rxjs';
 import { AlertService, ProgressBarService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
@@ -29,6 +29,7 @@ export class AddControlScriptComponent implements OnInit {
   update = false;
   scriptName = '';
   addStep = false;
+
   constructor(
     private route: ActivatedRoute,
     private controlService: ControlDispatcherService,
@@ -47,6 +48,10 @@ export class AddControlScriptComponent implements OnInit {
       }
     });
     this.getAllACL();
+  }
+
+  refresh() {
+    this.getControlScript(this.scriptName);
   }
 
 
@@ -107,7 +112,10 @@ export class AddControlScriptComponent implements OnInit {
 
   getConfig(control) {
     if (this.controlScript) {
-      return this.controlScript.steps.find(step => (step.value.order === control));
+      return this.controlScript.steps.find(step => {
+        return (step.value.order === control)
+      }
+      );
     }
   }
 

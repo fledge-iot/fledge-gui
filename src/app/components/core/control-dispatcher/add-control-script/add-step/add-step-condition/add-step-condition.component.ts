@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChange } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
 
 @Component({
@@ -27,16 +27,18 @@ export class AddStepConditionComponent implements OnInit {
 
   constructor(private control: NgForm) { }
 
-  ngOnChanges(simpleChange: SimpleChange) {
+  ngOnChanges(simpleChange: SimpleChanges) {
     if (!simpleChange['condition'].firstChange) {
       this.condition = simpleChange['condition'].currentValue;
-      if (Object.keys(this.condition).length > 0) {
-        this.addConditionControl();
-        this.conditionPayload = this.condition;
-        this.selectedCondition = this.conditionPayload.condition;
-        Object.keys(this.condition).map((k) => {
-          this.conditionControls().controls[k].patchValue(this.condition[k]);
-        });
+      if (this.condition) {
+        if (Object.keys(this.condition).length > 0) {
+          this.addConditionControl();
+          this.conditionPayload = this.condition;
+          this.selectedCondition = this.conditionPayload.condition;
+          Object.keys(this.condition).map((k) => {
+            this.conditionControls().controls[k].patchValue(this.condition[k]);
+          });
+        }
       }
     }
   }
