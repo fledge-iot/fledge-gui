@@ -3,7 +3,7 @@
     <header class="card-header">
       <div class="card-header-title">
         <span> {{update ? controlScript?.name + ' Script' : 'Add Control Script'}}</span>
-        <button *ngIf="update" (click)="getControlScript(scriptName)" class="button is-small" id="refresh-check">
+        <button *ngIf="update" (click)="refresh()" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
@@ -42,7 +42,7 @@
                       <div class="columns">
                         <div class="column">
                           <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
-                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(control)"
+                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(i)"
                             [addStepClicked]="addStep" [update]="update">
                           </app-add-step>
                         </div>

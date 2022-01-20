@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormGroup, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-add-step',
@@ -26,11 +26,6 @@ export class AddStepComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      if (this.stepControlGroup()) {
-        this.stepControlGroup().setValidators(Validators.requiredTrue);
-        this.stepControlGroup().updateValueAndValidity();
-      }
-
       if (this.config && !this.addStepClicked) {
         this.constrolStatus = { index: this.controlIndex, update: this.update };
         this.selectStep(this.config.key);
@@ -52,6 +47,13 @@ export class AddStepComponent implements OnInit {
     }
   }
 
+  setStepConfig(type: string) {
+    if (this.config && this.config.key === type) {
+      return this.config;
+    }
+    return;
+  }
+
   stepControlGroup(): FormGroup {
     return this.control.controls[`step-${this.controlIndex}`] as FormGroup;
   }
@@ -65,7 +67,6 @@ export class AddStepComponent implements OnInit {
     }
     // add new step in step form group
     this.selectedStep = step;
-    this.stepControlGroup().removeValidators(Validators.requiredTrue);
     this.stepControlGroup().updateValueAndValidity();
   }
 
