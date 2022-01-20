@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
+import { orderBy } from 'lodash';
 import { AlertService } from '../../../../../../services';
 import { ControlDispatcherService } from '../../../../../../services/control-dispatcher.service';
 
@@ -65,6 +66,8 @@ export class AddScriptComponent implements OnInit {
     this.controlService.fetchControlServiceScripts()
       .subscribe((data: any) => {
         this.scripts = data.scripts;
+        this.scripts = orderBy(this.scripts.filter(s => s.name !== this.selectedScript), 'name')
+
       }, error => {
         if (error.status === 0) {
           console.log('service down ', error);

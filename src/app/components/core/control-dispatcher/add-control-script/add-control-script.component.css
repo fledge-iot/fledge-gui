@@ -40,3 +40,15 @@ div.close-btn {
 .btn-delete {
   border: transparent !important;
 }
+
+.control-pad {
+  padding-right: 20px;
+}
+
+.step-content {
+  overflow: inherit !important;
+}
+
+.breadcrumb {
+  margin-bottom: 0px !important;
+}

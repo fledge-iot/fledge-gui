@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { orderBy } from 'lodash';
 import { AlertService, ProgressBarService, SharedService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
@@ -36,7 +37,7 @@ export class ControlScriptsListComponent implements OnInit {
     this.controlService.fetchControlServiceScripts()
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.controlScripts = data.scripts;
+        this.controlScripts = orderBy(data.scripts, 'name');
       }, error => {
         /** request completed */
         this.ngProgress.done();

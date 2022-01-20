@@ -6,6 +6,7 @@ import { cloneDeep, isEmpty, range } from 'lodash';
 import { Observable, of } from 'rxjs';
 import { AlertService, ProgressBarService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
+import { DialogService } from '../confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-add-control-script',
@@ -35,6 +36,7 @@ export class AddControlScriptComponent implements OnInit {
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
+    private dialogService: DialogService,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -82,6 +84,36 @@ export class AddControlScriptComponent implements OnInit {
         }
       });
   }
+
+  deleteScript(script) {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.deleteScript(script)
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.alertService.success(data.message);
+        // close modal
+        this.closeModal('confirmation-dialog');
+        this.router.navigate(['control-dispatcher']);
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
+  }
+
 
   public toggleDropdown() {
     const dropDown = document.querySelector('#acl-dropdown');
@@ -131,7 +163,6 @@ export class AddControlScriptComponent implements OnInit {
   addStepControl() {
     this.addStep = true;
     this.stepControlsList.push(this.stepControlsList.length);
-    console.log(this.stepControlsList);
   }
 
   deleteStepControl(index: number) {
