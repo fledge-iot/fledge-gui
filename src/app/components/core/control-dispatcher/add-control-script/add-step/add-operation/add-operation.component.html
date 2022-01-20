@@ -41,9 +41,9 @@
   </div>
 </div>
 <div *ngIf="services.length > 0">
-  <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters">
+  <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters" [update]="update">
   </app-add-step-value>
   <app-add-step-condition #operationCondition [from]='step' [index]="controlIndex"
-    [condition]="config?.value?.condition">
+    [condition]="config?.value?.condition" [update]="update">
   </app-add-step-condition>
 </div>

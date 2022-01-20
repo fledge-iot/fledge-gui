@@ -12,6 +12,7 @@ export class AddStepValueComponent implements OnInit {
   @Input() index;
   @Input() from;
   @Input() values;
+  @Input() update = false;
 
   keys;
   parameters = [];

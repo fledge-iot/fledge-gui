@@ -18,6 +18,7 @@ export class AddWriteComponent implements OnInit {
 
   stepsGroup: FormGroup;
   serviceControl: FormControl;
+  @Input() update = false;
 
   values = [];
   constructor(

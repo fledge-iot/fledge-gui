@@ -17,7 +17,8 @@ export class AddScriptComponent implements OnInit {
   selectedExecution = '';
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
-  @Input() config; // type of step
+  @Input() config;
+  @Input() update = false;
 
   stepsGroup: FormGroup;
 

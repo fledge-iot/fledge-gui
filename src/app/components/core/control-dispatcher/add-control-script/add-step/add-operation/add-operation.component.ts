@@ -1,12 +1,11 @@
 import { Component, Input, OnInit, SimpleChange } from '@angular/core';
-import { FormGroup, NgForm, FormControl, ControlContainer, Validators } from '@angular/forms';
+import { FormGroup, NgForm, FormControl } from '@angular/forms';
 import { ServicesApiService, AlertService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-operation',
   templateUrl: './add-operation.component.html',
   styleUrls: ['./add-operation.component.css'],
-  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class AddOperationComponent implements OnInit {
 
@@ -16,11 +15,11 @@ export class AddOperationComponent implements OnInit {
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
   @Input() config;
-
-  stepsGroup: FormGroup;
+  @Input() update = false;
 
   values = [];
   operationName = '';
+
   constructor(
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
@@ -40,8 +39,7 @@ export class AddOperationComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      this.stepsGroup.addControl('operation', new FormGroup({
+      this.stepControlGroup().addControl('operation', new FormGroup({
         name: new FormControl(''),
         service: new FormControl(''),
         parameters: new FormGroup({}),
@@ -54,8 +52,12 @@ export class AddOperationComponent implements OnInit {
     }, 0);
   }
 
+  stepControlGroup(): FormGroup {
+    return this.control.controls[`step-${this.controlIndex}`] as FormGroup;
+  }
+
   operationControlGroup(): FormGroup {
-    return this.stepsGroup.controls['operation'] as FormGroup;
+    return this.stepControlGroup().controls['operation'] as FormGroup;
   }
 
   public getAllServices(caching: boolean) {
@@ -88,7 +90,7 @@ export class AddOperationComponent implements OnInit {
 
   setName(name: string) {
     this.operationName = name;
-    this.operationControlGroup().controls['name'].setValue(name)
+    this.operationControlGroup().controls['name'].setValue(name);
   }
 
   setService(service: any) {

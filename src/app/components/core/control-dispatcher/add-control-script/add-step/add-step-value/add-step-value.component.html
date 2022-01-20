@@ -20,7 +20,7 @@
             </div>
           </div>
           &nbsp;
-          <div *ngIf="i > 0" class="field">
+          <div *ngIf="i > 0 || update" class="field">
             <button (click)="deleteControl(control.index)" class="delete is-small">
             </button>
           </div>

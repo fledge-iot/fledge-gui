@@ -14,6 +14,7 @@ export class AddStepConditionComponent implements OnInit {
   @Input() from;
   @Input() index;
   @Input() condition;
+  @Input() update = false;
 
   conditions = ['==', '!=', '<', '>', '<=', '>='] // supported conditions
   selectedCondition = '==';

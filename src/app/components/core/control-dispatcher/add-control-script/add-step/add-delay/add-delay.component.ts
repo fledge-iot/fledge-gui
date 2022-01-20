@@ -12,6 +12,7 @@ export class AddDelayComponent implements OnInit {
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
   @Input() config;
+  @Input() update = false;
 
   stepsGroup: FormGroup;
   duration = '';
