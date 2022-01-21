@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
 import { AlertService, SharedService } from '../../../../../../services';
 import { ControlDispatcherService } from '../../../../../../services/control-dispatcher.service';
@@ -23,8 +24,10 @@ export class AddScriptComponent implements OnInit {
 
   stepsGroup: FormGroup;
   values = [];
+  script = ''; // script name for filtering self script use in script type step
 
   constructor(
+    private route: ActivatedRoute,
     private alertService: AlertService,
     private controlService: ControlDispatcherService,
     public sharedService: SharedService,
@@ -39,6 +42,9 @@ export class AddScriptComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.script = params['name'];
+    });
     this.getScripts();
   }
 
@@ -66,8 +72,8 @@ export class AddScriptComponent implements OnInit {
   public getScripts() {
     this.controlService.fetchControlServiceScripts()
       .subscribe((data: any) => {
-        this.scripts = data.scripts;
-        this.scripts = orderBy(this.scripts.filter(s => s.name !== this.selectedScript), 'name')
+        this.scripts = data.scripts.filter(s => s.name !== this.script);
+        this.scripts = orderBy(this.scripts, 'name')
 
       }, error => {
         if (error.status === 0) {
