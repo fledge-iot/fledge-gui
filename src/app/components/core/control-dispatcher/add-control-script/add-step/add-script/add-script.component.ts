@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
 import { orderBy } from 'lodash';
-import { AlertService } from '../../../../../../services';
+import { AlertService, SharedService } from '../../../../../../services';
 import { ControlDispatcherService } from '../../../../../../services/control-dispatcher.service';
 
 @Component({
@@ -27,6 +27,7 @@ export class AddScriptComponent implements OnInit {
   constructor(
     private alertService: AlertService,
     private controlService: ControlDispatcherService,
+    public sharedService: SharedService,
     private control: NgForm) { }
 
   ngOnChanges(simpleChange: SimpleChange) {

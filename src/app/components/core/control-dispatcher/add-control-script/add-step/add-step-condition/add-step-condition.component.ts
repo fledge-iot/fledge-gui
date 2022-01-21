@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { SharedService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-step-condition',
@@ -25,7 +26,8 @@ export class AddStepConditionComponent implements OnInit {
   }
   showConditionControl = false;
 
-  constructor(private control: NgForm) { }
+  constructor(private control: NgForm,
+    public sharedService: SharedService) { }
 
   ngOnChanges(simpleChange: SimpleChanges) {
     if (!simpleChange['condition'].firstChange) {

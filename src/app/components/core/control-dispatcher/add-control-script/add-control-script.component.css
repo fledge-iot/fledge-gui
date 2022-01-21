@@ -2,6 +2,14 @@
   margin-bottom: 5px;
 }
 
+.cursor-default {
+  cursor: default !important;
+}
+
+.cursor-move {
+  cursor: move !important;
+}
+
 .cdk-drag {
   margin-bottom: 5px;
 }
@@ -42,7 +50,7 @@ div.close-btn {
 }
 
 .control-pad {
-  padding-right: 20px;
+  padding-left: 18px;
 }
 
 .step-content {

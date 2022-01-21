@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, SimpleChange, ViewChild } from '@angular/core';
 import { FormGroup, NgForm, FormControl } from '@angular/forms';
-import { AlertService, ConfigurationService } from '../../../../../../services';
+import { AlertService, ConfigurationService, SharedService } from '../../../../../../services';
 import { TreeComponent, ITreeOptions, ITreeState, } from '@circlon/angular-tree-component';
 import { sortBy, isEmpty } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
@@ -43,6 +43,7 @@ export class AddConfigureComponent implements OnInit {
   constructor(
     private alertService: AlertService,
     private configurationService: ConfigurationService,
+    public sharedService: SharedService,
     private control: NgForm) { }
 
   ngOnChanges(simpleChange: SimpleChange) {

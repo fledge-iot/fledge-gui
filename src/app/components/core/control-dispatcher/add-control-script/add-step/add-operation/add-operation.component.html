@@ -6,7 +6,8 @@
     <div class="field">
       <div class="control">
         <input class="input is-small name-control" type="text" placeholder="Name" name="operationName"
-          [ngModel]="operationName" (ngModelChange)="setName($event)">
+          [ngModel]="operationName" (ngModelChange)="setName($event)"
+          [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
       </div>
     </div>
   </div>
@@ -17,7 +18,7 @@
   </div>
   <div class="field-body">
     <div class="field is-narrow">
-      <div class="control">
+      <div *ngIf="sharedService.checkAuth();else staticServiceDiv" class="control">
         <div #serviceDropDown id="service-dropdown-{{controlIndex}}" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(serviceDropDown.id)" class="button is-small" aria-haspopup="true"
@@ -37,6 +38,12 @@
           </div>
         </div>
       </div>
+      <ng-template #staticServiceDiv>
+        <div class="control">
+          <input name="service" class="input is-small" type="text" [(ngModel)]="selectedService"
+            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>

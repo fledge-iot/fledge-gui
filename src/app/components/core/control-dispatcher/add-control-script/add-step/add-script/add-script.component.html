@@ -4,7 +4,7 @@
   </div>
   <div class="field-body">
     <div class="field is-narrow">
-      <div class="control">
+      <div *ngIf="sharedService.checkAuth();else staticScriptDiv" class="control">
         <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
@@ -24,6 +24,12 @@
           </div>
         </div>
       </div>
+      <ng-template #staticScriptDiv>
+        <div class="control">
+          <input name="script" class="input is-small" type="text" [(ngModel)]="selectedScript"
+            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>
@@ -34,7 +40,7 @@
     </div>
     <div class="field-body">
       <div class="field is-narrow">
-        <div class="control">
+        <div *ngIf="sharedService.checkAuth();else staticExecutionDiv" class="control">
           <div #executionDropDown id="execution-dropdown-{{controlIndex}}" class="dropdown is-left">
             <div class="dropdown-trigger">
               <button (click)="toggleDropDown(executionDropDown.id)" class="button is-small" aria-haspopup="true"
@@ -53,6 +59,12 @@
             </div>
           </div>
         </div>
+        <ng-template #staticExecutionDiv>
+          <div class="control">
+            <input name="execution" class="input is-small" type="text" [(ngModel)]="selectedExecution"
+              [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

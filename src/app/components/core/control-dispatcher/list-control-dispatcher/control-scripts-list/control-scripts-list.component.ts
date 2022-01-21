@@ -16,7 +16,6 @@ export class ControlScriptsListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   script;
   private subscription: Subscription;
-  isAdmin = false;
   constructor(
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
@@ -25,9 +24,6 @@ export class ControlScriptsListComponent implements OnInit {
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
-    this.subscription = this.sharedService.isAdmin.subscribe(value => {
-      this.isAdmin = value;
-    });
     this.showControlDispatcherService();
   }
 

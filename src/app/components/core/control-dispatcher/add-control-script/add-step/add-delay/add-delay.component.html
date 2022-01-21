@@ -6,7 +6,8 @@
     <div class="field is-narrow">
       <div class="control">
         <input class="input is-small name-control" type="text" name="duration" placeholder="duration" [value]="duration"
-          appNumberOnly (change)="setDuration($event.target.value)">
+          appNumberOnly (change)="setDuration($event.target.value)" [ngClass]="{'is-static':!sharedService.checkAuth()}"
+          [readonly]="!sharedService.checkAuth()">
       </div>
     </div>
   </div>

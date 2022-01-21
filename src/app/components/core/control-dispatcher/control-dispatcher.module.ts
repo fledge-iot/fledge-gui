@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AdminGuard, AuthGuard } from '../../../guards';
+import { AdminGuard, AuthGuard, AuthTypeGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AddControlScriptComponent } from './add-control-script/add-control-script.component';
 import { AddConfigureComponent } from './add-control-script/add-step/add-configure/add-configure.component';
@@ -30,7 +30,7 @@ const routes: Routes = [
   {
     path: 'script/add',
     component: AddControlScriptComponent,
-    canActivate: [AuthGuard, AdminGuard]
+    canActivate: [AuthTypeGuard]
   },
   {
     path: 'script/:name',
@@ -64,6 +64,6 @@ const routes: Routes = [
     DirectivesModule,
     RouterModule.forChild(routes)
   ],
-  providers: [AuthGuard, AdminGuard]
+  providers: [AuthTypeGuard]
 })
 export class ControlDispatcherModule { }

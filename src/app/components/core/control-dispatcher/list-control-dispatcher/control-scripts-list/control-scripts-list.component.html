@@ -13,7 +13,7 @@
         </a>
       </td>
       <td>
-        <button *ngIf="isAdmin" (click)="setScript(script);openModal('confirmation-dialog')"
+        <button *ngIf="sharedService.checkAuth()" (click)="setScript(script);openModal('confirmation-dialog')"
           class="button is-small btn-delete">
           <span class="icon is-small">
             <i class="far fa-trash-alt"></i>

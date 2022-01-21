@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
+import { SharedService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-delay',
@@ -17,7 +18,7 @@ export class AddDelayComponent implements OnInit {
   stepsGroup: FormGroup;
   duration = '';
 
-  constructor(private control: NgForm) { }
+  constructor(private control: NgForm, public sharedService: SharedService) { }
 
   ngOnChanges(simpleChange: SimpleChange) {
     if (!simpleChange['config'].firstChange && this.config) {

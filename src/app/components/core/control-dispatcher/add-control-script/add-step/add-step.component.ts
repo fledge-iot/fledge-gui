@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, NgForm } from '@angular/forms';
+import { SharedService } from '../../../../../services';
 
 @Component({
   selector: 'app-add-step',
@@ -18,7 +19,7 @@ export class AddStepComponent implements OnInit {
 
   // To hold update form status
   constrolStatus = { index: 0, update: 'false' };
-  constructor(private control: NgForm) { }
+  constructor(private control: NgForm, public sharedService: SharedService) { }
 
   ngOnInit(): void {
     this.constrolStatus = { index: this.controlIndex, update: 'false' };

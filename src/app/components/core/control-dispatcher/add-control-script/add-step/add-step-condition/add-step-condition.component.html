@@ -1,4 +1,4 @@
-<div *ngIf="!showConditionControl" class="field is-horizontal">
+<div *ngIf="!showConditionControl && sharedService.checkAuth()" class="field is-horizontal">
   <div class="field-label is-small">
     <label class="label"></label>
   </div>
@@ -25,7 +25,8 @@
         <div class="field">
           <div class="control">
             <input placeholder="key" class="input is-small" type="text" name='key' #key="ngModel"
-              [ngModel]="conditionPayload.key" (ngModelChange)="setConditionKey($event)" required>
+              [ngModel]="conditionPayload.key" (ngModelChange)="setConditionKey($event)"
+              [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
           </div>
           <div *ngIf="key.invalid && (key.dirty || key.touched)" class="help is-danger">
             <div *ngIf="key.errors?.['required']">
@@ -35,7 +36,7 @@
         </div>
         &nbsp;
         <div class="field">
-          <div class="control">
+          <div class="control" *ngIf="sharedService.checkAuth();else staticConditionDiv">
             <div #conditionCtrl id="condition-dropdown-{{index}}" class="dropdown is-left">
               <div class="dropdown-trigger">
                 <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -54,12 +55,19 @@
               </div>
             </div>
           </div>
+          <ng-template #staticConditionDiv>
+            <div class="control">
+              <input name="condition" class="input is-small" type="text" [(ngModel)]="selectedCondition"
+                [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+            </div>
+          </ng-template>
         </div>
         &nbsp;
         <div class="field">
           <div class="control">
             <input placeholder="value" class="input is-small" type="text" name='value' #val="ngModel"
-              [ngModel]="conditionPayload.value" (ngModelChange)="setConditionValue($event)" required>
+              [ngModel]="conditionPayload.value" (ngModelChange)="setConditionValue($event)"
+              [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
           </div>
           <div *ngIf="val.invalid && (val.dirty || val.touched)" class="help is-danger">
             <div *ngIf="val.errors?.['required']">
@@ -68,7 +76,7 @@
           </div>
         </div>
         &nbsp;
-        <div class="field">
+        <div class="field" *ngIf="sharedService.checkAuth()">
           <button (click)="deleteControl()" class="delete is-small">
           </button>
         </div>

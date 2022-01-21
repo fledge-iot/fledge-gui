@@ -6,7 +6,7 @@
     <div class="field is-narrow">
       <div class="control">
         <div #configureDropdown id="configure-dropdown-{{controlIndex}}" class="dropdown is-left">
-          <div class="dropdown-trigger">
+          <div *ngIf="sharedService.checkAuth();else staticCategoryDiv" class="dropdown-trigger">
             <button (click)="toggleDropDown(configureDropdown.id)" class="button is-small" aria-haspopup="true"
               aria-controls="dropdown-menu">
               <span>{{selectedCategory? selectedCategory : 'Select category'}}</span>
@@ -24,6 +24,12 @@
           </div>
         </div>
       </div>
+      <ng-template #staticCategoryDiv>
+        <div class="control">
+          <input name="category" class="input is-small" type="text" [(ngModel)]="selectedCategory"
+            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>
@@ -33,7 +39,7 @@
   </div>
   <div class="field-body" *ngIf="configItems?.length > 0 else noconfig">
     <div class="field is-narrow">
-      <div class="control">
+      <div class="control" *ngIf="sharedService.checkAuth();else staticConfigItemDiv">
         <div #configItem id="config-dropdown" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(configItem.id)" class="button is-small" aria-haspopup="true"
@@ -53,11 +59,18 @@
           </div>
         </div>
       </div>
+      <ng-template #staticConfigItemDiv>
+        <div class="control">
+          <input name="config" class="input is-small" type="text" [(ngModel)]="selectedConfigItem"
+            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+        </div>
+      </ng-template>
     </div>
     <div class="field is-narrow">
       <div class="control">
         <input class="input is-small name-control" name="value" type="text" placeholder="value"
-          (ngModelChange)="setValue($event)" [ngModel]="configValue">
+          (ngModelChange)="setValue($event)" [ngModel]="configValue"
+          [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
       </div>
     </div>
   </div>

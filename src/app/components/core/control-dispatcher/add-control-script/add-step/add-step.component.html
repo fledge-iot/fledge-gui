@@ -7,7 +7,7 @@
     <div class="field">
       <div class="control" *ngIf="constrolStatus?.update=== 'false'; else staticStep">
         <div #ctlDiv [id]="'step-dropdown-' + controlIndex" class="dropdown is-left">
-          <div class="dropdown-trigger">
+          <div *ngIf="sharedService.checkAuth()" class="dropdown-trigger">
             <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
               (click)="toggleDropDown(ctlDiv.id)">
               <span>{{selectedStep? (selectedStep | titlecase): 'Choose step type'}}</span>

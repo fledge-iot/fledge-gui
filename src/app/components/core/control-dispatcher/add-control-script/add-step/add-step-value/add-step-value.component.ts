@@ -2,6 +2,7 @@ import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { cloneDeep, uniqWith } from 'lodash';
+import { SharedService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-step-value',
@@ -17,7 +18,8 @@ export class AddStepValueComponent implements OnInit {
   keys;
   parameters = [];
 
-  constructor(private control: NgForm) { }
+  constructor(private control: NgForm,
+    public sharedService: SharedService) { }
 
   ngOnChanges(simpleChange: SimpleChange) {
     if (!simpleChange['values'].firstChange) {

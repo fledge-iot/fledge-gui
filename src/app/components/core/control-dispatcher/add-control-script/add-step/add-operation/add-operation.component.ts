@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { FormGroup, NgForm, FormControl } from '@angular/forms';
-import { ServicesApiService, AlertService } from '../../../../../../services';
+import { ServicesApiService, AlertService, SharedService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-operation',
@@ -23,6 +23,7 @@ export class AddOperationComponent implements OnInit {
   constructor(
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
+    public sharedService: SharedService,
     private control: NgForm) { }
 
   ngOnChanges(simpleChange: SimpleChange) {

@@ -4,7 +4,7 @@ import { NgForm, NgModelGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty, range } from 'lodash';
 import { Observable, of } from 'rxjs';
-import { AlertService, ProgressBarService } from '../../../../services';
+import { AlertService, ProgressBarService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 
@@ -14,7 +14,6 @@ import { DialogService } from '../confirmation-dialog/dialog.service';
   styleUrls: ['./add-control-script.component.css'],
 })
 export class AddControlScriptComponent implements OnInit {
-  submitted = false;
   stepControlsList = [];
 
   stepData = [];
@@ -37,6 +36,7 @@ export class AddControlScriptComponent implements OnInit {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private dialogService: DialogService,
+    public sharedService: SharedService,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -201,19 +201,22 @@ export class AddControlScriptComponent implements OnInit {
       } else if ('script' in val) {
         values = val['script'].parameters;
       }
-      values =
-        Object.values(values)
-          .filter((f: any) => (f.hasOwnProperty('key')))
-          .map((v: any) => {
-            return { [v.key]: v.value };
-          }).reduce((r, c) => ({ ...r, ...c }), {})
+      console.log('values', values);
+      if (values) {
+        values =
+          Object.values(values)
+            .filter((f: any) => (f.hasOwnProperty('key')))
+            .map((v: any) => {
+              return { [v.key]: v.value };
+            }).reduce((r, c) => ({ ...r, ...c }), {})
 
-      if ('write' in val) {
-        val['write'].values = values;
-      } else if ('operation' in val) {
-        val['operation'].parameters = values;
-      } else if ('script' in val) {
-        val['script'].parameters = values;
+        if ('write' in val) {
+          val['write'].values = values;
+        } else if ('operation' in val) {
+          val['operation'].parameters = values;
+        } else if ('script' in val) {
+          val['script'].parameters = values;
+        }
       }
       return val;
     });
@@ -224,6 +227,9 @@ export class AddControlScriptComponent implements OnInit {
       }
     })
 
+    console.log(payload);
+
+
     // change steps from array to object
     payload['steps'] = Object.assign({}, ...payload['steps']);
     return payload;
@@ -232,8 +238,6 @@ export class AddControlScriptComponent implements OnInit {
   onSubmit(form: NgForm) {
     console.log('form.value', form.value);
     const formData = cloneDeep(form.value);
-
-    this.submitted = true;
     let payload = {};
     payload['steps'] = Object.keys(formData).map((key, i) => {
       formData[key];
@@ -248,8 +252,6 @@ export class AddControlScriptComponent implements OnInit {
     if (this.update) {
       this.updateControlScript(payload)
     } else {
-
-
       this.ngProgress.start();
       this.controlService.addControlScript(payload)
         .subscribe(() => {

@@ -13,7 +13,7 @@
               <a (click)="showDiv(2)">ACL</a>
             </h6>
           </li>
-          <li *ngIf="isAdmin" style="position: absolute;right: 0;">
+          <li *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">
             <a [routerLink]="seletedTab === 1 ? ['script/add']:['acl/add']" class="is-light"
               style="border-bottom-width: 0">
               <p *ngIf="viewPort !== 'mobile'">&nbsp; Add &nbsp;</p>
