@@ -30,7 +30,7 @@ export class AddStepConditionComponent implements OnInit {
     public sharedService: SharedService) { }
 
   ngOnChanges(simpleChange: SimpleChanges) {
-    if (!simpleChange['condition'].firstChange) {
+    if (!simpleChange['condition']?.firstChange && this.condition) {
       this.condition = simpleChange['condition'].currentValue;
       if (this.condition) {
         if (Object.keys(this.condition).length > 0) {

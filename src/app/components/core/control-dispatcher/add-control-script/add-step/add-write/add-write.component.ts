@@ -28,7 +28,7 @@ export class AddWriteComponent implements OnInit {
     private control: NgForm) { }
 
   ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['config'].firstChange && this.config) {
+    if (!simpleChange['config']?.firstChange && this.config) {
       this.config = simpleChange['config'].currentValue;
       this.setService(this.config.value.service);
     }

@@ -21,7 +21,7 @@ export class AddDelayComponent implements OnInit {
   constructor(private control: NgForm, public sharedService: SharedService) { }
 
   ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['config'].firstChange && this.config) {
+    if (!simpleChange['config']?.firstChange && this.config) {
       this.config = simpleChange['config'].currentValue;
       this.duration = this.config.value.duration;
       this.setDuration(this.duration);

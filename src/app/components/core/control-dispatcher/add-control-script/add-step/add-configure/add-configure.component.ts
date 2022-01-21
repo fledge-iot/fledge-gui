@@ -47,7 +47,7 @@ export class AddConfigureComponent implements OnInit {
     private control: NgForm) { }
 
   ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['config'].firstChange && this.config) {
+    if (!simpleChange['config']?.firstChange && this.config) {
       this.config = simpleChange['config'].currentValue;
       this.nodes = [];
       this.getCategories();

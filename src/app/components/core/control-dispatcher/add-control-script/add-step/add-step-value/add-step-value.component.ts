@@ -22,7 +22,7 @@ export class AddStepValueComponent implements OnInit {
     public sharedService: SharedService) { }
 
   ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['values'].firstChange) {
+    if (!simpleChange['values']?.firstChange && this.values) {
       this.values = simpleChange['values'].currentValue;
       if (this.values) {
         this.parameters = [];
