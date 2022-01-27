@@ -78,7 +78,8 @@ export class AddStepComponent implements OnInit {
     this.stepsFormGroup().removeControl(`step-${index}`);
     this.stepControlsList = this.stepControlsList.filter(s => s.order !== index)
     this.stepEvent.emit(this.stepControlsList);
-    console.log(this.stepControlsList.length);
+    this.control.form.markAsTouched();
+    this.control.form.markAsDirty();
   }
 
   public toggleDropDown(id: string) {
