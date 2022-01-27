@@ -21,7 +21,6 @@ export class AddStepComponent implements OnInit {
   @Output() stepEvent = new EventEmitter<any>();
 
   stepControlsList = [];
-  scriptName = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -31,15 +30,22 @@ export class AddStepComponent implements OnInit {
     private ngProgress: ProgressBarService,
     public sharedService: SharedService) {
     this.route.params.subscribe(params => {
-      this.scriptName = params['name'];
-      if (this.scriptName) {
+      if (params['name']) {
         this.update = true;
-        this.getControlScript(this.scriptName);
+        this.getControlScript(params['name']);
       }
     });
   }
 
   ngOnInit(): void { }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (!this.update) {
+        this.initStepFormGroup(0);
+      }
+    }, 0);
+  }
 
   initStepFormGroup(index) {
     this.stepsFormGroup().addControl(`step-${index}`, new FormGroup({}));
@@ -75,19 +81,6 @@ export class AddStepComponent implements OnInit {
     console.log(this.stepControlsList.length);
   }
 
-  refresh() {
-    this.control.form.setControl('steps', new FormGroup({}));
-    this.getControlScript(this.scriptName);
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => {
-      if (!this.update) {
-        this.initStepFormGroup(0);
-      }
-    }, 0);
-  }
-
   public toggleDropDown(id: string) {
     const dropdowns = document.getElementsByClassName('dropdown');
     for (let i = 0; i < dropdowns.length; i++) {
@@ -114,11 +107,11 @@ export class AddStepComponent implements OnInit {
     return index;
   }
 
-  getControlScript(scriptName: string) {
+  getControlScript(script: string) {
     this.stepControlsList = [];
     /** request started */
     this.ngProgress.start();
-    this.controlService.fetchControlServiceScriptByName(scriptName)
+    this.controlService.fetchControlServiceScriptByName(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
         data.steps.forEach((step) => {

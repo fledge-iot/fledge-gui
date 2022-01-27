@@ -21,13 +21,9 @@ export class AddControlScriptComponent implements OnInit {
   @ViewChild('scriptForm') scriptForm: NgForm;
   @ViewChild('step') stepCtrl: AddStepComponent;
 
-  controlScript = {
-    name: '',
-    steps: [],
-    acls: ''
-  }
   update = false;
   scriptName = '';
+  controlScript = { name: '', steps: [], acls: 'None' };
 
   constructor(
     private route: ActivatedRoute,
@@ -43,7 +39,7 @@ export class AddControlScriptComponent implements OnInit {
       this.scriptName = params['name'];
       if (this.scriptName) {
         this.update = true;
-        this.getControlScript(this.scriptName);
+        this.getControlScript();
       }
     });
     this.getAllACL();
@@ -51,21 +47,21 @@ export class AddControlScriptComponent implements OnInit {
 
   refresh() {
     this.stepCtrl.getControlScript(this.scriptName);
+    this.getControlScript();
   }
 
+  updateScriptName(name: string) {
+    this.controlScript.name = name;
+  }
 
-  getControlScript(scriptName: string) {
+  getControlScript() {
     /** request started */
     this.ngProgress.start();
-    this.controlService.fetchControlServiceScriptByName(scriptName)
+    this.controlService.fetchControlServiceScriptByName(this.scriptName)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        const steps = [];
-        for (const [key, value] of Object.entries(data.steps)) {
-          steps.push({ key, value })
-        }
-        data.steps = steps;
-        this.controlScript = data;
+        this.controlScript.name = data.name;
+        this.scriptName = data.name;
         this.selectACL(data.acl);
       }, error => {
         /** request completed */
@@ -126,14 +122,6 @@ export class AddControlScriptComponent implements OnInit {
       });
   }
 
-  getConfig(control) {
-    if (this.controlScript) {
-      return this.controlScript.steps.find(step => {
-        return (step.value.order === control)
-      }
-      );
-    }
-  }
 
   selectACL(acl) {
     this.selectedACL = acl;
@@ -241,8 +229,6 @@ export class AddControlScriptComponent implements OnInit {
         });
     }
   }
-
-
 
   updateControlScript(payload) {
     /** request started */

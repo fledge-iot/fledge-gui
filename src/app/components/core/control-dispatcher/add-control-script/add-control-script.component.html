@@ -12,7 +12,7 @@
   <div class="card">
     <header class="card-header">
       <div class="card-header-title">
-        <span> {{update ? controlScript?.name + ' Script' : 'Add Control Script'}}</span>
+        <span> {{update ? this.scriptName + ' Script' : 'Add Control Script'}}</span>
         <button *ngIf="update" (click)="refresh()" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>

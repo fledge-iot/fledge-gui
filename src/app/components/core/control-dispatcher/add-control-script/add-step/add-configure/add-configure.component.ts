@@ -83,7 +83,6 @@ export class AddConfigureComponent implements OnInit {
       pipe(
         map((data: any) => data.categories),
         mergeMap((result) => {
-          console.log('result', this.config);
           if (this.config.category) {
             this.configureControlGroup().controls['category'].patchValue(this.config.category);
             this.getCategoryData(this.config.category);
