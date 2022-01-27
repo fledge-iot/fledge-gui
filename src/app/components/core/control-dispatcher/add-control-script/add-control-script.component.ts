@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -26,6 +26,7 @@ export class AddControlScriptComponent implements OnInit {
   controlScript = { name: '', steps: [], acls: 'None' };
 
   constructor(
+    private cdRef: ChangeDetectorRef,
     private route: ActivatedRoute,
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
@@ -43,6 +44,10 @@ export class AddControlScriptComponent implements OnInit {
       }
     });
     this.getAllACL();
+  }
+
+  ngAfterContentChecked(): void {
+    this.cdRef.detectChanges();
   }
 
   refresh() {
@@ -63,6 +68,7 @@ export class AddControlScriptComponent implements OnInit {
         this.controlScript.name = data.name;
         this.scriptName = data.name;
         this.selectACL(data.acl);
+        this.scriptForm.form.markAsPristine();
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -121,7 +127,6 @@ export class AddControlScriptComponent implements OnInit {
         }
       });
   }
-
 
   selectACL(acl) {
     this.selectedACL = acl;
@@ -216,6 +221,7 @@ export class AddControlScriptComponent implements OnInit {
         .subscribe(() => {
           this.ngProgress.done();
           this.alertService.success('script created successfully.');
+          this.scriptForm.form.markAsPristine();
           setTimeout(() => {
             this.router.navigate(['control-dispatcher']);
           }, 1000);

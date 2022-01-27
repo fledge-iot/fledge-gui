@@ -75,12 +75,16 @@ export class AddScriptComponent implements OnInit {
 
   setScript(script: any) {
     this.config.name = script;
-    this.scriptControlGroup().controls['name'].setValue(script)
+    this.scriptControlGroup().controls['name'].setValue(script);
+    this.scriptControlGroup().markAsTouched();
+    this.scriptControlGroup().markAsDirty();
   }
 
   setExecution(item: any) {
     this.config.execution = item.name;
-    this.scriptControlGroup().controls['execution'].setValue(item.value)
+    this.scriptControlGroup().controls['execution'].setValue(item.value);
+    this.scriptControlGroup().markAsTouched();
+    this.scriptControlGroup().markAsDirty();
   }
 
   stepsFormGroup() {

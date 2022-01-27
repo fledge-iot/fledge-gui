@@ -41,10 +41,14 @@ export class AddDelayComponent implements OnInit {
   setDuration(value: any) {
     this.config.duration = value ? value : '';
     this.delayFromGroup().controls['duration'].patchValue(value);
+    this.delayFromGroup().markAsTouched();
+    this.delayFromGroup().markAsDirty();
   }
 
   setOrder() {
     this.delayFromGroup().controls['order'].patchValue(this.controlIndex);
+    this.delayFromGroup().markAsTouched();
+    this.delayFromGroup().markAsDirty();
   }
 
 }

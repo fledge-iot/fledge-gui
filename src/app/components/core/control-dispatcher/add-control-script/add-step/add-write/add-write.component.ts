@@ -77,6 +77,8 @@ export class AddWriteComponent implements OnInit {
   setService(service: string) {
     this.config.service = service;
     this.writeControlGroup().controls['service'].setValue(service);
+    this.writeControlGroup().markAsTouched();
+    this.writeControlGroup().markAsDirty();
   }
 
   setOrder() {

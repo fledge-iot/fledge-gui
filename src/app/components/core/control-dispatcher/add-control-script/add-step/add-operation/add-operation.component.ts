@@ -76,11 +76,15 @@ export class AddOperationComponent implements OnInit {
   setName(name: string) {
     this.config.name = name;
     this.operationControlGroup().controls['name'].setValue(name);
+    this.operationControlGroup().markAsTouched();
+    this.operationControlGroup().markAsDirty();
   }
 
   setService(service: any) {
     this.config.service = service;
-    this.operationControlGroup().controls['service'].setValue(service)
+    this.operationControlGroup().controls['service'].setValue(service);
+    this.operationControlGroup().markAsTouched();
+    this.operationControlGroup().markAsDirty();
   }
 
   setOrder() {

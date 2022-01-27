@@ -87,14 +87,20 @@ export class AddStepValueComponent implements OnInit {
     this.parameters = this.parameters.filter(c => c.index !== index);
     this.valuesControlGroup().removeControl(`${this.from}-key-${index}`);
     this.valuesControlGroup().removeControl(`${this.from}-val-${index}`);
+    this.valuesControlGroup().markAsDirty();
+    this.valuesControlGroup().markAsTouched();
   }
 
   setValue(index, value) {
     this.valuesControlGroup().controls[`${this.from}-val-${index}`].setValue({ index, value });
+    this.valuesControlGroup().markAsDirty();
+    this.valuesControlGroup().markAsTouched();
   }
 
   setKey(index, key) {
     this.valuesControlGroup().controls[`${this.from}-key-${index}`].setValue({ index, key });
+    this.valuesControlGroup().markAsDirty();
+    this.valuesControlGroup().markAsTouched();
   }
 
 }

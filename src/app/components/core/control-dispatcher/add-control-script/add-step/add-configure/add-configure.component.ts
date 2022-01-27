@@ -120,6 +120,8 @@ export class AddConfigureComponent implements OnInit {
   public onNodeActive(event: any) {
     this.config.category = event.node.data.displayName;
     this.configureControlGroup().controls['category'].patchValue(event.node.data.key);
+    this.configureControlGroup().markAsTouched();
+    this.configureControlGroup().markAsDirty();
     this.getCategoryData(event.node.data.id, true);
   }
 
@@ -204,11 +206,15 @@ export class AddConfigureComponent implements OnInit {
     this.configValue = config.data.value;
     this.configureControlGroup().controls['item'].setValue(config.key);
     this.configureControlGroup().controls['value'].setValue(config.data.value);
+    this.configureControlGroup().markAsTouched();
+    this.configureControlGroup().markAsDirty();
   }
 
   setValue(value: any) {
     this.configValue = value;
     this.configureControlGroup().controls['value'].setValue(value);
+    this.configureControlGroup().markAsTouched();
+    this.configureControlGroup().markAsDirty();
   }
 
   setOrder() {
