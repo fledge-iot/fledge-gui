@@ -117,6 +117,7 @@ export class AddControlScriptComponent implements OnInit {
   getAllACL() {
     this.controlService.fetchAllACL()
       .subscribe((data: any) => {
+        console.log('acl', data);
         this.ngProgress.done();
         this.acls = this.acls.concat(data.acls);
       }, error => {
@@ -130,6 +131,7 @@ export class AddControlScriptComponent implements OnInit {
 
   selectACL(acl) {
     this.selectedACL = acl;
+    this.scriptForm.form.markAsDirty();
   }
 
   flattenPayload(steps: any) {
