@@ -71,7 +71,7 @@
     </div>
   </div>
 </div>
-<div class="columns">
+<div class="columns" *ngIf="sharedService.checkAuth()">
   <div class="column">
     <div class="control">
       <button (click)="addStepControl()" class="button is-small">
