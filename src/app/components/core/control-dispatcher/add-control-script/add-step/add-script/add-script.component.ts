@@ -81,7 +81,7 @@ export class AddScriptComponent implements OnInit {
   }
 
   setExecution(item: any) {
-    this.config.execution = item.name;
+    this.config.execution = item.value;
     this.scriptControlGroup().controls['execution'].setValue(item.value);
     this.scriptControlGroup().markAsTouched();
     this.scriptControlGroup().markAsDirty();
