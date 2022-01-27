@@ -185,6 +185,7 @@ export class AddControlScriptComponent implements OnInit {
       return val;
     });
 
+    steps = steps.filter(s => Object.keys(s).length !== 0);
     this.stepControlsList.map((value, index) => {
       steps.map(s => Object.keys(s).forEach(k => {
         if (k === value.key && s[k].order === value.order) {
