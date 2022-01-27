@@ -20,6 +20,7 @@ import { AddWriteComponent } from './add-control-script/add-step/add-write/add-w
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { ControlScriptsListComponent } from './list-control-dispatcher/control-scripts-list/control-scripts-list.component';
 import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
+import { AclListComponent } from './list-control-dispatcher/acl-list/acl-list.component';
 
 const routes: Routes = [
 
@@ -51,7 +52,8 @@ const routes: Routes = [
     AddScriptComponent,
     AddConfigureComponent,
     AddDelayComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    AclListComponent
   ],
   imports: [
     FormsModule,
