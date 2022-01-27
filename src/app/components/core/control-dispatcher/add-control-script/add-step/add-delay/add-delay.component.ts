@@ -1,56 +1,50 @@
-import { Component, Input, OnInit, SimpleChange } from '@angular/core';
-import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, NgForm } from '@angular/forms';
 import { SharedService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-delay',
   templateUrl: './add-delay.component.html',
   styleUrls: ['./add-delay.component.css'],
-  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class AddDelayComponent implements OnInit {
 
+  config;
+
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
-  @Input() config;
   @Input() update = false;
 
-  stepsGroup: FormGroup;
-  duration = '';
+  constructor(public control: NgForm, public sharedService: SharedService) { }
 
-  constructor(private control: NgForm, public sharedService: SharedService) { }
-
-  ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['config']?.firstChange && this.config) {
-      this.config = simpleChange['config'].currentValue;
-      this.duration = this.config.value.duration;
-      this.setDuration(this.duration);
+  ngOnChanges() {
+    this.config = this.control.value['steps'][`step-${this.controlIndex}`]['delay'];
+    if (this.config) {
+      this.setOrder();
     }
   }
 
   ngOnInit(): void { }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      this.stepsGroup.addControl('delay', new FormGroup({
-        duration: new FormControl(''),
-        condition: new FormGroup({})
-      }));
-
-      if (this.config) {
-        this.setDuration(this.config.value.duration);
-      }
-    }, 0);
+  stepsFormGroup() {
+    return this.control.form.controls['steps'] as FormGroup;
   }
 
-  scriptControlGroup(): FormGroup {
-    return this.stepsGroup.controls['delay'] as FormGroup;
+  stepControlGroup(): FormGroup {
+    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
+  }
+
+  delayFromGroup() {
+    return this.stepControlGroup().controls['delay'] as FormGroup;
   }
 
   setDuration(value: any) {
-    this.duration = value ? value : '';
-    this.scriptControlGroup().controls['duration'].setValue(this.duration);
+    this.config.duration = value ? value : '';
+    this.delayFromGroup().controls['duration'].patchValue(value);
+  }
+
+  setOrder() {
+    this.delayFromGroup().controls['order'].patchValue(this.controlIndex);
   }
 
 }

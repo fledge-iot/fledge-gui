@@ -5,3 +5,7 @@
 .field-label {
   text-align: left;
 }
+
+.name-control {
+  max-width: 70%;
+}

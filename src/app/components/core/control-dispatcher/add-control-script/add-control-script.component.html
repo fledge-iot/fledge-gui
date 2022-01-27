@@ -45,53 +45,9 @@
               <label class="label">Steps</label>
             </div>
             <div class="field-body">
-              <div class="field">
-                <div class="steps-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
-                  <div *ngFor="let control of stepControls()| async; let i = index" cdkDrag
-                    [cdkDragDisabled]="stepControlsList?.length < 2  || !sharedService.checkAuth()">
-                    <div class="box" cdkDragHandle
-                      [ngClass]="{'cursor-move': (stepControls()| async).length >= 2 && sharedService.checkAuth()}">
-                      <div class="columns">
-                        <div class="column">
-                          <app-add-step [ngModelGroup]="'step-'+control" #stepCtrl="ngModelGroup"
-                            (stepEvent)="setStep($event)" [controlIndex]="control" [config]="getConfig(i)"
-                            [addStepClicked]="addStep" [update]="update">
-                          </app-add-step>
-                        </div>
-                        <div *ngIf="sharedService.checkAuth()" class="column is-narrow"
-                          [ngClass]="{'close-btn': i > 0 || update}">
-                          <div class="field">
-                            <div *ngIf=" i > 0 || update">
-                              <button (click)="deleteStepControl(control)" class="button is-small btn-delete">
-                                <span class="icon is-small">
-                                  <i class="far fa-trash-alt"></i>
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div *ngIf="sharedService.checkAuth()" class="field is-horizontal">
-            <div class="field-label is-small">
-              <label class="label"></label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <button (click)="addStepControl()" class="button is-small">
-                    <span class="icon is-small">
-                      <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                    </span>
-                    <span>Add new step</span>
-                  </button>
-                </div>
-              </div>
+              <app-add-step #step class="field" [ngModelGroup]="'steps'" #stepCtrl="ngModelGroup"
+                (stepEvent)="updatedStepList($event)" [update]='update'>
+              </app-add-step>
             </div>
           </div>
           <div class="field is-horizontal">

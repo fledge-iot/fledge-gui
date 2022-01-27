@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, SimpleChange } from '@angular/core';
-import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { ControlContainer, FormGroup, NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
 import { AlertService, SharedService } from '../../../../../../services';
@@ -12,18 +12,15 @@ import { ControlDispatcherService } from '../../../../../../services/control-dis
   viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class AddScriptComponent implements OnInit {
-
   scripts = [];  // list of south services
-  selectedScript = ''; // selected list in the dropdown
   execution = [{ name: 'blocking', value: '' }, { name: 'non blocking', value: 'background' }];
   selectedExecution = '';
+  config;
+
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
-  @Input() config;
   @Input() update = false;
 
-  stepsGroup: FormGroup;
-  values = [];
   script = ''; // script name for filtering self script use in script type step
 
   constructor(
@@ -33,11 +30,10 @@ export class AddScriptComponent implements OnInit {
     public sharedService: SharedService,
     private control: NgForm) { }
 
-  ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['config']?.firstChange && this.config) {
-      this.config = simpleChange['config'].currentValue;
-      this.setScript(this.config.value.name);
-      this.setExecution(this.config.value.execution === 'background' ? this.execution[1] : this.execution[0]);
+  ngOnChanges() {
+    this.config = this.control.value['steps'][`step-${this.controlIndex}`]['script'];
+    if (this.config) {
+      this.setOrder();
     }
   }
 
@@ -46,27 +42,6 @@ export class AddScriptComponent implements OnInit {
       this.script = params['name'];
     });
     this.getScripts();
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      this.stepsGroup.addControl('script', new FormGroup({
-        name: new FormControl(''),
-        execution: new FormControl(''),
-        parameters: new FormGroup({}),
-        condition: new FormGroup({}),
-      }));
-
-      if (this.config && this.config.key === this.step) {
-        this.setScript(this.config.value.name);
-        this.setExecution(this.config.value.execution === 'background' ? this.execution[1] : this.execution[0]);
-      }
-    }, 0);
-  }
-
-  scriptControlGroup(): FormGroup {
-    return this.stepsGroup.controls['script'] as FormGroup;
   }
 
   public getScripts() {
@@ -99,13 +74,29 @@ export class AddScriptComponent implements OnInit {
   }
 
   setScript(script: any) {
-    this.selectedScript = script;
+    this.config.name = script;
     this.scriptControlGroup().controls['name'].setValue(script)
   }
 
   setExecution(item: any) {
-    this.selectedExecution = item.name;
+    this.config.execution = item.name;
     this.scriptControlGroup().controls['execution'].setValue(item.value)
+  }
+
+  stepsFormGroup() {
+    return this.control.form.controls['steps'] as FormGroup;
+  }
+
+  stepControlGroup(): FormGroup {
+    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
+  }
+
+  scriptControlGroup() {
+    return this.stepControlGroup().controls['script'] as FormGroup;
+  }
+
+  setOrder() {
+    this.scriptControlGroup().controls['order'].patchValue(this.controlIndex);
   }
 
 }

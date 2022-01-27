@@ -9,7 +9,7 @@
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
               aria-controls="dropdown-menu">
-              <span>{{selectedScript ? selectedScript : 'Select script'}}</span>
+              <span>{{config?.name ? config?.name : 'Select script'}}</span>
               <span class="icon is-small">
                 <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
               </span>
@@ -26,7 +26,7 @@
       </div>
       <ng-template #staticScriptDiv>
         <div class="control">
-          <input name="script" class="input is-small" type="text" [(ngModel)]="selectedScript"
+          <input name="script" class="input is-small" type="text" [(ngModel)]="config.name"
             [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
         </div>
       </ng-template>
@@ -45,7 +45,7 @@
             <div class="dropdown-trigger">
               <button (click)="toggleDropDown(executionDropDown.id)" class="button is-small" aria-haspopup="true"
                 aria-controls="dropdown-menu">
-                <span>{{selectedExecution? (selectedExecution| titlecase) : 'Select execution type'}}</span>
+                <span>{{config?.execution? (config?.execution| titlecase) : 'Select execution type'}}</span>
                 <span class="icon is-small">
                   <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                 </span>
@@ -69,9 +69,9 @@
     </div>
   </div>
   <div>
-    <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters" [update]="update">
+    <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.parameters" [update]="update">
     </app-add-step-value>
-    <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex" [condition]="config?.value?.condition"
+    <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex" [condition]="config?.condition"
       [update]="update">
     </app-add-step-condition>
   </div>

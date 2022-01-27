@@ -1,54 +1,85 @@
-<div class="field is-horizontal">
-  <div class="field-label is-small">
-    <label class="label">Step</label>
+<div cdkDropList (cdkDropListDropped)="onDrop($event)">
+  <div #controlStep class="steps-list" *ngFor="let control of stepControlsList; let i = index;trackBy:trackByFn" cdkDrag
+    [cdkDragDisabled]="stepControlsList?.length < 2  || !sharedService.checkAuth()">
+    <div class="box" cdkDragHandle
+      [ngClass]="{'cursor-move': stepControlsList.length >= 2 && sharedService.checkAuth()}">
+      <div class="field is-horizontal">
+        <div class="field-label is-small">
+          <label class="label">Step</label>
+        </div>
+        <div class="field-body">
 
-  </div>
-  <div class="field-body">
-    <div class="field">
-      <div class="control" *ngIf="constrolStatus?.update=== 'false'; else staticStep">
-        <div #ctlDiv [id]="'step-dropdown-' + controlIndex" class="dropdown is-left">
-          <div *ngIf="sharedService.checkAuth()" class="dropdown-trigger">
-            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-              (click)="toggleDropDown(ctlDiv.id)">
-              <span>{{selectedStep? (selectedStep | titlecase): 'Choose step type'}}</span>
-              <span class="icon is-small">
-                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-              </span>
-            </button>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-              <a (click)="selectStep(step);toggleDropDown(ctlDiv.id)" *ngFor="let step of scriptSteps"
-                class="dropdown-item">{{step | titlecase}}</a>
+          <div class="field">
+            <div class="control">
+              <div #ctlDiv [id]="'step-dropdown-' + control?.order" class="dropdown is-left"
+                *ngIf="control.add; else staticStep">
+                <div *ngIf="sharedService.checkAuth()" class="dropdown-trigger">
+                  <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                    (click)="toggleDropDown(ctlDiv.id)">
+                    <span>{{control?.key? (control?.key | titlecase): 'Choose step type'}}</span>
+                    <span class="icon is-small">
+                      <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a (click)="addNewStep(step, control.order);toggleDropDown(ctlDiv.id)"
+                      *ngFor="let step of scriptSteps" class="dropdown-item">{{step | titlecase}}</a>
+                  </div>
+                </div>
+              </div>
             </div>
+            <ng-template #staticStep>
+              <div class="control">
+                <input name="step" class="input is-small is-static" type="text" [ngModel]="control.key| titlecase"
+                  readonly>
+              </div>
+            </ng-template>
           </div>
+          <ng-container *ngIf="sharedService.checkAuth()">
+            <div class="field has-text-right" [ngClass]="{'close-btn': i > 0 || update}">
+              <button (click)="deleteStepControl(control?.order)" class="button is-small btn-delete">
+                <span class="icon is-small">
+                  <i class="far fa-trash-alt"></i>
+                </span>
+              </button>
+            </div>
+          </ng-container>
         </div>
       </div>
-      <ng-template #staticStep>
-        <div class="control">
-          <input name="step" class="input is-small is-static" type="text" [value]="selectedStep| titlecase" readonly>
-        </div>
-      </ng-template>
+      <div class="field">
+        <app-add-write [step]="'write'" *ngIf="control?.key === 'write'" [controlIndex]="control?.order"
+          [update]="update">
+        </app-add-write>
+
+        <app-add-operation [step]="'operation'" [controlIndex]="control?.order" *ngIf="control?.key === 'operation'"
+          [update]="update">
+        </app-add-operation>
+
+        <app-add-script [step]="'script'" [controlIndex]="control?.order" *ngIf="control?.key === 'script'"
+          [update]="update">
+        </app-add-script>
+
+        <app-add-configure [step]="'configure'" [controlIndex]="control?.order" *ngIf="control?.key === 'configure'"
+          [update]="update">
+        </app-add-configure>
+
+        <app-add-delay [step]="'delay'" *ngIf="control?.key === 'delay'" [controlIndex]="control?.order"
+          [update]="update"></app-add-delay>
+      </div>
     </div>
   </div>
 </div>
-<div class="field">
-  <app-add-write [step]="'write'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'write'"
-    (event)="getControl($event)" [config]="setStepConfig('write')" [update]="update">
-  </app-add-write>
-
-  <app-add-operation [step]="'operation'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'operation'"
-    (event)="getControl($event)" [config]="setStepConfig('operation')" [update]="update">
-  </app-add-operation>
-
-  <app-add-script [step]="'script'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'script'"
-    (event)="getControl($event)" [config]="setStepConfig('script')" [update]="update">
-  </app-add-script>
-
-  <app-add-configure [step]="'configure'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'configure'"
-    (event)="getControl($event)" [config]="setStepConfig('configure')" [update]="update">
-  </app-add-configure>
-
-  <app-add-delay [step]="'delay'" [controlIndex]="controlIndex" *ngIf="selectedStep === 'delay'"
-    (event)="getControl($event)" [config]="setStepConfig('delay')" [update]="update"></app-add-delay>
+<div class="columns">
+  <div class="column">
+    <div class="control">
+      <button (click)="addStepControl()" class="button is-small">
+        <span class="icon is-small">
+          <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+        </span>
+        <span>Add new step</span>
+      </button>
+    </div>
+  </div>
 </div>

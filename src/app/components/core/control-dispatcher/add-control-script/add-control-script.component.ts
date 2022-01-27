@@ -1,12 +1,11 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { NgForm, NgModelGroup } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { cloneDeep, isEmpty, range } from 'lodash';
-import { Observable, of } from 'rxjs';
+import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, ProgressBarService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
+import { AddStepComponent } from './add-step/add-step.component';
 
 @Component({
   selector: 'app-add-control-script',
@@ -16,11 +15,12 @@ import { DialogService } from '../confirmation-dialog/dialog.service';
 export class AddControlScriptComponent implements OnInit {
   stepControlsList = [];
 
-  stepData = [];
   acls = [{ name: 'None' }];
   selectedACL = 'None';
+
   @ViewChild('scriptForm') scriptForm: NgForm;
-  @ViewChildren('stepCtrl') stepCtrl: QueryList<NgModelGroup>;
+  @ViewChild('step') stepCtrl: AddStepComponent;
+
   controlScript = {
     name: '',
     steps: [],
@@ -28,7 +28,6 @@ export class AddControlScriptComponent implements OnInit {
   }
   update = false;
   scriptName = '';
-  addStep = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,15 +44,13 @@ export class AddControlScriptComponent implements OnInit {
       if (this.scriptName) {
         this.update = true;
         this.getControlScript(this.scriptName);
-      } else {
-        this.stepControlsList = range(1);
       }
     });
     this.getAllACL();
   }
 
   refresh() {
-    this.getControlScript(this.scriptName);
+    this.stepCtrl.getControlScript(this.scriptName);
   }
 
 
@@ -69,11 +66,7 @@ export class AddControlScriptComponent implements OnInit {
         }
         data.steps = steps;
         this.controlScript = data;
-        this.stepControlsList = [];
         this.selectACL(data.acl);
-        this.controlScript.steps.map(step => {
-          this.stepControlsList.push(step.value.order);
-        })
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -114,19 +107,10 @@ export class AddControlScriptComponent implements OnInit {
     this.dialogService.close(id);
   }
 
-
   public toggleDropdown() {
     const dropDown = document.querySelector('#acl-dropdown');
     dropDown.classList.toggle('is-active');
   }
-
-  onDrop(event: CdkDragDrop<string[]>) {
-    if (event.previousIndex === event.currentIndex) {
-      return;
-    }
-    moveItemInArray(this.stepControlsList, event.previousIndex, event.currentIndex);
-  }
-
 
   getAllACL() {
     this.controlService.fetchAllACL()
@@ -151,37 +135,12 @@ export class AddControlScriptComponent implements OnInit {
     }
   }
 
-  stepControls(): Observable<any> {
-    return of(this.stepControlsList);
-  }
-
-  setStep(data) {
-    this.stepData.push(data);
-  }
-
-
-  addStepControl() {
-    this.addStep = true;
-    this.stepControlsList.push(this.stepControlsList.length);
-  }
-
-  deleteStepControl(index: number) {
-    this.stepControlsList = this.stepControlsList.filter(c => c !== index);
-    this.stepCtrl.map(ctl => {
-      if (ctl.name === `step-${index}`) {
-        this.scriptForm.removeFormGroup(ctl);
-      } else {
-        return ctl;
-      }
-    });
-  }
-
   selectACL(acl) {
     this.selectedACL = acl;
   }
 
-  flattenPayload(payload: any) {
-    payload.steps.map((val: any) => {
+  flattenPayload(steps: any) {
+    Object.values(steps).map((val: any) => {
       let values;
       for (const key in val) {
         const element = val[key];
@@ -201,14 +160,25 @@ export class AddControlScriptComponent implements OnInit {
       } else if ('script' in val) {
         values = val['script'].parameters;
       }
-      console.log('values', values);
       if (values) {
-        values =
-          Object.values(values)
-            .filter((f: any) => (f.hasOwnProperty('key')))
-            .map((v: any) => {
-              return { [v.key]: v.value };
-            }).reduce((r, c) => ({ ...r, ...c }), {})
+        values = Object.values(values).reduce((acc: any, obj: any) => {
+          let found = false;
+          for (let i = 0; i < acc.length; i++) {
+            if (acc[i].index === obj.index) {
+              found = true;
+              acc[i].value = obj.value;
+            };
+          }
+          if (!found) {
+            acc.push(obj);
+          }
+          return acc;
+        }, []);
+
+        values = Object.values(values)
+          .map((v: any) => {
+            return { [v.key]: v.value };
+          }).reduce((r, c) => ({ ...r, ...c }), {})
 
         if ('write' in val) {
           val['write'].values = values;
@@ -222,31 +192,32 @@ export class AddControlScriptComponent implements OnInit {
     });
 
     this.stepControlsList.map((value, index) => {
-      for (const key in payload['steps'][value]) {
-        payload['steps'][value][key]['order'] = index;
-      }
+      steps.map(s => Object.keys(s).forEach(k => {
+        if (k === value.key && s[k].order === value.order) {
+          s[k].order = index;
+        }
+      }));
     })
+    return steps;
+  }
 
-    console.log(payload);
-
-
-    // change steps from array to object
-    payload['steps'] = Object.assign({}, ...payload['steps']);
-    return payload;
+  updatedStepList(list) {
+    this.stepControlsList = list;
   }
 
   onSubmit(form: NgForm) {
     console.log('form.value', form.value);
     const formData = cloneDeep(form.value);
     let payload = {};
-    payload['steps'] = Object.keys(formData).map((key, i) => {
-      formData[key];
-      return formData[`step-${i}`];
-    }).filter(v => v).map(v => v);
+    let { name, steps } = formData;
+    const step = []
+    Object.keys(steps).forEach((key) => {
+      step.push(steps[key])
+      return formData[key];
+    });
 
-    let { name } = formData;
     payload['name'] = name;
-    payload = this.flattenPayload(payload);
+    payload['steps'] = this.flattenPayload(step);
     payload['acl'] = this.selectedACL;
     console.log('payload', payload);
     if (this.update) {
@@ -281,7 +252,7 @@ export class AddControlScriptComponent implements OnInit {
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
-
+        this.refresh();
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -291,7 +262,5 @@ export class AddControlScriptComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
-
   }
-
 }

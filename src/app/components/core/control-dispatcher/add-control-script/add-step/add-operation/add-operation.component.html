@@ -6,7 +6,7 @@
     <div class="field">
       <div class="control">
         <input class="input is-small name-control" type="text" placeholder="Name" name="operationName"
-          [ngModel]="operationName" (ngModelChange)="setName($event)"
+          [ngModel]="config?.name" (ngModelChange)="setName($event)"
           [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
       </div>
     </div>
@@ -23,7 +23,7 @@
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(serviceDropDown.id)" class="button is-small" aria-haspopup="true"
               aria-controls="dropdown-menu">
-              <span>{{selectedService? selectedService : 'Select service'}}</span>
+              <span>{{config?.service? config?.service : 'Select service'}}</span>
               <span class="icon is-small">
                 <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
               </span>
@@ -40,7 +40,7 @@
       </div>
       <ng-template #staticServiceDiv>
         <div class="control">
-          <input name="service" class="input is-small" type="text" [(ngModel)]="selectedService"
+          <input name="service" class="input is-small" type="text" [(ngModel)]="config.service"
             [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
         </div>
       </ng-template>
@@ -48,9 +48,9 @@
   </div>
 </div>
 <div *ngIf="services.length > 0">
-  <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.value?.parameters" [update]="update">
+  <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.parameters" [update]="update">
   </app-add-step-value>
-  <app-add-step-condition #operationCondition [from]='step' [index]="controlIndex"
-    [condition]="config?.value?.condition" [update]="update">
+  <app-add-step-condition #operationCondition [from]='step' [index]="controlIndex" [condition]="config?.condition"
+    [update]="update">
   </app-add-step-condition>
 </div>

@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, SimpleChange } from '@angular/core';
-import { ControlContainer, FormControl, FormGroup, NgForm } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { ControlContainer, FormGroup, NgForm } from '@angular/forms';
 import { ServicesApiService, AlertService, SharedService } from '../../../../../../services';
 
 @Component({
@@ -10,16 +10,12 @@ import { ServicesApiService, AlertService, SharedService } from '../../../../../
 })
 export class AddWriteComponent implements OnInit {
   services = []; // south services list
-  selectedService = ''; // selected service
 
-  @Input() config;
+  config;
   @Input() controlIndex; // position
   @Input() step; // step type
 
-  stepsGroup: FormGroup;
-  serviceControl: FormControl;
   @Input() update = false;
-  values = [];
 
   constructor(
     private servicesApiService: ServicesApiService,
@@ -27,34 +23,15 @@ export class AddWriteComponent implements OnInit {
     public sharedService: SharedService,
     private control: NgForm) { }
 
-  ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['config']?.firstChange && this.config) {
-      this.config = simpleChange['config'].currentValue;
-      this.setService(this.config.value.service);
+  ngOnChanges() {
+    this.config = this.control.value['steps'][`step-${this.controlIndex}`]['write'];
+    if (this.config) {
+      this.setOrder();
     }
   }
 
   ngOnInit(): void {
     this.getAllServices(false);
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.stepsGroup = this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-      this.stepsGroup.addControl('write', new FormGroup({
-        service: new FormControl(''),
-        values: new FormGroup({}),
-        condition: new FormGroup({}),
-      }));
-
-      if (this.config) {
-        this.setService(this.config.value.service);
-      }
-    }, 0);
-  }
-
-  writeControlGroup(): FormGroup {
-    return this.stepsGroup.controls['write'] as FormGroup;
   }
 
   public getAllServices(caching: boolean) {
@@ -85,8 +62,24 @@ export class AddWriteComponent implements OnInit {
     }
   }
 
+  stepsFormGroup() {
+    return this.control.form.controls['steps'] as FormGroup;
+  }
+
+  stepControlGroup(): FormGroup {
+    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
+  }
+
+  writeControlGroup() {
+    return this.stepControlGroup().controls['write'] as FormGroup;
+  }
+
   setService(service: string) {
-    this.selectedService = service;
+    this.config.service = service;
     this.writeControlGroup().controls['service'].setValue(service);
+  }
+
+  setOrder() {
+    this.writeControlGroup().controls['order'].patchValue(this.controlIndex);
   }
 }

@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, SimpleChange } from '@angular/core';
-import { FormGroup, NgForm, FormControl } from '@angular/forms';
-import { ServicesApiService, AlertService, SharedService } from '../../../../../../services';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, NgForm } from '@angular/forms';
+import { AlertService, ServicesApiService, SharedService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-operation',
@@ -10,15 +10,11 @@ import { ServicesApiService, AlertService, SharedService } from '../../../../../
 export class AddOperationComponent implements OnInit {
 
   services = [];  // list of south services
-  selectedService = ''; // selected list in the dropdown
+  config;
 
   @Input() controlIndex; // position of the control in the dom
   @Input() step; // type of step
-  @Input() config;
   @Input() update = false;
-
-  values = [];
-  operationName = '';
 
   constructor(
     private servicesApiService: ServicesApiService,
@@ -26,39 +22,15 @@ export class AddOperationComponent implements OnInit {
     public sharedService: SharedService,
     private control: NgForm) { }
 
-  ngOnChanges(simpleChange: SimpleChange) {
-    if (!simpleChange['config']?.firstChange && this.config) {
-      this.config = simpleChange['config'].currentValue;
-      this.setService(this.config.value.service);
-      this.setName(this.config.value.name);
+  ngOnChanges() {
+    this.config = this.control.value['steps'][`step-${this.controlIndex}`]['operation'];
+    if (this.config) {
+      this.setOrder();
     }
   }
 
   ngOnInit(): void {
     this.getAllServices(false);
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.stepControlGroup().addControl('operation', new FormGroup({
-        name: new FormControl(''),
-        service: new FormControl(''),
-        parameters: new FormGroup({}),
-        condition: new FormGroup({}),
-      }));
-      if (this.config && this.config.key === this.step) {
-        this.setService(this.config.value.service);
-        this.setName(this.config.value.name);
-      }
-    }, 0);
-  }
-
-  stepControlGroup(): FormGroup {
-    return this.control.controls[`step-${this.controlIndex}`] as FormGroup;
-  }
-
-  operationControlGroup(): FormGroup {
-    return this.stepControlGroup().controls['operation'] as FormGroup;
   }
 
   public getAllServices(caching: boolean) {
@@ -89,14 +61,30 @@ export class AddOperationComponent implements OnInit {
     }
   }
 
+  stepsFormGroup() {
+    return this.control.form.controls['steps'] as FormGroup;
+  }
+
+  stepControlGroup(): FormGroup {
+    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
+  }
+
+  operationControlGroup() {
+    return this.stepControlGroup().controls['operation'] as FormGroup;
+  }
+
   setName(name: string) {
-    this.operationName = name;
+    this.config.name = name;
     this.operationControlGroup().controls['name'].setValue(name);
   }
 
   setService(service: any) {
-    this.selectedService = service;
+    this.config.service = service;
     this.operationControlGroup().controls['service'].setValue(service)
+  }
+
+  setOrder() {
+    this.operationControlGroup().controls['order'].patchValue(this.controlIndex);
   }
 
 }

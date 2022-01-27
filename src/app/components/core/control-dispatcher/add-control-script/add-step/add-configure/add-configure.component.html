@@ -9,7 +9,7 @@
           <div *ngIf="sharedService.checkAuth();else staticCategoryDiv" class="dropdown-trigger">
             <button (click)="toggleDropDown(configureDropdown.id)" class="button is-small" aria-haspopup="true"
               aria-controls="dropdown-menu">
-              <span>{{selectedCategory? selectedCategory : 'Select category'}}</span>
+              <span>{{config?.category? config?.category : 'Select category'}}</span>
               <span class="icon is-small">
                 <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
               </span>
@@ -26,14 +26,14 @@
       </div>
       <ng-template #staticCategoryDiv>
         <div class="control">
-          <input name="category" class="input is-small" type="text" [(ngModel)]="selectedCategory"
+          <input name="category" class="input is-small" type="text" [(ngModel)]="config.category"
             [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
         </div>
       </ng-template>
     </div>
   </div>
 </div>
-<div *ngIf="selectedCategory" class="field is-horizontal">
+<div *ngIf="config?.category" class="field is-horizontal">
   <div class="field-label is-small">
     <label class="label">Config Item</label>
   </div>
@@ -83,5 +83,5 @@
     </div>
   </ng-template>
 </div>
-<app-add-step-condition #configureCondition [from]='step' [index]="controlIndex" [condition]="config?.value?.condition">
+<app-add-step-condition #configureCondition [from]='step' [index]="controlIndex" [condition]="config?.condition">
 </app-add-step-condition>

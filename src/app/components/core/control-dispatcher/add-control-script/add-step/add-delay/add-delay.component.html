@@ -5,12 +5,11 @@
   <div class="field-body">
     <div class="field is-narrow">
       <div class="control">
-        <input class="input is-small name-control" type="text" name="duration" placeholder="duration" [value]="duration"
-          appNumberOnly (change)="setDuration($event.target.value)" [ngClass]="{'is-static':!sharedService.checkAuth()}"
-          [readonly]="!sharedService.checkAuth()">
+        <input class="input is-small name-control" type="text" name="duration" placeholder="duration"
+          [ngModel]="config?.duration" appNumberOnly (ngModelChange)="setDuration($event)">
       </div>
     </div>
   </div>
 </div>
-<app-add-step-condition #delayCondition [from]='step' [index]="controlIndex" [condition]="config?.value?.condition">
+<app-add-step-condition #delayCondition [from]='step' [index]="controlIndex" [condition]="config?.condition">
 </app-add-step-condition>

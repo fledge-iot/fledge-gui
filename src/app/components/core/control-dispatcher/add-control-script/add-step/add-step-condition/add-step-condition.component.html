@@ -25,7 +25,7 @@
         <div class="field">
           <div class="control">
             <input placeholder="key" class="input is-small" type="text" name='key' #key="ngModel"
-              [ngModel]="conditionPayload.key" (ngModelChange)="setConditionKey($event)"
+              [ngModel]="condition?.key" (ngModelChange)="setConditionKey($event)"
               [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
           </div>
           <div *ngIf="key.invalid && (key.dirty || key.touched)" class="help is-danger">
@@ -41,7 +41,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown(conditionCtrl.id)">
-                  <span>{{selectedCondition}}</span>
+                  <span>{{condition?.condition?condition?.condition : '==' }}</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -57,7 +57,7 @@
           </div>
           <ng-template #staticConditionDiv>
             <div class="control">
-              <input name="condition" class="input is-small" type="text" [(ngModel)]="selectedCondition"
+              <input name="condition" class="input is-small" type="text" [(ngModel)]="condition.key"
                 [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
             </div>
           </ng-template>
@@ -66,7 +66,7 @@
         <div class="field">
           <div class="control">
             <input placeholder="value" class="input is-small" type="text" name='value' #val="ngModel"
-              [ngModel]="conditionPayload.value" (ngModelChange)="setConditionValue($event)"
+              [ngModel]="condition?.value" (ngModelChange)="setConditionValue($event)"
               [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
           </div>
           <div *ngIf="val.invalid && (val.dirty || val.touched)" class="help is-danger">
