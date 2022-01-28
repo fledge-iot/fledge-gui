@@ -223,7 +223,7 @@ export class AddControlScriptComponent implements OnInit {
       this.controlService.addControlScript(payload)
         .subscribe(() => {
           this.ngProgress.done();
-          this.alertService.success('script created successfully.');
+          this.alertService.success(`script ${payload['name']} created successfully.`);
           this.scriptForm.form.markAsUntouched();
           this.scriptForm.form.markAsPristine();
           setTimeout(() => {
