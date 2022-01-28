@@ -12,9 +12,9 @@ import { orderBy } from 'lodash';
   styleUrls: ['./acl-list.component.css']
 })
 export class AclListComponent implements OnInit {
-  controlScripts: any = [];
+  controlAcls: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  script;
+  acl;
   private subscription: Subscription;
   constructor(
     private controlService: ControlDispatcherService,
@@ -24,16 +24,18 @@ export class AclListComponent implements OnInit {
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
-    this.showControlDispatcherService();
+    this.showACLs();
   }
 
-  showControlDispatcherService() {
+  showACLs() {
     /** request started */
     this.ngProgress.start();
-    this.controlService.fetchControlServiceScripts()
+    this.controlService.fetchAllACL()
       .subscribe((data: any) => {
+        console.log('data acl', data);
+
         this.ngProgress.done();
-        this.controlScripts = orderBy(data.scripts, 'name');
+        this.controlAcls = orderBy(data.acls, 'name');
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -45,8 +47,8 @@ export class AclListComponent implements OnInit {
       });
   }
 
-  setScript(script: any) {
-    this.script = script.name;
+  setACL(acl: any) {
+    this.acl = acl.name;
   }
 
   openModal(id: string) {
@@ -57,16 +59,16 @@ export class AclListComponent implements OnInit {
     this.dialogService.close(id);
   }
 
-  deleteScript(script) {
+  deleteAcl(acl) {
     /** request started */
     this.ngProgress.start();
-    this.controlService.deleteScript(script)
+    this.controlService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.showControlDispatcherService();
+        this.showACLs();
       }, error => {
         /** request completed */
         this.ngProgress.done();

@@ -1,0 +1,111 @@
+<div class="container is-fluid">
+  <nav class="breadcrumb" aria-label="breadcrumbs">
+    <ul>
+      <li><a [routerLink]="['/control-dispatcher']">ACL</a></li>
+      <li class="is-active">
+        <!-- <a href="#" aria-current="page">
+          {{scriptName ? scriptName : 'Add' }}
+        </a> -->
+      </li>
+    </ul>
+  </nav>
+  <div class="card">
+    <header class="card-header">
+      <div class="card-header-title">
+        <span> {{'Add ACL'}}</span>
+        <!-- <button class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button> -->
+      </div>
+    </header>
+    <div class="card-content step-content">
+      <form #scriptForm="ngForm">
+        <div class="column is-four-fifths">
+          <div class="field is-horizontal">
+            <div class="field-label is-small">
+              <label class="label">Name</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input #name name="name" class="input is-small" type="text" placeholder="Name" required
+                    [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+                </div>
+                <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
+                  <div *ngIf="name.errors?.['required']">
+                    Name is required.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-small">
+              <label class="label">Service</label>
+            </div>
+            <div class="field-body">
+              <div id="acl-service-dropdown" class="dropdown is-left">
+                <div class="dropdown-trigger">
+                  <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                    (click)=toggleDropdown()>
+                    <span>Select service</span>
+                    <span class="icon is-small">
+                      <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <div class="menu">
+                      <ng-container *ngFor="let service of services | keyvalue">
+                        <p class="menu-label">
+                          {{service.key}}
+                        </p>
+                        <ul class="menu-list" *ngFor="let s of service.value">
+                          <a class="dropdown-item">{{s.name}}</a>
+                        </ul>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths">
+          <div class="columns">
+            <div class="column is-2"></div>
+            <div class="column">
+              <div class="field is-grouped control-pad">
+                <p class="control">
+                  <button (click)="openModal('confirmation-dialog')" type="button"
+                    class="button is-small is-danger is-outlined">Delete</button>
+                </p>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field is-grouped is-pulled-right">
+                <p class="control">
+                  <button [routerLink]="['/control-dispatcher']" class="button is-small">Cancel</button>
+                </p>
+                <p class="control">
+                  <button [disabled]="!scriptForm.valid || !scriptForm.dirty" (click)="onSubmit(scriptForm)"
+                    type="button" class="button is-small is-link">Save</button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- <app-confirmation-dialog id="confirmation-dialog">
+  <section class="modal-card-body">
+    Are you sure, you want to delete the script <b>{{scriptName}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deleteScript(scriptName)">Delete</button>
+  </footer>
+</app-confirmation-dialog> -->

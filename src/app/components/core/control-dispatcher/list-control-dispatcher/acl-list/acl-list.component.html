@@ -1,4 +1,4 @@
-<table class="table scroll is-responsive is-hoverable" *ngIf="controlScripts.length > 0; else noscript">
+<table class="table scroll is-responsive is-hoverable" *ngIf="controlAcls.length > 0; else noacl">
   <thead>
     <tr>
       <th>Name</th>
@@ -6,14 +6,14 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let script of controlScripts">
+    <tr *ngFor="let acl of controlAcls">
       <td>
-        <a [routerLink]="['script', script?.name]">
-          {{script?.name}}
+        <a [routerLink]="['acl', acl?.name]">
+          {{acl?.name}}
         </a>
       </td>
       <td>
-        <button *ngIf="sharedService.checkAuth()" (click)="setScript(script);openModal('confirmation-dialog')"
+        <button *ngIf="sharedService.checkAuth()" (click)="setACL(acl);openModal('confirmation-dialog')"
           class="button is-small btn-delete">
           <span class="icon is-small">
             <i class="far fa-trash-alt"></i>
@@ -23,19 +23,19 @@
     </tr>
   </tbody>
 </table>
-<ng-template #noscript>
+<ng-template #noacl>
   <div class="field-body">
     <div class="field is-narrow">
-      <small class="text-secondary has-text-grey-light"> No control scripts found.</small>
+      <small class="text-secondary has-text-grey-light"> No control acl found.</small>
     </div>
   </div>
 </ng-template>
 <app-confirmation-dialog id="confirmation-dialog">
   <section class="modal-card-body">
-    Are you sure, you want to delete the acl <b>{{script}}</b>?
+    Are you sure, you want to delete the acl <b>{{acl}}</b>?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteScript(script)">Delete</button>
+    <button class="button is-small is-danger" (click)="deleteAcl(acl)">Delete</button>
   </footer>
 </app-confirmation-dialog>
