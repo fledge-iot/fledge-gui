@@ -1,23 +1,20 @@
 <div class="container is-fluid">
-  <nav class="breadcrumb" aria-label="breadcrumbs">
-    <ul>
-      <li><a [routerLink]="['/control-dispatcher']">Scripts</a></li>
-      <li class="is-active">
-        <a href="#" aria-current="page">
-          {{scriptName ? scriptName : 'Add' }}
-        </a>
-      </li>
-    </ul>
-  </nav>
+  <div class="navbar-item">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a [routerLink]="['/control-dispatcher']">Scripts</a></li>
+        <li class="is-active">
+          <a href="#" aria-current="page">
+            {{scriptName ? scriptName : 'Add' }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <button *ngIf="update" (click)="refresh()" class="button is-small" id="refresh-check">
+      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+    </button>
+  </div>
   <div class="card">
-    <header class="card-header">
-      <div class="card-header-title">
-        <span> {{update ? this.scriptName + ' Script' : 'Add Control Script'}}</span>
-        <button *ngIf="update" (click)="refresh()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button>
-      </div>
-    </header>
     <div class="card-content step-content">
       <form #scriptForm="ngForm">
         <div class="column is-four-fifths">
