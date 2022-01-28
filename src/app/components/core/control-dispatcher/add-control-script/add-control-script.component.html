@@ -28,8 +28,9 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input #name=ngModel name="name" class="input is-small" type="text" placeholder="Name" required
-                    [(ngModel)]="controlScript.name" [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                  <input #name=ngModel name="name" class="input" type="text" placeholder="Name" required
+                    [(ngModel)]="controlScript.name"
+                    [ngClass]="{'is-static':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
                     [readonly]="!sharedService.checkAuth()">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
@@ -79,7 +80,7 @@
               <ng-template #staticACLDiv>
                 <div class="field">
                   <div class="control">
-                    <input name="acl" class="input is-small" type="text" [(ngModel)]="selectedACL"
+                    <input name="acl" class="input" type="text" [(ngModel)]="selectedACL"
                       [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
                   </div>
                 </div>

@@ -26,6 +26,10 @@ div.close-btn {
   text-align: left;
 }
 
+.is-static {
+  padding-top: 0px !important;
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
