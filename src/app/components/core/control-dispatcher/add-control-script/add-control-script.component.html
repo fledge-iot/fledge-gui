@@ -55,8 +55,8 @@
               <label class="label">ACL</label>
             </div>
             <div class="field-body">
-              <div class="field">
-                <div class="control" *ngIf="sharedService.checkAuth();else staticACLDiv">
+              <div class="field" *ngIf="sharedService.checkAuth();else staticACLDiv">
+                <div class="control">
                   <div id="acl-dropdown" class="dropdown is-left">
                     <div class="dropdown-trigger">
                       <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -75,13 +75,15 @@
                     </div>
                   </div>
                 </div>
-                <ng-template #staticACLDiv>
+              </div>
+              <ng-template #staticACLDiv>
+                <div class="field">
                   <div class="control">
                     <input name="acl" class="input is-small" type="text" [(ngModel)]="selectedACL"
                       [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
                   </div>
-                </ng-template>
-              </div>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>

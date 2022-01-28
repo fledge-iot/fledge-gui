@@ -8,7 +8,6 @@
           <label class="label">Step</label>
         </div>
         <div class="field-body">
-
           <div class="field">
             <div class="control">
               <div #ctlDiv [id]="'step-dropdown-' + control?.order" class="dropdown is-left"
@@ -68,6 +67,14 @@
         <app-add-delay [step]="'delay'" *ngIf="control?.key === 'delay'" [controlIndex]="control?.order"
           [update]="update"></app-add-delay>
       </div>
+    </div>
+  </div>
+  <!-- <span ><small
+      class="has-text-grey-dark">None</small></span> -->
+  <div class="field" *ngIf="stepControlsList.length === 0 && !sharedService.checkAuth()">
+    <div class="control">
+      <input class="input is-small" type="text" value='None' [ngClass]="{'is-static':!sharedService.checkAuth()}"
+        [readonly]="!sharedService.checkAuth()">
     </div>
   </div>
 </div>
