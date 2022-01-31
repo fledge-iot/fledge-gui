@@ -1,35 +1,33 @@
 <div class="container is-fluid">
-  <nav class="breadcrumb" aria-label="breadcrumbs">
-    <ul>
-      <li><a [routerLink]="['/control-dispatcher']">Scripts</a></li>
-      <li class="is-active">
-        <a href="#" aria-current="page">
-          {{scriptName ? scriptName : 'Add' }}
-        </a>
-      </li>
-    </ul>
-  </nav>
+  <div class="navbar-item">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a [routerLink]="['/control-dispatcher']">Scripts</a></li>
+        <li class="is-active">
+          <a href="#" aria-current="page">
+            {{scriptName ? scriptName : 'Add' }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <button *ngIf="update" (click)="refresh()" class="button is-small" id="refresh-check">
+      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+    </button>
+  </div>
   <div class="card">
-    <header class="card-header">
-      <div class="card-header-title">
-        <span> {{update ? this.scriptName + ' Script' : 'Add Control Script'}}</span>
-        <button *ngIf="update" (click)="refresh()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button>
-      </div>
-    </header>
     <div class="card-content step-content">
       <form #scriptForm="ngForm">
         <div class="column is-four-fifths">
           <div class="field is-horizontal">
-            <div class="field-label is-small">
+            <div class="field-label">
               <label class="label">Name</label>
             </div>
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input #name=ngModel name="name" class="input is-small" type="text" placeholder="Name" required
-                    [(ngModel)]="controlScript.name" [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                  <input #name=ngModel name="name" class="input" type="text" placeholder="Name" required
+                    [(ngModel)]="controlScript.name"
+                    [ngClass]="{'is-static':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
                     [readonly]="!sharedService.checkAuth()">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
@@ -41,7 +39,7 @@
             </div>
           </div>
           <div class="field is-horizontal">
-            <div class="field-label is-small">
+            <div class="field-label">
               <label class="label">Steps</label>
             </div>
             <div class="field-body">
@@ -51,7 +49,7 @@
             </div>
           </div>
           <div class="field is-horizontal">
-            <div class="field-label is-small">
+            <div class="field-label">
               <label class="label">ACL</label>
             </div>
             <div class="field-body">
@@ -79,7 +77,7 @@
               <ng-template #staticACLDiv>
                 <div class="field">
                   <div class="control">
-                    <input name="acl" class="input is-small" type="text" [(ngModel)]="selectedACL"
+                    <input name="acl" class="input" type="text" [(ngModel)]="selectedACL"
                       [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
                   </div>
                 </div>

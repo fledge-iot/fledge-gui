@@ -102,6 +102,7 @@ export class AddStepComponent implements OnInit {
     }
     moveItemInArray(this.stepControlsList, event.previousIndex, event.currentIndex);
     this.stepEvent.emit(this.stepControlsList);
+    this.control.form.markAsDirty();
   }
 
   trackByFn(index: any) {

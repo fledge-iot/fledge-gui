@@ -68,6 +68,7 @@ export class AddControlScriptComponent implements OnInit {
         this.controlScript.name = data.name;
         this.scriptName = data.name;
         this.selectACL(data.acl);
+        this.scriptForm.form.markAsUntouched();
         this.scriptForm.form.markAsPristine();
       }, error => {
         /** request completed */
@@ -222,7 +223,8 @@ export class AddControlScriptComponent implements OnInit {
       this.controlService.addControlScript(payload)
         .subscribe(() => {
           this.ngProgress.done();
-          this.alertService.success('script created successfully.');
+          this.alertService.success(`Script ${payload['name']} created successfully.`);
+          this.scriptForm.form.markAsUntouched();
           this.scriptForm.form.markAsPristine();
           setTimeout(() => {
             this.router.navigate(['control-dispatcher']);
@@ -257,4 +259,5 @@ export class AddControlScriptComponent implements OnInit {
         }
       });
   }
+
 }

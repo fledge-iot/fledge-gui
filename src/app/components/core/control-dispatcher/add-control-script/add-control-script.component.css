@@ -22,6 +22,14 @@ div.close-btn {
   margin-left: 3px;
 }
 
+.field-label {
+  text-align: left;
+}
+
+.is-static {
+  padding-top: 0px !important;
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
