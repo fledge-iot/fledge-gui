@@ -50,6 +50,12 @@ export class ControlDispatcherService {
       catchError(error => throwError(error)));
   }
 
+  addACL(payload) {
+    return this.http.post(this.ACL_URL, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   deleteACL(name: string) {
     return this.http.delete(`${this.ACL_URL}/${encodeURIComponent(name)}`).pipe(
       map(response => response),

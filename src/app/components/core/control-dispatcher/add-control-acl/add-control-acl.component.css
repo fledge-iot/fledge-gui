@@ -2,10 +2,24 @@
   overflow: inherit !important;
 }
 
+.field-body .field {
+  margin-bottom: 5px;
+}
+
 .menu {
   padding-left: 5px !important;
 }
 
 .menu-label {
   margin: 0px !important;
+}
+
+.disabled {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.6;
+}
+
+.field-label {
+  text-align: left;
 }

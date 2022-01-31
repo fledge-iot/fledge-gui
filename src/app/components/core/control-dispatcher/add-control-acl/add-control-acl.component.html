@@ -3,23 +3,16 @@
     <ul>
       <li><a [routerLink]="['/control-dispatcher']">ACL</a></li>
       <li class="is-active">
-        <!-- <a href="#" aria-current="page">
-          {{scriptName ? scriptName : 'Add' }}
-        </a> -->
+        <a href="#" aria-current="page">
+          Add
+          <!-- {{scriptName ? scriptName : 'Add' }} -->
+        </a>
       </li>
     </ul>
   </nav>
   <div class="card">
-    <header class="card-header">
-      <div class="card-header-title">
-        <span> {{'Add ACL'}}</span>
-        <!-- <button class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button> -->
-      </div>
-    </header>
     <div class="card-content step-content">
-      <form #scriptForm="ngForm">
+      <form #aclForm="ngForm">
         <div class="column is-four-fifths">
           <div class="field is-horizontal">
             <div class="field-label is-small">
@@ -28,12 +21,62 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input #name name="name" class="input is-small" type="text" placeholder="Name" required
+                  <input name="name" class="input is-small" type="text" placeholder="Name" required [(ngModel)]="name"
                     [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
                 </div>
-                <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
+                <!-- <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                   <div *ngIf="name.errors?.['required']">
                     Name is required.
+                  </div>
+                </div> -->
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-small">
+              <label class="label">Services</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <!-- <div class="field is-horizontal">
+                  <div class="field-body">
+                    <div class="field is-expanded">
+                      <ng-container *ngFor="let service of selectedServicesList">
+                        <span>{{service.name}}</span>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div> -->
+                <div class="field is-horizontal">
+                  <div class="field-body">
+                    <div class="field is-expanded">
+                      <div id="acl-service-dropdown" class="dropdown is-left">
+                        <div class="dropdown-trigger">
+                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                            (click)="toggleDropDown('acl-service-dropdown')">
+                            <span>Select service</span>
+                            <span class="icon is-small">
+                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                          </button>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                          <div class="dropdown-content">
+                            <div class="menu">
+                              <ng-container *ngFor="let service of services | keyvalue">
+                                <p class="menu-label">
+                                  {{service.key}}
+                                </p>
+                                <ul class="menu-list" *ngFor="let s of service.value"
+                                  (click)="selectService(s);toggleDropDown('acl-service-dropdown')">
+                                  <a class="dropdown-item" [ngClass]="{disabled: s.select}">{{s.name}}</a>
+                                </ul>
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -41,30 +84,52 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label is-small">
-              <label class="label">Service</label>
+              <label class="label">URL</label>
             </div>
             <div class="field-body">
-              <div id="acl-service-dropdown" class="dropdown is-left">
-                <div class="dropdown-trigger">
-                  <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                    (click)=toggleDropdown()>
-                    <span>Select service</span>
-                    <span class="icon is-small">
-                      <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                    </span>
-                  </button>
-                </div>
-                <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                  <div class="dropdown-content">
-                    <div class="menu">
-                      <ng-container *ngFor="let service of services | keyvalue">
-                        <p class="menu-label">
-                          {{service.key}}
-                        </p>
-                        <ul class="menu-list" *ngFor="let s of service.value">
-                          <a class="dropdown-item">{{s.name}}</a>
-                        </ul>
-                      </ng-container>
+              <div class="field">
+                <div class="control box">
+                  <div class="field is-horizontal">
+                    <div class="field-label is-small">
+                      <label class="label">URL</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <div class="control">
+                          <input #url name="name" class="input is-small" type="text" placeholder="URL"
+                            [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                            [readonly]="!sharedService.checkAuth()">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field is-horizontal">
+                    <div class="field-label is-small">
+                      <label class="label">ACL</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <div class="control">
+                          <div id="acl-type-dropdown" class="dropdown is-left">
+                            <div class="dropdown-trigger">
+                              <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                                (click)="toggleDropDown('acl-type-dropdown')">
+                                <span>Select type</span>
+                                <span class="icon is-small">
+                                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                              </button>
+                            </div>
+                            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                              <div class="dropdown-content">
+                                <ng-container *ngFor="let service of services | keyvalue">
+                                  <a (click)="selectACLType(service.key)" class="dropdown-item">{{service.key}}</a>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -89,8 +154,7 @@
                   <button [routerLink]="['/control-dispatcher']" class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
-                  <button [disabled]="!scriptForm.valid || !scriptForm.dirty" (click)="onSubmit(scriptForm)"
-                    type="button" class="button is-small is-link">Save</button>
+                  <button (click)="onSubmit(aclForm)" type="button" class="button is-small is-link">Save</button>
                 </p>
               </div>
             </div>
