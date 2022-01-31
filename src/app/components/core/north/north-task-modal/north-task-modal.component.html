@@ -161,19 +161,24 @@
             </div>
           </div>
           <div class="field">
-            <div class="field has-text-left">
-              <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
-                data-tooltip="Help" (click)="goToLink({name: category['value'][0].plugin.value, type: 'North'})">
-                <i class="far fa-question-circle"></i>
-              </span>
+            <div class="field is-grouped is-pulled-left">
+              <div class="control">
+                <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
+                  data-tooltip="Help" (click)="goToLink({name: category['value'][0].plugin.value, type: 'North'})">
+                  <i class="far fa-question-circle"></i>
+                </span>
+              </div>
+              <div class="control">
+                <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
+                  data-tooltip="Show logs" (click)="navToSyslogs(task)">
+                  <i class="far fa-file-alt"></i>
+                </span>
+              </div>
             </div>
             <div class="field has-text-right">
               <p class="buttons is-pulled-right">
                 <button class="button is-small" (click)="navToSyslogs(task)">
-                  <span class="icon is-small is-tooltip-top tooltip is-pulled-right is-hovered"
-                    data-tooltip="Show logs">
-                    <i class="fas fa-file"></i>
-                  </span>
+                  <span>Show Logs</span>
                 </button>
                 <button *ngIf="task != undefined"
                   (click)="openDeleteModal(task.name, 'Deleting this ' + btnTxt + ' can not be undone. Continue?')"
