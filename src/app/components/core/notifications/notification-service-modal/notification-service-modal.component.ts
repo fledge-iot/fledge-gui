@@ -12,6 +12,7 @@ import { isEmpty } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -48,6 +49,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
   constructor(
+    private router: Router,
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
     private configService: ConfigurationService,
@@ -427,6 +429,10 @@ export class NotificationServiceModalComponent implements OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  navToSyslogs(name: string) {
+    this.router.navigate(['syslog'], { queryParams: { source: name } });
   }
 
   goToLink() {

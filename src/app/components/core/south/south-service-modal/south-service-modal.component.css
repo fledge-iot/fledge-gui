@@ -15,7 +15,7 @@
     width: 80%;
   }
   .field-body {
-    flex-grow : 2 !important;
+    flex-grow: 2 !important;
   }
 }
 
@@ -23,7 +23,9 @@
   display: none !important;
 }
 
-a { color: black; }
+a {
+  color: black;
+}
 
 .accordion.card {
   margin: 0% !important;
@@ -33,8 +35,7 @@ a { color: black; }
   box-sizing: border-box;
   border-radius: 4px;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-              0 8px 10px 1px rgba(0, 0, 0, 0.14),
-              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 .cdk-drag-placeholder {
@@ -71,7 +72,7 @@ a { color: black; }
   opacity: 0.8;
 }
 
-.add-application{
+.add-application {
   opacity: 0.7;
 }
 
