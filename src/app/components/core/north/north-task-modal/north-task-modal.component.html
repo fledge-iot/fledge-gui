@@ -177,9 +177,6 @@
             </div>
             <div class="field has-text-right">
               <p class="buttons is-pulled-right">
-                <button class="button is-small" (click)="navToSyslogs(task)">
-                  <span>Show Logs</span>
-                </button>
                 <button *ngIf="task != undefined"
                   (click)="openDeleteModal(task.name, 'Deleting this ' + btnTxt + ' can not be undone. Continue?')"
                   class="button is-small">Delete {{btnTxt}}</button>
