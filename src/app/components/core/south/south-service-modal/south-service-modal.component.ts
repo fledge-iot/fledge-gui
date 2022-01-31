@@ -22,6 +22,7 @@ import {
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -65,7 +66,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
-  constructor(private configService: ConfigurationService,
+  constructor(
+    private router: Router,
+    private configService: ConfigurationService,
     private alertService: AlertService,
     private assetService: AssetsService,
     private filterService: FilterService,
@@ -589,6 +592,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   goToLink(pluginInfo) {
     this.docService.goToPluginLink(pluginInfo);
+  }
+
+  navToSyslogs(service) {
+    this.router.navigate(['syslog'], { queryParams: { source: service.name } });
   }
 
   discardChanges() {

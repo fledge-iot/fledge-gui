@@ -5,7 +5,8 @@
       <p *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
         Notification Service</p>
       <p *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</p>
-      <button [disabled]="pluginInstallationState" class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button [disabled]="pluginInstallationState" class="delete" aria-label="close"
+        (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <form name="notification-form" id="notificationForm" #fg="ngForm" (ngSubmit)="fg.form.valid && saveChanges()"
@@ -62,10 +63,12 @@
           </div>
           <div class="field is-grouped is-pulled-right">
             <p class="control">
-              <button [disabled]="pluginInstallationState" class="button is-small" id="cancel" (click)="toggleModal(false)">Cancel</button>
+              <button [disabled]="pluginInstallationState" class="button is-small" id="cancel"
+                (click)="toggleModal(false)">Cancel</button>
             </p>
             <p class="control">
-              <button [disabled]="pluginInstallationState" class="button is-small is-link" (click)="proxy()">{{btnText}}</button>
+              <button [disabled]="pluginInstallationState" class="button is-small is-link"
+                (click)="proxy()">{{btnText}}</button>
             </p>
           </div>
         </div>
@@ -81,7 +84,12 @@
             </p>
           </div>
           <div class="field is-grouped is-pulled-right">
-            <p class="control">
+            <p class="buttons">
+              <button class="button is-small" (click)="navToSyslogs(notificationServiceName)">
+                <span class="icon is-small is-tooltip-top tooltip is-pulled-right is-hovered" data-tooltip="Show logs">
+                  <i class="fas fa-file"></i>
+                </span>
+              </button>
               <button (click)="openDeleteModal(notificationServiceName)" class="button is-small">Delete
                 Service
               </button>

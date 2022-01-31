@@ -18,6 +18,7 @@ import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.com
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -70,6 +71,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     key: ''
   };
   constructor(
+    private router: Router,
     private schedulesService: SchedulesService,
     private configService: ConfigurationService,
     private alertService: AlertService,
@@ -262,7 +264,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
     if (this.task['processName'] !== 'north_C') {
       updatePayload.repeat = 0;
-      if(form.controls['repeatTime'].value !== ('None' || undefined)) {
+      if (form.controls['repeatTime'].value !== ('None' || undefined)) {
         updatePayload.repeat = Utils.convertTimeToSec(form.controls['repeatTime'].value, form.controls['repeatDays'].value);
       }
       updatePayload.exclusive = form.controls['exclusive'].value;
@@ -561,6 +563,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   goToLink(pluginInfo) {
     this.docService.goToPluginLink(pluginInfo);
+  }
+
+  navToSyslogs(task) {
+    this.router.navigate(['syslog'], { queryParams: { source: task.name } });
   }
 
   discardChanges() {

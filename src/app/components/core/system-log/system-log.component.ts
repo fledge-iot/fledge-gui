@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../services';
@@ -33,6 +34,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     private schedulesService: SchedulesService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
+    private route: ActivatedRoute,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -43,6 +45,13 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         }
         this.refreshInterval = timeInterval;
       });
+
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+        this.getSysLogs();
+      }
+    });
   }
 
   ngOnInit() {
