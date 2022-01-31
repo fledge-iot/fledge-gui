@@ -1,0 +1,124 @@
+<div class="container is-fluid">
+  <div class="navbar-item">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a [routerLink]="['/control-dispatcher']">Scripts</a></li>
+        <li class="is-active">
+          <a href="#" aria-current="page">
+            {{scriptName ? scriptName : 'Add' }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <button *ngIf="update" (click)="refresh()" class="button is-small" id="refresh-check">
+      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="card">
+    <div class="card-content step-content">
+      <form #scriptForm="ngForm">
+        <div class="column is-four-fifths">
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Name</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input #name=ngModel name="name" class="input" type="text" placeholder="Name" required
+                    [(ngModel)]="controlScript.name"
+                    [ngClass]="{'is-static':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
+                    [readonly]="!sharedService.checkAuth()">
+                </div>
+                <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
+                  <div *ngIf="name.errors?.['required']">
+                    Name is required.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Steps</label>
+            </div>
+            <div class="field-body">
+              <app-add-step #step class="field" [ngModelGroup]="'steps'" #stepCtrl="ngModelGroup"
+                (stepEvent)="updatedStepList($event)" [update]='update'>
+              </app-add-step>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">ACL</label>
+            </div>
+            <div class="field-body">
+              <div class="field" *ngIf="sharedService.checkAuth();else staticACLDiv">
+                <div class="control">
+                  <div id="acl-dropdown" class="dropdown is-left">
+                    <div class="dropdown-trigger">
+                      <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                        (click)=toggleDropdown()>
+                        <span>{{selectedACL}}</span>
+                        <span class="icon is-small">
+                          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class="dropdown-content">
+                        <a (click)="selectACL(acl.name);toggleDropdown()" *ngFor="let acl of acls"
+                          class="dropdown-item">{{acl?.name}}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ng-template #staticACLDiv>
+                <div class="field">
+                  <div class="control">
+                    <input name="acl" class="input" type="text" [(ngModel)]="selectedACL"
+                      [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths">
+          <div class="columns">
+            <div class="column is-2"></div>
+            <div class="column">
+              <div class="field is-grouped control-pad">
+                <p class="control">
+                  <button (click)="openModal('confirmation-dialog')" type="button"
+                    class="button is-small is-danger is-outlined">Delete</button>
+                </p>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field is-grouped is-pulled-right">
+                <p class="control">
+                  <button [routerLink]="['/control-dispatcher']" class="button is-small">Cancel</button>
+                </p>
+                <p class="control">
+                  <button [disabled]="!scriptForm.valid || !scriptForm.dirty" (click)="onSubmit(scriptForm)"
+                    type="button" class="button is-small is-link">Save</button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<app-confirmation-dialog id="confirmation-dialog">
+  <section class="modal-card-body">
+    Are you sure, you want to delete the script <b>{{scriptName}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deleteScript(scriptName)">Delete</button>
+  </footer>
+</app-confirmation-dialog>

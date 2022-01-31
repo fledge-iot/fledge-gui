@@ -47,6 +47,10 @@ const appRoutes: Routes = [
       .then(m => m.NotificationsModule)
   },
   {
+    path: 'control-dispatcher', loadChildren: () => import('./components/core/control-dispatcher/control-dispatcher.module')
+      .then(m => m.ControlDispatcherModule)
+  },
+  {
     path: 'certificate', loadChildren: () => import('./components/core/certificate/certificate.module')
       .then(m => m.CertificateModule)
   },

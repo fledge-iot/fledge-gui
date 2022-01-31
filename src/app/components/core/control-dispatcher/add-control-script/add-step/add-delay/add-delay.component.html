@@ -1,0 +1,16 @@
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Duration</label>
+  </div>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <div class="control">
+        <input class="input is-small name-control" type="text" name="duration" placeholder="duration"
+          [ngModel]="config?.duration" appNumberOnly (ngModelChange)="setDuration($event)"
+          [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+      </div>
+    </div>
+  </div>
+</div>
+<app-add-step-condition #delayCondition [from]='step' [index]="controlIndex" [condition]="config?.condition">
+</app-add-step-condition>

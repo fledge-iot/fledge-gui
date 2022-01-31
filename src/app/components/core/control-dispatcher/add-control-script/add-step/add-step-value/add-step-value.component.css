@@ -1,0 +1,24 @@
+.field-body .field {
+  margin-bottom: 5px;
+}
+
+.delete {
+  vertical-align: middle !important;
+}
+
+.button.is-light.like-link {
+  background-color: white;
+}
+
+.button.is-light.like-link:hover {
+  font-style: bold;
+}
+
+.field-label {
+  text-align: left;
+}
+
+.btn-field-body {
+  margin-top: -12px;
+  margin-left: -12px;
+}

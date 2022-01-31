@@ -1,0 +1,41 @@
+<table class="table scroll is-responsive is-hoverable" *ngIf="controlScripts.length > 0; else noscript">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let script of controlScripts">
+      <td>
+        <a [routerLink]="['script', script?.name]">
+          {{script?.name}}
+        </a>
+      </td>
+      <td>
+        <button *ngIf="sharedService.checkAuth()" (click)="setScript(script);openModal('confirmation-dialog')"
+          class="button is-small btn-delete">
+          <span class="icon is-small">
+            <i class="far fa-trash-alt"></i>
+          </span>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<ng-template #noscript>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <small class="text-secondary has-text-grey-light"> No control scripts found.</small>
+    </div>
+  </div>
+</ng-template>
+<app-confirmation-dialog id="confirmation-dialog">
+  <section class="modal-card-body">
+    Are you sure, you want to delete the script <b>{{script}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deleteScript(script)">Delete</button>
+  </footer>
+</app-confirmation-dialog>

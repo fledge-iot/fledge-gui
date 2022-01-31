@@ -1,0 +1,87 @@
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Category</label>
+  </div>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <div class="control">
+        <div #configureDropdown id="configure-dropdown-{{controlIndex}}" class="dropdown is-left">
+          <div *ngIf="sharedService.checkAuth();else staticCategoryDiv" class="dropdown-trigger">
+            <button (click)="toggleDropDown(configureDropdown.id)" class="button is-small" aria-haspopup="true"
+              aria-controls="dropdown-menu">
+              <span>{{config?.category? config?.category : 'Select category'}}</span>
+              <span class="icon is-small">
+                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content tree-dropdown">
+              <tree-root #tree [nodes]="nodes" [options]="options"
+                (activate)="onNodeActive($event); toggleDropDown('configure-dropdown')">
+              </tree-root>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #staticCategoryDiv>
+        <div class="control">
+          <input name="category" class="input is-small" type="text" [(ngModel)]="config.category"
+            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+<div *ngIf="config?.category" class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Config Item</label>
+  </div>
+  <div class="field-body" *ngIf="configItems?.length > 0 else noconfig">
+    <div class="field is-narrow">
+      <div class="control" *ngIf="sharedService.checkAuth();else staticConfigItemDiv">
+        <div #configItem id="config-dropdown" class="dropdown is-left">
+          <div class="dropdown-trigger">
+            <button (click)="toggleDropDown(configItem.id)" class="button is-small" aria-haspopup="true"
+              aria-controls="dropdown-menu">
+              <span>{{ selectedConfigItem ? selectedConfigItem : 'Select item' }}</span>
+              <span class="icon is-small">
+                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <a (click)="setItem(c); toggleDropDown('config-dropdown')" *ngFor="let c of configItems"
+                class="dropdown-item">{{c.data.displayName ? c.data.displayName : (c.data.description.length <= 30 ?
+                  c.data.description : (c.data.description|slice:0:30)+'...') }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #staticConfigItemDiv>
+        <div class="control">
+          <input name="config" class="input is-small" type="text" [(ngModel)]="selectedConfigItem"
+            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+        </div>
+      </ng-template>
+    </div>
+    <div class="field is-narrow">
+      <div class="control">
+        <input class="input is-small name-control" name="value" type="text" placeholder="value"
+          (ngModelChange)="setValue($event)" [ngModel]="configValue"
+          [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+      </div>
+    </div>
+  </div>
+  <ng-template #noconfig>
+    <div class="field-body">
+      <div class="field is-narrow">
+        <small class="text-secondary has-text-grey-light">No configuration items found for the selected
+          category.</small>
+      </div>
+    </div>
+  </ng-template>
+</div>
+<app-add-step-condition #configureCondition [from]='step' [index]="controlIndex" [condition]="config?.condition">
+</app-add-step-condition>

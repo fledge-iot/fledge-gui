@@ -1,0 +1,81 @@
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Name</label>
+  </div>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <div *ngIf="sharedService.checkAuth();else staticScriptDiv" class="control">
+        <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
+          <div class="dropdown-trigger">
+            <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
+              aria-controls="dropdown-menu">
+              <span>{{config?.name ? config?.name : 'Select script'}}</span>
+              <span class="icon is-small">
+                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <a class="dropdown-item" *ngIf="scripts.length === 0"><small>No scripts found</small></a>
+              <a (click)="setScript(script.name);toggleDropDown('script-dropdown')" *ngFor="let script of scripts"
+                class="dropdown-item">{{script.name}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #staticScriptDiv>
+        <div class="control">
+          <input name="script" class="input is-small" type="text" [(ngModel)]="config.name"
+            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+<ng-container *ngIf="scripts.length > 0">
+  <div class="field is-horizontal">
+    <div class="field-label is-small">
+      <label class="label">Execution</label>
+    </div>
+    <div class="field-body">
+      <div class="field is-narrow">
+        <div *ngIf="sharedService.checkAuth();else staticExecutionDiv" class="control">
+          <div #executionDropDown id="execution-dropdown-{{controlIndex}}" class="dropdown is-left">
+            <div class="dropdown-trigger">
+              <button (click)="toggleDropDown(executionDropDown.id)" class="button is-small" aria-haspopup="true"
+                aria-controls="dropdown-menu">
+                <span *ngIf="config.execution === null">{{'Select execution type'}}</span>
+                <span *ngIf="config.execution !== null">{{config.execution === 'background' ? (execution[1].name |
+                  titlecase) :
+                  (execution[0].name |titlecase) }}</span>
+                <span class="icon is-small">
+                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <a (click)="setExecution(e);toggleDropDown(executionDropDown.id)" *ngFor="let e of execution"
+                  class="dropdown-item">{{e.name | titlecase}}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #staticExecutionDiv>
+          <div class="control">
+            <input name="execution" class="input is-small" type="text" [(ngModel)]="selectedExecution"
+              [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div>
+    <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.parameters" [update]="update">
+    </app-add-step-value>
+    <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex" [condition]="config?.condition"
+      [update]="update">
+    </app-add-step-condition>
+  </div>
+</ng-container>
