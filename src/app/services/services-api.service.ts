@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -22,6 +22,19 @@ export class ServicesApiService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  /**
+   *  Get service by type
+   *  GET  | /fledge/service
+   */
+  getServiceByType(type: string) {
+    let params = new HttpParams();
+    params = params.append('type', type);
+    return this.http.get(this.GET_SERVICES_URL, { params: params }).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
 
   /**
   *  POST  | /fledge/service

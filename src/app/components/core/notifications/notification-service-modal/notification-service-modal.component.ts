@@ -78,7 +78,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   ngOnInit() {
-    this.getAllServices();
+    this.getNotificationService();
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -105,17 +105,13 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
   }
 
-  public getAllServices() {
-    this.servicesApiService.getAllServices()
+  public getNotificationService() {
+    this.servicesApiService.getServiceByType('Notification')
       .subscribe((res: any) => {
-        this.service = res.services.find(s => s.type === 'Notification');
+        this.service = res.services[0];
       },
         (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
+          console.log('service down ', error);
         });
   }
 
