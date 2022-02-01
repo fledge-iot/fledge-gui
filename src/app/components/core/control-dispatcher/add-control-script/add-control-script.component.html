@@ -88,7 +88,7 @@
         <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths">
           <div class="columns">
             <div class="column is-2"></div>
-            <div class="column">
+            <div class="column" *ngIf="update">
               <div class="field is-grouped control-pad">
                 <p class="control">
                   <button (click)="openModal('confirmation-dialog')" type="button"
