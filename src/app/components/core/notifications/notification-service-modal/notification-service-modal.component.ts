@@ -40,6 +40,8 @@ export class NotificationServiceModalComponent implements OnChanges {
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
 
+  service;
+
   @Input() notificationServiceData: {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
@@ -75,6 +77,10 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
   }
 
+  ngOnInit() {
+    this.getAllServices();
+  }
+
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.pluginInstallationState) {
       this.toggleModal(false);
@@ -97,6 +103,20 @@ export class NotificationServiceModalComponent implements OnChanges {
       notificationServiceModal.classList.remove('is-active');
       this.category = '';
     }
+  }
+
+  public getAllServices() {
+    this.servicesApiService.getAllServices()
+      .subscribe((res: any) => {
+        this.service = res.services.find(s => s.type === 'Notification');
+      },
+        (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   addNotificationService(installationState = false) {
