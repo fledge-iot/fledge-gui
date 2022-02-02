@@ -12,6 +12,7 @@ import { isEmpty } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -39,6 +40,8 @@ export class NotificationServiceModalComponent implements OnChanges {
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
 
+  service;
+
   @Input() notificationServiceData: {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
@@ -48,6 +51,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
   constructor(
+    private router: Router,
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
     private configService: ConfigurationService,
@@ -73,6 +77,10 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
   }
 
+  ngOnInit() {
+    this.getNotificationService();
+  }
+
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.pluginInstallationState) {
       this.toggleModal(false);
@@ -95,6 +103,16 @@ export class NotificationServiceModalComponent implements OnChanges {
       notificationServiceModal.classList.remove('is-active');
       this.category = '';
     }
+  }
+
+  public getNotificationService() {
+    this.servicesApiService.getServiceByType('Notification')
+      .subscribe((res: any) => {
+        this.service = res.services[0];
+      },
+        (error) => {
+          console.log('service down ', error);
+        });
   }
 
   addNotificationService(installationState = false) {
@@ -427,6 +445,10 @@ export class NotificationServiceModalComponent implements OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  navToSyslogs(name: string) {
+    this.router.navigate(['syslog'], { queryParams: { source: name } });
   }
 
   goToLink() {
