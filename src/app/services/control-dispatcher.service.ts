@@ -50,7 +50,7 @@ export class ControlDispatcherService {
       catchError(error => throwError(error)));
   }
 
-  addACL(payload) {
+  addACL(payload: any) {
     return this.http.post(this.ACL_URL, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));

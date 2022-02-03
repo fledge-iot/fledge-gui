@@ -23,3 +23,16 @@
 .field-label {
   text-align: left;
 }
+
+:host ::ng-deep ng-select .ng-dropdown-panel {
+  z-index: 40 !important;
+}
+
+:host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+  max-height: 200px !important;
+}
+
+:host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+  color: #848181 !important;
+  font-size: 0.8rem !important;
+}
