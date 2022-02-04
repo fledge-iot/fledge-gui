@@ -92,7 +92,7 @@
             </div>
             <div class="field-body">
               <div class="field">
-                <ng-container class="steps-list" *ngFor="let control of aclURLsList; let i = index">
+                <ng-container class="steps-list" *ngFor="let control of aclURLsList">
                   <div class="control box">
                     <div class="columns">
                       <div class="column">
@@ -104,7 +104,7 @@
                             <div class="field">
                               <div class="control">
                                 <input #url name="url" class="input is-small" type="text" placeholder="URL"
-                                  name="url-{{i}}" (change)="setURL(i, url?.value)" [value]="control?.url"
+                                  name="url-{{i}}" (change)="setURL(control.index, url?.value)" [value]="control?.url"
                                   [ngClass]="{'is-static':!sharedService.checkAuth()}"
                                   [readonly]="!sharedService.checkAuth()">
                               </div>
@@ -119,9 +119,10 @@
                             <div class="field">
                               <div class="control">
                                 <ng-select placeholder="Select service type" [items]="serviceTypes" [multiple]="true"
-                                  (add)="addACLServiceType($event.type, i)" [ngModel]="control?.acl"
+                                  (add)="addACLServiceType($event.type, control.index)" [ngModel]="control?.acl"
                                   [ngModelOptions]="{standalone: true}" bindLabel="type"
-                                  (remove)="removeACLServiceType($event.label, i)" (clear)="clearACLServiceTypes()">
+                                  (remove)="removeACLServiceType($event.label, control.index)"
+                                  (clear)="clearACLServiceTypes()">
                                 </ng-select>
                               </div>
                             </div>
@@ -130,7 +131,7 @@
                       </div>
                       <div class="column is-1 close-btn-div">
                         <ng-container *ngIf="sharedService.checkAuth()">
-                          <button (click)="deleteStepControl(control?.order)" class="button is-small btn-delete">
+                          <button (click)="deleteURLControl(control.index)" class="button is-small btn-delete">
                             <span class="icon is-small">
                               <i class="far fa-trash-alt"></i>
                             </span>

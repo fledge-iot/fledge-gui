@@ -133,8 +133,17 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addURLControl() {
+    console.log('form', this.aclForm.controls);
+    console.log(this.aclURLsList.length);
+    if (this.aclURLsList.length === 0) {
+      this.aclForm.form.addControl('urls', new FormGroup({}));
+      this.initURLControl(1);
+      return;
+    }
     const maxOrder = Math.max(...this.aclURLsList.map(o => o.index));
+    console.log('max ', maxOrder);
     this.initURLControl(maxOrder + 1);
+
   }
 
   initURLControl(index: number, urlData: any = null) {
@@ -159,6 +168,13 @@ export class AddControlAclComponent implements OnInit {
 
   urlControl(index: number): FormGroup {
     return this.urlFormGroup().controls[`url-${index}`] as FormGroup;
+  }
+
+  deleteURLControl(index) {
+    console.log('index', index);
+    this.urlFormGroup().removeControl(`url-${index}`);
+    this.aclURLsList = this.aclURLsList.filter(item => item.index !== index);
+    console.log('aclURLsList', this.aclURLsList);
   }
 
   addServiceName(name: string) {
