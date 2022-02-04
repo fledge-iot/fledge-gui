@@ -50,8 +50,20 @@ export class ControlDispatcherService {
       catchError(error => throwError(error)));
   }
 
+  fetchAclByName(name: string) {
+    return this.http.get(`${this.ACL_URL}/${encodeURIComponent(name)}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   addACL(payload: any) {
     return this.http.post(this.ACL_URL, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  updateACL(name: string, payload: any) {
+    return this.http.put(`${this.ACL_URL}/${encodeURIComponent(name)}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
@@ -61,7 +73,5 @@ export class ControlDispatcherService {
       map(response => response),
       catchError(error => throwError(error)));
   }
-
-
 
 }

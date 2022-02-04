@@ -2,37 +2,41 @@
   overflow: inherit !important;
 }
 
-.field-body .field {
-  margin-bottom: 5px;
-}
-
-.menu {
-  padding-left: 5px !important;
-}
-
-.menu-label {
-  margin: 0px !important;
-}
-
-.disabled {
-  pointer-events: none;
-  cursor: default;
-  opacity: 0.6;
+.field:not(:last-child) {
+  margin-bottom: 5px !important;
 }
 
 .field-label {
   text-align: left;
 }
 
-:host ::ng-deep ng-select .ng-dropdown-panel {
+.control-pad {
+  padding-left: 18px;
+}
+
+.btn-delete {
+  border: transparent !important;
+}
+
+div.close-btn-div {
+  padding-top: 0px !important;
+}
+
+::ng-deep ng-select .ng-dropdown-panel {
   z-index: 40 !important;
 }
 
-:host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
   max-height: 200px !important;
 }
 
-:host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
   color: #848181 !important;
   font-size: 0.8rem !important;
+}
+
+::ng-deep .ng-select .ng-select-container,
+::ng-deep .ng-select.ng-select-multiple .ng-select-container {
+  min-height: 5px;
+  font-size: 0.8em;
 }

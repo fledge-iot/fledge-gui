@@ -11,7 +11,7 @@
           <!-- TODO - ACL -->
           <li [ngClass]="{'is-active': seletedTab == 2}">
             <h6 class="is-6 has-text-weight-semibold">
-              <a (click)="showDiv(2)">ACL</a>
+              <a (click)="showDiv(2)">ACLs</a>
             </h6>
           </li>
           <li *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">

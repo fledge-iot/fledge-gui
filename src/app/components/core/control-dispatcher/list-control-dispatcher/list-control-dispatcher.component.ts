@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SharedService } from '../../../../services';
 
@@ -13,9 +14,19 @@ export class ListControlDispatcherComponent implements OnInit {
   private subscription: Subscription;
   viewPort: any = '';
 
-  constructor(public sharedService: SharedService) { }
+  constructor(
+    public sharedService: SharedService,
+    private router: Router,
+    private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        this.seletedTab = params['tab'];
+      }
+    });
+  }
 
   ngOnInit(): void {
+
     this.viewPortSubscription = this.sharedService.viewport
       .subscribe(viewport => {
         this.viewPort = viewport;

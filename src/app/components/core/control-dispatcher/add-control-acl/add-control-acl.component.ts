@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
+import { uniqBy } from 'lodash';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -19,10 +20,11 @@ export class AddControlAclComponent implements OnInit {
   serviceNameList = [];
   serviceTypeList = [];
   name: string;
+  update = false;
 
   @ViewChild('aclForm') aclForm: NgForm;
 
-  constructor(private cdRef: ChangeDetectorRef,
+  constructor(
     private router: Router,
     private route: ActivatedRoute,
     private controlService: ControlDispatcherService,
@@ -33,12 +35,21 @@ export class AddControlAclComponent implements OnInit {
     public sharedService: SharedService) { }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.name = params['name'];
+      if (this.name) {
+        this.update = true;
+        this.getACLbyName();
+      }
+    });
     this.getAllServices();
   }
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.addFormControls(1);
+      if (!this.update) {
+        this.addFormControls(0);
+      }
     }, 0);
   }
 
@@ -53,6 +64,44 @@ export class AddControlAclComponent implements OnInit {
     dropDown.classList.toggle('is-active');
   }
 
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
+  }
+
+  getACLbyName() {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.fetchAclByName(this.name)
+      .subscribe((res: any) => {
+        this.ngProgress.done();
+        this.serviceNameList = res.service.filter(item => item.name);
+        this.serviceTypeList = res.service.filter(s => s.type);
+        this.serviceTypeList = uniqBy(this.serviceTypeList, 'type');
+        this.aclURLsList = [];
+        this.aclURLsList = res.url;
+        this.aclServiceTypeList = [];
+        this.aclURLsList.forEach((item, index) => {
+          item.index = index;
+          item.acl.forEach(acl => {
+            this.aclServiceTypeList.push({ type: acl.type, index });
+          });
+          this.addNewURLControl(index, this.aclURLsList[index]);
+        });
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
   public getAllServices() {
     /** request start */
     this.ngProgress.start();
@@ -64,11 +113,8 @@ export class AddControlAclComponent implements OnInit {
           s.select = false;
           return s;
         });
-        // this.services = groupBy(this.services, 'type');
-        console.log('service', this.services);
-        this.serviceTypes = [... new Set(this.services.map(s => s.type))];
-        console.log('type', this.serviceTypes);
-
+        this.serviceTypes = (this.services.map(s => ({ type: s.type })));
+        this.serviceTypes = uniqBy(this.serviceTypes, 'type');
       },
         (error) => {
           /** request done */
@@ -81,80 +127,76 @@ export class AddControlAclComponent implements OnInit {
         });
   }
 
-  addFormControls(index) {
+  addFormControls(index, urlData: any = null) {
     this.aclForm.form.addControl('urls', new FormGroup({}));
-    // this.aclForm.form.addControl('services', new FormGroup({}));
-    this.initURLControl(index);
-    // this.initServiceControl(index);
+    this.initURLControl(index, urlData);
   }
 
   addURLControl() {
-    // console.log(Math.max(...this.stepControlsList.map(o => o.order)));
-    const maxOrder = Math.max(...this.aclURLsList.map(o => o.key));
-    this.initURLControl(maxOrder + 1)
+    const maxOrder = Math.max(...this.aclURLsList.map(o => o.index));
+    this.initURLControl(maxOrder + 1);
   }
 
-  initURLControl(index: number) {
+  initURLControl(index: number, urlData: any = null) {
     this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
-      url: new FormControl(''),
-      acl: new FormControl('')
+      url: new FormControl(urlData ? urlData?.url : ''),
+      acl: new FormControl(urlData ? urlData?.acl : '')
     }));
-    this.aclURLsList.push({ key: index });
+    this.aclURLsList.push({ index: index, url: '', acl: [] });
   }
 
-  urlFormGroup() {
-    console.log('url control', this.aclForm.controls['urls']);
+  addNewURLControl(index: number, urlData: any = null) {
+    this.aclForm.form.addControl('urls', new FormGroup({}));
+    this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
+      url: new FormControl(urlData ? urlData?.url : ''),
+      acl: new FormControl(urlData ? urlData?.acl : [])
+    }));
+  }
+
+  urlFormGroup(): FormGroup {
     return this.aclForm.controls['urls'] as FormGroup;
+  }
+
+  urlControl(index: number): FormGroup {
+    return this.urlFormGroup().controls[`url-${index}`] as FormGroup;
   }
 
   addServiceName(name: string) {
     this.serviceNameList.push({ name });
-    console.log('add one name', this.serviceNameList);
   }
 
   removeServiceName(value: string) {
     this.serviceNameList = this.serviceNameList.filter(item => item.name != value);
-    console.log('remove one name', this.serviceNameList);
   }
 
   clearServiceNames() {
     this.serviceNameList = [];
-    console.log('clear name', this.serviceNameList);
   }
 
-  addServiceType(type: string) {
-    this.serviceTypeList.push({ type })
-    console.log('add one type', type);
+  addServiceType(type) {
+    this.serviceTypeList.push(type)
   }
 
   removeServiceType(type: string) {
     this.serviceTypeList = this.serviceTypeList.filter(item => item.type != type);
-    console.log('remove one type', this.serviceTypeList);
   }
 
   clearServiceTypes() {
     this.serviceTypeList = [];
-    console.log('clear type', this.serviceTypeList);
   }
 
   addACLServiceType(type: string, index: number) {
     this.aclServiceTypeList.push({ type, index })
-    console.log('add one type', this.aclServiceTypeList, index);
-    console.log('url control', this.urlFormGroup().controls[`url-${index}`] as FormGroup);
-    const urlControl = (this.urlFormGroup().controls[`url-${index}`] as FormGroup).controls['acl'];
-
-    urlControl.setValue(this.aclServiceTypeList.filter(item => item.index === index));
+    this.urlControl(index).controls['acl'].setValue(this.aclServiceTypeList.filter(item => item.index === index));
   }
 
   removeACLServiceType(type: string, index: number) {
-    this.aclServiceTypeList = this.aclServiceTypeList.filter(item => item.type != type);
-    const urlControl = (this.urlFormGroup().controls[`url-${index}`] as FormGroup).controls['acl'];
-    urlControl.setValue(this.aclServiceTypeList.filter(item => item.index === index));
+    this.aclServiceTypeList = this.aclServiceTypeList.filter(item => !(item.type == type && item.index === index));
+    this.urlControl(index).controls['acl'].setValue(this.aclServiceTypeList.filter(item => item.index === index));
   }
 
   clearACLServiceTypes() {
     this.aclServiceTypeList = [];
-    console.log('clear type', this.aclServiceTypeList);
   }
 
   setURL(index, value) {
@@ -165,7 +207,6 @@ export class AddControlAclComponent implements OnInit {
   onSubmit(form: NgForm) {
     console.log('form', form.value);
     let { name, urls } = form.value;
-    console.log('name', name);
     urls = Object.values(urls);
     console.log('urls', urls);
     const services = this.serviceNameList.concat(...this.serviceTypeList);
@@ -176,17 +217,59 @@ export class AddControlAclComponent implements OnInit {
       url: urls
     }
     console.log('payload', payload);
+    if (this.update) {
+      this.updateACL(payload);
+      return;
+    }
     this.ngProgress.start();
     this.controlService.addACL(payload)
-      .subscribe((d) => {
-        console.log(d);
-
+      .subscribe(() => {
         this.ngProgress.done();
-        this.alertService.success(`Script ${payload['name']} created successfully.`);
+        this.alertService.success(`ACL ${payload['name']} created successfully.`);
         setTimeout(() => {
-          this.router.navigate(['control-dispatcher']);
+          this.router.navigate(['control-dispatcher'], { queryParams: { tab: 2 } });
         }, 1000);
       }, error => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  updateACL(payload: any) {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.updateACL(this.name, payload)
+      .subscribe((data: any) => {
+        this.alertService.success(data.message, true)
+        /** request completed */
+        this.ngProgress.done();
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+  deleteAcl(acl) {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.deleteACL(acl)
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.alertService.success(data.message);
+        // close modal
+        this.closeModal('confirmation-dialog');
+        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 2 } });
+      }, error => {
+        /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);

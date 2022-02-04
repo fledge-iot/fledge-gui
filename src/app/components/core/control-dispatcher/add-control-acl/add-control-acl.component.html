@@ -1,11 +1,10 @@
 <div class="container is-fluid">
   <nav class="breadcrumb" aria-label="breadcrumbs">
     <ul>
-      <li><a [routerLink]="['/control-dispatcher']">ACLs</a></li>
+      <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 2}">ACLs</a></li>
       <li class="is-active">
         <a href="#" aria-current="page">
-          Add
-          <!-- {{scriptName ? scriptName : 'Add' }} -->
+          {{update ? name : 'Add' }}
         </a>
       </li>
     </ul>
@@ -42,70 +41,48 @@
                   <div class="field-body">
                     <div class="field">
                       <div class="control box">
-                        <div class="field is-horizontal">
-                          <div class="field-label is-small">
-                            <label class="label">Names</label>
-                          </div>
-                          <div class="field-body">
-                            <div class="field">
-                              <div class="control">
-                                <ng-select placeholder="Select service name" [items]="services" [multiple]="true"
-                                  bindLabel="name" groupBy="type" (add)="addServiceName($event.name)"
-                                  (remove)="removeServiceName($event.label)" (clear)="clearServiceNames()"></ng-select>
+                        <div class="columns">
+                          <div class="column">
+                            <div class="field is-horizontal">
+                              <div class="field-label is-small">
+                                <label class="label">Names</label>
+                              </div>
+                              <div class="field-body">
+                                <div class="field">
+                                  <div class="control">
+                                    <ng-select placeholder="Select service name" [items]="services" [multiple]="true"
+                                      bindLabel="name" groupBy="type" (add)="addServiceName($event.name)"
+                                      [ngModel]="serviceNameList" (remove)="removeServiceName($event.label)"
+                                      (clear)="clearServiceNames()" [ngModelOptions]="{standalone: true}">
+                                    </ng-select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="field is-horizontal">
+                              <div class="field-label is-small">
+                                <label class="label">Types</label>
+                              </div>
+                              <div class="field-body">
+                                <div class="field">
+                                  <div class="control">
+                                    <ng-select placeholder="Select service type" [items]="serviceTypes" bindLabel="type"
+                                      [multiple]="true" (add)="addServiceType($event)" [ngModel]="serviceTypeList"
+                                      [ngModelOptions]="{standalone: true}" (remove)="removeServiceType($event.label)"
+                                      (clear)="clearServiceTypes()">
+                                    </ng-select>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div class="field is-horizontal">
-                          <div class="field-label is-small">
-                            <label class="label">Types</label>
-                          </div>
-                          <div class="field-body">
-                            <div class="field">
-                              <div class="control">
-                                <ng-select placeholder="Select service type" [items]="serviceTypes" [multiple]="true"
-                                  (add)="addServiceType($event)" (remove)="removeServiceType($event.value)"
-                                  (clear)="clearServiceTypes()"></ng-select>
-                              </div>
-                            </div>
+                          <div class="column is-1">
                           </div>
                         </div>
                       </div>
-                      <!-- <div id="acl-service-dropdown" class="dropdown is-left">
-                          <div class="dropdown-trigger">
-                            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                              (click)="toggleDropDown('acl-service-dropdown')">
-                              <span>Select service</span>
-                              <span class="icon is-small">
-                                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                              </span>
-                            </button>
-                          </div>
-                          <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                            <div class="dropdown-content">
-                              <div class="menu">
-                                <ng-container *ngFor="let service of services | keyvalue">
-                                  <p class="menu-label">
-                                    {{service.key}}
-                                  </p>
-                                  <ul class="menu-list" *ngFor="let s of service.value"
-                                    (click)="selectService(s);toggleDropDown('acl-service-dropdown')">
-                                    <a class="dropdown-item" [ngClass]="{disabled: s.select}">{{s.name}}</a>
-                                  </ul>
-                                </ng-container>
-                              </div>
-                            </div>
-                          </div>
-                        </div> -->
                     </div>
                   </div>
                 </div>
-                <!-- <div class="field is-grouped control-pad">
-                  <p class="control">
-                    <button (click)="addServiceControl()" type="button" class="button is-small is-outlined">Add new
-                      service</button>
-                  </p>
-                </div> -->
               </div>
             </div>
           </div>
@@ -117,61 +94,68 @@
               <div class="field">
                 <ng-container class="steps-list" *ngFor="let control of aclURLsList; let i = index">
                   <div class="control box">
-                    <div class="field is-horizontal">
-                      <div class="field-label is-small">
-                        <label class="label">URL</label>
-                      </div>
-                      <div class="field-body">
-                        <div class="field">
-                          <div class="control">
-                            <input #url name="url" class="input is-small" type="text" placeholder="URL"
-                              name="url-{{control.key}}" (change)="setURL(control.key, url.value)"
-                              [ngClass]="{'is-static':!sharedService.checkAuth()}"
-                              [readonly]="!sharedService.checkAuth()">
+                    <div class="columns">
+                      <div class="column">
+                        <div class="field is-horizontal">
+                          <div class="field-label is-small">
+                            <label class="label">URL</label>
+                          </div>
+                          <div class="field-body">
+                            <div class="field">
+                              <div class="control">
+                                <input #url name="url" class="input is-small" type="text" placeholder="URL"
+                                  name="url-{{i}}" (change)="setURL(i, url?.value)" [value]="control?.url"
+                                  [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                                  [readonly]="!sharedService.checkAuth()">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="field is-horizontal">
+                          <div class="field-label is-small">
+                            <label class="label">ACLs</label>
+                          </div>
+                          <div class="field-body">
+                            <div class="field">
+                              <div class="control">
+                                <ng-select placeholder="Select service type" [items]="serviceTypes" [multiple]="true"
+                                  (add)="addACLServiceType($event.type, i)" [ngModel]="control?.acl"
+                                  [ngModelOptions]="{standalone: true}" bindLabel="type"
+                                  (remove)="removeACLServiceType($event.label, i)" (clear)="clearACLServiceTypes()">
+                                </ng-select>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="field is-horizontal">
-                      <div class="field-label is-small">
-                        <label class="label">ACLs</label>
-                      </div>
-                      <div class="field-body">
-                        <div class="field">
-                          <div class="control">
-                            <ng-select placeholder="Select service type" [items]="serviceTypes" [multiple]="true"
-                              (add)="addACLServiceType($event, control.key)"
-                              (remove)="removeACLServiceType($event.value, control.key)"
-                              (clear)="clearACLServiceTypes()"></ng-select>
-                            <!-- <div id="acl-type-dropdown" class="dropdown is-left">
-                              <div class="dropdown-trigger">
-                                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                  (click)="toggleDropDown('acl-type-dropdown')">
-                                  <span>Select service type</span>
-                                  <span class="icon is-small">
-                                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                                  </span>
-                                </button>
-                              </div>
-                              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                <div class="dropdown-content">
-                                  <ng-container *ngFor="let service of services | keyvalue">
-                                    <a (click)="selectACLType(service.key)" class="dropdown-item">{{service.key}}</a>
-                                  </ng-container>
-                                </div>
-                              </div>
-                            </div> -->
-                          </div>
-                        </div>
+                      <div class="column is-1 close-btn-div">
+                        <ng-container *ngIf="sharedService.checkAuth()">
+                          <button (click)="deleteStepControl(control?.order)" class="button is-small btn-delete">
+                            <span class="icon is-small">
+                              <i class="far fa-trash-alt"></i>
+                            </span>
+                          </button>
+                        </ng-container>
                       </div>
                     </div>
                   </div>
                 </ng-container>
-                <div class="field is-grouped control-pad">
-                  <p class="control">
-                    <button (click)="addURLControl()" type="button" class="button is-small is-outlined">Add new
-                      URL</button>
-                  </p>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label"></label>
+            </div>
+            <div class="field-body">
+              <div class="field is-grouped">
+                <div class="control">
+                  <button (click)="addURLControl()" class="button is-small">
+                    <span class="icon is-small">
+                      <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                    </span>
+                    <span>{{aclURLsList?.length === 0? 'Add URL': 'Add new URL'}}</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -181,7 +165,7 @@
           <div class="columns">
             <div class="column is-2"></div>
             <div class="column">
-              <div class="field is-grouped control-pad">
+              <div class="field is-grouped control-pad" *ngIf="update">
                 <p class="control">
                   <button (click)="openModal('confirmation-dialog')" type="button"
                     class="button is-small is-danger is-outlined">Delete</button>
@@ -191,7 +175,8 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button [routerLink]="['/control-dispatcher']" class="button is-small">Cancel</button>
+                  <button [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 2}"
+                    class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
                   <button (click)="onSubmit(aclForm)" type="button" class="button is-small is-link">Save</button>
@@ -204,12 +189,12 @@
     </div>
   </div>
 </div>
-<!-- <app-confirmation-dialog id="confirmation-dialog">
+<app-confirmation-dialog id="confirmation-dialog">
   <section class="modal-card-body">
-    Are you sure, you want to delete the script <b>{{scriptName}}</b>?
+    Are you sure, you want to delete the ACL <b>{{name}}</b>?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteScript(scriptName)">Delete</button>
+    <button class="button is-small is-danger" (click)="deleteAcl(name)">Delete</button>
   </footer>
-</app-confirmation-dialog> -->
+</app-confirmation-dialog>

@@ -43,6 +43,10 @@ const routes: Routes = [
     component: AddControlAclComponent,
     canActivate: [AuthTypeGuard]
   },
+  {
+    path: 'acl/:name',
+    component: AddControlAclComponent
+  }
 ];
 
 @NgModule({
