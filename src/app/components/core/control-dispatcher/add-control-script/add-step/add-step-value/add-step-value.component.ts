@@ -21,17 +21,19 @@ export class AddStepValueComponent implements OnInit {
 
   ngOnChanges() {
     this.values = Object.values(this.valuesControlGroup().value);
-    if (this.values.length == 0) {
+    if (this.values.length == 0 && !this.update) {
       this.parameters.push({ index: 0, key: '', value: '' });
       this.valuesControlGroup().addControl(`${this.from}-key-${0}`, new FormControl({ index: 0, key: '' }));
       this.valuesControlGroup().addControl(`${this.from}-val-${0}`, new FormControl({ index: 0, value: '' }));
     }
-    this.values.map((element) => {
-      const index = this.parameters.findIndex(e => e.index === element.index)
-      if (index !== -1) {
-        this.parameters[index] = { ...element, ...this.parameters[index] };
-      } else {
-        this.parameters.push(element);
+    this.values.forEach((element) => {
+      if (element?.key || element?.value) {
+        const index = this.parameters.findIndex(e => e.index === element.index)
+        if (index !== -1) {
+          this.parameters[index] = { ...element, ...this.parameters[index] };
+        } else {
+          this.parameters.push(element);
+        }
       }
     });
   }
