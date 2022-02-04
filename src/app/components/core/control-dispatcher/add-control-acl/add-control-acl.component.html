@@ -13,7 +13,7 @@
     <div class="card-content step-content">
       <form #aclForm="ngForm">
         <div class="column is-four-fifths">
-          <div class="field is-horizontal">
+          <div class="field is-horizontal acl-name-field">
             <div class="field-label">
               <label class="label">Name</label>
             </div>
@@ -21,13 +21,9 @@
               <div class="field">
                 <div class="control">
                   <input name="name" class="input is-small" type="text" placeholder="Name" required [(ngModel)]="name"
-                    [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+                    [ngClass]="{'is-static':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
+                    [readonly]="!sharedService.checkAuth()">
                 </div>
-                <!-- <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
-                  <div *ngIf="name.errors?.['required']">
-                    Name is required.
-                  </div>
-                </div> -->
               </div>
             </div>
           </div>
@@ -42,20 +38,25 @@
                     <div class="field">
                       <div class="control box">
                         <div class="columns">
-                          <div class="column">
+                          <div class="column service-control">
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
                                 <label class="label">Names</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
-                                  <div class="control">
+                                  <div class="control" *ngIf="sharedService.checkAuth(); else staticService">
                                     <ng-select placeholder="Select service name" [items]="services" [multiple]="true"
                                       bindLabel="name" groupBy="type" (add)="addServiceName($event.name)"
                                       [ngModel]="serviceNameList" (remove)="removeServiceName($event.label)"
                                       (clear)="clearServiceNames()" [ngModelOptions]="{standalone: true}">
                                     </ng-select>
                                   </div>
+                                  <ng-template #staticService>
+                                    <input class="input is-small" type="text" [value]="show(serviceNameList, true)"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                                      [readonly]="!sharedService.checkAuth()">
+                                  </ng-template>
                                 </div>
                               </div>
                             </div>
@@ -65,13 +66,18 @@
                               </div>
                               <div class="field-body">
                                 <div class="field">
-                                  <div class="control">
+                                  <div class="control" *ngIf="sharedService.checkAuth(); else staticServiceType">
                                     <ng-select placeholder="Select service type" [items]="serviceTypes" bindLabel="type"
                                       [multiple]="true" (add)="addServiceType($event)" [ngModel]="serviceTypeList"
                                       [ngModelOptions]="{standalone: true}" (remove)="removeServiceType($event.label)"
                                       (clear)="clearServiceTypes()">
                                     </ng-select>
                                   </div>
+                                  <ng-template #staticServiceType>
+                                    <input class="input is-small" type="text" [value]="show(serviceTypeList)"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                                      [readonly]="!sharedService.checkAuth()">
+                                  </ng-template>
                                 </div>
                               </div>
                             </div>
@@ -86,7 +92,7 @@
               </div>
             </div>
           </div>
-          <div class="field is-horizontal">
+          <div class="field is-horizontal url-control">
             <div class="field-label">
               <label class="label">URLs</label>
             </div>
@@ -95,7 +101,7 @@
                 <ng-container class="steps-list" *ngFor="let control of aclURLsList">
                   <div class="control box">
                     <div class="columns">
-                      <div class="column">
+                      <div class="column acl-control">
                         <div class="field is-horizontal">
                           <div class="field-label is-small">
                             <label class="label">URL</label>
@@ -104,7 +110,8 @@
                             <div class="field">
                               <div class="control">
                                 <input #url name="url" class="input is-small" type="text" placeholder="URL"
-                                  name="url-{{i}}" (input)="setURL(control.index, url?.value)" [value]="control?.url"
+                                  name="url-{{i}}" (input)="setURL(control.index, url?.value)"
+                                  [value]="!sharedService.checkAuth() && !control.url ? 'None': control.url"
                                   [ngClass]="{'is-static':!sharedService.checkAuth()}"
                                   [readonly]="!sharedService.checkAuth()">
                               </div>
@@ -117,7 +124,7 @@
                           </div>
                           <div class="field-body">
                             <div class="field">
-                              <div class="control">
+                              <div class="control" *ngIf="sharedService.checkAuth(); else staticACLService">
                                 <ng-select placeholder="Select service type" [items]="serviceTypes" [multiple]="true"
                                   (add)="addACLServiceType($event.type, control.index)" [ngModel]="control?.acl"
                                   [ngModelOptions]="{standalone: true}" bindLabel="type"
@@ -125,6 +132,11 @@
                                   (clear)="clearACLServiceTypes()">
                                 </ng-select>
                               </div>
+                              <ng-template #staticACLService>
+                                <input class="input is-small" type="text" [value]="show(control?.acl)"
+                                  [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                                  [readonly]="!sharedService.checkAuth()">
+                              </ng-template>
                             </div>
                           </div>
                         </div>
@@ -144,7 +156,7 @@
               </div>
             </div>
           </div>
-          <div class="field is-horizontal">
+          <div class="field is-horizontal" *ngIf="sharedService.checkAuth()">
             <div class="field-label">
               <label class="label"></label>
             </div>

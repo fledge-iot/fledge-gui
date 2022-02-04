@@ -86,10 +86,12 @@ export class AddControlAclComponent implements OnInit {
         this.aclServiceTypeList = [];
         this.aclURLsList.forEach((item, index) => {
           item.index = index;
-          item.acl.forEach(acl => {
-            this.aclServiceTypeList.push({ type: acl.type, index });
-          });
-          this.addNewURLControl(index, this.aclURLsList[index]);
+          if (item.acl) {
+            item.acl.forEach(acl => {
+              this.aclServiceTypeList.push({ type: acl.type, index });
+            });
+            this.addNewURLControl(index, this.aclURLsList[index]);
+          }
         });
         this.aclForm.form.markAsPristine();
       }, error => {
@@ -134,7 +136,6 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addURLControl() {
-    console.log('form', this.aclForm.controls);
     console.log(this.aclURLsList.length);
     if (this.aclURLsList.length === 0) {
       this.aclForm.form.addControl('urls', new FormGroup({}));
@@ -142,15 +143,13 @@ export class AddControlAclComponent implements OnInit {
       return;
     }
     const maxOrder = Math.max(...this.aclURLsList.map(o => o.index));
-    console.log('max ', maxOrder);
     this.initURLControl(maxOrder + 1);
-
   }
 
   initURLControl(index: number, urlData: any = null) {
     this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
       url: new FormControl(urlData ? urlData?.url : ''),
-      acl: new FormControl(urlData ? urlData?.acl : '')
+      acl: new FormControl(urlData ? urlData?.acl : [])
     }));
     this.aclURLsList.push({ index: index, url: '', acl: [] });
   }
@@ -172,10 +171,8 @@ export class AddControlAclComponent implements OnInit {
   }
 
   deleteURLControl(index) {
-    console.log('index', index);
     this.urlFormGroup().removeControl(`url-${index}`);
     this.aclURLsList = this.aclURLsList.filter(item => item.index !== index);
-    console.log('aclURLsList', this.aclURLsList);
     this.aclForm.form.markAsDirty();
   }
 
@@ -227,6 +224,10 @@ export class AddControlAclComponent implements OnInit {
     const urlControl = (this.urlFormGroup().controls[`url-${index}`] as FormGroup).controls['url'];
     urlControl.setValue(value);
     this.aclForm.form.markAsDirty();
+  }
+
+  show(data, isServiceName = false) {
+    return data ? data.map(d => isServiceName ? d.name : d.type) : 'None';
   }
 
   onSubmit(form: NgForm) {

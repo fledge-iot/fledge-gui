@@ -2,8 +2,24 @@
   overflow: inherit !important;
 }
 
-.field:not(:last-child) {
+.acl-name-field {
+  margin-bottom: 1.5rem !important;
+}
+
+.control.box {
+  margin-bottom: 0.25rem !important;
+}
+
+.service-control .field {
   margin-bottom: 5px !important;
+}
+
+.acl-control .field {
+  margin-bottom: 5px !important;
+}
+
+.url-control {
+  margin-bottom: 0.25rem !important;
 }
 
 .field-label {
