@@ -91,6 +91,7 @@ export class AddControlAclComponent implements OnInit {
           });
           this.addNewURLControl(index, this.aclURLsList[index]);
         });
+        this.aclForm.form.markAsPristine();
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -175,14 +176,17 @@ export class AddControlAclComponent implements OnInit {
     this.urlFormGroup().removeControl(`url-${index}`);
     this.aclURLsList = this.aclURLsList.filter(item => item.index !== index);
     console.log('aclURLsList', this.aclURLsList);
+    this.aclForm.form.markAsDirty();
   }
 
   addServiceName(name: string) {
     this.serviceNameList.push({ name });
+    this.aclForm.form.markAsDirty();
   }
 
   removeServiceName(value: string) {
     this.serviceNameList = this.serviceNameList.filter(item => item.name != value);
+    this.aclForm.form.markAsDirty();
   }
 
   clearServiceNames() {
@@ -190,11 +194,13 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addServiceType(type) {
-    this.serviceTypeList.push(type)
+    this.serviceTypeList.push(type);
+    this.aclForm.form.markAsDirty();
   }
 
   removeServiceType(type: string) {
     this.serviceTypeList = this.serviceTypeList.filter(item => item.type != type);
+    this.aclForm.form.markAsDirty();
   }
 
   clearServiceTypes() {
@@ -204,11 +210,13 @@ export class AddControlAclComponent implements OnInit {
   addACLServiceType(type: string, index: number) {
     this.aclServiceTypeList.push({ type, index })
     this.urlControl(index).controls['acl'].setValue(this.aclServiceTypeList.filter(item => item.index === index));
+    this.aclForm.form.markAsDirty();
   }
 
   removeACLServiceType(type: string, index: number) {
     this.aclServiceTypeList = this.aclServiceTypeList.filter(item => !(item.type == type && item.index === index));
     this.urlControl(index).controls['acl'].setValue(this.aclServiceTypeList.filter(item => item.index === index));
+    this.aclForm.form.markAsDirty();
   }
 
   clearACLServiceTypes() {
@@ -218,6 +226,7 @@ export class AddControlAclComponent implements OnInit {
   setURL(index, value) {
     const urlControl = (this.urlFormGroup().controls[`url-${index}`] as FormGroup).controls['url'];
     urlControl.setValue(value);
+    this.aclForm.form.markAsDirty();
   }
 
   onSubmit(form: NgForm) {

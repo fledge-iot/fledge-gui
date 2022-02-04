@@ -104,7 +104,7 @@
                             <div class="field">
                               <div class="control">
                                 <input #url name="url" class="input is-small" type="text" placeholder="URL"
-                                  name="url-{{i}}" (change)="setURL(control.index, url?.value)" [value]="control?.url"
+                                  name="url-{{i}}" (input)="setURL(control.index, url?.value)" [value]="control?.url"
                                   [ngClass]="{'is-static':!sharedService.checkAuth()}"
                                   [readonly]="!sharedService.checkAuth()">
                               </div>
@@ -180,7 +180,8 @@
                     class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
-                  <button (click)="onSubmit(aclForm)" type="button" class="button is-small is-link">Save</button>
+                  <button [disabled]="!aclForm.valid || !aclForm.dirty" (click)="onSubmit(aclForm)" type="button"
+                    class="button is-small is-link">Save</button>
                 </p>
               </div>
             </div>
