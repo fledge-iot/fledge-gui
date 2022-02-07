@@ -2,6 +2,7 @@
   <thead>
     <tr>
       <th>Name</th>
+      <th>Usage</th>
       <th></th>
     </tr>
   </thead>
@@ -12,6 +13,7 @@
           {{acl?.name}}
         </a>
       </td>
+      <td></td>
       <td>
         <button *ngIf="sharedService.checkAuth()" (click)="setACL(acl);openModal('confirmation-dialog')"
           class="button is-small btn-delete">

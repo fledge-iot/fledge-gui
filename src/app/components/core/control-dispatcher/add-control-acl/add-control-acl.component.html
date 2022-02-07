@@ -41,7 +41,8 @@
                           <div class="column service-control">
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label">Names</label>
+                                <label class="label">{{serviceNameList.length > 1 ?
+                                  'Names': 'Name'}}</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
@@ -54,7 +55,7 @@
                                   </div>
                                   <ng-template #staticService>
                                     <input class="input is-small" type="text" [value]="show(serviceNameList, true)"
-                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light': serviceNameList.length  === 0}"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': serviceNameList.length  === 0}"
                                       [readonly]="!sharedService.checkAuth()">
                                   </ng-template>
                                 </div>
@@ -62,7 +63,7 @@
                             </div>
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label">Types</label>
+                                <label class="label">{{serviceTypeList.length > 1 ? 'Types' : 'Type' }}</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
@@ -75,7 +76,7 @@
                                   </div>
                                   <ng-template #staticServiceType>
                                     <input class="input is-small" type="text" [value]="show(serviceTypeList)"
-                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light': serviceTypeList.length === 0}"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': serviceTypeList.length === 0}"
                                       [readonly]="!sharedService.checkAuth()">
                                   </ng-template>
                                 </div>
@@ -155,7 +156,7 @@
                 </ng-container>
               </div>
               <ng-template #staticURL>
-                <div *ngIf="!sharedService.checkAuth()" class="field has-text-grey-light">None</div>
+                <div *ngIf="!sharedService.checkAuth()" class="field has-text-grey-light is-size-7">None</div>
               </ng-template>
             </div>
           </div>
@@ -172,6 +173,19 @@
                     </span>
                     <span>{{aclURLsList?.length === 0? 'Add URL': 'Add new URL'}}</span>
                   </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- TODO: Usage information loop for available users list -->
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Used By</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <span class="has-text-grey-light is-size-7">No details available</span>
                 </div>
               </div>
             </div>

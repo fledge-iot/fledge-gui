@@ -79,11 +79,12 @@ export class AddControlAclComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.fetchAclByName(this.name)
       .subscribe((res: any) => {
-        console.log('acl', res.url);
-
         this.ngProgress.done();
+        // Get services list by name
         this.serviceNameList = res.service.filter(item => item.name);
+        // Get services list by type
         this.serviceTypeList = res.service.filter(s => s.type);
+        // remove duplicate type from service list
         this.serviceTypeList = uniqBy(this.serviceTypeList, 'type');
         const aclURLData = res.url;
         aclURLData.forEach((item, index) => {
@@ -92,14 +93,14 @@ export class AddControlAclComponent implements OnInit {
             item.acl.forEach(acl => {
               this.aclServiceTypeList.push({ type: acl.type, index });
             });
+            // create control for every item in url array
             this.addNewURLControl(index, aclURLData[index]);
           }
           if (item.url) {
+            // add url in the list of urls
             this.aclURLsList.push(item);
           }
         });
-        console.log('url list', this.aclURLsList);
-        console.log('acl list', this.aclServiceTypeList);
         this.aclForm.form.markAsPristine();
       }, error => {
         /** request completed */
@@ -234,7 +235,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   show(data, isServiceName = false) {
-    return data.length > 0 ? data.map(d => isServiceName ? d.name : d.type) : 'None';
+    return data.length > 0 ? data.map(d => isServiceName ? d.name : d.type).join(', ') : 'None';
   }
 
   onSubmit(form: NgForm) {
