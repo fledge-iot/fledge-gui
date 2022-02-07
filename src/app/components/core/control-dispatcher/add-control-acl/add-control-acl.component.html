@@ -41,8 +41,9 @@
                           <div class="column service-control">
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label">{{serviceNameList.length > 1 ?
-                                  'Names': 'Name'}}</label>
+                                <label class="label" *ngIf="sharedService.checkAuth()">Names</label>
+                                <label class="label" *ngIf="!sharedService.checkAuth()">{{serviceNameList.length > 1 ?
+                                  'Names' : 'Name' }}</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
@@ -63,7 +64,9 @@
                             </div>
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label">{{serviceTypeList.length > 1 ? 'Types' : 'Type' }}</label>
+                                <label class="label" *ngIf="sharedService.checkAuth()">Types</label>
+                                <label class="label" *ngIf="!sharedService.checkAuth()">{{serviceTypeList.length > 1 ?
+                                  'Types' : 'Type' }}</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
