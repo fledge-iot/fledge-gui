@@ -285,6 +285,7 @@ export class AddControlAclComponent implements OnInit {
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
+        this.aclForm.form.markAsPristine();
       }, error => {
         /** request completed */
         this.ngProgress.done();
