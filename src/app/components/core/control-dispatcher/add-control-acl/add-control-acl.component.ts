@@ -253,7 +253,7 @@ export class AddControlAclComponent implements OnInit {
         this.ngProgress.done();
         this.alertService.success(`ACL ${payload['name']} created successfully.`);
         setTimeout(() => {
-          this.router.navigate(['control-dispatcher'], { queryParams: { tab: 2 } });
+          this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'acls' } });
         }, 1000);
       }, error => {
         this.ngProgress.done();
@@ -293,7 +293,7 @@ export class AddControlAclComponent implements OnInit {
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 2 } });
+        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'acls' } });
       }, error => {
         /** request completed */
         this.ngProgress.done();

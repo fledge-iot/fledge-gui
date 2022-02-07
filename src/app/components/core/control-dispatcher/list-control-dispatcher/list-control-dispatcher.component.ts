@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SharedService } from '../../../../services';
 
@@ -9,7 +9,7 @@ import { SharedService } from '../../../../services';
   styleUrls: ['./list-control-dispatcher.component.css']
 })
 export class ListControlDispatcherComponent implements OnInit {
-  seletedTab: Number = 1;  // 1: control-script , 2 : control-acl
+  seletedTab = 'scripts';
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   viewPort: any = '';
@@ -26,18 +26,26 @@ export class ListControlDispatcherComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.viewPortSubscription = this.sharedService.viewport
       .subscribe(viewport => {
         this.viewPort = viewport;
       });
   }
 
-  showDiv(id: number) {
-    this.seletedTab = 1;
-    if (id === 2) {
+  showDiv(id: string) {
+    this.seletedTab = 'scripts';
+    if (id === 'acls') {
       this.seletedTab = id;
     }
+    // update query param on tab selection in url
+    const queryParams: Params = { tab: this.seletedTab };
+    this.router.navigate(
+      [],
+      {
+        relativeTo: this.route,
+        queryParams: queryParams,
+        queryParamsHandling: 'merge'
+      });
   }
 
   public ngOnDestroy(): void {
