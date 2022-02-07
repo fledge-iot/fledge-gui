@@ -20,7 +20,7 @@ export class AddControlAclComponent implements OnInit {
   serviceNameList = [];
   serviceTypeList = [];
   name: string;
-  update = false;
+  editMode = false;
 
   @ViewChild('aclForm') aclForm: NgForm;
 
@@ -38,7 +38,7 @@ export class AddControlAclComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.name = params['name'];
       if (this.name) {
-        this.update = true;
+        this.editMode = true;
         this.getACLbyName();
       }
     });
@@ -47,7 +47,7 @@ export class AddControlAclComponent implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      if (!this.update) {
+      if (!this.editMode) {
         this.addFormControls(0);
       }
     }, 0);
@@ -73,26 +73,33 @@ export class AddControlAclComponent implements OnInit {
   }
 
   getACLbyName() {
+    this.aclURLsList = []; // clear list
+    this.aclServiceTypeList = [];
     /** request started */
     this.ngProgress.start();
     this.controlService.fetchAclByName(this.name)
       .subscribe((res: any) => {
+        console.log('acl', res.url);
+
         this.ngProgress.done();
         this.serviceNameList = res.service.filter(item => item.name);
         this.serviceTypeList = res.service.filter(s => s.type);
         this.serviceTypeList = uniqBy(this.serviceTypeList, 'type');
-        this.aclURLsList = [];
-        this.aclURLsList = res.url;
-        this.aclServiceTypeList = [];
-        this.aclURLsList.forEach((item, index) => {
+        const aclURLData = res.url;
+        aclURLData.forEach((item, index) => {
           item.index = index;
           if (item.acl) {
             item.acl.forEach(acl => {
               this.aclServiceTypeList.push({ type: acl.type, index });
             });
-            this.addNewURLControl(index, this.aclURLsList[index]);
+            this.addNewURLControl(index, aclURLData[index]);
+          }
+          if (item.url) {
+            this.aclURLsList.push(item);
           }
         });
+        console.log('url list', this.aclURLsList);
+        console.log('acl list', this.aclServiceTypeList);
         this.aclForm.form.markAsPristine();
       }, error => {
         /** request completed */
@@ -227,7 +234,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   show(data, isServiceName = false) {
-    return data ? data.map(d => isServiceName ? d.name : d.type) : 'None';
+    return data.length > 0 ? data.map(d => isServiceName ? d.name : d.type) : 'None';
   }
 
   onSubmit(form: NgForm) {
@@ -243,7 +250,7 @@ export class AddControlAclComponent implements OnInit {
       url: urls
     }
     console.log('payload', payload);
-    if (this.update) {
+    if (this.editMode) {
       this.updateACL(payload);
       return;
     }

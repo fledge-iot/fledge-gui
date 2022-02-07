@@ -4,7 +4,7 @@
       <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'acls'}">ACLs</a></li>
       <li class="is-active">
         <a href="#" aria-current="page">
-          {{update ? name : 'Add' }}
+          {{editMode ? name : 'Add' }}
         </a>
       </li>
     </ul>
@@ -54,7 +54,7 @@
                                   </div>
                                   <ng-template #staticService>
                                     <input class="input is-small" type="text" [value]="show(serviceNameList, true)"
-                                      [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light': serviceNameList.length  === 0}"
                                       [readonly]="!sharedService.checkAuth()">
                                   </ng-template>
                                 </div>
@@ -75,7 +75,7 @@
                                   </div>
                                   <ng-template #staticServiceType>
                                     <input class="input is-small" type="text" [value]="show(serviceTypeList)"
-                                      [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light': serviceTypeList.length === 0}"
                                       [readonly]="!sharedService.checkAuth()">
                                   </ng-template>
                                 </div>
@@ -97,7 +97,7 @@
               <label class="label">URLs</label>
             </div>
             <div class="field-body">
-              <div class="field">
+              <div class="field" *ngIf="aclURLsList.length > 0; else staticURL">
                 <ng-container class="steps-list" *ngFor="let control of aclURLsList">
                   <div class="control box">
                     <div class="columns">
@@ -154,6 +154,9 @@
                   </div>
                 </ng-container>
               </div>
+              <ng-template #staticURL>
+                <div *ngIf="!sharedService.checkAuth()" class="field has-text-grey-light">None</div>
+              </ng-template>
             </div>
           </div>
           <div class="field is-horizontal" *ngIf="sharedService.checkAuth()">
@@ -178,7 +181,7 @@
           <div class="columns">
             <div class="column is-2"></div>
             <div class="column">
-              <div class="field is-grouped control-pad" *ngIf="update">
+              <div class="field is-grouped control-pad" *ngIf="editMode">
                 <p class="control">
                   <button (click)="openModal('confirmation-dialog')" type="button"
                     class="button is-small is-danger is-outlined">Delete</button>
