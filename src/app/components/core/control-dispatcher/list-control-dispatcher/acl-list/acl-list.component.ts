@@ -32,8 +32,6 @@ export class AclListComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.fetchAllACL()
       .subscribe((data: any) => {
-        console.log('data acl', data);
-
         this.ngProgress.done();
         this.controlAcls = orderBy(data.acls, 'name');
       }, error => {
@@ -72,6 +70,8 @@ export class AclListComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        // close modal
+        this.closeModal('confirmation-dialog');
         if (error.status === 0) {
           console.log('service down ', error);
         } else {

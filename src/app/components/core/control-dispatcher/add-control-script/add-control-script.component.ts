@@ -94,6 +94,8 @@ export class AddControlScriptComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        // close modal
+        this.closeModal('confirmation-dialog');
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
