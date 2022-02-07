@@ -56,3 +56,9 @@ div.close-btn-div {
   min-height: 5px;
   font-size: 0.8em;
 }
+
+.static-acl {
+  padding: 3px 0px 0px 0px !important;
+  height: 0%;
+  vertical-align: inherit !important;
+}

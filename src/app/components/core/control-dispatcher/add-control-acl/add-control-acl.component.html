@@ -21,7 +21,7 @@
               <div class="field">
                 <div class="control">
                   <input name="name" class="input is-small" type="text" placeholder="Name" required [(ngModel)]="name"
-                    [ngClass]="{'is-static':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
+                    [ngClass]="{'is-static static-acl':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
                     [readonly]="!sharedService.checkAuth()">
                 </div>
               </div>
