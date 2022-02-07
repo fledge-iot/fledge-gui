@@ -48,6 +48,7 @@ export class AddControlAclComponent implements OnInit {
   ngAfterViewInit() {
     setTimeout(() => {
       if (!this.editMode) {
+        // On add page, show one url control by default
         this.addFormControls(0);
       }
     }, 0);
@@ -196,6 +197,7 @@ export class AddControlAclComponent implements OnInit {
 
   clearServiceNames() {
     this.serviceNameList = [];
+    this.aclForm.form.markAsDirty();
   }
 
   addServiceType(type) {
@@ -210,6 +212,7 @@ export class AddControlAclComponent implements OnInit {
 
   clearServiceTypes() {
     this.serviceTypeList = [];
+    this.aclForm.form.markAsDirty();
   }
 
   addACLServiceType(type: string, index: number) {
@@ -226,6 +229,7 @@ export class AddControlAclComponent implements OnInit {
 
   clearACLServiceTypes() {
     this.aclServiceTypeList = [];
+    this.aclForm.form.markAsDirty();
   }
 
   setURL(index, value) {
