@@ -1,20 +1,20 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { orderBy } from 'lodash';
-import { AlertService, ProgressBarService, SharedService } from '../../../../../services';
+import { AlertService, SharedService, ProgressBarService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
+import { orderBy } from 'lodash';
 
 @Component({
-  selector: 'app-control-scripts-list',
-  templateUrl: './control-scripts-list.component.html',
-  styleUrls: ['./control-scripts-list.component.css']
+  selector: 'app-acl-list',
+  templateUrl: './acl-list.component.html',
+  styleUrls: ['./acl-list.component.css']
 })
-export class ControlScriptsListComponent implements OnInit {
-  controlScripts: any = [];
+export class AclListComponent implements OnInit {
+  controlAcls: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  script;
+  acl;
   private subscription: Subscription;
   constructor(
     private controlService: ControlDispatcherService,
@@ -24,16 +24,16 @@ export class ControlScriptsListComponent implements OnInit {
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
-    this.showControlDispatcherService();
+    this.showACLs();
   }
 
-  showControlDispatcherService() {
+  showACLs() {
     /** request started */
     this.ngProgress.start();
-    this.controlService.fetchControlServiceScripts()
+    this.controlService.fetchAllACL()
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.controlScripts = orderBy(data.scripts, 'name');
+        this.controlAcls = orderBy(data.acls, 'name');
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -45,8 +45,8 @@ export class ControlScriptsListComponent implements OnInit {
       });
   }
 
-  setScript(script: any) {
-    this.script = script.name;
+  setACL(acl: any) {
+    this.acl = acl.name;
   }
 
   openModal(id: string) {
@@ -57,16 +57,16 @@ export class ControlScriptsListComponent implements OnInit {
     this.dialogService.close(id);
   }
 
-  deleteScript(script) {
+  deleteAcl(acl) {
     /** request started */
     this.ngProgress.start();
-    this.controlService.deleteScript(script)
+    this.controlService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.showControlDispatcherService();
+        this.showACLs();
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -86,3 +86,4 @@ export class ControlScriptsListComponent implements OnInit {
     }
   }
 }
+

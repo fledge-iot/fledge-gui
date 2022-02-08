@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a [routerLink]="['/control-dispatcher']">Scripts</a></li>
+        <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'scripts'}">Scripts</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">
             {{scriptName ? scriptName : 'Add' }}
@@ -99,7 +99,8 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button [routerLink]="['/control-dispatcher']" class="button is-small">Cancel</button>
+                  <button [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'scripts'}"
+                    class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
                   <button [disabled]="!scriptForm.valid || !scriptForm.dirty" (click)="onSubmit(scriptForm)"

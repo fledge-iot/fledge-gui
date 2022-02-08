@@ -90,10 +90,12 @@ export class AddControlScriptComponent implements OnInit {
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.router.navigate(['control-dispatcher']);
+        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'scripts' } });
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        // close modal
+        this.closeModal('confirmation-dialog');
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -227,7 +229,7 @@ export class AddControlScriptComponent implements OnInit {
           this.scriptForm.form.markAsUntouched();
           this.scriptForm.form.markAsPristine();
           setTimeout(() => {
-            this.router.navigate(['control-dispatcher']);
+            this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'scripts' } });
           }, 1000);
         }, error => {
           this.ngProgress.done();

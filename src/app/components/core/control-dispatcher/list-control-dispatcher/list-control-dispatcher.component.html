@@ -3,19 +3,18 @@
     <header>
       <div class="tabs">
         <ul>
-          <li [ngClass]="{'is-active': seletedTab == 1}">
+          <li [ngClass]="{'is-active': seletedTab == 'scripts'}">
             <h6 class="is-6 has-text-weight-semibold">
-              <a (click)="showDiv(1)">Scripts</a>
+              <a (click)="showDiv('scripts')">Scripts</a>
             </h6>
           </li>
-          <!-- TODO - ACL -->
-          <!-- <li [ngClass]="{'is-active': seletedTab == 2}">
+          <!-- <li [ngClass]="{'is-active': seletedTab == 'acls'}">
             <h6 class="is-6 has-text-weight-semibold">
-              <a (click)="showDiv(2)">ACL</a>
+              <a (click)="showDiv('acls')">ACLs</a>
             </h6>
           </li> -->
           <li *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">
-            <a [routerLink]="seletedTab === 1 ? ['script/add']:['acl/add']" class="is-light"
+            <a [routerLink]="seletedTab === 'scripts' ? ['script/add']:['acl/add']" class="is-light"
               style="border-bottom-width: 0">
               <p *ngIf="viewPort !== 'mobile'">&nbsp; Add &nbsp;</p>
               <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
@@ -25,11 +24,11 @@
       </div>
     </header>
     <div class="card-content card-data">
-      <div *ngIf="seletedTab == 1" id="script-steps" #steps>
+      <div *ngIf="seletedTab == 'scripts'" id="script-steps" #steps>
         <app-control-scripts-list></app-control-scripts-list>
       </div>
-      <div *ngIf="seletedTab == 2">
-
+      <div *ngIf="seletedTab == 'acls'">
+        <app-acl-list></app-acl-list>
       </div>
     </div>
   </div>

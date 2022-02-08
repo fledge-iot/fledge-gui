@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SharedService } from '../../../../services';
 
@@ -8,12 +9,21 @@ import { SharedService } from '../../../../services';
   styleUrls: ['./list-control-dispatcher.component.css']
 })
 export class ListControlDispatcherComponent implements OnInit {
-  seletedTab: Number = 1;  // 1: control-script , 2 : control-acl
+  seletedTab = 'scripts';
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   viewPort: any = '';
 
-  constructor(public sharedService: SharedService) { }
+  constructor(
+    public sharedService: SharedService,
+    private router: Router,
+    private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        this.seletedTab = params['tab'];
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.viewPortSubscription = this.sharedService.viewport
@@ -22,11 +32,20 @@ export class ListControlDispatcherComponent implements OnInit {
       });
   }
 
-  showDiv(id: number) {
-    this.seletedTab = 1;
-    if (id === 2) {
+  showDiv(id: string) {
+    this.seletedTab = 'scripts';
+    if (id === 'acls') {
       this.seletedTab = id;
     }
+    // update query param on tab selection in url
+    const queryParams: Params = { tab: this.seletedTab };
+    this.router.navigate(
+      [],
+      {
+        relativeTo: this.route,
+        queryParams: queryParams,
+        queryParamsHandling: 'merge'
+      });
   }
 
   public ngOnDestroy(): void {

@@ -38,15 +38,40 @@ export class ControlDispatcherService {
       catchError(error => throwError(error)));
   }
 
+  deleteScript(name: string) {
+    return this.http.delete(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(name)}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   fetchAllACL() {
     return this.http.get(this.ACL_URL).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
-  deleteScript(name: string) {
-    return this.http.delete(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(name)}`).pipe(
+  fetchAclByName(name: string) {
+    return this.http.get(`${this.ACL_URL}/${encodeURIComponent(name)}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  addACL(payload: any) {
+    return this.http.post(this.ACL_URL, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  updateACL(name: string, payload: any) {
+    return this.http.put(`${this.ACL_URL}/${encodeURIComponent(name)}`, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  deleteACL(name: string) {
+    return this.http.delete(`${this.ACL_URL}/${encodeURIComponent(name)}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
 }

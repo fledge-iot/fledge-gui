@@ -20,6 +20,8 @@ import { AddWriteComponent } from './add-control-script/add-step/add-write/add-w
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { ControlScriptsListComponent } from './list-control-dispatcher/control-scripts-list/control-scripts-list.component';
 import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
+import { AclListComponent } from './list-control-dispatcher/acl-list/acl-list.component';
+import { AddControlAclComponent } from './add-control-acl/add-control-acl.component';
 
 const routes: Routes = [
 
@@ -35,6 +37,15 @@ const routes: Routes = [
   {
     path: 'script/:name',
     component: AddControlScriptComponent
+  },
+  {
+    path: 'acl/add',
+    component: AddControlAclComponent,
+    canActivate: [AuthTypeGuard]
+  },
+  {
+    path: 'acl/:name',
+    component: AddControlAclComponent
   }
 ];
 
@@ -51,7 +62,9 @@ const routes: Routes = [
     AddScriptComponent,
     AddConfigureComponent,
     AddDelayComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    AclListComponent,
+    AddControlAclComponent
   ],
   imports: [
     FormsModule,
