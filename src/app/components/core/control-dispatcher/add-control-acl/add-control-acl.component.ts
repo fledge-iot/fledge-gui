@@ -5,6 +5,7 @@ import { AlertService, ProgressBarService, ServicesApiService, SharedService } f
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { uniqBy } from 'lodash';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -31,6 +32,7 @@ export class AddControlAclComponent implements OnInit {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private dialogService: DialogService,
+    private docService: DocService,
     private servicesApiService: ServicesApiService,
     public sharedService: SharedService) { }
 
@@ -240,6 +242,10 @@ export class AddControlAclComponent implements OnInit {
 
   show(data, isServiceName = false) {
     return data.length > 0 ? data.map(d => isServiceName ? d.name : d.type).join(', ') : 'None';
+  }
+
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
   onSubmit(form: NgForm) {

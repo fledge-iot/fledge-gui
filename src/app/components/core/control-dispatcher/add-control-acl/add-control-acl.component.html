@@ -12,6 +12,10 @@
   <div class="card">
     <div class="card-content step-content">
       <form #aclForm="ngForm">
+        <span (click)="goToLink('')" class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+          data-tooltip="Help">
+          <i class="far fa-question-circle"></i>
+        </span>
         <div class="column is-four-fifths">
           <div class="field is-horizontal acl-name-field">
             <div class="field-label">

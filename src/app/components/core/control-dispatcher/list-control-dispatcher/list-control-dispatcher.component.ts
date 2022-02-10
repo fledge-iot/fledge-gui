@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SharedService } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-list-control-dispatcher',
@@ -17,6 +18,7 @@ export class ListControlDispatcherComponent implements OnInit {
   constructor(
     public sharedService: SharedService,
     private router: Router,
+    public docService: DocService,
     private route: ActivatedRoute) {
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
@@ -46,6 +48,10 @@ export class ListControlDispatcherComponent implements OnInit {
         queryParams: queryParams,
         queryParamsHandling: 'merge'
       });
+  }
+
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
   public ngOnDestroy(): void {

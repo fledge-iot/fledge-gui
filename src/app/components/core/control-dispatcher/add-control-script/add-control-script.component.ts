@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, ProgressBarService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
+import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { AddStepComponent } from './add-step/add-step.component';
 
@@ -33,6 +34,7 @@ export class AddControlScriptComponent implements OnInit {
     private ngProgress: ProgressBarService,
     private dialogService: DialogService,
     public sharedService: SharedService,
+    public docService: DocService,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -57,6 +59,10 @@ export class AddControlScriptComponent implements OnInit {
 
   updateScriptName(name: string) {
     this.controlScript.name = name;
+  }
+
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
   getControlScript() {
