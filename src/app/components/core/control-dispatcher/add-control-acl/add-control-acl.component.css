@@ -62,3 +62,7 @@ div.close-btn-div {
   height: 0%;
   vertical-align: inherit !important;
 }
+
+.is-hovered {
+  cursor: pointer !important;
+}
