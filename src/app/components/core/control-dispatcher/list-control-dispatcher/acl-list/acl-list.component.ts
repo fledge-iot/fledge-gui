@@ -20,7 +20,7 @@ export class AclListComponent implements OnInit {
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
     private dialogService: DialogService,
-    private sharedService: SharedService,
+    public sharedService: SharedService,
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
@@ -33,7 +33,23 @@ export class AclListComponent implements OnInit {
     this.controlService.fetchAllACL()
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.controlAcls = orderBy(data.acls, 'name');
+        this.controlAcls = orderBy(data.acls, 'name')
+        // Uncomment below code for testing of usese on list
+        // this.controlAcls = this.controlAcls.map((item) => {
+        //   item['users'] = [
+        //     {
+        //       "service": "Substation 11",
+        //       "script": "A#6"
+        //     },
+        //     {
+        //       "service": "Substation 110"
+        //     },
+        //     {
+        //       "script": "SC9"
+        //     }
+        //   ]
+        //   return item;
+        // });
       }, error => {
         /** request completed */
         this.ngProgress.done();

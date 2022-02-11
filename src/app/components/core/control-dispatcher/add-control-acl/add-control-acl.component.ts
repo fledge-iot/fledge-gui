@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
-import { uniqBy } from 'lodash';
+import { uniqBy, groupBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
@@ -20,6 +20,10 @@ export class AddControlAclComponent implements OnInit {
   aclServiceTypeList = [];
   serviceNameList = [];
   serviceTypeList = [];
+
+  usageServiceList = [];
+  usageScriptList = [];
+
   name: string;
   editMode = false;
 
@@ -82,7 +86,32 @@ export class AddControlAclComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.fetchAclByName(this.name)
       .subscribe((res: any) => {
+        console.log('res', res);
         this.ngProgress.done();
+        // To test users section uncomment below code
+        // res['users'] = [
+        //   {
+        //     "service": "Substation 1104"
+        //   },
+        //   {
+        //     "script": "A#6"
+        //   },
+        //   {
+        //     "service": "Substation 1105"
+        //   },
+        //   {
+        //     "script": "SC9"
+        //   }
+        // ]
+
+        // get users services list
+        this.usageServiceList = res['users']?.map(us => us.service).filter(item => item);
+
+        // get users scripts list
+        this.usageScriptList = res['users']?.map(us => us?.script).filter(item => item);
+        console.log('us type list', this.usageServiceList);
+        console.log('us script list', this.usageScriptList);
+
         // Get services list by name
         this.serviceNameList = res.service.filter(item => item.name);
         // Get services list by type

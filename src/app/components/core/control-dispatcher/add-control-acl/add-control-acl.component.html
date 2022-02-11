@@ -12,10 +12,11 @@
   <div class="card">
     <div class="card-content step-content">
       <form #aclForm="ngForm">
-        <span (click)="goToLink('')" class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+        <!-- TODO: FOGL-6225 -->
+        <!-- <span (click)="goToLink('')" class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
           data-tooltip="Help">
           <i class="far fa-question-circle"></i>
-        </span>
+        </span> -->
         <div class="column is-four-fifths">
           <div class="field is-horizontal acl-name-field">
             <div class="field-label">
@@ -118,7 +119,7 @@
                             <div class="field">
                               <div class="control">
                                 <input #url name="url" class="input is-small" type="text" placeholder="URL"
-                                  name="url-{{i}}" (input)="setURL(control.index, url?.value)"
+                                  name="url-{{control.index}}" (input)="setURL(control.index, url?.value)"
                                   [value]="!sharedService.checkAuth() && !control.url ? 'None': control.url"
                                   [ngClass]="{'is-static':!sharedService.checkAuth()}"
                                   [readonly]="!sharedService.checkAuth()">
@@ -187,14 +188,41 @@
           <!-- TODO: Usage information loop for available users list -->
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label">Used By</label>
+              <label class="label">Usage</label>
             </div>
             <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <span class="has-text-grey-light is-size-7">No details available</span>
+              <div class="field" *ngIf="usageServiceList && usageScriptList; else noUsageMsg">
+                <div class="field is-horizontal" *ngIf="usageServiceList?.length > 0">
+                  <div class="field-label is-small">
+                    <label class="label">{{usageServiceList?.length > 1? 'Services': 'Service'}}</label>
+                  </div>
+                  <div class=" field-body">
+                    <div class="control" *ngFor="let item of usageServiceList; last as isLast">
+                      <span>{{item}}</span>
+                      <span *ngIf="!isLast">,&nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal" *ngIf="usageScriptList?.length > 0">
+                  <div class="field-label is-small">
+                    <label class="label">{{usageScriptList?.length > 1? 'Scripts': 'Script'}}</label>
+                  </div>
+                  <div class=" field-body">
+                    <div class="control" *ngFor="let item of usageScriptList; last as isLast">
+                      <a [routerLink]="['/control-dispatcher/script', item]"
+                        routerLinkActive="router-link-active">{{item}}</a>
+                      <span *ngIf="!isLast">,&nbsp;</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <ng-template #noUsageMsg>
+                <div class="field">
+                  <div class="control">
+                    <span class="has-text-grey-light is-size-7">No details available</span>
+                  </div>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>

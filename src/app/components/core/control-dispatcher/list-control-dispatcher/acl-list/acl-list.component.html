@@ -1,4 +1,4 @@
-<table class="table scroll is-responsive is-hoverable" *ngIf="controlAcls.length > 0; else noacl">
+<table class="table scroll is-responsive is-hoverable is-striped" *ngIf="controlAcls.length > 0; else noacl">
   <thead>
     <tr>
       <th>Name</th>
@@ -7,22 +7,56 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let acl of controlAcls">
-      <td>
-        <a [routerLink]="['acl', acl?.name]">
-          {{acl?.name}}
-        </a>
-      </td>
-      <td></td>
-      <td>
-        <button *ngIf="sharedService.checkAuth()" (click)="setACL(acl);openModal('confirmation-dialog')"
-          class="button is-small btn-delete">
-          <span class="icon is-small">
-            <i class="far fa-trash-alt"></i>
-          </span>
-        </button>
-      </td>
-    </tr>
+    <ng-container *ngFor="let acl of controlAcls; first as isFirst">
+      <tr *ngIf="isFirst && acl?.users">
+        <td></td>
+        <td>
+      <tr>
+  <tbody>
+    <thead>
+      <tr>
+        <th class="is-size-7">Services</th>
+        <th></th>
+        <th></th>
+        <th class="is-size-7">Scripts</th>
+      </tr>
+    </thead>
+  </tbody>
+  </tr>
+  </td>
+  <td></td>
+  </tr>
+  <tr>
+    <td>
+      <a [routerLink]="['acl', acl?.name]">
+        {{acl?.name}}
+      </a>
+    </td>
+    <td>
+      <table class="table is-narrow" *ngIf="acl?.users">
+        <tbody>
+          <tr *ngFor="let item of acl?.users">
+            <td>
+              {{item?.service}}
+            </td>
+            <td>
+              <a [routerLink]="['/control-dispatcher/script', item?.script]"
+                routerLinkActive="router-link-active">{{item.script}}</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+    <td>
+      <button *ngIf="sharedService.checkAuth()" (click)="setACL(acl);openModal('confirmation-dialog')"
+        class="button is-small btn-delete">
+        <span class="icon is-small">
+          <i class="far fa-trash-alt"></i>
+        </span>
+      </button>
+    </td>
+  </tr>
+  </ng-container>
   </tbody>
 </table>
 <ng-template #noacl>
