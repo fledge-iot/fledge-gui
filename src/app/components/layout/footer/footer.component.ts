@@ -17,11 +17,10 @@ export class FooterComponent implements OnInit {
   constructor(public router: Router) { }
 
   ngOnInit(): void {
+    this.appVersion = `v${this.git.semverString}`;
     if (this.git?.distance == 0) {
       // released version
       this.appVersion = `v${this.git.semverString.replace('+0', '')}`
-    } else {
-      this.appVersion = `v${this.git.semverString.replace(`+${this.git?.distance}.`, `-${this.git?.distance}-`)}`;
     }
   }
 }
