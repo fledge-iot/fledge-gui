@@ -19,9 +19,9 @@ export class FooterComponent implements OnInit {
   ngOnInit(): void {
     if (this.git?.distance == 0) {
       // released version
-      this.appVersion = `${this.git.version}-${this.git.hash}`
+      this.appVersion = `v${this.git.semverString.replace('+0', '')}`
     } else {
-      this.appVersion = this.git.raw.substr(0, this.git.raw.lastIndexOf('-'));
+      this.appVersion = `v${this.git.semverString.replace(`+${this.git?.distance}.`, `-${this.git?.distance}-`)}`;
     }
   }
 }
