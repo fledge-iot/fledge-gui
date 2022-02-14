@@ -17,9 +17,6 @@ export class FooterComponent implements OnInit {
   constructor(public router: Router) { }
 
   ngOnInit(): void {
-    console.log('git', this.git);
-    console.log('distance', this.git.distance);
-    console.log('raw', this.git.raw);
     if (this.git?.distance == 0) {
       // released version
       this.appVersion = `${this.git.version}-${this.git.hash}`
