@@ -1,8 +1,8 @@
 <footer [ngClass]="{'git-hash':router.url.includes('/setting')}" class="footer is-offset-2 is-10">
-    <div class="content has-text-centered has-text-grey-dark">
-      <div class="help" *ngIf="router.url.includes('/setting')">v{{appVersion}}{{git.hash == "" ? '' : '-' + git.hash }}</div>
-      <small>
-          &copy; {{copyrightYear}} DIANOMIC SYSTEMS INC. All Rights Reserved.
-      </small>
-    </div>
+  <div class="content has-text-centered has-text-grey-dark">
+    <div class="help" *ngIf="router.url.includes('/setting')">v{{appVersion}}</div>
+    <small>
+      &copy; {{copyrightYear}} DIANOMIC SYSTEMS INC. All Rights Reserved.
+    </small>
+  </div>
 </footer>
