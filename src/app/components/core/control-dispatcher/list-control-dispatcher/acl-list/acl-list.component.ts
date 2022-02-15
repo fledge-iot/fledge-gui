@@ -48,6 +48,9 @@ export class AclListComponent implements OnInit {
         //     },
         //     {
         //       "script": "A#2"
+        //     },
+        //     {
+        //       "script": "A#21"
         //     }
         //   ]
         //   return item;
@@ -60,9 +63,11 @@ export class AclListComponent implements OnInit {
             const userScripts = acl.users.map(u => ({ script: u.script })).filter(s => s.script);
             const users = [userServices, userScripts];
             acl.users = Array.from({
-              length: users.length
+              length: acl.users.length
             }, (_, index) => Object.assign({}, ...users.map(({ [index]: obj }) => obj)));
           }
+          // remove empty {} objects from array
+          acl.users = acl.users.filter(value => Object.keys(value).length !== 0);
         });
       }, error => {
         /** request completed */
