@@ -143,12 +143,12 @@
                                   (add)="addACLServiceType($event.type, control.index)" [ngModel]="control?.acl"
                                   [ngModelOptions]="{standalone: true}" bindLabel="type"
                                   (remove)="removeACLServiceType($event.label, control.index)"
-                                  (clear)="clearACLServiceTypes()">
+                                  (clear)="clearACLServiceTypes(control.index)">
                                 </ng-select>
                               </div>
                               <ng-template #staticACLService>
                                 <input class="input is-small" type="text" [value]="show(control?.acl)"
-                                  [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                                  [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': control?.acl.length === 0}"
                                   [readonly]="!sharedService.checkAuth()">
                               </ng-template>
                             </div>
