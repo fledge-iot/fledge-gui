@@ -253,6 +253,8 @@ export class AddControlScriptComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.updateScript(this.scriptName, payload)
       .subscribe((data: any) => {
+        this.scriptName = payload.name;
+        this.router.navigate(['control-dispatcher/script/', payload.name]);
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
