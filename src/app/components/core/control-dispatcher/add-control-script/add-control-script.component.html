@@ -82,7 +82,8 @@
                 <div class="field">
                   <div class="control">
                     <input name="acl" class="input" type="text" [(ngModel)]="selectedACL"
-                      [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':selectedACL === 'None'}"
+                      [readonly]="!sharedService.checkAuth()">
                   </div>
                 </div>
               </ng-template>

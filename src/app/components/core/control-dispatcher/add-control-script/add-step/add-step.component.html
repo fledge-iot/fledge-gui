@@ -73,7 +73,8 @@
       class="has-text-grey-dark">None</small></span> -->
   <div class="field" *ngIf="stepControlsList.length === 0 && !sharedService.checkAuth()">
     <div class="control">
-      <input class="input is-small" type="text" value='None' [ngClass]="{'is-static':!sharedService.checkAuth()}"
+      <input class="input is-small" type="text" value='None'
+        [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !sharedService.checkAuth() }"
         [readonly]="!sharedService.checkAuth()">
     </div>
   </div>

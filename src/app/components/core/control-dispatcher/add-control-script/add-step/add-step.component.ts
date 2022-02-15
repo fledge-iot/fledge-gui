@@ -116,6 +116,8 @@ export class AddStepComponent implements OnInit {
     this.controlService.fetchControlServiceScriptByName(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        // remove empty object {} from steps array
+        data.steps = data.steps.filter(value => Object.keys(value).length !== 0);
         data.steps.forEach((step) => {
           const key = Object.keys(step)[0];
           const st = Object.values(step)[0];
