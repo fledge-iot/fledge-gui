@@ -10,7 +10,7 @@
     <ng-container *ngFor="let acl of controlAcls; first as isFirst">
       <tr *ngIf="isFirst && acl?.users">
         <td></td>
-        <td>
+        <td [ngClass]="{'acl-usage': isFirst && acl?.users}">
       <tr>
   <tbody>
     <thead>

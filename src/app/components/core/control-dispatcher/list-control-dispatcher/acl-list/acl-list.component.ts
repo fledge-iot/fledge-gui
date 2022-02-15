@@ -41,17 +41,29 @@ export class AclListComponent implements OnInit {
         //       "service": "Substation 11"
         //     },
         //     {
-        //       "script": "A#6"
+        //       "script": "A#1"
         //     },
         //     {
         //       "service": "Substation 110"
         //     },
         //     {
-        //       "script": "SC9"
+        //       "script": "A#2"
         //     }
         //   ]
         //   return item;
         // });
+
+        // make users array for {service, script} object to make a tabel in html view
+        this.controlAcls.forEach(acl => {
+          if (acl.users) {
+            const userServices = acl.users.map(u => ({ service: u.service })).filter(s => s.service);
+            const userScripts = acl.users.map(u => ({ script: u.script })).filter(s => s.script);
+            const users = [userServices, userScripts];
+            acl.users = Array.from({
+              length: users.length
+            }, (_, index) => Object.assign({}, ...users.map(({ [index]: obj }) => obj)));
+          }
+        });
       }, error => {
         /** request completed */
         this.ngProgress.done();

@@ -322,6 +322,8 @@ export class AddControlAclComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.updateACL(this.nameCopy, payload)
       .subscribe((data: any) => {
+        this.name = this.nameCopy = payload.name;
+        this.router.navigate(['control-dispatcher/acl/', payload.name]);
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
