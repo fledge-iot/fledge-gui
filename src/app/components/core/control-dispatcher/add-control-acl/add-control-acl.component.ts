@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
-import { uniqBy, groupBy } from 'lodash';
+import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
@@ -24,7 +24,8 @@ export class AddControlAclComponent implements OnInit {
   userServices = [];
   userScripts = [];
 
-  name: string;
+  name = '';
+  nameCopy = ''
   editMode = false;
 
   @ViewChild('aclForm') aclForm: NgForm;
@@ -44,8 +45,9 @@ export class AddControlAclComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.name = params['name'];
       if (this.name) {
+        this.nameCopy = params['name'];
         this.editMode = true;
-        this.getACLbyName();
+        this.getACLbyName(this.nameCopy);
       }
     });
     this.getAllServices();
@@ -79,14 +81,18 @@ export class AddControlAclComponent implements OnInit {
     this.dialogService.close(id);
   }
 
-  getACLbyName() {
+  refresh() {
+    this.getACLbyName(this.nameCopy);
+  }
+
+  getACLbyName(name: string) {
     this.aclURLsList = []; // clear list
     this.aclServiceTypeList = [];
     /** request started */
     this.ngProgress.start();
-    this.controlService.fetchAclByName(this.name)
+    this.controlService.fetchAclByName(name)
       .subscribe((res: any) => {
-        console.log('res', res);
+        this.name = name;
         this.ngProgress.done();
         // To test users section uncomment below code
         // res['users'] = [
@@ -109,8 +115,6 @@ export class AddControlAclComponent implements OnInit {
 
         // get users scripts list
         this.userScripts = res['users']?.map(us => us?.script).filter(item => item);
-        console.log('us type list', this.userServices);
-        console.log('us script list', this.userScripts);
 
         // Get services list by name
         this.serviceNameList = res.service.filter(item => item.name);
@@ -315,7 +319,7 @@ export class AddControlAclComponent implements OnInit {
   updateACL(payload: any) {
     /** request started */
     this.ngProgress.start();
-    this.controlService.updateACL(this.name, payload)
+    this.controlService.updateACL(this.nameCopy, payload)
       .subscribe((data: any) => {
         this.alertService.success(data.message, true)
         /** request completed */

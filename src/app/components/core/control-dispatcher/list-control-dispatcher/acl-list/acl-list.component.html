@@ -37,11 +37,11 @@
         <tbody>
           <tr *ngFor="let item of acl?.users">
             <td class="is-size-7">
-              {{item}}
+              {{item.service}}
             </td>
             <td class="is-size-7">
-              <!-- <a [routerLink]="['/control-dispatcher/script', item?.script]"
-                routerLinkActive="router-link-active">{{item.script}}</a> -->
+              <a [routerLink]="['/control-dispatcher/script', item?.script]"
+                routerLinkActive="router-link-active">{{item.script}}</a>
             </td>
           </tr>
         </tbody>

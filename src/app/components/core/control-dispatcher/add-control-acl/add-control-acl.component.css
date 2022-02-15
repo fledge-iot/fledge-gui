@@ -66,3 +66,11 @@ div.close-btn-div {
 .is-hovered {
   cursor: pointer !important;
 }
+
+#refresh-check {
+  margin-left: 3px;
+}
+
+.breadcrumb {
+  margin-bottom: 0px !important;
+}
