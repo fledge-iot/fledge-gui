@@ -6,3 +6,9 @@
 tr:hover .btn-delete {
   opacity: 1;
 }
+
+.child-table th {
+  padding-left: 0.1em !important;
+  padding-top: 0.1em !important;
+  padding-bottom: 0.1em !important;
+}

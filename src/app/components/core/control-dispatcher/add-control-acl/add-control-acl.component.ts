@@ -21,8 +21,8 @@ export class AddControlAclComponent implements OnInit {
   serviceNameList = [];
   serviceTypeList = [];
 
-  usageServiceList = [];
-  usageScriptList = [];
+  userServices = [];
+  userScripts = [];
 
   name: string;
   editMode = false;
@@ -105,12 +105,12 @@ export class AddControlAclComponent implements OnInit {
         // ]
 
         // get users services list
-        this.usageServiceList = res['users']?.map(us => us.service).filter(item => item);
+        this.userServices = res['users']?.map(us => us.service).filter(item => item);
 
         // get users scripts list
-        this.usageScriptList = res['users']?.map(us => us?.script).filter(item => item);
-        console.log('us type list', this.usageServiceList);
-        console.log('us script list', this.usageScriptList);
+        this.userScripts = res['users']?.map(us => us?.script).filter(item => item);
+        console.log('us type list', this.userServices);
+        console.log('us script list', this.userScripts);
 
         // Get services list by name
         this.serviceNameList = res.service.filter(item => item.name);

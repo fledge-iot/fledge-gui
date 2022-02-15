@@ -186,30 +186,30 @@
             </div>
           </div>
           <!-- TODO: Usage information loop for available users list -->
-          <div class="field is-horizontal">
+          <div class="field is-horizontal" *ngIf="this.editMode">
             <div class="field-label">
               <label class="label">Usage</label>
             </div>
             <div class="field-body">
-              <div class="field" *ngIf="usageServiceList && usageScriptList; else noUsageMsg">
-                <div class="field is-horizontal" *ngIf="usageServiceList?.length > 0">
+              <div class="field" *ngIf="userServices && userServices; else noUsageMsg">
+                <div class="field is-horizontal" *ngIf="userServices?.length > 0">
                   <div class="field-label is-small">
-                    <label class="label">{{usageServiceList?.length > 1? 'Services': 'Service'}}</label>
+                    <label class="label">{{userServices?.length > 1? 'Services': 'Service'}}</label>
                   </div>
                   <div class=" field-body">
-                    <div class="control" *ngFor="let item of usageServiceList; last as isLast">
-                      <span>{{item}}</span>
+                    <div class="control" *ngFor="let item of userServices; last as isLast">
+                      <span class="is-size-7">{{item}}</span>
                       <span *ngIf="!isLast">,&nbsp;</span>
                     </div>
                   </div>
                 </div>
-                <div class="field is-horizontal" *ngIf="usageScriptList?.length > 0">
+                <div class="field is-horizontal" *ngIf="userScripts?.length > 0">
                   <div class="field-label is-small">
-                    <label class="label">{{usageScriptList?.length > 1? 'Scripts': 'Script'}}</label>
+                    <label class="label">{{userScripts?.length > 1? 'Scripts': 'Script'}}</label>
                   </div>
                   <div class=" field-body">
-                    <div class="control" *ngFor="let item of usageScriptList; last as isLast">
-                      <a [routerLink]="['/control-dispatcher/script', item]"
+                    <div class="control" *ngFor="let item of userScripts; last as isLast">
+                      <a class="is-size-7" [routerLink]="['/control-dispatcher/script', item]"
                         routerLinkActive="router-link-active">{{item}}</a>
                       <span *ngIf="!isLast">,&nbsp;</span>
                     </div>

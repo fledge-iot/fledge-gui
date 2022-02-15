@@ -38,7 +38,9 @@ export class AclListComponent implements OnInit {
         // this.controlAcls = this.controlAcls.map((item) => {
         //   item['users'] = [
         //     {
-        //       "service": "Substation 11",
+        //       "service": "Substation 11"
+        //     },
+        //     {
         //       "script": "A#6"
         //     },
         //     {
