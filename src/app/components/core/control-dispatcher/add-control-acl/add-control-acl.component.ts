@@ -263,11 +263,8 @@ export class AddControlAclComponent implements OnInit {
   }
 
   clearACLServiceTypes(index) {
-    console.log('index', index);
     this.urlControl(index).controls['acl'].patchValue([]);
-    console.log('acl', this.urlControl(index).controls['acl']);
     this.aclServiceTypeList = [];
-
     this.aclForm.form.markAsDirty();
   }
 
