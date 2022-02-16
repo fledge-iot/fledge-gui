@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
+import { CustomValidator } from '../../../../directives/custom-validator';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -175,6 +176,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addFormControls(index, urlData: any = null) {
+    this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator]);
     this.aclForm.form.addControl('urls', new FormGroup({}));
     this.initURLControl(index, urlData);
   }
@@ -192,7 +194,7 @@ export class AddControlAclComponent implements OnInit {
 
   initURLControl(index: number, urlData: any = null) {
     this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
-      url: new FormControl(urlData ? urlData?.url : ''),
+      url: new FormControl(urlData ? urlData?.url : '', [Validators.required, CustomValidator.nospaceValidator]),
       acl: new FormControl(urlData ? urlData?.acl : [])
     }));
     this.aclURLsList.push({ index: index, url: '', acl: [] });
@@ -201,7 +203,7 @@ export class AddControlAclComponent implements OnInit {
   addNewURLControl(index: number, urlData: any = null) {
     this.aclForm.form.addControl('urls', new FormGroup({}));
     this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
-      url: new FormControl(urlData ? urlData?.url : ''),
+      url: new FormControl(urlData ? urlData?.url : '', [Validators.required, CustomValidator.nospaceValidator]),
       acl: new FormControl(urlData ? urlData?.acl : [])
     }));
   }
@@ -270,7 +272,7 @@ export class AddControlAclComponent implements OnInit {
 
   setURL(index, value) {
     const urlControl = (this.urlFormGroup().controls[`url-${index}`] as FormGroup).controls['url'];
-    urlControl.setValue(value);
+    urlControl.setValue(value.trim());
     this.aclForm.form.markAsDirty();
   }
 
@@ -286,16 +288,14 @@ export class AddControlAclComponent implements OnInit {
     console.log('form', form.value);
     let { name, urls } = form.value;
     urls = Object.values(urls);
-    console.log('urls', urls);
     if (urls) {
       urls.forEach(url => {
         url.acl = url.acl.map(acl => ({ type: acl.type }));
       });
     }
     const services = this.serviceNameList.concat(...this.serviceTypeList);
-    console.log('services', services);
     const payload = {
-      name: name,
+      name: name.trim(),
       service: services,
       url: urls
     }

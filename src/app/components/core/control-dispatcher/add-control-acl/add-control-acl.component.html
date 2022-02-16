@@ -123,7 +123,7 @@
                           <div class="field-body">
                             <div class="field">
                               <div class="control">
-                                <input #url name="url" class="input is-small" type="text" placeholder="URL"
+                                <input #url name="url" class="input is-small" type="text" placeholder="URL" required
                                   name="url-{{control.index}}" (input)="setURL(control.index, url?.value)"
                                   [value]="!sharedService.checkAuth() && !control.url ? 'None': control.url"
                                   [ngClass]="{'is-static':!sharedService.checkAuth()}"
