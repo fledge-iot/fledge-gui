@@ -3,7 +3,7 @@
     <label class="label">{{from === 'write' ? 'Values' : 'Parameters' }}</label>
   </div>
   <div class="field-body">
-    <div class="field" *ngIf="parameters.length > 0; else NoParameter">
+    <div class="field is-narrow" *ngIf="parameters.length > 0; else NoParameter">
       <ng-container *ngFor="let control of parameters; let i = index">
         <div class="field is-horizontal">
           <div class="field">
@@ -30,8 +30,10 @@
       </ng-container>
     </div>
     <ng-template #NoParameter>
-      <div class="control">
-        <span *ngIf="!sharedService.checkAuth()" class="has-text-grey-light is-size-7">None</span>
+      <div class="field">
+        <div class="control">
+          <span *ngIf="!sharedService.checkAuth()" class="has-text-grey-light is-size-7 no-parameter">None</span>
+        </div>
       </div>
     </ng-template>
   </div>

@@ -19,6 +19,11 @@
 }
 
 .btn-field-body {
-  margin-top: -12px;
   margin-left: -12px;
+  margin-bottom: 5px;
+}
+
+.no-parameter {
+  padding-top: calc(0.5em - 1px);
+  padding-bottom: calc(0.5em - 1px);
 }
