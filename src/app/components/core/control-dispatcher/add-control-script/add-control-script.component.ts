@@ -224,7 +224,6 @@ export class AddControlScriptComponent implements OnInit {
     payload['steps'] = this.flattenPayload(step);
     payload['acl'] = this.selectedACL;
     console.log('payload', payload);
-    return;
     if (this.editMode) {
       this.updateControlScript(payload)
     } else {
