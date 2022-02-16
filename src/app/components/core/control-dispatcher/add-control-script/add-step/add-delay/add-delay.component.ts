@@ -38,7 +38,7 @@ export class AddDelayComponent implements OnInit {
     return this.stepControlGroup().controls['delay'] as FormGroup;
   }
 
-  setDuration(value: any) {
+  setDuration(value: number) {
     this.config.duration = value ? value : '';
     this.delayFromGroup().controls['duration'].patchValue(value);
     this.delayFromGroup().markAsTouched();

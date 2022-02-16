@@ -17,7 +17,7 @@ export class AddControlScriptComponent implements OnInit {
   stepControlsList = [];
 
   acls = [{ name: 'None' }];
-  selectedACL = 'None';
+  selectedACL = '';
 
   @ViewChild('scriptForm') scriptForm: NgForm;
   @ViewChild('step') stepCtrl: AddStepComponent;
@@ -138,7 +138,7 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   selectACL(acl) {
-    this.selectedACL = acl;
+    this.selectedACL = acl === 'None' ? '' : acl;
     this.scriptForm.form.markAsDirty();
   }
 
@@ -222,7 +222,15 @@ export class AddControlScriptComponent implements OnInit {
 
     payload['name'] = name;
     payload['steps'] = this.flattenPayload(step);
-    payload['acl'] = this.selectedACL;
+
+    // check if valid ACL
+    if (this.selectedACL && !this.editMode) {
+      payload['acl'] = this.selectedACL;
+    }
+    if (this.editMode) {
+      // add acl='' in edit mode if acl is None
+      payload['acl'] = this.selectedACL ? this.selectedACL : '';
+    }
     console.log('payload', payload);
     if (this.editMode) {
       this.updateControlScript(payload)

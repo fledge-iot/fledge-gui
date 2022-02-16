@@ -63,7 +63,7 @@
                     <div class="dropdown-trigger">
                       <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                         (click)=toggleDropdown()>
-                        <span>{{selectedACL}}</span>
+                        <span>{{selectedACL ? selectedACL : 'None'}}</span>
                         <span class="icon is-small">
                           <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                         </span>
