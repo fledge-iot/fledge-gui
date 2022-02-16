@@ -65,9 +65,9 @@ export class AclListComponent implements OnInit {
             acl.users = Array.from({
               length: acl.users.length
             }, (_, index) => Object.assign({}, ...users.map(({ [index]: obj }) => obj)));
+            // remove empty {} objects from array
+            acl.users = acl.users.filter(value => Object.keys(value).length !== 0);
           }
-          // remove empty {} objects from array
-          acl.users = acl.users.filter(value => Object.keys(value).length !== 0);
         });
       }, error => {
         /** request completed */

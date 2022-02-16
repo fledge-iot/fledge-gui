@@ -287,6 +287,11 @@ export class AddControlAclComponent implements OnInit {
     let { name, urls } = form.value;
     urls = Object.values(urls);
     console.log('urls', urls);
+    if (urls) {
+      urls.forEach(url => {
+        url.acl = url.acl.map(acl => ({ type: acl.type }));
+      });
+    }
     const services = this.serviceNameList.concat(...this.serviceTypeList);
     console.log('services', services);
     const payload = {

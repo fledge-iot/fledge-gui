@@ -204,7 +204,7 @@
                   <div class=" field-body">
                     <div class="control" *ngFor="let item of userServices; last as isLast">
                       <span class="is-size-7">{{item}}</span>
-                      <span *ngIf="!isLast">,&nbsp;</span>
+                      <span *ngIf="!isLast" class="is-size-7">,&nbsp;</span>
                     </div>
                   </div>
                 </div>
@@ -216,7 +216,7 @@
                     <div class="control" *ngFor="let item of userScripts; last as isLast">
                       <a class="is-size-7" [routerLink]="['/control-dispatcher/script', item]"
                         routerLinkActive="router-link-active">{{item}}</a>
-                      <span *ngIf="!isLast">,&nbsp;</span>
+                      <span *ngIf="!isLast" class="is-size-7">,&nbsp;</span>
                     </div>
                   </div>
                 </div>
