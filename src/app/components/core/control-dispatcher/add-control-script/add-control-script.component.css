@@ -30,6 +30,10 @@ div.close-btn {
   padding-top: 0px !important;
 }
 
+.name-field {
+  height: inherit;
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;

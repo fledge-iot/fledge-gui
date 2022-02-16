@@ -22,7 +22,7 @@ export class AddControlScriptComponent implements OnInit {
   @ViewChild('scriptForm') scriptForm: NgForm;
   @ViewChild('step') stepCtrl: AddStepComponent;
 
-  update = false;
+  editMode = false;
   scriptName = '';
   controlScript = { name: '', steps: [], acls: 'None' };
 
@@ -41,7 +41,7 @@ export class AddControlScriptComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.scriptName = params['name'];
       if (this.scriptName) {
-        this.update = true;
+        this.editMode = true;
         this.getControlScript();
       }
     });
@@ -148,7 +148,7 @@ export class AddControlScriptComponent implements OnInit {
       for (const key in val) {
         const element = val[key];
         if ('condition' in element) {
-          if (isEmpty(element['condition'])) {
+          if (isEmpty(element['condition'].key) || element['condition'].value == null) {
             delete element['condition'];
           }
         }
@@ -224,7 +224,8 @@ export class AddControlScriptComponent implements OnInit {
     payload['steps'] = this.flattenPayload(step);
     payload['acl'] = this.selectedACL;
     console.log('payload', payload);
-    if (this.update) {
+    return;
+    if (this.editMode) {
       this.updateControlScript(payload)
     } else {
       this.ngProgress.start();

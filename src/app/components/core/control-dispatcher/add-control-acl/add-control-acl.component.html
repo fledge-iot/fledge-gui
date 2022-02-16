@@ -30,8 +30,8 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input name="name" class="input is-small" type="text" placeholder="Name" required [(ngModel)]="name"
-                    [ngClass]="{'is-static static-acl':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
+                  <input name="name" class="input" type="text" placeholder="Name" required [(ngModel)]="name"
+                    [ngClass]="{'is-static static-acl':editMode, 'is-small':sharedService.checkAuth() && !editMode}"
                     [readonly]="!sharedService.checkAuth()">
                 </div>
               </div>
