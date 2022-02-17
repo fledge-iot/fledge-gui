@@ -8,17 +8,23 @@
               <a (click)="showDiv('scripts')">Scripts</a>
             </h6>
           </li>
-          <!-- <li [ngClass]="{'is-active': seletedTab == 'acls'}">
+          <li [ngClass]="{'is-active': seletedTab == 'acls'}">
             <h6 class="is-6 has-text-weight-semibold">
               <a (click)="showDiv('acls')">ACLs</a>
             </h6>
-          </li> -->
-          <li *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">
+          </li>
+          <li class="custom-pad" *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">
             <a [routerLink]="seletedTab === 'scripts' ? ['script/add']:['acl/add']" class="is-light"
               style="border-bottom-width: 0">
               <p *ngIf="viewPort !== 'mobile'">&nbsp; Add &nbsp;</p>
               <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
+          </li>
+          <li style="position: absolute;right: 0;">
+            <span class="icon is-small tooltip is-tooltip-bottom is-pulled-right is-hovered" data-tooltip="Help"
+              (click)="goToLink('control-dispatcher-service')">
+              <i class="far fa-question-circle"></i>
+            </span>
           </li>
         </ul>
       </div>

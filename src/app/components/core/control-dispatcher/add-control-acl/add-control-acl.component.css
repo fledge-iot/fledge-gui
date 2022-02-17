@@ -18,10 +18,6 @@
   margin-bottom: 5px !important;
 }
 
-.url-control {
-  margin-bottom: 0.25rem !important;
-}
-
 .field-label {
   text-align: left;
 }
@@ -61,4 +57,16 @@ div.close-btn-div {
   padding: 3px 0px 0px 0px !important;
   height: 0%;
   vertical-align: inherit !important;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+}
+
+#refresh-check {
+  margin-left: 3px;
+}
+
+.breadcrumb {
+  margin-bottom: 0px !important;
 }

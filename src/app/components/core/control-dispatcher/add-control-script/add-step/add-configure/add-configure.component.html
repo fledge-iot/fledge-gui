@@ -26,8 +26,9 @@
       </div>
       <ng-template #staticCategoryDiv>
         <div class="control">
-          <input name="category" class="input is-small" type="text" [(ngModel)]="config.category"
-            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+          <input name="category" class="input is-small" type="text" [ngModel]="config.category?config.category: 'None'"
+            [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.category}"
+            [readonly]="!sharedService.checkAuth()">
         </div>
       </ng-template>
     </div>

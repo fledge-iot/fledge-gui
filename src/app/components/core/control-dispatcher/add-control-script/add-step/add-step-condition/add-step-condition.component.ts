@@ -93,8 +93,8 @@ export class AddStepConditionComponent implements OnInit {
   }
 
   setConditionKey(key) {
-    this.condition.key = key;
-    this.conditionControls().controls['key'].patchValue(key);
+    this.condition.key = key.trim();
+    this.conditionControls().controls['key'].patchValue(key.trim());
     this.conditionControls().markAsTouched();
     this.conditionControls().markAsDirty();
   }

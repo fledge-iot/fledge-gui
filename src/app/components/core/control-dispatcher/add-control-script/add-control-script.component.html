@@ -10,13 +10,17 @@
         </li>
       </ul>
     </nav>
-    <button *ngIf="update" (click)="refresh()" class="button is-small" id="refresh-check">
+    <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
   <div class="card">
     <div class="card-content step-content">
       <form #scriptForm="ngForm">
+        <span (click)="goToLink('automation-scripts')"
+          class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          <i class="far fa-question-circle"></i>
+        </span>
         <div class="column is-four-fifths">
           <div class="field is-horizontal">
             <div class="field-label">
@@ -25,10 +29,10 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input #name=ngModel name="name" class="input" type="text" placeholder="Name" required
+                  <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
                     [(ngModel)]="controlScript.name"
-                    [ngClass]="{'is-static':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
-                    [readonly]="!sharedService.checkAuth()">
+                    [ngClass]="{'is-static': editMode, 'is-small':sharedService.checkAuth() && !editMode}"
+                    [readonly]="editMode">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                   <div *ngIf="name.errors?.['required']">
@@ -44,7 +48,7 @@
             </div>
             <div class="field-body">
               <app-add-step #step class="field" [ngModelGroup]="'steps'" #stepCtrl="ngModelGroup"
-                (stepEvent)="updatedStepList($event)" [update]='update'>
+                (stepEvent)="updatedStepList($event)" [update]='editMode'>
               </app-add-step>
             </div>
           </div>
@@ -59,7 +63,7 @@
                     <div class="dropdown-trigger">
                       <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                         (click)=toggleDropdown()>
-                        <span>{{selectedACL}}</span>
+                        <span>{{selectedACL ? selectedACL : 'None'}}</span>
                         <span class="icon is-small">
                           <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                         </span>
@@ -78,7 +82,8 @@
                 <div class="field">
                   <div class="control">
                     <input name="acl" class="input" type="text" [(ngModel)]="selectedACL"
-                      [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':selectedACL === 'None'}"
+                      [readonly]="!sharedService.checkAuth()">
                   </div>
                 </div>
               </ng-template>
@@ -88,7 +93,7 @@
         <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths">
           <div class="columns">
             <div class="column is-2"></div>
-            <div class="column" *ngIf="update">
+            <div class="column" *ngIf="editMode">
               <div class="field is-grouped control-pad">
                 <p class="control">
                   <button (click)="openModal('confirmation-dialog')" type="button"

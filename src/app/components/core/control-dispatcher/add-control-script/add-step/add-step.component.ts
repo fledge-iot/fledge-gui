@@ -1,8 +1,9 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
+import { CustomValidator } from '../../../../../directives/custom-validator';
 import { AlertService, ProgressBarService, SharedService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 
@@ -58,9 +59,12 @@ export class AddStepComponent implements OnInit {
   }
 
   addStepControl() {
-    console.log(Math.max(...this.stepControlsList.map(o => o.order)));
-    const maxOrder = Math.max(...this.stepControlsList.map(o => o.order));
-    this.initStepFormGroup(maxOrder + 1)
+    if (this.stepControlsList.length > 0) {
+      const maxOrder = Math.max(...this.stepControlsList.map(o => o.order));
+      this.initStepFormGroup(maxOrder + 1)
+    } else {
+      this.initStepFormGroup(0)
+    }
   }
 
   addNewStep(stepName, index) {
@@ -116,6 +120,8 @@ export class AddStepComponent implements OnInit {
     this.controlService.fetchControlServiceScriptByName(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        // remove empty object {} from steps array
+        data.steps = data.steps.filter(value => Object.keys(value).length !== 0);
         data.steps.forEach((step) => {
           const key = Object.keys(step)[0];
           const st = Object.values(step)[0];
@@ -176,7 +182,7 @@ export class AddStepComponent implements OnInit {
       case 'operation':
         this.stepControlGroup(index).setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
-          name: new FormControl(step?.values?.name),
+          name: new FormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
           service: new FormControl(step?.values?.service),
           parameters: this.stepValuesGroup(step),
           condition: new FormGroup({
@@ -213,7 +219,7 @@ export class AddStepComponent implements OnInit {
       case 'script':
         this.stepControlGroup(index).setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
-          name: new FormControl(step?.values?.name),
+          name: new FormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
           execution: new FormControl(step?.values?.execution),
           parameters: this.stepValuesGroup(step),
           condition: new FormGroup({

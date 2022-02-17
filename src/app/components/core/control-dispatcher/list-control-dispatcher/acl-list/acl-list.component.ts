@@ -20,7 +20,7 @@ export class AclListComponent implements OnInit {
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
     private dialogService: DialogService,
-    private sharedService: SharedService,
+    public sharedService: SharedService,
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
@@ -33,7 +33,42 @@ export class AclListComponent implements OnInit {
     this.controlService.fetchAllACL()
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.controlAcls = orderBy(data.acls, 'name');
+        this.controlAcls = orderBy(data.acls, 'name')
+        // Uncomment below code for testing of usese on list
+        // this.controlAcls = this.controlAcls.map((item) => {
+        //   item['users'] = [
+        //     {
+        //       "service": "Substation 11"
+        //     },
+        //     {
+        //       "script": "A#1"
+        //     },
+        //     {
+        //       "service": "Substation 110"
+        //     },
+        //     {
+        //       "script": "A#2"
+        //     },
+        //     {
+        //       "script": "A#21"
+        //     }
+        //   ]
+        //   return item;
+        // });
+
+        // make users array for {service, script} object to make a tabel in html view
+        this.controlAcls.forEach(acl => {
+          if (acl.users) {
+            const userServices = acl.users.map(u => ({ service: u.service })).filter(s => s.service);
+            const userScripts = acl.users.map(u => ({ script: u.script })).filter(s => s.script);
+            const users = [userServices, userScripts];
+            acl.users = Array.from({
+              length: acl.users.length
+            }, (_, index) => Object.assign({}, ...users.map(({ [index]: obj }) => obj)));
+            // remove empty {} objects from array
+            acl.users = acl.users.filter(value => Object.keys(value).length !== 0);
+          }
+        });
       }, error => {
         /** request completed */
         this.ngProgress.done();

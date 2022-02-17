@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, ProgressBarService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
+import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { AddStepComponent } from './add-step/add-step.component';
 
@@ -16,14 +17,14 @@ export class AddControlScriptComponent implements OnInit {
   stepControlsList = [];
 
   acls = [{ name: 'None' }];
-  selectedACL = 'None';
+  selectedACL = '';
 
   @ViewChild('scriptForm') scriptForm: NgForm;
   @ViewChild('step') stepCtrl: AddStepComponent;
 
-  update = false;
+  editMode = false;
   scriptName = '';
-  controlScript = { name: '', steps: [], acls: 'None' };
+  controlScript = { name: '', steps: [], acl: '' };
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -33,13 +34,14 @@ export class AddControlScriptComponent implements OnInit {
     private ngProgress: ProgressBarService,
     private dialogService: DialogService,
     public sharedService: SharedService,
+    public docService: DocService,
     private router: Router) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.scriptName = params['name'];
       if (this.scriptName) {
-        this.update = true;
+        this.editMode = true;
         this.getControlScript();
       }
     });
@@ -59,6 +61,10 @@ export class AddControlScriptComponent implements OnInit {
     this.controlScript.name = name;
   }
 
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
+  }
+
   getControlScript() {
     /** request started */
     this.ngProgress.start();
@@ -67,6 +73,7 @@ export class AddControlScriptComponent implements OnInit {
         this.ngProgress.done();
         this.controlScript.name = data.name;
         this.scriptName = data.name;
+        this.controlScript.acl = data.acl;
         this.selectACL(data.acl);
         this.scriptForm.form.markAsUntouched();
         this.scriptForm.form.markAsPristine();
@@ -132,7 +139,7 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   selectACL(acl) {
-    this.selectedACL = acl;
+    this.selectedACL = acl === 'None' ? '' : acl;
     this.scriptForm.form.markAsDirty();
   }
 
@@ -142,7 +149,7 @@ export class AddControlScriptComponent implements OnInit {
       for (const key in val) {
         const element = val[key];
         if ('condition' in element) {
-          if (isEmpty(element['condition'])) {
+          if (isEmpty(element['condition'].key) || element['condition'].value == null) {
             delete element['condition'];
           }
         }
@@ -189,13 +196,10 @@ export class AddControlScriptComponent implements OnInit {
     });
 
     steps = steps.filter(s => Object.keys(s).length !== 0);
-    this.stepControlsList.map((value, index) => {
-      steps.map(s => Object.keys(s).forEach(k => {
-        if (k === value.key && s[k].order === value.order) {
-          s[k].order = index;
-        }
-      }));
-    })
+    steps.forEach(step => {
+      const index = this.stepControlsList.findIndex(s => s.order === Object.values(step)[0]['order']);
+      Object.values(step)[0]['order'] = index;
+    });
     return steps;
   }
 
@@ -204,7 +208,6 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    console.log('form.value', form.value);
     const formData = cloneDeep(form.value);
     let payload = {};
     let { name, steps } = formData;
@@ -216,9 +219,19 @@ export class AddControlScriptComponent implements OnInit {
 
     payload['name'] = name;
     payload['steps'] = this.flattenPayload(step);
-    payload['acl'] = this.selectedACL;
+
+    // check if valid ACL
+    if (this.selectedACL && !this.editMode) {
+      payload['acl'] = this.selectedACL;
+    }
+    if (this.editMode) {
+      if (this.controlScript.acl !== this.selectedACL) {
+        // add acl='' in edit mode if acl is None
+        payload['acl'] = this.selectedACL ? this.selectedACL : '';
+      }
+    }
     console.log('payload', payload);
-    if (this.update) {
+    if (this.editMode) {
       this.updateControlScript(payload)
     } else {
       this.ngProgress.start();
@@ -247,6 +260,8 @@ export class AddControlScriptComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.updateScript(this.scriptName, payload)
       .subscribe((data: any) => {
+        this.scriptName = payload.name;
+        this.router.navigate(['control-dispatcher/script/', payload.name]);
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
