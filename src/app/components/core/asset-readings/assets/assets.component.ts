@@ -6,6 +6,7 @@ import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, AssetsService, PingService, GenerateCsvService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import { ImageVisualisationComponent } from '../image-visualisation/image-visualisation.component';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
 
 @Component({
@@ -24,6 +25,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assetReadings = [];
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
+  @ViewChild(ImageVisualisationComponent, { static: true }) imageControlComponent: ImageVisualisationComponent;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -134,6 +136,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public showAssetChart(assetCode) {
     this.readingsGraphComponent.getAssetCode(assetCode);
     this.readingsGraphComponent.toggleModal(true);
+  }
+
+  public showLatestReadingChart(assetCode) {
+    this.imageControlComponent.getAssetCode(assetCode);
+    this.imageControlComponent.toggleModal(true);
   }
 
   public showLoadingSpinner() {
