@@ -208,7 +208,6 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    console.log('form.value', form.value);
     const formData = cloneDeep(form.value);
     let payload = {};
     let { name, steps } = formData;
@@ -232,7 +231,6 @@ export class AddControlScriptComponent implements OnInit {
       }
     }
     console.log('payload', payload);
-    return;
     if (this.editMode) {
       this.updateControlScript(payload)
     } else {
