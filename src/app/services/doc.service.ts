@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import  packageInfo  from '../../../package.json';
+import packageInfo from '../../../package.json';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +20,11 @@ export class DocService {
   goToNotificationDocLink(slug: string) {
     const v = packageInfo.version.includes('next') ? 'develop' : `v${packageInfo.version}`;
     window.open(`${packageInfo.doc_url}${v}/notifications.html#${slug}`, '_blank');
+  }
+
+  goToSetPointControlDocLink(slug: string) {
+    const v = packageInfo.version.includes('next') ? 'develop' : `v${packageInfo.version}`;
+    window.open(`${packageInfo.doc_url}${v}/control.html#${slug}`, '_blank');
   }
 
   goToViewQuickStartLink(slug: string) {

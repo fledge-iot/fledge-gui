@@ -1,17 +1,26 @@
 <div class="container is-fluid">
-  <nav class="breadcrumb" aria-label="breadcrumbs">
-    <ul>
-      <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'acls'}">ACLs</a></li>
-      <li class="is-active">
-        <a href="#" aria-current="page">
-          {{editMode ? name : 'Add' }}
-        </a>
-      </li>
-    </ul>
-  </nav>
+  <div class="navbar-item">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'acls'}">ACLs</a></li>
+        <li class="is-active">
+          <a href="#" aria-current="page">
+            {{editMode ? name : 'Add' }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check">
+      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+    </button>
+  </div>
   <div class="card">
     <div class="card-content step-content">
       <form #aclForm="ngForm">
+        <span (click)="goToLink('access-control-lists')"
+          class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          <i class="far fa-question-circle"></i>
+        </span>
         <div class="column is-four-fifths">
           <div class="field is-horizontal acl-name-field">
             <div class="field-label">
@@ -20,8 +29,8 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input name="name" class="input is-small" type="text" placeholder="Name" required [(ngModel)]="name"
-                    [ngClass]="{'is-static static-acl':!sharedService.checkAuth(), 'is-small':sharedService.checkAuth()}"
+                  <input name="name" class="input" type="text" placeholder="Name" required [(ngModel)]="name"
+                    [ngClass]="{'is-static static-acl':editMode, 'is-small':sharedService.checkAuth() && !editMode}"
                     [readonly]="!sharedService.checkAuth()">
                 </div>
               </div>
@@ -100,8 +109,8 @@
             <div class="field-label">
               <label class="label">URLs</label>
             </div>
-            <div class="field-body">
-              <div class="field" *ngIf="aclURLsList.length > 0; else staticURL">
+            <div class="field-body" *ngIf="aclURLsList.length > 0; else staticURL">
+              <div class="field">
                 <ng-container class="steps-list" *ngFor="let control of aclURLsList">
                   <div class="control box">
                     <div class="columns">
@@ -113,8 +122,8 @@
                           <div class="field-body">
                             <div class="field">
                               <div class="control">
-                                <input #url name="url" class="input is-small" type="text" placeholder="URL"
-                                  name="url-{{i}}" (input)="setURL(control.index, url?.value)"
+                                <input #url name="url" class="input is-small" type="url" placeholder="URL" required
+                                  name="url-{{control.index}}" (input)="setURL(control.index, url?.value)"
                                   [value]="!sharedService.checkAuth() && !control.url ? 'None': control.url"
                                   [ngClass]="{'is-static':!sharedService.checkAuth()}"
                                   [readonly]="!sharedService.checkAuth()">
@@ -133,12 +142,12 @@
                                   (add)="addACLServiceType($event.type, control.index)" [ngModel]="control?.acl"
                                   [ngModelOptions]="{standalone: true}" bindLabel="type"
                                   (remove)="removeACLServiceType($event.label, control.index)"
-                                  (clear)="clearACLServiceTypes()">
+                                  (clear)="clearACLServiceTypes(control.index)">
                                 </ng-select>
                               </div>
                               <ng-template #staticACLService>
                                 <input class="input is-small" type="text" [value]="show(control?.acl)"
-                                  [ngClass]="{'is-static':!sharedService.checkAuth()}"
+                                  [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': control?.acl.length === 0}"
                                   [readonly]="!sharedService.checkAuth()">
                               </ng-template>
                             </div>
@@ -158,39 +167,62 @@
                   </div>
                 </ng-container>
               </div>
-              <ng-template #staticURL>
-                <div *ngIf="!sharedService.checkAuth()" class="field has-text-grey-light is-size-7">None</div>
-              </ng-template>
+            </div>
+            <ng-template #staticURL>
+              <div class="field-body" *ngIf="!sharedService.checkAuth()">
+                <div class="field has-text-grey-light is-size-7">None</div>
+              </div>
+            </ng-template>
+            <div class="field-body" *ngIf="sharedService.checkAuth() && aclURLsList.length  === 0">
+              <template [ngTemplateOutlet]="btnTemplate"></template>
             </div>
           </div>
-          <div class="field is-horizontal" *ngIf="sharedService.checkAuth()">
+          <div class="field is-horizontal" *ngIf="sharedService.checkAuth() && aclURLsList.length > 0">
             <div class="field-label">
               <label class="label"></label>
             </div>
             <div class="field-body">
-              <div class="field is-grouped">
-                <div class="control">
-                  <button (click)="addURLControl()" class="button is-small">
-                    <span class="icon is-small">
-                      <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                    </span>
-                    <span>{{aclURLsList?.length === 0? 'Add URL': 'Add new URL'}}</span>
-                  </button>
-                </div>
-              </div>
+              <template [ngTemplateOutlet]="btnTemplate"></template>
             </div>
           </div>
           <!-- TODO: Usage information loop for available users list -->
-          <div class="field is-horizontal">
+          <div class="field is-horizontal" *ngIf="this.editMode">
             <div class="field-label">
-              <label class="label">Used By</label>
+              <label class="label">Usage</label>
             </div>
             <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <span class="has-text-grey-light is-size-7">No details available</span>
+              <div class="field" *ngIf="userServices && userServices; else noUsageMsg">
+                <div class="field is-horizontal" *ngIf="userServices?.length > 0">
+                  <div class="field-label is-small">
+                    <label class="label">{{userServices?.length > 1? 'Services': 'Service'}}</label>
+                  </div>
+                  <div class=" field-body">
+                    <div class="control" *ngFor="let item of userServices; last as isLast">
+                      <span class="is-size-7">{{item}}</span>
+                      <span *ngIf="!isLast" class="is-size-7">,&nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-horizontal" *ngIf="userScripts?.length > 0">
+                  <div class="field-label is-small">
+                    <label class="label">{{userScripts?.length > 1? 'Scripts': 'Script'}}</label>
+                  </div>
+                  <div class=" field-body">
+                    <div class="control" *ngFor="let item of userScripts; last as isLast">
+                      <a class="is-size-7" [routerLink]="['/control-dispatcher/script', item]"
+                        routerLinkActive="router-link-active">{{item}}</a>
+                      <span *ngIf="!isLast" class="is-size-7">,&nbsp;</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <ng-template #noUsageMsg>
+                <div class="field">
+                  <div class="control">
+                    <span class="has-text-grey-light is-size-7">No details available</span>
+                  </div>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>
@@ -223,6 +255,20 @@
     </div>
   </div>
 </div>
+
+<ng-template #btnTemplate>
+  <div class="field is-grouped">
+    <div class="control">
+      <button (click)="addURLControl()" class="button is-small">
+        <span class="icon is-small">
+          <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+        </span>
+        <span>{{aclURLsList?.length === 0? 'Add URL': 'Add new URL'}}</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
 <app-confirmation-dialog id="confirmation-dialog">
   <section class="modal-card-body">
     Are you sure, you want to delete the ACL <b>{{name}}</b>?

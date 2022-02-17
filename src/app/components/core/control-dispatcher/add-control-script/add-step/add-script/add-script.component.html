@@ -26,8 +26,9 @@
       </div>
       <ng-template #staticScriptDiv>
         <div class="control">
-          <input name="script" class="input is-small" type="text" [(ngModel)]="config.name"
-            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+          <input name="script" class="input is-small" type="text" [ngModel]="config.name?config.name:'None'"
+            [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.name}"
+            [readonly]="!sharedService.checkAuth()">
         </div>
       </ng-template>
     </div>
@@ -63,16 +64,21 @@
           </div>
         </div>
         <ng-template #staticExecutionDiv>
-          <div class="control">
-            <input name="execution" class="input is-small" type="text" [(ngModel)]="selectedExecution"
+          <div class="control" *ngIf="config.execution;else noExecution">
+            <input name="execution" class="input is-small" type="text" [(ngModel)]="config.execution"
               [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
           </div>
+          <ng-template #noExecution>
+            <div class="control">
+              <span *ngIf="!sharedService.checkAuth()" class="has-text-grey-light is-size-7">None</span>
+            </div>
+          </ng-template>
         </ng-template>
       </div>
     </div>
   </div>
   <div>
-    <app-add-step-value [from]='step' [index]="controlIndex" [values]="config?.parameters" [update]="update">
+    <app-add-step-value [from]='step' [index]="controlIndex" [update]="update">
     </app-add-step-value>
     <app-add-step-condition #scriptCondition [from]='step' [index]="controlIndex" [condition]="config?.condition"
       [update]="update">
