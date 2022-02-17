@@ -1,8 +1,9 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
+import { CustomValidator } from '../../../../../directives/custom-validator';
 import { AlertService, ProgressBarService, SharedService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 
@@ -178,7 +179,7 @@ export class AddStepComponent implements OnInit {
       case 'operation':
         this.stepControlGroup(index).setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
-          name: new FormControl(step?.values?.name),
+          name: new FormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
           service: new FormControl(step?.values?.service),
           parameters: this.stepValuesGroup(step),
           condition: new FormGroup({
@@ -215,7 +216,7 @@ export class AddStepComponent implements OnInit {
       case 'script':
         this.stepControlGroup(index).setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
-          name: new FormControl(step?.values?.name),
+          name: new FormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
           execution: new FormControl(step?.values?.execution),
           parameters: this.stepValuesGroup(step),
           condition: new FormGroup({

@@ -1,4 +1,4 @@
-.field-body .field {
+.field-body .field:not(:last-child) {
   margin-bottom: 5px;
 }
 

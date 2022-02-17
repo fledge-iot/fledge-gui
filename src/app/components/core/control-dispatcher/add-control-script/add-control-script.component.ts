@@ -24,7 +24,7 @@ export class AddControlScriptComponent implements OnInit {
 
   editMode = false;
   scriptName = '';
-  controlScript = { name: '', steps: [], acls: 'None' };
+  controlScript = { name: '', steps: [], acl: '' };
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -73,6 +73,7 @@ export class AddControlScriptComponent implements OnInit {
         this.ngProgress.done();
         this.controlScript.name = data.name;
         this.scriptName = data.name;
+        this.controlScript.acl = data.acl;
         this.selectACL(data.acl);
         this.scriptForm.form.markAsUntouched();
         this.scriptForm.form.markAsPristine();
@@ -228,8 +229,10 @@ export class AddControlScriptComponent implements OnInit {
       payload['acl'] = this.selectedACL;
     }
     if (this.editMode) {
-      // add acl='' in edit mode if acl is None
-      payload['acl'] = this.selectedACL ? this.selectedACL : '';
+      if (this.controlScript.acl !== this.selectedACL) {
+        // add acl='' in edit mode if acl is None
+        payload['acl'] = this.selectedACL ? this.selectedACL : '';
+      }
     }
     console.log('payload', payload);
     if (this.editMode) {

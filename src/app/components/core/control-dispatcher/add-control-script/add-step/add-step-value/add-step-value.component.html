@@ -2,8 +2,8 @@
   <div class="field-label is-small">
     <label class="label">{{from === 'write' ? 'Values' : 'Parameters' }}</label>
   </div>
-  <div class="field-body">
-    <div class="field is-narrow" *ngIf="parameters.length > 0; else NoParameter">
+  <div class="field-body" *ngIf="parameters.length > 0; else NoParameter">
+    <div class="field is-narrow">
       <ng-container *ngFor="let control of parameters; let i = index">
         <div class="field is-horizontal">
           <div class="field">
@@ -29,30 +29,39 @@
         </div>
       </ng-container>
     </div>
-    <ng-template #NoParameter>
+  </div>
+  <ng-template #NoParameter>
+    <div class="field-body" *ngIf="!sharedService.checkAuth()">
       <div class="field">
         <div class="control">
-          <span *ngIf="!sharedService.checkAuth()" class="has-text-grey-light is-size-7 no-parameter">None</span>
+          <span class="has-text-grey-light is-size-7 no-parameter">None</span>
         </div>
       </div>
-    </ng-template>
+    </div>
+  </ng-template>
+  <div *ngIf="sharedService.checkAuth() && parameters.length === 0" class="field-body btn-field-body">
+    <template [ngTemplateOutlet]="stepBtnTemplate"></template>
   </div>
 </div>
-<div *ngIf="sharedService.checkAuth()" class="field is-horizontal">
+<div *ngIf="sharedService.checkAuth() && parameters.length > 0" class="field is-horizontal">
   <div class="field-label is-small">
     <label class="label"></label>
   </div>
   <div class="field-body btn-field-body">
-    <div class="field">
-      <div class="control">
-        <button (click)="addValueControl()" class="button is-small is-light like-link is-link">
-          <span class="icon is-small">
-            <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-          </span>
-          <span> {{ this.parameters.length < 1 ? ("Add" + (from==="write" ? " value" : " parameter" )) : ("Add new" +
-              (from==="write" ? " value" : " parameter" )) }}</span>
-        </button>
-      </div>
-    </div>
+    <template [ngTemplateOutlet]="stepBtnTemplate"></template>
   </div>
 </div>
+
+<ng-template #stepBtnTemplate>
+  <div class="field">
+    <div class="control">
+      <button (click)="addValueControl()" class="button is-small is-light like-link is-link">
+        <span class="icon is-small">
+          <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+        </span>
+        <span> {{ this.parameters.length < 1 ? ("Add" + (from==="write" ? " value" : " parameter" )) : ("Add new" +
+            (from==="write" ? " value" : " parameter" )) }}</span>
+      </button>
+    </div>
+  </div>
+</ng-template>

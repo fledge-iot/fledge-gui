@@ -110,8 +110,8 @@
             <div class="field-label">
               <label class="label">URLs</label>
             </div>
-            <div class="field-body">
-              <div class="field" *ngIf="aclURLsList.length > 0; else staticURL">
+            <div class="field-body" *ngIf="aclURLsList.length > 0; else staticURL">
+              <div class="field">
                 <ng-container class="steps-list" *ngFor="let control of aclURLsList">
                   <div class="control box">
                     <div class="columns">
@@ -168,26 +168,22 @@
                   </div>
                 </ng-container>
               </div>
-              <ng-template #staticURL>
-                <div *ngIf="!sharedService.checkAuth()" class="field has-text-grey-light is-size-7">None</div>
-              </ng-template>
+            </div>
+            <ng-template #staticURL>
+              <div class="field-body" *ngIf="!sharedService.checkAuth()">
+                <div class="field has-text-grey-light is-size-7">None</div>
+              </div>
+            </ng-template>
+            <div class="field-body" *ngIf="sharedService.checkAuth() && aclURLsList.length  === 0">
+              <template [ngTemplateOutlet]="btnTemplate"></template>
             </div>
           </div>
-          <div class="field is-horizontal" *ngIf="sharedService.checkAuth()">
+          <div class="field is-horizontal" *ngIf="sharedService.checkAuth() && aclURLsList.length > 0">
             <div class="field-label">
               <label class="label"></label>
             </div>
             <div class="field-body">
-              <div class="field is-grouped">
-                <div class="control">
-                  <button (click)="addURLControl()" class="button is-small">
-                    <span class="icon is-small">
-                      <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                    </span>
-                    <span>{{aclURLsList?.length === 0? 'Add URL': 'Add new URL'}}</span>
-                  </button>
-                </div>
-              </div>
+              <template [ngTemplateOutlet]="btnTemplate"></template>
             </div>
           </div>
           <!-- TODO: Usage information loop for available users list -->
@@ -260,6 +256,20 @@
     </div>
   </div>
 </div>
+
+<ng-template #btnTemplate>
+  <div class="field is-grouped">
+    <div class="control">
+      <button (click)="addURLControl()" class="button is-small">
+        <span class="icon is-small">
+          <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+        </span>
+        <span>{{aclURLsList?.length === 0? 'Add URL': 'Add new URL'}}</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
 <app-confirmation-dialog id="confirmation-dialog">
   <section class="modal-card-body">
     Are you sure, you want to delete the ACL <b>{{name}}</b>?
