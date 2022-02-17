@@ -196,13 +196,10 @@ export class AddControlScriptComponent implements OnInit {
     });
 
     steps = steps.filter(s => Object.keys(s).length !== 0);
-    this.stepControlsList.map((value, index) => {
-      steps.map(s => Object.keys(s).forEach(k => {
-        if (k === value.key && s[k].order === value.order) {
-          s[k].order = index;
-        }
-      }));
-    })
+    steps.forEach(step => {
+      const index = this.stepControlsList.findIndex(s => s.order === Object.values(step)[0]['order']);
+      Object.values(step)[0]['order'] = index;
+    });
     return steps;
   }
 
@@ -235,6 +232,7 @@ export class AddControlScriptComponent implements OnInit {
       }
     }
     console.log('payload', payload);
+    return;
     if (this.editMode) {
       this.updateControlScript(payload)
     } else {
