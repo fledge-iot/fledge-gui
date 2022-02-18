@@ -139,7 +139,7 @@
                             <div class="field">
                               <div class="control" *ngIf="sharedService.checkAuth(); else staticACLService">
                                 <ng-select placeholder="Select service type" [items]="serviceTypes" [multiple]="true"
-                                  (add)="addACLServiceType($event.type, control.index)" [ngModel]="control?.acl"
+                                  (add)="addACLServiceType($event, control.index)" [ngModel]="control?.acl"
                                   [ngModelOptions]="{standalone: true}" bindLabel="type"
                                   (remove)="removeACLServiceType($event.label, control.index)"
                                   (clear)="clearACLServiceTypes(control.index)">

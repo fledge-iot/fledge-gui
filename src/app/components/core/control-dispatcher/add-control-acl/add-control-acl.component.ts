@@ -7,6 +7,7 @@ import { DialogService } from '../confirmation-dialog/dialog.service';
 import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
+import { SUPPORTED_SERVICE_TYPES } from '../../../../utils';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -15,7 +16,8 @@ import { CustomValidator } from '../../../../directives/custom-validator';
 })
 export class AddControlAclComponent implements OnInit {
   services = [];
-  serviceTypes = []
+  // filter Dispatcher service
+  serviceTypes = SUPPORTED_SERVICE_TYPES.filter(t => t != 'Dispatcher');
   aclURLsList = [];
 
   aclServiceTypeList = [];
@@ -161,8 +163,6 @@ export class AddControlAclComponent implements OnInit {
           s.select = false;
           return s;
         });
-        this.serviceTypes = (this.services.map(s => ({ type: s.type })));
-        this.serviceTypes = uniqBy(this.serviceTypes, 'type');
       },
         (error) => {
           /** request done */
@@ -182,7 +182,6 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addURLControl() {
-    console.log(this.aclURLsList.length);
     if (this.aclURLsList.length === 0) {
       this.aclForm.form.addControl('urls', new FormGroup({}));
       this.initURLControl(1);
@@ -238,7 +237,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addServiceType(type) {
-    this.serviceTypeList.push(type);
+    this.serviceTypeList.push({ type });
     this.aclForm.form.markAsDirty();
   }
 
@@ -285,9 +284,8 @@ export class AddControlAclComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    console.log('form', form.value);
     let { name, urls } = form.value;
-    urls = Object.values(urls);
+    urls = urls ? Object.values(urls) : [];
     if (urls) {
       urls.forEach(url => {
         url.acl = url.acl.map(acl => ({ type: acl.type }));
