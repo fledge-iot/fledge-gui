@@ -16,7 +16,7 @@ import { SERVICE_TYPES_LIST } from '../../../../utils';
 })
 export class AddControlAclComponent implements OnInit {
   services = [];
-  serviceTypes = SERVICE_TYPES_LIST; //[]
+  serviceTypes = SERVICE_TYPES_LIST;
   aclURLsList = [];
 
   aclServiceTypeList = [];
