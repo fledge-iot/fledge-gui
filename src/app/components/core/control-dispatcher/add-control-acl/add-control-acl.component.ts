@@ -7,7 +7,7 @@ import { DialogService } from '../confirmation-dialog/dialog.service';
 import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { SERVICE_TYPES_LIST } from '../../../../utils';
+import { SUPPORTED_SERVICE_TYPES } from '../../../../utils';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -16,7 +16,8 @@ import { SERVICE_TYPES_LIST } from '../../../../utils';
 })
 export class AddControlAclComponent implements OnInit {
   services = [];
-  serviceTypes = SERVICE_TYPES_LIST;
+  // filter Dispatcher service
+  serviceTypes = SUPPORTED_SERVICE_TYPES.filter(t => t != 'Dispatcher');
   aclURLsList = [];
 
   aclServiceTypeList = [];
