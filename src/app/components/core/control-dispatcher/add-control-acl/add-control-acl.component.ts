@@ -162,8 +162,6 @@ export class AddControlAclComponent implements OnInit {
           s.select = false;
           return s;
         });
-        // this.serviceTypes = (this.services.map(s => ({ type: s.type })));
-        // this.serviceTypes = uniqBy(this.serviceTypes, 'type');
       },
         (error) => {
           /** request done */
