@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { sortBy, orderBy } from 'lodash';
+import { orderBy } from 'lodash';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { interval, Subscription, Subject } from 'rxjs';
 
@@ -77,11 +77,18 @@ export class SouthComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
+          let enabledServices = [];
+          let disabledServices = [];
           this.southboundServices = data['services'];
-          this.southboundServices = sortBy(this.southboundServices, function (svc) {
+          this.southboundServices.forEach((svc) => {
             svc.assets = orderBy(svc.assets, ['asset'], ['asc']);
-            return svc['status'] + svc.name.toLowerCase();
+            if (svc['status'] && svc['status'] !== "shutdown") {
+              enabledServices.push(svc)
+            } else {
+              disabledServices.push(svc)
+            }
           });
+          this.southboundServices = orderBy(enabledServices, 'name').concat(orderBy(disabledServices, 'name'));
           this.hideLoadingSpinner();
         },
         error => {
