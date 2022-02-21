@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { uniqBy } from 'lodash';
+import { DocService } from '../../../../services/doc.service';
+import { CustomValidator } from '../../../../directives/custom-validator';
+import { SUPPORTED_SERVICE_TYPES } from '../../../../utils';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -13,13 +16,19 @@ import { uniqBy } from 'lodash';
 })
 export class AddControlAclComponent implements OnInit {
   services = [];
-  serviceTypes = []
+  // filter Dispatcher service
+  serviceTypes = SUPPORTED_SERVICE_TYPES.filter(t => t != 'Dispatcher');
   aclURLsList = [];
 
   aclServiceTypeList = [];
   serviceNameList = [];
   serviceTypeList = [];
-  name: string;
+
+  userServices = [];
+  userScripts = [];
+
+  name = '';
+  nameCopy = ''
   editMode = false;
 
   @ViewChild('aclForm') aclForm: NgForm;
@@ -31,6 +40,7 @@ export class AddControlAclComponent implements OnInit {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private dialogService: DialogService,
+    private docService: DocService,
     private servicesApiService: ServicesApiService,
     public sharedService: SharedService) { }
 
@@ -38,8 +48,9 @@ export class AddControlAclComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.name = params['name'];
       if (this.name) {
+        this.nameCopy = params['name'];
         this.editMode = true;
-        this.getACLbyName();
+        this.getACLbyName(this.nameCopy);
       }
     });
     this.getAllServices();
@@ -73,14 +84,41 @@ export class AddControlAclComponent implements OnInit {
     this.dialogService.close(id);
   }
 
-  getACLbyName() {
+  refresh() {
+    this.getACLbyName(this.nameCopy);
+  }
+
+  getACLbyName(name: string) {
     this.aclURLsList = []; // clear list
     this.aclServiceTypeList = [];
     /** request started */
     this.ngProgress.start();
-    this.controlService.fetchAclByName(this.name)
+    this.controlService.fetchAclByName(name)
       .subscribe((res: any) => {
+        this.name = name;
         this.ngProgress.done();
+        // To test users section uncomment below code
+        // res['users'] = [
+        //   {
+        //     "service": "Substation 1104"
+        //   },
+        //   {
+        //     "script": "A#6"
+        //   },
+        //   {
+        //     "service": "Substation 1105"
+        //   },
+        //   {
+        //     "script": "SC9"
+        //   }
+        // ]
+
+        // get users services list
+        this.userServices = res['users']?.map(us => us.service).filter(item => item);
+
+        // get users scripts list
+        this.userScripts = res['users']?.map(us => us?.script).filter(item => item);
+
         // Get services list by name
         this.serviceNameList = res.service.filter(item => item.name);
         // Get services list by type
@@ -125,8 +163,6 @@ export class AddControlAclComponent implements OnInit {
           s.select = false;
           return s;
         });
-        this.serviceTypes = (this.services.map(s => ({ type: s.type })));
-        this.serviceTypes = uniqBy(this.serviceTypes, 'type');
       },
         (error) => {
           /** request done */
@@ -140,12 +176,12 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addFormControls(index, urlData: any = null) {
+    this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator]);
     this.aclForm.form.addControl('urls', new FormGroup({}));
     this.initURLControl(index, urlData);
   }
 
   addURLControl() {
-    console.log(this.aclURLsList.length);
     if (this.aclURLsList.length === 0) {
       this.aclForm.form.addControl('urls', new FormGroup({}));
       this.initURLControl(1);
@@ -157,7 +193,7 @@ export class AddControlAclComponent implements OnInit {
 
   initURLControl(index: number, urlData: any = null) {
     this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
-      url: new FormControl(urlData ? urlData?.url : ''),
+      url: new FormControl(urlData ? urlData?.url : '', [Validators.required, CustomValidator.nospaceValidator]),
       acl: new FormControl(urlData ? urlData?.acl : [])
     }));
     this.aclURLsList.push({ index: index, url: '', acl: [] });
@@ -166,7 +202,7 @@ export class AddControlAclComponent implements OnInit {
   addNewURLControl(index: number, urlData: any = null) {
     this.aclForm.form.addControl('urls', new FormGroup({}));
     this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
-      url: new FormControl(urlData ? urlData?.url : ''),
+      url: new FormControl(urlData ? urlData?.url : '', [Validators.required, CustomValidator.nospaceValidator]),
       acl: new FormControl(urlData ? urlData?.acl : [])
     }));
   }
@@ -201,7 +237,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addServiceType(type) {
-    this.serviceTypeList.push(type);
+    this.serviceTypeList.push({ type });
     this.aclForm.form.markAsDirty();
   }
 
@@ -227,14 +263,15 @@ export class AddControlAclComponent implements OnInit {
     this.aclForm.form.markAsDirty();
   }
 
-  clearACLServiceTypes() {
+  clearACLServiceTypes(index) {
+    this.urlControl(index).controls['acl'].patchValue([]);
     this.aclServiceTypeList = [];
     this.aclForm.form.markAsDirty();
   }
 
   setURL(index, value) {
     const urlControl = (this.urlFormGroup().controls[`url-${index}`] as FormGroup).controls['url'];
-    urlControl.setValue(value);
+    urlControl.setValue(value.trim());
     this.aclForm.form.markAsDirty();
   }
 
@@ -242,15 +279,21 @@ export class AddControlAclComponent implements OnInit {
     return data.length > 0 ? data.map(d => isServiceName ? d.name : d.type).join(', ') : 'None';
   }
 
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
+  }
+
   onSubmit(form: NgForm) {
-    console.log('form', form.value);
     let { name, urls } = form.value;
-    urls = Object.values(urls);
-    console.log('urls', urls);
+    urls = urls ? Object.values(urls) : [];
+    if (urls) {
+      urls.forEach(url => {
+        url.acl = url.acl.map(acl => ({ type: acl.type }));
+      });
+    }
     const services = this.serviceNameList.concat(...this.serviceTypeList);
-    console.log('services', services);
     const payload = {
-      name: name,
+      name: name.trim(),
       service: services,
       url: urls
     }
@@ -280,8 +323,10 @@ export class AddControlAclComponent implements OnInit {
   updateACL(payload: any) {
     /** request started */
     this.ngProgress.start();
-    this.controlService.updateACL(this.name, payload)
+    this.controlService.updateACL(this.nameCopy, payload)
       .subscribe((data: any) => {
+        this.name = this.nameCopy = payload.name;
+        this.router.navigate(['control-dispatcher/acl/', payload.name]);
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();

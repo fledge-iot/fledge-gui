@@ -57,7 +57,7 @@
           </div>
           <ng-template #staticConditionDiv>
             <div class="control">
-              <input name="condition" class="input is-small" type="text" [(ngModel)]="condition.key"
+              <input name="condition" class="input is-small" type="text" [(ngModel)]="condition.condition"
                 [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
             </div>
           </ng-template>

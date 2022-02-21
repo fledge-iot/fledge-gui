@@ -20,6 +20,7 @@ export class AddStepValueComponent implements OnInit {
     public sharedService: SharedService) { }
 
   ngOnChanges() {
+    this.parameters = [];
     this.values = Object.values(this.valuesControlGroup().value);
     if (this.values.length == 0 && !this.update) {
       this.parameters.push({ index: 0, key: '', value: '' });

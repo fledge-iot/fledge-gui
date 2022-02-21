@@ -14,7 +14,6 @@ import { ControlDispatcherService } from '../../../../../../services/control-dis
 export class AddScriptComponent implements OnInit {
   scripts = [];  // list of south services
   execution = [{ name: 'blocking', value: '' }, { name: 'non blocking', value: 'background' }];
-  selectedExecution = '';
   config;
 
   @Input() controlIndex; // position of the control in the dom

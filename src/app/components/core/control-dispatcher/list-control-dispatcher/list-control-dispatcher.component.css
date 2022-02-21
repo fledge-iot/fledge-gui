@@ -1,0 +1,7 @@
+.custom-pad {
+  margin-right: 20px;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+}

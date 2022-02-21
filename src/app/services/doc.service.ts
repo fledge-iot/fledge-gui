@@ -27,6 +27,11 @@ export class DocService {
     window.open(`${packageInfo.doc_url}${v}/notifications.html#${slug}`, '_blank');
   }
 
+  goToSetPointControlDocLink(slug: string) {
+    const v = packageInfo.version.includes('next') ? 'develop' : `v${packageInfo.version}`;
+    window.open(`${packageInfo.doc_url}${v}/control.html#${slug}`, '_blank');
+  }
+
   goToViewQuickStartLink(slug: string) {
     const v = this.gitDistance > 0 ? 'develop' : `${this.appVersion}`;
     window.open(`${packageInfo.doc_url}${v}/quick_start/${slug}`, '_blank');
