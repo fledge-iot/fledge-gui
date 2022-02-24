@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { decode, encode } from 'base64-arraybuffer';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AssetsService } from '../../../../services';
@@ -45,11 +46,23 @@ export class ImageVisualisationComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
-          console.log(data[0].reading);
           // TO TEST INITIAL IMAGE LOADING
-          this.imageBase64String = data[0].reading['testcard'].split('8_')[1];
-          console.log('this.base64Image', this.imageBase64String);
-          this.imageUrl = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.imageBase64String);
+          const base64 = data[0].reading['testcard'].split('8_')[1];
+          var bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0))
+          // var binary_string = window.atob(base64);
+          // var len = binary_string.length;
+          // var bytes = new Uint8Array(len);
+          // for (var i = 0; i < len; i++) {
+          //   bytes[i] = binary_string.charCodeAt(i);
+          // }
+          // console.log('base64', base64String);
+          // const dataArray = decode(base64String);
+          // const byte = new Uint8Array(dataArray);
+          // console.log('bytes array', byte.buffer);
+          const blob = new Blob([bytes.buffer], { type: 'image/png' });
+          const imageUrl = URL.createObjectURL(blob);
+          this.imageUrl = this.domSanitizer.bypassSecurityTrustUrl(imageUrl);
+          console.log('img', this.imageUrl);
         },
         error => {
           console.log('error in response', error);
