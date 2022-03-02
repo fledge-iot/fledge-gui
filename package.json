@@ -32,7 +32,6 @@
     "@kurkle/color": "^0.1.9",
     "@ng-select/ng-select": "^7.3.0",
     "animate.css": "^4.1.1",
-    "base64-arraybuffer": "^1.0.2",
     "chart.js": "~2.9.4",
     "codemirror": "^5.59.4",
     "core-js": "^3.9.1",
