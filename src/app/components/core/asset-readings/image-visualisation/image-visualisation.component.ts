@@ -45,6 +45,7 @@ export class ImageVisualisationComponent implements OnInit {
     this.assetService.getLatestReadings(assetCode)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
+        this.showSpinner = false;
         if (data.length === 0) {
           console.log('No readings found.');
           return;
@@ -84,6 +85,7 @@ export class ImageVisualisationComponent implements OnInit {
         }
       },
         error => {
+          this.showSpinner = false;
           console.log('error in response', error);
         });
 
@@ -98,14 +100,18 @@ export class ImageVisualisationComponent implements OnInit {
       out = new Uint8ClampedArray(buffer.byteLength * 4);
       // set alpha channel
       view.forEach((a, i) => out[(i * 4) + 3] = a);
-    }
-
-    // FIX ME
-    if (options.depth === 16) {
+    } // FIX ME
+    else if (options.depth === 16) {
       // view = new Uint16Array(buffer);
       // out = new Uint8ClampedArray(buffer.byteLength * 2);
       // // set alpha channel
       // view.forEach((a, i) => out[(i * 4) + 3] = a);
+    } // FIX ME
+    else if (options.depth === 24) {
+      //  view = new Uint8Array(buffer);
+      //  out = new Uint8ClampedArray(buffer.byteLength * 4);
+      //  // set alpha channel
+      //  view.forEach((a, i) => out[(i * 4) + 3] = a);
     }
 
     console.log('view', view.length);
