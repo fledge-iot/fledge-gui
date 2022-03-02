@@ -2,8 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card animated fadeIn">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">Image
-      </p>
+      <p class="modal-card-title is-size-5">{{assetCode | titlecase}} Image</p>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
       </div>
@@ -12,7 +11,7 @@
       <div class="columns">
         <div class="column">
           <div id="tab-content">
-            <img [src]="image" alt="Angular">
+            <img [src]="image" [alt]="assetCode">
             <!-- <ng-container *ngIf="showSpinner; else DataDiv">
               <div class="app-loading">
                 &nbsp;
@@ -24,6 +23,7 @@
             <ng-template #DataDiv>
             </ng-template> -->
           </div>
+          <span>Timestamp: {{timestamp}} </span>
         </div>
       </div>
     </section>

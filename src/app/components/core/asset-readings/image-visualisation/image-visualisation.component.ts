@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { DateFormatterPipe } from '../../../../pipes';
 import { AssetsService } from '../../../../services';
 
 @Component({
@@ -12,10 +13,12 @@ export class ImageVisualisationComponent implements OnInit {
   showSpinner = true;
   assetCode = '';
   destroy$: Subject<boolean> = new Subject<boolean>();
-  imageBase64String = '';
   image;
 
+  timestamp: string;
+
   constructor(
+    private dateFormatter: DateFormatterPipe,
     public assetService: AssetsService) { }
 
   ngOnInit(): void { }
@@ -42,12 +45,14 @@ export class ImageVisualisationComponent implements OnInit {
     this.assetService.getLatestReadings(assetCode)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
-        // Check if returned readings are of image type
         if (data.length === 0) {
           console.log('No readings found.');
-
           return;
         }
+
+        // reading timestamp
+        this.timestamp = this.dateFormatter.transform(data[0].timestamp, 'HH:mm:ss')
+        // Check if returned readings are of image type
         var imageExists = Object.keys(data[0].reading).some(function (k) {
           return typeof (data[0].reading[k]) === 'string' && data[0].reading[k].includes("__DPIMAGE");
         });
@@ -72,6 +77,7 @@ export class ImageVisualisationComponent implements OnInit {
             // arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
           } else {
             console.log(`Not supported, found ${depth}`);
+            return;
           }
 
           this.processImage(arrayBufferView, { width, height, depth });
