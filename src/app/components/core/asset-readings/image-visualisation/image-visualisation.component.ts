@@ -14,7 +14,6 @@ export class ImageVisualisationComponent implements OnInit {
   assetCode = '';
   destroy$: Subject<boolean> = new Subject<boolean>();
   image;
-
   timestamp: string;
 
   constructor(
@@ -36,12 +35,8 @@ export class ImageVisualisationComponent implements OnInit {
     chart_modal.classList.remove('is-active');
   }
 
-  public getAssetCode(assetCode: string) {
-    this.assetCode = assetCode;
-    this.getAssetReadings(assetCode);
-  }
-
   getAssetReadings(assetCode) {
+    this.assetCode = assetCode;
     this.assetService.getLatestReadings(assetCode)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
@@ -114,18 +109,19 @@ export class ImageVisualisationComponent implements OnInit {
       //  view.forEach((a, i) => out[(i * 4) + 3] = a);
     }
 
-    console.log('view', view.length);
-    console.log('out', out.length);
+    if (out) {
+      console.log('view', view.length);
+      console.log('out', out.length);
+      const canvas = document.createElement('canvas');
+      canvas.width = options.width;
+      canvas.height = options.height;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = options.width;
-    canvas.height = options.height;
-
-    const image = new ImageData(out, options.width, options.height)
-    console.log('image', image);
-    canvas.getContext('2d').putImageData(image, 0, 0);
-    // if you want to save a png version
-    this.image = canvas.toDataURL("image/png");
+      const image = new ImageData(out, options.width, options.height)
+      console.log('image', image);
+      canvas.getContext('2d').putImageData(image, 0, 0);
+      // if you want to save a png version
+      this.image = canvas.toDataURL("image/png");
+    }
   }
 
   public ngOnDestroy(): void {
