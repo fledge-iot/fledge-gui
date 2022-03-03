@@ -261,14 +261,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
-    if (this.ifEmptyReadings()) {
-      return;
-    }
     this.setTabData();
-  }
-
-  ifEmptyReadings() {
-    return this.numberTypeReadingsList.length === 0 && this.arrayTypeReadingsList.length == 0 && this.isEmptyObject(this.stringTypeReadingsList);
   }
 
   setTabData() {
