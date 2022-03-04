@@ -49,7 +49,7 @@ export class ImageVisualisationComponent implements OnInit {
         // reading timestamp
         this.timestamp = this.dateFormatter.transform(data[0].timestamp, 'HH:mm:ss')
         // Check if returned readings are of image type
-        var imageExists = Object.keys(data[0].reading).some(function (k) {
+        const imageExists = Object.keys(data[0].reading).some(function (k) {
           return typeof (data[0].reading[k]) === 'string' && data[0].reading[k].includes("__DPIMAGE");
         });
         if (imageExists) {
@@ -67,10 +67,10 @@ export class ImageVisualisationComponent implements OnInit {
             arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0))
           } else if (depth === 16) {
             // FIX ME! test 16 bit raw image array
-            // arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
+            arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
           } else if (depth === 24) {
             // FIX ME! test 24 bit raw image array
-            // arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
+            arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
           } else {
             console.log(`Not supported, found ${depth}`);
             return;
@@ -84,6 +84,33 @@ export class ImageVisualisationComponent implements OnInit {
           console.log('error in response', error);
         });
 
+  }
+
+  getImage(data) {
+    // split image data
+    const imageData = data[0].reading[this.assetCode].replace('__DPIMAGE:', '').split('_');
+
+    // Get base64 raw string
+    const base64Str_ = imageData[1];
+
+    // Get width, height and depth of the image and convert values into Number
+    const [width, height, depth] = imageData[0].split(',').map(Number);
+
+    let arrayBufferView = null;
+    if (depth === 8) {
+      arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0))
+    } else if (depth === 16) {
+      // FIX ME! test 16 bit raw image array
+      arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
+    } else if (depth === 24) {
+      // FIX ME! test 24 bit raw image array
+      arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
+    } else {
+      console.log(`Not supported, found ${depth}`);
+      return;
+    }
+
+    this.processImage(arrayBufferView, { width, height, depth });
   }
 
   processImage(buffer, options: any = {}) {
@@ -110,15 +137,12 @@ export class ImageVisualisationComponent implements OnInit {
     }
 
     if (out) {
-      console.log('view', view.length);
-      console.log('out', out.length);
       const canvas = document.createElement('canvas');
       canvas.width = options.width;
       canvas.height = options.height;
-
-      const image = new ImageData(out, options.width, options.height)
-      console.log('image', image);
-      canvas.getContext('2d').putImageData(image, 0, 0);
+      const imageData = new ImageData(out, options.width, options.height)
+      console.log('image', imageData);
+      canvas.getContext('2d').putImageData(imageData, 0, 0);
       // if you want to save a png version
       this.image = canvas.toDataURL("image/png");
     }

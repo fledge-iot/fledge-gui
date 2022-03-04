@@ -47,8 +47,11 @@ export class ReadingsGraphComponent implements OnDestroy {
   public numberTypeReadingsList = [];
   public stringTypeReadingsList: any;
   public arrayTypeReadingsList = [];
+  public imageReadings = [];
   public selectedTab = 1;
   public timestamps = [];
+  public image;
+  public isLatestReadings = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -131,6 +134,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public getAssetCode(assetCode: string) {
+    this.isLatestReadings = false;
     this.isModalOpened = true;
     this.selectedTab = 1;
     this.loadPage = true;
@@ -157,6 +161,115 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       });
   }
+
+  getAssetLatestReadings(assetCode) {
+    this.selectedTab = 1;
+    this.loadPage = true;
+    this.notify.emit(false);
+    this.isLatestReadings = true;
+    this.assetCode = assetCode;
+    this.image = null;
+    this.numberTypeReadingsList = [];
+    this.arrayTypeReadingsList = [];
+    this.stringTypeReadingsList = {};
+    this.assetService.getLatestReadings(assetCode)
+      .pipe(takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe((data: any) => {
+        this.showSpinner = false;
+        this.loadPage = false;
+        if (data.length === 0) {
+          console.log('No readings found.');
+          return;
+        }
+        const imageExists = Object.keys(data[0].reading).some(function (k) {
+          return typeof (data[0].reading[k]) === 'string' && data[0].reading[k].includes("__DPIMAGE");
+        });
+        if (imageExists) {
+          this.image = null;
+          this.getImage(data);
+        } else {
+          this.getReadings(data);
+        }
+      },
+        error => {
+          this.showSpinner = false;
+          console.log('error in response', error);
+        });
+
+  }
+
+  getImage(data) {
+    this.imageReadings = [];
+    data.forEach(d => {
+      Object.entries(d.reading).forEach(([k, value]) => {
+        this.imageReadings.push({
+          datapoint: k,
+          image: value
+        });
+      });
+    });
+    // split image data
+    const imageData = this.imageReadings[0].image.replace('__DPIMAGE:', '').split('_');
+    // reading timestamp
+    this.timestamps = [this.dateFormatter.transform(data[0].timestamp, 'HH:mm:ss')];
+    // Get base64 raw string
+    const base64Str_ = imageData[1];
+
+    // Get width, height and depth of the image and convert values into Number
+    const [width, height, depth] = imageData[0].split(',').map(Number);
+
+    let arrayBufferView = null;
+    if (depth === 8) {
+      arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0))
+    } else if (depth === 16) {
+      // FIX ME! test 16 bit raw image array
+      arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
+    } else if (depth === 24) {
+      // FIX ME! test 24 bit raw image array
+      arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
+    } else {
+      console.log(`Not supported, found ${depth}`);
+      return;
+    }
+
+    this.processImage(arrayBufferView, { width, height, depth });
+  }
+
+  processImage(buffer, options: any = {}) {
+    let view = null;
+    let out = null;
+
+    if (options.depth === 8) {
+      view = new Uint8Array(buffer);
+      out = new Uint8ClampedArray(buffer.byteLength * 4);
+      // set alpha channel
+      view.forEach((a, i) => out[(i * 4) + 3] = a);
+    } // FIX ME
+    else if (options.depth === 16) {
+      // view = new Uint16Array(buffer);
+      // out = new Uint8ClampedArray(buffer.byteLength * 2);
+      // // set alpha channel
+      // view.forEach((a, i) => out[(i * 4) + 3] = a);
+    } // FIX ME
+    else if (options.depth === 24) {
+      //  view = new Uint8Array(buffer);
+      //  out = new Uint8ClampedArray(buffer.byteLength * 4);
+      //  // set alpha channel
+      //  view.forEach((a, i) => out[(i * 4) + 3] = a);
+    }
+
+    if (out) {
+      const canvas = document.createElement('canvas');
+      canvas.width = options.width;
+      canvas.height = options.height;
+      const imageData = new ImageData(out, options.width, options.height)
+      canvas.getContext('2d').putImageData(imageData, 0, 0);
+      // if you want to save a png version
+      this.image = canvas.toDataURL("image/png");
+    }
+    this.selectedTab = 5; // image tab
+  }
+
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
     this.assetService.getAllAssetSummary(assetCode, limit, time)
@@ -223,7 +336,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     const strReadings = [];
     const arrReadings = [];
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
-
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
         // discard unuseful reading
@@ -258,11 +370,14 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
     }
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
+
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
+
+
 
   setTabData() {
     if (this.isModalOpened) {
@@ -272,6 +387,8 @@ export class ReadingsGraphComponent implements OnDestroy {
         this.selectedTab = 2;
       } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
         this.selectedTab = 3;
+      } else if (this.image) {
+        this.selectedTab = 5;
       }
       this.isModalOpened = false;
     }
@@ -385,7 +502,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetChartType = 'line';
     this.assetChartOptions = {
       elements: {
-        point: { radius: 0 }
+        point: { radius: this.isLatestReadings ? 2 : 0 }
       },
       scales: {
         xAxes: [{
@@ -498,15 +615,19 @@ export class ReadingsGraphComponent implements OnDestroy {
   selectTab(id: number, showSpinner = true) {
     this.showSpinner = showSpinner;
     this.selectedTab = id;
-    if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
-      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    } else if (this.graphRefreshInterval === -1) {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    if (this.isLatestReadings) {
+      this.getAssetLatestReadings(this.assetCode);
+    } else {
+      if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
+        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      } else if (this.graphRefreshInterval === -1) {
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+      }
     }
   }
 
   showSummaryTab() {
-    return this.numberTypeReadingsList.length > 0;
+    return this.numberTypeReadingsList.length > 0 && !this.isLatestReadings;
   }
 
   isEmptyObject(obj) {
