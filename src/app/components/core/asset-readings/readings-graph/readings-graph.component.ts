@@ -2,13 +2,14 @@ import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, El
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService } from '../../../../services';
 import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
+import { Image } from "image-js";
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var Plotly: any;
 
@@ -60,6 +61,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     private assetService: AssetsService,
     private alertService: AlertService,
     private ping: PingService,
+    private sanitizer: DomSanitizer,
     private dateFormatter: DateFormatterPipe,
     public rangeSliderService: RangeSliderService) {
     this.assetChartType = 'line';
@@ -223,7 +225,8 @@ export class ReadingsGraphComponent implements OnDestroy {
       arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0))
     } else if (depth === 16) {
       // FIX ME! test 16 bit raw image array
-      arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
+      const unit8Arr = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
+      arrayBufferView = new Uint16Array(unit8Arr.buffer);
     } else if (depth === 24) {
       // FIX ME! test 24 bit raw image array
       arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
@@ -235,38 +238,47 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.processImage(arrayBufferView, { width, height, depth });
   }
 
-  processImage(buffer, options: any = {}) {
-    let view = null;
-    let out = null;
+  processImage(data, options: any = {}) {
+    new Image(options.width, options.height, data.buffer, { bitDepth: options.depth })
+      .toBlob().then(image => {
+        console.log('image', image);
+        let objectURL = URL.createObjectURL(image);
+        this.image = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+      });
 
-    if (options.depth === 8) {
-      view = new Uint8Array(buffer);
-      out = new Uint8ClampedArray(buffer.byteLength * 4);
-      // set alpha channel
-      view.forEach((a, i) => out[(i * 4) + 3] = a);
-    } // FIX ME
-    else if (options.depth === 16) {
-      // view = new Uint16Array(buffer);
-      // out = new Uint8ClampedArray(buffer.byteLength * 2);
-      // // set alpha channel
-      // view.forEach((a, i) => out[(i * 4) + 3] = a);
-    } // FIX ME
-    else if (options.depth === 24) {
-      //  view = new Uint8Array(buffer);
-      //  out = new Uint8ClampedArray(buffer.byteLength * 4);
-      //  // set alpha channel
-      //  view.forEach((a, i) => out[(i * 4) + 3] = a);
-    }
+    // document.getElementById('result').src = this.image.toDataURL();
 
-    if (out) {
-      const canvas = document.createElement('canvas');
-      canvas.width = options.width;
-      canvas.height = options.height;
-      const imageData = new ImageData(out, options.width, options.height)
-      canvas.getContext('2d').putImageData(imageData, 0, 0);
-      // if you want to save a png version
-      this.image = canvas.toDataURL("image/png");
-    }
+    // let view = null;
+    // let out = null;
+
+    // if (options.depth === 8) {
+    //   view = new Uint8Array(buffer);
+    //   out = new Uint8ClampedArray(buffer.byteLength * 4);
+    //   // set alpha channel
+    //   view.forEach((a, i) => out[(i * 4) + 3] = a);
+    // } // FIX ME
+    // else if (options.depth === 16) {
+    //   // view = new Uint16Array(buffer);
+    //   // out = new Uint8ClampedArray(buffer.byteLength * 2);
+    //   // // set alpha channel
+    //   // view.forEach((a, i) => out[(i * 4) + 3] = a);
+    // } // FIX ME
+    // else if (options.depth === 24) {
+    //   //  view = new Uint8Array(buffer);
+    //   //  out = new Uint8ClampedArray(buffer.byteLength * 4);
+    //   //  // set alpha channel
+    //   //  view.forEach((a, i) => out[(i * 4) + 3] = a);
+    // }
+
+    // if (out) {
+    //   const canvas = document.createElement('canvas');
+    //   canvas.width = options.width;
+    //   canvas.height = options.height;
+    //   const imageData = new ImageData(out, options.width, options.height)
+    //   canvas.getContext('2d').putImageData(imageData, 0, 0);
+    //   // if you want to save a png version
+    //   this.image = canvas.toDataURL("image/png");
+    // }
     this.selectedTab = 5; // image tab
   }
 
