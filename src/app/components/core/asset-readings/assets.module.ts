@@ -12,7 +12,6 @@ import { NumberInputDebounceModule } from '../../common/number-input-debounce/nu
 import { PaginationModule } from '../../common/pagination/pagination.module';
 import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
 import { AssetsComponent } from './assets/assets.component';
-import { ImageVisualisationComponent } from './image-visualisation/image-visualisation.component';
 
 const routes: Routes = [
   {
@@ -26,8 +25,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     AssetsComponent,
-    ReadingsGraphComponent,
-    ImageVisualisationComponent
+    ReadingsGraphComponent
   ],
   imports: [
     FormsModule,
