@@ -225,14 +225,16 @@ export class ReadingsGraphComponent implements OnDestroy {
       // FIX ME! test 16 bit raw image array
       arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
     } else if (depth === 24) {
-      // FIX ME! test 24 bit raw image array
+      // 24 bit raw image array
       arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
+      this.process24bitBitmap(arrayBufferView.buffer, { width, height, depth });
+      return;
     } else {
       console.log(`Not supported, found ${depth}`);
       return;
     }
 
-    this.processImage(arrayBufferView, { width, height, depth });
+    this.processImage(arrayBufferView.buffer, { width, height, depth });
   }
 
   processImage(buffer, options: any = {}) {
@@ -240,33 +242,49 @@ export class ReadingsGraphComponent implements OnDestroy {
     let out = null;
 
     if (options.depth === 8) {
-      view = new Uint8Array(buffer);
+      view = new Uint8ClampedArray(buffer);
       out = new Uint8ClampedArray(buffer.byteLength * 4);
       // set alpha channel
       view.forEach((a, i) => out[(i * 4) + 3] = a);
     } // FIX ME
     else if (options.depth === 16) {
-      // view = new Uint16Array(buffer);
-      // out = new Uint8ClampedArray(buffer.byteLength * 2);
-      // // set alpha channel
+      // view = new Uint8ClampedArray(buffer);
+      // out = new Uint8ClampedArray(buffer.byteLength);
+      // set alpha channel
       // view.forEach((a, i) => out[(i * 4) + 3] = a);
-    } // FIX ME
-    else if (options.depth === 24) {
-      //  view = new Uint8Array(buffer);
-      //  out = new Uint8ClampedArray(buffer.byteLength * 4);
-      //  // set alpha channel
-      //  view.forEach((a, i) => out[(i * 4) + 3] = a);
     }
+
 
     if (out) {
       const canvas = document.createElement('canvas');
       canvas.width = options.width;
       canvas.height = options.height;
-      const imageData = new ImageData(out, options.width, options.height)
-      canvas.getContext('2d').putImageData(imageData, 0, 0);
+      const imgData = new ImageData(out, options.width, options.height);
+      canvas.getContext('2d').putImageData(imgData, 5, 5);
       // if you want to save a png version
       this.image = canvas.toDataURL("image/png");
     }
+    this.selectedTab = 5; // image tab
+  }
+
+
+  process24bitBitmap(buffer, options: any = {}) {
+    const view = new Uint8ClampedArray(buffer);
+    const canvas = document.createElement('canvas');
+    var ctx = canvas.getContext("2d");
+    var imgData = ctx.createImageData(options.width, options.height);
+
+    var i;
+    var x = 0;
+    for (i = 0; i < imgData.data.length; i += 4) {
+      imgData.data[i + 0] = view[x++];
+      imgData.data[i + 1] = view[x++];
+      imgData.data[i + 2] = view[x++];
+      imgData.data[i + 3] = 255;
+    }
+
+    ctx.putImageData(imgData, 5, 5);
+    this.image = canvas.toDataURL("image/png");
     this.selectedTab = 5; // image tab
   }
 
