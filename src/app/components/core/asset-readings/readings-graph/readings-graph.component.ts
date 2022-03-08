@@ -220,15 +220,15 @@ export class ReadingsGraphComponent implements OnDestroy {
       let arrayBufferView = null;
       if (depth === 8) {
         arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
-        read.image = this.processImage(arrayBufferView.buffer, { width, height, depth });
+        read.image = this.process8bitBitmap(arrayBufferView.buffer, { width, height });
       } else if (depth === 16) {
         // FIX ME! test 16 bit raw image array
         arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
-        read.image = this.processImage(arrayBufferView.buffer, { width, height, depth });
+        read.image = this.process16bitBitmap(arrayBufferView.buffer, { width, height });
       } else if (depth === 24) {
         // 24 bit raw image array
         arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
-        read.image = this.process24bitBitmap(arrayBufferView.buffer, { width, height, depth });
+        read.image = this.process24bitBitmap(arrayBufferView.buffer, { width, height });
       } else {
         console.log(`Not supported, found ${depth}`);
         return;
@@ -238,23 +238,29 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.selectedTab = 5; // image tab
   }
 
-  processImage(buffer, options: any = {}) {
+  process8bitBitmap(buffer, options: any = {}) {
     let view = null;
     let out = null;
+    view = new Uint8ClampedArray(buffer);
+    out = new Uint8ClampedArray(buffer.byteLength * 4);
+    // set alpha channel
+    view.forEach((a, i) => out[(i * 4) + 3] = a);
+    const canvas = document.createElement('canvas');
+    canvas.width = options.width;
+    canvas.height = options.height;
+    const imgData = new ImageData(out, options.width, options.height);
+    canvas.getContext('2d').putImageData(imgData, 0, 0);
+    // if you want to save a png version
+    return canvas.toDataURL("image/png");
+  }
 
-    if (options.depth === 8) {
-      view = new Uint8ClampedArray(buffer);
-      out = new Uint8ClampedArray(buffer.byteLength * 4);
-      // set alpha channel
-      view.forEach((a, i) => out[(i * 4) + 3] = a);
-    } // FIX ME
-    else if (options.depth === 16) {
-      // view = new Uint8ClampedArray(buffer);
-      // out = new Uint8ClampedArray(buffer.byteLength);
-      // set alpha channel
-      // view.forEach((a, i) => out[(i * 4) + 3] = a);
-    }
-
+  process16bitBitmap(buffer, options: any = {}) {
+    let view = null;
+    let out = null;
+    view = new Uint8ClampedArray(buffer);
+    out = new Uint8ClampedArray(buffer.byteLength);
+    // set alpha channel
+    view.forEach((a, i) => out[(i * 4) + 3] = a);
     const canvas = document.createElement('canvas');
     canvas.width = options.width;
     canvas.height = options.height;
@@ -267,11 +273,11 @@ export class ReadingsGraphComponent implements OnDestroy {
   process24bitBitmap(buffer, options: any = {}) {
     const view = new Uint8ClampedArray(buffer);
     const canvas = document.createElement('canvas');
-    var ctx = canvas.getContext("2d");
-    var imgData = ctx.createImageData(options.width, options.height);
+    const ctx = canvas.getContext("2d");
+    const imgData = ctx.createImageData(options.width, options.height);
 
-    var i;
-    var x = 0;
+    let i;
+    let x = 0;
     for (i = 0; i < imgData.data.length; i += 4) {
       imgData.data[i + 0] = view[x++];
       imgData.data[i + 1] = view[x++];
