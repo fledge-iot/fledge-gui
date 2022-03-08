@@ -156,14 +156,17 @@
                     </table>
                   </div>
                 </div>
-                <div *ngIf="selectedTab === 5 && image" data-content="5">
+                <div *ngIf="selectedTab === 5" data-content="5">
                   <div class="has-text-centered">
-                    <div id="tab-content">
-                      <img [src]="image" [alt]="assetCode">
-                    </div>
-                    <small class="text-secondary has-text-grey-light">{{this.imageReadings[0].datapoint}}, Timestamp:
-                      {{timestamps[0]}}
-                    </small>
+                    <ng-container *ngFor="let read of imageReadings">
+                      <div id="tab-content">
+                        <img src={{read.image}} alt={{read.datapoint}}>
+                      </div>
+                      <small class="has-text-centered text-secondary has-text-grey-light">{{read?.datapoint}},
+                        Timestamp:
+                        {{read?.timestamp}}
+                      </small>
+                    </ng-container>
                   </div>
                 </div>
               </ng-template>

@@ -204,37 +204,38 @@ export class ReadingsGraphComponent implements OnDestroy {
       Object.entries(d.reading).forEach(([k, value]) => {
         this.imageReadings.push({
           datapoint: k,
-          image: value
+          imageData: value,
+          timestamp: this.dateFormatter.transform(data.timestamp, 'HH:mm:ss')
         });
       });
     });
-    // split image data
-    const imageData = this.imageReadings[0].image.replace('__DPIMAGE:', '').split('_');
-    // reading timestamp
-    this.timestamps = [this.dateFormatter.transform(data[0].timestamp, 'HH:mm:ss')];
-    // Get base64 raw string
-    const base64Str_ = imageData[1];
+    this.imageReadings.map((read) => {
+      const imageData = read.imageData.replace('__DPIMAGE:', '').split('_');
+      // Get base64 raw string
+      const base64Str_ = imageData[1];
+      // Get width, height and depth of the image and convert values into Number
+      const [width, height, depth] = imageData[0].split(',').map(Number);
+      // split image data
 
-    // Get width, height and depth of the image and convert values into Number
-    const [width, height, depth] = imageData[0].split(',').map(Number);
-
-    let arrayBufferView = null;
-    if (depth === 8) {
-      arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0))
-    } else if (depth === 16) {
-      // FIX ME! test 16 bit raw image array
-      arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
-    } else if (depth === 24) {
-      // 24 bit raw image array
-      arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
-      this.process24bitBitmap(arrayBufferView.buffer, { width, height, depth });
-      return;
-    } else {
-      console.log(`Not supported, found ${depth}`);
-      return;
-    }
-
-    this.processImage(arrayBufferView.buffer, { width, height, depth });
+      let arrayBufferView = null;
+      if (depth === 8) {
+        arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
+        read.image = this.processImage(arrayBufferView.buffer, { width, height, depth });
+      } else if (depth === 16) {
+        // FIX ME! test 16 bit raw image array
+        arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
+        read.image = this.processImage(arrayBufferView.buffer, { width, height, depth });
+      } else if (depth === 24) {
+        // 24 bit raw image array
+        arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
+        read.image = this.process24bitBitmap(arrayBufferView.buffer, { width, height, depth });
+      } else {
+        console.log(`Not supported, found ${depth}`);
+        return;
+      }
+      return read;
+    });
+    this.selectedTab = 5; // image tab
   }
 
   processImage(buffer, options: any = {}) {
@@ -254,19 +255,14 @@ export class ReadingsGraphComponent implements OnDestroy {
       // view.forEach((a, i) => out[(i * 4) + 3] = a);
     }
 
-
-    if (out) {
-      const canvas = document.createElement('canvas');
-      canvas.width = options.width;
-      canvas.height = options.height;
-      const imgData = new ImageData(out, options.width, options.height);
-      canvas.getContext('2d').putImageData(imgData, 5, 5);
-      // if you want to save a png version
-      this.image = canvas.toDataURL("image/png");
-    }
-    this.selectedTab = 5; // image tab
+    const canvas = document.createElement('canvas');
+    canvas.width = options.width;
+    canvas.height = options.height;
+    const imgData = new ImageData(out, options.width, options.height);
+    canvas.getContext('2d').putImageData(imgData, 0, 0);
+    // if you want to save a png version
+    return canvas.toDataURL("image/png");
   }
-
 
   process24bitBitmap(buffer, options: any = {}) {
     const view = new Uint8ClampedArray(buffer);
@@ -283,11 +279,9 @@ export class ReadingsGraphComponent implements OnDestroy {
       imgData.data[i + 3] = 255;
     }
 
-    ctx.putImageData(imgData, 5, 5);
-    this.image = canvas.toDataURL("image/png");
-    this.selectedTab = 5; // image tab
+    ctx.putImageData(imgData, 0, 0);
+    return canvas.toDataURL("image/png");
   }
-
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
     this.assetService.getAllAssetSummary(assetCode, limit, time)
