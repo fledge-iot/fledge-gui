@@ -47,7 +47,7 @@
                     <span><b>Summary</b></span>
                   </a>
                 </li>
-                <li *ngIf="image" [ngClass]="{'is-active': selectedTab == 5}" data-tab="5">
+                <li *ngIf="imageReadings.length > 0" [ngClass]="{'is-active': selectedTab == 5}" data-tab="5">
                   <a (click)="selectTab(5)">
                     <span><b>Image</b></span>
                   </a>
@@ -160,7 +160,7 @@
                   <div class="has-text-centered">
                     <ng-container *ngFor="let read of imageReadings">
                       <div id="tab-content">
-                        <img src={{read.image}} alt={{read.datapoint}}>
+                        <img [src]="read.image" alt={{read.datapoint}}>
                       </div>
                       <small class="has-text-centered text-secondary has-text-grey-light">{{read?.datapoint}},
                         Timestamp:

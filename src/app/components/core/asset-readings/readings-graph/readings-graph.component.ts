@@ -50,7 +50,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   public imageReadings = [];
   public selectedTab = 1;
   public timestamps = [];
-  public image;
   public isLatestReadings = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -168,10 +167,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.notify.emit(false);
     this.isLatestReadings = true;
     this.assetCode = assetCode;
-    this.image = null;
     this.numberTypeReadingsList = [];
     this.arrayTypeReadingsList = [];
     this.stringTypeReadingsList = {};
+    this.imageReadings = [];
     this.assetService.getLatestReadings(assetCode)
       .pipe(takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe((data: any) => {
@@ -185,7 +184,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           return typeof (data[0].reading[k]) === 'string' && data[0].reading[k].includes("__DPIMAGE");
         });
         if (imageExists) {
-          this.image = null;
+          this.imageReadings = [];
           this.getImage(data);
         } else {
           this.getReadings(data);
@@ -199,6 +198,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getImage(data) {
+    this.selectedTab = 5; // image tab
     this.imageReadings = [];
     data.forEach(d => {
       Object.entries(d.reading).forEach(([k, value]) => {
@@ -235,7 +235,6 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
       return read;
     });
-    this.selectedTab = 5; // image tab
   }
 
   process8bitBitmap(buffer, options: any = {}) {
@@ -255,25 +254,38 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   process16bitBitmap(buffer, options: any = {}) {
-    let view = null;
-    let out = null;
-    view = new Uint8ClampedArray(buffer);
-    out = new Uint8ClampedArray(buffer.byteLength);
-    // set alpha channel
-    view.forEach((a, i) => out[(i * 4) + 3] = a);
+    const view = new Uint8ClampedArray(buffer);
     const canvas = document.createElement('canvas');
-    canvas.width = options.width;
-    canvas.height = options.height;
-    const imgData = new ImageData(out, options.width, options.height);
-    canvas.getContext('2d').putImageData(imgData, 0, 0);
-    // if you want to save a png version
+    const ctx = canvas.getContext("2d");
+    ctx.canvas.width = options.width;
+    ctx.canvas.height = options.height;
+    const imgData = ctx.createImageData(options.width, options.height);
+
+    //uint14_to_uint8 is a constant to scale the uint14 number to uint8 for viewing purposes
+    //although it is 16 bit data, the actual max value is that of a uint14 value
+    //this is because the thermal cameras store uint14 data within a uint16 array
+    var max_uint14 = Math.pow(2, 14) - 1; //max value of uint14
+    var max_uint8 = Math.pow(2, 8) - 1; //max value of uint8
+    var uint14_to_uint8 = max_uint8 / max_uint14; //scale factor from uint14 to uint8
+    var i;
+    var x = 0;
+    for (i = 0; i < imgData.data.length; i += 4) {
+      var num_14 = (view[x] * 256) + view[x + 1]; // create a uint16 from 2 uint8 nums
+      imgData.data[i + 3] = Math.round(num_14 * uint14_to_uint8); //scale from uint14 to uint8 for viewing
+      x += 2;
+    }
+
+    ctx.putImageData(imgData, 0, 0);
     return canvas.toDataURL("image/png");
   }
 
   process24bitBitmap(buffer, options: any = {}) {
+
     const view = new Uint8ClampedArray(buffer);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext("2d");
+    ctx.canvas.width = options.width;
+    ctx.canvas.height = options.height;
     const imgData = ctx.createImageData(options.width, options.height);
 
     let i;
@@ -405,7 +417,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         this.selectedTab = 2;
       } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
         this.selectedTab = 3;
-      } else if (this.image) {
+      } else if (this.imageReadings.length > 0) {
         this.selectedTab = 5;
       }
       this.isModalOpened = false;
