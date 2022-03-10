@@ -22,6 +22,7 @@
 set -e
 
 GIT_ROOT=`pwd`    # The script must be executed from the root git directory
+UPGRADE=false
 usage="$(basename "$0") [clean|cleanall]
 This script is used to create the Debian package of fledge-gui
 
