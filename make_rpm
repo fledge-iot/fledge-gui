@@ -22,6 +22,7 @@
 set -e
 
 GIT_ROOT=`pwd`    # The script must be executed from the root git directory
+UPGRADE=false
 usage="$(basename "$0") [clean|cleanall]
 This script is used to create the RPM package of fledge-gui
 
@@ -55,6 +56,9 @@ do
 	          echo "${usage}"
 	          exit 0
 	          ;;
+      upgrade)
+          UPGRADE=true
+          ;;
 	      *)
           echo "Unrecognized option: $i"
           exit 1
@@ -89,7 +93,7 @@ version=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | se
 BUILD_ROOT="${GIT_ROOT}/packages/build"
 git_tag_info=$(git describe --tags | sed 's/-/_/g') && commit_count=$(echo ${git_tag_info} | cut -d_ -f2) || { commit_count=$(git rev-list --count HEAD); git_tag_info="v$version_$commit_count_$(git rev-parse --short HEAD)"; }
 branch_name=$(git rev-parse --abbrev-ref HEAD)
-if [[ ${branch_name} = "main" ]] || [[ ${branch_name} =~ ^[0-9]+\.[0-9]+\.[0-9]+RC ]]; then commit_count=1; fi
+if [[ ${branch_name} = "main" ]] || [[ ${branch_name} =~ ^[0-9]+\.[0-9]+\.[0-9]+RC ]] || [[ $UPGRADE == true ]]; then commit_count=1; fi
 # Final package name
 package_name="fledge-gui-${version}-${commit_count}"
 
