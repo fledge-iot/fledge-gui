@@ -54,6 +54,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
+  private latestReadingSubscription: Subscription;
 
   constructor(
     private assetService: AssetsService,
@@ -111,6 +112,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    if (this.latestReadingSubscription) {
+      this.latestReadingSubscription.unsubscribe();
+    }
 
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
@@ -143,6 +147,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else {
       this.isAlive = true;
     }
+    if (this.latestReadingSubscription) {
+      this.latestReadingSubscription.unsubscribe();
+    }
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;
@@ -161,55 +168,57 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  getAssetLatestReadings(assetCode) {
-    this.selectedTab = 1;
+  getAssetLatestReadings(assetCode, isModalOpened = false) {
     this.loadPage = true;
+    if (!isModalOpened) {
+      this.isModalOpened = true;
+    }
     this.notify.emit(false);
     this.isLatestReadings = true;
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
     this.assetCode = assetCode;
     this.numberTypeReadingsList = [];
     this.arrayTypeReadingsList = [];
     this.stringTypeReadingsList = {};
     this.imageReadings = [];
-    this.assetService.getLatestReadings(assetCode)
-      .pipe(takeUntil(this.destroy$)) // only fires when component is alive
-      .subscribe((data: any) => {
-        this.showSpinner = false;
-        this.loadPage = false;
-        if (data.length === 0) {
-          console.log('No readings found.');
-          return;
-        }
-        const imageExists = Object.keys(data[0].reading).some(function (k) {
-          return typeof (data[0].reading[k]) === 'string' && data[0].reading[k].includes("__DPIMAGE");
-        });
-        if (imageExists) {
-          this.imageReadings = [];
-          this.getImage(data);
+    if (this.graphRefreshInterval === -1) {
+      this.isAlive = false;
+      this.getLatestReading(assetCode);
+    } else {
+      this.isAlive = true;
+    }
+    this.latestReadingSubscription = interval(this.graphRefreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        if (this.selectedTab === 4) {
+          this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
-          this.getReadings(data);
+          this.getLatestReading(assetCode);
         }
-      },
-        error => {
-          this.showSpinner = false;
-          console.log('error in response', error);
-        });
-
+      });
   }
 
-  getImage(data) {
-    this.selectedTab = 5; // image tab
-    this.imageReadings = [];
-    data.forEach(d => {
-      Object.entries(d.reading).forEach(([k, value]) => {
-        this.imageReadings.push({
-          datapoint: k,
-          imageData: value,
-          timestamp: this.dateFormatter.transform(data.timestamp, 'HH:mm:ss')
-        });
+  getLatestReading(assetCode) {
+    this.assetService.getLatestReadings(assetCode).subscribe((data: any) => {
+      this.showSpinner = false;
+      this.loadPage = false;
+      this.autoRefresh = true;
+      if (data.length === 0) {
+        console.log('No readings found.');
+        return;
+      }
+      this.getReadings(data);
+    },
+      error => {
+        this.showSpinner = false;
+        console.log('error in response', error);
       });
-    });
-    this.imageReadings.map((read) => {
+  }
+
+  getImage(readings) {
+    readings.map((read) => {
       const imageData = read.imageData.replace('__DPIMAGE:', '').split('_');
       // Get base64 raw string
       const base64Str_ = imageData[1];
@@ -235,6 +244,9 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
       return read;
     });
+
+
+    return readings;
   }
 
   process8bitBitmap(buffer, options: any = {}) {
@@ -280,7 +292,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   process24bitBitmap(buffer, options: any = {}) {
-
     const view = new Uint8ClampedArray(buffer);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext("2d");
@@ -365,6 +376,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     const numReadings = [];
     const strReadings = [];
     const arrReadings = [];
+    const imageReadings = [];
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
@@ -378,11 +390,19 @@ export class ReadingsGraphComponent implements OnDestroy {
             read: { x: r.timestamp, y: value }
           });
         } else if (typeof value === 'string') {
-          strReadings.push({
-            key: k,
-            timestamp: r.timestamp,
-            data: value
-          });
+          if (value.includes("__DPIMAGE")) {
+            imageReadings.push({
+              datapoint: k,
+              imageData: value,
+              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss')
+            });
+          } else {
+            strReadings.push({
+              key: k,
+              timestamp: r.timestamp,
+              data: value
+            });
+          }
         } else if (Array.isArray(value)) {
           arrReadings.push({
             key: k,
@@ -399,26 +419,25 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       });
     }
+    this.imageReadings = imageReadings.length > 0 ? this.getImage(imageReadings) : [];
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
-
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
 
-
-
   setTabData() {
+    this.showSpinner = false;
     if (this.isModalOpened) {
       if (this.numberTypeReadingsList.length > 0) {
         this.selectedTab = 1;
       } else if (this.arrayTypeReadingsList.length > 0) {
         this.selectedTab = 2;
-      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
-        this.selectedTab = 3;
       } else if (this.imageReadings.length > 0) {
         this.selectedTab = 5;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
       }
       this.isModalOpened = false;
     }
@@ -455,12 +474,20 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
 
+    if (this.selectedTab === 5 && this.imageReadings.length === 0) {
+      if (this.arrayTypeReadingsList.length > 0) {
+        this.selectedTab = 2;
+      } else if (!this.isEmptyObject(this.stringTypeReadingsList)) {
+        this.selectedTab = 3;
+      }
+    }
+
     if (this.selectedTab === 1 && this.numberTypeReadingsList.length > 0) {
       this.statsAssetReadingsGraph(this.numberTypeReadingsList);
     } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
     }
-    this.showSpinner = false;
+
   }
 
   mergeObjects(assetReadings: any) {
@@ -645,14 +672,12 @@ export class ReadingsGraphComponent implements OnDestroy {
   selectTab(id: number, showSpinner = true) {
     this.showSpinner = showSpinner;
     this.selectedTab = id;
-    if (this.isLatestReadings) {
-      this.getAssetLatestReadings(this.assetCode);
-    } else {
-      if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
-        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-      } else if (this.graphRefreshInterval === -1) {
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-      }
+    if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
+      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    } else if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
+      this.getAssetLatestReadings(this.assetCode, true);
+    } else if (this.graphRefreshInterval === -1) {
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
     }
   }
 
