@@ -209,6 +209,21 @@ export class ReadingsGraphComponent implements OnDestroy {
         console.log('No readings found.');
         return;
       }
+      // Dummy data for testing purpose only
+      data = [
+        {
+          "reading": {
+            "x": 0.866025404,
+            "y": 1.2,
+            "z": 2.3,
+            "text1": "Text",
+            "img1": "__DPIMAGE....",
+            "img2": "__DPIMAGE....",
+            "buff": "__DPBUFFER..."
+          },
+          "timestamp": "2022-03-14 16:19:23.678042"
+        }
+      ]
       this.getReadings(data);
     },
       error => {
