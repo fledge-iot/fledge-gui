@@ -265,7 +265,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     ctx.putImageData(imgData, 0, 0);
-    // if you want to save a png version
     return canvas.toDataURL("image/png");
   }
 
