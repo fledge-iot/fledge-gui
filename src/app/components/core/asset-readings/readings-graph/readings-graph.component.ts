@@ -231,9 +231,9 @@ export class ReadingsGraphComponent implements OnDestroy {
         arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
         read.image = this.process8bitBitmap(arrayBufferView.buffer, { width, height });
       } else if (depth === 16) {
-        // FIX ME! test 16 bit raw image array
+        //16 bit raw image array
         arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
-        read.image = this.process16bitBitmap(arrayBufferView.buffer, { width, height });
+        read.image = this.process16bitBitmap(arrayBufferView, { width, height });
       } else if (depth === 24) {
         // 24 bit raw image array
         arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
@@ -250,40 +250,45 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   process8bitBitmap(buffer, options: any = {}) {
-    let view = null;
-    let out = null;
-    view = new Uint8ClampedArray(buffer);
-    out = new Uint8ClampedArray(buffer.byteLength * 4);
-    // set alpha channel
-    view.forEach((a, i) => out[(i * 4) + 3] = a);
+    const view = new Uint8ClampedArray(buffer);
     const canvas = document.createElement('canvas');
-    canvas.width = options.width;
-    canvas.height = options.height;
-    const imgData = new ImageData(out, options.width, options.height);
-    canvas.getContext('2d').putImageData(imgData, 0, 0);
+    const ctx = canvas.getContext('2d');
+    ctx.canvas.width = options.width;
+    ctx.canvas.height = options.height;
+    const imgData = ctx.createImageData(canvas.width, canvas.height);
+    let x = 0;
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      imgData.data[i] = view[x];
+      imgData.data[i + 1] = view[x];
+      imgData.data[i + 2] = view[x++];
+      imgData.data[i + 3] = 255;
+    }
+
+    ctx.putImageData(imgData, 0, 0);
     // if you want to save a png version
     return canvas.toDataURL("image/png");
   }
 
-  process16bitBitmap(buffer, options: any = {}) {
-    const view = new Uint8ClampedArray(buffer);
+  process16bitBitmap(data, options: any = {}) {
+    const view = new Uint16Array(data.buffer);
+    // set up canvas
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     ctx.canvas.width = options.width;
     ctx.canvas.height = options.height;
-    const imgData = ctx.createImageData(options.width, options.height);
+    const imgData = ctx.createImageData(canvas.width, canvas.height);
 
-    //uint14_to_uint8 is a constant to scale the uint14 number to uint8 for viewing purposes
-    //although it is 16 bit data, the actual max value is that of a uint14 value
-    //this is because the thermal cameras store uint14 data within a uint16 array
-    var max_uint14 = Math.pow(2, 14) - 1; //max value of uint14
-    var max_uint8 = Math.pow(2, 8) - 1; //max value of uint8
-    var uint14_to_uint8 = max_uint8 / max_uint14; //scale factor from uint14 to uint8
-    var i;
-    var x = 0;
-    for (i = 0; i < imgData.data.length; i += 4) {
-      var num_14 = (view[x] * 256) + view[x + 1]; // create a uint16 from 2 uint8 nums
-      imgData.data[i + 3] = Math.round(num_14 * uint14_to_uint8); //scale from uint14 to uint8 for viewing
+    const max_uint16 = Math.pow(2, 16) - 1;
+    const max_uint8 = Math.pow(2, 8) - 1;
+    let uint16_to_uint8 = max_uint8 / max_uint16;
+    let x = 0;
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      const num_16 = (view[x + 1] * 256) + view[x];
+      const num_scaled_8 = Math.round(num_16 * uint16_to_uint8);
+      imgData.data[i] = num_scaled_8;
+      imgData.data[i + 1] = num_scaled_8;
+      imgData.data[i + 2] = num_scaled_8;
+      imgData.data[i + 3] = 255;
       x += 2;
     }
 
@@ -298,10 +303,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     ctx.canvas.width = options.width;
     ctx.canvas.height = options.height;
     const imgData = ctx.createImageData(options.width, options.height);
-
-    let i;
     let x = 0;
-    for (i = 0; i < imgData.data.length; i += 4) {
+    for (let i = 0; i < imgData.data.length; i += 4) {
       imgData.data[i + 0] = view[x++];
       imgData.data[i + 1] = view[x++];
       imgData.data[i + 2] = view[x++];
