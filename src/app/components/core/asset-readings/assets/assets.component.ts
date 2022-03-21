@@ -136,6 +136,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.readingsGraphComponent.toggleModal(true);
   }
 
+  public showLatestReading(assetCode) {
+    this.readingsGraphComponent.getAssetLatestReadings(assetCode);
+    this.readingsGraphComponent.toggleModal(true);
+  }
+
   public showLoadingSpinner() {
     this.showSpinner = true;
   }

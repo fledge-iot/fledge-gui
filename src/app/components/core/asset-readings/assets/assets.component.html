@@ -1,6 +1,7 @@
 <div class="container is-fluid">
   <div class="card">
-    <span class="icon is-small tooltip is-tooltip-left is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+    <span class="icon is-small tooltip is-tooltip-left is-pulled-right is-hovered" data-tooltip="Help"
+      (click)="goToLink()">
       <i class="far fa-question-circle"></i>
     </span>
     <div class="card-content">
@@ -23,6 +24,7 @@
                   <th>Readings</th>
                   <th></th>
                   <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -32,6 +34,11 @@
                   <td>
                     <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
                       <i class="fa fa-sm fa-chart-line" aria-hidden="true"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a (click)="showLatestReading(asset.assetCode)" class="is-pulled-right">
+                      <i class="fa fa-sm fa-bolt"></i>
                     </a>
                   </td>
                   <td>

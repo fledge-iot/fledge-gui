@@ -42,6 +42,13 @@ export class AssetsService {
       catchError(error => throwError(error)));
   }
 
+
+  public getLatestReadings(assetCode) {
+    return this.http.get(`${this.GET_ASSET}/${encodeURIComponent(assetCode)}/latest`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   /**
   *  GET | /fledge/asset/{assetCode}
   * @param assets Array of asset names with limits to pass
