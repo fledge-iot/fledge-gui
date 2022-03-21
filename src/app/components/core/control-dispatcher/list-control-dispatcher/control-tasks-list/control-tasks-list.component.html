@@ -1,0 +1,77 @@
+<table class="table scroll is-responsive is-hoverable is-striped" *ngIf="controlTasks.length > 0; else notask">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Usage</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let task of controlTasks; first as isFirst">
+      <tr *ngIf="isFirst && task?.users">
+        <td></td>
+        <td [ngClass]="{'acl-usage': isFirst && task?.users}">
+      <tr>
+  <tbody>
+    <thead>
+      <tr class="child-table">
+        <th class="is-size-7">Services</th>
+        <th></th>
+        <th></th>
+        <th class="is-size-7">Scripts</th>
+      </tr>
+    </thead>
+  </tbody>
+  </tr>
+  </td>
+  <td></td>
+  </tr>
+  <tr>
+    <td>
+      <a [routerLink]="['acl', task?.name]">
+        {{acl?.name}}
+      </a>
+    </td>
+    <td>
+      <table class="table is-narrow" *ngIf="task?.users">
+        <tbody>
+          <tr *ngFor="let item of task?.users">
+            <td class="is-size-7">
+              {{item.service}}
+            </td>
+            <td class="is-size-7">
+              <a [routerLink]="['/control-dispatcher/script', item?.script]"
+                routerLinkActive="router-link-active">{{item.script}}</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+    <td>
+      <button *ngIf="sharedService.checkAuth()" (click)="setACL(acl);openModal('confirmation-dialog')"
+        class="button is-small btn-delete">
+        <span class="icon is-small">
+          <i class="far fa-trash-alt"></i>
+        </span>
+      </button>
+    </td>
+  </tr>
+  </ng-container>
+  </tbody>
+</table>
+<ng-template #notask>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <small class="text-secondary has-text-grey-light"> No control tasks found.</small>
+    </div>
+  </div>
+</ng-template>
+<app-confirmation-dialog id="confirmation-dialog">
+  <section class="modal-card-body">
+    Are you sure, you want to delete the task <b>{{controlTask}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deleteTask(controlTask)">Delete</button>
+  </footer>
+</app-confirmation-dialog>

@@ -22,6 +22,7 @@ import { ControlScriptsListComponent } from './list-control-dispatcher/control-s
 import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
 import { AclListComponent } from './list-control-dispatcher/acl-list/acl-list.component';
 import { AddControlAclComponent } from './add-control-acl/add-control-acl.component';
+import { ControlTasksListComponent } from './list-control-dispatcher/control-tasks-list/control-tasks-list.component';
 
 const routes: Routes = [
 
@@ -64,7 +65,8 @@ const routes: Routes = [
     AddDelayComponent,
     ConfirmationDialogComponent,
     AclListComponent,
-    AddControlAclComponent
+    AddControlAclComponent,
+    ControlTasksListComponent
   ],
   imports: [
     FormsModule,

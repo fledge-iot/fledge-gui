@@ -38,6 +38,8 @@ export class ListControlDispatcherComponent implements OnInit {
     this.seletedTab = 'scripts';
     if (id === 'acls') {
       this.seletedTab = id;
+    } else if (id === 'tasks') {
+      this.seletedTab = id;
     }
     // update query param on tab selection in url
     const queryParams: Params = { tab: this.seletedTab };
