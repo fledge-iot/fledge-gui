@@ -244,8 +244,6 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
       return read;
     });
-
-
     return readings;
   }
 
@@ -375,9 +373,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getReadings(readings: any) {
-    const numReadings = [];
     const strReadings = [];
-    const arrReadings = [];
     const imageReadings = [];
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
     for (const r of readings) {
@@ -386,12 +382,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (value === 'Data removed for brevity') {
           return;
         }
-        if (typeof value === 'number') {
-          numReadings.push({
-            key: k,
-            read: { x: r.timestamp, y: value }
-          });
-        } else if (typeof value === 'string') {
+        if (typeof value === 'string') {
           if (value.includes("__DPIMAGE")) {
             imageReadings.push({
               datapoint: k,
@@ -405,25 +396,15 @@ export class ReadingsGraphComponent implements OnDestroy {
               data: value
             });
           }
-        } else if (Array.isArray(value)) {
-          arrReadings.push({
-            key: k,
-            read: value
-          });
-        } else if (typeof value === 'object') {
+        } else {
           strReadings.push({
             key: k,
             data: JSON.stringify(value)
           });
         }
-        else {
-          console.log('Failed to parse reading ', value, ' for key ', k);
-        }
       });
     }
     this.imageReadings = imageReadings.length > 0 ? this.getImage(imageReadings) : [];
-    this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
-    this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
