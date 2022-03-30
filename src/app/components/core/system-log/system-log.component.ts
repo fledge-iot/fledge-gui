@@ -78,6 +78,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           const north = [];
           const management = [];
           const dispatcher_c = [];
+          const bucket_storage_c = []
 
           data.schedules.forEach(sch => {
             if ('south_c' === sch.processName) {
@@ -101,8 +102,11 @@ export class SystemLogComponent implements OnInit, OnDestroy {
             if ('dispatcher_c' === sch.processName) {
               dispatcher_c.push(sch);
             }
+            if ('bucket_storage_c' === sch.processName) {
+              bucket_storage_c.push(sch);
+            }
           });
-          this.scheduleData = south_c.concat(notification_c, north_c, north_C, north, management, dispatcher_c);
+          this.scheduleData = south_c.concat(notification_c, north_c, north_C, north, management, dispatcher_c, bucket_storage_c);
         },
         error => {
           if (error.status === 0) {

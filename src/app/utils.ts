@@ -6,7 +6,7 @@ export const GRAPH_REFRESH_INTERVAL = 5000; // milliseconds
 export const STATS_HISTORY_TIME_FILTER = '10'; // minutes
 export const ASSET_READINGS_TIME_FILTER = 600; // seconds
 
-export const SUPPORTED_SERVICE_TYPES = ["Core", "Storage", "Southbound", "Northbound", "Notifications", "Management", "Dispatcher"];
+export const SUPPORTED_SERVICE_TYPES = ["Core", "Storage", "Southbound", "Northbound", "Notifications", "Management", "Dispatcher", "BucketStorage"];
 
 export const CHART_COLORS = {
   blue: 'rgb(31, 119, 180)',
