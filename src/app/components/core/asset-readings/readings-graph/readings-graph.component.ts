@@ -209,7 +209,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         console.log('No readings found.');
         return;
       }
-      this.getReadings(data);
+      this.setLatestReadings(data);
     },
       error => {
         this.showSpinner = false;
@@ -244,8 +244,6 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
       return read;
     });
-
-
     return readings;
   }
 
@@ -372,6 +370,45 @@ export class ReadingsGraphComponent implements OnDestroy {
         error => {
           console.log('error in response', error);
         });
+  }
+
+
+  setLatestReadings(readings: any) {
+    const strReadings = [];
+    const imageReadings = [];
+    this.timestamps = readings.reverse().map((r: any) => r.timestamp);
+    for (const r of readings) {
+      Object.entries(r.reading).forEach(([k, value]) => {
+        // discard unuseful reading
+        if (value === 'Data removed for brevity') {
+          return;
+        }
+        if (typeof value === 'string') {
+          if (value.includes("__DPIMAGE")) {
+            imageReadings.push({
+              datapoint: k,
+              imageData: value,
+              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss')
+            });
+          } else {
+            strReadings.push({
+              key: k,
+              timestamp: r.timestamp,
+              data: value
+            });
+          }
+        } else {
+          strReadings.push({
+            key: k,
+            data: JSON.stringify(value)
+          });
+        }
+      });
+    }
+    this.imageReadings = imageReadings.length > 0 ? this.getImage(imageReadings) : [];
+    this.stringTypeReadingsList = mapValues(groupBy(strReadings,
+      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
+    this.setTabData();
   }
 
   getReadings(readings: any) {
