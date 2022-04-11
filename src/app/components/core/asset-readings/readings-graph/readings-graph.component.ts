@@ -142,14 +142,16 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.selectedTab = 1;
     this.loadPage = true;
     this.notify.emit(false);
+    if (this.latestReadingSubscription) {
+      this.latestReadingSubscription.unsubscribe();
+    }
+
     if (this.graphRefreshInterval === -1) {
       this.isAlive = false;
     } else {
       this.isAlive = true;
     }
-    if (this.latestReadingSubscription) {
-      this.latestReadingSubscription.unsubscribe();
-    }
+
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;
@@ -188,6 +190,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.getLatestReading(assetCode);
     } else {
       this.isAlive = true;
+      this.getLatestReading(assetCode);
     }
     this.latestReadingSubscription = interval(this.graphRefreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
