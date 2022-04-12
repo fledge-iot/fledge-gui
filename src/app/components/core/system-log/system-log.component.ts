@@ -66,7 +66,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   }
 
   public getSchedules(): void {
-    this.scheduleData = [];
+
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
