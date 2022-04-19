@@ -17,7 +17,7 @@
   </div>
   <div class="card">
     <div class="card-content step-content">
-      <form #controlScheduleTaskForm="ngForm">
+      <form [formGroup]="controlForm">
         <div class="column">
           <div class="field is-horizontal">
             <div class="field-label">
@@ -47,7 +47,8 @@
                 </div>
                 <ng-template #staticScriptDiv>
                   <div class="control">
-                    <input name="script" class="input is-small" type="text" [ngModel]="config.name?config.name:'None'"
+                    <input formControlName="name" name="script" class="input is-small" type="text"
+                      [ngModel]="config.name?config.name:'None'"
                       [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.name}"
                       [readonly]="!sharedService.checkAuth()">
                   </div>
@@ -55,28 +56,32 @@
               </div>
             </div>
           </div>
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Parameters</label>
-            </div>
-            <div class="field-body">
-              <div class="field is-narrow">
-                <div class="control">
-                  <input placeholder="param to substitute" class="input is-small" name="type" type="text"
-                    [(ngModel)]="type">
+          <div formArrayName="parameters">
+            <div class="field is-horizontal" *ngFor="let parameter of getParametersFormControls(); let i = index">
+              <div *ngIf="i == 0" class="field-label">
+                <label class="label">Parameters</label>
+              </div>
+              <div *ngIf="i > 0" class="field-label">
+                <label class="label"></label>
+              </div>
+              <div class="field-body" [formGroupName]="i">
+                <div class="field is-narrow">
+                  <div class="control">
+                    <input formControlName="param" placeholder="param to substitute" class="input is-small" name="type"
+                      type="text">
+                  </div>
+                </div>
+                &nbsp;
+                <div class="field is-narrow">
+                  <div class="control">
+                    <input formControlName="value" placeholder="value" class="input is-small" name="value" type="text">
+                  </div>
+                </div>
+                &nbsp;
+                <div class="field is-narrow">
+                  <button class="delete is-small" (click)="removeParameter(i)"></button>
                 </div>
               </div>
-              &nbsp;
-              <div class="field is-narrow">
-                <div class="control">
-                  <input placeholder="value" class="input is-small" name="value" type="text" required
-                    [(ngModel)]="value">
-                </div>
-              </div>
-              &nbsp;
-              <!-- <div class="field is-narrow">
-                <button class="delete is-small"></button>
-              </div> -->
             </div>
           </div>
           <!-- <div class="field is-horizontal">
@@ -97,7 +102,8 @@
           <div class="field">
             <div class="columns">
               <div class="column is-one-fifth"></div>
-              <div class="column btn-column"> <button class="button is-small is-link is-light has-background-white">
+              <div class="column btn-column"> <button class="button is-small is-link is-light has-background-white"
+                  (click)="addParameter()">
                   <span class="icon is-small">
                     <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                   </span>
@@ -112,7 +118,7 @@
                 class="button is-small">Cancel</button>
             </p>
             <p class="control">
-              <button type="button" class="button is-small is-link" (click)="save()">Save</button>
+              <button type="button" class="button is-small is-link" (click)="submit(controlForm.value)">Save</button>
             </p>
           </div>
         </div>

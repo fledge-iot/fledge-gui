@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { AlertService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 
@@ -11,18 +11,45 @@ import { ControlDispatcherService } from '../../../../services/control-dispatche
 export class AddControlScheduleTaskComponent implements OnInit {
   scripts = [];
   script = '';
-  @ViewChild('controlScheduleTaskForm') controlScheduleTaskForm: NgForm;
-
-  type: string;
-  value: string;
-
+  controlForm: FormGroup;
   constructor(
     public sharedService: SharedService,
     public controlService: ControlDispatcherService,
-    public alertService: AlertService) { }
+    public alertService: AlertService,
+    private fb: FormBuilder) {
+    this.controlForm = this.fb.group({
+      parameters: this.fb.array([
+        this.initParameter(),
+      ])
+    });
+  }
 
   ngOnInit(): void {
     this.getScripts()
+  }
+
+  initParameter() {
+    // initialize
+    return this.fb.group({
+      param: [''],
+      value: ['']
+    });
+  }
+
+  addParameter() {
+    // add parameter to the list
+    const control = <FormArray>this.controlForm.controls['parameters'];
+    control.push(this.initParameter());
+  }
+
+  removeParameter(index: number) {
+    // remove parameter from the list
+    const control = <FormArray>this.controlForm.controls['parameters'];
+    control.removeAt(index);
+  }
+
+  getParametersFormControls(): AbstractControl[] {
+    return (<FormArray>this.controlForm.get('parameters')).controls
   }
 
   public toggleDropDown(id: string) {
@@ -42,9 +69,7 @@ export class AddControlScheduleTaskComponent implements OnInit {
   public getScripts() {
     this.controlService.fetchControlServiceScripts()
       .subscribe((data: any) => {
-        console.log('data', data);
         this.scripts = data.scripts;
-
       }, error => {
         if (error.status === 0) {
           console.log('service down ', error);
@@ -59,13 +84,14 @@ export class AddControlScheduleTaskComponent implements OnInit {
     console.log('script', script);
   }
 
-  save() {
-    console.log('controlScheduleTaskForm', this.controlScheduleTaskForm.value);
+  submit(data) {
+    let parameters = {}
+    data.parameters.forEach(item => { parameters[item.param] = item.value });
     const payload = {
-      parameters: { [this.controlScheduleTaskForm.value.type]: this.controlScheduleTaskForm.value.value }
+      parameters
     }
-    this.controlService.addControlScheduleTask(this.script, payload).subscribe((data) => {
-      console.log('data', data);
+    this.controlService.addControlScheduleTask(this.script, payload).subscribe((data: any) => {
+      this.alertService.success(data.message);
     }, error => {
       if (error.status === 0) {
         console.log('service down ', error);
