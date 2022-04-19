@@ -19,8 +19,7 @@
             </h6>
           </li>
           <li class="custom-pad" *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">
-            <a [routerLink]="seletedTab === 'scripts' ? ['script/add']:['acl/add']" class="is-light"
-              style="border-bottom-width: 0">
+            <a class="is-light" style="border-bottom-width: 0" (click)="navigate()">
               <p *ngIf="viewPort !== 'mobile'">&nbsp; Add &nbsp;</p>
               <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>

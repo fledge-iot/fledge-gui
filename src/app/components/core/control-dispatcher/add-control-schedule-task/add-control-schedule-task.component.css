@@ -1,0 +1,30 @@
+.field-body .field {
+  margin-bottom: 5px;
+}
+
+.field-label {
+  text-align: left;
+}
+
+.step-content {
+  overflow: inherit !important;
+}
+
+.field-body .field:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.delete {
+  vertical-align: middle !important;
+}
+
+
+.field-label {
+  text-align: left;
+}
+
+.btn-column {
+  padding: 0px;
+  margin: 0px 0px 0px -15px;
+}
+
