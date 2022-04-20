@@ -170,7 +170,7 @@ export class AddStepComponent implements OnInit {
       case 'write':
         this.stepControlGroup(index).setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
-          service: new FormControl(step?.values?.service),
+          service: new FormControl(step?.values?.service, Validators.required),
           values: this.stepValuesGroup(step),
           condition: new FormGroup({
             key: new FormControl(step?.values?.condition?.key),
