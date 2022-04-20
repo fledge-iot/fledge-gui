@@ -107,19 +107,22 @@
                   <span class="icon is-small">
                     <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                   </span>
-                  <span>Add new</span>
+                  <span>{{getParametersFormControls().length === 0 ? 'Add new parameter':'Add new'}}</span>
                 </button></div>
             </div>
 
           </div>
-          <div class="field is-grouped is-pulled-right">
-            <p class="control">
-              <button [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}"
-                class="button is-small">Cancel</button>
-            </p>
-            <p class="control">
-              <button type="button" class="button is-small is-link" (click)="submit(controlForm.value)">Save</button>
-            </p>
+          <div class="field">
+            <div class="columns">
+              <div class="column is-one-fifth"></div>
+              <div class="column save-column">
+                <button [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}"
+                  class="button is-small">Cancel</button>
+                &nbsp;
+                <button type="button" class="button is-small is-link" [disabled]="controlForm.invalid || !script"
+                  (click)="submit(controlForm.value)">Save</button>
+              </div>
+            </div>
           </div>
         </div>
       </form>

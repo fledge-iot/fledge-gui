@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
+import { isEmpty } from 'lodash';
 
 @Component({
   selector: 'app-add-control-schedule-task',
@@ -12,6 +13,7 @@ export class AddControlScheduleTaskComponent implements OnInit {
   scripts = [];
   script = '';
   controlForm: FormGroup;
+
   constructor(
     public sharedService: SharedService,
     public controlService: ControlDispatcherService,
@@ -31,8 +33,8 @@ export class AddControlScheduleTaskComponent implements OnInit {
   initParameter() {
     // initialize
     return this.fb.group({
-      param: [''],
-      value: ['']
+      param: ['', Validators.required],
+      value: ['', Validators.required]
     });
   }
 
@@ -87,8 +89,11 @@ export class AddControlScheduleTaskComponent implements OnInit {
   submit(data) {
     let parameters = {}
     data.parameters.forEach(item => { parameters[item.param] = item.value });
-    const payload = {
+    let payload = {
       parameters
+    }
+    if (isEmpty(payload.parameters)) {
+      payload = null;
     }
     this.controlService.addControlScheduleTask(this.script, payload).subscribe((data: any) => {
       this.alertService.success(data.message);
