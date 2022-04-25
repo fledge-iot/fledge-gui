@@ -69,7 +69,6 @@ export class ControlTasksListComponent implements OnInit {
 
   deleteControlSchedule(script) {
     const id = script.schedule.id;
-    console.log('script id', id);
     /** request started */
     this.ngProgress.start();
     // disable schedule
