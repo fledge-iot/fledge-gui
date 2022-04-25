@@ -24,10 +24,10 @@ export class ControlScriptsListComponent implements OnInit {
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
-    this.showControlDispatcherService();
+    this.getControlScripts();
   }
 
-  showControlDispatcherService() {
+  getControlScripts() {
     /** request started */
     this.ngProgress.start();
     this.controlService.fetchControlServiceScripts()
@@ -66,7 +66,7 @@ export class ControlScriptsListComponent implements OnInit {
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.showControlDispatcherService();
+        this.getControlScripts();
       }, error => {
         /** request completed */
         this.ngProgress.done();

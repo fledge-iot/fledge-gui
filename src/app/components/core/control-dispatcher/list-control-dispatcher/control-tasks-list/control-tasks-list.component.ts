@@ -3,6 +3,7 @@ import { AlertService, SharedService, ProgressBarService } from '../../../../../
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
+import { orderBy } from 'lodash';
 
 @Component({
   selector: 'app-control-tasks-list',
@@ -10,7 +11,8 @@ import { DialogService } from '../../confirmation-dialog/dialog.service';
   styleUrls: ['./control-tasks-list.component.css']
 })
 export class ControlTasksListComponent implements OnInit {
-  controlTasks: any = [];
+  controlScripts: any = [];
+  script = '';
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   controlTask;
   constructor(private controlService: ControlDispatcherService,
@@ -20,7 +22,13 @@ export class ControlTasksListComponent implements OnInit {
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
+    this.getControlScripts();
   }
+
+  setScript(script: any) {
+    this.script = script.name;
+  }
+
 
   openModal(id: string) {
     this.dialogService.open(id);
@@ -30,10 +38,47 @@ export class ControlTasksListComponent implements OnInit {
     this.dialogService.close(id);
   }
 
-  deleteTask(task) {
-    console.log('Not implemented yet', task);
 
+  getControlScripts() {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.fetchControlServiceScripts()
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.controlScripts = orderBy(data.scripts, 'name');
+        console.log('script', this.controlScripts);
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
+  deleteScript(script) {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.deleteScript(script)
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.alertService.success(data.message);
+        // close modal
+        this.closeModal('confirmation-dialog');
+        this.getControlScripts();
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        // close modal
+        this.closeModal('confirmation-dialog');
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
 
 }

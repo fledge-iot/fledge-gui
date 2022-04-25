@@ -3,6 +3,7 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { AlertService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { isEmpty } from 'lodash';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-control-schedule-task',
@@ -18,11 +19,10 @@ export class AddControlScheduleTaskComponent implements OnInit {
     public sharedService: SharedService,
     public controlService: ControlDispatcherService,
     public alertService: AlertService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private router: Router) {
     this.controlForm = this.fb.group({
-      parameters: this.fb.array([
-        this.initParameter(),
-      ])
+      parameters: this.fb.array([])
     });
   }
 
@@ -97,6 +97,9 @@ export class AddControlScheduleTaskComponent implements OnInit {
     }
     this.controlService.addControlScheduleTask(this.script, payload).subscribe((data: any) => {
       this.alertService.success(data.message);
+      setTimeout(() => {
+        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'tasks' } });
+      }, 1000);
     }, error => {
       if (error.status === 0) {
         console.log('service down ', error);
