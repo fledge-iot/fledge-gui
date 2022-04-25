@@ -1,9 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertService, SharedService, ProgressBarService } from '../../../../../services';
+import {
+  AlertService,
+  SharedService,
+  ProgressBarService,
+  SchedulesService,
+  ConfigurationService
+} from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
-import { orderBy } from 'lodash';
+import { orderBy, isEmpty } from 'lodash';
 
 @Component({
   selector: 'app-control-tasks-list',
@@ -12,10 +18,12 @@ import { orderBy } from 'lodash';
 })
 export class ControlTasksListComponent implements OnInit {
   controlScripts: any = [];
-  script = '';
+  script;
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   controlTask;
   constructor(private controlService: ControlDispatcherService,
+    private schedulesService: SchedulesService,
+    private configurationService: ConfigurationService,
     private alertService: AlertService,
     private dialogService: DialogService,
     public sharedService: SharedService,
@@ -26,7 +34,7 @@ export class ControlTasksListComponent implements OnInit {
   }
 
   setScript(script: any) {
-    this.script = script.name;
+    this.script = script;
   }
 
 
@@ -46,6 +54,7 @@ export class ControlTasksListComponent implements OnInit {
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.controlScripts = orderBy(data.scripts, 'name');
+        this.controlScripts = this.controlScripts.filter(c => !isEmpty(c.schedule))
         console.log('script', this.controlScripts);
       }, error => {
         /** request completed */
@@ -58,16 +67,47 @@ export class ControlTasksListComponent implements OnInit {
       });
   }
 
-  deleteScript(script) {
+  deleteControlSchedule(script) {
+    const id = script.schedule.id;
+    console.log('script id', id);
     /** request started */
     this.ngProgress.start();
-    this.controlService.deleteScript(script)
-      .subscribe((data: any) => {
-        this.ngProgress.done();
-        this.alertService.success(data.message);
-        // close modal
-        this.closeModal('confirmation-dialog');
-        this.getControlScripts();
+    this.schedulesService.disableSchedule(id)
+      .subscribe(() => {
+        this.schedulesService.deleteSchedule(id)
+          .subscribe((data: any) => {
+            console.log('data', data);
+            this.ngProgress.done();
+            this.alertService.success(data.message);
+            const categoryName = script?.configuration?.categoryName;
+            // close modal
+            this.closeModal('confirmation-dialog');
+            this.configurationService.deleteCategory(categoryName).subscribe((data: any) => {
+              this.alertService.success(data.message);
+            }, error => {
+              /** request completed */
+              this.ngProgress.done();
+              // close modal
+              this.closeModal('confirmation-dialog');
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.alertService.error(error.statusText);
+              }
+            });
+          }, error => {
+            /** request completed */
+            this.ngProgress.done();
+            // close modal
+            this.closeModal('confirmation-dialog');
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          }, () => {
+            this.getControlScripts();
+          });
       }, error => {
         /** request completed */
         this.ngProgress.done();

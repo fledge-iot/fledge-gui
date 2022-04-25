@@ -28,6 +28,7 @@ export class ConfigurationService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
   /**
    *   GET  | /fledge/category/{categoryName}
    */
@@ -37,6 +38,17 @@ export class ConfigurationService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  /**
+  *   DELETE CATEGORY
+  *   DELETE  | /fledge/category/{categoryName}
+  */
+  deleteCategory(categoryName) {
+    return this.http.delete(this.CATEGORY_URL + '/' + categoryName).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
 
   /**
    *   GET  | /fledge/category/{categoryName}/children
@@ -78,9 +90,9 @@ export class ConfigurationService {
   */
   uploadFile(categoryName: string, configItem: string, fileToUpload) {
     return this.http.post(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName) + '/'
-    + encodeURIComponent(configItem) + '/upload', fileToUpload).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
+      + encodeURIComponent(configItem) + '/upload', fileToUpload).pipe(
+        map(response => response),
+        catchError(error => throwError(error)));
   }
 
   /**
