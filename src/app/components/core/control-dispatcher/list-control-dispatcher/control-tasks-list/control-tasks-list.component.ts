@@ -72,16 +72,18 @@ export class ControlTasksListComponent implements OnInit {
     console.log('script id', id);
     /** request started */
     this.ngProgress.start();
+    // disable schedule
     this.schedulesService.disableSchedule(id)
       .subscribe(() => {
+        // delete schedule
         this.schedulesService.deleteSchedule(id)
           .subscribe((data: any) => {
-            console.log('data', data);
             this.ngProgress.done();
             this.alertService.success(data.message);
             const categoryName = script?.configuration?.categoryName;
             // close modal
             this.closeModal('confirmation-dialog');
+            // delete category
             this.configurationService.deleteCategory(categoryName).subscribe((data: any) => {
               this.alertService.success(data.message);
             }, error => {
