@@ -3,6 +3,7 @@
     <tr>
       <th>Name</th>
       <th>Parameters</th>
+      <th>Service</th>
       <th>Enabled</th>
       <th></th>
     </tr>
@@ -18,12 +19,27 @@
         <table>
           <ng-container *ngFor="let item of showParameters(script?.configuration?.write?.value)">
             <tr>
-              <td class="rb">{{item}}</td>
+              <td>{{item | json}}</td>
             </tr>
           </ng-container>
         </table>
       </td>
-      <td> <input type="checkbox" [checked]="script?.schedule?.enabled" disabled></td>
+      <td>
+        <table>
+          <ng-container *ngFor="let item of showService(script?.configuration?.write?.value)">
+            <tr>
+              <td>{{item}}</td>
+            </tr>
+          </ng-container>
+        </table>
+      </td>
+      <td>
+        <table>
+          <tr>
+            <td><input type="checkbox" [checked]="script?.schedule?.enabled"></td>
+          </tr>
+        </table>
+      </td>
       <td>
         <button *ngIf="sharedService.checkAuth()" (click)="setScript(script);openModal('confirmation-dialog')"
           class="button is-small btn-delete">

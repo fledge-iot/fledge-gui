@@ -120,7 +120,15 @@ export class ControlTasksListComponent implements OnInit {
   }
 
   showParameters(val) {
-    return Object.entries(JSON.parse(val)[0].values);
+    let config = JSON.parse(val);
+    config = config.map(c => c.values);
+    return config;
+  }
+
+  showService(val) {
+    let config = JSON.parse(val);
+    config = [...new Set(config.map(c => c.service))];
+    return config;
   }
 
 }
