@@ -46,7 +46,6 @@ export class ControlTasksListComponent implements OnInit {
     this.dialogService.close(id);
   }
 
-
   getControlScripts() {
     /** request started */
     this.ngProgress.start();
@@ -120,6 +119,10 @@ export class ControlTasksListComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  showParameters(val) {
+    return Object.entries(JSON.parse(val)[0].values);
   }
 
 }

@@ -14,7 +14,16 @@
           {{script?.name}}
         </a>
       </td>
-      <td></td>
+      <td>
+        <table>
+          <ng-container *ngFor="let item of showParameters(script?.configuration?.write?.value)">
+            <tr>
+              <td class="rb">{{item}}</td>
+            </tr>
+          </ng-container>
+        </table>
+
+      </td>
       <td> <input type="checkbox" [checked]="script?.schedule?.enabled" disabled></td>
       <td>
         <button *ngIf="sharedService.checkAuth()" (click)="setScript(script);openModal('confirmation-dialog')"
