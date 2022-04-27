@@ -37,7 +37,6 @@ export class ControlTasksListComponent implements OnInit {
     this.script = script;
   }
 
-
   openModal(id: string) {
     this.dialogService.open(id);
   }
@@ -54,7 +53,6 @@ export class ControlTasksListComponent implements OnInit {
         this.ngProgress.done();
         this.controlScripts = orderBy(data.scripts, 'name');
         this.controlScripts = this.controlScripts.filter(c => !isEmpty(c.schedule))
-        console.log('script', this.controlScripts);
       }, error => {
         /** request completed */
         this.ngProgress.done();
