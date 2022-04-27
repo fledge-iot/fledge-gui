@@ -131,4 +131,56 @@ export class ControlTasksListComponent implements OnInit {
     return config;
   }
 
+  updateScheduleStatus(schedule) {
+    if (!schedule.enabled) {
+      this.enableSchedule(schedule.name);
+    } else {
+      this.disableSchedule(schedule.name);
+    }
+  }
+
+  enableSchedule(name) {
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.enableScheduleByName(name).
+      subscribe(
+        (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data.message, true);
+          this.getControlScripts();
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  disableSchedule(name) {
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.disableScheduleByName(name).
+      subscribe(
+        (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data.message, true);
+          this.getControlScripts();
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
 }

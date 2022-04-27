@@ -36,7 +36,9 @@
       <td>
         <table>
           <tr>
-            <td><input type="checkbox" [checked]="script?.schedule?.enabled"></td>
+            <td><input type="checkbox" [checked]="script?.schedule?.enabled"
+                (change)="updateScheduleStatus(script?.schedule)">
+            </td>
           </tr>
         </table>
       </td>
