@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {
   AlertService,
   SharedService,
@@ -14,7 +14,9 @@ import { orderBy, isEmpty } from 'lodash';
 @Component({
   selector: 'app-control-tasks-list',
   templateUrl: './control-tasks-list.component.html',
-  styleUrls: ['./control-tasks-list.component.css']
+  styleUrls: ['./control-tasks-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+
 })
 export class ControlTasksListComponent implements OnInit {
   controlScripts: any = [];
@@ -27,6 +29,7 @@ export class ControlTasksListComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     public sharedService: SharedService,
+    private cd: ChangeDetectorRef,
     private ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
@@ -53,6 +56,7 @@ export class ControlTasksListComponent implements OnInit {
         this.ngProgress.done();
         this.controlScripts = orderBy(data.scripts, 'name');
         this.controlScripts = this.controlScripts.filter(c => !isEmpty(c.schedule))
+        this.cd.detectChanges();
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -105,6 +109,7 @@ export class ControlTasksListComponent implements OnInit {
             }
           }, () => {
             this.getControlScripts();
+            this.cd.detectChanges();
           });
       }, error => {
         /** request completed */
@@ -155,6 +160,7 @@ export class ControlTasksListComponent implements OnInit {
           this.alertService.success(data.message, true);
           // update local reference of schedule
           schedule.enabled = true;
+          this.cd.detectChanges();
         },
         error => {
           /** request completed */
@@ -178,6 +184,7 @@ export class ControlTasksListComponent implements OnInit {
           this.alertService.success(data.message, true);
           // update local reference of schedule
           schedule.enabled = false;
+          this.cd.detectChanges();
         },
         error => {
           /** request completed */
