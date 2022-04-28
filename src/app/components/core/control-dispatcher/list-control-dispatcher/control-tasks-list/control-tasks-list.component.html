@@ -20,7 +20,7 @@
         </a>
       </td>
       <td>
-        <table>
+        <table class="is-borderless">
           <ng-container *ngFor="let item of showParameters(script?.configuration?.write?.value)">
             <tr>
               <td>{{item.key}}</td>
@@ -30,10 +30,10 @@
         </table>
       </td>
       <td>
-        <table>
-          <ng-container *ngFor="let item of showService(script?.configuration?.write?.value)">
+        <table class="is-borderless">
+          <ng-container *ngFor="let service of showService(script?.configuration?.write?.value)">
             <tr>
-              <td>{{item}}</td>
+              <td>{{service}}</td>
             </tr>
           </ng-container>
         </table>

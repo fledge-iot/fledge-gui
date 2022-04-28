@@ -6,3 +6,8 @@
 tr:hover .btn-delete {
   opacity: 1;
 }
+
+
+.is-borderless td, .is-borderless th {
+  border: 0;
+ }
