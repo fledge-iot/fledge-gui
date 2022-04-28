@@ -12,7 +12,11 @@
     <tr *ngFor="let script of controlScripts">
       <td>
         <a [routerLink]="['script', script?.name]">
-          {{script?.name}}
+          <table>
+            <tr>
+              <td>{{script?.name}}</td>
+            </tr>
+          </table>
         </a>
       </td>
       <td>

@@ -131,22 +131,23 @@ export class ControlTasksListComponent implements OnInit {
 
   updateScheduleStatus(schedule) {
     if (!schedule.enabled) {
-      this.enableSchedule(schedule.name);
+      this.enableSchedule(schedule);
     } else {
-      this.disableSchedule(schedule.name);
+      this.disableSchedule(schedule);
     }
   }
 
-  enableSchedule(name) {
+  enableSchedule(schedule) {
     /** request started */
     this.ngProgress.start();
-    this.schedulesService.enableScheduleByName(name).
+    this.schedulesService.enableScheduleByName(schedule.name).
       subscribe(
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(data.message, true);
-          this.getControlScripts();
+          // update local reference of schedule
+          schedule.enabled = true;
         },
         error => {
           /** request completed */
@@ -159,16 +160,17 @@ export class ControlTasksListComponent implements OnInit {
         });
   }
 
-  disableSchedule(name) {
+  disableSchedule(schedule) {
     /** request started */
     this.ngProgress.start();
-    this.schedulesService.disableScheduleByName(name).
+    this.schedulesService.disableScheduleByName(schedule.name).
       subscribe(
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(data.message, true);
-          this.getControlScripts();
+          // update local reference of schedule
+          schedule.enabled = false;
         },
         error => {
           /** request completed */
