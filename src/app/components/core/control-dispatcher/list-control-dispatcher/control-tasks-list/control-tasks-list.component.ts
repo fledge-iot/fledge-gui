@@ -125,8 +125,7 @@ export class ControlTasksListComponent implements OnInit {
     const parameters = [];
     params.forEach(element => {
       for (const [key, value] of Object.entries(element)) {
-        console.log(`${key}: ${value}`);
-        parameters.push(`${key} ${value}`)
+        parameters.push({key, value})
       }
     });
     return parameters;

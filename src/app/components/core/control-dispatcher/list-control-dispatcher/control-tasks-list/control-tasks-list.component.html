@@ -23,7 +23,8 @@
         <table>
           <ng-container *ngFor="let item of showParameters(script?.configuration?.write?.value)">
             <tr>
-              <td>{{item}}</td>
+              <td>{{item.key}}</td>
+              <td>{{item.value}}</td>
             </tr>
           </ng-container>
         </table>
