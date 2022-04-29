@@ -11,20 +11,14 @@
   <tbody>
     <tr *ngFor="let script of controlScripts">
       <td>
-        <a [routerLink]="['script', script?.name]">
-          <table>
-            <tr>
-              <td>{{script?.name}}</td>
-            </tr>
-          </table>
-        </a>
+        {{script?.name}}
       </td>
       <td>
         <table class="is-borderless">
           <ng-container *ngFor="let item of showParameters(script?.configuration?.write?.value)">
             <tr>
-              <td>{{item.key}}</td>
-              <td>{{item.value}}</td>
+              <td align="left">{{item.key}}</td>
+              <td align="left">{{item.value}}</td>
             </tr>
           </ng-container>
         </table>
@@ -39,21 +33,28 @@
         </table>
       </td>
       <td>
-        <table>
-          <tr>
-            <td><input type="checkbox" [checked]="script?.schedule?.enabled"
-                (change)="updateScheduleStatus(script?.schedule)">
-            </td>
-          </tr>
-        </table>
+        <input type="checkbox" [checked]="script?.schedule?.enabled" (change)="updateScheduleStatus(script?.schedule)">
       </td>
       <td>
-        <button *ngIf="sharedService.checkAuth()" (click)="setScript(script);openModal('confirmation-dialog')"
-          class="button is-small btn-delete">
-          <span class="icon is-small">
-            <i class="far fa-trash-alt"></i>
-          </span>
-        </button>
+        <div *ngIf="sharedService.checkAuth()" class="dropdown is-hoverable">
+          <div class="dropdown-trigger">
+            <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
+              <span class="icon is-small">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+            <div class="dropdown-content">
+              <a class="dropdown-item" [routerLink]="['script', script?.name]">
+                <span>View script</span>
+              </a>
+              <a class="dropdown-item" (click)="setScript(script);openModal('confirmation-dialog')">
+                <span>Delete</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </td>
     </tr>
   </tbody>

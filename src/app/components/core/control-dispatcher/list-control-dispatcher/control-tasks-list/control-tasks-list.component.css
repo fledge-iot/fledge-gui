@@ -1,6 +1,18 @@
+.align-content {
+  vertical-align: middle;
+}
+
 .btn-delete {
   border-color: transparent !important;
   opacity: 0;
+}
+
+.table {
+  overflow: visible;
+}
+
+::ng-deep .card-data {
+  overflow: visible;
 }
 
 tr:hover .btn-delete {
@@ -10,4 +22,10 @@ tr:hover .btn-delete {
 
 .is-borderless td, .is-borderless th {
   border: 0;
+  padding: 0px 12px 0px 0px;
  }
+
+
+.is-hoverable {
+  cursor: pointer !important;
+}
