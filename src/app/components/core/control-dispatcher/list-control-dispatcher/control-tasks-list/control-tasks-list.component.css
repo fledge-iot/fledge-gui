@@ -22,7 +22,8 @@ tr:hover .btn-delete {
 
 .is-borderless td, .is-borderless th {
   border: 0;
-  padding: 0px 12px 0px 0px;
+  padding: 2px 12px 0px 0px;
+  font-size: 90%;
  }
 
 
