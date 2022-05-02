@@ -83,7 +83,6 @@ export class AddControlScheduleTaskComponent implements OnInit {
 
   setScript(script: any) {
     this.script = script;
-    console.log('script', script);
   }
 
   submit(data) {

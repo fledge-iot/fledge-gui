@@ -16,7 +16,6 @@ import { orderBy, isEmpty } from 'lodash';
   templateUrl: './control-tasks-list.component.html',
   styleUrls: ['./control-tasks-list.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
-
 })
 export class ControlTasksListComponent implements OnInit {
   controlScripts: any = [];
@@ -68,6 +67,14 @@ export class ControlTasksListComponent implements OnInit {
       });
   }
 
+  /**
+   * Delete control schedule
+   *
+   * To delete control script schedule first disable schedule,
+   * and delete schedule then delete configuration category
+   *
+   * @param script Object
+   */
   deleteControlSchedule(script) {
     const id = script.schedule.id;
     /** request started */
@@ -124,20 +131,20 @@ export class ControlTasksListComponent implements OnInit {
       });
   }
 
-  showParameters(val) {
-    let config = JSON.parse(val);
-    const params =  config.map(c => c.values);
+  getScriptParameters(value) {
+    let config = JSON.parse(value);
+    const params = config.map(c => c.values);
     const parameters = [];
     params.forEach(element => {
       for (const [key, value] of Object.entries(element)) {
-        parameters.push({key, value})
+        parameters.push({ key, value })
       }
     });
     return parameters;
   }
 
-  showService(val) {
-    let config = JSON.parse(val);
+  getScriptServicesUsage(value) {
+    let config = JSON.parse(value);
     return [...new Set(config.map(c => c.service))];
   }
 
