@@ -1,15 +1,24 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": false
+  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
     "fledge": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
       "root": "",
       "sourceRoot": "src",
-      "projectType": "application",
+      "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
               "lodash",
@@ -17,14 +26,11 @@
               "@ctrl/ngx-codemirror",
               "codemirror"
             ],
-            "customWebpackConfig": {
-              "path": "./extra-webpack.config.js"
-            },
             "outputPath": "dist",
             "index": "src/fledge.html",
             "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.app.json",
             "polyfills": "src/polyfills.ts",
+            "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/assets"
             ],
@@ -33,9 +39,9 @@
               "./node_modules/animate.css/animate.css",
               "./node_modules/@ng-select/ng-select/themes/default.theme.css",
               "src/assets/css/bulma.min.css",
+              "src/assets/css/bulma-steps.min.css",
               "src/assets/css/font-awesome.min.css",
               "src/assets/css/bulma-tooltip.min.css",
-              "src/assets/css/bulma-steps.min.css",
               "src/styles.css"
             ],
             "scripts": [
@@ -44,20 +50,25 @@
           },
           "configurations": {
             "production": {
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2MBkb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
-              ]
+              ],
+              "outputHashing": "all"
             },
             "development": {
               "buildOptimizer": false,
@@ -72,15 +83,12 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "fledge:build"
-          },
           "configurations": {
-            "development": {
-              "browserTarget": "fledge:build:development"
-            },
             "production": {
               "browserTarget": "fledge:build:production"
+            },
+            "development": {
+              "browserTarget": "fledge:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -95,10 +103,13 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "src/test.ts",
-            "karmaConfig": "./karma.conf.js",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [],
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
             "styles": [
               "src/assets/css/bulma.min.css",
               "src/assets/css/bulma-steps.min.css",
@@ -106,9 +117,7 @@
               "src/assets/css/bulma-tooltip.min.css",
               "src/styles.css"
             ],
-            "assets": [
-              "src/assets"
-            ]
+            "scripts": []
           }
         },
         "lint": {
@@ -151,18 +160,5 @@
       }
     }
   },
-  "defaultProject": "fledge",
-  "cli": {
-    "packageManager": "yarn",
-    "analytics": false
-  },
-  "schematics": {
-    "@schematics/angular:component": {
-      "prefix": "app",
-      "style": "css"
-    },
-    "@schematics/angular:directive": {
-      "prefix": "app"
-    }
-  }
+  "defaultProject": "fledge"
 }

@@ -1,10 +1,18 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
     "downlevelIteration": true,
     "importHelpers": true,
     "module": "es2020",
     "outDir": "./dist/out-tsc",
+    // "forceConsistentCasingInFileNames": true,
+    // "strict": false,
+    // "noImplicitOverride": true,
+    // "noPropertyAccessFromIndexSignature": true,
+    // "noImplicitReturns": true,
+    // "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
@@ -13,19 +21,16 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedParameters": true,
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2016",
-      "dom"
-    ]
+    "target": "es2017",
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2020", "dom"]
   },
-  "exclude": [
-    "*.eot",
-    "*.woff2",
-    "*.svg",
-    "*.woff"
-  ]
+  "exclude": ["*.eot", "*.woff2", "*.svg", "*.woff"]
+  // "angularCompilerOptions": {
+  //   "enableI18nLegacyMessageIdFormat": false,
+  //   "strictInjectionParameters": false,
+  //   "strictInputAccessModifiers": false,
+  //   "strictTemplates": false
+  // }
 }
