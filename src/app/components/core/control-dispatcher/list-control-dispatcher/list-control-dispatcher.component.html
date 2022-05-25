@@ -15,7 +15,7 @@
           </li>
           <li [ngClass]="{'is-active': seletedTab == 'tasks'}">
             <h6 class="is-6 has-text-weight-semibold">
-              <a (click)="showDiv('tasks')">Tasks</a>
+              <a (click)="showDiv('tasks')">Script Schedules</a>
             </h6>
           </li>
           <li class="custom-pad" *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">

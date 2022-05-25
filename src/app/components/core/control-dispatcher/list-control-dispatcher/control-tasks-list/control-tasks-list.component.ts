@@ -215,9 +215,9 @@ export class ControlTasksListComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(data.message, true);
-          // update local reference of schedule
-          // schedule.enabled = false;
           this.cd.detectChanges();
+          // close modal
+          this.closeModal('start-schedule-dialog');
         },
         error => {
           /** request completed */
