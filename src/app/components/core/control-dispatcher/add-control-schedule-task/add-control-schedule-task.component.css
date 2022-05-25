@@ -18,6 +18,9 @@
   vertical-align: middle !important;
 }
 
+#refresh-check {
+  padding: 0px;
+}
 
 .field-label {
   text-align: left;
@@ -32,4 +35,12 @@
   padding: 0px;
   margin: 10px 0px 0px 0px;
 }
+
+.breadcrumb {
+  margin-bottom: 0px !important;
+}
+
+.delete-field {
+  max-width: 24% !important;
+  }
 

@@ -211,11 +211,9 @@ export class ControlTasksListComponent implements OnInit {
     this.schedulesService.startSchedule(id).
       subscribe(
         (data: any) => {
-          console.log('data', data);
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(data.message, true);
-          this.cd.detectChanges();
           // close modal
           this.closeModal('start-schedule-dialog');
         },

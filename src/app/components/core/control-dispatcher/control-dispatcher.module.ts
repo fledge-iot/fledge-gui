@@ -54,6 +54,10 @@ const routes: Routes = [
     component: AddControlScheduleTaskComponent,
     canActivate: [AuthTypeGuard]
   },
+  {
+    path: 'task/:name',
+    component: AddControlScheduleTaskComponent
+  },
 ];
 
 @NgModule({

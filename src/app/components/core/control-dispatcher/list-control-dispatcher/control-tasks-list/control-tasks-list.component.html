@@ -11,7 +11,7 @@
   <tbody>
     <tr *ngFor="let script of controlScripts">
       <td>
-        {{script?.name}}
+        <a [routerLink]="['task', script?.name]"> {{script?.name}} </a>
       </td>
       <td>
         <table class="parameter is-borderless">

@@ -5,108 +5,113 @@
         <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}">Script Schedule</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">
-            <!-- {{editMode ? name : 'Add' }} -->
-            Add
+            {{editMode ? script : 'Add' }}
           </a>
         </li>
       </ul>
     </nav>
-    <!-- <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check">
+    <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-    </button> -->
+    </button>
   </div>
   <div class="card">
     <div class="card-content step-content">
       <form [formGroup]="controlForm">
-        <div class="column">
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Script</label>
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label">Script</label>
+          </div>
+          <div class="field-body">
+            <div class="field is-narrow">
+              <div *ngIf="sharedService.checkAuth() && !editMode;else staticScriptDiv" class="control">
+                <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
+                  <div class="dropdown-trigger">
+                    <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
+                      aria-controls="dropdown-menu">
+                      <span>{{script ? script : 'Select script'}}</span>
+                      <span class="icon is-small">
+                        <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                    <div class="dropdown-content">
+                      <a class="dropdown-item" *ngIf="scripts.length === 0"><small>No scripts found</small></a>
+                      <a (click)="setScript(script.name);toggleDropDown('script-dropdown')"
+                        *ngFor="let script of scripts" class="dropdown-item">{{script.name}}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ng-template #staticScriptDiv>
+                <div class="control">
+                  <input name="script" class="input is-small" type="text" [value]="script? script: 'None'"
+                    [ngClass]="{'is-static':!sharedService.checkAuth() || editMode, 'has-text-grey-light is-size-7': !script}"
+                    [readonly]="!sharedService.checkAuth() || editMode">
+                </div>
+              </ng-template>
             </div>
-            <div class="field-body">
+          </div>
+        </div>
+        <div formArrayName="parameters">
+          <div class="field is-horizontal" *ngFor="let parameter of getParametersFormControls(); let i = index">
+            <div *ngIf="i == 0" class="field-label">
+              <label class="label">Parameters</label>
+            </div>
+            <div *ngIf="i > 0" class="field-label">
+              <label class="label"></label>
+            </div>
+            <div class="field-body" [formGroupName]="i">
               <div class="field is-narrow">
-                <div *ngIf="sharedService.checkAuth();else staticScriptDiv" class="control">
-                  <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
-                    <div class="dropdown-trigger">
-                      <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
-                        aria-controls="dropdown-menu">
-                        <span>{{script ? script : 'Select script'}}</span>
-                        <span class="icon is-small">
-                          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                      </button>
-                    </div>
-                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                      <div class="dropdown-content">
-                        <a class="dropdown-item" *ngIf="scripts.length === 0"><small>No scripts found</small></a>
-                        <a (click)="setScript(script.name);toggleDropDown('script-dropdown')"
-                          *ngFor="let script of scripts" class="dropdown-item">{{script.name}}</a>
-                      </div>
-                    </div>
-                  </div>
+                <div class="control">
+                  <input formControlName="param" placeholder="param to substitute" class="input is-small" name="type"
+                    type="text">
                 </div>
-                <ng-template #staticScriptDiv>
-                  <div class="control">
-                    <input formControlName="name" name="script" class="input is-small" type="text"
-                      [ngModel]="config.name?config.name:'None'"
-                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.name}"
-                      [readonly]="!sharedService.checkAuth()">
-                  </div>
-                </ng-template>
+              </div>
+              &nbsp;
+              <div class="field is-narrow">
+                <div class="control">
+                  <input formControlName="value" placeholder="value" class="input is-small" name="value" type="text">
+                </div>
+              </div>
+              &nbsp;
+              <div class="field is-narrow">
+                <button class="delete is-small" (click)="removeParameter(i)"></button>
               </div>
             </div>
           </div>
-          <div formArrayName="parameters">
-            <div class="field is-horizontal" *ngFor="let parameter of getParametersFormControls(); let i = index">
-              <div *ngIf="i == 0" class="field-label">
-                <label class="label">Parameters</label>
-              </div>
-              <div *ngIf="i > 0" class="field-label">
-                <label class="label"></label>
-              </div>
-              <div class="field-body" [formGroupName]="i">
-                <div class="field is-narrow">
-                  <div class="control">
-                    <input formControlName="param" placeholder="param to substitute" class="input is-small" name="type"
-                      type="text">
-                  </div>
-                </div>
-                &nbsp;
-                <div class="field is-narrow">
-                  <div class="control">
-                    <input formControlName="value" placeholder="value" class="input is-small" name="value" type="text">
-                  </div>
-                </div>
-                &nbsp;
-                <div class="field is-narrow">
-                  <button class="delete is-small" (click)="removeParameter(i)"></button>
-                </div>
-              </div>
-            </div>
+        </div>
+        <div class="field">
+          <div class="columns" *ngIf="!editMode">
+            <div class="column is-one-fifth"></div>
+            <div class="column btn-column"> <button class="button is-small is-link is-light has-background-white"
+                (click)="addParameter()">
+                <span class="icon is-small">
+                  <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                </span>
+                <span>{{getParametersFormControls().length === 0 ? 'Add parameter':'Add new parameter'}}</span>
+              </button></div>
           </div>
-          <div class="field">
-            <div class="columns">
-              <div class="column is-one-fifth"></div>
-              <div class="column btn-column"> <button class="button is-small is-link is-light has-background-white"
-                  (click)="addParameter()">
-                  <span class="icon is-small">
-                    <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                  </span>
-                  <span>{{getParametersFormControls().length === 0 ? 'Add parameter':'Add new parameter'}}</span>
-                </button></div>
-            </div>
-
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label"></label>
           </div>
-          <div class="field">
-            <div class="columns">
-              <div class="column is-one-fifth"></div>
-              <div class="column save-column">
-                <button [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}"
+          <div class="field-body">
+            <div *ngIf="editMode" class="field delete-field">
+              <button type="button" class="button is-small is-danger is-outlined"
+                (click)="openModal('confirmation-dialog')">Delete</button>
+            </div>
+            <div class="field is-grouped">
+              <p class="control">
+                <button type="button" [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}"
                   class="button is-small">Cancel</button>
-                &nbsp;
-                <button type="button" class="button is-small is-link" [disabled]="controlForm.invalid || !script"
+              </p>
+              <p class="control">
+                <button type="button" class="button is-small is-link"
+                  [disabled]="controlForm.pristine || controlForm.invalid || !script"
                   (click)="submit(controlForm.value)">Save</button>
-              </div>
+              </p>
             </div>
           </div>
         </div>
@@ -114,3 +119,16 @@
     </div>
   </div>
 </div>
+<app-confirmation-dialog id="confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, you want to delete the script <b>{{script}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteControlSchedule(scriptData)">Delete</button>
+  </footer>
+</app-confirmation-dialog>
