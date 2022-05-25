@@ -71,6 +71,18 @@ export class SchedulesService {
   }
 
   /**
+   * Start schedule
+   *
+   * POST | /fledge/schedule/start/{scheduleId}
+   *
+   */
+  public startSchedule(scheduleId: string) {
+    return this.http.post(`${this.SCHEDULE_URL}/start/${scheduleId}`, null).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  /**
     * Delete schedule
     *
     * DELETE | /fledge/schedule/{schedule_id}

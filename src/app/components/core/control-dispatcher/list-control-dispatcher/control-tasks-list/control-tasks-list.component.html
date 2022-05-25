@@ -46,6 +46,9 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu3" role="menu">
             <div class="dropdown-content">
+              <a class="dropdown-item" (click)="setScript(script);openModal('start-schedule-dialog')">
+                <span>Execute</span>
+              </a>
               <a class="dropdown-item" [routerLink]="['script', script?.name]">
                 <span>View script</span>
               </a>
@@ -67,11 +70,29 @@
   </div>
 </ng-template>
 <app-confirmation-dialog id="confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+  </header>
   <section class="modal-card-body">
     Are you sure, you want to delete the control task for the script <b>{{script?.name}}</b>?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
     <button class="button is-small is-danger" (click)="deleteControlSchedule(script)">Delete</button>
+  </footer>
+</app-confirmation-dialog>
+
+<app-confirmation-dialog id="start-schedule-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Control Schedule</p>
+    <button class="delete" aria-label="close" (click)="closeModal('start-schedule-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, you want to start the control schedule task for the script <b>{{script?.name}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('start-schedule-dialog')">Cancel</button>
+    <button class="button is-small is-success" (click)="startSchedule(script?.schedule?.id)">Execute</button>
   </footer>
 </app-confirmation-dialog>

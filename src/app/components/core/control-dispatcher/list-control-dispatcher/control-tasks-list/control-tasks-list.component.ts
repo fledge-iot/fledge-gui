@@ -21,6 +21,7 @@ export class ControlTasksListComponent implements OnInit {
   controlScripts: any = [];
   script;
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
+  @ViewChild('start-schedule-dialog') startScheduleDialog: ConfirmationDialogComponent;
   controlTask;
   constructor(private controlService: ControlDispatcherService,
     private schedulesService: SchedulesService,
@@ -191,6 +192,31 @@ export class ControlTasksListComponent implements OnInit {
           this.alertService.success(data.message, true);
           // update local reference of schedule
           schedule.enabled = false;
+          this.cd.detectChanges();
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  startSchedule(id: string) {
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.startSchedule(id).
+      subscribe(
+        (data: any) => {
+          console.log('data', data);
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data.message, true);
+          // update local reference of schedule
+          // schedule.enabled = false;
           this.cd.detectChanges();
         },
         error => {
