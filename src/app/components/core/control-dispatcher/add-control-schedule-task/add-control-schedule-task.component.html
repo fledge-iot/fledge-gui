@@ -106,12 +106,12 @@
                   (click)="openModal('confirmation-dialog')">Delete</button>
               </div>
               <div class="field" style="max-width: 50%;">
-                <button type="button" class="button is-small is-link is-pulled-right btn-save"
+                <button [ngClass]="{'is-pulled-right btn-save': editMode}" type="button" class="button is-small is-link"
                   [disabled]="controlForm.pristine || controlForm.invalid || !script"
                   (click)="submit(controlForm.value)">Save</button>
-
-                <button type="button" [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}"
-                  class="button is-small is-pulled-right">Cancel</button>
+                <button [ngClass]="editMode? 'is-pulled-right': 'btn-cancel'" type="button"
+                  [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}"
+                  class="button is-small">Cancel</button>
               </div>
             </div>
           </div>
