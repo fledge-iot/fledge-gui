@@ -2,6 +2,7 @@
   margin-bottom: 5px;
 }
 
+
 .field-label {
   text-align: left;
 }
@@ -22,28 +23,28 @@
   padding: 0px;
 }
 
-.field-label {
-  text-align: left;
-}
-
 .btn-column {
   padding: 0px;
   margin: 10px 0px 0px -10px;
-}
-
-.save-column {
-  padding: 0px;
-  margin: 10px 0px 0px 0px;
 }
 
 .breadcrumb {
   margin-bottom: 0px !important;
 }
 
+/* .group {
+  width: 50%;
+} */
 
 
-.btn-group-column {
-  padding: 0px;
-  margin: 20px 0px 0px -8px;
+@media screen and (min-width: 769px), print{
+.field-body > .field:not(.is-narrow) {
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+}
+}
+
+.btn-save {
+  margin-left: 10px;
 }
 

@@ -15,6 +15,7 @@ export class AddControlScheduleTaskComponent implements OnInit {
   scripts = [];
   script = '';
   scriptData: any;
+  writeScriptParameters = [];
   controlForm: FormGroup;
   editMode = false;
   constructor(
@@ -110,6 +111,8 @@ export class AddControlScheduleTaskComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.fetchControlServiceScriptByName(this.script)
       .subscribe((data: any) => {
+        console.log('data', data);
+
         this.scriptData = data;
         this.ngProgress.done();
         this.script = data.name;
@@ -131,9 +134,11 @@ export class AddControlScheduleTaskComponent implements OnInit {
       const params = config.map(c => c.values);
       const parameters = [];
       params.forEach(element => {
-        for (const [key, value] of Object.entries(element)) {
-          parameters.push({ key, value });
-          this.addParameter({ key, value });
+        if (!element.hasOwnProperty("")) {
+          for (const [key, value] of Object.entries(element)) {
+            parameters.push({ key, value });
+            this.addParameter({ key, value });
+          }
         }
       });
       return parameters;
@@ -142,8 +147,30 @@ export class AddControlScheduleTaskComponent implements OnInit {
   }
 
   setScript(script: any) {
-    this.script = script;
+    this.scriptData = script;
+    // Get write steps from script
+    this.getControlParameters();
+    this.script = script.name;
     this.controlForm.markAsDirty();
+  }
+
+  getControlParameters() {
+    this.clearForm();
+    this.writeScriptParameters = [];
+    // Get steps of write script
+    const scriptSteps = this.scriptData.steps.filter(({ write }) => write)
+    // put all values of write step parameter into an array
+    scriptSteps.forEach(({ write }) => {
+      this.writeScriptParameters.push(...Object.values(write.values))
+    });
+    // create UI control for each parameter
+    this.writeScriptParameters.forEach(key => {
+      if (key.startsWith('$') && key.endsWith('$')) {
+        // remove $ from start and end of the string
+        key = key.substr(1).slice(0, -1);
+        this.addParameter({ key, value: '' });
+      }
+    });
   }
 
   openModal(id: string) {
@@ -157,6 +184,7 @@ export class AddControlScheduleTaskComponent implements OnInit {
   submit(data) {
     let parameters = {}
     data.parameters.forEach(item => { parameters[item.param] = item.value });
+
     let payload = {
       parameters
     }

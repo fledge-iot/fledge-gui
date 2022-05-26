@@ -17,44 +17,46 @@
   <div class="card">
     <div class="card-content">
       <form [formGroup]="controlForm">
-        <div class="column is-four-fifths">
+        <div class="column">
           <div class="field is-horizontal">
             <div class="field-label">
               <label class="label">Script</label>
             </div>
             <div class="field-body">
-              <div class="field">
-                <div *ngIf="sharedService.checkAuth() && !editMode;else staticScriptDiv" class="control">
-                  <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
-                    <div class="dropdown-trigger">
-                      <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
-                        aria-controls="dropdown-menu">
-                        <span>{{script ? script : 'Select script'}}</span>
-                        <span class="icon is-small">
-                          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                      </button>
-                    </div>
-                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                      <div class="dropdown-content">
-                        <a class="dropdown-item" *ngIf="scripts.length === 0"><small>No scripts found</small></a>
-                        <a (click)="setScript(script.name);toggleDropDown('script-dropdown')"
-                          *ngFor="let script of scripts" class="dropdown-item">{{script.name}}</a>
+              <div class="group">
+                <div class="field">
+                  <div *ngIf="sharedService.checkAuth() && !editMode;else staticScriptDiv" class="control">
+                    <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
+                      <div class="dropdown-trigger">
+                        <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
+                          aria-controls="dropdown-menu">
+                          <span>{{script ? script : 'Select script'}}</span>
+                          <span class="icon is-small">
+                            <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                          </span>
+                        </button>
+                      </div>
+                      <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                          <a class="dropdown-item" *ngIf="scripts.length === 0"><small>No scripts found</small></a>
+                          <a (click)="setScript(script);toggleDropDown('script-dropdown')"
+                            *ngFor="let script of scripts" class="dropdown-item">{{script.name}}</a>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  <ng-template #staticScriptDiv>
+                    <div class="control">
+                      <input name="script" class="input is-small" type="text" [value]="script? script: 'None'"
+                        [ngClass]="{'is-static':!sharedService.checkAuth() || editMode, 'has-text-grey-light is-size-7': !script}"
+                        [readonly]="!sharedService.checkAuth() || editMode">
+                    </div>
+                  </ng-template>
                 </div>
-                <ng-template #staticScriptDiv>
-                  <div class="control">
-                    <input name="script" class="input is-small" type="text" [value]="script? script: 'None'"
-                      [ngClass]="{'is-static':!sharedService.checkAuth() || editMode, 'has-text-grey-light is-size-7': !script}"
-                      [readonly]="!sharedService.checkAuth() || editMode">
-                  </div>
-                </ng-template>
               </div>
             </div>
           </div>
-          <div formArrayName="parameters">
+          <ng-container formArrayName="parameters">
             <div class="field is-horizontal" *ngFor="let parameter of getParametersFormControls(); let i = index">
               <div *ngIf="i == 0" class="field-label">
                 <label class="label">Parameters</label>
@@ -63,26 +65,24 @@
                 <label class="label"></label>
               </div>
               <div class="field-body" [formGroupName]="i">
-                <div class="field">
+                <div class="field" style="max-width: 20%;">
                   <div class="control">
-                    <input formControlName="param" placeholder="param to substitute" class="input is-small" name="type"
-                      type="text">
+                    <input formControlName="param" placeholder="param to substitute" class="input is-small is-static"
+                      name="type" type="text" readonly>
                   </div>
                 </div>
-                &nbsp;
-                <div class="field">
+                <div class="field" style="max-width: 50%;">
                   <div class="control">
                     <input formControlName="value" placeholder="value" class="input is-small" name="value" type="text">
                   </div>
                 </div>
-                &nbsp;
-                <div class="field">
+                <!-- <div class="field">
                   <button class="delete is-small" (click)="removeParameter(i)"></button>
-                </div>
+                </div> -->
               </div>
             </div>
-          </div>
-          <div class="field">
+          </ng-container>
+          <!-- <div class="field">
             <div class="columns" *ngIf="!editMode">
               <div class="column is-one-fifth"></div>
               <div class="column btn-column"> <button class="button is-small is-link is-light has-background-white"
@@ -93,32 +93,25 @@
                   <span>{{getParametersFormControls().length === 0 ? 'Add parameter':'Add new parameter'}}</span>
                 </button></div>
             </div>
-          </div>
+          </div> -->
         </div>
-        <div class="field is-horizontal">
-          <div class="field-label">
-            <label class="label"></label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <div class="columns">
-                <div class="column btn-column" *ngIf="editMode">
-                  <button type="button" class="button is-small is-danger is-outlined"
-                    (click)="openModal('confirmation-dialog')">Delete</button>
-                </div>
-                <div class="column btn-group-column">
-                  <div class="field is-grouped">
-                    <p class="control">
-                      <button type="button" [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}"
-                        class="button is-small">Cancel</button>
-                    </p>
-                    <p class="control">
-                      <button type="button" class="button is-small is-link"
-                        [disabled]="controlForm.pristine || controlForm.invalid || !script"
-                        (click)="submit(controlForm.value)">Save</button>
-                    </p>
-                  </div>
-                </div>
+        <div class="column">
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label"></label>
+            </div>
+            <div class="field-body">
+              <div class="field" *ngIf="editMode" style="max-width: 20%;">
+                <button type="button" class="button is-small is-danger is-outlined"
+                  (click)="openModal('confirmation-dialog')">Delete</button>
+              </div>
+              <div class="field" style="max-width: 50%;">
+                <button type="button" class="button is-small is-link is-pulled-right btn-save"
+                  [disabled]="controlForm.pristine || controlForm.invalid || !script"
+                  (click)="submit(controlForm.value)">Save</button>
+
+                <button type="button" [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'tasks'}"
+                  class="button is-small is-pulled-right">Cancel</button>
               </div>
             </div>
           </div>
