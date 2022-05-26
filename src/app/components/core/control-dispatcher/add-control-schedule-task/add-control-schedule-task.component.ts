@@ -62,6 +62,7 @@ export class AddControlScheduleTaskComponent implements OnInit {
     // remove parameter from the list
     const control = <FormArray>this.controlForm.controls['parameters'];
     control.removeAt(index);
+    this.controlForm.markAsDirty();
   }
 
   clearForm() {
@@ -179,9 +180,12 @@ export class AddControlScheduleTaskComponent implements OnInit {
   }
 
   updateConfig(configuration, changeValues) {
-    const configValue = JSON.parse(configuration.write.value);
-    configValue[0].values = changeValues.parameters;
-    const payload = { write: JSON.stringify(configValue) };
+    let payload = {};
+    if (changeValues) {
+      const configValue = JSON.parse(configuration.write.value);
+      configValue[0].values = changeValues.parameters;
+      payload = { write: JSON.stringify(configValue) };
+    }
     const categoryName = configuration.categoryName;
     /** request started */
     this.ngProgress.start();

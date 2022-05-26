@@ -40,7 +40,10 @@
   margin-bottom: 0px !important;
 }
 
-.delete-field {
-  max-width: 24% !important;
-  }
+
+
+.btn-group-column {
+  padding: 0px;
+  margin: 20px 0px 0px -8px;
+}
 

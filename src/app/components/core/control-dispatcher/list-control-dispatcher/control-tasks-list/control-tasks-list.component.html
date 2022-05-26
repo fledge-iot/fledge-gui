@@ -46,7 +46,8 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu3" role="menu">
             <div class="dropdown-content">
-              <a class="dropdown-item" (click)="setScript(script);openModal('start-schedule-dialog')">
+              <a *ngIf="script?.schedule?.enabled" class="dropdown-item"
+                (click)="setScript(script);openModal('start-schedule-dialog')">
                 <span>Execute</span>
               </a>
               <a class="dropdown-item" [routerLink]="['script', script?.name]">

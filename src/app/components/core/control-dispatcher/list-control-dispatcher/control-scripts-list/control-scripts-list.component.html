@@ -13,12 +13,22 @@
         </a>
       </td>
       <td>
-        <button *ngIf="sharedService.checkAuth()" (click)="setScript(script);openModal('confirmation-dialog')"
-          class="button is-small btn-delete">
-          <span class="icon is-small">
-            <i class="far fa-trash-alt"></i>
-          </span>
-        </button>
+        <div *ngIf="sharedService.checkAuth()" class="dropdown is-hoverable">
+          <div class="dropdown-trigger">
+            <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
+              <span class="icon is-small">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+            <div class="dropdown-content">
+              <a class="dropdown-item" (click)="setScript(script);openModal('confirmation-dialog')">
+                <span>Delete</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </td>
     </tr>
   </tbody>
@@ -31,6 +41,10 @@
   </div>
 </ng-template>
 <app-confirmation-dialog id="confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+  </header>
   <section class="modal-card-body">
     Are you sure, you want to delete the script <b>{{script}}</b>?
   </section>
