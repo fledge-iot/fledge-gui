@@ -133,20 +133,26 @@ export class ControlTasksListComponent implements OnInit {
   }
 
   getScriptParameters(value) {
-    let config = JSON.parse(value);
-    const params = config.map(c => c.values);
-    const parameters = [];
-    params.forEach(element => {
-      for (const [key, value] of Object.entries(element)) {
-        parameters.push({ key, value })
-      }
-    });
-    return parameters;
+    if (value) {
+      let config = JSON.parse(value);
+      const params = config.map(c => c.values);
+      const parameters = [];
+      params.forEach(element => {
+        for (const [key, value] of Object.entries(element)) {
+          parameters.push({ key, value })
+        }
+      });
+      return parameters;
+    }
+    return value;
   }
 
   getScriptServicesUsage(value) {
-    let config = JSON.parse(value);
-    return [...new Set(config.map(c => c.service))];
+    if (value) {
+      let config = JSON.parse(value);
+      return [...new Set(config.map(c => c.service))];
+    }
+    return value;
   }
 
   updateScheduleStatus(schedule) {

@@ -126,16 +126,19 @@ export class AddControlScheduleTaskComponent implements OnInit {
   }
 
   getScriptParameters(value) {
-    let config = JSON.parse(value);
-    const params = config.map(c => c.values);
-    const parameters = [];
-    params.forEach(element => {
-      for (const [key, value] of Object.entries(element)) {
-        parameters.push({ key, value });
-        this.addParameter({ key, value });
-      }
-    });
-    return parameters;
+    if (value) {
+      let config = JSON.parse(value);
+      const params = config.map(c => c.values);
+      const parameters = [];
+      params.forEach(element => {
+        for (const [key, value] of Object.entries(element)) {
+          parameters.push({ key, value });
+          this.addParameter({ key, value });
+        }
+      });
+      return parameters;
+    }
+    return value;
   }
 
   setScript(script: any) {
@@ -180,12 +183,13 @@ export class AddControlScheduleTaskComponent implements OnInit {
   }
 
   updateConfig(configuration, changeValues) {
-    let payload = {};
-    if (changeValues) {
-      const configValue = JSON.parse(configuration.write.value);
-      configValue[0].values = changeValues.parameters;
-      payload = { write: JSON.stringify(configValue) };
-    }
+    console.log('configuration', configuration);
+    console.log('changeValues', changeValues);
+
+    const configValue = JSON.parse(configuration.write.value);
+    configValue[0].values = changeValues ? changeValues.parameters : '';
+    const payload = { write: JSON.stringify(configValue) };
+
     const categoryName = configuration.categoryName;
     /** request started */
     this.ngProgress.start();

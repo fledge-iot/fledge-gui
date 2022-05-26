@@ -17,8 +17,8 @@
         <table class="parameter is-borderless">
           <ng-container *ngFor="let item of getScriptParameters(script?.configuration?.write?.value)">
             <tr>
-              <td align="left">{{item.key}}</td>
-              <td align="left">{{item.value}}</td>
+              <td align="left">{{item?.key}}</td>
+              <td align="left">{{item?.value}}</td>
             </tr>
           </ng-container>
         </table>
