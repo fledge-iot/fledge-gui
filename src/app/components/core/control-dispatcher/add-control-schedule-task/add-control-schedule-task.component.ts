@@ -49,7 +49,7 @@ export class AddControlScheduleTaskComponent implements OnInit {
     // initialize
     return this.fb.group({
       param: [param?.key, Validators.required],
-      value: [param?.value, Validators.required]
+      value: [param?.value]
     });
   }
 
