@@ -111,8 +111,6 @@ export class AddControlScheduleTaskComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.fetchControlServiceScriptByName(this.script)
       .subscribe((data: any) => {
-        console.log('data', data);
-
         this.scriptData = data;
         this.ngProgress.done();
         this.script = data.name;
@@ -131,19 +129,24 @@ export class AddControlScheduleTaskComponent implements OnInit {
   getScriptParameters(value) {
     if (value) {
       let config = JSON.parse(value);
-      const params = config.map(c => c.values);
-      const parameters = [];
+      let params = config.map(c => c.values);
+      let parameters = [];
+      // generate parameters array
       params.forEach(element => {
         if (!element.hasOwnProperty("")) {
           for (const [key, value] of Object.entries(element)) {
             parameters.push({ key, value });
-            this.addParameter({ key, value });
           }
         }
       });
+      // remove duplicate objects from array
+      parameters = [...new Set(parameters.map(o => JSON.stringify(o)))].map(s => JSON.parse(s));
+      // generate parameters form controls
+      parameters.forEach(e => {
+        this.addParameter({ key: e.key, value: e.value });
+      });
       return parameters;
     }
-    return value;
   }
 
   setScript(script: any) {
@@ -163,7 +166,8 @@ export class AddControlScheduleTaskComponent implements OnInit {
     scriptSteps.forEach(({ write }) => {
       this.writeScriptParameters.push(...Object.values(write.values))
     });
-    // create UI control for each parameter
+    this.writeScriptParameters = [...new Set(this.writeScriptParameters)];
+    // create form control for each parameter
     this.writeScriptParameters.forEach(key => {
       if (key.startsWith('$') && key.endsWith('$')) {
         // remove $ from start and end of the string
@@ -211,13 +215,17 @@ export class AddControlScheduleTaskComponent implements OnInit {
   }
 
   updateConfig(configuration, changeValues) {
-    console.log('configuration', configuration);
-    console.log('changeValues', changeValues);
-
     const configValue = JSON.parse(configuration.write.value);
-    configValue[0].values = changeValues ? changeValues.parameters : '';
-    const payload = { write: JSON.stringify(configValue) };
+    // put form control values in category config
+    configValue.forEach(c => {
+      for (const key in c.values) {
+        if (changeValues.parameters[key]) {
+          c.values[key] = changeValues.parameters[key]
+        }
+      }
+    });
 
+    const payload = { write: JSON.stringify(configValue) };
     const categoryName = configuration.categoryName;
     /** request started */
     this.ngProgress.start();

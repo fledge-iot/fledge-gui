@@ -32,10 +32,6 @@
   margin-bottom: 0px !important;
 }
 
-/* .group {
-  width: 50%;
-} */
-
 
 @media screen and (min-width: 769px), print{
 .field-body > .field:not(.is-narrow) {
@@ -49,6 +45,6 @@
 }
 
 .btn-cancel {
-  margin-left: 10px;
+  margin-right: 10px;
 }
 
