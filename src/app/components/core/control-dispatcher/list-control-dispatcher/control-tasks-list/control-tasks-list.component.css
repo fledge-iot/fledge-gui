@@ -7,13 +7,6 @@
   opacity: 0;
 }
 
-.table {
-  overflow: visible;
-}
-
-::ng-deep .card-data {
-  overflow: visible;
-}
 
 tr:hover .btn-delete {
   opacity: 1;
@@ -39,3 +32,4 @@ tr:hover .btn-delete {
 .button.is-light {
   background-color: transparent !important
 }
+

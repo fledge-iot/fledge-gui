@@ -6,9 +6,6 @@ tr:hover .btn-delete {
   cursor: pointer !important;
 }
 
-.table {
-  overflow: visible;
-}
 
 .btn-delete {
   border-color: transparent !important;
