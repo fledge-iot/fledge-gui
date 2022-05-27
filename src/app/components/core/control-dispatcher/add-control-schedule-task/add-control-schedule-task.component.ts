@@ -219,12 +219,11 @@ export class AddControlScheduleTaskComponent implements OnInit {
     // put form control values in category config
     configValue.forEach(c => {
       for (const key in c.values) {
-        if (changeValues.parameters[key]) {
+        if (changeValues.parameters.hasOwnProperty(key)) {
           c.values[key] = changeValues.parameters[key]
         }
       }
     });
-
     const payload = { write: JSON.stringify(configValue) };
     const categoryName = configuration.categoryName;
     /** request started */
