@@ -53,8 +53,6 @@ export class ListControlDispatcherComponent implements OnInit {
   }
 
   navigate() {
-    console.log('tab', this.seletedTab);
-
     if (this.seletedTab === 'scripts') {
       this.router.navigate(['script/add'], { relativeTo: this.route });
     } else if (this.seletedTab == 'acls') {
