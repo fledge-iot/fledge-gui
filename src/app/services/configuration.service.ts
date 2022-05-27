@@ -44,7 +44,7 @@ export class ConfigurationService {
   *   DELETE  | /fledge/category/{categoryName}
   */
   deleteCategory(categoryName) {
-    return this.http.delete(this.CATEGORY_URL + '/' + categoryName).pipe(
+    return this.http.delete(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName)).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
