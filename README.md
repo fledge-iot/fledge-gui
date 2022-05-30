@@ -63,11 +63,11 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 
 ## Supported/ Tested Browser Version
 
-| Browser        | Tested Version  | Supported |
-| -------------- | --------------- | --------- |
-| Safari (macOS) | 14.1.x          | latest 1  |
-| Chrome         | 94.0.x (64-bit) | latest 2  |
-| Firefox        | 92.0.x (64-bit) | latest 2  |
+| Browser        | Tested Version   | Supported |
+| -------------- | ---------------- | --------- |
+| Safari (macOS) | 15.4.x           | latest 1  |
+| Chrome         | 101.0.x (64-bit) | latest 2  |
+| Firefox        | 100.0.x (64-bit) | latest 2  |
 
 [Changelog](docs/changelog.md)
 
