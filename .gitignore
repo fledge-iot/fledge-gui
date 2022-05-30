@@ -3,7 +3,7 @@
 # compiled output
 /dist
 /out-tsc
-.angular/cache
+.angular
 *.tar.gz
 
 # dependencies
@@ -49,5 +49,3 @@ packages/build/
 
 # git-version file
 src/git-version.json
-
-.angular
