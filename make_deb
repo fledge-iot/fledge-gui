@@ -87,8 +87,10 @@ BUILD_ROOT="${GIT_ROOT}/packages/build"
 # Get git info
 git_tag_info=$(git describe --tags) && commit_count=$(echo ${git_tag_info} | cut -d- -f2)
 branch_name=$(git rev-parse --abbrev-ref HEAD)
+# If tagged version is checked out then branch name is HEAD; set it to tag version value
+if [[ $branch_name == "HEAD" ]]; then branch_name=$(git describe --tags); fi
 # Final package name
-if [[ ${branch_name} != "main" ]] && [[ ! ${branch_name} =~ ^[0-9]+\.[0-9]+\.[0-9]+RC ]]; then package_name="fledge-gui_${version}-${commit_count}"; version=${git_tag_info:1}; else package_name="fledge-gui_${version}"; fi
+if [[ ${branch_name} != "main" ]] && [[ ! ${branch_name} =~ ^[0-9]+\.[0-9]+\.[0-9]+RC ]] && [[ ! ${branch_name} =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then package_name="fledge-gui_${version}-${commit_count}"; version=${git_tag_info:1}; else package_name="fledge-gui_${version}"; fi
 
 # Print the summary of findings
 echo "The package root directory is         : ${GIT_ROOT}"
@@ -124,7 +126,7 @@ echo -n "Populating the package and updating version file..."
 cd "${package_name}"
 cp -R ${GIT_ROOT}/packages/Debian/* .
 sed -i "s/Version: 0.0.0/Version: ${version}/g" DEBIAN/control
-if [[ ${branch_name} = "main" ]] || [[ ${branch_name} =~ ^[0-9]+\.[0-9]+\.[0-9]+RC ]]; then echo "Build: ${git_tag_info:1}" >> DEBIAN/control; fi
+if [[ ${branch_name} = "main" ]] || [[ ${branch_name} =~ ^[0-9]+\.[0-9]+\.[0-9]+RC ]] || [[ ${branch_name} =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then echo "Build: ${git_tag_info:1}" >> DEBIAN/control; fi
 echo "Done."
 
 
