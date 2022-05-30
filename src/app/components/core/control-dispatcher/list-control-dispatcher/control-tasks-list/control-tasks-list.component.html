@@ -66,7 +66,7 @@
 <ng-template #noscript>
   <div class="field-body">
     <div class="field is-narrow">
-      <small class="text-secondary has-text-grey-light"> No control scripts found.</small>
+      <small class="text-secondary has-text-grey-light"> No script schedule found.</small>
     </div>
   </div>
 </ng-template>
@@ -76,7 +76,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, you want to delete the control task for the script <b>{{script?.name}}</b>?
+    Are you sure, you want to delete script schedule <b>{{script?.name}}</b>?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
