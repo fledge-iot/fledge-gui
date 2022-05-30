@@ -50,4 +50,4 @@ packages/build/
 # git-version file
 src/git-version.json
 
-.angular/cache
+.angular
