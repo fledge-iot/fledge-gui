@@ -7,12 +7,6 @@
     "importHelpers": true,
     "module": "es2020",
     "outDir": "./dist/out-tsc",
-    // "forceConsistentCasingInFileNames": true,
-    // "strict": false,
-    // "noImplicitOverride": true,
-    // "noPropertyAccessFromIndexSignature": true,
-    // "noImplicitReturns": true,
-    // "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
@@ -27,10 +21,4 @@
     "lib": ["es2020", "dom"]
   },
   "exclude": ["*.eot", "*.woff2", "*.svg", "*.woff"]
-  // "angularCompilerOptions": {
-  //   "enableI18nLegacyMessageIdFormat": false,
-  //   "strictInjectionParameters": false,
-  //   "strictInputAccessModifiers": false,
-  //   "strictTemplates": false
-  // }
 }
