@@ -23,9 +23,10 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu3" role="menu">
             <div class="dropdown-content">
-              <a *ngIf="script?.schedule?.name" class="dropdown-item" [routerLink]="['task', script?.schedule?.name]">
+              <!-- TODO: FOGL-6468 -->
+              <!-- <a *ngIf="script?.schedule?.name" class="dropdown-item" [routerLink]="['task', script?.schedule?.name]">
                 <span>View script schedule</span>
-              </a>
+              </a> -->
               <a class="dropdown-item" (click)="setScript(script);openModal('confirmation-dialog')">
                 <span>Delete</span>
               </a>
