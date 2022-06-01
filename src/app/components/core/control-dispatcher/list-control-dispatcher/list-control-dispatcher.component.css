@@ -5,3 +5,7 @@
 .is-hovered {
   cursor: pointer !important;
 }
+
+.card-content {
+  overflow: initial !important;
+}

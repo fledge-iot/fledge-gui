@@ -1,4 +1,4 @@
-<table class="table scroll is-responsive is-hoverable is-striped" *ngIf="controlAcls.length > 0; else noacl">
+<table class="table is-responsive is-hoverable is-striped" *ngIf="controlAcls.length > 0; else noacl">
   <thead>
     <tr>
       <th>Name</th>
@@ -67,6 +67,10 @@
   </div>
 </ng-template>
 <app-confirmation-dialog id="confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+  </header>
   <section class="modal-card-body">
     Are you sure, you want to delete the ACL <b>{{acl}}</b>?
   </section>

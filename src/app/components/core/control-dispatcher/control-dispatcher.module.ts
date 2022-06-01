@@ -22,6 +22,8 @@ import { ControlScriptsListComponent } from './list-control-dispatcher/control-s
 import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
 import { AclListComponent } from './list-control-dispatcher/acl-list/acl-list.component';
 import { AddControlAclComponent } from './add-control-acl/add-control-acl.component';
+import { ControlTasksListComponent } from './list-control-dispatcher/control-tasks-list/control-tasks-list.component';
+import { ControlScheduleTaskDetailsComponent } from './control-schedule-task/control-schedule-task-details.component';
 
 const routes: Routes = [
 
@@ -46,7 +48,16 @@ const routes: Routes = [
   {
     path: 'acl/:name',
     component: AddControlAclComponent
-  }
+  },
+  {
+    path: 'task/add',
+    component: ControlScheduleTaskDetailsComponent,
+    canActivate: [AuthTypeGuard]
+  },
+  {
+    path: 'task/:name',
+    component: ControlScheduleTaskDetailsComponent
+  },
 ];
 
 @NgModule({
@@ -64,7 +75,9 @@ const routes: Routes = [
     AddDelayComponent,
     ConfirmationDialogComponent,
     AclListComponent,
-    AddControlAclComponent
+    AddControlAclComponent,
+    ControlTasksListComponent,
+    ControlScheduleTaskDetailsComponent
   ],
   imports: [
     FormsModule,

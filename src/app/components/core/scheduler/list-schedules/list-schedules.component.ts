@@ -105,9 +105,22 @@ export class ListSchedulesComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
-          // north_c - North C tasks, north_C - Northbound C Services
+          /**
+           * Services ignored to filter
+           *
+           * backup - backup hourly and, backup on demand service
+           * certificate checker - Certificate checker service
+           * dispatcher_c - The Dispatcher service
+           * notification_c - The Notification service
+           * purge - Purge service
+           * purge_system : Purge System service
+           * restore - Restore on demand service
+           * stats collection - Stats collection service
+           * management : Management service
+           *
+           */
           data.schedules.forEach(sch => {
-            if (!['south_c', 'north_c', 'north_C', 'south', 'north', 'notification_c'].includes(sch.processName)) {
+            if (!['south_c', 'north_c', 'north_C', 'south', 'north', 'notification_c', 'automation_script'].includes(sch.processName)) {
               this.scheduleData.push(sch);
             }
           });

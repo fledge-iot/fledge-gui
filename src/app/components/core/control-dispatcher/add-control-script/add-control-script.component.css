@@ -65,10 +65,6 @@ div.close-btn {
   padding-left: 18px;
 }
 
-.step-content {
-  overflow: inherit !important;
-}
-
 .breadcrumb {
   margin-bottom: 0px !important;
 }

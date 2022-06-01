@@ -38,6 +38,8 @@ export class ListControlDispatcherComponent implements OnInit {
     this.seletedTab = 'scripts';
     if (id === 'acls') {
       this.seletedTab = id;
+    } else if (id === 'tasks') {
+      this.seletedTab = id;
     }
     // update query param on tab selection in url
     const queryParams: Params = { tab: this.seletedTab };
@@ -48,6 +50,16 @@ export class ListControlDispatcherComponent implements OnInit {
         queryParams: queryParams,
         queryParamsHandling: 'merge'
       });
+  }
+
+  navigate() {
+    if (this.seletedTab === 'scripts') {
+      this.router.navigate(['script/add'], { relativeTo: this.route });
+    } else if (this.seletedTab == 'acls') {
+      this.router.navigate(['acl/add'], { relativeTo: this.route });
+    } else {
+      this.router.navigate(['task/add'], { relativeTo: this.route });
+    }
   }
 
   goToLink(urlSlug: string) {

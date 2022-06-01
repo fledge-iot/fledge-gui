@@ -74,4 +74,10 @@ export class ControlDispatcherService {
       catchError(error => throwError(error)));
   }
 
+  addControlScheduleTask(scriptName, payload) {
+    return this.http.post(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(scriptName)}/schedule`, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
 }
