@@ -1,4 +1,5 @@
 # Fledge GUI
+
 This is a GUI for Fledge
 
 ## Prerequisites
@@ -24,7 +25,7 @@ Run `yarn install && yarn start` & Navigate to http://localhost:4200/
 
 To allow access on other browser devices, over the same network, you can set host to `0.0.0.0`/IP address of the development machine. You can also set a different web port, default port is 4200.
 
-`yarn install && yarn start --host 0.0.0.0 --port <PORT>` 
+`yarn install && yarn start --host 0.0.0.0 --port <PORT>`
 
 `http://<IP OF HOST MACHINE>:<PORT>/`
 
@@ -34,7 +35,7 @@ To allow access on other browser devices, over the same network, you can set hos
 
 Run `./build --clean-start` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory (and, you may want to use provided `nginx.conf`; to avoid changes in default nginx config). 
+To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory (and, you may want to use provided `nginx.conf`; to avoid changes in default nginx config).
 
 > Make sure you have nginx(-light) installed on the deployment machine.
 
@@ -46,32 +47,34 @@ stop: `nginx -s stop`
 
 > nginx `-s stop` terminates the nginx process immediately while `-s quit` does a graceful shutdown.
 
-
 For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 
 > Make sure to fix `include` directive and `server root` in `nginx.conf`; unless you want to use default.
 
 ## Creating and Installing Debian/ RPM Package
+
 [Debian packaging and usage](docs/debian-readme.md)
 
 [RPM packaging and usage](docs/rpm-readme.md)
 
-## Running using Docker 
+## Running using Docker
+
 [Docker installation and using docker-compose](docs/docker-readme.md)
 
 ## Supported/ Tested Browser Version
-Browser | Tested Version | Supported
---------|-------- |-------
-Safari (macOS)  | 14.1.x   | latest 1
-Chrome  | 94.0.x (64-bit) | latest 2
-Firefox | 92.0.x (64-bit) | latest 2
 
+| Browser        | Tested Version   | Supported |
+| -------------- | ---------------- | --------- |
+| Safari (macOS) | 15.4.x           | latest 1  |
+| Chrome         | 101.0.x (64-bit) | latest 2  |
+| Firefox        | 100.0.x (64-bit) | latest 2  |
 
 [Changelog](docs/changelog.md)
 
 [Developer's Guide](docs/developers-guide.md)
 
 ## Contributing to Fledge
+
 See [Contributing Statement](CONTRIBUTING.md)
 
 > &copy; 2021 DIANOMIC SYSTEMS, INC. All Rights Reserved.
