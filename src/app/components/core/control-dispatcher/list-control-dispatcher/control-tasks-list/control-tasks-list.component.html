@@ -11,7 +11,9 @@
   <tbody>
     <tr *ngFor="let script of controlScripts">
       <td>
-        <a [routerLink]="['task', script?.name]"> {{script?.schedule?.name}} </a>
+        <!-- TODO: FOGL-6468 -->
+        <!-- <a [routerLink]="['task', script?.name]"> {{script?.schedule?.name}} </a> -->
+        {{script?.schedule?.name}}
       </td>
       <td>
         <table class="parameter is-borderless">
