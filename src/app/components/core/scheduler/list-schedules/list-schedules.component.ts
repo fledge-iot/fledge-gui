@@ -116,6 +116,7 @@ export class ListSchedulesComponent implements OnInit {
            * purge_system : Purge System service
            * restore - Restore on demand service
            * stats collection - Stats collection service
+           * management : Management service
            *
            */
           data.schedules.forEach(sch => {

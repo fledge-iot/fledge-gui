@@ -7,11 +7,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 
 @Component({
-  selector: 'app-add-control-schedule-task',
-  templateUrl: './add-control-schedule-task.component.html',
-  styleUrls: ['./add-control-schedule-task.component.css']
+  selector: 'app-control-schedule-task-details',
+  templateUrl: './control-schedule-task-details.component.html',
+  styleUrls: ['./control-schedule-task-details.component.css']
 })
-export class AddControlScheduleTaskComponent implements OnInit {
+export class ControlScheduleTaskDetailsComponent implements OnInit {
   scripts = [];
   script = '';
   scriptData: any;
@@ -201,10 +201,8 @@ export class AddControlScheduleTaskComponent implements OnInit {
       return;
     }
     this.controlService.addControlScheduleTask(this.script, payload).subscribe((data: any) => {
-      this.alertService.success(data.message);
-      setTimeout(() => {
-        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'tasks' } });
-      }, 1000);
+      this.alertService.success(data.message, true);
+      this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'tasks' } });
     }, error => {
       if (error.status === 0) {
         console.log('service down ', error);
@@ -266,16 +264,14 @@ export class AddControlScheduleTaskComponent implements OnInit {
         this.schedulesService.deleteSchedule(id)
           .subscribe((data: any) => {
             this.ngProgress.done();
-            this.alertService.success(data.message);
+            this.alertService.success(data.message, true);
             const categoryName = script?.configuration?.categoryName;
             // close modal
             this.closeModal('confirmation-dialog');
             // delete category
             this.configService.deleteCategory(categoryName).subscribe((data: any) => {
-              this.alertService.success(data.message);
-              setTimeout(() => {
-                this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'tasks' } });
-              }, 1000);
+              this.alertService.success(data.message, true);
+              this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'tasks' } });
             }, error => {
               /** request completed */
               this.ngProgress.done();

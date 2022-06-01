@@ -23,7 +23,7 @@ import { ListControlDispatcherComponent } from './list-control-dispatcher/list-c
 import { AclListComponent } from './list-control-dispatcher/acl-list/acl-list.component';
 import { AddControlAclComponent } from './add-control-acl/add-control-acl.component';
 import { ControlTasksListComponent } from './list-control-dispatcher/control-tasks-list/control-tasks-list.component';
-import { AddControlScheduleTaskComponent } from './add-control-schedule-task/add-control-schedule-task.component';
+import { ControlScheduleTaskDetailsComponent } from './control-schedule-task/control-schedule-task-details.component';
 
 const routes: Routes = [
 
@@ -51,12 +51,12 @@ const routes: Routes = [
   },
   {
     path: 'task/add',
-    component: AddControlScheduleTaskComponent,
+    component: ControlScheduleTaskDetailsComponent,
     canActivate: [AuthTypeGuard]
   },
   {
     path: 'task/:name',
-    component: AddControlScheduleTaskComponent
+    component: ControlScheduleTaskDetailsComponent
   },
 ];
 
@@ -77,7 +77,7 @@ const routes: Routes = [
     AclListComponent,
     AddControlAclComponent,
     ControlTasksListComponent,
-    AddControlScheduleTaskComponent
+    ControlScheduleTaskDetailsComponent
   ],
   imports: [
     FormsModule,
