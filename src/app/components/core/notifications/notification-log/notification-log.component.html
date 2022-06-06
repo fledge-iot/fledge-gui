@@ -7,7 +7,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <div *ngIf="isAlive" class="fix-pad auto-refresh">
+      <div *ngIf="refreshInterval !== -1" class="fix-pad auto-refresh">
         <label class="checkbox">
           <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
           Auto Refresh
