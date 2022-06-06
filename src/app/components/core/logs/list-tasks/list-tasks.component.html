@@ -7,7 +7,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <div class="fix-pad auto-refresh">
+      <div *ngIf="isAlive" class="fix-pad auto-refresh">
         <label class="checkbox">
           <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
           Auto Refresh
@@ -34,11 +34,13 @@
               <small>{{task.state}}</small>
             </td>
             <td>
-              <small>{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') : task.startTime}}</small>
+              <small>{{task.startTime != 'None' ? (task.startTime | dateparser: 'DD-MM-YYYY HH:mm:ss') :
+                task.startTime}}</small>
             </td>
             <td>
-              <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY HH:mm:ss')
-              : task.endTime}}</small>
+              <small *ngIf="task.endTime != ''">{{task.endTime != '' ? (task.endTime | dateparser: 'DD-MM-YYYY
+                HH:mm:ss')
+                : task.endTime}}</small>
             </td>
             <td>
               <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small"
