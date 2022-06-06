@@ -31,7 +31,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public limit: number;
   public DEFAULT_LIMIT = 100;
   public optedTime = ASSET_READINGS_TIME_FILTER;
-  private isAlive: boolean;
+  public isAlive: boolean;
   public summaryLimit = 5;
   public buttonText = '';
   public autoRefresh = false;
