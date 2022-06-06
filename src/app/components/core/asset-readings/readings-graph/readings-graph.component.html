@@ -2,7 +2,11 @@
   <div class="modal-background"></div>
   <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">{{assetCode}}
+      <p class="modal-card-title is-size-5">
+        {{assetCode}}
+        <button (click)="refresh()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
       </p>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>

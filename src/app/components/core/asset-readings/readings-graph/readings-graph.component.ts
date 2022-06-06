@@ -541,6 +541,20 @@ export class ReadingsGraphComponent implements OnDestroy {
     }).value();
   }
 
+  refresh() {
+    if (!this.isAlive) {
+      console.log('refresh');
+      if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
+        this.getLatestReading(this.assetCode);
+      } else {
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+      }
+      if (this.selectedTab === 4) {
+        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      }
+    }
+  }
+
   private statsAssetReadingsGraph(assetReadings: any): void {
     const dataset = [];
     assetReadings = orderBy(assetReadings, [reading => reading.key.toLowerCase()], ['asc']);
