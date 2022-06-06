@@ -543,7 +543,6 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   refresh() {
     if (!this.isAlive) {
-      console.log('refresh');
       if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
         this.getLatestReading(this.assetCode);
       } else {
