@@ -3,6 +3,9 @@
     <header class="card-header">
       <div id="south-service" class="card-header-title">
         South Services
+        <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
       </div>
       <a id="add_south_service" class="fix-pad button is-light" (click)="addSouthService()">
         <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>

@@ -31,7 +31,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public limit: number;
   public DEFAULT_LIMIT = 100;
   public optedTime = ASSET_READINGS_TIME_FILTER;
-  private isAlive: boolean;
+  public isAlive: boolean;
   public summaryLimit = 5;
   public buttonText = '';
   public autoRefresh = false;
@@ -539,6 +539,19 @@ export class ReadingsGraphComponent implements OnDestroy {
         read: map(group, 'read')
       };
     }).value();
+  }
+
+  refresh() {
+    if (!this.isAlive) {
+      if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
+        this.getLatestReading(this.assetCode);
+      } else {
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+      }
+      if (this.selectedTab === 4) {
+        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      }
+    }
   }
 
   private statsAssetReadingsGraph(assetReadings: any): void {

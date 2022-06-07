@@ -21,7 +21,13 @@ export class ControlScriptsListComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     private sharedService: SharedService,
-    private ngProgress: ProgressBarService) { }
+    private ngProgress: ProgressBarService) {
+    this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
+      if (tab === 'scripts') {
+        this.getControlScripts();
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.getControlScripts();

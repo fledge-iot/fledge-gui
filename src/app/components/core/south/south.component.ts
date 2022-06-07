@@ -20,7 +20,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   public southboundServices = [];
   public refreshSouthboundServiceInterval = POLLING_INTERVAL;
   public showSpinner = false;
-  private isAlive: boolean;
+  public isAlive: boolean;
   private subscription: Subscription;
   private viewPortSubscription: Subscription;
   viewPort: any = '';

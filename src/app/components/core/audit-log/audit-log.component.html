@@ -7,7 +7,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <div class="fix-pad auto-refresh">
+      <div *ngIf="refreshInterval !== -1" class="fix-pad auto-refresh">
         <label class="checkbox">
           <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
           Auto Refresh
@@ -35,7 +35,7 @@
                   <a class="dropdown-item" *ngFor="let source of logSourceList"
                     (click)="toggleDropDown('dropdown');filterSource('source', source.code)">
                     {{source.code}}{{source.description
-                        != '' ? ' - ' + source.description : ''}}
+                    != '' ? ' - ' + source.description : ''}}
                   </a>
                 </div>
               </div>
@@ -96,7 +96,8 @@
         </div>
       </ng-container>
       <ng-template #no_data_div>
-        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No audit logs found.</small></div>
+        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No audit logs found.</small>
+        </div>
       </ng-template>
     </div>
   </div>

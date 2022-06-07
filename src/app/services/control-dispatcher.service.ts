@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -11,6 +11,8 @@ export class ControlDispatcherService {
 
   private CONTROL_SERVICE_URL = environment.BASE_URL + 'control/script';
   private ACL_URL = environment.BASE_URL + 'ACL';
+
+  public triggerRefreshEvent: BehaviorSubject<string> = new BehaviorSubject<any>('');
 
   constructor(private http: HttpClient) { }
 
