@@ -23,7 +23,7 @@ export class NorthComponent implements OnInit, OnDestroy {
   private viewPortSubscription: Subscription;
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
-  private isAlive: boolean;
+  public isAlive: boolean;
   private subscription: Subscription;
   destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(private northService: NorthService,

@@ -16,7 +16,7 @@ import { FileUploadModalComponent } from '../../common/file-upload-modal/file-up
 })
 export class BackupRestoreComponent implements OnInit, OnDestroy {
   public backupData = [];
-  private isAlive: boolean; // used to unsubscribe from the IntervalObservable
+  public isAlive: boolean; // used to unsubscribe from the IntervalObservable
   // when OnDestroy is called.
 
   // Object to hold child data
