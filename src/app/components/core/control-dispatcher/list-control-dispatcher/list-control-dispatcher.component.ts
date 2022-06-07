@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SharedService } from '../../../../services';
+import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class ListControlDispatcherComponent implements OnInit {
   viewPort: any = '';
 
   constructor(
+    public controlService: ControlDispatcherService,
     public sharedService: SharedService,
     private router: Router,
     public docService: DocService,
@@ -50,6 +52,14 @@ export class ListControlDispatcherComponent implements OnInit {
         queryParams: queryParams,
         queryParamsHandling: 'merge'
       });
+  }
+
+  /**
+   * refresh even trigger
+   * @param tab selected control name
+   */
+  refresh(tab: string) {
+    this.controlService.triggerRefreshEvent.next(tab);
   }
 
   navigate() {

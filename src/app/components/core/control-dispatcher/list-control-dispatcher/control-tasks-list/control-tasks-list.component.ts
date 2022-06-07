@@ -10,6 +10,7 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
 import { orderBy, isEmpty } from 'lodash';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-control-tasks-list',
@@ -23,6 +24,8 @@ export class ControlTasksListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   @ViewChild('start-schedule-dialog') startScheduleDialog: ConfirmationDialogComponent;
   controlTask;
+  private subscription: Subscription;
+
   constructor(private controlService: ControlDispatcherService,
     private schedulesService: SchedulesService,
     private configurationService: ConfigurationService,
@@ -30,7 +33,13 @@ export class ControlTasksListComponent implements OnInit {
     private dialogService: DialogService,
     public sharedService: SharedService,
     private cd: ChangeDetectorRef,
-    private ngProgress: ProgressBarService) { }
+    private ngProgress: ProgressBarService) {
+    this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
+      if (tab === 'tasks') {
+        this.getControlScripts();
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.getControlScripts();
@@ -232,6 +241,12 @@ export class ControlTasksListComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 }

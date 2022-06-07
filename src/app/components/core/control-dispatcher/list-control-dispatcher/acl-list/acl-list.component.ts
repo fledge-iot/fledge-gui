@@ -21,7 +21,13 @@ export class AclListComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     public sharedService: SharedService,
-    private ngProgress: ProgressBarService) { }
+    private ngProgress: ProgressBarService) {
+    this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
+      if (tab === 'acls') {
+        this.showACLs();
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.showACLs();
