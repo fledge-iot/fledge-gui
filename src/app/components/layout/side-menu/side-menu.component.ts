@@ -1,7 +1,11 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { LookupService } from '../../../microfrontend/lookup.service';
+import { Microfrontend } from '../../../microfrontend/microfrontend';
 import { DocService } from '../../../services/doc.service';
 import { SharedService } from '../../../services/shared.service';
+import { buildRoutes } from '../../../../menu-utils';
+
 
 @Component({
   selector: 'app-side-menu',
@@ -11,14 +15,22 @@ import { SharedService } from '../../../services/shared.service';
 export class SideMenuComponent implements OnInit {
   public step = '';
   @Output() toggle: EventEmitter<any> = new EventEmitter();
+  microfrontends: Microfrontend[] = [];
 
   isAdmin = false;
   constructor(
     private router: Router,
     private docService: DocService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private lookupService: LookupService
   ) { }
-  ngOnInit() {
+
+  async ngOnInit() {
+    this.router.navigate([''])
+    this.microfrontends = await this.lookupService.lookup();
+    const routes = buildRoutes(this.microfrontends);
+    this.router.resetConfig(routes);
+
     this.sharedService.isAdmin.subscribe(value => {
       this.isAdmin = value;
     });
