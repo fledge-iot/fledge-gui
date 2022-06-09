@@ -7,6 +7,8 @@ export class LookupService {
     return fetch('./assets/json/mfe-routes.json').then(res => res.json())
       .then(jsonData => {
         return Promise.resolve(jsonData);
-      });
+      }).catch(err => {
+        console.error('json load error', err);
+      });;
   }
 }
