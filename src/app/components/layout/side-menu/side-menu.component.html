@@ -46,6 +46,11 @@
     </a>
   </li>
   <li>
+    <ng-container *ngFor="let mfe of microfrontends"><a [routerLink]="mfe.routePath">
+        {{mfe.displayName}}</a>
+    </ng-container>
+  </li>
+  <li>
     <a id="backup-restore" [ngClass]="{'is-active': step==='/backup-restore'}" (click)="onToggle('/backup-restore')">
       Backup &amp; Restore
     </a>
