@@ -46,8 +46,8 @@
     </a>
   </li>
   <li>
-    <ng-container *ngFor="let mfe of microfrontends"><a [ngClass]="{'is-active': step=== '/' + mfe.routePath}"
-        (click)="onToggle('/' + mfe.routePath)">
+    <ng-container *ngFor="let mfe of microfrontends"><a *ngIf="mfe?.displayName"
+        [ngClass]="{'is-active': step=== '/' + mfe.routePath}" (click)="onToggle('/' + mfe.routePath)">
         {{mfe.displayName}}</a>
     </ng-container>
   </li>
