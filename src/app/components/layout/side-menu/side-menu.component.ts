@@ -30,13 +30,12 @@ export class SideMenuComponent implements OnInit {
     this.microfrontends = await this.lookupService.lookup();
     const routes = buildRoutes(this.microfrontends);
     this.router.resetConfig(routes);
-
     this.sharedService.isAdmin.subscribe(value => {
       this.isAdmin = value;
     });
     this.router.events.subscribe(() => {
-      if (this.router.url === '/' || this.router.url === '/dashboard') {
-        this.step = '/dashboard';
+      if (this.router.url === '/') {
+        this.step = '/';
       } else {
         this.step = this.router.url;
       }

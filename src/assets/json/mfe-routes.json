@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "type": "module",
+    "remoteEntry": "http://localhost:5000/remoteEntry.js",
+    "exposedModule": "./MLModule",
+    "displayName": "ML Models",
+    "routePath": "mlmodel",
+    "ngModuleName": "MlModelModule"
+  }
+]
