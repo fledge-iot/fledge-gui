@@ -29,8 +29,6 @@ export class SideMenuComponent implements OnInit {
     this.microfrontends = await this.lookupService.lookup();
     const routes = buildRoutes(this.microfrontends);
     this.router.resetConfig(routes);
-    console.log('routes', routes);
-
     this.sharedService.isAdmin.subscribe(value => {
       this.isAdmin = value;
     });
