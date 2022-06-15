@@ -1,6 +1,8 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
+import { LookupService } from './microfrontend/lookup.service';
+import { buildRoutes } from '../menu-utils';
 
 import { PingService } from './services';
 import { SharedService } from './services/shared.service';
@@ -21,7 +23,8 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router,
     private ping: PingService,
-    private sharedService: SharedService) { }
+    private sharedService: SharedService,
+    private lookupService: LookupService) { }
 
   public toggleSidebar() {
     if (this.navMode === 'over') {
@@ -29,7 +32,12 @@ export class AppComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // reconfigure app routes after mfe loads
+    const microfrontends = await this.lookupService.lookup();
+    const routes = buildRoutes(microfrontends);
+    this.router.resetConfig(routes);
+
     if (window.innerWidth < 1024) {
       this.navMode = 'over';
       this._opened = false;

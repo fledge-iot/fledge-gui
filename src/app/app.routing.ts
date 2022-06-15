@@ -6,7 +6,7 @@ import { LoginComponent } from './components/layout/login';
 import { AuthCheckGuard } from './guards';
 import { DashboardComponent } from './components/core/dashboard';
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthCheckGuard] },
   {
     path: 'asset', loadChildren: () => import('./components/core/asset-readings/assets.module')
@@ -74,7 +74,6 @@ const appRoutes: Routes = [
     path: 'user', loadChildren: () => import('./components/core/user-management/user.management.module')
       .then(m => m.UserManagementModule)
   },
-  // otherwise redirect to dashboard
   { path: '**', redirectTo: '' }
 ];
 

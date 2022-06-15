@@ -1,6 +1,6 @@
 <ul class="menu-list">
   <li>
-    <a id="dashboard" [ngClass]="{'is-active': step==='/dashboard'}" (click)="onToggle('/dashboard')">
+    <a id="dashboard" [ngClass]="{'is-active': step==='/'}" (click)="onToggle('/')">
       Dashboard
     </a>
   </li>
@@ -44,6 +44,12 @@
     <a id="certificate" [ngClass]="{'is-active': step==='/certificate'}" (click)="onToggle('/certificate')">
       Certificate Store
     </a>
+  </li>
+  <li>
+    <ng-container *ngFor="let mfe of microfrontends"><a *ngIf="mfe?.displayName"
+        [ngClass]="{'is-active': step=== '/' + mfe.routePath}" (click)="onToggle('/' + mfe.routePath)">
+        {{mfe.displayName}}</a>
+    </ng-container>
   </li>
   <li>
     <a id="backup-restore" [ngClass]="{'is-active': step==='/backup-restore'}" (click)="onToggle('/backup-restore')">
