@@ -73,7 +73,8 @@ export const appRoutes: Routes = [
   {
     path: 'user', loadChildren: () => import('./components/core/user-management/user.management.module')
       .then(m => m.UserManagementModule)
-  }
+  },
+  { path: '**', redirectTo: '' }
 ];
 
 export const routing = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules, relativeLinkResolution: 'legacy' });

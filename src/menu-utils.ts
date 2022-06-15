@@ -8,11 +8,13 @@ export function buildRoutes(options: Microfrontend[]): Routes {
     path: o.routePath,
     loadChildren: () => loadRemoteModule(o).then(m => m[o.ngModuleName])
   }));
+
   /**
    * add redirection routh path after mfe because router order
    * is static path first followed by an empty path route
    * Read more https://angular.io/guide/router#route-order
   */
   lazyRoutes.push({ path: '**', redirectTo: '' });
-  return [...appRoutes, ...lazyRoutes];
+  // remove list item of appRoutes that is { path: '**', redirectTo: '' }
+  return [...appRoutes.slice(0, -1), ...lazyRoutes];
 }
