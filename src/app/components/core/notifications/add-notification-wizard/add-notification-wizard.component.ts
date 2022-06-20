@@ -152,7 +152,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   }
 
   movePrevious() {
-    const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
+    const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
 
     if (+id === 1) {
@@ -209,7 +209,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
     const formValues = this.notificationForm.value;
-    const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
+    const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
