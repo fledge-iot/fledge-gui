@@ -80,7 +80,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   }
 
   movePrevious() {
-    const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
+    const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
       this.router.navigate(['/south']);
@@ -126,7 +126,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     } else {
       this.isSinglePlugin = true;
       this.isValidPlugin = true;
-       this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
       this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
     }
   }
@@ -146,7 +146,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     this.isValidPlugin = true;
     this.isValidName = true;
     const formValues = this.serviceForm.value;
-    const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
+    const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
@@ -265,7 +265,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     matchedConfigCopy.forEach(e => {
       changedConfig.forEach(c => {
         if (e.key === c.key) {
-          e.value = c.type === 'script'? c.value : c.value.toString();
+          e.value = c.type === 'script' ? c.value : c.value.toString();
         }
       });
     });

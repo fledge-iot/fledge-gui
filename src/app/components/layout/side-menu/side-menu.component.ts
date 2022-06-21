@@ -28,20 +28,8 @@ export class SideMenuComponent implements OnInit {
     this.sharedService.isAdmin.subscribe(value => {
       this.isAdmin = value;
     });
-    this.router.events.subscribe(() => {
-      if (this.router.url === '/') {
-        this.step = '/';
-      } else {
-        this.step = this.router.url;
-      }
-    });
   }
 
-  onToggle(step) {
-    this.step = step;
-    this.router.navigate([step]);
-    this.toggle.emit();
-  }
 
   goToLink() {
     this.docService.goToLink();
