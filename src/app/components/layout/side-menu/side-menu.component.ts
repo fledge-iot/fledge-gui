@@ -4,6 +4,7 @@ import { LookupService } from '../../../microfrontend/lookup.service';
 import { Microfrontend } from '../../../microfrontend/microfrontend';
 import { DocService } from '../../../services/doc.service';
 import { SharedService } from '../../../services/shared.service';
+import { buildRoutes } from '../../../../menu-utils';
 
 @Component({
   selector: 'app-side-menu',
@@ -25,6 +26,10 @@ export class SideMenuComponent implements OnInit {
 
   async ngOnInit() {
     this.microfrontends = await this.lookupService.lookup();
+    const routes = buildRoutes(this.microfrontends);
+    // reconfigure routes after dyanmic route load
+    this.router.resetConfig(routes);
+
     this.sharedService.isAdmin.subscribe(value => {
       this.isAdmin = value;
     });
