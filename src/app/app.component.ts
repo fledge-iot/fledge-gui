@@ -33,10 +33,6 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-    // reconfigure app routes after mfe loads
-    const microfrontends = await this.lookupService.lookup();
-    const routes = buildRoutes(microfrontends);
-    this.router.resetConfig(routes);
 
     if (window.innerWidth < 1024) {
       this.navMode = 'over';
