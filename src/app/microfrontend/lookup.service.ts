@@ -6,15 +6,30 @@ import { flatten } from 'lodash';
 export class LookupService {
   async lookup(): Promise<Microfrontend[]> {
     const routes = await this.readRoutes();
-    let promiseArray = [];
+    let routesFilePathArray = [];
     routes.forEach(el => {
-      promiseArray.push(fetch(`./${el}/assets/routes.json`));
+      routesFilePathArray.push(fetch(`./${el}/assets/routes.json`));
     });
 
-    return Promise.all(promiseArray)
-      .then(results => Promise.all(results.map(r => r.json())))
+    /**
+     * Takes an iterable of promises i.e.routesFilePathArray as an input,
+     * and returns a single Promise that resolves to an array of the results
+     * of the input promises. This returned promise will
+     * resolve when all of the input's promises have resolved,
+     * or if the input iterable contains no promises.
+     * It rejects immediately upon any of the input promises rejecting or non-promises throwing an error,
+     * and will reject with this first rejection message / error.
+     */
+    return Promise.all(routesFilePathArray)
+      /**
+       * The Promise.allSettled() method returns a promise that resolves after
+       * all of the given promises have either fulfilled or rejected,
+       * with an array of objects that each describes the outcome of each promise.
+       */
+      .then(results => Promise.allSettled(results.map(r => r.json())))
       .then((results) => {
-        return Promise.resolve(flatten(results));
+        const response = results.filter(x => x.status === "fulfilled").map((x: any) => x.value);
+        return Promise.resolve(flatten(response));
       })
       .catch(() => {
         return Promise.resolve([]);
@@ -23,12 +38,17 @@ export class LookupService {
 
   async readRoutes(): Promise<string[]> {
     return fetch('./assets/routes.txt').
-      then(res => res.text())
+      then(response => {
+        if (!response.ok) {
+          throw new Error(response.status + " Failed Fetch ");
+        } else {
+          return response.text();
+        }
+      })
       .then((result) => {
         const routes = result.split('\n').filter((item) => item);
         return Promise.resolve(routes);
-      }).catch(err => {
-        console.log(err)
+      }).catch(() => {
         return Promise.resolve([]);
       });
   }
