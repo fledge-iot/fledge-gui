@@ -6,55 +6,112 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="box">
-        <app-view-config-item *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"
-          #notificationConfigView>
-        </app-view-config-item>
-        <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Rule - ' + notification.rule">
-        <div class="columns">
-          <div class="column">
-            <div class="field">
-              <app-view-config-item *ngIf="ruleConfiguration" [categoryConfigurationData]="ruleConfiguration" [formId]="rule"
-                [useRuleProxy]="useRuleProxy" #ruleConfigView>
-              </app-view-config-item>
+      <ng-container *ngIf="!isWizard">
+        <div class="box">
+          <app-view-config-item *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"
+            #notificationConfigView>
+          </app-view-config-item>
+          <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Rule - ' + notification.rule">
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <app-view-config-item *ngIf="ruleConfiguration" [categoryConfigurationData]="ruleConfiguration"
+                  [formId]="rule" [useRuleProxy]="useRuleProxy" #ruleConfigView>
+                </app-view-config-item>
+              </div>
             </div>
           </div>
-        </div>
-        <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Delivery Channel - ' + notification.channel">
-        <div class="columns">
-          <div class="column">
-            <div class="field">
-              <app-view-config-item *ngIf="deliveryConfiguration" #deliveryConfigView
-                [categoryConfigurationData]="deliveryConfiguration" [useDeliveryProxy]="useDeliveryProxy" [formId]="delivery">
-              </app-view-config-item>
+          <hr *ngIf="notification" class="hr-text">
+          <div class="columns">
+            <div class="column has-text-centered">
+              <span class="label is-size-6 add-channel">
+                <a (click)="openAddFilterModal(true)">Delivery Channel
+                  <span class="icon">
+                    <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
+                    <!-- <i class="fa fa-sm fa-plus-circle" aria-hidden="true"></i> -->
+                  </span>
+                </a>
+              </span>
             </div>
           </div>
-        </div>
-        <hr class="hr-text" data-content="">
-        <div class="columns">
-          <div class="column">
-            <div class="field is-grouped is-pulled-right">
-              <p class="control">
-                <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-              </p>
-              <p class="control">
-                <button class="button is-small is-link" (click)="proxy()">Save</button>
-              </p>
+          <div class="view-content columns">
+            <div class="column">
+              <div class="channel-list">
+                <div class="accordion card" *ngFor="let channel of notificationDeliveryChannels; let i = index"
+                  [attr.id]="i">
+                  <header class="card-header">
+                    <p class="card-header-title">
+                      {{channel?.name}}
+                    </p>
+                    <a (click)="activeAccordion(i, channel)" class="card-header-icon">
+                      <span class="icon">
+                        <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </a>
+                  </header>
+                  <div class="card-content" hidden>
+                    <div class="content" *ngIf="deliveryConfiguration.length > 0">
+                      <app-view-config-item #deliveryChannelConfigView
+                        [categoryConfigurationData]=" setChannelConfiguration(channel)"
+                        [useFilterProxy]="useFilterProxy" [formId]="item">
+                      </app-view-config-item>
+                      <div class="field">
+                        <div class="field is-pulled-right" *ngIf="i > 0">
+                          <button class="button is-light btnDelete" (click)="deleteDeliveryChannel(channel)"><span
+                              class="icon is-medium"><i class="fa fa-sm fa-trash-alt fa-lg"
+                                aria-hidden="true"></i></span></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          <!-- <div class="columns">
+            <div class="column">
+              <div class="field">
+                <app-view-config-item *ngIf="deliveryConfiguration" #deliveryConfigView
+                  [categoryConfigurationData]="deliveryConfiguration" [useDeliveryProxy]="useDeliveryProxy"
+                  [formId]="delivery">
+                </app-view-config-item>
+              </div>
+            </div>
+          </div> -->
+          <hr class="hr-text" data-content="">
+          <div class="columns">
+            <div class="column">
+              <div class="field is-grouped is-pulled-right">
+                <p class="control">
+                  <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+                </p>
+                <p class="control">
+                  <button class="button is-small is-link" (click)="proxy()">Save</button>
+                </p>
+              </div>
+            </div>
+          </div>
+          <hr class="hr-text" data-content="">
+          <ng-container *ngIf="notification != undefined">
+            <p class="buttons is-pulled-left">
+              <span class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon"
+                data-tooltip="Help" (click)="goToLink()">
+                <i class="far fa-question-circle"></i>
+              </span>
+            </p>
+            <p class="buttons is-pulled-right">
+              <button (click)="openDeleteModal(notification.name)" class="button is-small"
+                [disabled]="!notification.notificationEnabled ? 'disabled' : null">Delete Instance</button>
+            </p>
+          </ng-container>
         </div>
-        <hr class="hr-text" data-content="">
-        <ng-container *ngIf="notification != undefined">
-          <p class="buttons is-pulled-left">
-            <span class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help" (click)="goToLink()">
-              <i class="far fa-question-circle"></i>
-            </span>
-          </p>
-          <p class="buttons is-pulled-right">
-            <button (click)="openDeleteModal(notification.name)" class="button is-small" [disabled]="!notification.notificationEnabled ? 'disabled' : null">Delete Instance</button>
-          </p>
-        </ng-container>
-      </div>
+      </ng-container>
+      <ng-container *ngIf="isWizard">
+        <div class="box animated slideInRight">
+          <app-add-notification-channel (notify)="onNotify($event)" [notificationName]="notification.name">
+          </app-add-notification-channel>
+        </div>
+      </ng-container>
     </section>
   </div>
   <app-alert-dialog (deleteNotification)='deleteNotification($event)' [notificationRecord]='notificationRecord'>

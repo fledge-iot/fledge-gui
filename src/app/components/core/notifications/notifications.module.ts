@@ -18,6 +18,8 @@ import { ServiceResolver } from '../../../resolver/service.resolver';
 import { NotificationLogComponent } from './notification-log/notification-log.component';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
+import { AddNotificationChannelComponent } from './add-notification-channel/add-notification-channel.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 const routes: Routes = [
   {
@@ -44,7 +46,8 @@ const routes: Routes = [
     AddNotificationWizardComponent,
     NotificationLogComponent,
     NotificationModalComponent,
-    NotificationServiceModalComponent
+    NotificationServiceModalComponent,
+    AddNotificationChannelComponent
   ],
   imports: [
     FormsModule,
@@ -57,7 +60,9 @@ const routes: Routes = [
     FilterModule,
     SharedModule,
     NumberInputDebounceModule,
-    PaginationModule
+    PaginationModule,
+    NgSelectModule
+
   ],
   providers: [ServicesApiService, NotificationsService],
 })

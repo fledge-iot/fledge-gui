@@ -70,3 +70,10 @@ hr {
   padding-top: 1rem;
 }
 
+.add-channel {
+  opacity: 0.7;
+}
+
+.accordion.card {
+  margin: 0% !important;
+}

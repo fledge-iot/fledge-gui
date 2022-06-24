@@ -1,7 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener } from '@angular/core';
-
 import { isEmpty } from 'lodash';
-
 import {
   ConfigurationService, AlertService,
   ProgressBarService,
@@ -27,13 +25,14 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   public useProxy: 'true';
   public category: any;
   public ruleConfiguration: any;
-  public deliveryConfiguration: any;
+  public deliveryConfiguration = [];
   public notificationRecord: any;
   public changedChildConfig = [];
-
+  public isWizard;
   rulePluginChangedConfig = [];
   deliveryPluginChangedConfig = [];
   notificationChangedConfig = [];
+  notificationDeliveryChannels = [];
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
@@ -53,7 +52,8 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     if (this.notification !== undefined) {
       this.getCategory();
       this.getRuleConfiguration();
-      this.getDeliveryConfiguration();
+      // this.getDeliveryConfiguration();
+      this.getDeliveryChannels()
     }
   }
 
@@ -69,6 +69,9 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     if (isOpen) {
       modalWindow.classList.add('is-active');
       return;
+    }
+    if (this.isWizard) {
+      this.isWizard = false;
     }
     this.notify.emit(false);
     modalWindow.classList.remove('is-active');
@@ -95,28 +98,28 @@ export class NotificationModalComponent implements OnInit, OnChanges {
         });
   }
 
-  public getDeliveryConfiguration(): void {
-    /** request started */
-    this.ngProgress.start();
-    const categoryValues = [];
-    const notificationName = this.notification['name'];
-    this.configService.getCategory(`delivery${notificationName}`).
-      subscribe(
-        (data) => {
-          if (!isEmpty(data)) {
-            categoryValues.push(data);
-            this.deliveryConfiguration = { key: `delivery${notificationName}`, value: categoryValues };
-            this.useDeliveryProxy = 'true';
-          }
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText, true);
-          }
-        });
-  }
+  // public getDeliveryConfiguration(): void {
+  //   /** request started */
+  //   this.ngProgress.start();
+  //   const categoryValues = [];
+  //   const notificationName = this.notification['name'];
+  //   this.configService.getCategory(`delivery${notificationName}`).
+  //     subscribe(
+  //       (data) => {
+  //         if (!isEmpty(data)) {
+  //           categoryValues.push(data);
+  //           this.deliveryConfiguration = { key: `delivery${notificationName}`, value: categoryValues };
+  //           this.useDeliveryProxy = 'true';
+  //         }
+  //       },
+  //       error => {
+  //         if (error.status === 0) {
+  //           console.log('service down ', error);
+  //         } else {
+  //           this.alertService.error(error.statusText, true);
+  //         }
+  //       });
+  // }
 
   public getCategory(): void {
     /** request started */
@@ -207,6 +210,117 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     this.notify.emit();
     this.toggleModal(false);
   }
+
+  openAddFilterModal(isClicked: boolean) {
+    // this.applicationTagClicked = isClicked;
+    // if (this.isFilterOrderChanged || this.isFilterDeleted) {
+    //   this.showConfirmationDialog();
+    //   return;
+    // }
+    this.isWizard = isClicked;
+    // this.category = '';
+    // this.isFilterOrderChanged = false;
+    // this.isFilterDeleted = false;
+    // this.deletedFilterPipeline = [];
+  }
+
+  onNotify() {
+    this.isWizard = false;
+  }
+
+  getDeliveryChannels() {
+    const notificationName = this.notification['name'];
+    this.notificationService.getDeliveryChannels(notificationName)
+      .subscribe(
+        (data: any) => {
+          console.log('channel data', data);
+          this.notificationDeliveryChannels = data.channels;
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  activeAccordion(id, channelName: string) {
+    console.log('f name', id);
+    //this.useFilterProxy = 'true';
+    const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
+    if (last !== undefined) {
+      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
+      const activeId = last.getAttribute('id');
+      lastActiveContentBody.hidden = true;
+      last.classList.remove('is-active');
+      if (id !== +activeId) {
+        const next = <HTMLElement>document.getElementById(id);
+        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
+        nextActiveContentBody.hidden = false;
+        next.setAttribute('class', 'accordion card is-active');
+        this.getDeliveryConfiguration(channelName);
+      } else {
+        last.classList.remove('is-active');
+        lastActiveContentBody.hidden = true;
+      }
+    } else {
+      const element = <HTMLElement>document.getElementById(id);
+      console.log('E', element);
+
+      const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
+      console.log('body', body);
+
+      body.hidden = false;
+      element.setAttribute('class', 'accordion card is-active');
+      this.getDeliveryConfiguration(channelName);
+    }
+  }
+
+  getDeliveryConfiguration(channel: any) {
+    const catName = channel.category;
+    this.notificationService.getNotificationConfiguration(catName)
+      .subscribe((data: any) => {
+        console.log('config data', data);
+
+        this.deliveryConfiguration.push({ key: catName, 'value': [data] });
+        // this.selectedFilterPlugin = data.plugin.value;
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  setChannelConfiguration(channel: any) {
+    const catName = channel.category;
+    return this.deliveryConfiguration.find(f => f.key === catName);
+  }
+
+  deleteDeliveryChannel(channel) {
+    console.log('channel', channel);
+    const notificationName = this.notification['name'];
+    this.notificationService.deleteDeliveryChannel(notificationName, channel.name)
+      .subscribe((data: any) => {
+        console.log('deleted data', data);
+
+        // this.deliveryConfiguration.push({ key: catName, 'value': [data] });
+        // this.selectedFilterPlugin = data.plugin.value;
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+
+  }
+
 
   goToLink() {
     const urlSlug = 'editing-notifications';
