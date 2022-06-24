@@ -173,8 +173,6 @@ export class AddFilterWizardComponent implements OnInit {
     this.isValidPlugin = true;
     this.isValidName = true;
     const formValues = this.serviceForm.value;
-    console.log('form', formValues);
-
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     if (first === undefined) {
       return;
@@ -478,8 +476,6 @@ export class AddFilterWizardComponent implements OnInit {
         this.plugins = sortBy(data.plugins, p => {
           return p.name.toLowerCase();
         });
-        console.log('filer', this.plugins);
-
         if (pluginInstalled) {
           this.moveNext();
         }
