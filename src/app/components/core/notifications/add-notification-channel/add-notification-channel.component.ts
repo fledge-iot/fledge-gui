@@ -151,9 +151,6 @@ export class AddNotificationChannelComponent implements OnInit {
           return;
         }
 
-        console.log('formValues.plugin', formValues.plugin);
-
-
         if (formValues.plugin.length !== 1 && formValues.pluginToInstall === '') {
           this.isSinglePlugin = false;
           return;
@@ -163,7 +160,6 @@ export class AddNotificationChannelComponent implements OnInit {
           this.isValidName = false;
           return;
         }
-        console.log('formValues', !formValues.name, formValues.name);
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
 
@@ -363,8 +359,6 @@ export class AddNotificationChannelComponent implements OnInit {
   }
 
   getDescription(selectedPlugin) {
-    console.log('selectedPlugin', selectedPlugin);
-
     if (selectedPlugin === '') {
       this.isValidPlugin = false;
       this.selectedPluginDescription = '';
@@ -396,10 +390,6 @@ export class AddNotificationChannelComponent implements OnInit {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig) {
-    console.log('changedConfig', changedConfig);
-    console.log('plugin', this.plugin);
-    console.log('plugins', this.plugins);
-
     // final array to hold changed configuration
     // let finalConfig = [];
 
@@ -484,13 +474,9 @@ export class AddNotificationChannelComponent implements OnInit {
   public getInstalledDeliveryPlugins(pluginInstalled?: boolean) {
     this.notificationService.getInstalledNotifyPlugins().subscribe(
       (data: any) => {
-        console.log('dara', data.plugins);
-
         this.plugins = sortBy(data.plugins, p => {
           return p.name.toLowerCase();
         });
-        console.log('plugins', this.plugins);
-
         if (pluginInstalled) {
           this.moveNext();
         }

@@ -25,10 +25,9 @@
           <div class="columns">
             <div class="column has-text-centered">
               <span class="label is-size-6 add-channel">
-                <a (click)="openAddFilterModal(true)">Delivery Channel
+                <a (click)="openChannelModal(true)">Delivery Channel
                   <span class="icon">
                     <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
-                    <!-- <i class="fa fa-sm fa-plus-circle" aria-hidden="true"></i> -->
                   </span>
                 </a>
               </span>
@@ -52,8 +51,8 @@
                   <div class="card-content" hidden>
                     <div class="content" *ngIf="deliveryConfiguration.length > 0">
                       <app-view-config-item #deliveryChannelConfigView
-                        [categoryConfigurationData]=" setChannelConfiguration(channel)"
-                        [useFilterProxy]="useFilterProxy" [formId]="item">
+                        [categoryConfigurationData]="setChannelConfiguration(channel)"
+                        [useDeliveryProxy]="useDeliveryProxy" [formId]="delivery">
                       </app-view-config-item>
                       <div class="field">
                         <div class="field is-pulled-right" *ngIf="i > 0">
@@ -68,16 +67,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="columns">
-            <div class="column">
-              <div class="field">
-                <app-view-config-item *ngIf="deliveryConfiguration" #deliveryConfigView
-                  [categoryConfigurationData]="deliveryConfiguration" [useDeliveryProxy]="useDeliveryProxy"
-                  [formId]="delivery">
-                </app-view-config-item>
-              </div>
-            </div>
-          </div> -->
           <hr class="hr-text" data-content="">
           <div class="columns">
             <div class="column">

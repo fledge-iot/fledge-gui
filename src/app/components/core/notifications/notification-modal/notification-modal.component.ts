@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener, QueryList, ViewChildren } from '@angular/core';
 import { isEmpty } from 'lodash';
 import {
   ConfigurationService, AlertService,
@@ -37,7 +37,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild('ruleConfigView') ruleConfigView: ViewConfigItemComponent;
-  @ViewChild('deliveryConfigView') deliveryConfigView: ViewConfigItemComponent;
+  @ViewChildren('deliveryChannelConfigView') deliveryConfigViews: QueryList<ViewConfigItemComponent>;;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -72,8 +72,12 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     }
     if (this.isWizard) {
       this.isWizard = false;
+      this.getCategory();
     }
     this.notify.emit(false);
+    this.ruleConfiguration = [];
+    this.deliveryConfiguration = [];
+
     modalWindow.classList.remove('is-active');
   }
 
@@ -97,29 +101,6 @@ export class NotificationModalComponent implements OnInit, OnChanges {
           }
         });
   }
-
-  // public getDeliveryConfiguration(): void {
-  //   /** request started */
-  //   this.ngProgress.start();
-  //   const categoryValues = [];
-  //   const notificationName = this.notification['name'];
-  //   this.configService.getCategory(`delivery${notificationName}`).
-  //     subscribe(
-  //       (data) => {
-  //         if (!isEmpty(data)) {
-  //           categoryValues.push(data);
-  //           this.deliveryConfiguration = { key: `delivery${notificationName}`, value: categoryValues };
-  //           this.useDeliveryProxy = 'true';
-  //         }
-  //       },
-  //       error => {
-  //         if (error.status === 0) {
-  //           console.log('service down ', error);
-  //         } else {
-  //           this.alertService.error(error.statusText, true);
-  //         }
-  //       });
-  // }
 
   public getCategory(): void {
     /** request started */
@@ -186,12 +167,30 @@ export class NotificationModalComponent implements OnInit, OnChanges {
         });
   }
 
+  openChannelModal(isClicked: boolean) {
+    this.isWizard = isClicked;
+  }
+
+  onNotify() {
+    this.isWizard = false;
+    this.getCategory();
+    this.getDeliveryChannels();
+  }
+
   proxy() {
     if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
-      && this.validateFormService.checkViewConfigItemFormValidity(this.ruleConfigView)
-      && this.validateFormService.checkViewConfigItemFormValidity(this.deliveryConfigView))) {
+      && this.validateFormService.checkViewConfigItemFormValidity(this.ruleConfigView))) {
       return;
     }
+
+    const deliverChannelFormStatus = this.deliveryConfigViews.toArray().every(component => {
+      return this.validateFormService.checkViewConfigItemFormValidity(component);
+    });
+
+    if (!deliverChannelFormStatus) {
+      return;
+    }
+
     if (this.useProxy) {
       document.getElementById('vci-proxy').click();
     }
@@ -211,29 +210,11 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     this.toggleModal(false);
   }
 
-  openAddFilterModal(isClicked: boolean) {
-    // this.applicationTagClicked = isClicked;
-    // if (this.isFilterOrderChanged || this.isFilterDeleted) {
-    //   this.showConfirmationDialog();
-    //   return;
-    // }
-    this.isWizard = isClicked;
-    // this.category = '';
-    // this.isFilterOrderChanged = false;
-    // this.isFilterDeleted = false;
-    // this.deletedFilterPipeline = [];
-  }
-
-  onNotify() {
-    this.isWizard = false;
-  }
-
   getDeliveryChannels() {
     const notificationName = this.notification['name'];
     this.notificationService.getDeliveryChannels(notificationName)
       .subscribe(
         (data: any) => {
-          console.log('channel data', data);
           this.notificationDeliveryChannels = data.channels;
         },
         error => {
@@ -247,8 +228,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   }
 
   activeAccordion(id, channelName: string) {
-    console.log('f name', id);
-    //this.useFilterProxy = 'true';
+    this.useDeliveryProxy = 'true';
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
       const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
@@ -267,11 +247,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       }
     } else {
       const element = <HTMLElement>document.getElementById(id);
-      console.log('E', element);
-
       const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
-      console.log('body', body);
-
       body.hidden = false;
       element.setAttribute('class', 'accordion card is-active');
       this.getDeliveryConfiguration(channelName);
@@ -282,10 +258,8 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     const catName = channel.category;
     this.notificationService.getNotificationConfiguration(catName)
       .subscribe((data: any) => {
-        console.log('config data', data);
-
         this.deliveryConfiguration.push({ key: catName, 'value': [data] });
-        // this.selectedFilterPlugin = data.plugin.value;
+        this.useDeliveryProxy = 'true';
       },
         error => {
           if (error.status === 0) {
@@ -302,14 +276,11 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   }
 
   deleteDeliveryChannel(channel) {
-    console.log('channel', channel);
     const notificationName = this.notification['name'];
     this.notificationService.deleteDeliveryChannel(notificationName, channel.name)
-      .subscribe((data: any) => {
-        console.log('deleted data', data);
-
-        // this.deliveryConfiguration.push({ key: catName, 'value': [data] });
-        // this.selectedFilterPlugin = data.plugin.value;
+      .subscribe(() => {
+        this.alertService.success(`${channel.name} deleted successfully.`);
+        this.getDeliveryChannels();
       },
         error => {
           if (error.status === 0) {
@@ -318,8 +289,29 @@ export class NotificationModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
-
   }
+
+  /**
+  * Get edited configuration from child config page
+  * @param changedConfig changed configuration of a selected plugin
+  */
+  getChangedConfig(changedConfig) {
+    if (isEmpty(changedConfig)) {
+      return;
+    }
+    changedConfig = changedConfig.map(el => {
+      if (el.type.toUpperCase() === 'JSON') {
+        el.value = JSON.parse(el.value);
+      }
+      return {
+        [el.key]: el.value !== undefined ? el.value : el.default,
+      };
+    });
+
+    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
+    this.changedChildConfig = changedConfig;
+  }
+
 
 
   goToLink() {
