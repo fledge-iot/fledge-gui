@@ -105,12 +105,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.page--;
     if (this.page == 1) {
       this.isAlive = true;
-      this.subscription = interval(this.refreshInterval)
-        .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
-        .subscribe(() => {
-          this.getSysLogs(true);
-          this.getSchedules();
-        });
+      this.onFirst();
+      return;
     }
     this.setLimitOffset();
   }
@@ -120,7 +116,13 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   onFirst(): void {
     this.page = 1;
-    this.setLimitOffset();
+    this.limit = this.DEFAULT_LIMIT;
+    this.offset = (((this.page) - 1) * this.limit);
+    this.getSysLogs();
+    if (this.refreshInterval !== -1) {
+      this.isAlive = true;
+      this.toggleAutoRefresh(true);
+    }
   }
 
   /**
@@ -200,8 +202,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         });
   }
 
-  toggleAutoRefresh(event: any) {
-    this.isAlive = event.target.checked;
+  toggleAutoRefresh(refresh: boolean) {
+    this.isAlive = refresh;
 
     // clear interval subscription before initializing it again
     if (this.subscription) {

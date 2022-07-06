@@ -9,7 +9,8 @@
       </div>
       <div *ngIf="refreshInterval !== -1 && page === 1" class="fix-pad auto-refresh">
         <label class="checkbox">
-          <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
+          <input class="checkmark" type="checkbox" [checked]='isAlive'
+            (click)="toggleAutoRefresh($event.target.checked)">
           Auto Refresh
         </label>
       </div>
