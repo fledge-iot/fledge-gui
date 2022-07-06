@@ -103,7 +103,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   onPrev(): void {
     this.page--;
-    if (this.page == 1) {
+    if (this.page == 1 && this.refreshInterval !== -1) {
       this.isAlive = true;
       this.onFirst();
       return;
@@ -122,6 +122,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.refreshInterval !== -1) {
       this.isAlive = true;
       this.toggleAutoRefresh(true);
+    } else {
+      this.getSchedules();
     }
   }
 
