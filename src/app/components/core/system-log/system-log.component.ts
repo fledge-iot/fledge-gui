@@ -24,7 +24,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   page = 1;
-  tempOffset = 0;
+  offset = 0;
   searchTerm = '';
 
   constructor(private systemLogService: SystemLogService,
@@ -66,17 +66,17 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
-          let services_northtasks_schedules = [];
+          let serviceNorthTaskSchedules = [];
           data.schedules.forEach(sch => {
-            if ('STARTUP' === sch.type) {
-              services_northtasks_schedules.push(sch);
+            if ('STARTUP' === sch.type.toUpperCase()) {
+              serviceNorthTaskSchedules.push(sch);
             }
-            // Handle north tasks and services both
+            // Handle north tasks
             if (['north_c', 'north'].includes(sch.processName)) {
-              services_northtasks_schedules.push(sch);
+              serviceNorthTaskSchedules.push(sch);
             }
           });
-          this.scheduleData = new Set(services_northtasks_schedules);
+          this.scheduleData = new Set(serviceNorthTaskSchedules);
         },
         error => {
           if (error.status === 0) {
@@ -92,6 +92,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   onNext(): void {
     this.page++;
+    if (this.page > 1) {
+      this.isAlive = false;
+    }
     this.setLimitOffset();
   }
 
@@ -100,6 +103,15 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   onPrev(): void {
     this.page--;
+    if (this.page == 1) {
+      this.isAlive = true;
+      this.subscription = interval(this.refreshInterval)
+        .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+        .subscribe(() => {
+          this.getSysLogs(true);
+          this.getSchedules();
+        });
+    }
     this.setLimitOffset();
   }
 
@@ -111,29 +123,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.setLimitOffset();
   }
 
-  public setLimit(limit) {
-    this.limit = 0;
-    if (this.page !== 1) {
-      this.page = 1;
-    }
-    if (limit === '' || limit === 0 || limit === null || limit === undefined) {
-      limit = this.DEFAULT_LIMIT;
-    }
-    this.limit = limit;
-    console.log('Limit: ', this.limit);
-    this.getSysLogs();
-  }
-
-  public setOffset(offset: number) {
-    if (this.page !== 1) {
-      this.page = 1;
-    }
-    if (offset === null || offset === undefined) {
-      offset = 0;
-    }
-    this.getSysLogs();
-  }
-
   /**
    *  Set limit and offset (it is internally called by onNext(), onPrev(), onFirst() methods)
    */
@@ -141,7 +130,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.tempOffset = (((this.page) - 1) * this.limit);
+    this.offset = (((this.page) - 1) * this.limit);
     this.getSysLogs();
   }
 
@@ -158,7 +147,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   public filterData(filter: string, value: string) {
     this.limit = 0;
-    this.tempOffset = 0;
+    this.offset = 0;
     if (this.page !== 1) {
       this.page = 1;
     }
@@ -181,7 +170,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.tempOffset).
+    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.offset).
       subscribe(
         (data) => {
           if (autoRefresh === false) {
