@@ -86,8 +86,13 @@
         <p class="s-log" [innerHTML]="log"> </p>
       </ng-container>
       <ng-container *ngIf="logs?.length == 0">
-        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No matching log entries
-            found.</small></div>
+        <div class="has-text-centered">
+          <small *ngIf="page === 1" class="text-secondary has-text-grey-light">No matching log entries
+            found.</small>
+          <small *ngIf="page > 1" class="text-secondary has-text-grey-light">No older logs are available to be
+            shown.</small>
+        </div>
+
       </ng-container>
 
     </div>
