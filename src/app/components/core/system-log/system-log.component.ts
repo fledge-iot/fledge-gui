@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
+import { sortBy } from 'lodash';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
 
@@ -76,7 +77,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
               serviceNorthTaskSchedules.push(sch);
             }
           });
-          this.scheduleData = new Set(serviceNorthTaskSchedules);
+          this.scheduleData = new Set(sortBy(serviceNorthTaskSchedules, (s: any) => {
+            return s.name.toLowerCase();
+          }));
         },
         error => {
           if (error.status === 0) {
