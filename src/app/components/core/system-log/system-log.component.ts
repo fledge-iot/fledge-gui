@@ -92,9 +92,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   onNext(): void {
     this.page++;
-    if (this.page > 1) {
-      this.isAlive = false;
-    }
+    this.destroy$.next(true);
     this.setLimitOffset();
   }
 
@@ -103,11 +101,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   onPrev(): void {
     this.page--;
-    if (this.page == 1 && this.refreshInterval !== -1) {
-      this.isAlive = true;
-      this.onFirst();
-      return;
-    }
     this.setLimitOffset();
   }
 
@@ -119,11 +112,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.limit = this.DEFAULT_LIMIT;
     this.offset = (((this.page) - 1) * this.limit);
     this.getSysLogs();
-    if (this.refreshInterval !== -1) {
-      this.isAlive = true;
-      this.toggleAutoRefresh(true);
-    } else {
-      this.getSchedules();
+    this.getSchedules();
+    if (this.isAlive) {
+      this.destroy$.next(false);
+      this.toggleAutoRefresh(this.isAlive)
     }
   }
 
@@ -206,7 +198,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   toggleAutoRefresh(refresh: boolean) {
     this.isAlive = refresh;
-
     // clear interval subscription before initializing it again
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -222,7 +213,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
     // start auto refresh
     this.subscription = interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive && this.page === 1), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getSysLogs(true);
         this.getSchedules();
