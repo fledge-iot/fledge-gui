@@ -101,6 +101,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   onPrev(): void {
     this.page--;
+    if (this.page === 1) {
+      this.onFirst();
+      return;
+    }
     this.setLimitOffset();
   }
 
