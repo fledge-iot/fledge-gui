@@ -158,7 +158,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.form.reset();
     }
     this.isAdvanceConfig = true;
-    this.getAdvanceConfig(null);
+    // this.getAdvanceConfig(null);
     this.filterConfiguration = [];
     modal.classList.remove('is-active');
     if (this.viewConfigItemComponent !== undefined) {
@@ -504,16 +504,16 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       );
   }
 
-  getAdvanceConfig(childConfig) {
-    if (!this.isAdvanceConfig) {
-      this.isAdvanceConfig = true;
-      this.advanceConfigButtonText = 'Hide Advanced Config';
-      this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
-    } else {
-      this.isAdvanceConfig = false;
-      this.advanceConfigButtonText = 'Show Advanced Config';
-    }
-  }
+  // getAdvanceConfig(childConfig) {
+  //   if (!this.isAdvanceConfig) {
+  //     this.isAdvanceConfig = true;
+  //     this.advanceConfigButtonText = 'Hide Advanced Config';
+  //     // this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
+  //   } else {
+  //     this.isAdvanceConfig = false;
+  //     this.advanceConfigButtonText = 'Show Advanced Config';
+  //   }
+  // }
 
   /**
   * Get edited configuration from child config page
