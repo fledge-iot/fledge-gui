@@ -24,9 +24,7 @@ export class ConfigChildrenComponent {
   constructor(private configService: ConfigurationService) { }
 
   ngOnChanges() {
-    console.log('categoryChildren', this.categoryChildren);
     this.selectTab(this.categoryChildren[0]);
-    console.log('category', this.categoryName);
   }
 
   /**
@@ -63,7 +61,6 @@ export class ConfigChildrenComponent {
    * @returns updated value Object
    */
   getChangedConfig(changedConfig) {
-    console.log('child changed config', changedConfig);
     if (isEmpty(changedConfig)) {
       return;
     }

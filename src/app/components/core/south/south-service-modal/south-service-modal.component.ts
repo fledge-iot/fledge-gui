@@ -1,28 +1,23 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, ViewChildren, QueryList
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
 
+import { Router } from '@angular/router';
 import {
-  AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
-  ServicesApiService,
-  ProgressBarService,
-  GenerateCsvService
+  AlertService, AssetsService, ConfigurationService, FilterService, GenerateCsvService, ProgressBarService, SchedulesService,
+  ServicesApiService
 } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import {
-  ConfigChildrenComponent
-} from '../../configuration-manager/config-children/config-children.component';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { DocService } from '../../../../services/doc.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -60,7 +55,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('serviceConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
-  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
@@ -262,7 +256,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    */
   getChangedConfig(changedConfig) {
     this.changedChildConfig = changedConfig;
-    console.log('south modal changed child config ', this.changedChildConfig);
   }
 
   proxy() {
