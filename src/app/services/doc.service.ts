@@ -19,7 +19,7 @@ export class DocService {
 
   goToNotificationDocLink(slug: string) {
     const v = packageInfo.version.includes('next') ? 'develop' : `v${packageInfo.version}`;
-    window.open(`${packageInfo.doc_url}${v}/notifications.html#${slug}`, '_blank');
+    window.open(`${packageInfo.doc_url}${v}/services/fledge-service-notification/index.html#${slug}`, '_blank');
   }
 
   goToSetPointControlDocLink(slug: string) {
