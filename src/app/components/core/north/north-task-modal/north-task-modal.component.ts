@@ -1,24 +1,23 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, QueryList, ViewChildren
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
 
+import { Router } from '@angular/router';
 import {
-  AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService, ServicesApiService
+  AlertService, ConfigurationService, FilterService, NorthService, ProgressBarService, SchedulesService, ServicesApiService
 } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { DocService } from '../../../../services/doc.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -45,11 +44,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public filterConfiguration = [];
   public isFilterDeleted = false;
   public confirmationDialogData = {};
-  public childConfiguration: any;
+  public categoryChildren = [];
   public changedChildConfig = [];
-
-  public advanceConfigButtonText = 'Show Advanced Config';
-  public isAdvanceConfig = false;
   public btnTxt = '';
   public selectedFilterPlugin;
 
@@ -62,7 +58,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
-  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
 
   // Object to hold data of north task to delete
   public deleteTaskData = {
@@ -157,8 +152,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.form !== undefined) {
       this.form.reset();
     }
-    this.isAdvanceConfig = true;
-    this.getAdvanceConfig(null);
     this.filterConfiguration = [];
     modal.classList.remove('is-active');
     if (this.viewConfigItemComponent !== undefined) {
@@ -314,6 +307,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     for (const e of <any>el) {
       e.click();
     }
+
+    const cel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
+    for (const e of <any>cel) {
+      e.click();
+    }
+
     this.updateAdvanceConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
@@ -433,8 +432,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.getCategory();
     this.isWizard = false;
     this.getFilterPipeline();
-    this.isAdvanceConfig = false;
-    this.advanceConfigButtonText = 'Show Advanced Config';
   }
 
   getFilterPipeline() {
@@ -496,7 +493,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
-          this.childConfiguration = data.categories.find(d => d.key.toString().includes('Advanced'));
+          this.categoryChildren = data.categories;
         },
         error => {
           console.log('error ', error);
@@ -504,35 +501,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       );
   }
 
-  getAdvanceConfig(childConfig) {
-    if (!this.isAdvanceConfig) {
-      this.isAdvanceConfig = true;
-      this.advanceConfigButtonText = 'Hide Advanced Config';
-      this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
-    } else {
-      this.isAdvanceConfig = false;
-      this.advanceConfigButtonText = 'Show Advanced Config';
-    }
-  }
-
   /**
   * Get edited configuration from child config page
-  * @param changedConfig changed configuration of a selected plugin
+  * @param changedConfig : Object
   */
   getChangedConfig(changedConfig) {
-    if (isEmpty(changedConfig)) {
-      return;
-    }
-    changedConfig = changedConfig.map(el => {
-      if (el.type.toUpperCase() === 'JSON') {
-        el.value = JSON.parse(el.value);
-      }
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
-    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
     this.changedChildConfig = changedConfig;
   }
 
@@ -542,7 +515,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
     /** request started */
     this.ngProgress.start();
-    this.configService.updateBulkConfiguration(this.childConfiguration.key, configItems).
+    this.configService.updateBulkConfiguration(configItems.key, configItems.value).
       subscribe(
         () => {
           this.changedChildConfig = [];  // clear the array

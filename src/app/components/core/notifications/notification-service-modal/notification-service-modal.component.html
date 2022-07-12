@@ -48,6 +48,11 @@
             </div>
           </div>
         </div>
+        <div *ngIf="categoryChildren?.length > 0">
+          <app-config-children (onConfigChanged)="getChildChangedConfig($event)" [categoryChildren]="categoryChildren"
+            [categoryName]="category?.key">
+          </app-config-children>
+        </div>
         <button id="hidden-save" class="is-hidden button is-small is-link is-pulled-right"
           form="notificationForm">Save</button>
       </form>

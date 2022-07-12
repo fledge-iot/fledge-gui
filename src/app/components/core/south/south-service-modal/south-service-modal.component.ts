@@ -1,28 +1,23 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, ViewChildren, QueryList
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
 
+import { Router } from '@angular/router';
 import {
-  AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
-  ServicesApiService,
-  ProgressBarService,
-  GenerateCsvService
+  AlertService, AssetsService, ConfigurationService, FilterService, GenerateCsvService, ProgressBarService, SchedulesService,
+  ServicesApiService
 } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import {
-  ConfigChildrenComponent
-} from '../../configuration-manager/config-children/config-children.component';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { DocService } from '../../../../services/doc.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -35,10 +30,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public useProxy: 'true';
   public useFilterProxy: 'true';
   public isEnabled = false;
-  public isAdvanceConfig = false;
-  public advanceConfigButtonText = 'Show Advanced Config';
   svcCheckbox: FormControl = new FormControl();
-  public childConfiguration;
+  public categoryChildren = [];
   public changedChildConfig = [];
   public filterPipeline = [];
   public deletedFilterPipeline = [];
@@ -62,7 +55,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('serviceConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
-  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
@@ -135,8 +127,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       return;
     }
     this.notify.emit(false);
-    this.isAdvanceConfig = true;
-    this.getAdvanceConfig(null);
     this.filterConfiguration = [];
     modalWindow.classList.remove('is-active');
   }
@@ -252,7 +242,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
-          this.childConfiguration = data.categories.find(d => d.key.toString().includes('Advanced'));
+          this.categoryChildren = data.categories;
         },
         error => {
           console.log('error ', error);
@@ -260,35 +250,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       );
   }
 
-  getAdvanceConfig(childConfig) {
-    if (!this.isAdvanceConfig) {
-      this.isAdvanceConfig = true;
-      this.advanceConfigButtonText = 'Hide Advanced Config';
-      this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
-    } else {
-      this.isAdvanceConfig = false;
-      this.advanceConfigButtonText = 'Show Advanced Config';
-    }
-  }
-
   /**
    * Get edited configuration from child config page
-   * @param changedConfig changed configuration of a selected plugin
+   * @param changedConfig: Object
    */
   getChangedConfig(changedConfig) {
-    if (isEmpty(changedConfig)) {
-      return;
-    }
-    changedConfig = changedConfig.map(el => {
-      if (el.type.toUpperCase() === 'JSON') {
-        el.value = JSON.parse(el.value);
-      }
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
-    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
     this.changedChildConfig = changedConfig;
   }
 
@@ -312,6 +278,11 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     for (const e of <any>el) {
       e.click();
     }
+
+    const cel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
+    for (const e of <any>cel) {
+      e.click();
+    }
     this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
@@ -322,7 +293,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
     /** request started */
     this.ngProgress.start();
-    this.configService.updateBulkConfiguration(this.childConfiguration.key, configItems).
+    this.configService.updateBulkConfiguration(configItems.key, configItems.value).
       subscribe(
         () => {
           this.changedChildConfig = [];  // clear the array
@@ -465,8 +436,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.getCategory();
     this.isWizard = false;
     this.getFilterPipeline();
-    this.isAdvanceConfig = false;
-    this.advanceConfigButtonText = 'Show Advanced Config';
   }
 
   getFilterPipeline() {
