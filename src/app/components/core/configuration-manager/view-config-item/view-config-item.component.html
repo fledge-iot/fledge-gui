@@ -111,11 +111,11 @@
                     </ng-container>
 
                     <div *ngSwitchCase="'SCRIPT'">
-                      <ngx-codemirror
+                      <ngx-codemirror #scriptCode
                         [ngClass]="{'readonly-editor': !isFileUploaded, 'dark-bg-color': !isFileUploaded && selectedTheme === 'darcula'}"
                         name="{{configItem.value.key}}" [options]="setEditorConfig(configItem.value.type)"
                         [autoFocus]="true" (ngModelChange)="getFileName(configItem?.value?.file)"
-                        (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                        (input)="checkValidityOnChange(configItem.value.key, scriptCode.value)"
                         [ngModel]="fileContent || setConfigValue(configItem.value)"
                         [disabled]="!isFileUploaded || (configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
