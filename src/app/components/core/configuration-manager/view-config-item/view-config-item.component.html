@@ -22,20 +22,20 @@
                     <label class="checkbox">
                       <input type="checkbox" name='{{configItem.value.key}}' value="setConfigValue(configItem.value)"
                         [ngModel]="setConfigValue(configItem.value) == 'true'"
-                        (change)="checkValidityOnChange(configItem.value.key, $event.target.checked)"
+                        (change)="checkValidityOnChange(configItem.value, $event.target.checked)"
                         [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                     </label>
                   </ng-container>
                   <div class="field">
                     <input *ngSwitchCase="'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                       type="text" [ngModel]="setConfigValue(configItem.value)"
-                      (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      (input)="checkValidityOnChange(configItem.value, $event.target.value)"
                       [value]='setConfigValue(configItem.value)' [attr.maxLength]="configItem?.value?.length"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                       [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                     <ng-container *ngSwitchCase="'RAW_TEXT'">
                       <ngx-codemirror name="{{configItem.value.key}}" [options]="setEditorConfig(configItem.value.type)"
-                        [autoFocus]="true" (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                        [autoFocus]="true" (input)="checkValidityOnChange(configItem.value, $event.target.value)"
                         [ngModel]="setConfigValue(configItem.value)"
                         [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
@@ -86,7 +86,7 @@
                       [value]='setConfigValue(configItem.value)' class="input is-fullwidth is-small"
                       [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
                       [ngModel]="setConfigValue(configItem.value)"
-                      (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      (input)="checkValidityOnChange(configItem.value, $event.target.value)"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                       [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                       appNumberOnly />
@@ -95,7 +95,7 @@
                       [value]='setConfigValue(configItem.value)' step="any" class="input is-fullwidth is-small"
                       [minValue]="configItem?.value?.minimum" [maxValue]="configItem?.value?.maximum"
                       [ngModel]="setConfigValue(configItem.value)"
-                      (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      (input)="checkValidityOnChange(configItem.value, $event.target.value)"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                       [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'"
                       appNumberOnly />
@@ -114,7 +114,7 @@
                       <ngx-codemirror #scriptCode
                         [ngClass]="{'readonly-editor': (!configItem?.value?.file && !newFileName) , 'dark-bg-color': !configItem?.value?.file && !newFileName && selectedTheme === 'darcula'}"
                         name="{{configItem.value.key}}" [options]="setEditorConfig(configItem.value.type)"
-                        [autoFocus]="true" (input)="checkValidityOnChange(configItem.value, scriptCode.value)"
+                        [autoFocus]="true" (ngModelChange)="checkValidityOnChange(configItem.value, scriptCode.value)"
                         [ngModel]="fileContent || setConfigValue(configItem.value)"
                         [disabled]="(configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable)"
                         [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'">
@@ -135,7 +135,7 @@
                     <div *ngSwitchCase="'ENUMERATION'" class="select is-small">
                       <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)"
                         [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
-                        (change)="checkValidityOnChange(configItem.value.key, $event.target.value)">
+                        (change)="checkValidityOnChange(configItem.value, $event.target.value)">
                         <option *ngFor="let configOption of configItem.value.options" [value]='configOption'>
                           {{configOption}}</option>
                       </select>
@@ -143,7 +143,7 @@
 
                     <input *ngSwitchCase="'URL'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                       type="url" [ngModel]="setConfigValue(configItem.value)" [value]='setConfigValue(configItem.value)'
-                      (input)="checkValidityOnChange(configItem.value.key, $event.target.value)"
+                      (input)="checkValidityOnChange(configItem.value, $event.target.value)"
                       [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
                       [required]="configItem?.value?.hasOwnProperty('mandatory') && configItem?.value?.mandatory=='true'" />
                   </div>
