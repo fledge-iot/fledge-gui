@@ -45,7 +45,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('jsoneditor') jsoneditor: ElementRef;
   @ViewChild('pwd') pwd: ElementRef;
-  @ViewChild(NgForm) form;
+  @ViewChild('f', { static: false }) form: NgForm;
 
   public passwordOnChangeFired = false;
   public passwordMatched = {
@@ -75,7 +75,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
+    if (this.form) {
+      this.form.resetForm();
+    }
     this.filesToUpload = [];
+    this.categoryConfiguration = null;
     this.configItems = [];
     this.fileContent = '';
     this.newFileName = '';
