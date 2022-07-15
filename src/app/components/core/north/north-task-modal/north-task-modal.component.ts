@@ -54,7 +54,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('taskConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
@@ -155,10 +154,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.category = null;
     this.filterConfiguration = [];
     modal.classList.remove('is-active');
-    if (this.viewConfigItemComponent !== undefined) {
-      this.viewConfigItemComponent.passwordOnChangeFired = false;
-      this.viewConfigItemComponent.passwordMatched.value = true;
-    }
   }
 
   public getCategory(): void {
@@ -176,7 +171,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         if (!isEmpty(data)) {
           categoryValues.push(data);
           this.category = { key: this.name, value: categoryValues };
-          this.useProxy = 'true';
         }
         /** request completed */
         this.ngProgress.done();
@@ -288,8 +282,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
-      && this.form.valid)) {
+    if (!this.form.valid) {
       return;
     }
 
@@ -301,7 +294,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (this.useProxy) {
+    if (this.useProxy === 'true') {
       document.getElementById('vci-proxy').click();
     }
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
@@ -507,6 +500,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   * @param changedConfig : Object
   */
   getChangedConfig(changedConfig) {
+    this.useProxy = changedConfig.useProxy;
+    delete changedConfig.useProxy;
     this.changedChildConfig = changedConfig;
   }
 

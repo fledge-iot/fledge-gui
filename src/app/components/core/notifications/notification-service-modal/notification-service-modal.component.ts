@@ -1,12 +1,10 @@
-import { Component, EventEmitter, Output, OnChanges, Input, SimpleChanges, ViewChild, HostListener } from '@angular/core';
+import { Component, OnChanges, Input, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 import {
   ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService
 } from '../../../../services';
-import {
-  ViewConfigItemComponent
-} from '../../configuration-manager/view-config-item/view-config-item.component';
+
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
@@ -22,7 +20,6 @@ import { Router } from '@angular/router';
 export class NotificationServiceModalComponent implements OnChanges {
   enabled: Boolean;
   category: any;
-  useProxy: string;
   isNotificationServiceAvailable = false;
   isNotificationServiceEnabled = false;
   notificationServiceName = '';
@@ -49,7 +46,6 @@ export class NotificationServiceModalComponent implements OnChanges {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
   };
-  @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
@@ -72,7 +68,6 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
     this.enabled = this.isNotificationServiceEnabled;
     this.btnText = 'Add';
-    this.useProxy = 'false';
     if (this.isNotificationServiceAvailable) {
       this.showDeleteBtn = true;
       this.btnText = 'Save';
@@ -293,7 +288,6 @@ export class NotificationServiceModalComponent implements OnChanges {
           if (!isEmpty(data)) {
             categoryValues.push(data);
             this.category = { key: this.notificationServiceName, value: categoryValues };
-            this.useProxy = 'true';
           }
           /** request completed */
           this.ngProgress.done();
@@ -413,9 +407,6 @@ export class NotificationServiceModalComponent implements OnChanges {
       this.form.controls['notificationServiceName'].markAsTouched();
       return;
     }
-    if (this.useProxy === 'true') {
-      document.getElementById('vci-proxy').click();
-    }
 
     const cel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
     for (const e of <any>cel) {
@@ -430,28 +421,10 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   /**
    * Get edited configuration from child config page
-   * @param changedConfig changed configuration of a selected plugin
-   */
-  getChangedConfig(changedConfig) {
-    if (isEmpty(changedConfig)) {
-      return;
-    }
-    changedConfig = changedConfig.map(el => {
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
-    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
-    this.changedChildConfig = changedConfig;
-  }
-
-
-  /**
-   * Get edited configuration from child config page
    * @param changedConfig: Object
    */
   getChildChangedConfig(changedConfig) {
+    delete changedConfig.useProxy;
     this.changedChildCategoryConfig = changedConfig;
   }
 

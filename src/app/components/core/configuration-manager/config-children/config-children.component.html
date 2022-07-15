@@ -1,4 +1,4 @@
-<div class="tabs is-boxed" *ngIf="categoryChildren.length > 0">
+<div class="tabs is-boxed" *ngIf="categoryChildren?.length > 0">
   <ul>
     <li [ngClass]="{'is-active': seletedTab == category?.key}" *ngIf="category">
       <h6 class="is-6 has-text-weight-semibold">
@@ -18,8 +18,8 @@
 <ng-container>
   <div *ngIf="seletedTab == category?.key">
     <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
-      [useCategoryChildrenProxy]="useCategoryChildrenProxy" [pageId]="'children'"
-      (onConfigChanged)="getChangedConfig($event)"></app-view-config-item>
+      [useCategoryChildrenProxy]="useCategoryChildrenProxy" (onConfigChanged)="getChangedConfig($event)">
+    </app-view-config-item>
   </div>
 </ng-container>
 <ng-container *ngFor="let child of categoryChildren">

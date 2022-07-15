@@ -181,7 +181,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     }).filter(f => f !== undefined);
     // condition to check if called from wizard
     if (this.isWizardCall || this.pageId === 'children') {
-      console.log('page config');
       if (this.filesToUpload.length > 0) {
         changedConfigValues.push({ key: 'script', 'value': this.filesToUpload, 'type': 'script' });
       }

@@ -15,8 +15,10 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-view-config-item #taskConfigView *ngIf="category" [categoryConfigurationData]="category"
-            [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
+          <app-config-children (onConfigChanged)="getChangedConfig($event)" [categoryChildren]="categoryChildren"
+            [category]="category">
+          </app-config-children>
+          <hr>
           <form name="task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
             <div class="columns">
               <div class="column">
@@ -67,11 +69,7 @@
             </div>
             <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="taskForm">Save</button>
           </form>
-          <div *ngIf="categoryChildren?.length > 0">
-            <app-config-children (onConfigChanged)="getChangedConfig($event)" [categoryChildren]="categoryChildren"
-              [categoryName]="category?.key">
-            </app-config-children>
-          </div>
+          <!-- </div> -->
           <hr>
           <div class="columns">
             <div class="column has-text-centered">

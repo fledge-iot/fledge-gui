@@ -53,7 +53,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('serviceConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
@@ -128,6 +127,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
     this.notify.emit(false);
     this.filterConfiguration = [];
+    this.categoryChildren = [];
     this.category = null;
     modalWindow.classList.remove('is-active');
   }
@@ -142,7 +142,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           if (!isEmpty(data)) {
             categoryValues.push(data);
             this.category = { key: this.service['name'], value: categoryValues };
-            this.useProxy = 'true';
+            // this.useProxy = 'true';
           }
           /** request completed */
           this.ngProgress.done();
@@ -244,8 +244,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       subscribe(
         (data: any) => {
           this.categoryChildren = data.categories;
-          console.log('cat', this.categoryChildren);
-
         },
         error => {
           console.log('error ', error);
@@ -258,14 +256,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    * @param changedConfig: Object
    */
   getChangedConfig(changedConfig) {
+    this.useProxy = changedConfig.useProxy;
+    delete changedConfig.useProxy;
     this.changedChildConfig = changedConfig;
   }
 
   proxy() {
-    if (!this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)) {
-      return;
-    }
-
     const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {
       return this.validateFormService.checkViewConfigItemFormValidity(component);
     });
@@ -274,7 +270,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (this.useProxy) {
+    if (this.useProxy === 'true') {
+      console.log('this.useProxy', this.useProxy);
+
       document.getElementById('vci-proxy').click();
     }
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');

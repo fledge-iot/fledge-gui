@@ -8,23 +8,7 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <!-- <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
-            [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item> -->
-          <!-- <div *ngIf="service != undefined" class="columns">
-            <div class="column">
-              <div class="field is-horizontal">
-                <div class="field-label has-text-left">
-                  <label class="label">Enabled</label>
-                </div>
-                <div class="field-body">
-                  <div class="field">
-                    <input [formControl]="svcCheckbox" class="checkbox" type="checkbox">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
-          <div *ngIf="categoryChildren?.length > 0">
+          <div>
             <app-config-children (onConfigChanged)="getChangedConfig($event)" [categoryChildren]="categoryChildren"
               [category]="category">
             </app-config-children>

@@ -30,28 +30,27 @@
             </div>
           </div>
         </div>
-        <app-view-config-item #notificationConfigView *ngIf="category" [categoryConfigurationData]="category"
-          [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'modal'">
-        </app-view-config-item>
-        <div class="columns">
-          <div class="column">
-            <div class="field is-horizontal">
-              <div class="field-label has-text-left">
-                <label class="label">Enabled</label>
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
-                    [(ngModel)]="enabled">
+        <div>
+          <app-config-children (onConfigChanged)="getChildChangedConfig($event)" [categoryChildren]="categoryChildren"
+            [category]="category">
+          </app-config-children>
+
+          <hr class="hr-text" data-content="">
+          <div class="columns">
+            <div class="column">
+              <div class="field is-horizontal">
+                <div class="field-label has-text-left">
+                  <label class="label">Enabled</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
+                      [(ngModel)]="enabled">
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div *ngIf="categoryChildren?.length > 0">
-          <app-config-children (onConfigChanged)="getChildChangedConfig($event)" [categoryChildren]="categoryChildren"
-            [categoryName]="category?.key">
-          </app-config-children>
         </div>
         <button id="hidden-save" class="is-hidden button is-small is-link is-pulled-right"
           form="notificationForm">Save</button>

@@ -12,7 +12,7 @@ import { ViewConfigItemComponent } from '../view-config-item/view-config-item.co
 export class ConfigChildrenComponent {
   seletedTab = '';
   useCategoryChildrenProxy = 'true'
-  childCategoryKey = ''
+  categoryKey = ''
   configuration: any;
 
   @Input() categoryChildren = []
@@ -26,7 +26,8 @@ export class ConfigChildrenComponent {
   ngOnChanges() {
     if (this.category) {
       this.seletedTab = this.category.key
-    } else {
+      this.categoryKey = this.category.key;
+    } else if (this.categoryChildren.length > 0) {
       this.selectTab(this.categoryChildren[0]);
     }
   }
@@ -36,9 +37,9 @@ export class ConfigChildrenComponent {
    * @param category Object{key, description, displayName}
    */
   selectTab(category: any) {
-    this.seletedTab = category.displayName;
-    this.childCategoryKey = category.key;
-    this.getConfig(category.key);
+    this.seletedTab = category?.displayName;
+    this.categoryKey = category?.key;
+    this.getConfig(category?.key);
     this.useCategoryChildrenProxy = 'true';
   }
 
@@ -79,10 +80,12 @@ export class ConfigChildrenComponent {
 
     changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
     if (!isEmpty(changedConfig)) {
-      console.log('changedConfig', changedConfig);
-
+      let useProxy = 'false';
+      if (this.seletedTab === this.category?.key) {
+        useProxy = 'true';
+      }
       // emit child changed config on south service modal
-      this.onConfigChanged.emit({ key: this.childCategoryKey, value: changedConfig });
+      this.onConfigChanged.emit({ key: this.categoryKey, value: changedConfig, useProxy });
     }
   }
 }
