@@ -157,6 +157,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.form !== undefined) {
       this.form.reset();
     }
+    this.category = null;
     this.isAdvanceConfig = true;
     this.getAdvanceConfig(null);
     this.filterConfiguration = [];
