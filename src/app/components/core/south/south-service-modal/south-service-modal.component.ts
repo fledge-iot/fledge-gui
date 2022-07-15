@@ -128,6 +128,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
     this.notify.emit(false);
     this.filterConfiguration = [];
+    this.category = null;
     modalWindow.classList.remove('is-active');
   }
 

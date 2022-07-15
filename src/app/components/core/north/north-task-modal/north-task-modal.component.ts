@@ -152,6 +152,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.form !== undefined) {
       this.form.reset();
     }
+    this.category = null;
     this.filterConfiguration = [];
     modal.classList.remove('is-active');
     if (this.viewConfigItemComponent !== undefined) {
