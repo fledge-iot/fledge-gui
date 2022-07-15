@@ -244,6 +244,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       subscribe(
         (data: any) => {
           this.categoryChildren = data.categories;
+          console.log('cat', this.categoryChildren);
+
         },
         error => {
           console.log('error ', error);

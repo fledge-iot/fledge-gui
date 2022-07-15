@@ -16,7 +16,7 @@ export class ConfigChildrenComponent {
   configuration: any;
 
   @Input() categoryChildren = []
-  @Input() categoryName = ''
+  @Input() category;
 
   @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
   @ViewChildren('childrenConfigView') childrenConfigViewComponents: QueryList<ViewConfigItemComponent>;
@@ -24,7 +24,11 @@ export class ConfigChildrenComponent {
   constructor(private configService: ConfigurationService) { }
 
   ngOnChanges() {
-    this.selectTab(this.categoryChildren[0]);
+    if (this.category) {
+      this.seletedTab = this.category.key
+    } else {
+      this.selectTab(this.categoryChildren[0]);
+    }
   }
 
   /**
@@ -75,6 +79,8 @@ export class ConfigChildrenComponent {
 
     changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
     if (!isEmpty(changedConfig)) {
+      console.log('changedConfig', changedConfig);
+
       // emit child changed config on south service modal
       this.onConfigChanged.emit({ key: this.childCategoryKey, value: changedConfig });
     }
