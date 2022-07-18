@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
-import { isEmpty } from 'lodash';
+import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 
 import { ConfigurationService } from '../../../../services';
 import { ViewConfigItemComponent } from '../view-config-item/view-config-item.component';
@@ -13,12 +12,12 @@ export class ConfigChildrenComponent {
   seletedTab = '';
   useCategoryChildrenProxy = 'true'
   categoryKey = ''
-  configuration: any;
+  advanceConfiguration: any;
+  securityConfiguration: any;
 
   @Input() categoryChildren = []
   @Input() category;
 
-  @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
   @ViewChildren('childrenConfigView') childrenConfigViewComponents: QueryList<ViewConfigItemComponent>;
 
   constructor(private configService: ConfigurationService) { }
@@ -30,6 +29,15 @@ export class ConfigChildrenComponent {
     } else if (this.categoryChildren.length > 0) {
       this.selectTab(this.categoryChildren[0]);
     }
+
+    if (this.categoryChildren.length > 0) {
+      // Filter out Advance and Security category from the main categroy children
+      this.categoryChildren = this.categoryChildren.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
+      this.categoryChildren.forEach(cat => {
+        // Get child category configuration
+        this.getConfig(cat);
+      });
+    }
   }
 
   /**
@@ -39,7 +47,6 @@ export class ConfigChildrenComponent {
   selectTab(category: any) {
     this.seletedTab = category?.displayName;
     this.categoryKey = category?.key;
-    this.getConfig(category?.key);
     this.useCategoryChildrenProxy = 'true';
   }
 
@@ -47,45 +54,20 @@ export class ConfigChildrenComponent {
    * Get configuration of the child category
    * @param categoryName : String
    */
-  getConfig(categoryName: string) {
-    this.configService.getCategory(categoryName).
+  getConfig(category: any) {
+    this.configService.getCategory(category.key).
       subscribe(
         (data: any) => {
           // set configuration to pass on view-config-item-component page
-          this.configuration = { key: categoryName, value: [data] };
+          if (category.key.includes('Advanced')) {
+            this.advanceConfiguration = { key: category.key, value: [data] };
+          } else if (category.key.includes('Security')) {
+            this.securityConfiguration = { key: category.key, value: [data] };
+          }
         },
         error => {
           console.log('error ', error);
         }
       );
-  }
-
-  /**
-   * Get changed value of the configuration item
-   * @param changedConfig: Object
-   * @returns updated value Object
-   */
-  getChangedConfig(changedConfig) {
-    if (isEmpty(changedConfig)) {
-      return;
-    }
-    changedConfig = changedConfig.map(el => {
-      if (el.type.toUpperCase() === 'JSON') {
-        el.value = JSON.parse(el.value);
-      }
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
-    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
-    if (!isEmpty(changedConfig)) {
-      let useProxy = 'false';
-      if (this.seletedTab === this.category?.key) {
-        useProxy = 'true';
-      }
-      // emit child changed config on south service modal
-      this.onConfigChanged.emit({ key: this.categoryKey, value: changedConfig, useProxy });
-    }
   }
 }

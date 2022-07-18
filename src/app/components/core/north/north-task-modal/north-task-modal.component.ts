@@ -45,7 +45,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public isFilterDeleted = false;
   public confirmationDialogData = {};
   public categoryChildren = [];
-  public changedChildConfig = [];
   public btnTxt = '';
   public selectedFilterPlugin;
 
@@ -297,17 +296,18 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.useProxy === 'true') {
       document.getElementById('vci-proxy').click();
     }
+
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
     for (const e of <any>el) {
       e.click();
     }
 
-    const cel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
-    for (const e of <any>cel) {
+    const securityCel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
+    for (const e of <any>securityCel) {
       e.click();
     }
 
-    this.updateAdvanceConfigConfiguration(this.changedChildConfig);
+    // this.updateAdvanceConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
 
@@ -493,41 +493,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           console.log('error ', error);
         }
       );
-  }
-
-  /**
-  * Get edited configuration from child config page
-  * @param changedConfig : Object
-  */
-  getChangedConfig(changedConfig) {
-    this.useProxy = changedConfig.useProxy;
-    delete changedConfig.useProxy;
-    this.changedChildConfig = changedConfig;
-  }
-
-  public updateAdvanceConfigConfiguration(configItems: any) {
-    if (isEmpty(configItems)) {
-      return;
-    }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(configItems.key, configItems.value).
-      subscribe(
-        () => {
-          this.changedChildConfig = [];  // clear the array
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.');
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
   }
 
   goToLink(pluginInfo) {

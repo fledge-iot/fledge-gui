@@ -32,7 +32,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public isEnabled = false;
   svcCheckbox: FormControl = new FormControl();
   public categoryChildren = [];
-  public changedChildConfig = [];
   public filterPipeline = [];
   public deletedFilterPipeline = [];
   public filterConfiguration = [];
@@ -251,15 +250,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       );
   }
 
-  /**
-   * Get edited configuration from child config page
-   * @param changedConfig: Object
-   */
-  getChangedConfig(changedConfig) {
-    this.useProxy = changedConfig.useProxy;
-    delete changedConfig.useProxy;
-    this.changedChildConfig = changedConfig;
-  }
 
   proxy() {
     const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {
@@ -271,8 +261,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
 
     if (this.useProxy === 'true') {
-      console.log('this.useProxy', this.useProxy);
-
       document.getElementById('vci-proxy').click();
     }
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
@@ -280,38 +268,14 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       e.click();
     }
 
-    const cel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
-    for (const e of <any>cel) {
+    const securityCel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
+    for (const e of <any>securityCel) {
       e.click();
     }
-    this.updateConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
 
-  public updateConfigConfiguration(configItems) {
-    if (isEmpty(configItems)) {
-      return;
-    }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(configItems.key, configItems.value).
-      subscribe(
-        () => {
-          this.changedChildConfig = [];  // clear the array
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.', true);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
+
 
   /**
    * Open delete modal

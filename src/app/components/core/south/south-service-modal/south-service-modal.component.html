@@ -9,8 +9,7 @@
       <ng-container *ngIf="!isWizard">
         <div class="box">
           <div>
-            <app-config-children (onConfigChanged)="getChangedConfig($event)" [categoryChildren]="categoryChildren"
-              [category]="category">
+            <app-config-children [categoryChildren]="categoryChildren" [category]="category">
             </app-config-children>
           </div>
           <hr>

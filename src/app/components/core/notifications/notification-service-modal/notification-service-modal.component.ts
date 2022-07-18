@@ -37,10 +37,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   state$ = new BehaviorSubject<any>(null);
 
   service;
-
   public categoryChildren = [];
-  public changedChildConfig = [];
-  public changedChildCategoryConfig = [];
 
   @Input() notificationServiceData: {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
@@ -412,70 +409,9 @@ export class NotificationServiceModalComponent implements OnChanges {
     for (const e of <any>cel) {
       e.click();
     }
-    this.updateConfigConfiguration(this.changedChildConfig);
-    this.updateChildCategoryConfiguration(this.changedChildCategoryConfig);
 
     document.getElementById('hidden-save').click();
     this.notificationService.notifyServiceEmitter.next({ isConfigChanged: true });
-  }
-
-  /**
-   * Get edited configuration from child config page
-   * @param changedConfig: Object
-   */
-  getChildChangedConfig(changedConfig) {
-    delete changedConfig.useProxy;
-    this.changedChildCategoryConfig = changedConfig;
-  }
-
-  public updateConfigConfiguration(configItems) {
-    if (isEmpty(configItems)) {
-      return;
-    }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(this.notificationServiceName, configItems).
-      subscribe(
-        () => {
-          this.changedChildConfig = [];  // clear the array
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.', true);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  public updateChildCategoryConfiguration(configItems) {
-    if (isEmpty(configItems)) {
-      return;
-    }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(configItems.key, configItems.value).
-      subscribe(
-        () => {
-          this.changedChildCategoryConfig = [];  // clear the array
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.', true);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
   }
 
   navToSyslogs(name: string) {

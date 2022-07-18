@@ -21,7 +21,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @Input() categoryConfigurationData: any;
   @Input() useProxy = 'false';
   @Input() useFilterProxy = 'false';
-  @Input() useCategoryChildrenProxy = 'false';
+  @Input() useChildrenProxy = 'false';
   @Input() useRuleProxy = 'false';
   @Input() useDeliveryProxy = 'false';
   @Input() formId = '';
@@ -180,7 +180,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       }
     }).filter(f => f !== undefined);
     // condition to check if called from wizard
-    if (this.isWizardCall || this.pageId === 'children') {
+    if (this.isWizardCall) {
       if (this.filesToUpload.length > 0) {
         changedConfigValues.push({ key: 'script', 'value': this.filesToUpload, 'type': 'script' });
       }
@@ -363,7 +363,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public checkButtonProxy() {
     if (this.useProxy === 'false'
       && this.useFilterProxy === 'false'
-      && this.useCategoryChildrenProxy === 'false'
+      && this.useChildrenProxy === 'false'
       && this.useRuleProxy === 'false'
       && this.useDeliveryProxy === 'false') {
       return 'false';

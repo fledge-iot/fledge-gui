@@ -15,17 +15,15 @@
     </ng-container>
   </ul>
 </div>
-<ng-container>
-  <div *ngIf="seletedTab == category?.key">
-    <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
-      [useCategoryChildrenProxy]="useCategoryChildrenProxy" (onConfigChanged)="getChangedConfig($event)">
-    </app-view-config-item>
-  </div>
-</ng-container>
-<ng-container *ngFor="let child of categoryChildren">
-  <div *ngIf="seletedTab == child?.displayName">
-    <app-view-config-item #childrenConfigView [hidden]="!configuration" [categoryConfigurationData]="configuration"
-      [useCategoryChildrenProxy]="useCategoryChildrenProxy" [pageId]="'children'"
-      (onConfigChanged)="getChangedConfig($event)"></app-view-config-item>
-  </div>
-</ng-container>
+
+<app-view-config-item #childrenConfigView [hidden]="seletedTab !== category?.key" [categoryConfigurationData]="category"
+  [useChildrenProxy]="useCategoryChildrenProxy" [formId]="category?.key">
+</app-view-config-item>
+
+<app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Advanced')"
+  [categoryConfigurationData]="advanceConfiguration" [useChildrenProxy]="useCategoryChildrenProxy" formId="advanced">
+</app-view-config-item>
+
+<app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Security')"
+  [categoryConfigurationData]="securityConfiguration" [useChildrenProxy]="useCategoryChildrenProxy" formId="security">
+</app-view-config-item>

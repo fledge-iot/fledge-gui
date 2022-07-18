@@ -31,8 +31,7 @@
           </div>
         </div>
         <div>
-          <app-config-children (onConfigChanged)="getChildChangedConfig($event)" [categoryChildren]="categoryChildren"
-            [category]="category">
+          <app-config-children [categoryChildren]="categoryChildren" [category]="category">
           </app-config-children>
 
           <hr class="hr-text" data-content="">
