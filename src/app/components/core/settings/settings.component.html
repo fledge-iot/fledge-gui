@@ -78,38 +78,6 @@
     <div id="settings-content" class="card-content">
       <div class="columns">
         <div class="column is-6">
-          <label class="label is-small"> Refresh Dashboard Graph</label>
-          <div class="control">
-            <div id="refresh-time-dropdown" class="dropdown">
-              <div class="dropdown-trigger">
-                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)="toggleDropDown('refresh-time-dropdown')">
-                  <span *ngIf="refreshInterval === '5000'">Every 5 Seconds</span>
-                  <span *ngIf="refreshInterval === '10000'">Every 10 Seconds</span>
-                  <span *ngIf="refreshInterval === '15000'">Every 15 Seconds</span>
-                  <span class="icon is-small">
-                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('5000')">Every 5
-                    Seconds</a>
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('10000')">Every 10
-                    Seconds</a>
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('15000')">Every 15
-                    Seconds</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-6">
           <label class="label is-small">Ping/Auto Refresh Interval</label>
           <div class="control">
             <div id="ping-interval-dropdown" class="dropdown">
@@ -139,8 +107,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="columns">
         <div class="column is-6">
           <label class="label is-small">Timestamps</label>
           <div class="control">
@@ -160,6 +126,39 @@
                   <a class="dropdown-item" (click)="toggleDropDown('timezone-dropdown');setTimeZone('local')">Browser
                     timezone</a>
                   <a class="dropdown-item" (click)="toggleDropDown('timezone-dropdown');setTimeZone('utc')">UTC</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column is-6">
+          <label class="label is-small"> Refresh Dashboard Graph</label>
+          <div class="control">
+            <div id="refresh-time-dropdown" class="dropdown">
+              <div class="dropdown-trigger">
+                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                  (click)="toggleDropDown('refresh-time-dropdown')">
+                  <span *ngIf="refreshInterval === '5000'">Every 5 Seconds</span>
+                  <span *ngIf="refreshInterval === '10000'">Every 10 Seconds</span>
+                  <span *ngIf="refreshInterval === '15000'">Every 15 Seconds</span>
+                  <span class="icon is-small">
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('5000')">Every 5
+                    Seconds</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('10000')">Every 10
+                    Seconds</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('refresh-time-dropdown');setDashboardRefreshTime('15000')">Every 15
+                    Seconds</a>
                 </div>
               </div>
             </div>
@@ -192,17 +191,17 @@
       <hr>
       <div class="columns">
         <div class="column is-6">
-          <label class="label is-small">Readings Graph Alpha Control</label>
-          <div class="control">
-            <input type="checkbox" (click)="setAlphControlStatus($event.target.checked)"
-              [checked]="rangeSliderService.getAlphControlStatus()">
-          </div>
-        </div>
-        <div class="column is-6">
           <label class="label is-small">Developer Features</label>
           <div class="control">
             <input type="checkbox" (click)="setDeveloperFeatures($event.target.checked)"
               [checked]="developerFeaturesService.getDeveloperFeatureControl()">
+          </div>
+        </div>
+        <div class="column is-6">
+          <label class="label is-small">Readings Graph Alpha Control</label>
+          <div class="control">
+            <input type="checkbox" (click)="setAlphControlStatus($event.target.checked)"
+              [checked]="rangeSliderService.getAlphControlStatus()">
           </div>
         </div>
       </div>
