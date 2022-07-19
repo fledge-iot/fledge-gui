@@ -31,7 +31,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public useFilterProxy: 'true';
   public isEnabled = false;
   svcCheckbox: FormControl = new FormControl();
-  public categoryChildren = [];
   public filterPipeline = [];
   public deletedFilterPipeline = [];
   public filterConfiguration = [];
@@ -85,7 +84,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (this.service !== undefined) {
       this.getCategory();
-      this.checkIfAdvanceConfig(this.service['name']);
       this.getFilterPipeline();
     }
   }
@@ -126,7 +124,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
     this.notify.emit(false);
     this.filterConfiguration = [];
-    this.categoryChildren = [];
     this.category = null;
     modalWindow.classList.remove('is-active');
   }
@@ -237,19 +234,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.svcCheckbox.reset(false);
     }
   }
-
-  checkIfAdvanceConfig(categoryName) {
-    this.configService.getCategoryConfigChildren(categoryName).
-      subscribe(
-        (data: any) => {
-          this.categoryChildren = data.categories;
-        },
-        error => {
-          console.log('error ', error);
-        }
-      );
-  }
-
 
   proxy() {
     const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {

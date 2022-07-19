@@ -9,7 +9,7 @@
       <ng-container *ngIf="!isWizard">
         <div class="box">
           <div>
-            <app-config-children [categoryChildren]="categoryChildren" [category]="category">
+            <app-config-children *ngIf="category" [category]="category">
             </app-config-children>
           </div>
           <hr>
