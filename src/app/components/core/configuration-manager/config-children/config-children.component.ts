@@ -1,4 +1,4 @@
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, Input, QueryList, SimpleChange, ViewChildren } from '@angular/core';
 
 import { ConfigurationService } from '../../../../services';
 import { ViewConfigItemComponent } from '../view-config-item/view-config-item.component';
@@ -22,15 +22,12 @@ export class ConfigChildrenComponent {
 
   constructor(private configService: ConfigurationService) { }
 
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChange) {
     if (this.category) {
       this.seletedTab = this.category.key
       this.categoryKey = this.category.key;
-    } else if (this.categoryChildren.length > 0) {
-      this.selectTab(this.categoryChildren[0]);
     }
-
-    if (this.categoryChildren.length > 0) {
+    if (changes['categoryChildren']?.currentValue.length > 0) {
       // Filter out Advance and Security category from the main categroy children
       this.categoryChildren = this.categoryChildren.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
       this.categoryChildren.forEach(cat => {
