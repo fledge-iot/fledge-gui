@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
 import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
-import { AlertService, AssetsService, PingService, GenerateCsvService } from '../../../../services';
+import { AlertService, AssetsService, PingService, GenerateCsvService, ProgressBarService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
@@ -14,14 +15,13 @@ import { ReadingsGraphComponent } from '../readings-graph/readings-graph.compone
   styleUrls: ['./assets.component.css']
 })
 export class AssetsComponent implements OnInit, OnDestroy {
-
-  selectedAsset: any; // Selected asset object (assetCode, count)
   MAX_RANGE = MAX_INT_SIZE / 2;
   assets = [];
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
   private isAlive: boolean;
   assetReadings = [];
+  public developerFeaturesStatus = false;
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -29,8 +29,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   constructor(private assetService: AssetsService,
     private alertService: AlertService,
+    private dialogService: DialogService,
     private generateCsvService: GenerateCsvService,
     private docService: DocService,
+    private ngProgress: ProgressBarService,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -44,6 +46,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.developerFeaturesStatus = JSON.parse(sessionStorage.getItem('DEV_FEATURES_STATUS'));
     this.showLoadingSpinner();
     this.getAsset();
     interval(this.refreshInterval)
@@ -60,9 +63,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
         (data: any[]) => {
           this.assets = data;
           this.assets = orderBy(this.assets, ['assetCode'], ['asc']);
-          if (this.selectedAsset) {
-            this.selectedAsset = this.assets.find(a => a.assetCode === this.selectedAsset.assetCode);
-          }
           this.hideLoadingSpinner();
         },
         error => {
@@ -128,6 +128,28 @@ export class AssetsComponent implements OnInit, OnDestroy {
         });
   }
 
+  purgeAssetData(assetCode) {
+    console.log('asset code', assetCode);
+    /** request started */
+    this.ngProgress.start();
+    this.assetService.purgeAssetData(assetCode)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any[]) => {
+          /** request completed */
+          this.ngProgress.done();
+          console.log('purged ', data);
+        }, error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   /**
   * Open asset chart modal dialog
   */
@@ -161,6 +183,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
   goToLink() {
     const urlSlug = 'viewing.html';
     this.docService.goToViewQuickStartLink(urlSlug);
+  }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
   }
 
   public ngOnDestroy(): void {

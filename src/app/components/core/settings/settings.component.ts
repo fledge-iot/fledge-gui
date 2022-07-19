@@ -31,6 +31,7 @@ export class SettingsComponent implements OnInit {
   version;
   scheme; // default protocol
   showAlertMessage = false;
+  developerFeaturesStatus = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -53,6 +54,7 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.developerFeaturesStatus = sessionStorage.getItem('DEV_FEATURES_STATUS') == null ? false : JSON.parse(sessionStorage.getItem('DEV_FEATURES_STATUS'));
     this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
     // get last selected time interval
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
@@ -133,6 +135,11 @@ export class SettingsComponent implements OnInit {
     this.refreshInterval = time;
     localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
     this.pingService.refreshIntervalChanged.next(+time);
+  }
+
+  setDeveloperFeaturesStatus(devStatus: boolean) {
+    this.developerFeaturesStatus = devStatus;
+    sessionStorage.setItem('DEV_FEATURES_STATUS', JSON.stringify(devStatus))
   }
 
   openSSLCertWarningPage() {
