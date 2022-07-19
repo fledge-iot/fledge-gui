@@ -3,7 +3,7 @@ import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
-import { DialogService } from '../confirmation-dialog/dialog.service';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
