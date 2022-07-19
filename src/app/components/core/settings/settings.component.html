@@ -194,7 +194,9 @@
         <div class="column is-6">
           <label class="label is-small">Show Readings Graph Alpha Control</label>
           <div class="control">
-            <div id="alpha-control-dropdown" class="dropdown">
+            <input type="checkbox" (click)="setAlphControlStatus($event.target.checked)"
+              [checked]="rangeSliderService.getAlphControlStatus() === true ? true : false">
+            <!-- <div id="alpha-control-dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('alpha-control-dropdown')">
@@ -212,7 +214,7 @@
                     (click)="toggleDropDown('alpha-control-dropdown');setAlphControlStatus(false)">No</a>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="column is-6">

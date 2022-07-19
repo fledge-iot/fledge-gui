@@ -49,7 +49,7 @@
                       </span>
                     </a>
                   </td>
-                  <td *ngIf="developerFeaturesStatus">
+                  <td *ngIf="developerFeatures">
                     <a (click)="openModal(asset?.assetCode)" class="is-pulled-right">
                       <span class="icon">
                         <i class="fa fa-xs fa-eraser" aria-hidden="true"></i>
@@ -66,8 +66,7 @@
                     </section>
                     <footer class="modal-card-foot">
                       <button class="button is-small" (click)="closeModal(asset?.assetCode)">Cancel</button>
-                      <button class="button is-small is-danger"
-                        (click)="purgeAssetData(asset?.assetCode)">Delete</button>
+                      <button class="button is-small is-danger" (click)="purgeAssetData(asset?.assetCode)">Yes</button>
                     </footer>
                   </app-confirmation-dialog>
                 </tr>

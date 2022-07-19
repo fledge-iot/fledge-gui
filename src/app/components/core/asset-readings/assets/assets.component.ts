@@ -21,7 +21,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   private isAlive: boolean;
   assetReadings = [];
-  public developerFeaturesStatus = false;
+  public developerFeatures = false;
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -46,7 +46,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.developerFeaturesStatus = JSON.parse(sessionStorage.getItem('DEV_FEATURES_STATUS'));
+    this.developerFeatures = JSON.parse(sessionStorage.getItem('DEV_FEATURES_STATUS'));
     this.showLoadingSpinner();
     this.getAsset();
     interval(this.refreshInterval)
