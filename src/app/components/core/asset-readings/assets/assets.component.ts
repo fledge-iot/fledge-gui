@@ -8,6 +8,7 @@ import { AlertService, AssetsService, PingService, GenerateCsvService, ProgressB
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
+import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 
 @Component({
   selector: 'app-assets',
@@ -21,7 +22,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   private isAlive: boolean;
   assetReadings = [];
-  public developerFeatures = false;
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -32,6 +32,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private generateCsvService: GenerateCsvService,
     private docService: DocService,
+    public developerFeaturesService: DeveloperFeaturesService,
     private ngProgress: ProgressBarService,
     private ping: PingService) {
     this.isAlive = true;
@@ -46,7 +47,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.developerFeatures = JSON.parse(sessionStorage.getItem('DEV_FEATURES_STATUS'));
     this.showLoadingSpinner();
     this.getAsset();
     interval(this.refreshInterval)

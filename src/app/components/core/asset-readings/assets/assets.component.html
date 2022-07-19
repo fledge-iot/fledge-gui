@@ -49,7 +49,7 @@
                       </span>
                     </a>
                   </td>
-                  <td *ngIf="developerFeatures">
+                  <td *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
                     <a (click)="openModal(asset?.assetCode)" class="is-pulled-right">
                       <span class="icon">
                         <i class="fa fa-xs fa-eraser" aria-hidden="true"></i>

@@ -195,14 +195,14 @@
           <label class="label is-small">Readings Graph Alpha Control</label>
           <div class="control">
             <input type="checkbox" (click)="setAlphControlStatus($event.target.checked)"
-              [checked]="rangeSliderService.getAlphControlStatus() === true ? true : false">
+              [checked]="rangeSliderService.getAlphControlStatus()">
           </div>
         </div>
         <div class="column is-6">
           <label class="label is-small">Developer Features</label>
           <div class="control">
-            <input type="checkbox" (click)="setDeveloperFeaturesStatus($event.target.checked)"
-              [checked]="developerFeaturesStatus">
+            <input type="checkbox" (click)="setDeveloperFeatures($event.target.checked)"
+              [checked]="developerFeaturesService.getDeveloperFeatureControl()">
           </div>
         </div>
       </div>

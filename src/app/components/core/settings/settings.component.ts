@@ -8,6 +8,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TimezoneService } from '../../../services/timezone.service';
 import { RangeSliderService } from '../../common/range-slider/range-slider.service';
+import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 
 @Component({
   selector: 'app-settings',
@@ -31,13 +32,12 @@ export class SettingsComponent implements OnInit {
   version;
   scheme; // default protocol
   showAlertMessage = false;
-  developerFeaturesStatus = false;
-
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private pingService: PingService,
     private sharedService: SharedService,
     public rangeSliderService: RangeSliderService,
+    public developerFeaturesService: DeveloperFeaturesService,
     public timezoneService: TimezoneService) {
     this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
       localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
@@ -54,7 +54,6 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.developerFeaturesStatus = sessionStorage.getItem('DEV_FEATURES_STATUS') == null ? false : JSON.parse(sessionStorage.getItem('DEV_FEATURES_STATUS'));
     this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
     // get last selected time interval
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
@@ -137,9 +136,12 @@ export class SettingsComponent implements OnInit {
     this.pingService.refreshIntervalChanged.next(+time);
   }
 
-  setDeveloperFeaturesStatus(devStatus: boolean) {
-    this.developerFeaturesStatus = devStatus;
-    sessionStorage.setItem('DEV_FEATURES_STATUS', JSON.stringify(devStatus))
+  setDeveloperFeatures(devStatus: boolean) {
+    this.developerFeaturesService.setDeveloperFeatureControl(devStatus);
+  }
+
+  setAlphControlStatus(status: boolean) {
+    this.rangeSliderService.alphaControl(status);
   }
 
   openSSLCertWarningPage() {
@@ -161,9 +163,5 @@ export class SettingsComponent implements OnInit {
         pingResponse = res;
       });
     return pingResponse;
-  }
-
-  setAlphControlStatus(status: boolean) {
-    this.rangeSliderService.alphaControl(status);
   }
 }
