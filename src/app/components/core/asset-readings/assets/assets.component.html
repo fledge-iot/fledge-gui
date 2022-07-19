@@ -1,6 +1,6 @@
 <div class="container is-fluid">
   <div class="card">
-    <span class="icon is-small tooltip is-tooltip-left is-pulled-right is-hovered" data-tooltip="Help"
+    <span class="icon is-small tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered" data-tooltip="Help"
       (click)="goToLink()">
       <i class="far fa-question-circle"></i>
     </span>
@@ -44,15 +44,15 @@
                   </td>
                   <td>
                     <a (click)="getAssetReadings(asset.assetCode, asset.count)" class="is-pulled-right">
-                      <span class="icon">
-                        <i class="fa fa-xs fa-download" aria-hidden="true"></i>
+                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Export asset readings">
+                        <i class="fa fa-sm fa-download" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
                   <td *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
                     <a (click)="openModal(asset?.assetCode)" class="is-pulled-right">
-                      <span class="icon">
-                        <i class="fa fa-xs fa-eraser" aria-hidden="true"></i>
+                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Purge asset data">
+                        <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
