@@ -129,16 +129,16 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   purgeAssetData(assetCode) {
-    console.log('asset code', assetCode);
     /** request started */
     this.ngProgress.start();
     this.assetService.purgeAssetData(assetCode)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
-        (data: any[]) => {
+        () => {
           /** request completed */
           this.ngProgress.done();
-          console.log('purged ', data);
+          this.alertService.success(`${assetCode}'s  data purged successfully.`);
+          this.closeModal(assetCode);
         }, error => {
           /** request completed */
           this.ngProgress.done();
