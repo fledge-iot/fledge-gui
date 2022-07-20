@@ -34,43 +34,47 @@
                   <td><span class="is-pulled-right">{{asset.count | number}}</span></td>
                   <td>
                     <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
-                      <i class="fa fa-sm fa-chart-line" aria-hidden="true"></i>
+                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Readings">
+                        <i class="fa fa-sm fa-chart-line" aria-hidden="true"></i>
+                      </span>
                     </a>
                   </td>
                   <td>
                     <a (click)="showLatestReading(asset.assetCode)" class="is-pulled-right">
-                      <i class="fa fa-sm fa-bolt"></i>
+                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Latest readings">
+                        <i class="fa fa-sm fa-bolt" aria-hidden="true"></i>
+                      </span>
                     </a>
                   </td>
                   <td>
                     <a (click)="getAssetReadings(asset.assetCode, asset.count)" class="is-pulled-right">
-                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Export asset readings">
+                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Export readings">
                         <i class="fa fa-sm fa-download" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
                   <td *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
-                    <a (click)="openModal(asset?.assetCode)" class="is-pulled-right">
-                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Purge asset data">
+                    <a (click)="setAsset(asset);openModal('confirmation-dialog')" class="is-pulled-right">
+                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Purge data">
                         <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
-                  <app-confirmation-dialog [id]="asset?.assetCode">
-                    <header class="modal-card-head">
-                      <p class="modal-card-title is-size-6">Purge</p>
-                      <button class="delete" aria-label="close" (click)="closeModal(asset?.assetCode)"></button>
-                    </header>
-                    <section class="modal-card-body">
-                      Are you sure, you want to purge the <b>{{asset?.assetCode}}</b> data?
-                    </section>
-                    <footer class="modal-card-foot">
-                      <button class="button is-small" (click)="closeModal(asset?.assetCode)">Cancel</button>
-                      <button class="button is-small is-danger" (click)="purgeAssetData(asset?.assetCode)">Yes</button>
-                    </footer>
-                  </app-confirmation-dialog>
                 </tr>
               <tbody>
+                <app-confirmation-dialog id="confirmation-dialog">
+                  <header class="modal-card-head">
+                    <span class="modal-card-title is-size-6">Purge</span>
+                    <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+                  </header>
+                  <section class="modal-card-body">
+                    Are you sure, you want to purge the <b>{{selectedAssetName}}</b> data?
+                  </section>
+                  <footer class="modal-card-foot">
+                    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+                    <button class="button is-small is-danger" (click)="purgeAssetData(selectedAssetName)">Yes</button>
+                  </footer>
+                </app-confirmation-dialog>
             </table>
           </ng-container>
         </ng-container>

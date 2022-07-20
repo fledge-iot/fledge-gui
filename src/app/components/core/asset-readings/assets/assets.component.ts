@@ -22,6 +22,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   private isAlive: boolean;
   assetReadings = [];
+  selectedAssetName = '';
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -138,7 +139,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(`${assetCode}'s  data purged successfully.`);
-          this.closeModal(assetCode);
+          this.closeModal('confirmation-dialog');
         }, error => {
           /** request completed */
           this.ngProgress.done();
@@ -191,6 +192,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   closeModal(id: string) {
     this.dialogService.close(id);
+  }
+
+  setAsset(asset: any) {
+    this.selectedAssetName = asset.assetCode;
   }
 
   public ngOnDestroy(): void {
