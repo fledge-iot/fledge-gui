@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { DialogService } from './dialog.service';
 
 @Component({
@@ -12,7 +12,13 @@ export class ConfirmationDialogComponent implements OnInit {
   private element: any;
   @ViewChild('confirmationDialog', { static: true }) confirmationDialog: ElementRef;
 
-  constructor(private dialogService: DialogService) {
+  constructor(private dialogService: DialogService) { }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    const alertModal = <HTMLDivElement>document.getElementById(this.id);
+    if (!alertModal.classList.contains('is-active')) {
+      this.toggleModal(false);
+    }
   }
 
   ngOnInit(): void {

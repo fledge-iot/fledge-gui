@@ -1,15 +1,18 @@
 <div id="north-task-modal" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
-    <header class="modal-card-head" style="flex-grow:0;">
-      <p *ngIf="task != undefined" class="modal-card-title is-size-5">
+    <header class="modal-card-head">
+      <span *ngIf="task != undefined" class="modal-card-title is-size-5">
         <ng-container *ngIf="task?.processName === 'north_C'; else nTask">
           {{task.name}} North Service
         </ng-container>
         <ng-template #nTask>
           {{task.name}}
         </ng-template>
-      </p>
+        <button (click)="getNorthData()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">

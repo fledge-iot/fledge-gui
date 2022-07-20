@@ -26,9 +26,19 @@
   }
 }
 
-.tooltip {
+.tooltip-help {
   padding-right: 1.0rem;
   padding-top: 1.0rem !important;
+}
+
+.delete-asset {
+  padding-right: 1.0rem;
+  padding-top: 1.0rem !important;
+  margin-right: 8px !important;
+}
+
+.tooltip {
+  opacity: 1.0 !important;
 }
 
 .is-hovered {

@@ -4,7 +4,7 @@ import { AlertService, ConfigurationService, ProgressBarService, SchedulesServic
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { isEmpty } from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DialogService } from '../confirmation-dialog/dialog.service';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-control-schedule-task-details',

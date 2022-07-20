@@ -2,7 +2,11 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service</p>
+      <span *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service
+        <button (click)="getServiceData()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">

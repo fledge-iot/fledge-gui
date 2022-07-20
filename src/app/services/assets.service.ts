@@ -105,4 +105,17 @@ export class AssetsService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  public purgeAssetData(assetCode) {
+    return this.http.delete(`${this.GET_ASSET}/${encodeURIComponent(assetCode)}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  public purgeAllAssetsData() {
+    return this.http.delete(`${this.GET_ASSET}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
 }
