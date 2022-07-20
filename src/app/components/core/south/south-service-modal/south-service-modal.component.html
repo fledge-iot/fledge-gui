@@ -2,23 +2,21 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service</p>
+      <span *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service
+        <button (click)="refreshPageData()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-view-config-item #serviceConfigView *ngIf="category" [categoryConfigurationData]="category"
-            [useProxy]="useProxy" [pageId]="'modal'"></app-view-config-item>
-          <div *ngIf="childConfiguration != null" class="field is-horizontal is-pulled-right"
-            style="margin-bottom: -1%;">
-            <button class="button is-small is-text"
-              (click)="getAdvanceConfig(childConfiguration)">{{advanceConfigButtonText}}</button>
+          <div>
+            <app-config-children #configChildComponent *ngIf="category" [category]="category">
+            </app-config-children>
           </div>
-          <br />
-          <div [hidden]="!isAdvanceConfig">
-            <app-config-children (onConfigChanged)="getChangedConfig($event)"></app-config-children>
-          </div>
+          <hr>
           <div *ngIf="service != undefined" class="columns">
             <div class="column">
               <div class="field is-horizontal">

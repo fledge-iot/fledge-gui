@@ -21,6 +21,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @Input() categoryConfigurationData: any;
   @Input() useProxy = 'false';
   @Input() useFilterProxy = 'false';
+  @Input() useChildrenProxy = 'false';
   @Input() useRuleProxy = 'false';
   @Input() useDeliveryProxy = 'false';
   @Input() formId = '';
@@ -362,6 +363,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public checkButtonProxy() {
     if (this.useProxy === 'false'
       && this.useFilterProxy === 'false'
+      && this.useChildrenProxy === 'false'
       && this.useRuleProxy === 'false'
       && this.useDeliveryProxy === 'false') {
       return 'false';

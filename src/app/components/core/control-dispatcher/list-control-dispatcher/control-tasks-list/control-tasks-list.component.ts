@@ -7,8 +7,8 @@ import {
   ConfigurationService
 } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
-import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
-import { DialogService } from '../../confirmation-dialog/dialog.service';
+import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
+import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { orderBy, isEmpty } from 'lodash';
 import { Subscription } from 'rxjs';
 

@@ -1,18 +1,17 @@
-import { Component, EventEmitter, Output, OnChanges, Input, SimpleChanges, ViewChild, HostListener } from '@angular/core';
+import { Component, OnChanges, Input, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 import {
   ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService
 } from '../../../../services';
-import {
-  ViewConfigItemComponent
-} from '../../configuration-manager/view-config-item/view-config-item.component';
+
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { Router } from '@angular/router';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -22,11 +21,9 @@ import { Router } from '@angular/router';
 export class NotificationServiceModalComponent implements OnChanges {
   enabled: Boolean;
   category: any;
-  useProxy: string;
   isNotificationServiceAvailable = false;
   isNotificationServiceEnabled = false;
   notificationServiceName = '';
-  changedChildConfig = [];
   availableServices = [];
   notificationServicePackageName = 'fledge-service-notification';
   btnText = 'Add';
@@ -41,14 +38,13 @@ export class NotificationServiceModalComponent implements OnChanges {
   state$ = new BehaviorSubject<any>(null);
 
   service;
-
   @Input() notificationServiceData: {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
   };
-  @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
 
   constructor(
     private router: Router,
@@ -69,7 +65,6 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
     this.enabled = this.isNotificationServiceEnabled;
     this.btnText = 'Add';
-    this.useProxy = 'false';
     if (this.isNotificationServiceAvailable) {
       this.showDeleteBtn = true;
       this.btnText = 'Save';
@@ -79,6 +74,14 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   ngOnInit() {
     this.getNotificationService();
+  }
+
+  refreshPageData() {
+    this.getCategory();
+    if (this.configChildComponent) {
+      this.configChildComponent.getChildConfigData();
+    }
+    this.enabled = this.isNotificationServiceEnabled;
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -106,11 +109,14 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   public getNotificationService() {
+    this.ngProgress.start();
     this.servicesApiService.getServiceByType('Notification')
       .subscribe((res: any) => {
+        this.ngProgress.done();
         this.service = res.services[0];
       },
         (error) => {
+          this.ngProgress.done();
           console.log('service down ', error);
         });
   }
@@ -277,7 +283,6 @@ export class NotificationServiceModalComponent implements OnChanges {
           if (!isEmpty(data)) {
             categoryValues.push(data);
             this.category = { key: this.notificationServiceName, value: categoryValues };
-            this.useProxy = 'true';
           }
           /** request completed */
           this.ngProgress.done();
@@ -396,55 +401,14 @@ export class NotificationServiceModalComponent implements OnChanges {
       this.form.controls['notificationServiceName'].markAsTouched();
       return;
     }
-    if (this.useProxy === 'true') {
-      document.getElementById('vci-proxy').click();
+
+    const cel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
+    for (const e of <any>cel) {
+      e.click();
     }
-    this.updateConfigConfiguration(this.changedChildConfig);
+
     document.getElementById('hidden-save').click();
     this.notificationService.notifyServiceEmitter.next({ isConfigChanged: true });
-  }
-
-  /**
-   * Get edited configuration from child config page
-   * @param changedConfig changed configuration of a selected plugin
-   */
-  getChangedConfig(changedConfig) {
-    if (isEmpty(changedConfig)) {
-      return;
-    }
-    changedConfig = changedConfig.map(el => {
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
-    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
-    this.changedChildConfig = changedConfig;
-  }
-
-  public updateConfigConfiguration(configItems) {
-    if (isEmpty(configItems)) {
-      return;
-    }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(this.notificationServiceName, configItems).
-      subscribe(
-        () => {
-          this.changedChildConfig = [];  // clear the array
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.', true);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
   }
 
   navToSyslogs(name: string) {

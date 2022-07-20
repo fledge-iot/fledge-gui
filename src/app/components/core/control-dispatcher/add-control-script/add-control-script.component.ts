@@ -5,7 +5,7 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, ProgressBarService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
-import { DialogService } from '../confirmation-dialog/dialog.service';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AddStepComponent } from './add-step/add-step.component';
 
 @Component({
