@@ -3,7 +3,7 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <span *ngIf="service != undefined" class="modal-card-title is-size-5">{{service.name}} South Service
-        <button (click)="getServiceData()" class="button is-small" id="refresh-check">
+        <button (click)="refreshPageData()" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </span>
@@ -13,7 +13,7 @@
       <ng-container *ngIf="!isWizard">
         <div class="box">
           <div>
-            <app-config-children *ngIf="category" [category]="category">
+            <app-config-children #configChildComponent *ngIf="category" [category]="category">
             </app-config-children>
           </div>
           <hr>

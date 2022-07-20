@@ -18,6 +18,7 @@ import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -52,6 +53,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
+  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
@@ -82,14 +84,22 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    this.getServiceData();
+    this.getCateogryData();
   }
 
-  getServiceData() {
+  getCateogryData() {
     if (this.service !== undefined) {
       this.getCategory();
       this.getFilterPipeline();
     }
+  }
+
+  refreshPageData() {
+    this.getCateogryData();
+    if (this.configChildComponent) {
+      this.configChildComponent.getChildConfigData();
+    }
+    this.svcCheckbox.setValue(this.service['schedule_enabled']);
   }
 
   onDrop(event: CdkDragDrop<string[]>) {

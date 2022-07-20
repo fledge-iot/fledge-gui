@@ -11,6 +11,7 @@ import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { Router } from '@angular/router';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -43,6 +44,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   };
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
 
   constructor(
     private router: Router,
@@ -72,6 +74,14 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   ngOnInit() {
     this.getNotificationService();
+  }
+
+  refreshPageData() {
+    this.getCategory();
+    if (this.configChildComponent) {
+      this.configChildComponent.getChildConfigData();
+    }
+    this.enabled = this.isNotificationServiceEnabled;
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {

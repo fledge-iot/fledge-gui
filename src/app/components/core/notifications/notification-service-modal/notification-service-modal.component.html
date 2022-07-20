@@ -2,10 +2,13 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
+      <span *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
         Notification Service
-      </p>
-      <p *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</p>
+        <button (click)="refreshPageData()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </span>
+      <span *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</span>
       <button [disabled]="pluginInstallationState" class="delete" aria-label="close"
         (click)="toggleModal(false)"></button>
     </header>
@@ -32,7 +35,7 @@
           </div>
         </div>
         <div>
-          <app-config-children *ngIf="category" [category]="category"></app-config-children>
+          <app-config-children #configChildComponent *ngIf="category" [category]="category"></app-config-children>
           <hr class="hr-text" data-content="">
           <div class="columns">
             <div class="column">

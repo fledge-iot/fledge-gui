@@ -18,6 +18,7 @@ import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -55,6 +56,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
+  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
 
   // Object to hold data of north task to delete
   public deleteTaskData = {
@@ -87,6 +89,15 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     this.getNorthData();
+  }
+
+  refreshPageData() {
+    this.getNorthData();
+    console.log(this.configChildComponent);
+
+    if (this.configChildComponent) {
+      this.configChildComponent.getChildConfigData();
+    }
   }
 
   getNorthData() {

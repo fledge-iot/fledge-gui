@@ -1,7 +1,6 @@
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { ConfigurationService } from '../../../../services';
-import { ViewConfigItemComponent } from '../view-config-item/view-config-item.component';
 
 @Component({
   selector: 'app-config-children',
@@ -16,15 +15,17 @@ export class ConfigChildrenComponent {
   securityConfiguration: any;
 
   categoryChildren = []
-  @Input() category;
-
-  @ViewChildren('childrenConfigView') childrenConfigViewComponents: QueryList<ViewConfigItemComponent>;
+  @Input() category
 
   constructor(
     private configService: ConfigurationService
   ) { }
 
   ngOnInit() {
+    this.getChildConfigData();
+  }
+
+  public getChildConfigData() {
     if (this.category) {
       this.seletedTab = this.category.key
       this.categoryKey = this.category.key;
@@ -47,7 +48,6 @@ export class ConfigChildrenComponent {
         }
       );
   }
-
 
   /**
    * Set configuration of the selected child category
