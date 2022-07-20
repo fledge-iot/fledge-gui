@@ -83,6 +83,10 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
+    this.getServiceData();
+  }
+
+  getServiceData() {
     if (this.service !== undefined) {
       this.getCategory();
       this.checkIfAdvanceConfig(this.service['name']);

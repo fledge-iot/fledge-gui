@@ -87,6 +87,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges() {
+    this.getNorthData();
+  }
+
+  getNorthData() {
     if (this.task !== undefined) {
       this.getCategory();
       this.checkIfAdvanceConfig(this.task['name']);
