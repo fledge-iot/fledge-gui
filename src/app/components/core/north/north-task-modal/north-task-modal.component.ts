@@ -93,8 +93,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   refreshPageData() {
     this.getNorthData();
-    console.log(this.configChildComponent);
-
     if (this.configChildComponent) {
       this.configChildComponent.getChildConfigData();
     }
