@@ -1,16 +1,21 @@
 <div class="container is-fluid">
   <div class="card">
-    <span class="icon is-small tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered" data-tooltip="Help"
-      (click)="goToLink()">
-      <i class="far fa-question-circle"></i>
-    </span>
-    <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
-      <span *ngIf="assets!= undefined && assets.length > 0"
-        class="icon is-small delete-asset tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered"
-        data-tooltip="Purge assets data" (click)="openModal('delete-asset-dialog')">
-        <i class="fa fa-eraser"></i>
+    <div>
+      <span class="icon is-small tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered" data-tooltip="Help"
+        (click)="goToLink()">
+        <i class="far fa-question-circle"></i>
       </span>
-    </ng-container>
+      <span *ngIf="!isAlive" class="icon is-small is-pulled-right is-hovered assets-control" (click)="getAsset()">
+        <i class="fa fa-sm fa-sync-alt" aria-hidden="true"></i>
+      </span>
+      <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
+        <span *ngIf="assets!= undefined && assets.length > 0"
+          class="icon is-small tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered assets-control"
+          data-tooltip="Purge assets data" (click)="openModal('delete-asset-dialog')">
+          <i class="fa fa-eraser"></i>
+        </span>
+      </ng-container>
+    </div>
     <div class="card-content">
       <div class="content">
         <div *ngIf="showSpinner" class="app-loading">
