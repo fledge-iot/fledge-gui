@@ -99,11 +99,14 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   public getNotificationService() {
+    this.ngProgress.start();
     this.servicesApiService.getServiceByType('Notification')
       .subscribe((res: any) => {
+        this.ngProgress.done();
         this.service = res.services[0];
       },
         (error) => {
+          this.ngProgress.done();
           console.log('service down ', error);
         });
   }

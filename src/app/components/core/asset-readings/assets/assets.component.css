@@ -31,6 +31,12 @@
   padding-top: 1.0rem !important;
 }
 
+.delete-asset {
+  padding-right: 1.0rem;
+  padding-top: 1.0rem !important;
+  margin-right: 5px !important;
+}
+
 .tooltip {
   opacity: 1.0 !important;
 }

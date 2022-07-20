@@ -172,6 +172,30 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.showSpinner = false;
   }
 
+  deleteAsset() {
+    /** request started */
+    this.ngProgress.start();
+    this.assetService.deleteAsset()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          console.log('data', data);
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(`All buffered assets removed successfully.`);
+          // this.closeModal('confirmation-dialog');
+          this.getAsset();
+        }, error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   onNotify(event) {
     this.isAlive = event;
     interval(this.refreshInterval)

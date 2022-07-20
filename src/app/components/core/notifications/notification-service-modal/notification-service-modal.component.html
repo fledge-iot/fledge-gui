@@ -3,7 +3,8 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <p *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
-        Notification Service</p>
+        Notification Service
+      </p>
       <p *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</p>
       <button [disabled]="pluginInstallationState" class="delete" aria-label="close"
         (click)="toggleModal(false)"></button>
