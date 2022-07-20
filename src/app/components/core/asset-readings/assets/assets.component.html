@@ -4,9 +4,10 @@
       (click)="goToLink()">
       <i class="far fa-question-circle"></i>
     </span>
-    <span *ngIf="assets!= undefined && assets.length > 0" class="icon is-small is-hovered is-pulled-right delete-asset"
-      (click)="openModal('delete-asset-dialog')">
-      <i class="far fa-trash-alt"></i>
+    <span *ngIf="assets!= undefined && assets.length > 0"
+      class="icon is-small delete-asset tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered"
+      data-tooltip="Purge assets data" (click)="openModal('delete-asset-dialog')">
+      <i class="fa fa-eraser"></i>
     </span>
 
     <div class="card-content">
@@ -91,7 +92,7 @@
               </section>
               <footer class="modal-card-foot">
                 <button class="button is-small" (click)="closeModal('delete-asset-dialog')">Cancel</button>
-                <button class="button is-small is-danger" (click)="deleteAsset()">Yes</button>
+                <button class="button is-small is-danger" (click)="purgeAllAssetsData()">Yes</button>
               </footer>
             </app-confirmation-dialog>
           </ng-container>

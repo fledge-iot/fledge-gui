@@ -172,10 +172,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.showSpinner = false;
   }
 
-  deleteAsset() {
+  purgeAllAssetsData() {
     /** request started */
     this.ngProgress.start();
-    this.assetService.deleteAsset()
+    this.assetService.purgeAllAssetsData()
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {

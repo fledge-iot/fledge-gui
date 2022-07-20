@@ -112,7 +112,7 @@ export class AssetsService {
       catchError(error => throwError(error)));
   }
 
-  public deleteAsset() {
+  public purgeAllAssetsData() {
     return this.http.delete(`${this.GET_ASSET}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
