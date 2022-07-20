@@ -44,7 +44,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public filterConfiguration = [];
   public isFilterDeleted = false;
   public confirmationDialogData = {};
-  public categoryChildren = [];
   public btnTxt = '';
   public selectedFilterPlugin;
 
@@ -93,7 +92,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   getNorthData() {
     if (this.task !== undefined) {
       this.getCategory();
-      this.checkIfAdvanceConfig(this.task['name']);
       this.getFilterPipeline();
       this.btnTxt = this.task['processName'] === 'north_C' ? 'Service' : 'Instance';
     }
@@ -485,18 +483,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  checkIfAdvanceConfig(categoryName: string) {
-    this.configService.getCategoryConfigChildren(categoryName).
-      subscribe(
-        (data: any) => {
-          this.categoryChildren = data.categories;
-        },
-        error => {
-          console.log('error ', error);
-        }
-      );
   }
 
   goToLink(pluginInfo) {

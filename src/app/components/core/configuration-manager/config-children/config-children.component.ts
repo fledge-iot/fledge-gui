@@ -15,30 +15,39 @@ export class ConfigChildrenComponent {
   advanceConfiguration: any;
   securityConfiguration: any;
 
-  @Input() categoryChildren = []
+  categoryChildren = []
   @Input() category;
 
   @ViewChildren('childrenConfigView') childrenConfigViewComponents: QueryList<ViewConfigItemComponent>;
 
-  constructor(private configService: ConfigurationService) { }
+  constructor(
+    private configService: ConfigurationService
+  ) { }
 
-  ngOnChanges() {
+  ngOnInit() {
     if (this.category) {
       this.seletedTab = this.category.key
       this.categoryKey = this.category.key;
-    } else if (this.categoryChildren.length > 0) {
-      this.selectTab(this.categoryChildren[0]);
-    }
-
-    if (this.categoryChildren.length > 0) {
-      // Filter out Advance and Security category from the main categroy children
-      this.categoryChildren = this.categoryChildren.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
-      this.categoryChildren.forEach(cat => {
-        // Get child category configuration
-        this.getConfig(cat);
-      });
+      this.checkIfAdvanceConfig(this.category.key)
     }
   }
+
+  checkIfAdvanceConfig(categoryName: string) {
+    this.configService.getCategoryConfigChildren(categoryName).
+      subscribe(
+        (data: any) => {
+          this.categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
+          this.categoryChildren.forEach(cat => {
+            // Get child category configuration
+            this.getConfig(cat);
+          });
+        },
+        error => {
+          console.log('error ', error);
+        }
+      );
+  }
+
 
   /**
    * Set configuration of the selected child category

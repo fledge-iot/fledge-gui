@@ -18,7 +18,7 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-config-children [categoryChildren]="categoryChildren" [category]="category">
+          <app-config-children *ngIf="category" [category]="category">
           </app-config-children>
           <hr>
           <form name="task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>

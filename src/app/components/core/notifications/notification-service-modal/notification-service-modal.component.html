@@ -31,9 +31,7 @@
           </div>
         </div>
         <div>
-          <app-config-children [categoryChildren]="categoryChildren" [category]="category">
-          </app-config-children>
-
+          <app-config-children *ngIf="category" [category]="category"></app-config-children>
           <hr class="hr-text" data-content="">
           <div class="columns">
             <div class="column">

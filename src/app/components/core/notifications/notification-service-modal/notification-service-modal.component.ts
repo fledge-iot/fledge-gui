@@ -37,8 +37,6 @@ export class NotificationServiceModalComponent implements OnChanges {
   state$ = new BehaviorSubject<any>(null);
 
   service;
-  public categoryChildren = [];
-
   @Input() notificationServiceData: {
     notificationServiceAvailable: boolean, notificationServiceEnabled: boolean,
     notificationServiceName: string
@@ -69,7 +67,6 @@ export class NotificationServiceModalComponent implements OnChanges {
       this.showDeleteBtn = true;
       this.btnText = 'Save';
       this.getCategory();
-      this.checkIfAdvanceConfig(this.notificationServiceName);
     }
   }
 
@@ -99,18 +96,6 @@ export class NotificationServiceModalComponent implements OnChanges {
       notificationServiceModal.classList.remove('is-active');
       this.category = '';
     }
-  }
-
-  checkIfAdvanceConfig(categoryName) {
-    this.configService.getCategoryConfigChildren(categoryName).
-      subscribe(
-        (data: any) => {
-          this.categoryChildren = data.categories;
-        },
-        error => {
-          console.log('error ', error);
-        }
-      );
   }
 
   public getNotificationService() {
@@ -363,7 +348,6 @@ export class NotificationServiceModalComponent implements OnChanges {
           this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
           this.toggleModal(false);
           this.form.reset();
-          this.categoryChildren = [];
         },
         error => {
           this.ngProgress.done();
