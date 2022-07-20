@@ -4,12 +4,13 @@
       (click)="goToLink()">
       <i class="far fa-question-circle"></i>
     </span>
-    <span *ngIf="assets!= undefined && assets.length > 0"
-      class="icon is-small delete-asset tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered"
-      data-tooltip="Purge assets data" (click)="openModal('delete-asset-dialog')">
-      <i class="fa fa-eraser"></i>
-    </span>
-
+    <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
+      <span *ngIf="assets!= undefined && assets.length > 0"
+        class="icon is-small delete-asset tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered"
+        data-tooltip="Purge assets data" (click)="openModal('delete-asset-dialog')">
+        <i class="fa fa-eraser"></i>
+      </span>
+    </ng-container>
     <div class="card-content">
       <div class="content">
         <div *ngIf="showSpinner" class="app-loading">
