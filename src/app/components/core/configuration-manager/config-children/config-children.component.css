@@ -11,3 +11,18 @@
 .tooltip.is-tooltip-multiline::before {
   min-width: 16rem !important;
 }
+
+.highlight {
+  border: 1px solid transparent;
+  border-color: #dbdbdb;
+  border-top-color: transparent!important;
+  border-radius: 4px;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  position: relative;
+  padding: 1rem;
+}
+
+.tabs {
+  margin-bottom: 0px !important;
+}
