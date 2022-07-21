@@ -9,9 +9,9 @@
         <i class="fa fa-sm fa-sync-alt" aria-hidden="true"></i>
       </span>
       <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
-        <span *ngIf="assets!= undefined && assets.length > 0"
+        <span *ngIf="assets?.length > 0"
           class="icon is-small tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered assets-control"
-          data-tooltip="Purge assets data" (click)="openModal('delete-asset-dialog')">
+          data-tooltip="Purge assets data" (click)="openModal('purge-all-assets-dialog')">
           <i class="fa fa-eraser"></i>
         </span>
       </ng-container>
@@ -66,7 +66,7 @@
                     </a>
                   </td>
                   <td *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
-                    <a (click)="setAsset(asset);openModal('confirmation-dialog')" class="is-pulled-right">
+                    <a (click)="setAsset(asset);openModal('purge-asset-dialog')" class="is-pulled-right">
                       <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Purge data">
                         <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
                       </span>
@@ -74,30 +74,30 @@
                   </td>
                 </tr>
               <tbody>
-                <app-confirmation-dialog id="confirmation-dialog">
+                <app-confirmation-dialog id="purge-asset-dialog">
                   <header class="modal-card-head">
                     <span class="modal-card-title is-size-6">Purge</span>
-                    <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+                    <button class="delete" aria-label="close" (click)="closeModal('purge-asset-dialog')"></button>
                   </header>
                   <section class="modal-card-body">
                     Are you sure, you want to purge the <b>{{selectedAssetName}}</b> data?
                   </section>
                   <footer class="modal-card-foot">
-                    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+                    <button class="button is-small" (click)="closeModal('purge-asset-dialog')">Cancel</button>
                     <button class="button is-small is-danger" (click)="purgeAssetData(selectedAssetName)">Yes</button>
                   </footer>
                 </app-confirmation-dialog>
             </table>
-            <app-confirmation-dialog id="delete-asset-dialog">
+            <app-confirmation-dialog id="purge-all-assets-dialog">
               <header class="modal-card-head">
                 <span class="modal-card-title is-size-6">Delete</span>
-                <button class="delete" aria-label="close" (click)="closeModal('delete-asset-dialog')"></button>
+                <button class="delete" aria-label="close" (click)="closeModal('purge-all-assets-dialog')"></button>
               </header>
               <section class="modal-card-body">
                 Are you sure, All buffered assets will be removed if this action is continued?
               </section>
               <footer class="modal-card-foot">
-                <button class="button is-small" (click)="closeModal('delete-asset-dialog')">Cancel</button>
+                <button class="button is-small" (click)="closeModal('purge-all-assets-dialog')">Cancel</button>
                 <button class="button is-small is-danger" (click)="purgeAllAssetsData()">Yes</button>
               </footer>
             </app-confirmation-dialog>

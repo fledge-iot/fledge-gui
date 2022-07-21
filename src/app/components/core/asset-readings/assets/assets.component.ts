@@ -73,7 +73,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           this.hideLoadingSpinner();
         },
         error => {
-          /** request completed */
+          /** request completed but error */
           this.ngProgress.done();
           this.hideLoadingSpinner();
           if (error.status === 0) {
@@ -147,10 +147,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(`${assetCode}'s  data purged successfully.`);
-          this.closeModal('confirmation-dialog');
+          this.closeModal('purge-asset-dialog');
           this.getAsset();
         }, error => {
-          /** request completed */
+          /** request completed but error */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -191,10 +191,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(`All buffered assets removed successfully.`);
-          this.closeModal('delete-asset-dialog');
+          this.closeModal('purge-all-assets-dialog');
           this.getAsset();
         }, error => {
-          /** request completed */
+          /** request completed but error */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
