@@ -20,7 +20,6 @@
         <div class="box">
           <app-config-children #configChildComponent *ngIf="category" [category]="category">
           </app-config-children>
-          <hr>
           <form name="task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
             <div class="columns">
               <div class="column">

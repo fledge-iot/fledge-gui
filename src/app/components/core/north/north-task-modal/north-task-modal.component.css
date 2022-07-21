@@ -92,3 +92,7 @@ a {
   cursor: pointer !important;
   padding-top: 1rem;
 }
+
+#taskForm {
+  margin-top: 10px;
+}

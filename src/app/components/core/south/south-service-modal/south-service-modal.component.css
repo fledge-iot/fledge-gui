@@ -92,3 +92,7 @@ a {
   cursor: pointer !important;
   padding-top: 1rem;
 }
+
+.enable-div {
+  margin-top: 10px;
+}
