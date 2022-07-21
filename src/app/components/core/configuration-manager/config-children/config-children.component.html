@@ -15,15 +15,20 @@
     </ng-container>
   </ul>
 </div>
+<div>
+  <p [ngClass]="{'highlight': seletedTab}">
+    <app-view-config-item #childrenConfigView [hidden]="seletedTab !== category?.key"
+      [categoryConfigurationData]="category" [useChildrenProxy]="useCategoryChildrenProxy" [formId]="category?.key">
+    </app-view-config-item>
 
-<app-view-config-item #childrenConfigView [hidden]="seletedTab !== category?.key" [categoryConfigurationData]="category"
-  [useChildrenProxy]="useCategoryChildrenProxy" [formId]="category?.key">
-</app-view-config-item>
+    <app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Advanced')"
+      [categoryConfigurationData]="advanceConfiguration" [useChildrenProxy]="useCategoryChildrenProxy"
+      formId="advanced">
+    </app-view-config-item>
 
-<app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Advanced')"
-  [categoryConfigurationData]="advanceConfiguration" [useChildrenProxy]="useCategoryChildrenProxy" formId="advanced">
-</app-view-config-item>
-
-<app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Security')"
-  [categoryConfigurationData]="securityConfiguration" [useChildrenProxy]="useCategoryChildrenProxy" formId="security">
-</app-view-config-item>
+    <app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Security')"
+      [categoryConfigurationData]="securityConfiguration" [useChildrenProxy]="useCategoryChildrenProxy"
+      formId="security">
+    </app-view-config-item>
+  </p>
+</div>

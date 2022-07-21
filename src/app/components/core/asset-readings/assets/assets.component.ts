@@ -20,7 +20,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assets = [];
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
-  private isAlive: boolean;
+  public isAlive: boolean;
   assetReadings = [];
   selectedAssetName = '';
 
@@ -58,15 +58,23 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   public getAsset(): void {
+    /** request started */
+    if (!this.isAlive) {
+      this.ngProgress.start();
+    }
     this.assetService.getAsset()
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
+          /** request completed */
+          this.ngProgress.done();
           this.assets = data;
           this.assets = orderBy(this.assets, ['assetCode'], ['asc']);
           this.hideLoadingSpinner();
         },
         error => {
+          /** request completed but error */
+          this.ngProgress.done();
           this.hideLoadingSpinner();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -139,9 +147,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(`${assetCode}'s  data purged successfully.`);
-          this.closeModal('confirmation-dialog');
+          this.closeModal('purge-asset-dialog');
+          this.getAsset();
         }, error => {
-          /** request completed */
+          /** request completed but error */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -178,15 +187,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.assetService.purgeAllAssetsData()
       .pipe(takeUntil(this.destroy$))
       .subscribe(
-        (data: any) => {
-          console.log('data', data);
+        () => {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(`All buffered assets removed successfully.`);
-          // this.closeModal('confirmation-dialog');
+          this.closeModal('purge-all-assets-dialog');
           this.getAsset();
         }, error => {
-          /** request completed */
+          /** request completed but error */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
