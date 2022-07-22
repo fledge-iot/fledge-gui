@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AlertService, ProgressBarService } from '../../../../services';
 import { PluginPersistDataService } from './plugin-persist-data.service';
@@ -13,11 +13,14 @@ export class PluginPersistDataComponent implements OnInit {
   @Input() pluginName;
   @Input() serviceStaus = false;
   public pluginData = '';
-  public isJsonExtension = true;
+  public pluginDataToImport = '';
+  public isJsonExtension;
   // TODO: FOGL-6693
   public plugins = [] // add plugins for testing
   public selectedPlugin = '';
   noPersistDataMessage = '';
+
+  @ViewChild('fileInput') fileInput: ElementRef;
 
   constructor(
     public pluginDataService: PluginPersistDataService,
@@ -43,6 +46,7 @@ export class PluginPersistDataComponent implements OnInit {
     this.pluginDataService.getData(this.serviceName, pluginName)
       .subscribe(
         (res: any) => {
+          console.log('res', res);
           this.pluginData = res.data;
           /** request completed */
           this.ngProgress.done();
@@ -70,7 +74,7 @@ export class PluginPersistDataComponent implements OnInit {
   }
 
   onPluginDataFileChange(event: any) {
-    this.pluginData = '';
+    this.pluginDataToImport = '';
     if (event.target.files.length !== 0) {
       const fileName = event.target.files[0].name;
       const ext = fileName.substr(fileName.lastIndexOf('.') + 1);
@@ -84,14 +88,12 @@ export class PluginPersistDataComponent implements OnInit {
         const fileReader = new FileReader();
         fileReader.readAsText(file);
         fileReader.onload = () => {
-          this.pluginData = JSON.parse(JSON.stringify(fileReader.result));
+          this.pluginDataToImport = JSON.parse(JSON.stringify(fileReader.result));
           console.log('file', this.pluginData);
-
         };
       }
     }
   }
-
 
   exportPluginData(pluginData) {
     const str = JSON.stringify(pluginData);
@@ -110,7 +112,7 @@ export class PluginPersistDataComponent implements OnInit {
   }
 
   importPluginData() {
-    const payload = { data: JSON.parse(this.pluginData) };
+    const payload = { data: JSON.parse(this.pluginDataToImport) };
     /** request started */
     this.ngProgress.start();
     this.pluginDataService.importData(this.serviceName, this.pluginName, payload)
@@ -142,7 +144,8 @@ export class PluginPersistDataComponent implements OnInit {
           this.alertService.success(data.result);
           /** request completed */
           this.ngProgress.done();
-          this.closeModal('delete-plugin-data-confirmation-dialog')
+          this.closeModal('delete-plugin-data-confirmation-dialog');
+          this.getData(this.pluginName);
         },
         error => {
           /** request completed but error */
@@ -153,6 +156,12 @@ export class PluginPersistDataComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  resetFileControl() {
+    this.fileInput.nativeElement.value = "";
+    this.pluginDataToImport = '';
+    this.isJsonExtension = false;
   }
 
 }

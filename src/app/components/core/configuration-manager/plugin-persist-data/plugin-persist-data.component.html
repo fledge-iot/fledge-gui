@@ -65,8 +65,9 @@
 <!-- Import plugin data -->
 <app-confirmation-dialog id="import-plugin-data-dialog">
   <header class="modal-card-head">
-    <span class="modal-card-title is-size-6">{{pluginName}}</span>
-    <button class="delete" aria-label="close" (click)="closeModal('import-plugin-data-dialog')"></button>
+    <span class="modal-card-title is-size-6">{{pluginName}} Data</span>
+    <button class="delete" aria-label="close"
+      (click)="closeModal('import-plugin-data-dialog');resetFileControl()"></button>
   </header>
   <section class="modal-card-body">
     <div class="columns">
@@ -88,11 +89,10 @@
                         <i class="fa fa-sm fa-upload"></i>
                       </span>
                       <input type="file" required id="pluginData" (change)="onPluginDataFileChange($event)" #fileInput>
-                      <small *ngIf="!isJsonExtension" class="help is-danger level-left">Not a 'json'
-                        file.</small>
                     </span>
                   </label>
                 </div>
+                <small *ngIf="!isJsonExtension" class="help is-danger level-left">*json file.</small>
               </div>
             </div>
           </div>
@@ -101,8 +101,9 @@
     </div>
   </section>
   <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('import-plugin-data-dialog')">Cancel</button>
-    <button *ngIf="!serviceStaus" class="button is-small is-danger" (click)="importPluginData()">Yes</button>
+    <button class="button is-small" (click)="closeModal('import-plugin-data-dialog');resetFileControl()">Cancel</button>
+    <button *ngIf="!serviceStaus" class="button is-small is-success" [disabled]="!isJsonExtension"
+      (click)="importPluginData()">Import</button>
   </footer>
 </app-confirmation-dialog>
 
