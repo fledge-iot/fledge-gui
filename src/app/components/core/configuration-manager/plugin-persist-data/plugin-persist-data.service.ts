@@ -8,7 +8,7 @@ import { environment } from '../../../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class PluginDataService {
+export class PluginPersistDataService {
   private SERVICE_URL = environment.BASE_URL + 'service';
   constructor(private http: HttpClient) { }
 

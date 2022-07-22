@@ -1,39 +1,48 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AlertService, ProgressBarService } from '../../../../services';
-import { PluginDataService } from './plugin-data.service';
+import { PluginPersistDataService } from './plugin-persist-data.service';
 
 @Component({
-  selector: 'app-plugin-dev-data',
-  templateUrl: './plugin-dev-data.component.html',
-  styleUrls: ['./plugin-dev-data.component.css']
+  selector: 'app-plugin-persist-data',
+  templateUrl: './plugin-persist-data.component.html',
+  styleUrls: ['./plugin-persist-data.component.css']
 })
-export class PluginDevDataComponent implements OnInit {
+export class PluginPersistDataComponent implements OnInit {
   @Input() serviceName;
   @Input() pluginName;
-  public pluginData;
+  @Input() serviceStaus = false;
+  public pluginData = '';
   public isJsonExtension = true;
-  public selectedTheme = 'default';
+  // TODO: FOGL-6693
+  public plugins = [] // add plugins for testing
+  public selectedPlugin = '';
+  noPersistDataMessage = '';
 
   constructor(
-    public pluginDataService: PluginDataService,
+    public pluginDataService: PluginPersistDataService,
     private alertService: AlertService,
     private dialogService: DialogService,
     public ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
+    // add first plugin in plugins array
+    this.plugins.unshift(this.pluginName)
+    console.log('plugins', this.plugins);
     console.log('serviceName', this.serviceName);
     console.log('pluginName', this.pluginName);
-    this.getData();
+    this.getData(this.plugins[0]); // show data of the first plugin in the list
   }
 
-  getData() {
+  getData(pluginName: string) {
+    this.pluginData = '';
+    this.noPersistDataMessage = '';
+    this.selectedPlugin = pluginName;
     /** request started */
     this.ngProgress.start();
-    this.pluginDataService.getData(this.serviceName, this.pluginName)
+    this.pluginDataService.getData(this.serviceName, pluginName)
       .subscribe(
         (res: any) => {
-          console.log('data', res.data);
           this.pluginData = res.data;
           /** request completed */
           this.ngProgress.done();
@@ -43,6 +52,9 @@ export class PluginDevDataComponent implements OnInit {
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
+          } else if (error.status == 404) {
+            console.log('err', error);
+            this.noPersistDataMessage = error.statusText;
           } else {
             this.alertService.error(error.statusText);
           }
@@ -72,14 +84,16 @@ export class PluginDevDataComponent implements OnInit {
         const fileReader = new FileReader();
         fileReader.readAsText(file);
         fileReader.onload = () => {
-          this.pluginData = fileReader.result;
+          this.pluginData = JSON.parse(JSON.stringify(fileReader.result));
+          console.log('file', this.pluginData);
+
         };
       }
     }
   }
 
 
-  exportPluginData(pluginData: any) {
+  exportPluginData(pluginData) {
     const str = JSON.stringify(pluginData);
     const bytes = new TextEncoder().encode(str);
     const blob = new Blob([bytes], {
@@ -96,18 +110,17 @@ export class PluginDevDataComponent implements OnInit {
   }
 
   importPluginData() {
-    const payload = { data: JSON.parse(JSON.stringify(this.pluginData)) };
-    console.log('plugin data', payload);
+    const payload = { data: JSON.parse(this.pluginData) };
     /** request started */
     this.ngProgress.start();
     this.pluginDataService.importData(this.serviceName, this.pluginName, payload)
       .subscribe(
         (data: any) => {
-          this.pluginData = data.result;
           this.alertService.success(data.result);
           /** request completed */
           this.ngProgress.done();
-          this.closeModal('import-plugin-data-dialog')
+          this.closeModal('import-plugin-data-dialog');
+          this.getData(this.pluginName);
         },
         error => {
           /** request completed but error */
@@ -126,10 +139,10 @@ export class PluginDevDataComponent implements OnInit {
     this.pluginDataService.deleteData(this.serviceName, this.pluginName)
       .subscribe(
         (data: any) => {
-          console.log('data', data);
           this.alertService.success(data.result);
           /** request completed */
           this.ngProgress.done();
+          this.closeModal('delete-plugin-data-confirmation-dialog')
         },
         error => {
           /** request completed but error */

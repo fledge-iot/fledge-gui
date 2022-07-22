@@ -3,10 +3,14 @@
 }
 
 .dropdown-content {
- width: 80% !important;
+ max-width: max-content !important;
 }
 
 .is-disable{
   pointer-events: none;
   opacity: .65;
+  }
+
+  .dropdown {
+    width: auto !important;
   }

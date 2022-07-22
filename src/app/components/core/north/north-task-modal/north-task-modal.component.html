@@ -18,10 +18,10 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-config-children #configChildComponent *ngIf="category" [category]="category"
-            [plugin]="task?.plugin.name">
+          <app-config-children #configChildComponent *ngIf="category" [category]="category" [plugin]="task?.plugin.name"
+            [serviceStatus]="enabled">
           </app-config-children>
-          <form name="task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
+          <form name=" task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
             <div class="columns">
               <div class="column">
                 <div class="field is-horizontal">

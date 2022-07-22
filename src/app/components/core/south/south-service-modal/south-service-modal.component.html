@@ -12,7 +12,8 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isWizard">
         <div class="box">
-          <app-config-children #configChildComponent *ngIf="category" [category]="category">
+          <app-config-children #configChildComponent *ngIf="category" [category]="category"
+            [plugin]="service?.plugin.name" [serviceStatus]="isEnabled">
           </app-config-children>
           <div *ngIf="service != undefined" class="columns">
             <div class="column">

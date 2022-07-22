@@ -38,7 +38,8 @@
       formId="security">
     </app-view-config-item>
 
-    <app-plugin-dev-data *ngIf="seletedTab == 'developer'" [serviceName]="category?.key" [pluginName]="plugin">
-    </app-plugin-dev-data>
+    <app-plugin-persist-data *ngIf="seletedTab == 'developer'" [serviceStaus]="serviceStatus"
+      [serviceName]="category?.key" [pluginName]="plugin">
+    </app-plugin-persist-data>
   </p>
 </div>

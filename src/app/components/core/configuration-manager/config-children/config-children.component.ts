@@ -19,6 +19,7 @@ export class ConfigChildrenComponent {
   categoryChildren = [];
   @Input() category;
   @Input() plugin;
+  @Input() serviceStatus = false;
 
   constructor(
     private configService: ConfigurationService,
