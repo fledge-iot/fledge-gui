@@ -1,0 +1,71 @@
+<div class="container is-fluid">
+  <div class="columns">
+    <div class="column is-10">
+      <pre>{{pluginData | json}}</pre>
+    </div>
+    <div class="column is-2">
+      <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+          <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+            <span class="icon is-small">
+              <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
+            </span>
+          </a>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <a [ngClass]="{'is-disable': pluginData}" class="dropdown-item"
+              (click)="openModal('import-plugin-data-dialog')">
+              Import the data
+            </a>
+            <a [ngClass]="{'is-disable': !pluginData}" class="dropdown-item" (click)="exportPluginData(pluginData)">
+              Export the data
+            </a>
+            <a [ngClass]="{'is-disable': !pluginData}" class="dropdown-item" (click)="deleteData()">
+              Delete the data
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import plugin data -->
+<app-confirmation-dialog id="import-plugin-data-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">{{pluginName}}</span>
+    <button class="delete" aria-label="close" (click)="closeModal('import-plugin-data-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    <div class="columns">
+      <div class="column">
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label has-text-left">Browse file</label>
+          </div>
+          <div class="field-body">
+            <div class="field ">
+              <div class="file is-fullwidth">
+                <label class="file-label">
+                  <span class="file-cta is-fullwidth">
+                    <span class="file-icon">
+                      <i class="fa fa-sm fa-upload"></i>
+                    </span>
+                    <input type="file" required id="pluginData" (change)="onPluginDataFileChange($event)" #fileInput>
+                    <small *ngIf="!isJsonExtension" class="help is-danger level-left">Not a 'json'
+                      file.</small>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('import-plugin-data-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="importPluginData()">Yes</button>
+  </footer>
+</app-confirmation-dialog>

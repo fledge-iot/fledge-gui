@@ -1,0 +1,12 @@
+.context-menu {
+  border: none;
+}
+
+.dropdown-content {
+ width: 80% !important;
+}
+
+.is-disable{
+  pointer-events: none;
+  opacity: .65;
+  }
