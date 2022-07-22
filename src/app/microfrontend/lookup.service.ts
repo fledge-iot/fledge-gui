@@ -11,7 +11,6 @@ export class LookupService {
         .then(jsonData => {
           return Promise.resolve(jsonData);
         }).catch(() => {
-          // console.error('json load error', err);
           return Promise.resolve([]);
         });
     } else {
