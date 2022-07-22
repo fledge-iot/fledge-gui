@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AlertService, SharedService, ProgressBarService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
-import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
-import { DialogService } from '../../confirmation-dialog/dialog.service';
+import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
+import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { orderBy } from 'lodash';
 
 @Component({

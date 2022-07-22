@@ -2,9 +2,13 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
-        Notification Service</p>
-      <p *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</p>
+      <span *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
+        Notification Service
+        <button (click)="refreshPageData()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </span>
+      <span *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</span>
       <button [disabled]="pluginInstallationState" class="delete" aria-label="close"
         (click)="toggleModal(false)"></button>
     </header>
@@ -30,19 +34,19 @@
             </div>
           </div>
         </div>
-        <app-view-config-item #notificationConfigView *ngIf="category" [categoryConfigurationData]="category"
-          [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'modal'">
-        </app-view-config-item>
-        <div class="columns">
-          <div class="column">
-            <div class="field is-horizontal">
-              <div class="field-label has-text-left">
-                <label class="label">Enabled</label>
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
-                    [(ngModel)]="enabled">
+        <div>
+          <app-config-children #configChildComponent *ngIf="category" [category]="category"></app-config-children>
+          <div class="columns">
+            <div class="column">
+              <div class="field is-horizontal enable-div">
+                <div class="field-label has-text-left">
+                  <label class="label">Enabled</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
+                      [(ngModel)]="enabled">
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,7 +1,10 @@
 @media screen and (min-width: 769px) {
-    .field-body {
-      flex-grow : 2 !important;
-    }
+  .modal-card {
+    width: 70%;
+  }
+  .field-body {
+    flex-grow: 2 !important;
+  }
 }
 
 hr {
@@ -42,4 +45,8 @@ hr {
 .is-hovered {
   cursor: pointer !important;
   margin-top: 7px;
+}
+
+.enable-div {
+  margin: 1.5rem 1rem;
 }
