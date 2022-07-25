@@ -19,7 +19,7 @@
       <ng-container *ngIf="!isWizard">
         <div class="box">
           <app-config-children #configChildComponent *ngIf="category" [category]="category" [plugin]="task?.plugin.name"
-            [serviceStatus]="enabled">
+            [serviceStatus]="task['enabled']" [from]="'north'">
           </app-config-children>
           <form name=" task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
             <div class="columns">

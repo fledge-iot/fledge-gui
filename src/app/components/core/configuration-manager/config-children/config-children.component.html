@@ -15,7 +15,7 @@
     </ng-container>
     <!-- Developer tab to show plugin data -->
     <li [ngClass]="{'is-active': seletedTab == 'developer'}"
-      *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
+      *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from)">
       <h6 class="is-6 has-text-weight-semibold">
         <a (click)="seletedTab = 'developer'">Developer</a>
       </h6>
@@ -38,7 +38,7 @@
       formId="security">
     </app-view-config-item>
 
-    <app-plugin-persist-data *ngIf="seletedTab == 'developer'" [serviceStaus]="serviceStatus"
+    <app-plugin-persist-data *ngIf="seletedTab == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
       [serviceName]="category?.key" [pluginName]="plugin">
     </app-plugin-persist-data>
   </p>

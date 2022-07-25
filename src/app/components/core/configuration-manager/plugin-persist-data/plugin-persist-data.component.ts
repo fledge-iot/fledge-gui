@@ -31,9 +31,6 @@ export class PluginPersistDataComponent implements OnInit {
   ngOnInit(): void {
     // add first plugin in plugins array
     this.plugins.unshift(this.pluginName)
-    console.log('plugins', this.plugins);
-    console.log('serviceName', this.serviceName);
-    console.log('pluginName', this.pluginName);
     this.getData(this.plugins[0]); // show data of the first plugin in the list
   }
 
@@ -46,7 +43,6 @@ export class PluginPersistDataComponent implements OnInit {
     this.pluginDataService.getData(this.serviceName, pluginName)
       .subscribe(
         (res: any) => {
-          console.log('res', res);
           this.pluginData = res.data;
           /** request completed */
           this.ngProgress.done();
@@ -57,7 +53,6 @@ export class PluginPersistDataComponent implements OnInit {
           if (error.status === 0) {
             console.log('service down ', error);
           } else if (error.status == 404) {
-            console.log('err', error);
             this.noPersistDataMessage = error.statusText;
           } else {
             this.alertService.error(error.statusText);
@@ -159,9 +154,10 @@ export class PluginPersistDataComponent implements OnInit {
   }
 
   resetFileControl() {
-    this.fileInput.nativeElement.value = "";
-    this.pluginDataToImport = '';
-    this.isJsonExtension = false;
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = "";
+      this.pluginDataToImport = '';
+      this.isJsonExtension = false;
+    }
   }
-
 }

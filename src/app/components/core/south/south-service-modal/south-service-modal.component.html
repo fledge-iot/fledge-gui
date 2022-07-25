@@ -13,7 +13,7 @@
       <ng-container *ngIf="!isWizard">
         <div class="box">
           <app-config-children #configChildComponent *ngIf="category" [category]="category"
-            [plugin]="service?.plugin.name" [serviceStatus]="isEnabled">
+            [plugin]="service?.plugin.name" [serviceStatus]="service['schedule_enabled']" [from]="'south'">
           </app-config-children>
           <div *ngIf="service != undefined" class="columns">
             <div class="column">

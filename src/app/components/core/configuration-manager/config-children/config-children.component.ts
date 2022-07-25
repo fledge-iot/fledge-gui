@@ -20,6 +20,9 @@ export class ConfigChildrenComponent {
   @Input() category;
   @Input() plugin;
   @Input() serviceStatus = false;
+  @Input() from;
+
+  pages = ['south', 'north']
 
   constructor(
     private configService: ConfigurationService,
