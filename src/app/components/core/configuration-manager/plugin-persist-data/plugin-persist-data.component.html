@@ -88,11 +88,12 @@
                       <span class="file-icon">
                         <i class="fa fa-sm fa-upload"></i>
                       </span>
-                      <input type="file" required id="pluginData" (change)="onPluginDataFileChange($event)" #fileInput>
+                      <input accept=".json" type="file" required id="pluginData"
+                        (change)="onPluginDataFileChange($event)" #fileInput>
                     </span>
                   </label>
                 </div>
-                <small *ngIf="!isJsonExtension" class="help is-danger level-left">*json file.</small>
+                <small *ngIf="!isJsonExtension" class="help is-danger level-left">*.json file</small>
               </div>
             </div>
           </div>
