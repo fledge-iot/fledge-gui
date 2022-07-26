@@ -97,10 +97,11 @@ export class PluginPersistDataComponent implements OnInit {
       type: "application/json;charset=utf-8"
     });
     const url = window.URL.createObjectURL(blob);
+    const fileName = `${this.serviceName.replaceAll(' ', '_')}_${this.pluginName.replaceAll(' ', '_')}_data`;
     // create a custom anchor tag
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${this.serviceName}_${this.pluginName}_data`;
+    a.download = fileName; //`${this.serviceName}_${this.pluginName}_data`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
