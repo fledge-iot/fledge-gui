@@ -15,6 +15,7 @@ export class PluginPersistDataComponent implements OnInit {
   public pluginData = '';
   public pluginDataToImport = '';
   public isJsonExtension;
+  public jsonParseError = false;
   // TODO: FOGL-6693
   public plugins = [] // add plugins for testing
   public selectedPlugin = '';
@@ -84,7 +85,6 @@ export class PluginPersistDataComponent implements OnInit {
         fileReader.readAsText(file);
         fileReader.onload = () => {
           this.pluginDataToImport = JSON.parse(JSON.stringify(fileReader.result));
-          console.log('file', this.pluginData);
         };
       }
     }
@@ -108,27 +108,33 @@ export class PluginPersistDataComponent implements OnInit {
   }
 
   importPluginData() {
-    const payload = { data: JSON.parse(this.pluginDataToImport) };
-    /** request started */
-    this.ngProgress.start();
-    this.pluginDataService.importData(this.serviceName, this.pluginName, payload)
-      .subscribe(
-        (data: any) => {
-          this.alertService.success(data.result);
-          /** request completed */
-          this.ngProgress.done();
-          this.closeModal('import-plugin-data-dialog');
-          this.getData(this.pluginName);
-        },
-        error => {
-          /** request completed but error */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    try {
+      const jsonValue = JSON.parse(this.pluginDataToImport);
+      const payload = { data: jsonValue };
+      this.jsonParseError = false;
+      /** request started */
+      this.ngProgress.start();
+      this.pluginDataService.importData(this.serviceName, this.pluginName, payload)
+        .subscribe(
+          (data: any) => {
+            this.alertService.success(data.result);
+            /** request completed */
+            this.ngProgress.done();
+            this.closeModal('import-plugin-data-dialog');
+            this.getData(this.pluginName);
+          },
+          error => {
+            /** request completed but error */
+            this.ngProgress.done();
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    } catch (ex) {
+      this.jsonParseError = true;
+    }
   }
 
   deleteData() {
@@ -159,6 +165,7 @@ export class PluginPersistDataComponent implements OnInit {
       this.fileInput.nativeElement.value = "";
       this.pluginDataToImport = '';
       this.isJsonExtension = false;
+      this.jsonParseError = false;
     }
   }
 }

@@ -94,6 +94,7 @@
                   </label>
                 </div>
                 <small *ngIf="!isJsonExtension" class="help is-danger level-left">*.json file</small>
+                <small *ngIf="jsonParseError" class="help is-danger level-left">Invalid json file</small>
               </div>
             </div>
           </div>
@@ -103,7 +104,7 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('import-plugin-data-dialog');resetFileControl()">Cancel</button>
-    <button *ngIf="!serviceStaus" class="button is-small is-success" [disabled]="!isJsonExtension"
+    <button *ngIf="!serviceStaus" class="button is-small is-success" [disabled]="!isJsonExtension || jsonParseError"
       (click)="importPluginData()">Import</button>
   </footer>
 </app-confirmation-dialog>
