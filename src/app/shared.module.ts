@@ -8,6 +8,7 @@ import { ConfirmationDialogComponent } from './components/common/confirmation-di
 import { RangeSliderComponent } from './components/common/range-slider/range-slider.component';
 import { TimeDropdownComponent } from './components/common/time-dropdown/time-dropdown.component';
 import { ConfigChildrenComponent } from './components/core/configuration-manager/config-children/config-children.component';
+import { PluginPersistDataComponent } from './components/core/configuration-manager/plugin-persist-data/plugin-persist-data.component';
 import {
   ViewConfigItemComponent
 } from './components/core/configuration-manager/view-config-item/view-config-item.component';
@@ -31,6 +32,7 @@ import { PipesModule } from './pipes/pipes.module';
   declarations: [
     ViewConfigItemComponent,
     ConfigChildrenComponent,
+    PluginPersistDataComponent,
     PluginModalComponent,
     ViewLogsComponent,
     TimeDropdownComponent,
@@ -40,6 +42,7 @@ import { PipesModule } from './pipes/pipes.module';
   exports: [
     ViewConfigItemComponent,
     ConfigChildrenComponent,
+    PluginPersistDataComponent,
     PluginModalComponent,
     ViewLogsComponent,
     TimeDropdownComponent,

@@ -35,7 +35,8 @@
           </div>
         </div>
         <div>
-          <app-config-children #configChildComponent *ngIf="category" [category]="category"></app-config-children>
+          <app-config-children #configChildComponent *ngIf="category" [category]="category" [from]="'notification'">
+          </app-config-children>
           <div class="columns">
             <div class="column">
               <div class="field is-horizontal enable-div">

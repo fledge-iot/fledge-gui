@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 
 import { ConfigurationService } from '../../../../services';
+import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
+
 
 @Component({
   selector: 'app-config-children',
@@ -9,16 +11,22 @@ import { ConfigurationService } from '../../../../services';
 })
 export class ConfigChildrenComponent {
   seletedTab = '';
-  useCategoryChildrenProxy = 'true'
-  categoryKey = ''
+  useCategoryChildrenProxy = 'true';
+  categoryKey = '';
   advanceConfiguration: any;
   securityConfiguration: any;
 
-  categoryChildren = []
-  @Input() category
+  categoryChildren = [];
+  @Input() category;
+  @Input() plugin;
+  @Input() serviceStatus = false;
+  @Input() from;
+
+  pages = ['south', 'north']
 
   constructor(
-    private configService: ConfigurationService
+    private configService: ConfigurationService,
+    public developerFeaturesService: DeveloperFeaturesService,
   ) { }
 
   ngOnInit() {

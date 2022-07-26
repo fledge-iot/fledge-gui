@@ -21,6 +21,7 @@
   border-top-right-radius: 0 !important;
   position: relative;
   padding: 1rem;
+  overflow: visible;
 }
 
 .tabs {
