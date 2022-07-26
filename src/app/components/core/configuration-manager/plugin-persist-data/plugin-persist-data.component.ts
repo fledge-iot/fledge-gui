@@ -148,6 +148,7 @@ export class PluginPersistDataComponent implements OnInit {
           this.ngProgress.done();
           this.closeModal('delete-plugin-data-confirmation-dialog');
           this.getData(this.pluginName);
+          this.resetFileControl();
         },
         error => {
           /** request completed but error */
