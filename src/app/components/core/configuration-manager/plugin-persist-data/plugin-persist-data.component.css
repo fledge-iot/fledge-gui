@@ -18,3 +18,7 @@
   pre {
     white-space: pre-wrap;
   }
+
+  .dropdown-menu {
+    padding-left: 25px !important;
+  }
