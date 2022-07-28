@@ -19,6 +19,7 @@ import {
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -53,17 +54,17 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  // @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
   @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
 
   // Object to hold data of north task to delete
-  public deleteTaskData = {
-    name: '',
-    message: '',
-    key: ''
-  };
+  // public deleteTaskData = {
+  //   name: '',
+  //   message: '',
+  //   key: ''
+  // };
   constructor(
     private router: Router,
     private schedulesService: SchedulesService,
@@ -73,6 +74,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private filterService: FilterService,
     private validateFormService: ValidateFormService,
     public fb: FormBuilder,
+    private dialogService: DialogService,
     public ngProgress: ProgressBarService,
     private servicesApiService: ServicesApiService,
     private docService: DocService
@@ -165,6 +167,15 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.filterConfiguration = [];
     modal.classList.remove('is-active');
   }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
+  }
+
 
   public getCategory(): void {
     /** request started */
@@ -331,15 +342,15 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   * @param message   message to show on alert
   * @param action here action is 'deleteTask'
   */
-  openDeleteModal(name, message) {
-    this.deleteTaskData = {
-      name: name,
-      message: message,
-      key: this.task['processName'] === 'north_C' ? 'deleteService' : 'deleteTask'
-    };
-    // call child component method to toggle modal
-    this.child.toggleModal(true);
-  }
+  // openDeleteModal(name, message) {
+  //   this.deleteTaskData = {
+  //     name: name,
+  //     message: message,
+  //     key: this.task['processName'] === 'north_C' ? 'deleteService' : 'deleteTask'
+  //   };
+  //   // call child component method to toggle modal
+  //   this.child.toggleModal(true);
+  // }
 
   onDelete(payload) {
     if (this.task['processName'] === 'north_C') {
@@ -362,6 +373,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
           this.toggleModal(false);
+          this.closeModal('delete-task-dialog');
           this.notify.emit();
         },
         (error) => {
@@ -387,6 +399,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
           this.toggleModal(false);
+          this.closeModal('delete-task-dialog');
           this.notify.emit();
         },
         (error) => {
