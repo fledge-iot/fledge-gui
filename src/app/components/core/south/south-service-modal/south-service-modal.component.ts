@@ -13,12 +13,12 @@ import {
 import { DocService } from '../../../../services/doc.service';
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { MAX_INT_SIZE } from '../../../../utils';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
-import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-south-service-modal',
