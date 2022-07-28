@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class AssetsService {
   private GET_ASSET = environment.BASE_URL + 'asset';
+  private TRACK_SERVICE_URL = environment.BASE_URL + 'track';
   constructor(private http: HttpClient) { }
 
   /**
@@ -118,4 +119,9 @@ export class AssetsService {
       catchError(error => throwError(error)));
   }
 
+  public deprecateAssetTrackEntry(serviceName: string, assetName: string, event: string) {
+    return this.http.put(`${this.TRACK_SERVICE_URL}/service/${encodeURIComponent(serviceName)}/asset/${encodeURIComponent(assetName)}/event/${encodeURIComponent(event)}`, null).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
 }

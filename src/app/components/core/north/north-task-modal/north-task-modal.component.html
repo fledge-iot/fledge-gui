@@ -173,8 +173,10 @@
             </div>
             <div class="field has-text-right">
               <p class="buttons is-pulled-right">
-                <button *ngIf="task != undefined"
+                <!-- <button *ngIf="task != undefined"
                   (click)="openDeleteModal(task.name, 'Deleting this ' + btnTxt + ' can not be undone. Continue?')"
+                  class="button is-small">Delete {{btnTxt}}</button> -->
+                <button *ngIf="task != undefined" (click)="openModal('delete-task-dialog')"
                   class="button is-small">Delete {{btnTxt}}</button>
               </p>
             </div>
@@ -188,7 +190,19 @@
       </ng-container>
     </section>
   </div>
-  <app-alert-dialog (deleteTask)='onDelete($event)' [deleteTaskData]='deleteTaskData'></app-alert-dialog>
   <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
+<app-confirmation-dialog id="delete-task-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">Delete {{btnTxt}}</span>
+    <button class="delete" aria-label="close" (click)="closeModal('delete-task-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    {{'Deleting this ' + btnTxt + ' can not be undone. Continue?'}}
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('delete-task-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="onDelete(task)">Delete</button>
+  </footer>
+</app-confirmation-dialog>

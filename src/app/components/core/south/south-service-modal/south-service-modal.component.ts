@@ -13,12 +13,12 @@ import {
 import { DocService } from '../../../../services/doc.service';
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { MAX_INT_SIZE } from '../../../../utils';
-import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -44,7 +44,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public filterItemIndex;
   public isWizard;
   // Object to hold data of south service to delete
-  public serviceRecord;
   public selectedFilterPlugin;
 
   confirmationDialogData = {};
@@ -54,7 +53,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
-  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   constructor(
@@ -68,6 +66,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private servicesApiService: ServicesApiService,
     private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService,
+    private dialogService: DialogService,
     private docService: DocService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -273,25 +272,13 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     document.getElementById('ss').click();
   }
 
-
-
-  /**
-   * Open delete modal
-   * @param message   message to show on alert
-   * @param action here action is 'deleteService'
-   */
-  openDeleteModal(port, protocol, name, message, action) {
-    this.serviceRecord = {
-      port: port,
-      protocol: protocol,
-      name: name,
-      message: message,
-      key: action
-    };
-    // call child component method to toggle modal
-    this.child.toggleModal(true);
+  openModal(id: string) {
+    this.dialogService.open(id);
   }
 
+  closeModal(id: string) {
+    this.dialogService.close(id);
+  }
 
   /**
   * Open confirmation modal
@@ -368,6 +355,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
           this.toggleModal(false);
+          this.closeModal('delete-service-dialog');
           setTimeout(() => {
             this.notify.emit();
           }, 6000);
