@@ -54,17 +54,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  // @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
   @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
 
-  // Object to hold data of north task to delete
-  // public deleteTaskData = {
-  //   name: '',
-  //   message: '',
-  //   key: ''
-  // };
   constructor(
     private router: Router,
     private schedulesService: SchedulesService,
@@ -336,21 +329,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   getTimeIntervalValue(event) {
     this.repeatTime = event.target.value;
   }
-
-  /**
-  * Open delete modal
-  * @param message   message to show on alert
-  * @param action here action is 'deleteTask'
-  */
-  // openDeleteModal(name, message) {
-  //   this.deleteTaskData = {
-  //     name: name,
-  //     message: message,
-  //     key: this.task['processName'] === 'north_C' ? 'deleteService' : 'deleteTask'
-  //   };
-  //   // call child component method to toggle modal
-  //   this.child.toggleModal(true);
-  // }
 
   onDelete(payload) {
     if (this.task['processName'] === 'north_C') {
