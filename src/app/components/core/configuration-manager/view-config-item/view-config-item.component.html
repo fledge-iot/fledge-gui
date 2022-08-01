@@ -132,6 +132,15 @@
                       </div>
                     </div>
 
+                    <div *ngSwitchCase="'ACL'" class="select is-small">
+                      <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)"
+                        [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"
+                        (change)="checkValidityOnChange(configItem.value, $event.target.value)">
+                        <option *ngFor="let configOption of controlAcls" [value]='configOption.name'>
+                          {{configOption?.name ? configOption?.name : 'None'}}</option>
+                      </select>
+                    </div>
+
                     <div *ngSwitchCase="'ENUMERATION'" class="select is-small">
                       <select name='{{configItem.value.key}}' [ngModel]="setConfigValue(configItem.value)"
                         [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable"

@@ -26,6 +26,9 @@ export default class ConfigTypeValidation {
       case 'X509 CERTIFICATE':
         valueType = 'LONG_TEXT';
         break;
+      case 'ACL':
+        valueType = 'ACL';
+        break;
       case 'ENUMERATION':
         valueType = 'ENUMERATION';
         break;

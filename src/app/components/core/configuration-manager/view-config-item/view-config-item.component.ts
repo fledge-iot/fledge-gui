@@ -5,8 +5,9 @@ import {
   Output, ViewChild
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy } from 'lodash';
+import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy, orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
+import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { AlertService, ConfigurationService, ProgressBarService, SharedService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -34,6 +35,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public isValidForm = true;
   public isWizardCall = false;
   public filesToUpload = [];
+  public controlAcls = [];
   public hasEditableConfigItems = true;
   public fileContent = '';
   public oldFileName = '';
@@ -58,6 +60,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private configService: ConfigurationService,
+    private controlService: ControlDispatcherService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private cdRef: ChangeDetectorRef,
@@ -73,7 +76,29 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         this.selectedTheme = 'darcula';
       }
     });
+    this.getAllACLs();
   }
+
+  getAllACLs() {
+    /** request started */
+    this.ngProgress.start();
+    this.controlService.fetchAllACL()
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.controlAcls = orderBy(data.acls, 'name');
+        this.controlAcls.unshift({ name: '' }) // for empty acl value
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
+
 
   ngOnChanges() {
     if (this.form) {
@@ -108,6 +133,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
       // check if editable config item found, based on readonly property
       for (const el of this.categoryConfiguration) {
+        console.log('el', el);
+
         if (!has(el, 'readonly') || el.readonly === 'false') {
           this.hasEditableConfigItems = true;
           break;
@@ -290,6 +317,16 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       return configVal.value;
     } else {
       return configVal.default;
+    }
+  }
+
+  public setACLValue(configVal) {
+    console.log(configVal.value === '');
+
+    if (configVal.value === '') {
+      return 'None';
+    } else {
+      return configVal.value;
     }
   }
 
