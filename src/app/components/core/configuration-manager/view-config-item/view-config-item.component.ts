@@ -76,29 +76,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         this.selectedTheme = 'darcula';
       }
     });
-    this.getAllACLs();
   }
-
-  getAllACLs() {
-    /** request started */
-    this.ngProgress.start();
-    this.controlService.fetchAllACL()
-      .subscribe((data: any) => {
-        this.ngProgress.done();
-        this.controlAcls = orderBy(data.acls, 'name');
-        this.controlAcls.unshift({ name: '' }) // for empty acl value
-      }, error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
-  }
-
-
 
   ngOnChanges() {
     if (this.form) {
@@ -124,6 +102,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       });
 
       this.configItems = this.categoryConfiguration.map(el => {
+        if (el.type.toLowerCase() === 'acl') {
+          this.getAllACLs();
+        }
         return {
           key: el.key,
           value: el.value !== undefined ? el.value : el.default,
@@ -133,7 +114,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
       // check if editable config item found, based on readonly property
       for (const el of this.categoryConfiguration) {
-        console.log('el', el);
+
 
         if (!has(el, 'readonly') || el.readonly === 'false') {
           this.hasEditableConfigItems = true;
@@ -151,6 +132,21 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       this.cdRef.detectChanges();
     }
   }
+
+  getAllACLs() {
+    this.controlService.fetchAllACL()
+      .subscribe((data: any) => {
+        this.controlAcls = orderBy(data.acls, 'name');
+        this.controlAcls.unshift({ name: '' }) // for empty acl value
+      }, error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
 
   public setEditorConfig(type: string) {
     const editorOptions = {
