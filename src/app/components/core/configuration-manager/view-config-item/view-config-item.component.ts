@@ -316,16 +316,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  public setACLValue(configVal) {
-    console.log(configVal.value === '');
-
-    if (configVal.value === '') {
-      return 'None';
-    } else {
-      return configVal.value;
-    }
-  }
-
   /**
    * Method to set isWizardCall = true if called from
    * add south or north wizard.
