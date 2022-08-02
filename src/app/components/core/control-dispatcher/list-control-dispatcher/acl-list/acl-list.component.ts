@@ -5,6 +5,7 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { orderBy } from 'lodash';
+import { AclService } from '../../../../../services/acl.service';
 
 @Component({
   selector: 'app-acl-list',
@@ -18,6 +19,7 @@ export class AclListComponent implements OnInit {
   private subscription: Subscription;
   constructor(
     private controlService: ControlDispatcherService,
+    private aclService: AclService,
     private alertService: AlertService,
     private dialogService: DialogService,
     public sharedService: SharedService,
@@ -36,7 +38,7 @@ export class AclListComponent implements OnInit {
   showACLs() {
     /** request started */
     this.ngProgress.start();
-    this.controlService.fetchAllACL()
+    this.aclService.fetchAllACL()
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.controlAcls = orderBy(data.acls, 'name')
@@ -101,7 +103,7 @@ export class AclListComponent implements OnInit {
   deleteAcl(acl) {
     /** request started */
     this.ngProgress.start();
-    this.controlService.deleteACL(acl)
+    this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.alertService.success(data.message);

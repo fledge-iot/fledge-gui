@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 export class ControlDispatcherService {
 
   private CONTROL_SERVICE_URL = environment.BASE_URL + 'control/script';
-  private ACL_URL = environment.BASE_URL + 'ACL';
+
 
   public triggerRefreshEvent: BehaviorSubject<string> = new BehaviorSubject<any>('');
 
@@ -42,36 +42,6 @@ export class ControlDispatcherService {
 
   deleteScript(name: string) {
     return this.http.delete(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(name)}`).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  fetchAllACL() {
-    return this.http.get(this.ACL_URL).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  fetchAclByName(name: string) {
-    return this.http.get(`${this.ACL_URL}/${encodeURIComponent(name)}`).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  addACL(payload: any) {
-    return this.http.post(this.ACL_URL, payload).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  updateACL(name: string, payload: any) {
-    return this.http.put(`${this.ACL_URL}/${encodeURIComponent(name)}`, payload).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  deleteACL(name: string) {
-    return this.http.delete(`${this.ACL_URL}/${encodeURIComponent(name)}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

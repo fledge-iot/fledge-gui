@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
-import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
+import { AclService } from '../../../../services/acl.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
@@ -36,7 +36,7 @@ export class AddControlAclComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private controlService: ControlDispatcherService,
+    private aclService: AclService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private dialogService: DialogService,
@@ -93,7 +93,7 @@ export class AddControlAclComponent implements OnInit {
     this.aclServiceTypeList = [];
     /** request started */
     this.ngProgress.start();
-    this.controlService.fetchAclByName(name)
+    this.aclService.fetchAclByName(name)
       .subscribe((res: any) => {
         this.name = name;
         this.ngProgress.done();
@@ -303,7 +303,7 @@ export class AddControlAclComponent implements OnInit {
       return;
     }
     this.ngProgress.start();
-    this.controlService.addACL(payload)
+    this.aclService.addACL(payload)
       .subscribe(() => {
         this.ngProgress.done();
         this.alertService.success(`ACL ${payload['name']} created successfully.`);
@@ -323,7 +323,7 @@ export class AddControlAclComponent implements OnInit {
   updateACL(payload: any) {
     /** request started */
     this.ngProgress.start();
-    this.controlService.updateACL(this.nameCopy, payload)
+    this.aclService.updateACL(this.nameCopy, payload)
       .subscribe((data: any) => {
         this.name = this.nameCopy = payload.name;
         this.router.navigate(['control-dispatcher/acl/', payload.name]);
@@ -345,7 +345,7 @@ export class AddControlAclComponent implements OnInit {
   deleteAcl(acl) {
     /** request started */
     this.ngProgress.start();
-    this.controlService.deleteACL(acl)
+    this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.alertService.success(data.message);
