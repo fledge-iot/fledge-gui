@@ -35,7 +35,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public isValidForm = true;
   public isWizardCall = false;
   public filesToUpload = [];
-  public controlACLs = [];
+  public acls = [];
   public hasEditableConfigItems = true;
   public fileContent = '';
   public oldFileName = '';
@@ -135,8 +135,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   getAllACLs() {
     this.aclService.fetchAllACL()
       .subscribe((data: any) => {
-        this.controlACLs = orderBy(data.acls, 'name');
-        this.controlACLs.unshift({ name: '' }) // add empty acl as first item in the ACLs array to mapped to None text
+        this.acls = orderBy(data.acls, 'name');
+        this.acls.unshift({ name: '' }) // add empty acl as first item in the ACLs array to mapped to None text
       }, error => {
         if (error.status === 0) {
           console.log('service down ', error);
