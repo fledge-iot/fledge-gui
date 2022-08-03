@@ -5,8 +5,9 @@ import {
   Output, ViewChild
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy } from 'lodash';
+import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy, orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
+import { AclService } from '../../../../services/acl.service';
 import { AlertService, ConfigurationService, ProgressBarService, SharedService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -34,6 +35,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public isValidForm = true;
   public isWizardCall = false;
   public filesToUpload = [];
+  public acls = [];
   public hasEditableConfigItems = true;
   public fileContent = '';
   public oldFileName = '';
@@ -58,6 +60,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private configService: ConfigurationService,
+    private aclService: AclService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private cdRef: ChangeDetectorRef,
@@ -99,6 +102,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       });
 
       this.configItems = this.categoryConfiguration.map(el => {
+        // Needs explicit service call to populate all acls as dropdown options
+        if (el.type.toLowerCase() === 'acl') {
+          this.getAllACLs();
+        }
         return {
           key: el.key,
           value: el.value !== undefined ? el.value : el.default,
@@ -123,6 +130,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       this.checkValidityOnPageLoad();
       this.cdRef.detectChanges();
     }
+  }
+
+  getAllACLs() {
+    this.aclService.fetchAllACL()
+      .subscribe((data: any) => {
+        this.acls = orderBy(data.acls, 'name');
+        this.acls.unshift({ name: '' }) // add empty acl as first item in the ACLs array to mapped to None text
+      }, error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public setEditorConfig(type: string) {
