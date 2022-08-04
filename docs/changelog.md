@@ -2,8 +2,7 @@
 
 #### Added
 
-[FOGL-6129] Create UI for creating control dispatch scripts [#6129](https://github.com/fledge-iot/fledge-gui/pull/139)
-
+- [FOGL-6129] Create UI for creating control dispatch scripts [#139](https://github.com/fledge-iot/fledge-gui/pull/139)
 - [FOGL-6174] Image Visualization [#162](https://github.com/fledge-iot/fledge-gui/pull/162)
 - [FOGL-6669] Add GUI support for manual purge [#188](https://github.com/fledge-iot/fledge-gui/pull/188)
 - [FOGL-6720] Add new developer feature to deprecate assets [#193](https://github.com/fledge-iot/fledge-gui/pull/193)
