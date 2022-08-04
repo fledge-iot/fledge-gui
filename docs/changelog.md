@@ -5,11 +5,11 @@
 - [FOGL-6129] Create UI for creating control dispatch scripts [#139](https://github.com/fledge-iot/fledge-gui/pull/139)
 - [FOGL-6174] Image Visualization [#162](https://github.com/fledge-iot/fledge-gui/pull/162)
 - [FOGL-6669] Add GUI support for manual purge [#188](https://github.com/fledge-iot/fledge-gui/pull/188)
-- [FOGL-6720] Add new developer feature to deprecate assets [#193](https://github.com/fledge-iot/fledge-gui/pull/193)
-- [FOGL-6661] Add developer feature to look at plugin data [#192](https://github.com/fledge-iot/fledge-gui/pull/192)
+- Added developer features
+  - [FOGL-6720] Add new developer feature to deprecate assets [#193](https://github.com/fledge-iot/fledge-gui/pull/193)
+  - [FOGL-6661] Add developer feature to look at plugin data [#192](https://github.com/fledge-iot/fledge-gui/pull/192)
 - [FOGL-6613] Add support for ACL configuration item type [#194] (https://github.com/fledge-iot/fledge-gui/pull/194)
 - [FOGL-6595] Add Security options to Services GUI[#184](https://github.com/fledge-iot/fledge-gui/pull/184)
-- [FOGL-6275] GUI for managing control schedule tasks for script [#170](https://github.com/fledge-iot/fledge-gui/pull/170)
 - [FOGL-6108] Provide Alpha control to specifies the opacity for line color in the asset reading graph [#134](https://github.com/fledge-iot/fledge-gui/pull/134)
 
 #### Changed
