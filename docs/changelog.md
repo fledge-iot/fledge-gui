@@ -15,7 +15,7 @@
 
 #### Changed
 
-- Upgraded to Angular 8 (including compatible TypeScript / CLI versions)
+- Upgraded to Angular 13 (including compatible TypeScript / CLI versions)
 - [FOGL-6463] Updated system log page design [#183](https://github.com/fledge-iot/fledge-gui/pull/183)
 - [FOGL-6473] Add button to refresh the latest reading / image viewer within the GUI [#176](https://github.com/fledge-iot/fledge-gui/pull/176)
 - [FOGL-6171] Direct links to service logs [#148](https://github.com/fledge-iot/fledge-gui/pull/148)
