@@ -108,8 +108,6 @@ export class SouthComponent implements OnInit, OnDestroy {
             return s;
           })
           this.hideLoadingSpinner();
-          console.log(this.southboundServices);
-
         },
         error => {
           this.hideLoadingSpinner();
