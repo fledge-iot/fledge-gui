@@ -98,7 +98,18 @@ export class SouthComponent implements OnInit, OnDestroy {
             }
           });
           this.southboundServices = orderBy(enabledServices, 'name').concat(orderBy(disabledServices, 'name'));
+          // add expanded key in service to show/hide the assets in the service row
+          this.southboundServices.map((s, i) => {
+            if (i === 0) {
+              s.expanded = true; // set first row expanded by default
+            } else {
+              s.expanded = false
+            }
+            return s;
+          })
           this.hideLoadingSpinner();
+          console.log(this.southboundServices);
+
         },
         error => {
           this.hideLoadingSpinner();
