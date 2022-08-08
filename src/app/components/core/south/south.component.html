@@ -114,7 +114,9 @@
                   </td>
                   <td>
                     <span *ngIf="svc?.assets?.length > 1" (click)="svc.expanded = !svc.expanded"
-                      [ngClass]="{'open': svc.expanded}">
+                      [ngClass]="{'open': svc.expanded}"
+                      class="icon is-small tooltip is-tooltip-right tooltip-help is-pulled-right is-hovered"
+                      [attr.data-tooltip]="svc.expanded ? 'Collapse the assets' : 'Expand the assets'">
                       <i class="fas fa-angle-down"></i>
                     </span>
                   </td>

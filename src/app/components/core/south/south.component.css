@@ -57,4 +57,13 @@ color: #363636;
   border: 0;
  }
 
+ .tooltip {
+  opacity: 1.0 !important;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+  }
+
+
 
