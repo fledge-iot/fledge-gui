@@ -4,28 +4,32 @@
 
 - [FOGL-6129] Create UI for creating control dispatch scripts [#139](https://github.com/fledge-iot/fledge-gui/pull/139)
 - [FOGL-6174] Image Visualization [#162](https://github.com/fledge-iot/fledge-gui/pull/162)
-- [FOGL-6669] Add GUI support for manual purge [#188](https://github.com/fledge-iot/fledge-gui/pull/188)
 - Added developer features
-  - [FOGL-6720] Add new developer feature to deprecate assets [#193](https://github.com/fledge-iot/fledge-gui/pull/193)
-  - [FOGL-6661] Add developer feature to look at plugin data [#192](https://github.com/fledge-iot/fledge-gui/pull/192)
-- [FOGL-6613] Add support for ACL configuration item type [#194] (https://github.com/fledge-iot/fledge-gui/pull/194)
-- [FOGL-6595] Add Security options to Services GUI[#184](https://github.com/fledge-iot/fledge-gui/pull/184)
-- [FOGL-6108] Provide Alpha control to specifies the opacity for line color in the asset reading graph [#134](https://github.com/fledge-iot/fledge-gui/pull/134)
+  - [FOGL-6669] Support for manual purge [#188](https://github.com/fledge-iot/fledge-gui/pull/188)
+  - [FOGL-6720] Support for deprecate assets [#193](https://github.com/fledge-iot/fledge-gui/pull/193)
+  - [FOGL-6661] Support to see plugin data [#192](https://github.com/fledge-iot/fledge-gui/pull/192)
+- [FOGL-6613] Support for ACL configuration item type to allow the selection for an ACL from those already created [#194] (https://github.com/fledge-iot/fledge-gui/pull/194)
+
+- [FOGL-6108] Provided Alpha control to specifies the opacity for line color in the asset reading graph [#134](https://github.com/fledge-iot/fledge-gui/pull/134)
 
 #### Changed
 
-- Upgraded to Angular 13 (including compatible TypeScript / CLI versions)
+- [FOGL-6595] A new tabbed layout for configuration, Advanced and Security tabs in south, north services and tasks.[#184](https://github.com/fledge-iot/fledge-gui/pull/184)
 - [FOGL-6463] Updated system log page design [#183](https://github.com/fledge-iot/fledge-gui/pull/183)
-- [FOGL-6473] Add button to refresh the latest reading / image viewer within the GUI [#176](https://github.com/fledge-iot/fledge-gui/pull/176)
-- [FOGL-6171] Direct links to service logs [#148](https://github.com/fledge-iot/fledge-gui/pull/148)
+- [FOGL-6473] Provied refresh button to update the latest reading / image viewer within the GUI [#176](https://github.com/fledge-iot/fledge-gui/pull/176)
+- [FOGL-6171] Added direct links to access service logs [#148](https://github.com/fledge-iot/fledge-gui/pull/148)
 
 #### Fixed
 
 - [FOGL-6630] Fixed script update issue for configuration item [#187](https://github.com/fledge-iot/fledge-gui/pull/187)
-- [FOGL-6276] Side menu item selection issue fixed [#179](https://github.com/fledge-iot/fledge-gui/pull/179)
+- [FOGL-6276] Fixed side menu item selection issue [#179](https://github.com/fledge-iot/fledge-gui/pull/179)
 - [FOGL-5967] Fixed mask input field for Time and Repeat fields in schedule [#125](https://github.com/fledge-iot/fledge-gui/pull/125)
 - [FOGL-6144] Fixed erroneously merges gaps in time series data [#142](https://github.com/fledge-iot/fledge-gui/pull/142)
 - [FOGL-6203] Fixed sorting for disabled schedules for services on south page, after fledge restart [#158](https://github.com/fledge-iot/fledge-gui/pull/158)
+
+#### Others
+
+- Upgraded to Angular 13 (including compatible TypeScript / CLI versions)
 
 ## v1.9.2 [2021-09-29]
 
