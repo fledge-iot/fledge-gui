@@ -188,8 +188,6 @@ export class AuditLogComponent implements OnInit, OnDestroy {
   }
 
   public filterSource(type: string, source: any) {
-    console.log(source);
-
     this.limit = this.DEFAULT_LIMIT;
     this.tempOffset = 0;
     this.recordCount = 0;
