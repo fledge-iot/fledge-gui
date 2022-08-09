@@ -20,6 +20,7 @@ import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 })
 export class SouthComponent implements OnInit, OnDestroy {
   public service;
+  public southAseetsExpandedState = [];
   public southboundServices = [];
   public refreshSouthboundServiceInterval = POLLING_INTERVAL;
   public showSpinner = false;
@@ -99,14 +100,14 @@ export class SouthComponent implements OnInit, OnDestroy {
           });
           this.southboundServices = orderBy(enabledServices, 'name').concat(orderBy(disabledServices, 'name'));
           // add expanded key in service to show/hide the assets in the service row
-          this.southboundServices.map((s, i) => {
-            if (i === 0) {
-              s.expanded = true; // set first row expanded by default
-            } else {
-              s.expanded = false
+          this.southboundServices.map((svc: any) => {
+            svc.expanded = false;
+            const ss = this.southAseetsExpandedState.find(s => s.name === svc.name);
+            if (ss) {
+              svc.expanded = ss.expanded;
             }
-            return s;
-          })
+            return svc;
+          });
           this.hideLoadingSpinner();
         },
         error => {
@@ -117,6 +118,22 @@ export class SouthComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  showHideAsset(svc: any) {
+    this.southboundServices.map((s) => {
+      if (svc.name === s.name) {
+        const index = this.southAseetsExpandedState.findIndex(s => s.name === svc.name);
+        if (index != -1) {
+          this.southAseetsExpandedState[index].expanded = !this.southAseetsExpandedState[index].expanded;
+          s.expanded = this.southAseetsExpandedState[index].expanded;;
+        } else {
+          s.expanded = !s.expanded;
+          this.southAseetsExpandedState.push(s);
+        }
+      }
+      return s;
+    });
   }
 
   addSouthService() {

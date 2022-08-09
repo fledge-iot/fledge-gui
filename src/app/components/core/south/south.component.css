@@ -53,7 +53,7 @@ color: #363636;
   transform: rotate(180deg)
 }
 
-.table.is-borderless td, .table.is-borderless th {
+.is-borderless td, .is-borderless th {
   border: 0;
  }
 
@@ -63,7 +63,8 @@ color: #363636;
 
 .is-hovered {
   cursor: pointer !important;
-  }
+  margin-top: 0.5em;
+}
 
 
 
