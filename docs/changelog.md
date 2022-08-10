@@ -2,35 +2,35 @@
 
 #### Added
 
-- [FOGL-6129] Added the user interface to supports the new control dispatcher service [#139](https://github.com/fledge-iot/fledge-gui/pull/139)
-- [FOGL-6174] Image Visualization [#162](https://github.com/fledge-iot/fledge-gui/pull/162)
+- [FOGL-6129] Support for Control Dispatcher service UI [#139](https://github.com/fledge-iot/fledge-gui/pull/139)
+- [FOGL-6174] Assets image data visualization [#162](https://github.com/fledge-iot/fledge-gui/pull/162)
 - Added developer features
-  - [FOGL-6669] Support to manually purge assets reading [#188](https://github.com/fledge-iot/fledge-gui/pull/188)
-  - [FOGL-6661] Support to see plugin's persisted data [#192](https://github.com/fledge-iot/fledge-gui/pull/192)
+  - [FOGL-6669] Support to manually purge assets readings [#188](https://github.com/fledge-iot/fledge-gui/pull/188)
+  - [FOGL-6661] Support to view/export & import plugin's persisted data [#192](https://github.com/fledge-iot/fledge-gui/pull/192)
   - [FOGL-6720] Support to deprecate assets [#193](https://github.com/fledge-iot/fledge-gui/pull/193)
-- [FOGL-6613] Support for ACL configuration item type to allow the selection for an existing ACL [#194] (https://github.com/fledge-iot/fledge-gui/pull/194)
-- [FOGL-6108] Provided Alpha control to specifies the opacity for line colors in the asset reading graph [#134](https://github.com/fledge-iot/fledge-gui/pull/134)
+- [FOGL-6613] Support for ACL configuration item type which allows the selection from existing ACLs [#194] (https://github.com/fledge-iot/fledge-gui/pull/194)
+- [FOGL-6108] Provided alpha control to specify the opacity for line colors in the asset readings graph [#134](https://github.com/fledge-iot/fledge-gui/pull/134)
 
 #### Changed
 
-- [FOGL-6595] A new tabbed layout for services and north tasks configuration with Advanced and Security tabs [#184](https://github.com/fledge-iot/fledge-gui/pull/184)
-- [FOGL-6463] Updated system log page design [#183](https://github.com/fledge-iot/fledge-gui/pull/183)
+- [FOGL-6595] Tabbed layout for services and north tasks with Advanced and Security configuration tabs [#184](https://github.com/fledge-iot/fledge-gui/pull/184)
+- [FOGL-6463] Updated system log page design for better performance [#183](https://github.com/fledge-iot/fledge-gui/pull/183)
 - [FOGL-6473] Provided refresh button to update the latest reading/image view [#176](https://github.com/fledge-iot/fledge-gui/pull/176)
-- [FOGL-6171] Added direct links to access service's syslogs [#148](https://github.com/fledge-iot/fledge-gui/pull/148)
+- [FOGL-6171] Direct links to access service's syslogs [#148](https://github.com/fledge-iot/fledge-gui/pull/148)
 
 #### Fixed
 
-- [FOGL-6630] Fixed script update issue for configuration item [#187](https://github.com/fledge-iot/fledge-gui/pull/187)
-- [FOGL-6276] Fixed side menu item selection issue [#179](https://github.com/fledge-iot/fledge-gui/pull/179)
-- [FOGL-5967] Fixed mask input field for Time and Repeat fields in schedule [#125](https://github.com/fledge-iot/fledge-gui/pull/125)
-- [FOGL-6144] Fixed erroneously merges gaps in time series data [#142](https://github.com/fledge-iot/fledge-gui/pull/142)
-- [FOGL-6203] Fixed sorting for disabled schedules for services on south page, after fledge restart [#158](https://github.com/fledge-iot/fledge-gui/pull/158)
-- [FOGL-5967] Fixed time format masked fields to ease the entry of times values [#125](https://github.com/fledge-iot/fledge-gui/pull/125)
-- [FOGL-3193]- Fixed some timezone inconsistencies in the user interface.[#132](https://github.com/fledge-iot/fledge-gui/pull/132)
+- [FOGL-6630] Edit issue for Script type configuration items [#187](https://github.com/fledge-iot/fledge-gui/pull/187)
+- [FOGL-6276] Selected sidebar menu item highlight issue while navigating to child pages [#179](https://github.com/fledge-iot/fledge-gui/pull/179)
+- [FOGL-5967] Editing masked input field for Time format [#125](https://github.com/fledge-iot/fledge-gui/pull/125)
+- [FOGL-6144] Graphs erroneously merge gaps in time series data [#142](https://github.com/fledge-iot/fledge-gui/pull/142)
+- [FOGL-6203] Sorting for disabled services on south page, after Fledge restart [#158](https://github.com/fledge-iot/fledge-gui/pull/158)
+- [FOGL-3193] Timezone inconsistencies in the user interface [#132](https://github.com/fledge-iot/fledge-gui/pull/132)
 
 #### Others
 
 - Upgraded to Angular 13 (including compatible TypeScript / CLI versions)
+- Added support for Micro Frontends/GUI extensions
 
 ## v1.9.2 [2021-09-29]
 
