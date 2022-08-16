@@ -16,8 +16,7 @@ export class PluginPersistDataComponent implements OnInit {
   public pluginDataToImport = '';
   public isJsonExtension;
   public jsonParseError = false;
-  // TODO: FOGL-6693
-  public plugins = [] // add plugins for testing
+  public plugins = [];
   public selectedPlugin = '';
   noPersistDataMessage = '';
 
@@ -30,9 +29,31 @@ export class PluginPersistDataComponent implements OnInit {
     public ngProgress: ProgressBarService) { }
 
   ngOnInit(): void {
-    // add first plugin in plugins array
-    this.plugins.unshift(this.pluginName)
-    this.getData(this.plugins[0]); // show data of the first plugin in the list
+    this.getPlugins();
+  }
+
+  getPlugins() {
+    /** request started */
+    this.ngProgress.start();
+    this.pluginDataService.getPlugins(this.serviceName)
+      .subscribe(
+        (res: any) => {
+          this.plugins = res.persistent;
+          /** request completed */
+          this.ngProgress.done();
+          this.getData(this.plugins[0]); // show data of the first plugin in the list
+        },
+        error => {
+          /** request completed but error */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else if (error.status == 404) {
+            this.noPersistDataMessage = error.statusText;
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   getData(pluginName: string) {
