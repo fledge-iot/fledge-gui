@@ -12,6 +12,12 @@ export class PluginPersistDataService {
   private SERVICE_URL = environment.BASE_URL + 'service';
   constructor(private http: HttpClient) { }
 
+  public getPlugins(serviceName: string) {
+    return this.http.get(`${this.SERVICE_URL}/${encodeURIComponent(serviceName)}/persist`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   public getData(serviceName: string, pluginName: string) {
     return this.http.get(`${this.SERVICE_URL}/${encodeURIComponent(serviceName)}/plugin/${encodeURIComponent(pluginName)}/data`).pipe(
       map(response => response),
