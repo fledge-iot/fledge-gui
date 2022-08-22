@@ -86,13 +86,14 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 
 #### Core
 
-| Library     | Version | Latest Stable (? Y/n) | License    |
-| ----------- | ------- | --------------------- | ---------- |
-| Angular     | 13.2.0  | 14.1.3                | MIT        |
-| Angular CLI | 13.2.4  | 14.1.3                | MIT        |
-| TypeScript  | 4.5.2   | 4.5.2                 | Apache 2.0 |
-| rxjs        | 6.6.6   | 6.6.6                 | Apache 2.0 |
-| Bulma css   | 0.8.2   | 0.9.4                 | MIT        |
+| Library      | Version | Latest Stable (? Y/n) | License    |
+| ------------ | ------- | --------------------- | ---------- |
+| Angular      | 13.2.0  | 14.1.3                | MIT        |
+| Angular CLI  | 13.2.4  | 14.1.3                | MIT        |
+| TypeScript   | 4.5.2   | 4.5.2                 | Apache 2.0 |
+| rxjs         | 6.6.6   | 6.6.6                 | Apache 2.0 |
+| Bulma css    | 0.8.2   | 0.9.4                 | MIT        |
+| Font-Awesome | 5.6.3   | 6.1.2                 | MIT        |
 
 #### Dev
 
@@ -111,6 +112,8 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 | @ng-select/ng-select            | 8.1.1   | 8.1.1                 | MIT     |
 | @circlon/angular-tree-component | 11.0.4  | 11.0.4                | MIT     |
 | @kurkle/color                   | 0.1.9   | 0.1.9                 | MIT     |
+| Animate.css                     | 4.1.1   | 4.1.1                 | MIT     |
+| ngx-build-plus                  | 13.0.1  | 14.0.0                | MIT     |
 
 ## Update Dependencies
 
