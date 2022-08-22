@@ -62,7 +62,10 @@ export const appRoutes: Routes = [
     path: 'backup-restore', loadChildren: () => import('./components/core/backup-restore/backup-restore.module')
       .then(m => m.BackupRestoreModule)
   },
-  { path: 'setting', component: SettingsComponent },
+  {
+    path: 'developer', loadChildren: () => import('./components/core/developer/developer.module')
+      .then(m => m.DeveloperModule)
+  }, { path: 'setting', component: SettingsComponent },
   { path: 'service-discovery', component: ServiceDiscoveryComponent },
   // user-management
   {
