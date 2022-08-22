@@ -88,28 +88,27 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 
 | Library     | Version | Latest Stable (? Y/n) | License    |
 | ----------- | ------- | --------------------- | ---------- |
-| Angular     | 12.2.4  | 12.2.4                | MIT        |
-| Angular CLI | 12.2.4  | 12.2.4                | MIT        |
-| TypeScript  | 4.3.5   | 4.3.5                 | Apache 2.0 |
+| Angular     | 13.2.0  | 14.1.3                | MIT        |
+| Angular CLI | 13.2.4  | 14.1.3                | MIT        |
+| TypeScript  | 4.5.2   | 4.5.2                 | Apache 2.0 |
 | rxjs        | 6.6.6   | 6.6.6                 | Apache 2.0 |
-| Bulma css   | 0.8.2   | 0.8.2                 | MIT        |
+| Bulma css   | 0.8.2   | 0.9.4                 | MIT        |
 
 #### Dev
 
 | Library                         | Version | Latest Stable (? Y/n) | License |
 | ------------------------------- | ------- | --------------------- | ------- |
-| chart.js                        | 2.9.4   | 2.9.4                 | MIT     |
-| core-js                         | 3.9.1   | 3.9.1                 | MIT     |
-| ng-sidebar                      | 9.4.2   | 9.4.2                 | MIT     |
-| moment                          | 2.29.1  | 2.29.1                | MIT     |
-| ngx-progressbar                 | 6.1.1   | 6.1.1                 | MIT     |
-| protractor-beautiful-reporter   | 1.3.3   | 1.3.6                 | MIT     |
-| node-git-describe               | 4.0.4   | 4.0.4                 | MIT     |
-| plotly.js                       | 1.58.4  | 1.58.4                | MIT     |
-| @ctrl/ngx-codemirror            | 2.2.0   | 2.2.0                 | MIT     |
-| codemirror                      | 5.59.4  | 5.49.4                | MIT     |
+| chart.js                        | 2.9.4   | 3.9.1                 | MIT     |
+| ng-sidebar                      | 9.4.3   | 9.4.3                 | MIT     |
+| moment                          | 2.29.3  | 2.29.3                | MIT     |
+| ngx-progressbar                 | 8.0.0   | 9.0.0                 | MIT     |
+| protractor-beautiful-reporter   | 1.3.6   | 1.3.6                 | MIT     |
+| node-git-describe               | 4.1.0   | 4.1.0                 | MIT     |
+| plotly.js                       | 2.12.1  | 2.12.1                | MIT     |
+| @ctrl/ngx-codemirror            | 5.1.1   | 5.1.1                 | MIT     |
+| codemirror                      | 5.65.3  | 5.65.3                | MIT     |
 | jsonlint-mod                    | 1.7.6   | 1.7.6                 | MIT     |
-| @ng-select/ng-select            | 6.1.0   | 6.1.0                 | MIT     |
+| @ng-select/ng-select            | 8.1.1   | 8.1.1                 | MIT     |
 | @circlon/angular-tree-component | 11.0.4  | 11.0.4                | MIT     |
 | @kurkle/color                   | 0.1.9   | 0.1.9                 | MIT     |
 
