@@ -65,7 +65,8 @@ export const appRoutes: Routes = [
   {
     path: 'developer', loadChildren: () => import('./components/core/developer/developer.module')
       .then(m => m.DeveloperModule)
-  }, { path: 'setting', component: SettingsComponent },
+  },
+  { path: 'setting', component: SettingsComponent },
   { path: 'service-discovery', component: ServiceDiscoveryComponent },
   // user-management
   {

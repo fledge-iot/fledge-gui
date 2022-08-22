@@ -1,0 +1,52 @@
+<div class="container is-fluid">
+  <div class="navbar-item">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a [routerLink]="['/developer']">Developer</a></li>
+        <li class="is-active">
+          <a href="#" aria-current="page">
+            python-packages
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="card">
+    <header class="card-header">
+      <div id="south-service" class="card-header-title">
+        Python Packages
+      </div>
+      <a id="add_south_service" class="fix-pad button is-light" routerLink="/developer/python/package/add">
+        <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
+        <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+      </a>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <div class="has-text-centered" *ngIf="pythonPackages.length === 0">
+          <small class="no-rec">No installed python package</small>
+        </div>
+        <ng-container *ngIf="pythonPackages.length > 0">
+          <table class="table is-fullwidth scroll is-responsive is-hoverable" cellpadding="0" cellspacing="0">
+            <thead>
+              <tr>
+                <th class="align-th">Pacakge</th>
+                <th class="align-th">Version</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pkg of pythonPackages" class="parent">
+                <td class="align-content content-pad">
+                  <small>{{pkg?.package}}</small>
+                </td>
+                <td class="align-content content-pad">
+                  <small>{{pkg?.version}}</small>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
