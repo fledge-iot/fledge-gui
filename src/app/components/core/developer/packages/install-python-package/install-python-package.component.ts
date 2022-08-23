@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AlertService, ProgressBarService } from '../../../../../services';
 import { PackageManagerService } from '../../../../../services/package-manager.service';
 
@@ -13,6 +14,7 @@ export class InstallPythonPackageComponent implements OnInit {
   submitted = false;
 
   constructor(
+    private router: Router,
     private fb: FormBuilder,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
@@ -41,7 +43,8 @@ export class InstallPythonPackageComponent implements OnInit {
           (data: any) => {
             /** request completed */
             this.ngProgress.done();
-            this.alertService.success(data?.message);
+            this.alertService.success(data?.message, true);
+            this.router.navigate(['developer/python/package/list']);
           },
           error => {
             /** request completed */
