@@ -12,7 +12,7 @@
   </div>
   <div class="card">
     <div class="card-content step-content">
-      <form>
+      <form class="form" [formGroup]="installationForm">
         <div class="column is-four-fifths">
           <div class="field is-horizontal">
             <div class="field-label">
@@ -21,14 +21,13 @@
             <div class="field-body">
               <div class="field is-narrow">
                 <div class="control">
-                  <input name="name" class="input is-small" type="text" placeholder="Package" required>
+                  <input formControlName="package" class="input is-small" type="text" placeholder="Package" required>
                 </div>
+                <span class="help is-danger"
+                  *ngIf="(installationFormControl.package?.touched || submitted) && installationFormControl.package?.errors?.required">
+                  Package name is required.
+                </span>
 
-                <!-- <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
-                  <div *ngIf="name.errors?.['required']">
-                    Name is required.
-                  </div>
-                </div> -->
               </div>
 
             </div>
@@ -40,7 +39,7 @@
             <div class="field-body">
               <div class="field is-narrow">
                 <div class="control">
-                  <input name="name" class="input is-small" type="text" placeholder="1.0.0">
+                  <input formControlName="version" class="input is-small" type="text" placeholder="1.0.0">
                 </div>
               </div>
             </div>
@@ -55,7 +54,8 @@
                   <button [routerLink]="['/developer/python/package/list']" class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
-                  <button type="button" class="button is-small is-link">Install</button>
+                  <button type="button" class="button is-small is-link"
+                    (click)="installPythonPackage()">Install</button>
                 </p>
               </div>
             </div>

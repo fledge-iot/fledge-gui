@@ -9,13 +9,20 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class PackageManagerService {
 
-  private GET_PACKAGE_PACKAGES_URL = environment.BASE_URL + 'python/packages';
+  private GET_PYTHON_PACKAGES_URL = environment.BASE_URL + 'python/packages';
+  private INSTALL_PYTHON_PACKAGE_URL = environment.BASE_URL + 'python/package';
 
   constructor(private http: HttpClient) { }
 
 
   public getPythonPackages() {
-    return this.http.get(this.GET_PACKAGE_PACKAGES_URL).pipe(
+    return this.http.get(this.GET_PYTHON_PACKAGES_URL).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  public InstallPythonPackage(payload: any) {
+    return this.http.post(`${this.INSTALL_PYTHON_PACKAGE_URL}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
