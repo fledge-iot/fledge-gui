@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { DeveloperComponent } from './developer.component';
 import { ListPythonPackagesComponent } from './packages/list-python-packages/list-python-packages.component';
-import { AddPythonPackageComponent } from './packages/add-python-package/add-python-package.component';
+import { InstallPythonPackageComponent } from './packages/install-python-package/install-python-package.component';
 
 const routes: Routes = [
   {
@@ -16,7 +16,7 @@ const routes: Routes = [
   },
   {
     path: 'python/package/add',
-    component: AddPythonPackageComponent
+    component: InstallPythonPackageComponent
   }
 ];
 
@@ -24,7 +24,7 @@ const routes: Routes = [
   declarations: [
     DeveloperComponent,
     ListPythonPackagesComponent,
-    AddPythonPackageComponent
+    InstallPythonPackageComponent
   ],
   imports: [
     CommonModule,
