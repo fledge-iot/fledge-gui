@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
 import { DeveloperFeaturesService } from '../services/developer-features.service';
 
 @Injectable()
 export class DeveloperGuard implements CanActivate {
-  constructor(public developerFeaturesService: DeveloperFeaturesService) { }
+  constructor(private router: Router, public developerFeaturesService: DeveloperFeaturesService) { }
   canActivate() {
-    return this.developerFeaturesService.getDeveloperFeatureControl();
+    const isDeveloper = this.developerFeaturesService.getDeveloperFeatureControl();
+    if (isDeveloper) {
+      return true;
+    }
+    this.router.navigateByUrl('');
+    return false;
   }
 }
