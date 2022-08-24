@@ -54,7 +54,7 @@
                   <button [routerLink]="['/developer/python/package/list']" class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
-                  <button type="button" class="button is-small is-link"
+                  <button [disabled]="!installationForm.valid" type="button" class="button is-small is-link"
                     (click)="installPythonPackage()">Install</button>
                 </p>
               </div>

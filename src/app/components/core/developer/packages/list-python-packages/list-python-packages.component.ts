@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { AlertService, ProgressBarService } from '../../../../../services';
 import { PackageManagerService } from '../../../../../services/package-manager.service';
 import { SharedService } from '../../../../../services/shared.service';
-import { orderBy } from 'lodash';
+import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-list-python-packages',
@@ -38,7 +38,7 @@ export class ListPythonPackagesComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
-          this.pythonPackages = orderBy(data.packages, 'package');
+          this.pythonPackages = sortBy(data.packages, p => p.package.toLowerCase());
         },
         error => {
           /** request completed */
@@ -49,10 +49,6 @@ export class ListPythonPackagesComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  installPythonPackage() {
-
   }
 
   public ngOnDestroy(): void {

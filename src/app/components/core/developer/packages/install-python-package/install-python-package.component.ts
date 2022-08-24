@@ -35,7 +35,6 @@ export class InstallPythonPackageComponent implements OnInit {
   installPythonPackage() {
     this.submitted = true;
     if (this.installationForm.valid) {
-      console.table(this.installationForm.value);
       /** request started */
       this.ngProgress.start();
       this.packageManagerService.InstallPythonPackage(this.installationForm.value)
@@ -52,7 +51,7 @@ export class InstallPythonPackageComponent implements OnInit {
             if (error.status === 0) {
               console.log('service down ', error);
             } else {
-              this.alertService.error(error.statusText);
+              this.alertService.error(error.error.message ? error.error.message : error.statusText);
             }
           });
     }
