@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { SharedService } from '../../../../services';
+import { ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 
@@ -15,11 +15,14 @@ export class ListControlDispatcherComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   viewPort: any = '';
+  dispatcherServiceInstalled = false;
 
   constructor(
     public controlService: ControlDispatcherService,
     public sharedService: SharedService,
+    public servicesApiService: ServicesApiService,
     private router: Router,
+    public ngProgress: ProgressBarService,
     public docService: DocService,
     private route: ActivatedRoute) {
     this.route.queryParams.subscribe(params => {
@@ -33,6 +36,27 @@ export class ListControlDispatcherComponent implements OnInit {
     this.viewPortSubscription = this.sharedService.viewport
       .subscribe(viewport => {
         this.viewPort = viewport;
+      });
+    this.getInstalledServicesList();
+  }
+
+  public getInstalledServicesList() {
+    /** request start */
+    this.ngProgress.start();
+    this.servicesApiService.getInstalledServices().
+      then((data: any) => {
+        console.log('data', data);
+
+        /** request done */
+        this.ngProgress.done();
+        this.dispatcherServiceInstalled = data.services.includes('dispatcher');
+        console.log('s', this.dispatcherServiceInstalled);
+
+      })
+      .catch(error => {
+        /** request done */
+        this.ngProgress.done();
+        console.log('service down ', error);
       });
   }
 
