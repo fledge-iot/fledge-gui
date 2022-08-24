@@ -16,7 +16,7 @@ export class ListControlDispatcherComponent implements OnInit {
   private subscription: Subscription;
   viewPort: any = '';
   dispatcherServiceInstalled = false;
-
+  dispatcherService;
   constructor(
     public controlService: ControlDispatcherService,
     public sharedService: SharedService,
@@ -45,19 +45,35 @@ export class ListControlDispatcherComponent implements OnInit {
     this.ngProgress.start();
     this.servicesApiService.getInstalledServices().
       then((data: any) => {
-        console.log('data', data);
-
         /** request done */
         this.ngProgress.done();
+        // Check if dispatcher service available in installed services list
         this.dispatcherServiceInstalled = data.services.includes('dispatcher');
-        console.log('s', this.dispatcherServiceInstalled);
-
+        if (this.dispatcherServiceInstalled) {
+          this.checkServiceStatus();
+        }
       })
       .catch(error => {
         /** request done */
         this.ngProgress.done();
         console.log('service down ', error);
       });
+  }
+
+  public checkServiceStatus() {
+    /** request start */
+    this.ngProgress.start();
+    this.servicesApiService.getAllServices()
+      .subscribe((res: any) => {
+        this.dispatcherService = null; // reset service
+        /** request done */
+        this.ngProgress.done();
+        // Check if dispatcher service is added
+        this.dispatcherService = res.services.find((svc: any) => svc.type === 'Dispatcher');
+      },
+        (error) => {
+          console.log('service down ', error);
+        });
   }
 
   showDiv(id: string) {

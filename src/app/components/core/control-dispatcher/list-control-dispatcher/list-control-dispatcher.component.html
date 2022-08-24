@@ -1,8 +1,10 @@
 <div class="container is-fluid">
   <ng-container>
-    <article class="message is-warning">
-      <div class="message-body" *ngIf="!dispatcherServiceInstalled;else installMessage">
-        Dispatcher service is not installed.
+    <article class="message is-warning" *ngIf="dispatcherService?.status !=='running'">
+      <div class="message-body">
+        <span *ngIf="!dispatcherServiceInstalled">Dispatcher service is not installed.</span>
+        <span *ngIf="!dispatcherService">Dispatcher service is not added.</span>
+        <span *ngIf="dispatcherService?.status==='shutdown'">Dispatcher service is not enabled.</span>
         <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
           <span class="icon">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
@@ -13,20 +15,6 @@
           <i class="far fa-question-circle"></i>
         </span>
       </div>
-      <ng-template #installMessage>
-        <div class="message-body">
-          Dispatcher service is installed.
-          <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
-            <span class="icon">
-              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-            </span>
-          </button>
-          <span class="icon is-small tooltip is-pulled-right is-hovered btn-pad" data-tooltip="Help"
-            (click)="goToLink('control-dispatcher-service')">
-            <i class="far fa-question-circle"></i>
-          </span>
-        </div>
-      </ng-template>
     </article>
   </ng-container>
   <div class="card">
