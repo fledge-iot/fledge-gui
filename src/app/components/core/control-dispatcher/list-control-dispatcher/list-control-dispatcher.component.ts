@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
+import { ProgressBarService, SchedulesService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 
@@ -15,11 +15,13 @@ export class ListControlDispatcherComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   viewPort: any = '';
-  dispatcherServiceInstalled = false;
   dispatcherService;
+  dispatcherServiceInstalled = false;
+  dispatcherServiceEnabled = false;
   constructor(
     public controlService: ControlDispatcherService,
     public sharedService: SharedService,
+    public schedulesService: SchedulesService,
     public servicesApiService: ServicesApiService,
     private router: Router,
     public ngProgress: ProgressBarService,
@@ -65,13 +67,39 @@ export class ListControlDispatcherComponent implements OnInit {
     this.ngProgress.start();
     this.servicesApiService.getAllServices()
       .subscribe((res: any) => {
-        this.dispatcherService = null; // reset service
         /** request done */
         this.ngProgress.done();
+        this.dispatcherService = null; // reset service
         // Check if dispatcher service is added
         this.dispatcherService = res.services.find((svc: any) => svc.type === 'Dispatcher');
+        if (this.dispatcherService) {
+          this.getSchedules();
+        }
       },
         (error) => {
+          /** request done */
+          this.ngProgress.done();
+          console.log('service down ', error);
+        });
+  }
+
+  public getSchedules(): void {
+    /** request start */
+    this.ngProgress.start();
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          /** request done */
+          this.ngProgress.done();
+          const schedule = data.schedules.find((item: any) => item.processName === 'dispatcher_c');
+          this.dispatcherServiceEnabled = false;
+          if (schedule?.enabled) {
+            this.dispatcherServiceEnabled = true;
+          }
+        },
+        error => {
+          /** request done */
+          this.ngProgress.done();
           console.log('service down ', error);
         });
   }

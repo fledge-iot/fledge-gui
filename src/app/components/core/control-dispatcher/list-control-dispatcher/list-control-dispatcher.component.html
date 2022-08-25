@@ -1,21 +1,53 @@
 <div class="container is-fluid">
   <ng-container>
-    <article class="message is-warning" *ngIf="dispatcherService?.status !=='running'">
-      <div class="message-body">
-        <span *ngIf="!dispatcherServiceInstalled">Dispatcher service is not installed.</span>
-        <span *ngIf="!dispatcherService">Dispatcher service is not added.</span>
-        <span *ngIf="dispatcherService?.status==='shutdown'">Dispatcher service is not enabled.</span>
-        <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
-          <span class="icon">
-            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+    <ng-container *ngIf="!dispatcherServiceInstalled">
+      <article class="message is-warning">
+        <div class="message-body">
+          <span>Dispatcher service is not installed.</span>
+          <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
+            <span class="icon">
+              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+            </span>
+          </button>
+          <span class="icon is-small tooltip is-pulled-right is-hovered btn-pad" data-tooltip="Help"
+            (click)="goToLink('control-dispatcher-service')">
+            <i class="far fa-question-circle"></i>
           </span>
-        </button>
-        <span class="icon is-small tooltip is-pulled-right is-hovered btn-pad" data-tooltip="Help"
-          (click)="goToLink('control-dispatcher-service')">
-          <i class="far fa-question-circle"></i>
-        </span>
-      </div>
-    </article>
+        </div>
+      </article>
+    </ng-container>
+    <ng-container *ngIf="dispatcherServiceInstalled && !dispatcherService">
+      <article class="message is-warning">
+        <div class="message-body">
+          <span>Dispatcher service is not added.</span>
+          <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
+            <span class="icon">
+              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+            </span>
+          </button>
+          <span class="icon is-small tooltip is-pulled-right is-hovered btn-pad" data-tooltip="Help"
+            (click)="goToLink('control-dispatcher-service')">
+            <i class="far fa-question-circle"></i>
+          </span>
+        </div>
+      </article>
+    </ng-container>
+    <ng-container *ngIf="dispatcherServiceInstalled && dispatcherService && !dispatcherServiceEnabled">
+      <article class="message is-warning">
+        <div class="message-body">
+          <span>Dispatcher service is not enabled.</span>
+          <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
+            <span class="icon">
+              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+            </span>
+          </button>
+          <span class="icon is-small tooltip is-pulled-right is-hovered btn-pad" data-tooltip="Help"
+            (click)="goToLink('control-dispatcher-service')">
+            <i class="far fa-question-circle"></i>
+          </span>
+        </div>
+      </article>
+    </ng-container>
   </ng-container>
   <div class="card">
     <header>
