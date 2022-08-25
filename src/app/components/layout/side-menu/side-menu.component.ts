@@ -5,6 +5,7 @@ import { Microfrontend } from '../../../microfrontend/microfrontend';
 import { DocService } from '../../../services/doc.service';
 import { SharedService } from '../../../services/shared.service';
 import { buildRoutes } from '../../../../menu-utils';
+import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 
 @Component({
   selector: 'app-side-menu',
@@ -21,7 +22,8 @@ export class SideMenuComponent implements OnInit {
     private router: Router,
     private docService: DocService,
     private sharedService: SharedService,
-    private lookupService: LookupService
+    private lookupService: LookupService,
+    public developerFeaturesService: DeveloperFeaturesService,
   ) { }
 
   async ngOnInit() {

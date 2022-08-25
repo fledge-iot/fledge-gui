@@ -86,7 +86,12 @@
       Support
     </a>
   </li>
-
+  <li>
+    <a id="developer" routerLinkActive="is-active" routerLink='/developer'
+      *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
+      Developer
+    </a>
+  </li>
   <li>
     <a id="setting" routerLinkActive="is-active" routerLink='/setting'>
       Settings
