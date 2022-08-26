@@ -15,9 +15,9 @@ export class ListControlDispatcherComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   viewPort: any = '';
-  dispatcherServiceInstalled = false;
-  dispatcherServiceAdded = false;
-  dispatcherServiceEnabled = false;
+  dispatcherServiceInstalled;
+  dispatcherServiceAdded;
+  dispatcherServiceEnabled;
   constructor(
     public controlService: ControlDispatcherService,
     public sharedService: SharedService,
