@@ -15,8 +15,8 @@ export class ListControlDispatcherComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   viewPort: any = '';
-  dispatcherService;
   dispatcherServiceInstalled = false;
+  dispatcherServiceAdded = false;
   dispatcherServiceEnabled = false;
   constructor(
     public controlService: ControlDispatcherService,
@@ -52,7 +52,7 @@ export class ListControlDispatcherComponent implements OnInit {
         // Check if dispatcher service available in installed services list
         this.dispatcherServiceInstalled = data.services.includes('dispatcher');
         if (this.dispatcherServiceInstalled) {
-          this.checkServiceStatus();
+          this.getSchedules();
         }
       })
       .catch(error => {
@@ -60,27 +60,6 @@ export class ListControlDispatcherComponent implements OnInit {
         this.ngProgress.done();
         console.log('service down ', error);
       });
-  }
-
-  public checkServiceStatus() {
-    /** request start */
-    this.ngProgress.start();
-    this.servicesApiService.getAllServices()
-      .subscribe((res: any) => {
-        /** request done */
-        this.ngProgress.done();
-        this.dispatcherService = null; // reset service
-        // Check if dispatcher service is added
-        this.dispatcherService = res.services.find((svc: any) => svc.type === 'Dispatcher');
-        if (this.dispatcherService) {
-          this.getSchedules();
-        }
-      },
-        (error) => {
-          /** request done */
-          this.ngProgress.done();
-          console.log('service down ', error);
-        });
   }
 
   public getSchedules(): void {
@@ -93,6 +72,10 @@ export class ListControlDispatcherComponent implements OnInit {
           this.ngProgress.done();
           const schedule = data.schedules.find((item: any) => item.processName === 'dispatcher_c');
           this.dispatcherServiceEnabled = false;
+          this.dispatcherServiceAdded = false;
+          if (schedule) {
+            this.dispatcherServiceAdded = true;
+          }
           if (schedule?.enabled) {
             this.dispatcherServiceEnabled = true;
           }
