@@ -53,6 +53,10 @@ export class ListControlDispatcherComponent implements OnInit {
         this.dispatcherServiceInstalled = data.services.includes('dispatcher');
         if (this.dispatcherServiceInstalled) {
           this.getSchedules();
+        } else {
+          this.dispatcherServiceInstalled = false;
+          this.dispatcherServiceAdded = false;
+          this.dispatcherServiceEnabled = false;
         }
       })
       .catch(error => {
