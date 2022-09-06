@@ -33,7 +33,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             this.alertService.error('Failed to connect');
           } else if (err.status === 401 && !location.href.includes('/setting?id=1')) {
             sessionStorage.clear();
-            // this.router.navigate(['/login']);
+            this.router.navigate(['/login']);
           }
         } else { // not a HttpErrorResponse
           this.alertService.error(err.message);
