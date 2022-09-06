@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { PingService, SharedService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
 import { ServiceDiscoveryComponent } from '../service-discovery';
-import { environment } from '../../../../environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TimezoneService } from '../../../services/timezone.service';
@@ -20,8 +19,6 @@ export class SettingsComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
   @Input() navbarComponent: NavbarComponent;
   @ViewChild(ServiceDiscoveryComponent, { static: true }) serviceDiscoveryModal: ServiceDiscoveryComponent;
-
-  API_URL = environment.BASE_URL;
   protocol = 'http'; // default protocol
   host;
   servicePort;
@@ -146,7 +143,7 @@ export class SettingsComponent implements OnInit {
   }
 
   openSSLCertWarningPage() {
-    window.open(`${this.API_URL}ping`, '_blank');
+    window.open(`${this.serviceUrl}ping`, '_blank');
   }
 
   showAlertToContinueWithInsecureCert() {
