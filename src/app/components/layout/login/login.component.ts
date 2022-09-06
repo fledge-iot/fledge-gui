@@ -35,14 +35,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
     });
 
     this.route.queryParams.subscribe(params => {
-      console.log('login ott', params);
       if (params?.ott) {
         this.ottToken = params.ott;
         const scheme = params.scheme;
         const host = params.address;
         const port = params.port;
+        this.storageService.setProtocol(scheme);
+        this.storageService.setHost(host);
+        this.storageService.setPort(port);
         const serviceUrl = `${scheme}://${host}:${port}/fledge/`;
-        console.log('serviceUrl', serviceUrl);
         this.storageService.setServiceURL(serviceUrl);
       }
     });
