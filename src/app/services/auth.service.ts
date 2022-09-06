@@ -30,6 +30,12 @@ export class AuthService {
       catchError(error => throwError(error)));
   }
 
+  loginUsingOttToken(ottToken: string) {
+    return this.http.post(this.LOGIN_URL, { ott: ottToken }).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   /**
    *  clear all active users sessions
     * @param string user id

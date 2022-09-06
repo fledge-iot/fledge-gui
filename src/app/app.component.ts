@@ -1,8 +1,6 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
-import { LookupService } from './microfrontend/lookup.service';
-import { buildRoutes } from '../menu-utils';
 
 import { PingService } from './services';
 import { SharedService } from './services/shared.service';
@@ -23,8 +21,7 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router,
     private ping: PingService,
-    private sharedService: SharedService,
-    private lookupService: LookupService) { }
+    private sharedService: SharedService) { }
 
   public toggleSidebar() {
     if (this.navMode === 'over') {
@@ -33,14 +30,17 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-
     if (window.innerWidth < 1024) {
       this.navMode = 'over';
       this._opened = false;
     }
+
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.isActive(event.url);
+        if (!event.url.includes('ott')) {
+          this.isActive(event.url);
+          this.onLaunchAppRedirect();
+        }
       }
     });
     if (location.href.includes('/login')) {
@@ -48,7 +48,6 @@ export class AppComponent implements OnInit {
     }
     this.setPingIntervalOnAppLaunch();
     this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
-    this.onLaunchAppRedirect();
   }
 
   @HostListener('window:resize', ['$event'])
