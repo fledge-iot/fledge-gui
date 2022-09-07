@@ -104,8 +104,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   loginUsingOttToken() {
-    console.log('login using token');
-
     this.ngProgress.start();
     this.authService.loginUsingOttToken(this.ottToken).
       subscribe(
