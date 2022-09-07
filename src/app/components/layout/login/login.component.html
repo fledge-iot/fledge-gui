@@ -1,5 +1,15 @@
 <section class="is-success">
   <div class="has-text-centered">
+    <div class="column is-4 is-offset-4" *ngIf="ottToken && sslCertificateError">
+      <article class="message is-warning alert-box">
+        <div class="message-body">
+          You are trying to connect over HTTPS. To secure an instance, you must provide your own valid TLS certificate
+          for production operations.A self-signed certificate is included within Fledge, and you will need to configure
+          your browser to accept it as valid. To do this, click this <a class="alert-link"
+            (click)="openSSLCertWarningPage()"><u><b>link</b></u></a> and in that page accept the certificate.
+        </div>
+      </article>
+    </div>
     <div class="column is-4 is-offset-4">
       <div class="box">
         <form name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>

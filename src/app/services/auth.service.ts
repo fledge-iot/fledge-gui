@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -10,6 +10,7 @@ export class AuthService {
   // private instance variable to hold base url
   private LOGIN_URL = environment.BASE_URL + 'login';
   private LOGOUT_URL = environment.BASE_URL;
+  public loginSuccessSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) { }
 

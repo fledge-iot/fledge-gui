@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
 
-import { PingService } from './services';
+import { AuthService, PingService } from './services';
 import { SharedService } from './services/shared.service';
 
 @Component({
@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router,
     private ping: PingService,
+    private authService: AuthService,
     private sharedService: SharedService) { }
 
   public toggleSidebar() {
@@ -37,10 +38,12 @@ export class AppComponent implements OnInit {
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        if (!event.url.includes('ott')) {
-          this.isActive(event.url);
-          this.onLaunchAppRedirect();
-        }
+        this.isActive(event.url);
+        this.authService.loginSuccessSubject.subscribe((success) => {
+          if (!success && !event.url.includes('login')) {
+            this.onLaunchAppRedirect();
+          }
+        })
       }
     });
     if (location.href.includes('/login')) {
