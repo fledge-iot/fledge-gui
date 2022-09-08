@@ -46,7 +46,7 @@
         .&nbsp;
         <a (click)="forgotPassword()">Forgot Password?</a>
       </div>
-      <div class="has-text-grey">
+      <div class="has-text-grey" *ngIf="!ottToken">
         <a class="grey-link" (click)="setupInstance()">Setup Instance</a>
       </div>
     </div>
