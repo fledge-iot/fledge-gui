@@ -69,7 +69,9 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
           router.navigate(['/login'])
         }
       } else {
-        router.navigate(['/setting'], { queryParams: { id: '1' } });
+        if (!location.href.includes('ott')) {
+          router.navigate(['/setting'], { queryParams: { id: '1' } });
+        }
       }
       sharedService.loginScreenSubject.next(true);
     });
