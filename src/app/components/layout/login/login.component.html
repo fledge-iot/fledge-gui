@@ -10,7 +10,7 @@
         </div>
       </article>
     </div>
-    <div class="column is-4 is-offset-4" *ngIf="!ottToken">
+    <div class="column is-4 is-offset-4" *ngIf="!ottToken || sslCertificateError">
       <div class="box">
         <form name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
           <div class="field">

@@ -1,8 +1,8 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
 
-import { AuthService, PingService } from './services';
+import { PingService } from './services';
 import { SharedService } from './services/shared.service';
 
 @Component({
@@ -21,7 +21,6 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router,
     private ping: PingService,
-    private authService: AuthService,
     private sharedService: SharedService) { }
 
   public toggleSidebar() {
@@ -35,22 +34,23 @@ export class AppComponent implements OnInit {
       this.navMode = 'over';
       this._opened = false;
     }
-
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        this.isActive(event.url);
-        this.authService.loginSuccessSubject.subscribe((success) => {
-          if (!success && !event.url.includes('login')) {
-            this.onLaunchAppRedirect();
-          }
-        })
-      }
-    });
-    if (location.href.includes('/login')) {
-      this.isLoginView = true;
-    }
     this.setPingIntervalOnAppLaunch();
     this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
+    this.router.events.subscribe(event => {
+
+      if (event instanceof NavigationStart) {
+        console.log('start', !event.url.includes('login?ott'));
+        if (!event.url.includes('login?ott')) {
+          this.onLaunchAppRedirect();
+        }
+      }
+      if (event instanceof NavigationEnd) {
+        this.isActive(event.url);
+
+      }
+    });
+
+    // this.onLaunchAppRedirect();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -80,7 +80,7 @@ export class AppComponent implements OnInit {
    *
    */
   isActive(href) {
-    const withoutSidebarRoutes = (href === '/login' || href === '/setting?id=1' || href.indexOf('user/reset-password') >= 0);
+    const withoutSidebarRoutes = (href.includes('/login') || href.includes('/setting?id=1') || href.indexOf('user/reset-password') >= 0);
     const tokenMissingWhenAuthMandatory = sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
     if (withoutSidebarRoutes || tokenMissingWhenAuthMandatory) {
       return this.isLoginView = true;
@@ -90,7 +90,9 @@ export class AppComponent implements OnInit {
   }
 
   onLaunchAppRedirect() {
+    console.log('app relaunch');
     this.sharedService.isServiceUp.subscribe(isServiceUp => {
+      console.log('service up', isServiceUp);
       if (!isServiceUp) {
         this.router.navigate(['/setting'], { queryParams: { id: '1' } });
       } else if (sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
