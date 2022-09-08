@@ -6,7 +6,6 @@ import { AlertService, AuthService, PingService, UserService, ProgressBarService
 import { SharedService } from '../../../services/shared.service';
 import { CertificateBaseLoginComponent } from '../certificate-base-login';
 import { Subscription } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
 
 @Component({
   moduleId: module.id.toString(),
@@ -61,7 +60,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   @HostListener('window:visibilitychange', ['$event'])
   onFocus(): void {
-    if (!document.hidden && this.ottToken && !this.sslCertificateError) {
+    if (!document.hidden && this.ottToken) {
       this.loginUsingOttToken();
     }
   }
@@ -117,7 +116,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
           sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
           this.getUser(data['uid']);
           this.router.navigate([''], { replaceUrl: true });
-          this.authService.loginSuccessSubject.next(true);
         },
         error => {
           this.ngProgress.done();
@@ -148,7 +146,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
           sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
           this.getUser(data['uid']);
           this.router.navigate([''], { replaceUrl: true });
-          this.authService.loginSuccessSubject.next(true);
         },
         error => {
           this.ngProgress.done();

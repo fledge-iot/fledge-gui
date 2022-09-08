@@ -10,7 +10,6 @@ export class AuthService {
   // private instance variable to hold base url
   private LOGIN_URL = environment.BASE_URL + 'login';
   private LOGOUT_URL = environment.BASE_URL;
-  public loginSuccessSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) { }
 

@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
 
 import { PingService } from './services';
@@ -34,23 +34,17 @@ export class AppComponent implements OnInit {
       this.navMode = 'over';
       this._opened = false;
     }
+    this.sharedService.loginScreenSubject.subscribe((isLoginView: boolean) => {
+      this.isLoginView = isLoginView;
+    })
+
     this.setPingIntervalOnAppLaunch();
     this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
     this.router.events.subscribe(event => {
-
-      if (event instanceof NavigationStart) {
-        console.log('start', !event.url.includes('login?ott'));
-        if (!event.url.includes('login?ott')) {
-          this.onLaunchAppRedirect();
-        }
-      }
       if (event instanceof NavigationEnd) {
         this.isActive(event.url);
-
       }
     });
-
-    // this.onLaunchAppRedirect();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -87,22 +81,6 @@ export class AppComponent implements OnInit {
     } else {
       return this.isLoginView = false;
     }
-  }
-
-  onLaunchAppRedirect() {
-    console.log('app relaunch');
-    this.sharedService.isServiceUp.subscribe(isServiceUp => {
-      console.log('service up', isServiceUp);
-      if (!isServiceUp) {
-        this.router.navigate(['/setting'], { queryParams: { id: '1' } });
-      } else if (sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
-        this.router.navigate(['/login']);
-      } else {
-        if (location.href.includes('/setting?id=1')) {
-          this.router.navigate(['']);
-        }
-      }
-    });
   }
 
   setPingIntervalOnAppLaunch() {

@@ -47,20 +47,31 @@ import { ProgressBarComponent } from './components/common/progress-bar/progress-
 import { ProgressBarService } from './services/progress-bar.service';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
 import { ValidateFormService } from './services/validate-form.service';
+import { Router } from '@angular/router';
 
-export function pingServiceFactory(ping: PingService, sharedService: SharedService): Function {
+export function pingServiceFactory(ping: PingService, sharedService: SharedService, router: Router): Function {
   return () => ping.pingService()
     .then((data) => {
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
-      sharedService.isServiceUp.next(true);
+      if (!location.href.includes('ott') && sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
+        router.navigate(['/login']);
+        sharedService.loginScreenSubject.next(true);
+      } else {
+        if (location.href.includes('/settings?id=1')) {
+          router.navigate([''])
+        }
+      }
     })
     .catch(error => {
       // Set isService to true, if response status code is not undefined and not 0 & not 404
       if (error && error.status && !(error.status === 0 || error.status === 404)) {
-        sharedService.isServiceUp.next(true);
+        if (!location.href.includes('ott')) {
+          router.navigate(['/login'])
+        }
       } else {
-        sharedService.isServiceUp.next(false);
+        router.navigate(['/setting'], { queryParams: { id: '1' } });
       }
+      sharedService.loginScreenSubject.next(true);
     });
 }
 
@@ -106,7 +117,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     {
       provide: APP_INITIALIZER,
       useFactory: pingServiceFactory,
-      deps: [PingService, SharedService],
+      deps: [PingService, SharedService, Router],
       multi: true
     },
     ConnectedServiceStatus,
