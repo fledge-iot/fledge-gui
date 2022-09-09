@@ -18,11 +18,11 @@
         <div *ngIf="!isNotificationServiceAvailable" class="columns is-mobile">
           <div class="column">
             <div class="field is-horizontal">
-              <div class="field-label has-text-left">
+              <div class="field-label has-text-left notification-label">
                 <label class="label">Name</label>
               </div>
               <div class="field-body">
-                <div class="field">
+                <div class="field is-narrow">
                   <input *ngIf="!isNotificationServiceAvailable" type="text" class="input is-small"
                     name="notificationServiceName" [(ngModel)]="notificationServiceName"
                     placeholder="Fledge Notifications" required trim="blur" />
@@ -39,8 +39,8 @@
           </app-config-children>
           <div class="columns">
             <div class="column">
-              <div class="field is-horizontal enable-div">
-                <div class="field-label has-text-left">
+              <div class="field is-horizontal" [ngClass]="{'enable-div': category}">
+                <div class="field-label has-text-left notification-label">
                   <label class="label">Enabled</label>
                 </div>
                 <div class="field-body">

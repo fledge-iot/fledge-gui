@@ -7,6 +7,14 @@
   }
 }
 
+.field.is-narrow {
+  width: 50% !important;
+}
+
+.notification-label {
+  max-width: 100px !important;
+}
+
 hr {
   background-color: #fff !important;
 }
@@ -50,3 +58,5 @@ hr {
 .enable-div {
   margin: 1.5rem 1rem;
 }
+
+

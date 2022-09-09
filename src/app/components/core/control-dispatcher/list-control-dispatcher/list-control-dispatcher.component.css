@@ -2,10 +2,19 @@
   margin-right: 20px;
 }
 
+.btn-pad {
+  margin-top: 6px;
+}
+
 .is-hovered {
   cursor: pointer !important;
 }
 
 .card-content {
   overflow: initial !important;
+}
+
+.message.is-warning {
+  margin-top: 10px;
+  margin-bottom: 0px !important;
 }

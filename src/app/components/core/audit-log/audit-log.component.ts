@@ -18,6 +18,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
   public MAX_RANGE = MAX_INT_SIZE;
   limit = this.DEFAULT_LIMIT;
   public source = '';
+  public selectedSourceName = '';
   public severity = '';
   public isAlive: boolean;
 
@@ -49,7 +50,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getLogSource();
     this.getLogSeverity();
-    this.subscription =  interval(this.refreshInterval)
+    this.subscription = interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getAuditLogs(true);
@@ -186,7 +187,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     this.auditLogSubscriber(autoRefresh);
   }
 
-  public filterSource(type: string, code: string) {
+  public filterSource(type: string, source: any) {
     this.limit = this.DEFAULT_LIMIT;
     this.tempOffset = 0;
     this.recordCount = 0;
@@ -195,10 +196,11 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     }
 
     if (type === 'source') {
-      this.source = code.trim().toLowerCase() === 'source' ? '' : code.trim().toLowerCase();
+      this.source = source ? source?.code.trim().toLowerCase() : '';
+      this.selectedSourceName = source ? `${source.code} - ${source.description}` : '';
     }
     if (type === 'severity') {
-      this.severity = code.trim().toLowerCase() === 'severity' ? '' : code.trim().toLowerCase();
+      this.severity = source.trim().toLowerCase() === 'severity' ? '' : source.trim().toLowerCase();
     }
     this.auditLogSubscriber();
   }
@@ -251,12 +253,15 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       this.refreshInterval = POLLING_INTERVAL;
     }
 
-    this.subscription =  interval(this.refreshInterval)
+    this.subscription = interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getAuditLogs(true);
       });
+  }
 
+  showtooltip(sourceCode: string) {
+    return this.logSourceList.find(s => s.code === sourceCode)?.description;
   }
 
   public ngOnDestroy(): void {

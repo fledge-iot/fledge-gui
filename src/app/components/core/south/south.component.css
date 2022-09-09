@@ -49,4 +49,22 @@ color: #363636;
   opacity: 1.0 !important;
 }
 
+.open i.fa-angle-down {
+  transform: rotate(180deg)
+}
+
+.is-borderless td, .is-borderless th {
+  border: 0;
+ }
+
+ .tooltip {
+  opacity: 1.0 !important;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+  margin-top: 0.5em;
+}
+
+
 

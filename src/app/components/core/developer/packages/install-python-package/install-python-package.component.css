@@ -1,0 +1,7 @@
+.field-label {
+  text-align: left;
+}
+
+.field.is-narrow {
+  width: 50% !important;
+}

@@ -189,7 +189,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       };
     });
     const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, (newConfig, oldConfig) => {
-      if (newConfig.type === 'JSON' && oldConfig.type === 'JSON') {
+      if (newConfig.type === 'JSON' && oldConfig.type === 'JSON' && newConfig.key === oldConfig.key) {
         return isEqual(JSON.parse(newConfig.value), JSON.parse(oldConfig.value));
       }
       return isEqual(newConfig, oldConfig);
