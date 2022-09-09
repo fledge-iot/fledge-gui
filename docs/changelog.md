@@ -8,6 +8,7 @@
   - [FOGL-6669] Support to manually purge assets readings [#188](https://github.com/fledge-iot/fledge-gui/pull/188)
   - [FOGL-6661] Support to view/export & import plugin's persisted data [#192](https://github.com/fledge-iot/fledge-gui/pull/192)
   - [FOGL-6720] Support to deprecate assets [#193](https://github.com/fledge-iot/fledge-gui/pull/193)
+  - [FOGL-6785] Support to install pip3 package [#203](https://github.com/fledge-iot/fledge-gui/pull/203)
 - [FOGL-6613] Support for ACL configuration item type which allows the selection from existing ACLs [#194] (https://github.com/fledge-iot/fledge-gui/pull/194)
 - [FOGL-6108] Provided alpha control to specify the opacity for line colors in the asset readings graph [#134](https://github.com/fledge-iot/fledge-gui/pull/134)
 
@@ -26,6 +27,7 @@
 - [FOGL-6144] Graphs erroneously merge gaps in time series data [#142](https://github.com/fledge-iot/fledge-gui/pull/142)
 - [FOGL-6203] Sorting for disabled services on south page, after Fledge restart [#158](https://github.com/fledge-iot/fledge-gui/pull/158)
 - [FOGL-3193] Timezone inconsistencies in the user interface [#132](https://github.com/fledge-iot/fledge-gui/pull/132)
+- [FOGL-6839] JSON config copy issue between multiple JSON fields of a category [#205](https://github.com/fledge-iot/fledge-gui/pull/205)
 
 #### Others
 
