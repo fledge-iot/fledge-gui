@@ -1,63 +1,45 @@
-<form name="form" id="configForm" #f="ngForm" novalidate>
-  <ng-container *ngIf="configuration != undefined">
-    <ng-container *ngFor="let configItem of configAttributes">
-      <div class="config-div" *ngIf="!configItem.readonly">
-        <div class="field is-horizontal">
-          <div class="field-label has-text-left">
-            <label class="label tooltip is-tooltip-right is-tooltip-multiline" [attr.data-tooltip]="configItem.description">
-              {{setDisplayName(configItem)}}
-            </label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <ng-container *ngIf="getConfigAttributeType(configItem.type) == 'BOOLEAN'">
-                <label class="checkbox">
-                  <input type="checkbox" name='{{configItem.key}}' value="setConfigValue(configItem)" [ngModel]="setConfigValue(configItem) == 'true'">
-                </label>
-              </ng-container>
-              <div class="field">
-                <input *ngIf="getConfigAttributeType(configItem.type) === 'TEXT'" name="{{configItem.key}}" class="input is-fullwidth is-small"
-                  type="text" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)'
-                  [attr.maxLength]="configItem?.length" (input)="checkValueOnChange(configItem.key, $event.target.value)" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
-
-                <input *ngIf="getConfigAttributeType(configItem.type) === 'INTEGER'" name="{{configItem.key}}" type="number"
-                  [value]='setConfigValue(configItem)' class="input is-fullwidth is-small" [minValue]="configItem?.minimum"
-                  [maxValue]="configItem?.maximum" [ngModel]="setConfigValue(configItem)" appNumberOnly (input)="checkValueOnChange(configItem.key, $event.target.value)" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
-
-                <input *ngIf="getConfigAttributeType(configItem.type) === 'FLOAT'" name="{{configItem.key}}" type="number"
-                  [value]='setConfigValue(configItem)' step="any" class="input is-fullwidth is-small" [minValue]="configItem?.minimum"
-                  [maxValue]="configItem?.maximum" [ngModel]="setConfigValue(configItem)" appNumberOnly (input)="checkValueOnChange(configItem.key, $event.target.value)" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
-
-                <textarea rows="3" *ngIf="getConfigAttributeType(configItem.type) === 'LONG_TEXT'" class="textarea is-fullwidth is-small"
-                  name="{{configItem.key}}" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)'
-                  [attr.maxLength]="configItem?.length" [jsonValue]="setConfigValue(configItem)">{{configItem?.value != undefined ? configItem?.value : configItem?.default}}</textarea>
-
-                <div *ngIf="getConfigAttributeType(configItem.type) == 'ENUMERATION'" class="select is-small">
-                  <select name='{{configItem.key}}' [ngModel]="setConfigValue(configItem)">
-                    <option *ngFor="let configOption of configItem.options" [value]='configOption'>{{configOption}}</option>
-                  </select>
-                </div>
-              </div>
-              <input *ngIf="getConfigAttributeType(configItem.type) === 'URL'" name="{{configItem.key}}" class="input is-fullwidth is-small"
-                type="url" [ngModel]="setConfigValue(configItem)" [value]='setConfigValue(configItem)' (input)="checkValueOnChange(configItem.key, $event.target.value)" [required]="configItem?.hasOwnProperty('mandatory') && configItem?.mandatory=='true'"/>
-
-              <span *ngIf="f?.controls[configItem.key]?.hasError('required')" class="help is-danger">
-                <sup>*</sup>required
-              </span>
-              <span *ngIf="f?.controls[configItem.key]?.hasError('minValue')" class="help is-danger">
-                <sup>*</sup>Value should not be less than {{configItem?.minimum}}.
-              </span>
-              <span *ngIf="f?.controls[configItem.key]?.hasError('maxValue')" class="help is-danger">
-                <sup>*</sup>Value should not be greater than {{configItem?.maximum}}.
-              </span>
-              <span *ngIf="f?.controls[configItem.key]?.hasError('jsonValue')" class="help is-danger">
-                Invalid JSON.
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="tabs is-boxed">
+  <ul>
+    <li [ngClass]="{'is-active': seletedTab == category?.key}" *ngIf="category">
+      <h6 class="is-6 has-text-weight-semibold">
+        <a (click)="seletedTab = category?.key">Configuration</a>
+      </h6>
+    </li>
+    <ng-container *ngFor="let child of categoryChildren">
+      <li [ngClass]="{'is-active': seletedTab == child?.displayName}">
+        <h6 class="is-6 has-text-weight-semibold">
+          <a (click)="selectTab(child)">{{child?.displayName.includes('Advanced')? 'Advanced Configuration' :
+            (child?.displayName.includes('Security')? 'Security Configuration' : child?.displayName)}}</a>
+        </h6>
+      </li>
     </ng-container>
-  </ng-container>
-</form>
-<br>
+    <!-- Developer tab to show plugin data -->
+    <li [ngClass]="{'is-active': seletedTab == 'developer'}"
+      *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from)">
+      <h6 class="is-6 has-text-weight-semibold">
+        <a (click)="seletedTab = 'developer'">Developer</a>
+      </h6>
+    </li>
+  </ul>
+</div>
+<div>
+  <p class="highlight">
+    <app-view-config-item #childrenConfigView [hidden]="seletedTab !== category?.key"
+      [categoryConfigurationData]="category" [useChildrenProxy]="useCategoryChildrenProxy" [formId]="category?.key">
+    </app-view-config-item>
+
+    <app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Advanced')"
+      [categoryConfigurationData]="advanceConfiguration" [useChildrenProxy]="useCategoryChildrenProxy"
+      formId="advanced">
+    </app-view-config-item>
+
+    <app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Security')"
+      [categoryConfigurationData]="securityConfiguration" [useChildrenProxy]="useCategoryChildrenProxy"
+      formId="security">
+    </app-view-config-item>
+
+    <app-plugin-persist-data *ngIf="seletedTab == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
+      [serviceName]="category?.key" [pluginName]="plugin">
+    </app-plugin-persist-data>
+  </p>
+</div>

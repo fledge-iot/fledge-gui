@@ -1,5 +1,3 @@
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -9,13 +7,15 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
-import { sortBy } from 'lodash';
 import { Router } from '@angular/router';
+import { sortBy } from 'lodash';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {
-  AlertService, AuthService, ConnectedServiceStatus, PingService, ServicesApiService,
-  ProgressBarService
+  AlertService, AuthService, ConnectedServiceStatus, PingService,
+  ProgressBarService, ServicesApiService
 } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';
@@ -144,6 +144,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           });
           const notificationService = servicesData.filter((el => (el.type === 'Notification')));
           const managementService = servicesData.filter((el => (el.type === 'Management')));
+          const dispatcherService = servicesData.filter((el => (el.type === 'Dispatcher')));
+          const bucketStorageService = servicesData.filter((el => (el.type === 'BucketStorage')));
 
           this.servicesRecord.push(coreService[0], storageService[0]);
           southboundServices.forEach(service => {
@@ -155,9 +157,19 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           if (notificationService.length) {
             this.servicesRecord.push(notificationService[0]);
           }
+
           if (managementService.length) {
             this.servicesRecord.push(managementService[0]);
           }
+
+          if (dispatcherService.length) {
+            this.servicesRecord.push(dispatcherService[0]);
+          }
+
+          if (bucketStorageService.length) {
+            this.servicesRecord.push(bucketStorageService[0]);
+          }
+
           this.hideLoadingSpinner();
         },
         (error) => {
@@ -187,8 +199,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.uptime = Utils.secondsToDhms(data['uptime']).roundOffTime;
       }
-      this.pingInfo = { isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
-      version: this.pingData['version'] };
+      this.pingInfo = {
+        isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
+        version: this.pingData['version']
+      };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
         this.isAuthOptional = true;
@@ -197,7 +211,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.sharedService.isAdmin.next(JSON.parse(sessionStorage.getItem('isAdmin')));
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
-      this.sharedService.connectionInfo.next({'version': this.pingData['version'], 'isServiceUp': true});
+      this.sharedService.connectionInfo.next({ 'version': this.pingData['version'], 'isServiceUp': true });
     })
       .catch((error) => {
         this.pingData = [];
@@ -211,7 +225,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.pingInfo.isAlive = true;
           this.pingInfo.isAuth = true;
         } else {
-          this.sharedService.connectionInfo.next({version: '', isServiceUp: false});
+          this.sharedService.connectionInfo.next({ version: '', isServiceUp: false });
           this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
         }
       });

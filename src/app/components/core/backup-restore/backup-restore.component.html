@@ -3,6 +3,9 @@
     <header class="card-header">
       <p class="card-header-title">
         Backups
+        <button *ngIf="!isAlive" (click)="getBackup()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
       </p>
       <div>
         <div class="columns fix-margin">
@@ -17,11 +20,11 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="requestBackup()">
+                  <a class="dropdown-item" id="create-backup" (click)="requestBackup()">
                     <i class="far fa-plus-square fa-sm fa-fw" aria-hidden="true"></i>
                     <span> Create New</span>
                   </a>
-                  <a class="dropdown-item" (click)="uploadBackup()">
+                  <a class="dropdown-item" id="upload-backup" (click)="uploadBackup()">
                     <i class="fas fa-paperclip fa-sm fa-fw" aria-hidden="true"></i>
                     <span> Upload a Backup</span>
                   </a>
@@ -53,7 +56,7 @@
             <thead>
               <tr>
                 <th>
-                  <div [ngClass]="{'sort-order': backupData.length > 1}"  (click)="sort()">
+                  <div [ngClass]="{'sort-order': backupData.length > 1}" (click)="sort()">
                     Date &amp; Time
                     <ng-container *ngIf="backupData.length > 1">
                       <i *ngIf="!ascSort" #desc class="fas fa-caret-down" aria-hidden="true"></i>
@@ -72,7 +75,7 @@
             <tbody>
               <tr *ngFor="let backup of backupData">
                 <td class="align-content">
-                  <small>{{ backup.date | dateparser:"YYYY-MM-DD hh:mm:ss"}}</small>
+                  <small>{{ backup.date | dateparser:"YYYY-MM-DD HH:mm:ss"}}</small>
                 </td>
                 <td class="align-content">
                   <small>{{ backup.status }}</small>

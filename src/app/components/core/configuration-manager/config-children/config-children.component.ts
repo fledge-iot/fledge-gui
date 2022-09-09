@@ -1,113 +1,54 @@
-import { AfterViewInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { differenceWith, isEqual, isEmpty } from 'lodash';
+import { Component, Input } from '@angular/core';
 
 import { ConfigurationService } from '../../../../services';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import ConfigTypeValidation from '../configuration-type-validation';
+import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
+
 
 @Component({
   selector: 'app-config-children',
   templateUrl: './config-children.component.html',
   styleUrls: ['./config-children.component.css']
 })
-export class ConfigChildrenComponent implements AfterViewInit {
+export class ConfigChildrenComponent {
+  seletedTab = '';
+  useCategoryChildrenProxy = 'true';
+  categoryKey = '';
+  advanceConfiguration: any;
+  securityConfiguration: any;
 
-  configuration = [];
-  configItems = [];
-  configAttributes = [];
+  categoryChildren = [];
+  @Input() category;
+  @Input() plugin;
+  @Input() serviceStatus = false;
+  @Input() from;
 
-  @Output() onConfigChanged: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('f', { static: true }) form;
+  pages = ['south', 'north']
 
-  constructor(private configService: ConfigurationService,
-    private validateFormService: ValidateFormService) { }
+  constructor(
+    private configService: ConfigurationService,
+    public developerFeaturesService: DeveloperFeaturesService,
+  ) { }
 
-  ngAfterViewInit() {
-    this.form.control.valueChanges
-      .subscribe(values => {
-        const formData = [];
-        for (const key in values) {
-          const d = {
-            key: key,
-            value: values[key] === null ? '0' : values[key].toString(),
-            type: this.configItems.find(conf => {
-              return conf.key === key;
-            }).type
-          };
-          if (this.form.valid) {
-            formData.push(d);
-          }
-        }
-        const changedConfigValues = differenceWith(formData, this.configItems, isEqual);
-        if (!isEmpty(changedConfigValues)) {
-          this.onConfigChanged.emit(changedConfigValues);
-        }
-        if (!(this.validateFormService.checkConfigChildrenForm(this.form.valid))) {
-          return;
-        }
-      });
+  ngOnInit() {
+    this.getChildConfigData();
   }
 
-  public getConfigAttributeType(key) {
-    return ConfigTypeValidation.getValueType(key);
-  }
-
-  /**
-   * Method to set ngModal value
-   * @param configVal Config value to pass in ngModel
-   */
-  public setConfigValue(configVal) {
-    if (configVal.value !== undefined) {
-      return configVal.value;
-    } else {
-      return configVal.default;
+  public getChildConfigData() {
+    if (this.category) {
+      this.seletedTab = this.category.key
+      this.categoryKey = this.category.key;
+      this.checkIfAdvanceConfig(this.category.key)
     }
   }
 
-  /**
-   * Check if object has a specific key
-   * @param o Object
-   * @param name key name
-   */
-  public hasProperty(o, name) {
-    return o.hasOwnProperty(name);
-  }
-
-  /**
-   * display config item name on gui
-   * @param configItem config item object
-   */
-  public setDisplayName(configItem) {
-    if (this.hasProperty(configItem, 'displayName')) {
-      return configItem.displayName.trim().length > 0 ? configItem.displayName : configItem.key;
-    }
-    return configItem.key;
-  }
-
-  getAdvanceConfig(categoryConfig, isAdvanceConfig = false) {
-    if (categoryConfig === null || !isAdvanceConfig) {
-      this.configuration = undefined;
-      return;
-    }
-    this.configAttributes = [];
-    this.configService.getCategory(categoryConfig.key).
+  checkIfAdvanceConfig(categoryName: string) {
+    this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
-          this.configItems = [];
-          this.configuration = data;
-          for (const key in this.configuration) {
-            if (this.configuration.hasOwnProperty(key)) {
-              const element = this.configuration[key];
-              element.key = key;
-              this.configAttributes.push(element);
-            }
-          }
-          this.configAttributes.forEach(el => {
-            this.configItems.push({
-              key: el.key,
-              value: el.value !== undefined ? el.value : el.default,
-              type: el.type
-            });
+          this.categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
+          this.categoryChildren.forEach(cat => {
+            // Get child category configuration
+            this.getConfig(cat);
           });
         },
         error => {
@@ -116,13 +57,34 @@ export class ConfigChildrenComponent implements AfterViewInit {
       );
   }
 
-  checkValueOnChange(key: string, configValue: string) {
-    this.configAttributes.map(configItem => {
-      if (configItem.hasOwnProperty('mandatory') && configItem['key'] === key) {
-       if (configItem['mandatory'] === 'true' && configValue.trim().length === 0) {
-        this.form.controls[key].setErrors({'required': true});
-       }
-      }
-    });
+  /**
+   * Set configuration of the selected child category
+   * @param category Object{key, description, displayName}
+   */
+  selectTab(category: any) {
+    this.seletedTab = category?.displayName;
+    this.categoryKey = category?.key;
+    this.useCategoryChildrenProxy = 'true';
+  }
+
+  /**
+   * Get configuration of the child category
+   * @param categoryName : String
+   */
+  getConfig(category: any) {
+    this.configService.getCategory(category.key).
+      subscribe(
+        (data: any) => {
+          // set configuration to pass on view-config-item-component page
+          if (category.key.includes('Advanced')) {
+            this.advanceConfiguration = { key: category.key, value: [data] };
+          } else if (category.key.includes('Security')) {
+            this.securityConfiguration = { key: category.key, value: [data] };
+          }
+        },
+        error => {
+          console.log('error ', error);
+        }
+      );
   }
 }

@@ -12,7 +12,11 @@ table tbody {
 .card-content { overflow: visible; }
 
 .dropdown-trigger > .button {
-  width: 60%;
+  width: 80%;
+}
+
+.tooltip {
+  opacity: 1.0 !important;
 }
 
 .card-header-title {

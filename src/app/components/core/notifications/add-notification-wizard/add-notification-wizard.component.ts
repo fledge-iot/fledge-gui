@@ -21,9 +21,9 @@ import { DocService } from '../../../../services/doc.service';
   styleUrls: ['./add-notification-wizard.component.css']
 })
 export class AddNotificationWizardComponent implements OnInit, OnDestroy {
-  @ViewChild('desc', { static: false }) description: ElementRef;
-  @ViewChild('name', { static: false }) name: ElementRef;
-  @ViewChild('retriggerTime', { static: false }) retriggerTime: ElementRef;
+  @ViewChild('desc') description: ElementRef;
+  @ViewChild('name') name: ElementRef;
+  @ViewChild('retriggerTime') retriggerTime: ElementRef;
 
   public notificationRulePlugins = [];
   public notificationDeliveryPlugins = [];
@@ -61,8 +61,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     retriggerTime: new FormControl()
   });
 
-  @ViewChild('ruleConfigView', { static: false }) ruleViewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild('deliveryConfigView', { static: false }) deliveryViewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('ruleConfigView') ruleViewConfigItemComponent: ViewConfigItemComponent;
+  @ViewChild('deliveryConfigView') deliveryViewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ViewLogsComponent, { static: true }) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
@@ -152,7 +152,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   }
 
   movePrevious() {
-    const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
+    const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
 
     if (+id === 1) {
@@ -209,7 +209,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
     const formValues = this.notificationForm.value;
-    const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
+    const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
@@ -544,7 +544,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
   /**
    * Open readthedocs.io documentation of notification plugins
-   * @param selectedPlugin Selected rule/delivery  plugin 
+   * @param selectedPlugin Selected rule/delivery  plugin
    * @param pluginType Type of the plugin (e.g. rule/notify)
    */
   goToLink(selectedPlugin: string, pluginType: string) {
@@ -554,6 +554,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     };
     this.docService.goToPluginLink(pluginInfo);
   }
+
+  goToNotificationTypeLink() {
+    const urlSlug = 'notification-types';
+    this.docService.goToNotificationDocLink(urlSlug);
+  }
+
 
   ngOnDestroy() {
     this.subscription.unsubscribe();

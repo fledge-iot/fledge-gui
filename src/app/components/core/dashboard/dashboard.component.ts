@@ -6,7 +6,7 @@ import { takeWhile, takeUntil } from 'rxjs/operators';
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, StatisticsService } from '../../../services';
 import { DocService } from '../../../services/doc.service';
-import { GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
+import Utils, { CHART_COLORS, GRAPH_REFRESH_INTERVAL, STATS_HISTORY_TIME_FILTER } from '../../../utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Array of Statistics Keys (["BUFFERED", "DISCARDED", "PURGED", ....])
   statisticsKeys = [];
 
-  selectedGraphsList = [] =
+  selectedGraphsList =
     [{ key: 'READINGS', checked: true },
     { key: 'Readings Sent', checked: true }];
 
@@ -147,6 +147,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           label: '',
           data: data,
           backgroundColor: color,
+          borderColor: color,
           fill: false,
           lineTension: 0
         }
@@ -178,8 +179,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public refreshStatisticsHistory(): void {
     this.statisticsService.getStatisticsHistory(this.optedTime)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((data: any[]) => {
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
           const labels = [];
           const record = map(data['statistics'], dt.key).reverse();
@@ -190,9 +191,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
-          this.graphsToShow.map(statistics => {
+          this.graphsToShow.map((statistics) => {
             if (statistics.key === dt.key) {
-              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
+              statistics.chartValue = this.getChartValues(labels, record, Utils.transparentize(CHART_COLORS.green, 0.8));
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
             }
@@ -216,8 +217,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     this.optedTime = localStorage.getItem('STATS_HISTORY_TIME_FILTER');
     this.statisticsService.getStatisticsHistory(this.optedTime, null, null)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((data: any[]) => {
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any[]) => {
         this.statisticsKeys.forEach(dt => {
           const labels = [];
           const record = map(data['statistics'], dt.key).reverse();
@@ -228,9 +229,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             labels.push(ts);
           });
           this.graphsToShow = this.graphsToShow.filter(value => value !== undefined);
-          this.graphsToShow.map(statistics => {
+          this.graphsToShow.map((statistics) => {
             if (statistics.key === dt.key) {
-              statistics.chartValue = this.getChartValues(labels, record, 'rgb(144,238,144)');
+              statistics.chartValue = this.getChartValues(labels, record, Utils.transparentize(CHART_COLORS.green, 0.8));
               statistics.chartType = 'line';
               statistics.limit = this.DEFAULT_LIMIT;
             }

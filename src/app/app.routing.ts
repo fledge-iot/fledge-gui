@@ -6,7 +6,7 @@ import { LoginComponent } from './components/layout/login';
 import { AuthCheckGuard } from './guards';
 import { DashboardComponent } from './components/core/dashboard';
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthCheckGuard] },
   {
     path: 'asset', loadChildren: () => import('./components/core/asset-readings/assets.module')
@@ -47,6 +47,10 @@ const appRoutes: Routes = [
       .then(m => m.NotificationsModule)
   },
   {
+    path: 'control-dispatcher', loadChildren: () => import('./components/core/control-dispatcher/control-dispatcher.module')
+      .then(m => m.ControlDispatcherModule)
+  },
+  {
     path: 'certificate', loadChildren: () => import('./components/core/certificate/certificate.module')
       .then(m => m.CertificateModule)
   },
@@ -57,6 +61,10 @@ const appRoutes: Routes = [
   {
     path: 'backup-restore', loadChildren: () => import('./components/core/backup-restore/backup-restore.module')
       .then(m => m.BackupRestoreModule)
+  },
+  {
+    path: 'developer', loadChildren: () => import('./components/core/developer/developer.module')
+      .then(m => m.DeveloperModule)
   },
   { path: 'setting', component: SettingsComponent },
   { path: 'service-discovery', component: ServiceDiscoveryComponent },
@@ -70,8 +78,7 @@ const appRoutes: Routes = [
     path: 'user', loadChildren: () => import('./components/core/user-management/user.management.module')
       .then(m => m.UserManagementModule)
   },
-  // otherwise redirect to dashboard
   { path: '**', redirectTo: '' }
 ];
 
-export const routing = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules });
+export const routing = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules, relativeLinkResolution: 'legacy' });

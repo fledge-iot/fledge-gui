@@ -114,7 +114,7 @@ export class SkipLogin {
 
   getAuditLogsTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .card-header-title')).getText();
+    return element(by.css('.card-header-title')).getText();
   }
 
   isAuditLogsSourceDropdownPresent() {
@@ -133,7 +133,7 @@ export class SkipLogin {
 
   getSystemLogTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('#card-title .card-header-title')).getText();
+    return element(by.css('.card-header-title')).getText();
   }
 
   isSystemLogDropDownPresent() {
@@ -234,7 +234,7 @@ export class SkipLogin {
 
   clickRequestBackup() {
     browser.ignoreSynchronization = true;
-    element(by.css('app-backup-restore .fix-pad')).click();
+    element(by.css('#dropdown-menu3 .dropdown-content #create-backup')).click();
     // wait
     browser.driver.sleep(15000);
     browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore table thead tr'))), 1000);
@@ -252,7 +252,9 @@ export class SkipLogin {
 
   getRequestBackup() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-backup-restore header a')).getText();
+    browser.actions().mouseMove(element(by.css('app-backup-restore .dropdown.is-hoverable.is-right'))).perform();
+    browser.wait(this.EC.visibilityOf(element(by.id('dropdown-menu3'))), 2000);
+    return element(by.css('#dropdown-menu3 .dropdown-content #create-backup span')).getText();
   }
 
   getCreatedBackupRow() {
@@ -306,7 +308,7 @@ export class SkipLogin {
 
   getSettingsTitle() {
     browser.ignoreSynchronization = true;
-    return element(by.css('app-settings > div > div:nth-child(1) .card-header-title')).getText();
+    return element(by.css('app-settings #connection .card-header .card-header-title')).getText();
   }
 
   getSettingsSelectTag() {

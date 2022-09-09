@@ -16,7 +16,7 @@ import { FileUploadModalComponent } from '../../common/file-upload-modal/file-up
 })
 export class BackupRestoreComponent implements OnInit, OnDestroy {
   public backupData = [];
-  private isAlive: boolean; // used to unsubscribe from the IntervalObservable
+  public isAlive: boolean; // used to unsubscribe from the IntervalObservable
   // when OnDestroy is called.
 
   // Object to hold child data
@@ -191,16 +191,24 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   }
 
   public async downloadBackup(backup): Promise<void> {
-    const blob = await this.backupRestoreService.downloadBackup(backup.id);
-    const url = window.URL.createObjectURL(blob);
-    // create a custom anchor tag
-    const a = document.createElement('a');
-    a.href = url;
-    const date = this.dateFormatter.transform(backup.date, 'YYYY_MM_DD_HH_mm_ss');
-    a.download = 'fledge_backup_' + date + '.tar.gz';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+      const blob = await this.backupRestoreService.downloadBackup(backup.id);
+      const url = window.URL.createObjectURL(blob);
+      // create a custom anchor tag
+      const a = document.createElement('a');
+      a.href = url;
+      const date = this.dateFormatter.transform(backup.date, 'YYYY_MM_DD_HH_mm_ss');
+      a.download = 'fledge_backup_' + date + '.tar.gz';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      if (error.status === 0) {
+        console.log('service down ', error);
+      } else {
+        this.alertService.error(error.statusText);
+      }
+    }
   }
 
   public showLoadingSpinner() {

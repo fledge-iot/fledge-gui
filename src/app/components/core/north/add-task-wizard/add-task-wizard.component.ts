@@ -4,8 +4,10 @@ import { Router } from '@angular/router';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 import { Subscription } from 'rxjs';
 
-import { AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
-  ServicesApiService, ConfigurationService} from '../../../../services';
+import {
+  AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
+  ServicesApiService, ConfigurationService
+} from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
@@ -50,7 +52,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
   @Input() categoryConfigurationData;
   @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
     modalState: false,
@@ -88,7 +90,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   movePrevious() {
-    const last = <HTMLElement>document.getElementsByClassName('is-active')[0];
+    const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
       this.router.navigate(['/north']);
@@ -137,7 +139,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     this.isValidDay = true;
     this.isValidTime = true;
     const formValues = this.taskForm.value;
-    const first = <HTMLElement>document.getElementsByClassName('is-active')[0];
+    const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
@@ -398,7 +400,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     matchedConfigCopy.forEach(e => {
       changedConfig.forEach(c => {
         if (e.key === c.key) {
-          e.value = c.type === 'script'? c.value : c.value.toString();
+          e.value = c.type === 'script' ? c.value : c.value.toString();
         }
       });
     });

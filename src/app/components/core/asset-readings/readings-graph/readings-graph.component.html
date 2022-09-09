@@ -2,7 +2,11 @@
   <div class="modal-background"></div>
   <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">{{assetCode}}
+      <p class="modal-card-title is-size-5">
+        {{assetCode}}
+        <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
       </p>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
@@ -19,35 +23,9 @@
       </ng-container>
       <ng-template #tabs>
         <div class="columns">
-          <div class="column is-2">
-            <div id="time-dropdown" class="dropdown is-left">
-              <div class="dropdown-trigger">
-                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)=toggleDropdown()>
-                  <span *ngIf="optedTime == 60">1 minute</span>
-                  <span *ngIf="optedTime == 300">5 minutes</span>
-                  <span *ngIf="optedTime == 600">10 minutes</span>
-                  <span *ngIf="optedTime == 1800">30 minutes</span>
-                  <span *ngIf="optedTime == 3600">1 hour</span>
-                  <span *ngIf="optedTime == 28800">8 hour</span>
-                  <span *ngIf="optedTime == 86400">1 day</span>
-                  <span class="icon is-small">
-                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(60)">1 minute</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(300)">5 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(600)">10 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(1800)">30 minutes</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(3600)">1 hour</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(28800)">8 hour</a>
-                  <a class="dropdown-item" (click)="getTimeBasedAssetReadingsAndSummary(86400)">1 day</a>
-                </div>
-              </div>
-            </div>
+          <div class="column is-2" *ngIf="!isLatestReadings">
+            <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
+              (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
           <div class="column">
             <div class="tabs is-boxed is-fullwidth is-small" id="tabs">
@@ -62,8 +40,8 @@
                     <span><b>3D Graph</b></span>
                   </a>
                 </li>
-                <li *ngIf="!isEmptyObject(stringTypeReadingsList)" [ngClass]="{'is-active': selectedTab == 3}"
-                  data-tab="3">
+                <li *ngIf="stringTypeReadingsList && !isEmptyObject(stringTypeReadingsList)"
+                  [ngClass]="{'is-active': selectedTab == 3}" data-tab="3">
                   <a (click)="selectTab(3)">
                     <span><b>Tabular Data</b></span>
                   </a>
@@ -71,6 +49,11 @@
                 <li *ngIf="showSummaryTab()" [ngClass]="{'is-active': selectedTab == 4}" data-tab="4">
                   <a (click)="selectTab(4)">
                     <span><b>Summary</b></span>
+                  </a>
+                </li>
+                <li *ngIf="imageReadings.length > 0" [ngClass]="{'is-active': selectedTab == 5}" data-tab="5">
+                  <a (click)="selectTab(5)">
+                    <span><b>Image</b></span>
                   </a>
                 </li>
               </ul>
@@ -90,8 +73,14 @@
               </ng-container>
               <ng-template #DataDiv>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
-                  <app-chart *ngIf="!showGraphSpinner" class="chart-container animated fadeIn" [type]="assetChartType"
-                    [data]="assetReadingValues" [options]="assetChartOptions" #assetChart></app-chart>
+                  <div *ngIf="rangeSliderService.getAlphControlStatus()" class="range-wrap is-pulled-right">
+                    <app-range-slider></app-range-slider>
+                  </div>
+                  <div>
+                    <app-chart class="chart-container animated fadeIn" [from]="'asset'" [type]="assetChartType"
+                      [data]="assetReadingValues" [options]="assetChartOptions" #assetChart>
+                    </app-chart>
+                  </div>
                 </div>
                 <div *ngIf="selectedTab === 2 && arrayTypeReadingsList?.length > 0" data-content="2">
                   <div id="3d_graph" #3DGraph></div>
@@ -120,7 +109,6 @@
                               </ng-container>
                             </tbody>
                           </table>
-
                         </td>
                       </tr>
                     </tbody>
@@ -142,9 +130,9 @@
                               <div class="tags has-addons">
                                 <span class="tag is-light"> Avg </span>
                                 <span class="tag is-info">{{isNumber(reading.average)
-                            ?
-                            roundTo(reading.average,
-                            5) : reading.average.toString().substring(0,6)}}
+                                  ?
+                                  roundTo(reading.average,
+                                  5) : reading.average.toString().substring(0,6)}}
                                 </span>
                               </div>
                             </td>
@@ -152,14 +140,14 @@
                               <div class="tags has-addons">
                                 <span class="tag is-light"> Min </span>
                                 <span class="tag is-info">{{isNumber(reading.min) ?
-                            roundTo(reading.min, 5) : reading.min.toString().substring(0,6)}}</span>
+                                  roundTo(reading.min, 5) : reading.min.toString().substring(0,6)}}</span>
                               </div>
                             </td>
                             <td>
                               <div class="tags has-addons">
                                 <span class="tag is-light"> Max </span>
                                 <span class="tag is-info">{{isNumber(reading.max) ?
-                            roundTo(reading.max, 5): reading.max.toString().substring(0,6)}}</span>
+                                  roundTo(reading.max, 5): reading.max.toString().substring(0,6)}}</span>
                               </div>
                             </td>
                           </ng-container>
@@ -170,6 +158,19 @@
                         </tr>
                       </tbody>
                     </table>
+                  </div>
+                </div>
+                <div *ngIf="selectedTab === 5" data-content="5">
+                  <div class="has-text-centered">
+                    <ng-container *ngFor="let read of imageReadings">
+                      <div id="tab-content">
+                        <img [src]="read.image" alt={{read.datapoint}}>
+                      </div>
+                      <small class="has-text-centered text-secondary has-text-grey-light">{{read?.datapoint}},
+                        Timestamp:
+                        {{read?.timestamp}}
+                      </small>
+                    </ng-container>
                   </div>
                 </div>
               </ng-template>

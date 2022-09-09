@@ -1,0 +1,68 @@
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Name</label>
+  </div>
+  <div class="field-body">
+    <div class="field">
+      <div class="control" *ngIf="sharedService.checkAuth();else operationNameDiv">
+        <input class="input is-small name-control" type="text" placeholder="Name" name="operationName"
+          [ngModel]="config.name" (ngModelChange)="setName($event)" [ngClass]="{'is-static':!sharedService.checkAuth()}"
+          [readonly]="!sharedService.checkAuth()">
+      </div>
+      <ng-template #operationNameDiv>
+        <div class="control" *ngIf="config.name;else noOperation">
+          <input name="name" class="input is-small" type="text" [(ngModel)]="config.name"
+            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+        </div>
+        <ng-template #noOperation>
+          <div class="control">
+            <span *ngIf="!sharedService.checkAuth()" class="has-text-grey-light is-size-7">None</span>
+          </div>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+</div>
+<div class="field is-horizontal">
+  <div class="field-label is-small">
+    <label class="label">Service</label>
+  </div>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <div *ngIf="sharedService.checkAuth();else staticServiceDiv" class="control">
+        <div #serviceDropDown id="service-dropdown-{{controlIndex}}" class="dropdown is-left">
+          <div class="dropdown-trigger">
+            <button (click)="toggleDropDown(serviceDropDown.id)" class="button is-small" aria-haspopup="true"
+              aria-controls="dropdown-menu">
+              <span>{{config?.service? config?.service : 'Select service'}}</span>
+              <span class="icon is-small">
+                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <a class="dropdown-item" *ngIf="services.length === 0"><small>No South services found</small></a>
+              <a (click)="setService(service.name);toggleDropDown('service-dropdown')" *ngFor="let service of services"
+                class="dropdown-item">{{service.name}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #staticServiceDiv>
+        <div class="control">
+          <input name="service" class="input is-small" type="text" [ngModel]="config.service? config.service: 'None' "
+            [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.service}"
+            [readonly]="!sharedService.checkAuth()">
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+<div *ngIf="services.length > 0">
+  <app-add-step-value [from]='step' [index]="controlIndex" [update]="update">
+  </app-add-step-value>
+  <app-add-step-condition #operationCondition [from]='step' [index]="controlIndex" [condition]="config?.condition"
+    [update]="update">
+  </app-add-step-condition>
+</div>

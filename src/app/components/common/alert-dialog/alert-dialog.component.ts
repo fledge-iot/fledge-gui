@@ -8,9 +8,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, HostListener
 export class AlertDialogComponent implements OnInit, OnChanges {
   @Input() notificationRecord: { name: string, message: string, key: string, headerTextValue: any };
   @Input() notificationServiceRecord: { name: string, message: string, key: string, headerTextValue: any };
-  @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any, headerTextValue: any};
+  @Input() childData: { id: Number, name: any, key: any, message: any, actionButtonValue: any, headerTextValue: any };
   @Input() serviceRecord: { port: Number, key: any, name: any, message: any, protocol: string, headerTextValue: any };
-  @Input() deleteTaskData: { name: any, message: any, key: any, headerTextValue: any };
   @Output() delete = new EventEmitter<Number>();
   @Output() deleteService = new EventEmitter<Object>();
   @Output() deleteNotification = new EventEmitter<Object>();
@@ -67,9 +66,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.serviceRecord.headerTextValue = 'Delete Service';
       }
     }
-    if (this.deleteTaskData) {
-      this.deleteTaskData.headerTextValue = this.deleteTaskData.key === 'deleteTask' ? 'Delete Instance' : 'Delete Service';
-    }
+
     if (this.notificationRecord) {
       if (this.notificationRecord.key === 'deleteNotification') {
         this.notificationRecord.headerTextValue = 'Delete Instance';
@@ -77,7 +74,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
     }
     if (this.notificationServiceRecord) {
       if (this.notificationServiceRecord.key === 'deleteNotificationService') {
-       this.notificationServiceRecord.headerTextValue = 'Delete Service';
+        this.notificationServiceRecord.headerTextValue = 'Delete Service';
       }
     }
   }
@@ -110,11 +107,11 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.toggleModal(false);
       }
       if (this.childData.key === 'deleteCertificate') {
-        this.deleteCertificate.emit({name: this.childData.name, type: 'cert'});
+        this.deleteCertificate.emit({ name: this.childData.name, type: 'cert' });
         this.toggleModal(false);
       }
       if (this.childData.key === 'deleteKey') {
-        this.deleteCertificate.emit({name: this.childData.name, type: 'key'});
+        this.deleteCertificate.emit({ name: this.childData.name, type: 'key' });
         this.toggleModal(false);
       }
       if (this.childData.key === 'clearSessions') {
@@ -158,14 +155,6 @@ export class AlertDialogComponent implements OnInit, OnChanges {
     if (this.notificationServiceRecord) {
       if (this.notificationServiceRecord.key === 'deleteNotificationService') {
         this.deleteNotificationService.emit(this.notificationServiceRecord.name);
-        this.toggleModal(false);
-      }
-    }
-    if (this.deleteTaskData) {
-      if (this.deleteTaskData.key === 'deleteTask' || this.deleteTaskData.key === 'deleteService') {
-        this.deleteTask.emit({
-          name: this.deleteTaskData.name
-        });
         this.toggleModal(false);
       }
     }

@@ -33,8 +33,38 @@
 
 .readings-count {
   vertical-align: middle;
+  max-width: max-content;
 }
 
 .service-name {
   padding-top: 0;
 }
+
+#deprecate_event_div {
+padding-right: 10px;
+color: #363636;
+}
+
+.tooltip {
+  opacity: 1.0 !important;
+}
+
+.open i.fa-angle-down {
+  transform: rotate(180deg)
+}
+
+.is-borderless td, .is-borderless th {
+  border: 0;
+ }
+
+ .tooltip {
+  opacity: 1.0 !important;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+  margin-top: 0.5em;
+}
+
+
+

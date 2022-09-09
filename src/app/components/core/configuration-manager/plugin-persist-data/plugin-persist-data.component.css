@@ -1,0 +1,24 @@
+.context-menu {
+  border: none;
+}
+
+.dropdown-content {
+ max-width: max-content !important;
+}
+
+.is-disable{
+  pointer-events: none;
+  opacity: .65;
+  }
+
+  .dropdown {
+    width: auto !important;
+  }
+
+  pre {
+    white-space: pre-wrap;
+  }
+
+  .dropdown-menu {
+    padding-left: 25px !important;
+  }

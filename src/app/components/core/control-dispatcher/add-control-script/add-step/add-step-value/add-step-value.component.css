@@ -1,0 +1,29 @@
+.field-body .field:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.delete {
+  vertical-align: middle !important;
+}
+
+.button.is-light.like-link {
+  background-color: white;
+}
+
+.button.is-light.like-link:hover {
+  font-style: bold;
+}
+
+.field-label {
+  text-align: left;
+}
+
+.btn-field-body {
+  margin-left: -12px;
+  margin-bottom: 5px;
+}
+
+.no-parameter {
+  padding-top: calc(0.5em - 1px);
+  padding-bottom: calc(0.5em - 1px);
+}

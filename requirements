@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+set -e
+
+PKG_MANAGER=$( command -v yum || command -v apt-get ) || { echo "Platform not supported, check README and Prerequisite docs."; exit 1; }
+cd $(dirname $0)
+echo "Setting up the prerequisites..."
+echo
+
+OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
+
+PKG_TYPE="deb"
+# Check if OS is RHEL/CentOS
+# In case we have yum and apt-get installed on same machine then set PKG_MANAGER based on OS
+if [[ ${OS_NAME} == *"Red Hat"* || ${OS_NAME} == *"CentOS"* ]]; then PKG_MANAGER="yum"; PKG_TYPE="rpm" ; fi
+echo
+
+install_nodejs () {
+  isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
+  requiredNodeVer="v14.15.5"
+  # Check if Node.js is installed or if installed version is < 14.x
+  if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
+      curl -L https://${PKG_TYPE}.nodesource.com/setup_14.x | sudo -E bash -
+      sudo $1 install -y nodejs
+  fi
+}
+
+install_yarn () {
+    isYarnInstalled=`which yarn` && currentYarnVer=`yarn -v` || echo ''
+    requiredYarnVer="1.21.0"
+    # Check if yarn is installed or if installed version is < 1.21.x
+    if [[ "$isYarnInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredYarnVer" "$currentYarnVer" | sort -V | head -n1)" != "$requiredYarnVer" ]]; then
+        sudo npm install -g yarn
+    fi
+}
+
+case $PKG_MANAGER in
+  
+  *yum*)
+    sudo yum install -y curl
+    install_nodejs "yum"
+    install_yarn
+    ;;
+
+  *apt*)
+    sudo apt install -y curl
+    install_nodejs "apt"
+    install_yarn
+    ;;
+
+esac
+
+
+# Don't run yarn build as root; if you had done, reclaim ownership for .npm and .config files
+sudo chown -R $USER:$GROUP $(sudo find / -type d -name .npm 2>/dev/null)
+sudo chown -R $USER:$GROUP $(sudo find / -type d -name .config 2>/dev/null)
+
+
+echo "Node.js version: `node -v`"
+echo "npm version: `npm -v`"
+echo "yarn version: `yarn -v`"

@@ -14,7 +14,7 @@ import { takeUntil, takeWhile } from 'rxjs/operators';
 export class PackagesLogComponent implements OnInit, OnDestroy {
   public logList = [];
 
-  @ViewChild(ViewLogsComponent, { static: false }) viewLogsModal: ViewLogsComponent;
+  @ViewChild(ViewLogsComponent) viewLogsModal: ViewLogsComponent;
 
   public isAlive: boolean;
   public refreshInterval = POLLING_INTERVAL;
@@ -57,6 +57,7 @@ export class PackagesLogComponent implements OnInit, OnDestroy {
             this.ngProgress.done();
           }
           this.logList = sortBy(data['logs'], (obj) => obj.timestamp).reverse();
+
         },
         error => {
           this.ngProgress.done();

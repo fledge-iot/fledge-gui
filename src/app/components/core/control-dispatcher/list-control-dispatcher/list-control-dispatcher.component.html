@@ -1,0 +1,69 @@
+<div class="container is-fluid">
+  <ng-container *ngIf="dispatcherServiceEnabled === false">
+    <article class="message is-warning">
+      <div class="message-body">
+        <span *ngIf="dispatcherServiceInstalled === false">Dispatcher service is not installed.</span>
+        <span *ngIf="dispatcherServiceInstalled && dispatcherServiceAdded === false">Dispatcher service is not
+          added.</span>
+        <span *ngIf="dispatcherServiceAdded && dispatcherServiceEnabled === false">Dispatcher service is not
+          enabled.</span>
+        <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
+          <span class="icon">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          </span>
+        </button>
+      </div>
+    </article>
+  </ng-container>
+  <div class="card">
+    <header>
+      <div class="tabs">
+        <ul>
+          <li [ngClass]="{'is-active': seletedTab == 'scripts'}">
+            <h6 class="is-6 has-text-weight-semibold">
+              <a (click)="showDiv('scripts')">Scripts</a>
+            </h6>
+          </li>
+          <li [ngClass]="{'is-active': seletedTab == 'acls'}">
+            <h6 class="is-6 has-text-weight-semibold">
+              <a (click)="showDiv('acls')">ACLs</a>
+            </h6>
+          </li>
+          <!-- <li [ngClass]="{'is-active': seletedTab == 'tasks'}">
+            <h6 class="is-6 has-text-weight-semibold">
+              <a (click)="showDiv('tasks')">Script Schedules</a>
+            </h6>
+          </li> -->
+          <li class="custom-pad" *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">
+            <a class="is-light" style="border-bottom-width: 0" (click)="navigate()">
+              <p *ngIf="viewPort !== 'mobile'">&nbsp; Add &nbsp;</p>
+              <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+            </a>
+          </li>
+          <li style="position: absolute;right: 0;">
+            <span class="icon is-small tooltip is-tooltip-bottom is-pulled-right is-hovered" data-tooltip="Help"
+              (click)="goToLink('control-dispatcher-service')">
+              <i class="far fa-question-circle"></i>
+            </span>
+          </li>
+          <li>
+            <button (click)="refresh(seletedTab)" class="button is-small" id="refresh-check">
+              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <div class="card-content card-data">
+      <div *ngIf="seletedTab == 'scripts'" id="script-steps" #steps>
+        <app-control-scripts-list></app-control-scripts-list>
+      </div>
+      <div *ngIf="seletedTab == 'acls'">
+        <app-acl-list></app-acl-list>
+      </div>
+      <!-- <div *ngIf="seletedTab == 'tasks'">
+        <app-control-tasks-list></app-control-tasks-list>
+      </div> -->
+    </div>
+  </div>
+</div>

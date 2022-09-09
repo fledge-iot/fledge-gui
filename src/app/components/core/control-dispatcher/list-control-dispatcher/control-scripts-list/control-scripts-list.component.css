@@ -1,0 +1,17 @@
+tr:hover .btn-delete {
+  opacity: 1;
+}
+
+.is-hoverable {
+  cursor: pointer !important;
+}
+
+
+.btn-delete {
+  border-color: transparent !important;
+  opacity: 0;
+}
+
+.button.is-light {
+  background-color: transparent !important
+}

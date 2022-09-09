@@ -3,6 +3,7 @@
 # compiled output
 /dist
 /out-tsc
+.angular
 *.tar.gz
 
 # dependencies

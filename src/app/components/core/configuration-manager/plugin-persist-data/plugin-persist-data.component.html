@@ -1,0 +1,135 @@
+<div class="container is-fluid">
+  <div class="columns" *ngIf="plugins.length > 0">
+    <div class="column">
+      <div class="dropdown is-hoverable is-pulled-left">
+        <div class="dropdown-trigger">
+          <a class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu">
+            <span>{{selectedPlugin}}</span>
+            <span class="icon is-small">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </a>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <ng-container *ngFor="let plugin of plugins">
+              <a class="dropdown-item" (click)="getData(plugin)">
+                {{plugin}}
+              </a>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="column">
+      <div class="dropdown is-hoverable is-pulled-right is-right">
+        <div class="dropdown-trigger">
+          <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+            <span class="icon is-small">
+              <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
+            </span>
+          </a>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <a [ngClass]="{'is-disable': pluginData}" class="dropdown-item"
+              (click)="openModal('import-plugin-data-dialog')">
+              Import the data
+            </a>
+            <a [ngClass]="{'is-disable': !pluginData}" class="dropdown-item" (click)="exportPluginData(pluginData)">
+              Export the data
+            </a>
+            <a [ngClass]="{'is-disable': !pluginData}" class="dropdown-item"
+              (click)="openModal('delete-plugin-data-confirmation-dialog')">
+              Delete the data
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column" *ngIf="plugins.length === 0">
+      <div class="has-text-centered">
+        <small class="no-rec">
+          No persisting data plugins found.
+        </small>
+      </div>
+    </div>
+    <div class="column" *ngIf="plugins.length > 0">
+      <div *ngIf="noPersistDataMessage.length === 0 && pluginData;else messageDiv ">
+        <pre>{{pluginData | json}}</pre>
+      </div>
+      <ng-template #messageDiv>
+        <div class="has-text-centered">
+          <small class="no-rec">{{noPersistDataMessage}}</small>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Import plugin data -->
+<app-confirmation-dialog id="import-plugin-data-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">{{pluginName}} Data</span>
+    <button class="delete" aria-label="close"
+      (click)="closeModal('import-plugin-data-dialog');resetFileControl()"></button>
+  </header>
+  <section class="modal-card-body">
+    <div class="columns">
+      <div class="column">
+        <span *ngIf="serviceStaus; else fileControl">
+          {{serviceName}} must be shut down to allow import the plugin data.
+        </span>
+        <ng-template #fileControl>
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label has-text-left">Browse file</label>
+            </div>
+            <div class="field-body">
+              <div class="field ">
+                <div class="file is-fullwidth">
+                  <label class="file-label">
+                    <span class="file-cta is-fullwidth">
+                      <span class="file-icon">
+                        <i class="fa fa-sm fa-upload"></i>
+                      </span>
+                      <input accept=".json" type="file" required id="pluginData"
+                        (change)="onPluginDataFileChange($event)" #fileInput>
+                    </span>
+                  </label>
+                </div>
+                <small *ngIf="!isJsonExtension" class="help is-danger level-left">*.json file</small>
+                <small *ngIf="jsonParseError" class="help is-danger level-left">Invalid json file</small>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('import-plugin-data-dialog');resetFileControl()">Cancel</button>
+    <button *ngIf="!serviceStaus" class="button is-small is-success" [disabled]="!isJsonExtension || jsonParseError"
+      (click)="importPluginData()">Import</button>
+  </footer>
+</app-confirmation-dialog>
+
+<!-- Delete operation  -->
+<app-confirmation-dialog id="delete-plugin-data-confirmation-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">Delete {{pluginName}} data</span>
+    <button class="delete" aria-label="close" (click)="closeModal('delete-plugin-data-confirmation-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    <span *ngIf="!serviceStaus; else message">Are you sure, You want to delete the plugin data?</span>
+    <ng-template #message>
+      {{serviceName}} must be shut down to allow delete the plugin data.
+    </ng-template>
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('delete-plugin-data-confirmation-dialog')">Cancel</button>
+    <button *ngIf="!serviceStaus" class="button is-small is-danger" (click)="deleteData()">Yes</button>
+  </footer>
+</app-confirmation-dialog>

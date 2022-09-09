@@ -8,10 +8,11 @@
 }
 
 .description {
-  flex-shrink:initial !important;
+  flex-shrink: initial !important;
 }
 
-.dropdown.notification-type, .retrigger-time {
+.dropdown.notification-type,
+.retrigger-time {
   width: 15%;
 }
 
@@ -25,4 +26,8 @@
 
 .is-hovered {
   cursor: pointer !important;
+}
+
+.notification-type-help {
+  margin: 7px;
 }

@@ -2,10 +2,15 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
-        Notification Service</p>
-      <p *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</p>
-      <button [disabled]="pluginInstallationState" class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <span *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
+        Notification Service
+        <button (click)="refreshPageData()" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </span>
+      <span *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</span>
+      <button [disabled]="pluginInstallationState" class="delete" aria-label="close"
+        (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <form name="notification-form" id="notificationForm" #fg="ngForm" (ngSubmit)="fg.form.valid && saveChanges()"
@@ -13,11 +18,11 @@
         <div *ngIf="!isNotificationServiceAvailable" class="columns is-mobile">
           <div class="column">
             <div class="field is-horizontal">
-              <div class="field-label has-text-left">
+              <div class="field-label has-text-left notification-label">
                 <label class="label">Name</label>
               </div>
               <div class="field-body">
-                <div class="field">
+                <div class="field is-narrow">
                   <input *ngIf="!isNotificationServiceAvailable" type="text" class="input is-small"
                     name="notificationServiceName" [(ngModel)]="notificationServiceName"
                     placeholder="Fledge Notifications" required trim="blur" />
@@ -29,19 +34,20 @@
             </div>
           </div>
         </div>
-        <app-view-config-item #notificationConfigView *ngIf="category" [categoryConfigurationData]="category"
-          [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'modal'">
-        </app-view-config-item>
-        <div class="columns">
-          <div class="column">
-            <div class="field is-horizontal">
-              <div class="field-label has-text-left">
-                <label class="label">Enabled</label>
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
-                    [(ngModel)]="enabled">
+        <div>
+          <app-config-children #configChildComponent *ngIf="category" [category]="category" [from]="'notification'">
+          </app-config-children>
+          <div class="columns">
+            <div class="column">
+              <div class="field is-horizontal" [ngClass]="{'enable-div': category}">
+                <div class="field-label has-text-left notification-label">
+                  <label class="label">Enabled</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
+                      [(ngModel)]="enabled">
+                  </div>
                 </div>
               </div>
             </div>
@@ -62,10 +68,12 @@
           </div>
           <div class="field is-grouped is-pulled-right">
             <p class="control">
-              <button [disabled]="pluginInstallationState" class="button is-small" id="cancel" (click)="toggleModal(false)">Cancel</button>
+              <button [disabled]="pluginInstallationState" class="button is-small" id="cancel"
+                (click)="toggleModal(false)">Cancel</button>
             </p>
             <p class="control">
-              <button [disabled]="pluginInstallationState" class="button is-small is-link" (click)="proxy()">{{btnText}}</button>
+              <button [disabled]="pluginInstallationState" class="button is-small is-link"
+                (click)="proxy()">{{btnText}}</button>
             </p>
           </div>
         </div>
@@ -73,17 +81,35 @@
       <hr *ngIf="isNotificationServiceAvailable && showDeleteBtn" class="hr-text" data-content="">
       <div *ngIf="isNotificationServiceAvailable && showDeleteBtn" class="columns">
         <div class="column">
+          <div class="field is-horizontal" *ngIf="service">
+            <div class="field-label has-text-left">
+              <label class="label">Service Info</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <ng-container>
+                  <small>{{service?.protocol}}://{{service?.address}}:{{service?.management_port}}</small>
+                </ng-container>
+              </div>
+            </div>
+          </div>
           <div class="field is-grouped is-pulled-left">
             <p class="control">
               <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
                 <i class="far fa-question-circle"></i>
               </span>
             </p>
+            <p class="control">
+              <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
+                data-tooltip="Show logs" (click)="navToSyslogs(notificationServiceName)">
+                <i class="far fa-file-alt"></i>
+              </span>
+            </p>
           </div>
           <div class="field is-grouped is-pulled-right">
-            <p class="control">
-              <button (click)="openDeleteModal(notificationServiceName)" class="button is-small">Delete
-                Service
+            <p class="buttons">
+              <button (click)="openDeleteModal(notificationServiceName)" class="button is-small">
+                Delete Service
               </button>
             </p>
           </div>

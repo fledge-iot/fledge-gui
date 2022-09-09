@@ -4,7 +4,7 @@ import { sortBy } from 'lodash';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { interval, Subscription, Subject } from 'rxjs';
 
-import { AlertService, NorthService, PingService, SharedService } from '../../../services';
+import { AlertService, NorthService, PingService, ProgressBarService, SharedService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
 import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
@@ -23,13 +23,14 @@ export class NorthComponent implements OnInit, OnDestroy {
   private viewPortSubscription: Subscription;
   public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
-  private isAlive: boolean;
+  public isAlive: boolean;
   private subscription: Subscription;
   destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(private northService: NorthService,
     private ping: PingService,
     private alertService: AlertService,
     private router: Router,
+    public ngProgress: ProgressBarService,
     private sharedService: SharedService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -53,7 +54,7 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   @ViewChild(NorthTaskModalComponent, { static: true }) northTaskModal: NorthTaskModalComponent;
-  @ViewChild(ViewLogsComponent, { static: false }) viewLogsComponent: ViewLogsComponent;
+  @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   ngOnInit() {
     this.showLoadingSpinner();
@@ -73,10 +74,14 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   public getNorthTasks(caching: boolean): void {
+    if (!this.isAlive) {
+      this.ngProgress.start();
+    }
     this.northService.getNorthTasks(caching)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
+          this.ngProgress.done();
           this.tasks = data;
           this.tasks = sortBy(this.tasks, function (obj) {
             return !obj.enabled + obj.name.toLowerCase();
@@ -84,6 +89,7 @@ export class NorthComponent implements OnInit, OnDestroy {
           this.hideLoadingSpinner();
         },
         error => {
+          this.ngProgress.done();
           this.hideLoadingSpinner();
           if (error.status === 0) {
             console.log('service down ', error);

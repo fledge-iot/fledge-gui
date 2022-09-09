@@ -1,0 +1,50 @@
+.field-body .field {
+  margin-bottom: 5px;
+}
+
+
+.field-label {
+  text-align: left;
+}
+
+.card-content {
+  overflow: inherit !important;
+}
+
+.field-body .field:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.delete {
+  vertical-align: middle !important;
+}
+
+#refresh-check {
+  padding: 0px;
+}
+
+.btn-column {
+  padding: 0px;
+  margin: 10px 0px 0px -10px;
+}
+
+.breadcrumb {
+  margin-bottom: 0px !important;
+}
+
+
+@media screen and (min-width: 769px), print{
+.field-body > .field:not(.is-narrow) {
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+}
+}
+
+.btn-save {
+  margin-left: 10px;
+}
+
+.btn-cancel {
+  margin-right: 10px;
+}
+

@@ -1,0 +1,101 @@
+<table class="table is-responsive is-hoverable" *ngIf="controlScripts.length > 0; else noscript">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Parameters</th>
+      <th>Service</th>
+      <th>Enabled</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let script of controlScripts">
+      <td>
+        <!-- TODO: FOGL-6468 -->
+        <!-- <a [routerLink]="['task', script?.name]"> {{script?.schedule?.name}} </a> -->
+        {{script?.schedule?.name}}
+      </td>
+      <td>
+        <table class="parameter is-borderless">
+          <ng-container *ngFor="let item of getScriptParameters(script?.configuration?.write?.value)">
+            <tr>
+              <td align="left">{{item?.key}}</td>
+              <td align="left">{{item?.value}}</td>
+            </tr>
+          </ng-container>
+        </table>
+      </td>
+      <td>
+        <table class="is-borderless">
+          <ng-container *ngFor="let service of getScriptServicesUsage(script?.configuration?.write?.value)">
+            <tr>
+              <td>{{service}}</td>
+            </tr>
+          </ng-container>
+        </table>
+      </td>
+      <td>
+        <input type="checkbox" [checked]="script?.schedule?.enabled" (change)="updateScheduleStatus(script?.schedule)">
+      </td>
+      <td>
+        <div *ngIf="sharedService.checkAuth()" class="dropdown is-hoverable">
+          <div class="dropdown-trigger">
+            <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
+              <span class="icon is-small">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+            <div class="dropdown-content">
+              <a *ngIf="script?.schedule?.enabled" class="dropdown-item"
+                (click)="setScript(script);openModal('start-schedule-dialog')">
+                <span>Execute</span>
+              </a>
+              <a class="dropdown-item" [routerLink]="['script', script?.name]">
+                <span>View script</span>
+              </a>
+              <a class="dropdown-item" (click)="setScript(script);openModal('confirmation-dialog')">
+                <span>Delete</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<ng-template #noscript>
+  <div class="field-body">
+    <div class="field is-narrow">
+      <small class="text-secondary has-text-grey-light"> No control script task schedules found.</small>
+    </div>
+  </div>
+</ng-template>
+<app-confirmation-dialog id="confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, you want to delete task schedule for control script <b>{{script?.name}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deleteControlSchedule(script)">Delete</button>
+  </footer>
+</app-confirmation-dialog>
+
+<app-confirmation-dialog id="start-schedule-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Control Schedule</p>
+    <button class="delete" aria-label="close" (click)="closeModal('start-schedule-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, you want to start the task schedule for control script <b>{{script?.name}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('start-schedule-dialog')">Cancel</button>
+    <button class="button is-small is-success" (click)="startSchedule(script?.schedule?.id)">Execute</button>
+  </footer>
+</app-confirmation-dialog>

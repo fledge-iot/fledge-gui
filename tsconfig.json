@@ -1,9 +1,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
     "downlevelIteration": true,
     "importHelpers": true,
-    "module": "esnext",
+    "module": "es2020",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -11,20 +12,12 @@
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "noUnusedParameters": true,
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2016",
-      "dom"
-    ]
+    "target": "es2017",
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2020", "dom"]
   },
-  "exclude": [
-    "*.eot",
-    "*.woff2",
-    "*.svg",
-    "*.woff"
-  ]
+  "exclude": ["*.eot", "*.woff2", "*.svg", "*.woff"]
 }

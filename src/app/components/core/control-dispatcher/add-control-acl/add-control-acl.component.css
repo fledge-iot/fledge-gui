@@ -1,0 +1,72 @@
+.step-content {
+  overflow: inherit !important;
+}
+
+.acl-name-field {
+  margin-bottom: 1.5rem !important;
+}
+
+.control.box {
+  margin-bottom: 0.25rem !important;
+}
+
+.service-control .field {
+  margin-bottom: 5px !important;
+}
+
+.acl-control .field {
+  margin-bottom: 5px !important;
+}
+
+.field-label {
+  text-align: left;
+}
+
+.control-pad {
+  padding-left: 18px;
+}
+
+.btn-delete {
+  border: transparent !important;
+}
+
+div.close-btn-div {
+  padding-top: 0px !important;
+}
+
+::ng-deep ng-select .ng-dropdown-panel {
+  z-index: 40 !important;
+}
+
+::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+  max-height: 200px !important;
+}
+
+::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+  color: #848181 !important;
+  font-size: 0.8rem !important;
+}
+
+::ng-deep .ng-select .ng-select-container,
+::ng-deep .ng-select.ng-select-multiple .ng-select-container {
+  min-height: 5px;
+  font-size: 0.8em;
+}
+
+.static-acl {
+  padding: 3px 0px 0px 0px !important;
+  height: 0%;
+  vertical-align: inherit !important;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+}
+
+#refresh-check {
+  margin-left: 3px;
+}
+
+.breadcrumb {
+  margin-bottom: 0px !important;
+}

@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
+import { sortBy } from 'lodash';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
 
@@ -13,26 +15,24 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   public logs: any;
   public source = '';
   public level = 'info';
-  public totalCount: any;
   DEFAULT_LIMIT = 50;
   limit = this.DEFAULT_LIMIT;
   public isAlive: boolean;
-  public scheduleData = [];
+  public scheduleData = new Set<string>();
 
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
 
   page = 1;
-  recordCount = 0;
-  tempOffset = 0;
-  totalPagesCount = 0;
+  offset = 0;
   searchTerm = '';
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
+    private route: ActivatedRoute,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -43,12 +43,19 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         }
         this.refreshInterval = timeInterval;
       });
+
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+        this.getSysLogs();
+      }
+    });
   }
 
   ngOnInit() {
     this.getSysLogs();
     this.getSchedules();
-    this.subscription =  interval(this.refreshInterval)
+    this.subscription = interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getSysLogs(true);
@@ -57,43 +64,22 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   }
 
   public getSchedules(): void {
-    this.scheduleData = [];
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
-          const south_c = [];
-          const notification_c = [];
-          const north_c = [];
-          // processName north_C represents Northbound services
-          const north_C = [];
-          const north = [];
-          const management = [];
-          const dispatcher_c = [];
-
+          let serviceNorthTaskSchedules = [];
           data.schedules.forEach(sch => {
-            if ('south_c' === sch.processName) {
-              south_c.push(sch);
+            if ('STARTUP' === sch.type.toUpperCase()) {
+              serviceNorthTaskSchedules.push(sch);
             }
-            if ('notification_c' === sch.processName) {
-              notification_c.push(sch);
-            }
-            if ('north_c' === sch.processName) {
-              north_c.push(sch);
-            }
-            if ('north_C' === sch.processName) {
-              north_C.push(sch);
-            }
-            if ('north' === sch.processName) {
-              north.push(sch);
-            }
-            if ('management' === sch.processName) {
-              management.push(sch);
-            }
-            if ('dispatcher_c' === sch.processName) {
-              dispatcher_c.push(sch);
+            // Handle north tasks
+            if (['north_c', 'north'].includes(sch.processName)) {
+              serviceNorthTaskSchedules.push(sch);
             }
           });
-          this.scheduleData = south_c.concat(notification_c, north_c, north_C, north, management, dispatcher_c);
+          this.scheduleData = new Set(sortBy(serviceNorthTaskSchedules, (s: any) => {
+            return s.name.toLowerCase();
+          }));
         },
         error => {
           if (error.status === 0) {
@@ -105,67 +91,11 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   *  Go to the page on which user clicked in pagination
-   */
-  goToPage(n: number): void {
-    this.page = n;
-    this.setLimitOffset();
-  }
-
-  /**
    *  Go to the next page
    */
   onNext(): void {
     this.page++;
-    this.setLimitOffset();
-  }
-
-  /**
-   *  Go to the first page
-   */
-  onFirst(): void {
-    this.page = 1;
-    this.setLimitOffset();
-  }
-
-  /**
-  *  Calculate number of pages for pagination based on total records;
-  */
-  public totalPages() {
-    this.totalPagesCount = Math.ceil(this.recordCount / this.limit) || 0;
-  }
-
-  public setLimit(limit) {
-    this.limit = 0;
-    if (this.page !== 1) {
-      this.page = 1;
-    }
-    if (limit === '' || limit === 0 || limit === null || limit === undefined) {
-      limit = this.DEFAULT_LIMIT;
-    }
-    this.limit = limit;
-    console.log('Limit: ', this.limit);
-    this.totalPages();
-    this.getSysLogs();
-  }
-
-  public setOffset(offset: number) {
-    if (this.page !== 1) {
-      this.page = 1;
-    }
-    if (offset === null || offset === undefined) {
-      offset = 0;
-    }
-    this.totalPages();
-    this.getSysLogs();
-  }
-
-  /**
-   *  Go to the last page
-   */
-  onLast(): void {
-    const p = Math.ceil(this.recordCount / this.limit) || 0;
-    this.page = p;
+    this.destroy$.next(true);
     this.setLimitOffset();
   }
 
@@ -174,17 +104,36 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   onPrev(): void {
     this.page--;
+    if (this.page === 1) {
+      this.onFirst();
+      return;
+    }
     this.setLimitOffset();
   }
 
   /**
-   *  Set limit and offset (it is internally called by goToPage(), onNext(), onPrev(), onFirst(), onLast() methods)
+   *  Go to the first page
+   */
+  onFirst(): void {
+    this.page = 1;
+    this.limit = this.DEFAULT_LIMIT;
+    this.offset = (((this.page) - 1) * this.limit);
+    this.getSysLogs();
+    this.getSchedules();
+    if (this.isAlive) {
+      this.destroy$.next(false);
+      this.toggleAutoRefresh(this.isAlive)
+    }
+  }
+
+  /**
+   *  Set limit and offset (it is internally called by onNext(), onPrev(), onFirst() methods)
    */
   setLimitOffset() {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.tempOffset = (((this.page) - 1) * this.limit);
+    this.offset = (((this.page) - 1) * this.limit);
     this.getSysLogs();
   }
 
@@ -201,8 +150,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   public filterData(filter: string, value: string) {
     this.limit = 0;
-    this.tempOffset = 0;
-    this.recordCount = 0;
+    this.offset = 0;
     if (this.page !== 1) {
       this.page = 1;
     }
@@ -225,7 +173,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.tempOffset).
+    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.offset).
       subscribe(
         (data) => {
           if (autoRefresh === false) {
@@ -242,9 +190,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
             logs.push(fl);
           });
           this.logs = logs.reverse();
-          this.totalCount = data['count'];
-          this.recordCount = this.totalCount;
-          this.totalPages();
         },
         error => {
           if (autoRefresh === false) {
@@ -258,9 +203,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         });
   }
 
-  toggleAutoRefresh(event: any) {
-    this.isAlive = event.target.checked;
-
+  toggleAutoRefresh(refresh: boolean) {
+    this.isAlive = refresh;
     // clear interval subscription before initializing it again
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -276,7 +220,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
     // start auto refresh
     this.subscription = interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .pipe(takeWhile(() => this.isAlive && this.page === 1), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         this.getSysLogs(true);
         this.getSchedules();
