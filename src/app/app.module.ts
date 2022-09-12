@@ -57,7 +57,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
         router.navigate(['/login']);
         sharedService.loginScreenSubject.next(true);
       } else {
-        if (location.href.includes('/settings?id=1')) {
+        if (location.href.includes('/setting?id=1')) {
           router.navigate([''])
         }
       }
