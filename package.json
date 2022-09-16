@@ -1,6 +1,6 @@
 {
   "name": "fledge",
-  "version": "1.9.2next",
+  "version": "2.0.0",
   "license": "Apache-2.0",
   "doc_url": "https://fledge-iot.readthedocs.io/en/",
   "scripts": {
