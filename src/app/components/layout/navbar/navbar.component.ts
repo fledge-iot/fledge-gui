@@ -76,7 +76,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.getServiceStatus();
     this.pingService();
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))

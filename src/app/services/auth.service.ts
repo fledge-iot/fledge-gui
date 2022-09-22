@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -26,6 +26,12 @@ export class AuthService {
 
   loginWithCertificate(payload) {
     return this.http.post(this.LOGIN_URL, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  loginUsingOttToken(ottToken: string) {
+    return this.http.post(this.LOGIN_URL, { ott: ottToken }).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
