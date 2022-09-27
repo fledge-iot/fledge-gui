@@ -1,7 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { environment } from '../../../../environments/environment';
 import * as data from '../../../../git-version.json';
 import * as moment from 'moment';
 
@@ -11,10 +9,18 @@ import * as moment from 'moment';
   styleUrls: ['./footer.component.css']
 })
 
-export class FooterComponent {
-  public appVersion: string = environment.VERSION;
+export class FooterComponent implements OnInit {
+  public appVersion;
   public git = data['default'];
   copyrightYear = moment().year();
 
-  constructor(public router: Router) {}
+  constructor(public router: Router) { }
+
+  ngOnInit(): void {
+    this.appVersion = `v${this.git.semverString}`;
+    if (this.git?.distance == 0) {
+      // released version
+      this.appVersion = `v${this.git.semverString.replace('+0', '')}`
+    }
+  }
 }
