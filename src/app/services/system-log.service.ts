@@ -19,6 +19,8 @@ export class SystemLogService {
     let params = new HttpParams();
     params = params.set('limit', limit.toString());
     params = params.set('offset', offset.toString());
+    params = params.set('nontotals', true);
+
     if (level.toString() !== '') {
       params = params.set('level', level.toString());
     }
@@ -26,7 +28,7 @@ export class SystemLogService {
       params = params.set('source', encodeURIComponent(source.toString()));
     }
     return this.http.get(this.SYSLOG_URL, { params: params }).pipe(map(response => response),
-    catchError(error => throwError(error)));
+      catchError(error => throwError(error)));
   }
 
 }

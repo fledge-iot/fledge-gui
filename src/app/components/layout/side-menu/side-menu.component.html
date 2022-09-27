@@ -1,52 +1,57 @@
 <ul class="menu-list">
   <li>
-    <a id="dashboard" [ngClass]="{'is-active': step==='/dashboard'}" (click)="onToggle('/dashboard')">
+    <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
       Dashboard
     </a>
   </li>
   <li>
-    <a id="asset" [ngClass]="{'is-active': step==='/asset'}" (click)="onToggle('/asset')">
+    <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
       Assets &amp; Readings
     </a>
   </li>
   <li>
-    <a id="south" [ngClass]="{'is-active': step==='/south'}" (click)="onToggle('/south')">
+    <a id=" south" routerLinkActive="is-active" routerLink='/south'>
       South
     </a>
   </li>
   <li>
-    <a id="north" [ngClass]="{'is-active': step==='/north'}" (click)="onToggle('/north')">
+    <a id="north" routerLinkActive="is-active" routerLink='/north'>
       North
     </a>
   </li>
   <li>
-    <a id="notification" [ngClass]="{'is-active': step==='/notification'}" (click)="onToggle('/notification')">
+    <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
       Notifications
     </a>
   </li>
   <li>
-    <a id="control-dispatcher" [ngClass]="{'is-active': step==='/control-dispatcher'}"
-      (click)="onToggle('/control-dispatcher')">
+    <a id="control-dispatcher" routerLinkActive="is-active" routerLink='/control-dispatcher'>
       Control Dispatcher
     </a>
   </li>
   <li>
-    <a id="configuration" [ngClass]="{'is-active': step==='/configuration'}" (click)="onToggle('/configuration')">
+    <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
       Configuration
     </a>
   </li>
   <li>
-    <a id="schedules" [ngClass]="{'is-active': step==='/schedules'}" (click)="onToggle('/schedules')">
+    <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
       Schedules
     </a>
   </li>
   <li>
-    <a id="certificate" [ngClass]="{'is-active': step==='/certificate'}" (click)="onToggle('/certificate')">
+    <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
       Certificate Store
     </a>
   </li>
   <li>
-    <a id="backup-restore" [ngClass]="{'is-active': step==='/backup-restore'}" (click)="onToggle('/backup-restore')">
+    <ng-container *ngFor="let mfe of microfrontends"><a *ngIf="mfe?.displayName" routerLinkActive="is-active"
+        [routerLink]="mfe.routePath">
+        {{mfe.displayName}}</a>
+    </ng-container>
+  </li>
+  <li>
+    <a id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
       Backup &amp; Restore
     </a>
   </li>
@@ -54,38 +59,41 @@
     <a>Logs</a>
     <ul>
       <li>
-        <a id="audit" [ngClass]="{'is-active': step==='/audit'}" (click)="onToggle('/audit')">Audit</a>
+        <a id=" audit" routerLinkActive="is-active" routerLink='/audit'>Audit</a>
       </li>
       <li>
-        <a id="notification-log" [ngClass]="{'is-active': step==='/notification/logs'}"
-          (click)="onToggle('/notification/logs')">Notifications</a>
+        <a id="notification-log" routerLinkActive="is-active" routerLink='/notification/logs'>Notifications</a>
       </li>
       <li>
-        <a id="packages" [ngClass]="{'is-active': step==='/packages'}" (click)="onToggle('/packages')">Packages</a>
+        <a id="packages" routerLinkActive="is-active" routerLink='/packages'>Packages</a>
       </li>
       <li>
-        <a id="syslog" [ngClass]="{'is-active': step==='/syslog'}" (click)="onToggle('/syslog')">System</a>
+        <a id="syslog" routerLinkActive="is-active" routerLink='/syslog'>System</a>
       </li>
       <li>
-        <a id="tasks" [ngClass]="{'is-active': step==='/tasks'}" (click)="onToggle('/tasks')">Tasks</a>
+        <a id="tasks" routerLinkActive="is-active" routerLink='/tasks'>Tasks</a>
       </li>
     </ul>
   </li>
   <li>
-    <a id="user-management" *ngIf="isAdmin" [ngClass]="{'is-active': step==='/user-management'}"
-      (click)="onToggle('/user-management')">
+    <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
       User Management
     </a>
   </li>
 
   <li>
-    <a id="support" [ngClass]="{'is-active': step==='/support'}" (click)="onToggle('/support')">
+    <a id="support" routerLinkActive="is-active" routerLink='/support'>
       Support
     </a>
   </li>
-
   <li>
-    <a id="setting" [ngClass]="{'is-active': step==='/setting'}" (click)="onToggle('/setting')">
+    <a id="developer" routerLinkActive="is-active" routerLink='/developer'
+      *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
+      Developer
+    </a>
+  </li>
+  <li>
+    <a id="setting" routerLinkActive="is-active" routerLink='/setting'>
       Settings
     </a>
   </li>

@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class AssetsService {
   private GET_ASSET = environment.BASE_URL + 'asset';
+  private TRACK_SERVICE_URL = environment.BASE_URL + 'track';
   constructor(private http: HttpClient) { }
 
   /**
@@ -38,6 +39,13 @@ export class AssetsService {
       params = params.set('offset', offset.toString());
     }
     return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+
+  public getLatestReadings(assetCode) {
+    return this.http.get(`${this.GET_ASSET}/${encodeURIComponent(assetCode)}/latest`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
@@ -95,6 +103,24 @@ export class AssetsService {
   public getAssetAverage(assetObject: any) {
     // TODO: time based readings average;
     return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetObject.assetCode) + '/' + assetObject.reading + '/series').pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  public purgeAssetData(assetCode) {
+    return this.http.delete(`${this.GET_ASSET}/${encodeURIComponent(assetCode)}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  public purgeAllAssetsData() {
+    return this.http.delete(`${this.GET_ASSET}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  public deprecateAssetTrackEntry(serviceName: string, assetName: string, event: string) {
+    return this.http.put(`${this.TRACK_SERVICE_URL}/service/${encodeURIComponent(serviceName)}/asset/${encodeURIComponent(assetName)}/event/${encodeURIComponent(event)}`, null).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

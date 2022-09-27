@@ -4,11 +4,14 @@ import { orderBy } from 'lodash';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { interval, Subscription, Subject } from 'rxjs';
 
-import { PingService, ServicesApiService, ProgressBarService, SharedService } from '../../../services';
+import { PingService, ServicesApiService, ProgressBarService, SharedService, AssetsService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
+import { DeveloperFeaturesService } from '../../../services/developer-features.service';
+import { DialogService } from '../../common/confirmation-dialog/dialog.service';
+
 
 @Component({
   selector: 'app-south',
@@ -17,13 +20,17 @@ import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component
 })
 export class SouthComponent implements OnInit, OnDestroy {
   public service;
+  public southAseetsExpandedState = [];
   public southboundServices = [];
   public refreshSouthboundServiceInterval = POLLING_INTERVAL;
   public showSpinner = false;
-  private isAlive: boolean;
+  public isAlive: boolean;
   private subscription: Subscription;
   private viewPortSubscription: Subscription;
   viewPort: any = '';
+  selectedAsset = '';
+  selectedService = '';
+  eventsTrack = [];
 
   @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
@@ -32,9 +39,12 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   constructor(private servicesApiService: ServicesApiService,
     private alertService: AlertService,
+    private assetService: AssetsService,
     public ngProgress: ProgressBarService,
+    public developerFeaturesService: DeveloperFeaturesService,
     private router: Router,
     private ping: PingService,
+    private dialogService: DialogService,
     private sharedService: SharedService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -89,6 +99,15 @@ export class SouthComponent implements OnInit, OnDestroy {
             }
           });
           this.southboundServices = orderBy(enabledServices, 'name').concat(orderBy(disabledServices, 'name'));
+          // add expanded key in service to show/hide the assets in the service row
+          this.southboundServices.map((svc: any) => {
+            svc.expanded = true;
+            const ss = this.southAseetsExpandedState.find(s => s.name === svc.name);
+            if (ss) {
+              svc.expanded = ss.expanded;
+            }
+            return svc;
+          });
           this.hideLoadingSpinner();
         },
         error => {
@@ -99,6 +118,22 @@ export class SouthComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  showHideAsset(svc: any) {
+    this.southboundServices.map((s) => {
+      if (svc.name === s.name) {
+        const index = this.southAseetsExpandedState.findIndex(s => s.name === svc.name);
+        if (index != -1) {
+          this.southAseetsExpandedState[index].expanded = !this.southAseetsExpandedState[index].expanded;
+          s.expanded = this.southAseetsExpandedState[index].expanded;;
+        } else {
+          s.expanded = !s.expanded;
+          this.southAseetsExpandedState.push(s);
+        }
+      }
+      return s;
+    });
   }
 
   addSouthService() {
@@ -124,6 +159,42 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
+  }
+
+  selectAsset(serviceName: string, assetName: string) {
+    this.selectedAsset = assetName;
+    this.selectedService = serviceName;
+  }
+
+  deprecateAsset(assetName: string) {
+    /** request started */
+    this.ngProgress.start();
+    this.assetService.deprecateAssetTrackEntry(this.selectedService, assetName, 'Ingest')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data.success);
+          this.closeModal('asset-tracking-dialog');
+          this.getSouthboundServices(false);
+        }, error => {
+          /** request completed but error */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   public ngOnDestroy(): void {

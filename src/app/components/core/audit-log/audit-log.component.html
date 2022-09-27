@@ -7,7 +7,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <div class="fix-pad auto-refresh">
+      <div *ngIf="refreshInterval !== -1" class="fix-pad auto-refresh">
         <label class="checkbox">
           <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
           Auto Refresh
@@ -23,7 +23,7 @@
               <div class="dropdown-trigger">
                 <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('dropdown')">
-                  <span>{{source == ''? "ALL": source.toUpperCase()}}</span>
+                  <span>{{selectedSourceName == ''? "ALL": selectedSourceName.toUpperCase()}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -33,9 +33,9 @@
                 <div class="dropdown-content">
                   <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterSource('source', '')">ALL</a>
                   <a class="dropdown-item" *ngFor="let source of logSourceList"
-                    (click)="toggleDropDown('dropdown');filterSource('source', source.code)">
+                    (click)="toggleDropDown('dropdown');filterSource('source', source)">
                     {{source.code}}{{source.description
-                        != '' ? ' - ' + source.description : ''}}
+                    != '' ? ' - ' + source.description : ''}}
                   </a>
                 </div>
               </div>
@@ -83,7 +83,10 @@
                 <small>{{log.timestamp | dateparser: 'YYYY-MM-DD HH:mm:ss'}}</small>
               </td>
               <td><small>{{log.severity}}</small></td>
-              <td><small>{{log.source}}</small></td>
+              <td>
+                <small [ngClass]="{'tooltip is-tooltip-left tooltip-help is-hovered': !source}"
+                  [attr.data-tooltip]='showtooltip(log.source)'>{{log.source}}</small>
+              </td>
               <td><small>{{log.details | json}}</small></td>
             </tr>
           </tbody>
@@ -96,7 +99,8 @@
         </div>
       </ng-container>
       <ng-template #no_data_div>
-        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No audit logs found.</small></div>
+        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No audit logs found.</small>
+        </div>
       </ng-template>
     </div>
   </div>

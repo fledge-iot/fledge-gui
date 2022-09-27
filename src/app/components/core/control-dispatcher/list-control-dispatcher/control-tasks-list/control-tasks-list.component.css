@@ -1,0 +1,35 @@
+.align-content {
+  vertical-align: middle;
+}
+
+.btn-delete {
+  border-color: transparent !important;
+  opacity: 0;
+}
+
+
+tr:hover .btn-delete {
+  opacity: 1;
+}
+
+
+.parameter.is-borderless td, .parameter.is-borderless th {
+  border: 0;
+  padding: 2px 12px 0px 0px;
+  font-size: 90%;
+ }
+
+ .is-borderless td, .is-borderless th {
+  border: 0;
+  padding: 2px 12px 0px 0px;
+ }
+
+
+.is-hoverable {
+  cursor: pointer !important;
+}
+
+.button.is-light {
+  background-color: transparent !important
+}
+

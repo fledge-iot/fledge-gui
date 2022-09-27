@@ -3,6 +3,9 @@
     <header class="card-header">
       <div id="south-service" class="card-header-title">
         South Services
+        <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" class="button is-small" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
       </div>
       <a id="add_south_service" class="fix-pad button is-light" (click)="addSouthService()">
         <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
@@ -34,14 +37,17 @@
                     <table class="table is-responsive">
                       <tr>
                         <td class="border-fix">Assets</td>
+                        <td *ngIf="developerFeaturesService.getDeveloperFeatureControl()" class="border-fix"></td>
                         <td class="border-fix align-right">Readings</td>
                       </tr>
                     </table>
                   </th>
+                  <th class="align-th"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let svc of southboundServices" [ngClass]="{'fade': (svc.schedule_enabled === false)}">
+                <tr *ngFor="let svc of southboundServices" [ngClass]="{'fade': (svc.schedule_enabled === false)}"
+                  class="parent">
                   <td class="align-content">
                     <a class="button is-text service-name" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
                   </td>
@@ -64,16 +70,55 @@
                     <small>{{svc?.plugin?.version}}</small>
                   </td>
                   <td class="align-content">
-                    <table class="table is-narrow is-responsive">
-                      <tr *ngFor='let data of svc.assets' [ngClass]="{'fade': (svc.schedule_enabled === false)}">
-                        <td>
-                          <small>{{data.asset}}</small>
-                        </td>
-                        <td class="readings-count">
-                          <small class="level-right">{{data.count | number}}</small>
-                        </td>
+                    <table class="table is-narrow is-responsive" [ngClass]="{'is-borderless': !svc.expanded}">
+                      <tr *ngFor='let data of svc.assets; let i = index'
+                        [ngClass]="{' fade': (svc.schedule_enabled===false)}">
+                        <!-- Section to show asset & readings if asset == 1 -->
+                        <ng-container *ngIf="i==0;else expandedTable">
+                          <td>
+                            <a *ngIf="developerFeaturesService.getDeveloperFeatureControl()" id="deprecate_event_div"
+                              (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
+                              <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Deprecate asset">
+                                <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
+                              </span>
+                            </a>
+                            <small>{{data.asset}}</small>
+                          </td>
+                          <td>
+                          </td>
+                          <td class="readings-count">
+                            <small class="level-right">{{data.count | number}}</small>
+                          </td>
+                        </ng-container>
+                        <!-- Section to show asset & readings if assets > 1 -->
+                        <ng-template #expandedTable>
+                          <ng-container *ngIf="svc.expanded">
+                            <td>
+                              <a *ngIf="developerFeaturesService.getDeveloperFeatureControl()" id="deprecate_event_div"
+                                (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
+                                <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Deprecate asset">
+                                  <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
+                                </span>
+                              </a>
+                              <small>{{data.asset}}</small>
+                            </td>
+                            <td>
+                            </td>
+                            <td class="readings-count">
+                              <small class="level-right">{{data.count | number}}</small>
+                            </td>
+                          </ng-container>
+                        </ng-template>
                       </tr>
                     </table>
+                  </td>
+                  <td>
+                    <span *ngIf="svc?.assets?.length > 1" (click)="showHideAsset(svc)"
+                      [ngClass]="{'open': svc.expanded}"
+                      class="icon is-small tooltip is-tooltip-right tooltip-help is-pulled-right is-hovered"
+                      [attr.data-tooltip]="svc.expanded ? 'Hide other assets' : 'Show all assets'">
+                      <i class="fas fa-xs fa-angle-down"></i>
+                    </span>
                   </td>
                 </tr>
               </tbody>
@@ -86,3 +131,16 @@
 </div>
 <app-south-service-modal (notify)='onNotify()' [service]="service"></app-south-service-modal>
 <app-view-logs></app-view-logs>
+<app-confirmation-dialog id="asset-tracking-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">Deprecate</span>
+    <button class="delete" aria-label="close" (click)="closeModal('asset-tracking-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, <b>{{selectedAsset}}</b> will be deprecated if this action is continued?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('asset-tracking-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deprecateAsset(selectedAsset)">Yes</button>
+  </footer>
+</app-confirmation-dialog>

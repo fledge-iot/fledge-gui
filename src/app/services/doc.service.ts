@@ -24,7 +24,7 @@ export class DocService {
 
   goToNotificationDocLink(slug: string) {
     const v = this.gitDistance > 0 ? 'develop' : `${this.appVersion}`;
-    window.open(`${packageInfo.doc_url}${v}/notifications.html#${slug}`, '_blank');
+    window.open(`${packageInfo.doc_url}${v}/services/fledge-service-notification/index.html#${slug}`, '_blank');
   }
 
   goToSetPointControlDocLink(slug: string) {

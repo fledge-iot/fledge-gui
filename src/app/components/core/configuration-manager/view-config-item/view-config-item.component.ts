@@ -5,8 +5,9 @@ import {
   Output, ViewChild
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy } from 'lodash';
+import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy, orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
+import { AclService } from '../../../../services/acl.service';
 import { AlertService, ConfigurationService, ProgressBarService, SharedService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import ConfigTypeValidation from '../configuration-type-validation';
@@ -21,6 +22,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @Input() categoryConfigurationData: any;
   @Input() useProxy = 'false';
   @Input() useFilterProxy = 'false';
+  @Input() useChildrenProxy = 'false';
   @Input() useRuleProxy = 'false';
   @Input() useDeliveryProxy = 'false';
   @Input() formId = '';
@@ -33,21 +35,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public isValidForm = true;
   public isWizardCall = false;
   public filesToUpload = [];
+  public acls = [];
   public hasEditableConfigItems = true;
   public fileContent = '';
   public oldFileName = '';
   public newFileName = '';
-  public isFileUploaded = false;
   public isValidJson = true;
   public selectedTheme = 'default';
   public isValidExtension = true;
   private subscription: Subscription;
 
-  @ViewChild('codeeditor') codeeditor: ElementRef;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('jsoneditor') jsoneditor: ElementRef;
   @ViewChild('pwd') pwd: ElementRef;
-  @ViewChild(NgForm) form;
+  @ViewChild('f', { static: false }) form: NgForm;
 
   public passwordOnChangeFired = false;
   public passwordMatched = {
@@ -59,6 +60,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private configService: ConfigurationService,
+    private aclService: AclService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private cdRef: ChangeDetectorRef,
@@ -77,7 +79,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
+    if (this.form) {
+      this.form.resetForm();
+    }
     this.filesToUpload = [];
+    this.categoryConfiguration = null;
     this.configItems = [];
     this.fileContent = '';
     this.newFileName = '';
@@ -96,6 +102,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       });
 
       this.configItems = this.categoryConfiguration.map(el => {
+        // Needs explicit service call to populate all acls as dropdown options
+        if (el.type.toLowerCase() === 'acl') {
+          this.getAllACLs();
+        }
         return {
           key: el.key,
           value: el.value !== undefined ? el.value : el.default,
@@ -120,6 +130,20 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       this.checkValidityOnPageLoad();
       this.cdRef.detectChanges();
     }
+  }
+
+  getAllACLs() {
+    this.aclService.fetchAllACL()
+      .subscribe((data: any) => {
+        this.acls = orderBy(data.acls, 'name');
+        this.acls.unshift({ name: '' }) // add empty acl as first item in the ACLs array to mapped to None text
+      }, error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public setEditorConfig(type: string) {
@@ -165,7 +189,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       };
     });
     const changedConfigValues = this.configItems.length > 0 ? differenceWith(formData, this.configItems, (newConfig, oldConfig) => {
-      if (newConfig.type === 'JSON' && oldConfig.type === 'JSON') {
+      if (newConfig.type === 'JSON' && oldConfig.type === 'JSON' && newConfig.key === oldConfig.key) {
         return isEqual(JSON.parse(newConfig.value), JSON.parse(oldConfig.value));
       }
       return isEqual(newConfig, oldConfig);
@@ -208,7 +232,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     const fileReader = new FileReader();
     const fi = event.target;
     if (fi.files.length !== 0) {
-      this.isFileUploaded = true;
       this.isValidExtension = true;
     }
     if (fi.files && fi.files[0]) {
@@ -218,10 +241,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         this.fileContent = fileReader.result.toString();
       };
       fileReader.readAsText(file);
-      const ext = file.name.substr(file.name.lastIndexOf('.') + 1);
+      const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
       if (ext !== 'py') {
         this.isValidExtension = false;
-        this.isFileUploaded = false;
       } else {
         this.filesToUpload.push({ [configItem]: file });
       }
@@ -285,9 +307,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
    * @param configVal Config value to pass in ngModel
    */
   public setConfigValue(configVal) {
-    if (this.codeeditor !== undefined) {
-      this.codeeditor.nativeElement.click();
-    }
     if (configVal.value !== undefined) {
       return configVal.value;
     } else {
@@ -313,7 +332,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       this.ngProgress.start();
       this.configService.uploadFile(this.categoryConfigurationData.key, configItem, formData)
         .subscribe((content: any) => {
-          this.newFileName = content.file.substr(content.file.lastIndexOf('/') + 1);
+          this.newFileName = content.file.substring(content.file.lastIndexOf('/') + 1);
           this.filesToUpload = [];
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.', true);
@@ -365,18 +384,11 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public checkButtonProxy() {
     if (this.useProxy === 'false'
       && this.useFilterProxy === 'false'
+      && this.useChildrenProxy === 'false'
       && this.useRuleProxy === 'false'
       && this.useDeliveryProxy === 'false') {
       return 'false';
     }
-  }
-
-  public getFileName(name: string) {
-    this.oldFileName = name !== undefined ? name.substr(name.lastIndexOf('/') + 1) : this.oldFileName;
-    if (this.oldFileName !== '') {
-      this.isFileUploaded = true;
-    }
-    this.cdRef.detectChanges();
   }
 
   createFileToUpload(data: any) {
@@ -463,12 +475,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  checkValidityOnChange(key: string, configValue: string) {
+  checkValidityOnChange(config: any, configValue: string) {
+    if (config?.type?.toLowerCase() === 'script') {
+      this.oldFileName = config.file ? config.file.substring(config.file.lastIndexOf('/') + 1) : config.file;
+    }
     this.categoryConfiguration.forEach(cnf => {
       if (cnf.hasOwnProperty('validity')) {
         let expression = cnf.validity;
         this.categoryConfiguration.forEach(el => {
-          if (el.key === key) {
+          if (el.key === config.key) {
             el.value = configValue;
           }
 
@@ -481,9 +496,9 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
         cnf.validityExpression = expression;
       }
 
-      if (cnf.hasOwnProperty('mandatory') && cnf['key'] === key) {
+      if (cnf.hasOwnProperty('mandatory') && cnf['key'] === config.key) {
         if (cnf['mandatory'] === 'true' && configValue.trim().length === 0) {
-          this.form.controls[key].setErrors({ 'required': true });
+          this.form.controls[config.key].setErrors({ 'required': true });
         }
       }
     });
@@ -495,7 +510,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
             // tslint:disable-next-line: no-eval
             const e = eval(config.validityExpression);
             if (typeof (e) !== 'boolean') {
-              console.log('Validity expression', config.validityExpression, 'for', key, 'evlauted to non-boolean value ', e);
+              console.log('Validity expression', config.validityExpression, 'for', config.key, 'evlauted to non-boolean value ', e);
             }
             config.editable = e === false ? false : true;
           } catch (e) {

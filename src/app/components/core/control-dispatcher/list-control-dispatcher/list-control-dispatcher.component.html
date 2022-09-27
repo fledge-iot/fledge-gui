@@ -1,4 +1,20 @@
 <div class="container is-fluid">
+  <ng-container *ngIf="dispatcherServiceEnabled === false">
+    <article class="message is-warning">
+      <div class="message-body">
+        <span *ngIf="dispatcherServiceInstalled === false">Dispatcher service is not installed.</span>
+        <span *ngIf="dispatcherServiceInstalled && dispatcherServiceAdded === false">Dispatcher service is not
+          added.</span>
+        <span *ngIf="dispatcherServiceAdded && dispatcherServiceEnabled === false">Dispatcher service is not
+          enabled.</span>
+        <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
+          <span class="icon">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          </span>
+        </button>
+      </div>
+    </article>
+  </ng-container>
   <div class="card">
     <header>
       <div class="tabs">
@@ -13,9 +29,13 @@
               <a (click)="showDiv('acls')">ACLs</a>
             </h6>
           </li>
+          <!-- <li [ngClass]="{'is-active': seletedTab == 'tasks'}">
+            <h6 class="is-6 has-text-weight-semibold">
+              <a (click)="showDiv('tasks')">Script Schedules</a>
+            </h6>
+          </li> -->
           <li class="custom-pad" *ngIf="sharedService.checkAuth()" style="position: absolute;right: 0;">
-            <a [routerLink]="seletedTab === 'scripts' ? ['script/add']:['acl/add']" class="is-light"
-              style="border-bottom-width: 0">
+            <a class="is-light" style="border-bottom-width: 0" (click)="navigate()">
               <p *ngIf="viewPort !== 'mobile'">&nbsp; Add &nbsp;</p>
               <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
@@ -25,6 +45,11 @@
               (click)="goToLink('control-dispatcher-service')">
               <i class="far fa-question-circle"></i>
             </span>
+          </li>
+          <li>
+            <button (click)="refresh(seletedTab)" class="button is-small" id="refresh-check">
+              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+            </button>
           </li>
         </ul>
       </div>
@@ -36,6 +61,9 @@
       <div *ngIf="seletedTab == 'acls'">
         <app-acl-list></app-acl-list>
       </div>
+      <!-- <div *ngIf="seletedTab == 'tasks'">
+        <app-control-tasks-list></app-control-tasks-list>
+      </div> -->
     </div>
   </div>
 </div>

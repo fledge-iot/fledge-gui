@@ -1,28 +1,24 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, ViewChildren, QueryList
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
 
+import { Router } from '@angular/router';
 import {
-  AlertService, AssetsService, ConfigurationService, FilterService, SchedulesService,
-  ServicesApiService,
-  ProgressBarService,
-  GenerateCsvService
+  AlertService, AssetsService, ConfigurationService, FilterService, GenerateCsvService, ProgressBarService, SchedulesService,
+  ServicesApiService
 } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import { MAX_INT_SIZE } from '../../../../utils';
-import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import {
-  ConfigChildrenComponent
-} from '../../configuration-manager/config-children/config-children.component';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { DocService } from '../../../../services/doc.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -35,11 +31,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public useProxy: 'true';
   public useFilterProxy: 'true';
   public isEnabled = false;
-  public isAdvanceConfig = false;
-  public advanceConfigButtonText = 'Show Advanced Config';
   svcCheckbox: FormControl = new FormControl();
-  public childConfiguration;
-  public changedChildConfig = [];
   public filterPipeline = [];
   public deletedFilterPipeline = [];
   public filterConfiguration = [];
@@ -52,7 +44,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public filterItemIndex;
   public isWizard;
   // Object to hold data of south service to delete
-  public serviceRecord;
   public selectedFilterPlugin;
 
   confirmationDialogData = {};
@@ -60,10 +51,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('serviceConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
-  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
-  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   constructor(
@@ -77,6 +66,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private servicesApiService: ServicesApiService,
     private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService,
+    private dialogService: DialogService,
     private docService: DocService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -93,11 +83,22 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
+    this.getCateogryData();
+  }
+
+  getCateogryData() {
     if (this.service !== undefined) {
       this.getCategory();
-      this.checkIfAdvanceConfig(this.service['name']);
       this.getFilterPipeline();
     }
+  }
+
+  refreshPageData() {
+    this.getCateogryData();
+    if (this.configChildComponent) {
+      this.configChildComponent.getChildConfigData();
+    }
+    this.svcCheckbox.setValue(this.service['schedule_enabled']);
   }
 
   onDrop(event: CdkDragDrop<string[]>) {
@@ -135,9 +136,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       return;
     }
     this.notify.emit(false);
-    this.isAdvanceConfig = true;
-    this.getAdvanceConfig(null);
     this.filterConfiguration = [];
+    this.category = null;
     modalWindow.classList.remove('is-active');
   }
 
@@ -151,7 +151,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           if (!isEmpty(data)) {
             categoryValues.push(data);
             this.category = { key: this.service['name'], value: categoryValues };
-            this.useProxy = 'true';
+            // this.useProxy = 'true';
           }
           /** request completed */
           this.ngProgress.done();
@@ -248,55 +248,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
   }
 
-  checkIfAdvanceConfig(categoryName) {
-    this.configService.getCategoryConfigChildren(categoryName).
-      subscribe(
-        (data: any) => {
-          this.childConfiguration = data.categories.find(d => d.key.toString().includes('Advanced'));
-        },
-        error => {
-          console.log('error ', error);
-        }
-      );
-  }
-
-  getAdvanceConfig(childConfig) {
-    if (!this.isAdvanceConfig) {
-      this.isAdvanceConfig = true;
-      this.advanceConfigButtonText = 'Hide Advanced Config';
-      this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
-    } else {
-      this.isAdvanceConfig = false;
-      this.advanceConfigButtonText = 'Show Advanced Config';
-    }
-  }
-
-  /**
-   * Get edited configuration from child config page
-   * @param changedConfig changed configuration of a selected plugin
-   */
-  getChangedConfig(changedConfig) {
-    if (isEmpty(changedConfig)) {
-      return;
-    }
-    changedConfig = changedConfig.map(el => {
-      if (el.type.toUpperCase() === 'JSON') {
-        el.value = JSON.parse(el.value);
-      }
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
-    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
-    this.changedChildConfig = changedConfig;
-  }
-
   proxy() {
-    if (!this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)) {
-      return;
-    }
-
     const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {
       return this.validateFormService.checkViewConfigItemFormValidity(component);
     });
@@ -305,59 +257,28 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (this.useProxy) {
+    if (this.useProxy === 'true') {
       document.getElementById('vci-proxy').click();
     }
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
     for (const e of <any>el) {
       e.click();
     }
-    this.updateConfigConfiguration(this.changedChildConfig);
+
+    const securityCel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
+    for (const e of <any>securityCel) {
+      e.click();
+    }
     document.getElementById('ss').click();
   }
 
-  public updateConfigConfiguration(configItems) {
-    if (isEmpty(configItems)) {
-      return;
-    }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(this.childConfiguration.key, configItems).
-      subscribe(
-        () => {
-          this.changedChildConfig = [];  // clear the array
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.', true);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+  openModal(id: string) {
+    this.dialogService.open(id);
   }
 
-  /**
-   * Open delete modal
-   * @param message   message to show on alert
-   * @param action here action is 'deleteService'
-   */
-  openDeleteModal(port, protocol, name, message, action) {
-    this.serviceRecord = {
-      port: port,
-      protocol: protocol,
-      name: name,
-      message: message,
-      key: action
-    };
-    // call child component method to toggle modal
-    this.child.toggleModal(true);
+  closeModal(id: string) {
+    this.dialogService.close(id);
   }
-
 
   /**
   * Open confirmation modal
@@ -434,6 +355,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
           this.toggleModal(false);
+          this.closeModal('delete-service-dialog');
           setTimeout(() => {
             this.notify.emit();
           }, 6000);
@@ -465,8 +387,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.getCategory();
     this.isWizard = false;
     this.getFilterPipeline();
-    this.isAdvanceConfig = false;
-    this.advanceConfigButtonText = 'Show Advanced Config';
   }
 
   getFilterPipeline() {

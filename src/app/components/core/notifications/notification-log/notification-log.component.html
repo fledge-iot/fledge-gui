@@ -7,7 +7,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <div class="fix-pad auto-refresh">
+      <div *ngIf="refreshInterval !== -1" class="fix-pad auto-refresh">
         <label class="checkbox">
           <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
           Auto Refresh
@@ -35,7 +35,7 @@
                   <a class="dropdown-item" *ngFor="let s of logSourceList"
                     (click)="toggleDropDown('dropdown');filterSource('source', s.code)">
                     {{s.code}}{{s.description
-                        != '' ? ' - ' + s.description : ''}}
+                    != '' ? ' - ' + s.description : ''}}
                   </a>
                 </div>
               </div>
@@ -65,13 +65,14 @@
           </div>
           <div class="column">
             <label class="label is-small">Search</label>
-            <input [disabled]="notificationLogs?.length < 2" #nameField type="search" class="input is-fullwidth is-small" placeholder="search text by name"
-              [(ngModel)]="searchTerm" />
+            <input [disabled]="notificationLogs?.length < 2" #nameField type="search"
+              class="input is-fullwidth is-small" placeholder="search text by name" [(ngModel)]="searchTerm" />
           </div>
         </div>
       </div>
       <ng-container *ngIf="notificationLogs?.length > 0; else no_data_div">
-        <table *ngIf="(notificationLogs | SearchPipe: searchTerm)?.length !== 0" class="table is-narrow is-responsive is-hoverable" cellpadding="0" cellspacing="0">
+        <table *ngIf="(notificationLogs | SearchPipe: searchTerm)?.length !== 0"
+          class="table is-narrow is-responsive is-hoverable" cellpadding="0" cellspacing="0">
           <thead>
             <tr>
               <th>Timestamp</th>
@@ -100,11 +101,13 @@
       </ng-container>
       <ng-template #no_matching_entry>
         <div class="card-content">
-          <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No matching log entries found.</small></div>
+          <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No matching log entries
+              found.</small></div>
         </div>
       </ng-template>
       <ng-template #no_data_div>
-        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No notification logs found.</small></div>
+        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No notification logs
+            found.</small></div>
       </ng-template>
     </div>
   </div>

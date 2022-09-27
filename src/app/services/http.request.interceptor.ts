@@ -31,7 +31,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         if (err instanceof HttpErrorResponse) {
           if (err.status === 0) {
             this.alertService.error('Failed to connect');
-          } else if (err.status === 401 && !location.href.includes('/setting?id=1')) {
+          } else if (err.status === 401 && !location.href.includes('/setting?id=1') && !location.href.includes('ott')) {
             sessionStorage.clear();
             this.router.navigate(['/login']);
           }

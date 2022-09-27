@@ -76,7 +76,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.getServiceStatus();
     this.pingService();
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
@@ -145,6 +144,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           const notificationService = servicesData.filter((el => (el.type === 'Notification')));
           const managementService = servicesData.filter((el => (el.type === 'Management')));
           const dispatcherService = servicesData.filter((el => (el.type === 'Dispatcher')));
+          const bucketStorageService = servicesData.filter((el => (el.type === 'BucketStorage')));
 
           this.servicesRecord.push(coreService[0], storageService[0]);
           southboundServices.forEach(service => {
@@ -164,6 +164,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           if (dispatcherService.length) {
             this.servicesRecord.push(dispatcherService[0]);
           }
+
+          if (bucketStorageService.length) {
+            this.servicesRecord.push(bucketStorageService[0]);
+          }
+
           this.hideLoadingSpinner();
         },
         (error) => {

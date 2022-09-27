@@ -1,24 +1,24 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, HostListener, QueryList, ViewChildren
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { isEmpty } from 'lodash';
 
+import { Router } from '@angular/router';
 import {
-  AlertService, ConfigurationService, FilterService, NorthService, SchedulesService, ProgressBarService, ServicesApiService
+  AlertService, ConfigurationService, FilterService, NorthService, ProgressBarService, SchedulesService, ServicesApiService
 } from '../../../../services';
+import { DocService } from '../../../../services/doc.service';
+import { ValidateFormService } from '../../../../services/validate-form.service';
 import Utils from '../../../../utils';
-import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
+import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import {
   ViewConfigItemComponent
 } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { DocService } from '../../../../services/doc.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -45,11 +45,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public filterConfiguration = [];
   public isFilterDeleted = false;
   public confirmationDialogData = {};
-  public childConfiguration: any;
-  public changedChildConfig = [];
-
-  public advanceConfigButtonText = 'Show Advanced Config';
-  public isAdvanceConfig = false;
   public btnTxt = '';
   public selectedFilterPlugin;
 
@@ -58,18 +53,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   @Input() task: { task: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('taskConfigView') viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
-  @ViewChild(ConfigChildrenComponent) configChildrenComponent: ConfigChildrenComponent;
+  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
 
-  // Object to hold data of north task to delete
-  public deleteTaskData = {
-    name: '',
-    message: '',
-    key: ''
-  };
   constructor(
     private router: Router,
     private schedulesService: SchedulesService,
@@ -79,6 +66,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private filterService: FilterService,
     private validateFormService: ValidateFormService,
     public fb: FormBuilder,
+    private dialogService: DialogService,
     public ngProgress: ProgressBarService,
     private servicesApiService: ServicesApiService,
     private docService: DocService
@@ -94,9 +82,19 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   ngOnInit() { }
 
   ngOnChanges() {
+    this.getNorthData();
+  }
+
+  refreshPageData() {
+    this.getNorthData();
+    if (this.configChildComponent) {
+      this.configChildComponent.getChildConfigData();
+    }
+  }
+
+  getNorthData() {
     if (this.task !== undefined) {
       this.getCategory();
-      this.checkIfAdvanceConfig(this.task['name']);
       this.getFilterPipeline();
       this.btnTxt = this.task['processName'] === 'north_C' ? 'Service' : 'Instance';
     }
@@ -157,15 +155,19 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.form !== undefined) {
       this.form.reset();
     }
-    this.isAdvanceConfig = true;
-    this.getAdvanceConfig(null);
+    this.category = null;
     this.filterConfiguration = [];
     modal.classList.remove('is-active');
-    if (this.viewConfigItemComponent !== undefined) {
-      this.viewConfigItemComponent.passwordOnChangeFired = false;
-      this.viewConfigItemComponent.passwordMatched.value = true;
-    }
   }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
+  }
+
 
   public getCategory(): void {
     /** request started */
@@ -182,7 +184,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         if (!isEmpty(data)) {
           categoryValues.push(data);
           this.category = { key: this.name, value: categoryValues };
-          this.useProxy = 'true';
         }
         /** request completed */
         this.ngProgress.done();
@@ -294,8 +295,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   proxy() {
-    if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
-      && this.form.valid)) {
+    if (!this.form.valid) {
       return;
     }
 
@@ -307,34 +307,26 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (this.useProxy) {
+    if (this.useProxy === 'true') {
       document.getElementById('vci-proxy').click();
     }
+
     const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
     for (const e of <any>el) {
       e.click();
     }
-    this.updateAdvanceConfigConfiguration(this.changedChildConfig);
+
+    const securityCel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
+    for (const e of <any>securityCel) {
+      e.click();
+    }
+
+    // this.updateAdvanceConfigConfiguration(this.changedChildConfig);
     document.getElementById('ss').click();
   }
 
   getTimeIntervalValue(event) {
     this.repeatTime = event.target.value;
-  }
-
-  /**
-  * Open delete modal
-  * @param message   message to show on alert
-  * @param action here action is 'deleteTask'
-  */
-  openDeleteModal(name, message) {
-    this.deleteTaskData = {
-      name: name,
-      message: message,
-      key: this.task['processName'] === 'north_C' ? 'deleteService' : 'deleteTask'
-    };
-    // call child component method to toggle modal
-    this.child.toggleModal(true);
   }
 
   onDelete(payload) {
@@ -358,6 +350,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
           this.toggleModal(false);
+          this.closeModal('delete-task-dialog');
           this.notify.emit();
         },
         (error) => {
@@ -383,6 +376,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
           this.toggleModal(false);
+          this.closeModal('delete-task-dialog');
           this.notify.emit();
         },
         (error) => {
@@ -433,8 +427,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.getCategory();
     this.isWizard = false;
     this.getFilterPipeline();
-    this.isAdvanceConfig = false;
-    this.advanceConfigButtonText = 'Show Advanced Config';
   }
 
   getFilterPipeline() {
@@ -483,75 +475,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
       },
         (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  checkIfAdvanceConfig(categoryName: string) {
-    this.configService.getCategoryConfigChildren(categoryName).
-      subscribe(
-        (data: any) => {
-          this.childConfiguration = data.categories.find(d => d.key.toString().includes('Advanced'));
-        },
-        error => {
-          console.log('error ', error);
-        }
-      );
-  }
-
-  getAdvanceConfig(childConfig) {
-    if (!this.isAdvanceConfig) {
-      this.isAdvanceConfig = true;
-      this.advanceConfigButtonText = 'Hide Advanced Config';
-      this.configChildrenComponent.getAdvanceConfig(childConfig, this.isAdvanceConfig);
-    } else {
-      this.isAdvanceConfig = false;
-      this.advanceConfigButtonText = 'Show Advanced Config';
-    }
-  }
-
-  /**
-  * Get edited configuration from child config page
-  * @param changedConfig changed configuration of a selected plugin
-  */
-  getChangedConfig(changedConfig) {
-    if (isEmpty(changedConfig)) {
-      return;
-    }
-    changedConfig = changedConfig.map(el => {
-      if (el.type.toUpperCase() === 'JSON') {
-        el.value = JSON.parse(el.value);
-      }
-      return {
-        [el.key]: el.value !== undefined ? el.value : el.default,
-      };
-    });
-
-    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
-    this.changedChildConfig = changedConfig;
-  }
-
-  public updateAdvanceConfigConfiguration(configItems: any) {
-    if (isEmpty(configItems)) {
-      return;
-    }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(this.childConfiguration.key, configItems).
-      subscribe(
-        () => {
-          this.changedChildConfig = [];  // clear the array
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.');
-        },
-        error => {
-          /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);

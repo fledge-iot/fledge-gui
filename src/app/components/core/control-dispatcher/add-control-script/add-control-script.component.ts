@@ -2,10 +2,11 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
+import { AclService } from '../../../../services/acl.service';
 import { AlertService, ProgressBarService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
-import { DialogService } from '../confirmation-dialog/dialog.service';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AddStepComponent } from './add-step/add-step.component';
 
 @Component({
@@ -30,6 +31,7 @@ export class AddControlScriptComponent implements OnInit {
     private cdRef: ChangeDetectorRef,
     private route: ActivatedRoute,
     private controlService: ControlDispatcherService,
+    private aclService: AclService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private dialogService: DialogService,
@@ -125,7 +127,7 @@ export class AddControlScriptComponent implements OnInit {
   }
 
   getAllACL() {
-    this.controlService.fetchAllACL()
+    this.aclService.fetchAllACL()
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.acls = this.acls.concat(data.acls);

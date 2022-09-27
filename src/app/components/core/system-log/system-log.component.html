@@ -3,13 +3,14 @@
     <header class="card-header">
       <div class="card-header-title">
         <span>System Logs</span>
-        <button *ngIf="!isAlive" (click)="getSysLogs()" class="button is-small" id="refresh-check">
+        <button *ngIf="!isAlive || page > 1" (click)="onFirst()" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <div class="fix-pad auto-refresh">
+      <div *ngIf="refreshInterval !== -1 && page === 1" class="fix-pad auto-refresh">
         <label class="checkbox">
-          <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
+          <input class="checkmark" type="checkbox" [checked]='isAlive'
+            (click)="toggleAutoRefresh($event.target.checked)">
           Auto Refresh
         </label>
       </div>
@@ -85,19 +86,30 @@
       <ng-container *ngFor="let log of logs | SearchPipe:searchTerm">
         <p class="s-log" [innerHTML]="log"> </p>
       </ng-container>
+      <ng-container *ngIf="logs?.length == 0">
+        <div class="has-text-centered">
+          <small *ngIf="page === 1" class="text-secondary has-text-grey-light">No matching log entries
+            found.</small>
+          <small *ngIf="page > 1" class="text-secondary has-text-grey-light">No older logs are available to be
+            shown.</small>
+        </div>
+
+      </ng-container>
+
     </div>
-    <ng-container *ngIf="(logs | SearchPipe: searchTerm)?.length !== 0; else no_data_div">
-      <div *ngIf="totalPagesCount > 1" class="pagination-section">
-        <app-pagination [count]="recordCount" [page]="page" [perPage]="limit" [totalPage]='totalPagesCount'
-          (onRangeChange)="setLimit($event)" (goPrev)="onPrev()" (goNext)="onNext()" (goFirst)="onFirst()"
-          (goLast)="onLast()" (goPage)="goToPage($event)">
-        </app-pagination>
+    <ng-container>
+      <div class="field has-addons pagination-section">
+        <p class="control">
+          <button class="button is-small" (click)="onPrev()" [disabled]="offset <= 0">
+            <span>Newer</span>
+          </button>
+        </p>
+        <p class="control">
+          <button class="button is-small" (click)="onNext()" [disabled]="logs?.length == 0">
+            <span>Older</span>
+          </button>
+        </p>
       </div>
     </ng-container>
-    <ng-template #no_data_div>
-      <div class="card-content">
-        <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No matching log entries found.</small></div>
-      </div>
-    </ng-template>
   </div>
 </div>

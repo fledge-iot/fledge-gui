@@ -6,7 +6,7 @@ import { LoginComponent } from './components/layout/login';
 import { AuthCheckGuard } from './guards';
 import { DashboardComponent } from './components/core/dashboard';
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthCheckGuard] },
   {
     path: 'asset', loadChildren: () => import('./components/core/asset-readings/assets.module')
@@ -62,6 +62,10 @@ const appRoutes: Routes = [
     path: 'backup-restore', loadChildren: () => import('./components/core/backup-restore/backup-restore.module')
       .then(m => m.BackupRestoreModule)
   },
+  {
+    path: 'developer', loadChildren: () => import('./components/core/developer/developer.module')
+      .then(m => m.DeveloperModule)
+  },
   { path: 'setting', component: SettingsComponent },
   { path: 'service-discovery', component: ServiceDiscoveryComponent },
   // user-management
@@ -74,7 +78,6 @@ const appRoutes: Routes = [
     path: 'user', loadChildren: () => import('./components/core/user-management/user.management.module')
       .then(m => m.UserManagementModule)
   },
-  // otherwise redirect to dashboard
   { path: '**', redirectTo: '' }
 ];
 

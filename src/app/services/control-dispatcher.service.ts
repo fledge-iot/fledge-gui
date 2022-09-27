@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -10,7 +10,9 @@ import { environment } from '../../environments/environment';
 export class ControlDispatcherService {
 
   private CONTROL_SERVICE_URL = environment.BASE_URL + 'control/script';
-  private ACL_URL = environment.BASE_URL + 'ACL';
+
+
+  public triggerRefreshEvent: BehaviorSubject<string> = new BehaviorSubject<any>('');
 
   constructor(private http: HttpClient) { }
 
@@ -44,32 +46,8 @@ export class ControlDispatcherService {
       catchError(error => throwError(error)));
   }
 
-  fetchAllACL() {
-    return this.http.get(this.ACL_URL).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  fetchAclByName(name: string) {
-    return this.http.get(`${this.ACL_URL}/${encodeURIComponent(name)}`).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  addACL(payload: any) {
-    return this.http.post(this.ACL_URL, payload).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  updateACL(name: string, payload: any) {
-    return this.http.put(`${this.ACL_URL}/${encodeURIComponent(name)}`, payload).pipe(
-      map(response => response),
-      catchError(error => throwError(error)));
-  }
-
-  deleteACL(name: string) {
-    return this.http.delete(`${this.ACL_URL}/${encodeURIComponent(name)}`).pipe(
+  addControlScheduleTask(scriptName, payload) {
+    return this.http.post(`${this.CONTROL_SERVICE_URL}/${encodeURIComponent(scriptName)}/schedule`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

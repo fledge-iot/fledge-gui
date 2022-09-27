@@ -3,8 +3,8 @@ import { Subscription } from 'rxjs';
 import { orderBy } from 'lodash';
 import { AlertService, ProgressBarService, SharedService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
-import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
-import { DialogService } from '../../confirmation-dialog/dialog.service';
+import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
+import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-control-scripts-list',
@@ -21,13 +21,19 @@ export class ControlScriptsListComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     private sharedService: SharedService,
-    private ngProgress: ProgressBarService) { }
-
-  ngOnInit(): void {
-    this.showControlDispatcherService();
+    private ngProgress: ProgressBarService) {
+    this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
+      if (tab === 'scripts') {
+        this.getControlScripts();
+      }
+    })
   }
 
-  showControlDispatcherService() {
+  ngOnInit(): void {
+    this.getControlScripts();
+  }
+
+  getControlScripts() {
     /** request started */
     this.ngProgress.start();
     this.controlService.fetchControlServiceScripts()
@@ -66,7 +72,7 @@ export class ControlScriptsListComponent implements OnInit {
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.showControlDispatcherService();
+        this.getControlScripts();
       }, error => {
         /** request completed */
         this.ngProgress.done();
