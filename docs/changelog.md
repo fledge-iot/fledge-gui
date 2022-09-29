@@ -1,4 +1,12 @@
-## v1.9.2next [2021-xx-xx]
+## v2.0.0next [2022-xx-xx]
+
+#### Added
+
+#### Changed
+
+#### Fixed
+
+## v2.0.0 [2022-09-09]
 
 #### Added
 
