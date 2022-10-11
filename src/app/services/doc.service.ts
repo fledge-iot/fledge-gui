@@ -6,11 +6,13 @@ import * as data from '../../git-version.json';
   providedIn: 'root'
 })
 export class DocService {
-  public gitDistance = data['default'].distance;
-  public appVersion = data['default'].tag;
-  public version = 'develop';
+  private gitDistance = data['default'].distance;
+  private appVersion = data['default'].tag;
+  private version = 'develop'; //readthedocs version to use
   constructor() {
-    this.version = this?.gitDistance > 0 ? 'develop' : `${this?.appVersion}`;
+    if (this.gitDistance == 0) {
+      this.version = this.appVersion;
+    }
   }
 
   goToLink() {
