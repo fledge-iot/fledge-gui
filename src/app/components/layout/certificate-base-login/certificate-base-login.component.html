@@ -6,12 +6,6 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <div class="columns">
-        <div class="column is-offset-7 has-text-right">
-          <button class="button is-small is-text"
-            (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
-        </div>
-      </div>
       <form [formGroup]="form" id="ngForm" (ngSubmit)="LoginWithCertificate()" novalidate>
         <div class="columns">
           <div class="column">
@@ -39,6 +33,12 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-offset-7 has-text-right">
+            <button class="button is-small is-text"
+              (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
           </div>
         </div>
         <div *ngIf="!showBrowseCertificate" class="columns">
