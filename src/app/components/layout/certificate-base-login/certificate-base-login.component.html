@@ -35,12 +35,6 @@
             </div>
           </div>
         </div>
-        <div class="columns">
-          <div class="column is-offset-7 has-text-right">
-            <button class="button is-small is-text"
-              (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
-          </div>
-        </div>
         <div *ngIf="!showBrowseCertificate" class="columns">
           <div class="column">
             <div class="field is-horizontal">
@@ -58,6 +52,12 @@
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
       <button id="save" type="submit" form="ngForm" class="button is-info is-small">Log In</button>
+      <div class="columns">
+        <div class="column is-offset-11">
+          <button class="button is-small is-text"
+            (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
+        </div>
+      </div>
     </footer>
   </div>
 </div>
