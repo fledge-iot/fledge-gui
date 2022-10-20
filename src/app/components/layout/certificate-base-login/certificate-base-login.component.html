@@ -8,20 +8,18 @@
     <section class="modal-card-body">
       <form [formGroup]="form" id="ngForm" (ngSubmit)="LoginWithCertificate()" novalidate>
         <div class="columns">
-          <div class="column">
+          <div class="column" *ngIf="showBrowseCertificate">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label *ngIf="showBrowseCertificate" class="label">Browse Certificate</label>
-                <label *ngIf="!showBrowseCertificate" class="label disabled">Browse Certificate</label>
               </div>
               <div class="field-body">
                 <div class="field">
                   <div class="file is-fullwidth">
                     <label class="file-label">
-                      <span class="file-cta is-fullwidth">
+                      <span *ngIf="showBrowseCertificate" class="file-cta is-fullwidth">
                         <span class="file-icon">
-                          <i *ngIf="showBrowseCertificate" class="fa fa-sm fa-upload"></i>
-                          <i *ngIf="!showBrowseCertificate" class="fa fa-sm fa-upload disabled"></i>
+                          <i class="fa fa-sm fa-upload"></i>
                         </span>
                         <input type="file" required id="certificate" (change)="onCertificateChange($event)"
                           formControlName="certificate" #fileInput>
