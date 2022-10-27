@@ -7,8 +7,8 @@
     </header>
     <section class="modal-card-body">
       <form [formGroup]="form" id="ngForm" (ngSubmit)="LoginWithCertificate()" novalidate>
-        <div class="columns">
-          <div class="column" *ngIf="showBrowseCertificate">
+        <div class="columns" *ngIf="showBrowseCertificate">
+          <div class="column">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label *ngIf="showBrowseCertificate" class="label">Browse Certificate</label>
@@ -17,7 +17,7 @@
                 <div class="field">
                   <div class="file is-fullwidth">
                     <label class="file-label">
-                      <span *ngIf="showBrowseCertificate" class="file-cta is-fullwidth">
+                      <span class="file-cta is-fullwidth">
                         <span class="file-icon">
                           <i class="fa fa-sm fa-upload"></i>
                         </span>
@@ -50,10 +50,12 @@
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
       <button id="save" type="submit" form="ngForm" class="button is-info is-small">Log In</button>
-      <div class="columns">
-        <div class="column is-offset-11">
-          <button class="button is-small is-text"
-            (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
+      <div class="container">
+        <div class="columns">
+          <div class="column has-text-right">
+            <button class="button is-small is-text"
+              (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
+          </div>
         </div>
       </div>
     </footer>
