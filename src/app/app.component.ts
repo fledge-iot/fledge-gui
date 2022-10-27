@@ -1,8 +1,6 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
-import { LookupService } from './microfrontend/lookup.service';
-import { buildRoutes } from '../menu-utils';
 
 import { PingService } from './services';
 import { SharedService } from './services/shared.service';
@@ -23,8 +21,7 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router,
     private ping: PingService,
-    private sharedService: SharedService,
-    private lookupService: LookupService) { }
+    private sharedService: SharedService) { }
 
   public toggleSidebar() {
     if (this.navMode === 'over') {
@@ -33,22 +30,21 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-
     if (window.innerWidth < 1024) {
       this.navMode = 'over';
       this._opened = false;
     }
+    this.sharedService.loginScreenSubject.subscribe((isLoginView: boolean) => {
+      this.isLoginView = isLoginView;
+    })
+
+    this.setPingIntervalOnAppLaunch();
+    this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.isActive(event.url);
       }
     });
-    if (location.href.includes('/login')) {
-      this.isLoginView = true;
-    }
-    this.setPingIntervalOnAppLaunch();
-    this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
-    this.onLaunchAppRedirect();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -78,27 +74,13 @@ export class AppComponent implements OnInit {
    *
    */
   isActive(href) {
-    const withoutSidebarRoutes = (href === '/login' || href === '/setting?id=1' || href.indexOf('user/reset-password') >= 0);
+    const withoutSidebarRoutes = (href.includes('/login') || href.includes('/setting?id=1') || href.indexOf('user/reset-password') >= 0);
     const tokenMissingWhenAuthMandatory = sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
     if (withoutSidebarRoutes || tokenMissingWhenAuthMandatory) {
       return this.isLoginView = true;
     } else {
       return this.isLoginView = false;
     }
-  }
-
-  onLaunchAppRedirect() {
-    this.sharedService.isServiceUp.subscribe(isServiceUp => {
-      if (!isServiceUp) {
-        this.router.navigate(['/setting'], { queryParams: { id: '1' } });
-      } else if (sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
-        this.router.navigate(['/login']);
-      } else {
-        if (location.href.includes('/setting?id=1')) {
-          this.router.navigate(['']);
-        }
-      }
-    });
   }
 
   setPingIntervalOnAppLaunch() {

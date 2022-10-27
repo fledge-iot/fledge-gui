@@ -3,12 +3,12 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { PingService, SharedService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
 import { ServiceDiscoveryComponent } from '../service-discovery';
-import { environment } from '../../../../environments/environment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TimezoneService } from '../../../services/timezone.service';
 import { RangeSliderService } from '../../common/range-slider/range-slider.service';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
+import { StorageService } from '../../../services/storage.service';
 
 @Component({
   selector: 'app-settings',
@@ -19,8 +19,6 @@ export class SettingsComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
   @Input() navbarComponent: NavbarComponent;
   @ViewChild(ServiceDiscoveryComponent, { static: true }) serviceDiscoveryModal: ServiceDiscoveryComponent;
-
-  API_URL = environment.BASE_URL;
   protocol = 'http'; // default protocol
   host;
   servicePort;
@@ -38,23 +36,23 @@ export class SettingsComponent implements OnInit {
     private sharedService: SharedService,
     public rangeSliderService: RangeSliderService,
     public developerFeaturesService: DeveloperFeaturesService,
+    public storageService: StorageService,
     public timezoneService: TimezoneService) {
-    this.protocol = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
-      localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
-    this.host = localStorage.getItem('CONNECTED_HOST') != null ? localStorage.getItem('CONNECTED_HOST') : location.hostname;
-    this.servicePort = localStorage.getItem('CONNECTED_PORT') != null ? localStorage.getItem('CONNECTED_PORT') : 8081;
+    this.protocol = this.storageService.getProtocol() != null ? this.storageService.getProtocol() : location.protocol.replace(':', '').trim();
+    this.host = this.storageService.getHost() != null ? this.storageService.getHost() : location.hostname;
+    this.servicePort = this.storageService.getPort() != null ? this.storageService.getPort() : 8081;
+
     // Check whether the service is up or not
     this.sharedService.connectionInfo.subscribe(info => {
       this.isServiceUp = info.isServiceUp;
       this.version = info.version;
-      this.scheme = localStorage.getItem('CONNECTED_PROTOCOL') != null ?
-        localStorage.getItem('CONNECTED_PROTOCOL') : location.protocol.replace(':', '').trim();
+      this.scheme = this.storageService.getProtocol() != null ? this.storageService.getProtocol() : location.protocol.replace(':', '').trim();
     });
     this.showAlertToContinueWithInsecureCert();
   }
 
   ngOnInit() {
-    this.serviceUrl = sessionStorage.getItem('SERVICE_URL');
+    this.serviceUrl = this.storageService.getServiceURL();
     // get last selected time interval
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
@@ -90,9 +88,9 @@ export class SettingsComponent implements OnInit {
   protected setServiceUrl() {
     const hostField = <HTMLInputElement>document.getElementById('host');
     const servicePortField = <HTMLInputElement>document.getElementById('service_port');
-    localStorage.setItem('CONNECTED_PROTOCOL', this.protocol);
-    localStorage.setItem('CONNECTED_HOST', hostField.value);
-    localStorage.setItem('CONNECTED_PORT', servicePortField.value);
+    this.storageService.setProtocol(this.protocol);
+    this.storageService.setHost(hostField.value);
+    this.storageService.setPort(servicePortField.value);
     this.serviceUrl = this.protocol + '://' + hostField.value + ':'
       + servicePortField.value + '/fledge/';
     this.showAlertToContinueWithInsecureCert();
@@ -100,7 +98,7 @@ export class SettingsComponent implements OnInit {
 
   public resetEndPoint() {
     this.setServiceUrl();
-    localStorage.setItem('SERVICE_URL', this.serviceUrl);
+    this.storageService.setServiceURL(this.serviceUrl);
     this.reloadApp();
   }
 
@@ -145,11 +143,11 @@ export class SettingsComponent implements OnInit {
   }
 
   openSSLCertWarningPage() {
-    window.open(`${this.API_URL}ping`, '_blank');
+    window.open(`${this.serviceUrl}ping`, '_blank');
   }
 
   showAlertToContinueWithInsecureCert() {
-    this.showAlertMessage = localStorage.getItem('CONNECTED_PROTOCOL') === 'https';
+    this.showAlertMessage = this.storageService.getProtocol() === 'https';
   }
 
   /**

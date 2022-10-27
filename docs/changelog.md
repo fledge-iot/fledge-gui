@@ -1,4 +1,16 @@
-## v1.9.2next [2021-xx-xx]
+## v2.0.1 [2022-10-20]
+
+#### Added
+
+- [FOGL-6812] Parameterised URL support to connect & allow login in a secured instance [#206](https://github.com/fledge-iot/fledge-gui/pull/206)
+
+#### Changed
+
+- [FOGL-6994] Improved the way of showing build version and documentation help URL links for released vs nightly versions [#156](https://github.com/fledge-iot/fledge-gui/pull/156)
+
+#### Fixed
+
+## v2.0.0 [2022-09-09]
 
 #### Added
 
