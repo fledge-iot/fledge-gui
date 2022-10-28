@@ -7,11 +7,11 @@
     </header>
     <section class="modal-card-body">
       <form [formGroup]="form" id="ngForm" (ngSubmit)="LoginWithCertificate()" novalidate>
-        <div class="columns" *ngIf="showBrowseCertificate">
+        <div class="columns browse-crt-modal" *ngIf="showBrowseCertificate">
           <div class="column">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
-                <label *ngIf="showBrowseCertificate" class="label">Browse Certificate</label>
+                <label *ngIf="showBrowseCertificate" class="label">Certificate</label>
               </div>
               <div class="field-body">
                 <div class="field">
@@ -52,7 +52,7 @@
       <button id="save" type="submit" form="ngForm" class="button is-info is-small">Log In</button>
       <div class="container">
         <div class="columns">
-          <div class="column has-text-right">
+          <div class="column has-text-right btn-txt">
             <button class="button is-small is-text"
               (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
           </div>
