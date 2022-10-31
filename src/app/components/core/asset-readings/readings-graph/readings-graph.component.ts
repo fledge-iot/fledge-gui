@@ -410,7 +410,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
     this.imageReadings = imageReadings.length > 0 ? this.getImage(imageReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
-      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
+      (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MMM-DD HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
 
@@ -465,7 +465,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
-      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
+      (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MMM-DD HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
 
