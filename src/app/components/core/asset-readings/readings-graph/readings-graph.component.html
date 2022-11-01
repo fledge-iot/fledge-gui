@@ -27,7 +27,7 @@
             <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
-          <div class="column">
+          <div class="column" *ngIf="!isLatestReadings">
             <div class="tabs is-boxed is-fullwidth is-small" id="tabs">
               <ul>
                 <li *ngIf="numberTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 1}" data-tab="1">
