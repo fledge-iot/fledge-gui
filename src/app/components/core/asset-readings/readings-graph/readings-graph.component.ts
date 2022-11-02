@@ -391,7 +391,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             imageReadings.push({
               datapoint: k,
               imageData: value,
-              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss')
+              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss.SSS')
             });
           } else {
             strReadings.push({
@@ -436,7 +436,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             imageReadings.push({
               datapoint: k,
               imageData: value,
-              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss')
+              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss.SSS')
             });
           } else {
             strReadings.push({
@@ -663,7 +663,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   create3DGraph(readings: any, ts: any) {
     readings = orderBy(readings, [reading => reading.key.toLowerCase()], ['asc']);
-    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss:SSS'));
+    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss.SSS'));
     this.polyGraphData = {
       data: [
         {
