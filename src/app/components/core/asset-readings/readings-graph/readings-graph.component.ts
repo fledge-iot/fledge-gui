@@ -559,7 +559,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     assetReadings = orderBy(assetReadings, [reading => reading.key.toLowerCase()], ['asc']);
     for (const r of assetReadings) {
       r.read = r.read.map(dt => {
-        dt.x = this.dateFormatter.transform(dt.x, 'YYYY-MM-DD HH:mm:ss')
+        dt.x = this.dateFormatter.transform(dt.x, 'YYYY-MM-DD HH:mm:ss.SSS')
         return dt;
       });
       const dsColor = Utils.namedColor(dataset.length);
