@@ -436,7 +436,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             imageReadings.push({
               datapoint: k,
               imageData: value,
-              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss.SSS')
+              timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
             });
           } else {
             strReadings.push({
