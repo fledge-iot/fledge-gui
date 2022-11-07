@@ -1,4 +1,4 @@
-## v2.0.0next [2022-xx-xx]
+## v2.0.1 [2022-10-20]
 
 #### Added
 
@@ -6,7 +6,7 @@
 
 #### Changed
 
-- Improved the way of showing build version and documentation help URL links for released vs nightly versions [#156](https://github.com/fledge-iot/fledge-gui/pull/156)
+- [FOGL-6994] Improved the way of showing build version and documentation help URL links for released vs nightly versions [#156](https://github.com/fledge-iot/fledge-gui/pull/156)
 
 #### Fixed
 
