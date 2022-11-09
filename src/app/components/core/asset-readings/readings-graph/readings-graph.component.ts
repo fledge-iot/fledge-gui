@@ -625,7 +625,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             tooltipFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
             displayFormats: {
               unit: 'second',
-              second: 'HH:mm:ss'
+              second: this.optedTime === 604800 ? 'ddd HH:mm:ss' : 'HH:mm:ss'
             }
           },
           ticks: {
