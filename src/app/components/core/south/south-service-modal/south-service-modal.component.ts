@@ -515,7 +515,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   navToSyslogs(service) {
-    this.router.navigate(['syslog'], { queryParams: { source: service.name } });
+    this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
 
   discardChanges() {

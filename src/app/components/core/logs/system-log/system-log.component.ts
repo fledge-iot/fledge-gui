@@ -3,8 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { sortBy } from 'lodash';
-import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../services';
-import { POLLING_INTERVAL } from '../../../utils';
+import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../../services';
+import { POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
   selector: 'app-system-log',

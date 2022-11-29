@@ -7,7 +7,7 @@ import { interval, Subscription, Subject } from 'rxjs';
 import { AlertService, NorthService, PingService, ProgressBarService, SharedService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
-import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
+import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-north',

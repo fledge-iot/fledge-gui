@@ -14,7 +14,7 @@ import {
 } from './components/core/configuration-manager/view-config-item/view-config-item.component';
 import {
   ViewLogsComponent
-} from './components/core/packages-log/view-logs/view-logs.component';
+} from './components/core/logs/packages-log/view-logs/view-logs.component';
 import { PluginModalComponent } from './components/core/plugin-modal/plugin-modal.component';
 import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
