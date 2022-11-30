@@ -1,5 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, HostListener, Input, OnChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { User } from '../../../../models';
 import { AlertService, UserService } from '../../../../services';
@@ -22,6 +24,8 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   selectedAuthMethod;
   isFieldChanged = false;
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private alertService: AlertService,
     private userService: UserService) { }
 
@@ -38,9 +42,9 @@ export class UpdateUserComponent implements OnInit, OnChanges {
       real_name: '',
       access_method: '',
       confirmPassword: '',
-      roleId: 0   // set "user" as a default role
+      role_id: 0   // set "user" as a default role
     };
-    this.authMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
+    this.authMethods = [{ text: 'Any', value: 'any' }, { text: 'Password', value: 'pwd' }, { text: 'Certificate', value: 'cert' }];
   }
 
   ngOnChanges(): void {
@@ -66,7 +70,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
       description: userRecord.description,
       password: '',
       confirmPassword: '',
-      roleId: userRecord.roleId  // to set default value in role option
+      role_id: userRecord.roleId  // to set default value in role option
     };
     this.updateSection = key;
   }
@@ -109,27 +113,33 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   }
 
   updateAuthMethod(form: NgForm) {
-    this.userService.updateUser(this.userRecord).
-    subscribe(() => {
+    this.userService.updateUser(this.userRecord)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.notify.emit();
         this.toggleModal(false, form);
         this.alertService.success('User updated successfully');
       },
-      error => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   /**
    *  To update user role by admin
    */
   updateRole(form: NgForm) {
-    this.userService.updateRole(this.userRecord).
-      subscribe(
+    const payload = {
+      userId: this.userRecord.userId,
+      role_id: this.userRecord.role_id
+    }
+    this.userService.updateRole(payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data) => {
           this.notify.emit();
           this.toggleModal(false, form);
@@ -151,8 +161,9 @@ export class UpdateUserComponent implements OnInit, OnChanges {
     if (this.userRecord.password !== this.userRecord.confirmPassword) {
       return;
     }
-    this.userService.resetPassword(this.userRecord).
-      subscribe(
+    this.userService.resetPassword(this.userRecord)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data) => {
           this.notify.emit();
           this.toggleModal(false, form);
@@ -181,11 +192,16 @@ export class UpdateUserComponent implements OnInit, OnChanges {
 
   public setUserRole(role: any) {
     this.selectedRole = role.name;
-    this.userRecord.roleId = role.id;
+    this.userRecord.role_id = role.id;
   }
 
   public setAuthMethod(auth: any) {
     this.selectedAuthMethod = auth.text;
     this.userRecord.access_method = auth.value;
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
