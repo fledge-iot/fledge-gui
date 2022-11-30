@@ -76,7 +76,9 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   }
 
   public resetUserForm(form: NgForm) {
-    form.reset();
+    if (form) {
+      form.reset();
+    }
   }
 
   public toggleModal(isOpen: Boolean, form: NgForm = null) {
