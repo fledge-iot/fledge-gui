@@ -8,7 +8,7 @@ import { PingService, ServicesApiService, ProgressBarService, SharedService, Ass
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
-import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
+import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 

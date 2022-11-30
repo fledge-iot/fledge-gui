@@ -109,7 +109,7 @@ export class SkipLogin {
   }
 
   navToAuditLogs() {
-    return browser.get('/#/audit');
+    return browser.get('/#/logs/audit');
   }
 
   getAuditLogsTitle() {

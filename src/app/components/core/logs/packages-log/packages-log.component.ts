@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AlertService, PackagesLogService, PingService, ProgressBarService } from '../../../services';
+import { AlertService, PackagesLogService, PingService, ProgressBarService } from '../../../../services';
 import { sortBy } from 'lodash';
 import { ViewLogsComponent } from './view-logs/view-logs.component';
-import { POLLING_INTERVAL } from '../../../utils';
+import { POLLING_INTERVAL } from '../../../../utils';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil, takeWhile } from 'rxjs/operators';
 

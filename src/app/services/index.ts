@@ -3,7 +3,7 @@ export * from './alert.service';
 export * from './configuration.service';
 export * from './statistics.service';
 export * from './assets.service';
-export * from  './audit.service';
+export * from './audit.service';
 export * from './system-log.service';
 export * from './schedules.service';
 export * from './services-api.service';

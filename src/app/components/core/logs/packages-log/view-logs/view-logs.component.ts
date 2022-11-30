@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 
-import { PackagesLogService, ProgressBarService } from '../../../../services';
+import { PackagesLogService, ProgressBarService } from '../../../../../services';
 
 @Component({
   selector: 'app-view-logs',
