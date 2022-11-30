@@ -191,8 +191,6 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   }
 
   public setUserRole(role: any) {
-    console.log('role', role);
-
     this.selectedRole = role.name;
     this.userRecord.role_id = role.id;
   }
