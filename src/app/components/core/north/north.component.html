@@ -7,7 +7,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <a id="add_task" class="fix-pad button is-light" (click)="addNorthInstance()">
+      <a id="add_task" class="fix-pad button is-light" (click)="addNorthInstance()" role="'admin'" requiredEditorRole>
         <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
