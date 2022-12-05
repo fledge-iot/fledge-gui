@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { sortBy } from 'lodash';
 
-import { AlertService, SchedulesService, ProgressBarService } from '../../../../services';
+import { AlertService, SchedulesService, ProgressBarService, RolesService } from '../../../../services';
 import Utils from '../../../../utils';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { UpdateScheduleComponent } from '../update-schedule/update-schedule.component';
@@ -46,7 +46,8 @@ export class ListSchedulesComponent implements OnInit {
 
   constructor(private schedulesService: SchedulesService,
     private alertService: AlertService,
-    public ngProgress: ProgressBarService
+    public ngProgress: ProgressBarService,
+    public rolesService: RolesService
   ) { }
 
   ngOnInit() {
