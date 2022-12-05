@@ -8,7 +8,7 @@
       <span *ngIf="!isAlive" class="icon is-small is-pulled-right is-hovered assets-control" (click)="getAsset()">
         <i class="fa fa-sm fa-sync-alt" aria-hidden="true"></i>
       </span>
-      <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
+      <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditorRole()">
         <span *ngIf="assets?.length > 0"
           class="icon is-small tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered assets-control"
           data-tooltip="Purge assets data" (click)="openModal('purge-all-assets-dialog')">
@@ -65,7 +65,7 @@
                       </span>
                     </a>
                   </td>
-                  <td *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
+                  <td *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditorRole()">
                     <a (click)="setAsset(asset);openModal('purge-asset-dialog')" class="is-pulled-right">
                       <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Purge data">
                         <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>

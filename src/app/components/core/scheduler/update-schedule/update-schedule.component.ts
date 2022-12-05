@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { AlertService, SchedulesService } from '../../../../services';
+import { AlertService, RolesService, SchedulesService } from '../../../../services';
 import Utils from '../../../../utils';
 
 @Component({
@@ -27,10 +27,13 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to verify time format 00:00:00
   form: FormGroup;
-  constructor(private schedulesService: SchedulesService, public fb: FormBuilder, private alertService: AlertService) { }
+  constructor(
+    private schedulesService: SchedulesService,
+    public fb: FormBuilder,
+    private alertService: AlertService,
+    public rolesService: RolesService) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.toggleModal(false);

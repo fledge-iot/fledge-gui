@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 
-import { PingService, SharedService } from '../../../services';
+import { PingService, RolesService, SharedService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
 import { ServiceDiscoveryComponent } from '../service-discovery';
 import { Subject } from 'rxjs';

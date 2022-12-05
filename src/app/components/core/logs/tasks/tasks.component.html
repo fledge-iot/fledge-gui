@@ -43,8 +43,8 @@
                 : task.endTime}}</small>
             </td>
             <td>
-              <button *ngIf="'RUNNING' == (task.state | uppercase)" class="button is-small"
-                (click)="cancelRunningTask(task.id)">Cancel</button>
+              <button *ngIf="'RUNNING' == (task.state | uppercase) && rolesService.hasEditorRole()"
+                class="button is-small" (click)="cancelRunningTask(task.id)">Cancel</button>
             </td>
           </tr>
         </tbody>

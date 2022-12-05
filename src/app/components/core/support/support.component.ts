@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AlertService, SupportService, ProgressBarService, SharedService } from '../../../services';
+import { AlertService, SupportService, ProgressBarService, SharedService, RolesService } from '../../../services';
 import { Subscription } from 'rxjs';
 import { DocService } from '../../../services/doc.service';
 
@@ -17,7 +17,8 @@ export class SupportComponent implements OnInit, OnDestroy {
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
     private docService: DocService,
-    private sharedService: SharedService) { }
+    private sharedService: SharedService,
+    public rolesService: RolesService) { }
 
   ngOnInit() {
     this.getBundles();

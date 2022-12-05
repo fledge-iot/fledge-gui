@@ -4,7 +4,7 @@ import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
-import { AlertService, AssetsService, PingService, GenerateCsvService, ProgressBarService } from '../../../../services';
+import { AlertService, AssetsService, PingService, GenerateCsvService, ProgressBarService, RolesService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
@@ -35,7 +35,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private docService: DocService,
     public developerFeaturesService: DeveloperFeaturesService,
     private ngProgress: ProgressBarService,
-    private ping: PingService) {
+    private ping: PingService,
+    public rolesService: RolesService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
