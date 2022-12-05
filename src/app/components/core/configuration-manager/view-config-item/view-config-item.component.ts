@@ -8,7 +8,7 @@ import { NgForm } from '@angular/forms';
 import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy, orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { AclService } from '../../../../services/acl.service';
-import { AlertService, ConfigurationService, ProgressBarService, SharedService } from '../../../../services';
+import { AlertService, ConfigurationService, ProgressBarService, RolesService, SharedService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import ConfigTypeValidation from '../configuration-type-validation';
 
@@ -65,7 +65,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     public ngProgress: ProgressBarService,
     private cdRef: ChangeDetectorRef,
     private sharedService: SharedService,
-    private docService: DocService
+    private docService: DocService,
+    public rolesService: RolesService
   ) {
     this.JSON = JSON;
   }

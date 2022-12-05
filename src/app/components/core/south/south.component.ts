@@ -4,7 +4,7 @@ import { orderBy } from 'lodash';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { interval, Subscription, Subject } from 'rxjs';
 
-import { PingService, ServicesApiService, ProgressBarService, SharedService, AssetsService } from '../../../services';
+import { PingService, ServicesApiService, ProgressBarService, SharedService, AssetsService, RolesService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
@@ -45,7 +45,8 @@ export class SouthComponent implements OnInit, OnDestroy {
     private router: Router,
     private ping: PingService,
     private dialogService: DialogService,
-    private sharedService: SharedService) {
+    private sharedService: SharedService,
+    public rolesService: RolesService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))

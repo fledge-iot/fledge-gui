@@ -31,7 +31,7 @@
                   <div class="field-body">
                     <div class="field">
                       <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
-                        [(ngModel)]="enabled">
+                        [(ngModel)]="enabled" [disabled]="!rolesService.hasEditorRole()">
                     </div>
                   </div>
                 </div>
@@ -43,7 +43,7 @@
                     <div class="field-body">
                       <div class="field">
                         <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive"
-                          [value]="exclusive" [(ngModel)]="exclusive">
+                          [value]="exclusive" [(ngModel)]="exclusive" [disabled]="!rolesService.hasEditorRole()">
                       </div>
                     </div>
                   </div>
@@ -53,13 +53,16 @@
                     </div>
                     <div class="field-body">
                       <div class="field">
-                        <input name="repeatDays" class="input is-small" type='number' appNumberOnly min="0" max="365"
-                          placeholder="days" [(ngModel)]="repeatDays">
+                        <input name="repeatDays" class="input is-small"
+                          [ngClass]="{'is-static': !rolesService.hasEditorRole()}" type='number' appNumberOnly min="0"
+                          max="365" placeholder="days" [(ngModel)]="repeatDays"
+                          [readOnly]="!rolesService.hasEditorRole()">
                       </div>
                       <div class="field">
-                        <input class="input is-small" name="repeatTime" type="text" [pattern]='regExp'
-                          placeholder="HH:mm:ss" mask="00:00:00" [(ngModel)]="repeatTime" required
-                          (change)="getTimeIntervalValue($event)">
+                        <input class="input is-small" [ngClass]="{'is-static': !rolesService.hasEditorRole()}"
+                          name="repeatTime" type="text" [pattern]='regExp' placeholder="HH:mm:ss" mask="00:00:00"
+                          [(ngModel)]="repeatTime" required (change)="getTimeIntervalValue($event)"
+                          [readOnly]="!rolesService.hasEditorRole()">
                         <span *ngIf="fg?.controls['repeatTime']?.invalid" class="help is-danger">
                           <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
                         </span>
@@ -69,27 +72,30 @@
                 </ng-container>
               </div>
             </div>
-            <button id="ss" class="is-hidden button is-small is-link is-pulled-right" form="taskForm">Save</button>
+            <button *ngIf="rolesService.hasEditorRole()" id="ss"
+              class="is-hidden button is-small is-link is-pulled-right" form="taskForm">Save</button>
           </form>
           <!-- </div> -->
           <hr>
           <div class="columns">
             <div class="column has-text-centered">
-              <span class="label is-size-6 add-application">
+              <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditorRole(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon">
                     <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
-                    <!-- <i class="fa fa-sm fa-plus-circle" aria-hidden="true"></i> -->
                   </span>
                 </a>
               </span>
+              <ng-template #staticLabel>
+                <span class="label is-size-6">Applications</span>
+              </ng-template>
             </div>
           </div>
           <div *ngIf="filterPipeline != undefined" class="view-content columns">
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
-                  [cdkDragDisabled]="filterPipeline.length < 2"
+                  [cdkDragDisabled]="filterPipeline.length < 2 || !rolesService.hasEditorRole()"
                   [ngClass]="{'cursor-pointer': filterPipeline.length < 2}">
                   <header class="card-header" cdkDragHandle
                     [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 }">
@@ -117,7 +123,7 @@
                             <i class="far fa-question-circle"></i>
                           </span>
                         </div>
-                        <div class="field is-pulled-right">
+                        <div class="field is-pulled-right" *ngIf="rolesService.hasEditorRole()">
                           <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span
                               class="icon is-medium"><i class="fa fa-sm fa-trash-alt fa-lg"
                                 aria-hidden="true"></i></span></button>
@@ -129,8 +135,8 @@
               </div>
             </div>
           </div>
-          <hr>
-          <div class="columns">
+          <hr *ngIf="rolesService.hasEditorRole()">
+          <div class="columns" *ngIf="rolesService.hasEditorRole()">
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
@@ -171,7 +177,7 @@
                 </span>
               </div>
             </div>
-            <div class="field has-text-right">
+            <div class="field has-text-right" *ngIf="rolesService.hasEditorRole()">
               <p class="buttons is-pulled-right">
                 <!-- <button *ngIf="task != undefined"
                   (click)="openDeleteModal(task.name, 'Deleting this ' + btnTxt + ' can not be undone. Continue?')"
@@ -193,7 +199,7 @@
   <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
-<app-confirmation-dialog id="delete-task-dialog">
+<app-confirmation-dialog id="delete-task-dialog" *ngIf="rolesService.hasEditorRole()">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">Delete {{btnTxt}}</span>
     <button class="delete" aria-label="close" (click)="closeModal('delete-task-dialog')"></button>

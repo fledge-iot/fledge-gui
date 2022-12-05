@@ -15,7 +15,7 @@
           <app-config-children #configChildComponent *ngIf="category" [category]="category"
             [plugin]="service?.plugin.name" [serviceStatus]="service['schedule_enabled']" [from]="'south'">
           </app-config-children>
-          <div *ngIf="service != undefined" class="columns">
+          <div *ngIf="service" class="columns">
             <div class="column">
               <div class="field is-horizontal enable-div">
                 <div class="field-label has-text-left">
@@ -23,7 +23,7 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input [formControl]="svcCheckbox" class="checkbox" type="checkbox">
+                    <input [formControl]="svcCheckbox" class="checkbox is-static" type="checkbox">
                   </div>
                 </div>
               </div>
@@ -32,21 +32,23 @@
           <hr>
           <div class="columns">
             <div class="column has-text-centered">
-              <span class="label is-size-6 add-application">
+              <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditorRole(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon">
                     <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
-                    <!-- <i class="fa fa-sm fa-plus-circle" aria-hidden="true"></i> -->
                   </span>
                 </a>
               </span>
+              <ng-template #staticLabel>
+                <span class="label is-size-6">Applications</span>
+              </ng-template>
             </div>
           </div>
           <div *ngIf="filterPipeline != undefined" class="view-content columns">
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
-                  [cdkDragDisabled]="filterPipeline.length == 1">
+                  [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditorRole()">
                   <header class="card-header" cdkDragHandle
                     [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 }">
                     <p class="card-header-title">
@@ -73,7 +75,7 @@
                             <i class="far fa-question-circle"></i>
                           </span>
                         </div>
-                        <div class="field is-pulled-right">
+                        <div class="field is-pulled-right" *ngIf="rolesService.hasEditorRole()">
                           <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span
                               class="icon is-medium"><i class="fa fa-sm fa-trash-alt fa-lg"
                                 aria-hidden="true"></i></span></button>
@@ -86,7 +88,7 @@
             </div>
           </div>
           <hr>
-          <div class="columns">
+          <div class="columns" *ngIf="rolesService.hasEditorRole()">
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
@@ -98,9 +100,9 @@
               </div>
             </div>
           </div>
-          <hr>
-          <button id="ss" *ngIf="service != undefined" class="is-hidden button is-small is-link is-pulled-right"
-            (click)="saveChanges(service.name)">Save</button>
+          <hr *ngIf="rolesService.hasEditorRole()">
+          <button id="ss" *ngIf="service && rolesService.hasEditorRole()"
+            class="is-hidden button is-small is-link is-pulled-right" (click)="saveChanges(service.name)">Save</button>
           <ng-container *ngIf="service != undefined">
             <div *ngIf="service.schedule_enabled" class="field is-horizontal">
               <div class="field-label has-text-left">
@@ -132,7 +134,8 @@
               <button (click)="getAssetReadings(service)" class="button is-small">
                 <span>Export Readings</span>
               </button>
-              <button (click)="openModal('delete-service-dialog')" class="button is-small">Delete Service</button>
+              <button *ngIf="rolesService.hasEditorRole()" (click)="openModal('delete-service-dialog')"
+                class="button is-small">Delete Service</button>
             </p>
           </ng-container>
         </div>
@@ -148,7 +151,7 @@
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
 
-<app-confirmation-dialog id="delete-service-dialog">
+<app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditorRole()">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">Delete Service</span>
     <button class="delete" aria-label="close" (click)="closeModal('delete-service-dialog')"></button>

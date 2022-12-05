@@ -11,10 +11,8 @@ export class RolesService {
    * To check if user, who has the add/edit permission
    * @returns true|false based on user role
    */
-  hasEditorRole(): boolean {
+  public hasEditorRole(): boolean {
     const uid = Number(sessionStorage.getItem('uid'));
-    console.log('uid', uid);
-
     return [appRoles.admin, appRoles.user].includes(uid);
   }
 }
