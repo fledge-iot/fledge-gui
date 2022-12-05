@@ -50,9 +50,9 @@
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
                   [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditorRole()">
                   <header class="card-header" cdkDragHandle
-                    [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 }">
+                    [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditorRole() }">
                     <p class="card-header-title">
-                      <ng-container *ngIf="filterPipeline.length > 1">
+                      <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditorRole()">
                         <i class="fa fa-sm fa-bars"></i>&nbsp;
                       </ng-container>
                       {{filter}}

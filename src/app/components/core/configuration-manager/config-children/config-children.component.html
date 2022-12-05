@@ -15,7 +15,7 @@
     </ng-container>
     <!-- Developer tab to show plugin data -->
     <li [ngClass]="{'is-active': seletedTab == 'developer'}"
-      *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from)">
+      *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditorRole()">
       <h6 class="is-6 has-text-weight-semibold">
         <a (click)="seletedTab = 'developer'">Developer</a>
       </h6>

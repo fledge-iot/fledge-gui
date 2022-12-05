@@ -98,9 +98,9 @@
                   [cdkDragDisabled]="filterPipeline.length < 2 || !rolesService.hasEditorRole()"
                   [ngClass]="{'cursor-pointer': filterPipeline.length < 2}">
                   <header class="card-header" cdkDragHandle
-                    [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 }">
+                    [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2  && rolesService.hasEditorRole()}">
                     <p class="card-header-title">
-                      <ng-container *ngIf="filterPipeline.length > 1">
+                      <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditorRole()">
                         <i class="fa fa-sm fa-bars"></i>&nbsp;
                       </ng-container>
                       {{filter}}
