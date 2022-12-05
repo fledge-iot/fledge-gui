@@ -51,7 +51,8 @@
     </ng-container>
   </li>
   <li>
-    <a id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
+    <a *ngIf="rolesService.hasEditorRole()" id="backup-restore" routerLinkActive="is-active"
+      routerLink='/backup-restore'>
       Backup &amp; Restore
     </a>
   </li>
