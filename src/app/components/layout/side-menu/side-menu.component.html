@@ -88,7 +88,7 @@
   </li>
   <li>
     <a id="developer" routerLinkActive="is-active" routerLink='/developer'
-      *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
+      *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditorRole()">
       Developer
     </a>
   </li>

@@ -190,7 +190,7 @@
       </div>
       <hr>
       <div class="columns">
-        <div class="column is-6">
+        <div class="column is-6" *ngIf="rolesService.hasEditorRole()">
           <label class="label is-small">Developer Features</label>
           <div class="control">
             <input type="checkbox" (click)="setDeveloperFeatures($event.target.checked)"

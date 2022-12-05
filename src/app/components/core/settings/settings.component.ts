@@ -37,7 +37,8 @@ export class SettingsComponent implements OnInit {
     public rangeSliderService: RangeSliderService,
     public developerFeaturesService: DeveloperFeaturesService,
     public storageService: StorageService,
-    public timezoneService: TimezoneService) {
+    public timezoneService: TimezoneService,
+    public rolesService: RolesService) {
     this.protocol = this.storageService.getProtocol() != null ? this.storageService.getProtocol() : location.protocol.replace(':', '').trim();
     this.host = this.storageService.getHost() != null ? this.storageService.getHost() : location.hostname;
     this.servicePort = this.storageService.getPort() != null ? this.storageService.getPort() : 8081;
