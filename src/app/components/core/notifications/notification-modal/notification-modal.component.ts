@@ -1,7 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener } from '@angular/core';
-
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener, QueryList, ViewChildren } from '@angular/core';
 import { isEmpty } from 'lodash';
-
 import {
   ConfigurationService, AlertService,
   ProgressBarService,
@@ -27,18 +25,19 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   public useProxy: 'true';
   public category: any;
   public ruleConfiguration: any;
-  public deliveryConfiguration: any;
+  public deliveryConfiguration = [];
   public notificationRecord: any;
   public changedChildConfig = [];
-
+  public isWizard;
   rulePluginChangedConfig = [];
   deliveryPluginChangedConfig = [];
   notificationChangedConfig = [];
+  notificationDeliveryChannels = [];
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild('ruleConfigView') ruleConfigView: ViewConfigItemComponent;
-  @ViewChild('deliveryConfigView') deliveryConfigView: ViewConfigItemComponent;
+  @ViewChildren('deliveryChannelConfigView') deliveryConfigViews: QueryList<ViewConfigItemComponent>;;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
@@ -53,7 +52,8 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     if (this.notification !== undefined) {
       this.getCategory();
       this.getRuleConfiguration();
-      this.getDeliveryConfiguration();
+      // this.getDeliveryConfiguration();
+      this.getDeliveryChannels()
     }
   }
 
@@ -70,7 +70,14 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       modalWindow.classList.add('is-active');
       return;
     }
+    if (this.isWizard) {
+      this.isWizard = false;
+      this.getCategory();
+    }
     this.notify.emit(false);
+    this.ruleConfiguration = [];
+    this.deliveryConfiguration = [];
+
     modalWindow.classList.remove('is-active');
   }
 
@@ -84,29 +91,6 @@ export class NotificationModalComponent implements OnInit, OnChanges {
             categoryValues.push(data);
             this.ruleConfiguration = { key: `rule${notificationName}`, value: categoryValues };
             this.useRuleProxy = 'true';
-          }
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText, true);
-          }
-        });
-  }
-
-  public getDeliveryConfiguration(): void {
-    /** request started */
-    this.ngProgress.start();
-    const categoryValues = [];
-    const notificationName = this.notification['name'];
-    this.configService.getCategory(`delivery${notificationName}`).
-      subscribe(
-        (data) => {
-          if (!isEmpty(data)) {
-            categoryValues.push(data);
-            this.deliveryConfiguration = { key: `delivery${notificationName}`, value: categoryValues };
-            this.useDeliveryProxy = 'true';
           }
         },
         error => {
@@ -183,12 +167,30 @@ export class NotificationModalComponent implements OnInit, OnChanges {
         });
   }
 
+  openChannelModal(isClicked: boolean) {
+    this.isWizard = isClicked;
+  }
+
+  onNotify() {
+    this.isWizard = false;
+    this.getCategory();
+    this.getDeliveryChannels();
+  }
+
   proxy() {
     if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
-      && this.validateFormService.checkViewConfigItemFormValidity(this.ruleConfigView)
-      && this.validateFormService.checkViewConfigItemFormValidity(this.deliveryConfigView))) {
+      && this.validateFormService.checkViewConfigItemFormValidity(this.ruleConfigView))) {
       return;
     }
+
+    const deliverChannelFormStatus = this.deliveryConfigViews.toArray().every(component => {
+      return this.validateFormService.checkViewConfigItemFormValidity(component);
+    });
+
+    if (!deliverChannelFormStatus) {
+      return;
+    }
+
     if (this.useProxy) {
       document.getElementById('vci-proxy').click();
     }
@@ -207,6 +209,110 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     this.notify.emit();
     this.toggleModal(false);
   }
+
+  getDeliveryChannels() {
+    const notificationName = this.notification['name'];
+    this.notificationService.getDeliveryChannels(notificationName)
+      .subscribe(
+        (data: any) => {
+          this.notificationDeliveryChannels = data.channels;
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  activeAccordion(id, channelName: string) {
+    this.useDeliveryProxy = 'true';
+    const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
+    if (last !== undefined) {
+      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
+      const activeId = last.getAttribute('id');
+      lastActiveContentBody.hidden = true;
+      last.classList.remove('is-active');
+      if (id !== +activeId) {
+        const next = <HTMLElement>document.getElementById(id);
+        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
+        nextActiveContentBody.hidden = false;
+        next.setAttribute('class', 'accordion card is-active');
+        this.getDeliveryConfiguration(channelName);
+      } else {
+        last.classList.remove('is-active');
+        lastActiveContentBody.hidden = true;
+      }
+    } else {
+      const element = <HTMLElement>document.getElementById(id);
+      const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
+      body.hidden = false;
+      element.setAttribute('class', 'accordion card is-active');
+      this.getDeliveryConfiguration(channelName);
+    }
+  }
+
+  getDeliveryConfiguration(channel: any) {
+    const catName = channel.category;
+    this.notificationService.getNotificationConfiguration(catName)
+      .subscribe((data: any) => {
+        this.deliveryConfiguration.push({ key: catName, 'value': [data] });
+        this.useDeliveryProxy = 'true';
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  setChannelConfiguration(channel: any) {
+    const catName = channel.category;
+    return this.deliveryConfiguration.find(f => f.key === catName);
+  }
+
+  deleteDeliveryChannel(channel) {
+    const notificationName = this.notification['name'];
+    this.notificationService.deleteDeliveryChannel(notificationName, channel.name)
+      .subscribe(() => {
+        this.alertService.success(`${channel.name} deleted successfully.`);
+        this.getDeliveryChannels();
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  /**
+  * Get edited configuration from child config page
+  * @param changedConfig changed configuration of a selected plugin
+  */
+  getChangedConfig(changedConfig) {
+    if (isEmpty(changedConfig)) {
+      return;
+    }
+    changedConfig = changedConfig.map(el => {
+      if (el.type.toUpperCase() === 'JSON') {
+        el.value = JSON.parse(el.value);
+      }
+      return {
+        [el.key]: el.value !== undefined ? el.value : el.default,
+      };
+    });
+
+    changedConfig = Object.assign({}, ...changedConfig); // merge all object into one
+    this.changedChildConfig = changedConfig;
+  }
+
+
 
   goToLink() {
     const urlSlug = 'editing-notifications';

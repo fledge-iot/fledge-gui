@@ -2,27 +2,27 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { assign, reduce, sortBy, isEmpty } from 'lodash';
 
-import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService } from '../../../../services';
+import { AlertService, ConfigurationService, ServicesApiService, ProgressBarService, NotificationsService } from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
+import { CustomValidator } from '../../../../directives/custom-validator';
 
 @Component({
-  selector: 'app-add-filter-wizard',
-  templateUrl: './add-filter-wizard.component.html',
-  styleUrls: ['./add-filter-wizard.component.css']
+  selector: 'app-add-notification-channel',
+  templateUrl: './add-notification-channel.component.html',
+  styleUrls: ['./add-notification-channel.component.css']
 })
-export class AddFilterWizardComponent implements OnInit {
-
+export class AddNotificationChannelComponent implements OnInit {
   public plugins = [];
   public categories = [];
   public configurationData;
-  public useProxy;
   public isValidPlugin = true;
   public isSinglePlugin = true;
   public isValidName = true;
+  public isValidDesc = true;
   public payload: any;
   public selectedPluginDescription = '';
   public plugin: any;
@@ -33,6 +33,7 @@ export class AddFilterWizardComponent implements OnInit {
   public stopLoading = false;
   public placeholderText = 'fetching available plugins...';
   public disabledBtn = false;
+  public useProxy;
 
   increment = 1;
   maxRetry = 15;
@@ -40,19 +41,20 @@ export class AddFilterWizardComponent implements OnInit {
 
   installPluginSub: Subscription;
 
-  serviceForm = new FormGroup({
+  pluginChannelForm = new FormGroup({
     name: new FormControl(),
+    description: new FormControl(),
     plugin: new FormControl(),
     pluginToInstall: new FormControl()
   });
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @Input() serviceName: any;
+  @Input() notificationName = '';
 
   @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItem: ViewConfigItemComponent;
 
   constructor(private formBuilder: FormBuilder,
-    private filterService: FilterService,
+    private notificationService: NotificationsService,
     private configurationService: ConfigurationService,
     private configService: ConfigurationService,
     private alertService: AlertService,
@@ -61,55 +63,14 @@ export class AddFilterWizardComponent implements OnInit {
     private validateFormService: ValidateFormService,
     private ngProgress: ProgressBarService) { }
 
-  ngOnInit() {
-    this.getCategories();
-    this.serviceForm = this.formBuilder.group({
-      name: ['', Validators.required],
+  ngOnInit(): void {
+    this.pluginChannelForm = this.formBuilder.group({
+      name: ['', [Validators.required, CustomValidator.nospaceValidator]],
+      description: [''],
       plugin: [{ value: '', disabled: false }, Validators.required],
       pluginToInstall: [{ value: null, disabled: false }, Validators.required]
     });
-    this.getInstalledFilterPlugins();
-  }
-
-  toggleAvailablePlugins() {
-    if (this.show) {
-      this.show = false;
-      return;
-    }
-    this.show = true;
-    this.getAvailablePlugins('Filter');
-  }
-
-  getAvailablePlugins(type: string) {
-    this.requestInProgress = true;
-    this.service.getAvailablePlugins(type).
-      subscribe(
-        (data: any) => {
-          this.pluginData = data['plugins'].map((p: string) => p.replace(`fledge-filter-`, ''));
-          this.requestInProgress = false;
-          this.placeholderText = 'Select Plugin';
-          if (isEmpty(this.pluginData)) {
-            this.stopLoading = true;
-            this.alertService.warning('No plugin available to install');
-          }
-        },
-        error => {
-          this.stopLoading = true;
-          this.requestInProgress = false;
-          this.placeholderText = 'Select Plugin';
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else if (error.status === 404) {
-            this.alertService.error('Make sure package repository is configured / added in Fledge');
-          } else {
-            let errorText = error.statusText;
-            if (typeof error.error.link === 'string') {
-              errorText += ` <a>${error.error.link}</a>`;
-            }
-            this.alertService.error(errorText);
-          }
-        }
-      );
+    this.getInstalledDeliveryPlugins();
   }
 
   movePrevious() {
@@ -147,23 +108,23 @@ export class AddFilterWizardComponent implements OnInit {
 
   gotoNext() {
     let pluginToInstall: any;
-    if (this.serviceForm.value['plugin']) {
-      pluginToInstall = this.serviceForm.value['plugin']['0'];
+    if (this.pluginChannelForm.value.plugin) {
+      pluginToInstall = this.pluginChannelForm.value.plugin['0'];
     }
-    if (this.serviceForm.value['pluginToInstall']) {
-      pluginToInstall = this.serviceForm.value['pluginToInstall'];
+    if (this.pluginChannelForm.value.pluginToInstall) {
+      pluginToInstall = this.pluginChannelForm.value.pluginToInstall;
     }
     if (pluginToInstall === null || pluginToInstall === undefined) {
       this.isValidPlugin = false;
       return;
     }
     const isPluginInstalled = this.plugins.filter(p => p.name.toLowerCase() === pluginToInstall.toLowerCase());
-    if (this.serviceForm.value['pluginToInstall'] && isPluginInstalled.length === 0) {
-      if (this.serviceForm.value['name'].trim() === '') {
+    if (this.pluginChannelForm.value.pluginToInstall && isPluginInstalled.length === 0) {
+      if (!this.pluginChannelForm.value.name || this.pluginChannelForm.value.name.trim().length === 0) {
         this.isValidName = false;
         return;
       }
-      this.installPlugin(this.serviceForm.value['pluginToInstall']);
+      this.installPlugin(this.pluginChannelForm.value.pluginToInstall);
     } else {
       this.moveNext();
     }
@@ -172,7 +133,9 @@ export class AddFilterWizardComponent implements OnInit {
   moveNext() {
     this.isValidPlugin = true;
     this.isValidName = true;
-    const formValues = this.serviceForm.value;
+    const formValues = this.pluginChannelForm.value;
+    console.log('form values', formValues);
+
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     if (first === undefined) {
       return;
@@ -183,17 +146,17 @@ export class AddFilterWizardComponent implements OnInit {
 
     switch (+id) {
       case 1:
-        if (formValues['plugin'] === '' && formValues['pluginToInstall'] === '') {
+        if (formValues.plugin === '' && formValues.pluginToInstall === '') {
           this.isValidPlugin = false;
           return;
         }
 
-        if (formValues['plugin'].length !== 1 && formValues['pluginToInstall'] === '') {
+        if (formValues.plugin.length !== 1 && formValues.pluginToInstall === '') {
           this.isSinglePlugin = false;
           return;
         }
 
-        if (formValues['name'].trim() === '') {
+        if (!formValues.name || formValues.name.trim().length === 0) {
           this.isValidName = false;
           return;
         }
@@ -203,7 +166,7 @@ export class AddFilterWizardComponent implements OnInit {
         // To verify if category (or filter itself) with this name already exists
         // hence filter can not be created with that name
         const isFilterExist = this.categories.some(item => {
-          return formValues['name'].trim() === item.key;
+          return formValues.name?.trim() === item.key;
         });
         if (isFilterExist) {
           this.alertService.error('A filter (or category) with this name already exists.');
@@ -211,20 +174,20 @@ export class AddFilterWizardComponent implements OnInit {
         }
 
         // create payload
-        if (formValues['name'].trim() !== '' && (formValues['plugin'].length > 0 || formValues['pluginToInstall'].length > 0)) {
+        if (formValues.name?.trim() !== '' && (formValues.plugin.length > 0 || formValues.pluginToInstall.length > 0)) {
           let pluginValue;
-          if (formValues['pluginToInstall']) {
-            pluginValue = this.plugins.find(p => p.name.toLowerCase() === formValues['pluginToInstall'].toLowerCase()).name;
+          if (formValues.pluginToInstall) {
+            pluginValue = this.plugins.find(p => p.name.toLowerCase() === formValues.pluginToInstall.toLowerCase()).name;
           } else {
-            pluginValue = formValues['plugin'][0];
+            pluginValue = formValues.plugin[0];
           }
           this.payload = {
-            name: formValues['name'],
+            name: formValues.name,
             plugin: pluginValue
           };
 
         }
-        this.getConfiguration(formValues['name'].trim());
+        this.getConfiguration(formValues.name?.trim());
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -237,7 +200,7 @@ export class AddFilterWizardComponent implements OnInit {
         if (this.viewConfigItem !== undefined && !this.viewConfigItem.isValidForm) {
           return false;
         }
-        this.addFilter(this.payload);
+        this.addDeliveryChannel(this.payload);
         break;
       default:
         break;
@@ -272,27 +235,27 @@ export class AddFilterWizardComponent implements OnInit {
     }
     const pluginData = {
       format: 'repository',
-      name: `fledge-filter-` + pluginName,
+      name: `fledge-notify-` + pluginName,
       version: ''
     };
 
     /** request started */
     this.ngProgress.start();
-    this.serviceForm.controls.pluginToInstall.disable();
-    this.serviceForm.controls.plugin.disable();
+    this.pluginChannelForm.controls.pluginToInstall.disable();
+    this.pluginChannelForm.controls.plugin.disable();
     this.disabledBtn = true;
-    this.alertService.activityMessage('Installing ' + pluginName + ' filter plugin...', true);
+    this.alertService.activityMessage('Installing ' + pluginName + ' notify plugin...', true);
     this.service.installPlugin(pluginData).
       subscribe(
         (data: any) => {
           /** request done */
-          this.monitorFilterPluginInstallationStatus(data, pluginName);
+          this.monitorNotifyPluginInstallationStatus(data, pluginName);
         },
         error => {
           /** request done */
           this.ngProgress.done();
-          this.serviceForm.controls.pluginToInstall.enable();
-          this.serviceForm.controls.plugin.enable();
+          this.pluginChannelForm.controls.pluginToInstall.enable();
+          this.pluginChannelForm.controls.plugin.enable();
           this.disabledBtn = false;
           if (error.status === 0) {
             console.log('service down ', error);
@@ -302,7 +265,48 @@ export class AddFilterWizardComponent implements OnInit {
         });
   }
 
-  monitorFilterPluginInstallationStatus(data: any, pluginName: string) {
+  toggleAvailablePlugins() {
+    if (this.show) {
+      this.show = false;
+      return;
+    }
+    this.show = true;
+    this.getAvailablePlugins('notify');
+  }
+
+  getAvailablePlugins(type: string) {
+    this.requestInProgress = true;
+    this.service.getAvailablePlugins(type).
+      subscribe(
+        (data: any) => {
+          this.pluginData = data['plugins'].map((p: string) => p.replace(`fledge-notify-`, ''));
+          this.requestInProgress = false;
+          this.placeholderText = 'Select Plugin';
+          if (isEmpty(this.pluginData)) {
+            this.stopLoading = true;
+            this.alertService.warning('No plugin available to install');
+          }
+        },
+        error => {
+          this.stopLoading = true;
+          this.requestInProgress = false;
+          this.placeholderText = 'Select Plugin';
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else if (error.status === 404) {
+            this.alertService.error('Make sure package repository is configured / added in Fledge');
+          } else {
+            let errorText = error.statusText;
+            if (typeof error.error.link === 'string') {
+              errorText += ` <a>${error.error.link}</a>`;
+            }
+            this.alertService.error(errorText);
+          }
+        }
+      );
+  }
+
+  monitorNotifyPluginInstallationStatus(data: any, pluginName: string) {
     this.installPluginSub = this.service.monitorPluginInstallationStatus(data.statusLink)
       .pipe(
         take(1),
@@ -347,9 +351,9 @@ export class AddFilterWizardComponent implements OnInit {
         this.ngProgress.done();
         this.alertService.closeMessage();
         this.alertService.success(`Plugin ${pluginName} installed successfully.`);
-        this.getInstalledFilterPlugins(true);
-        this.serviceForm.controls.pluginToInstall.enable();
-        this.serviceForm.controls.plugin.enable();
+        this.getInstalledDeliveryPlugins(true);
+        this.pluginChannelForm.controls.pluginToInstall.enable();
+        this.pluginChannelForm.controls.plugin.enable();
         this.disabledBtn = false;
       });
   }
@@ -358,7 +362,7 @@ export class AddFilterWizardComponent implements OnInit {
     if (selectedPlugin === '') {
       this.isValidPlugin = false;
       this.selectedPluginDescription = '';
-      this.serviceForm.value['plugin'] = '';
+      this.pluginChannelForm.value['plugin'] = '';
     } else {
       this.isSinglePlugin = true;
       this.isValidPlugin = true;
@@ -370,14 +374,14 @@ export class AddFilterWizardComponent implements OnInit {
   /**
    *  Get default configuration of a selected plugin
    */
-  private getConfiguration(filterName: string): void {
+  private getConfiguration(name: string): void {
     const config = this.plugins.map(p => {
       if (p.name.toLowerCase() === this.payload.plugin.toLowerCase()) {
         return p.config;
       }
     }).filter(value => value !== undefined);
     // array to hold data to display on configuration page
-    this.configurationData = { key: this.serviceName + '_' + filterName, 'value': config };
+    this.configurationData = { key: this.notificationName + '_' + name, 'value': config };
     this.useProxy = 'true';
   }
 
@@ -387,32 +391,41 @@ export class AddFilterWizardComponent implements OnInit {
    */
   getChangedConfig(changedConfig) {
     // final array to hold changed configuration
-    let finalConfig = [];
+    // let finalConfig = [];
+
+    // convert finalConfig array in object of objects to pass in add service
+    // finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
+    const selectePlugin = this.plugins.find(p => p.name.toLowerCase() === this.plugin.toLowerCase());
     changedConfig.forEach(item => {
       if (item.type === 'script') {
         this.filesToUpload = item.value;
       } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-        });
+        selectePlugin.config[item.key].value = item.type === 'JSON' ? JSON.parse(item.value) : item.value
+        console.log('selected plugin config', selectePlugin.config);
+
+        // finalConfig.push({
+        //   [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
+        // });
       }
     });
 
-    // convert finalConfig array in object of objects to pass in add service
-    finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    this.payload.filter_config = finalConfig;
+    console.log('config', selectePlugin);
+    // finalConfig['plugin'] = selectePlugin;
+    this.payload.config = selectePlugin.config;
+    // delete finalConfig['plugin'].config;
   }
 
   /**
    * Method to add filter
    * @param payload  to pass in request
    */
-  public addFilter(payload) {
-    this.filterService.saveFilter(payload)
+  public addDeliveryChannel(payload) {
+    console.log('payload', payload);
+    this.notificationService.addExtraDeliveryChannel(this.notificationName, payload)
       .subscribe(
-        (data: any) => {
-          this.alertService.success(data.filter + ' filter added successfully.', true);
-          this.addFilterPipeline({ 'pipeline': [payload.name] });
+        (data) => {
+          this.alertService.success(payload.name + ' channel added successfully.', true);
+          this.notify.emit(data);
         },
         (error) => {
           if (error.status === 0) {
@@ -446,32 +459,20 @@ export class AddFilterWizardComponent implements OnInit {
     });
   }
 
-
-  public addFilterPipeline(payload) {
-    this.filterService.addFilterPipeline(payload, this.serviceName)
-      .subscribe((data: any) => {
-        this.notify.emit(data);
-        if (this.filesToUpload !== []) {
-          this.uploadScript();
-        }
-      },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
   validateServiceName(event) {
     if (event.target.value.trim().length > 0) {
       this.isValidName = true;
     }
   }
 
-  public getInstalledFilterPlugins(pluginInstalled?: boolean) {
-    this.filterService.getInstalledFilterPlugins().subscribe(
+  validDescription(event) {
+    if (event.target.value.trim().length > 0) {
+      this.isValidDesc = true;
+    }
+  }
+
+  public getInstalledDeliveryPlugins(pluginInstalled?: boolean) {
+    this.notificationService.getInstalledNotifyPlugins().subscribe(
       (data: any) => {
         this.plugins = sortBy(data.plugins, p => {
           return p.name.toLowerCase();
@@ -505,11 +506,14 @@ export class AddFilterWizardComponent implements OnInit {
       );
   }
 
-  filterSelectionChanged(event: any) {
-    if (event !== undefined) {
+  pluginSelectionChanged(event: any) {
+    console.log('pluginSelectionChanged', event);
+
+    if (event) {
+      this.plugin = event;
       this.isValidPlugin = true;
     } else {
-      this.serviceForm.controls.pluginToInstall.reset();
+      this.pluginChannelForm.controls.pluginToInstall.reset();
     }
   }
 
@@ -521,8 +525,9 @@ export class AddFilterWizardComponent implements OnInit {
   goToLink(selectedPlugin: string) {
     const pluginInfo = {
       name: selectedPlugin,
-      type: 'filter'
+      type: 'notify'
     };
     this.docService.goToPluginLink(pluginInfo);
   }
+
 }

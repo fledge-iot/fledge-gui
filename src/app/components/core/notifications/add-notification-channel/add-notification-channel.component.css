@@ -1,0 +1,30 @@
+:host ::ng-deep ng-select .ng-dropdown-panel {
+  z-index: 40 !important;
+}
+
+:host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+  max-height: 200px !important;
+}
+
+:host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-disabled {
+  color: #848181 !important;
+  font-size: 0.80rem !important;
+}
+
+.field-label {
+  text-align: left;
+}
+
+.steps {
+  overflow-y: visible;
+}
+
+.is-vertical-center {
+  display: flex;
+  align-items: center;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+}
+

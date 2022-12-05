@@ -10,6 +10,9 @@ export class NotificationsService {
   notifyServiceEmitter = new BehaviorSubject<any>(null);
 
   private GET_NOTIFICATION_URL = environment.BASE_URL + 'notification';
+  private GET_INSTALLED_NOTIFY_PLUGINS = environment.BASE_URL + 'plugins/installed?type=notify&config=true';
+  private CATEGORY_URL = environment.BASE_URL + 'category';
+
 
   constructor(private http: HttpClient) { }
 
@@ -23,6 +26,17 @@ export class NotificationsService {
     return this.http.get(this.GET_NOTIFICATION_URL + '/plugin').pipe(
       map(response => response),
       catchError((error) => throwError(error)));
+  }
+
+  /**
+   * Get installed notify plugins
+   *
+   * GET | plugins/installed?type=notify
+   */
+  public getInstalledNotifyPlugins() {
+    return this.http.get(this.GET_INSTALLED_NOTIFY_PLUGINS).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
   }
 
   getNotificationTypeList() {
@@ -48,4 +62,29 @@ export class NotificationsService {
       map(response => response),
       catchError((error) => throwError(error)));
   }
+
+  addExtraDeliveryChannel(notificationName: string, payload: any) {
+    return this.http.post(`${this.GET_NOTIFICATION_URL}/${encodeURIComponent(notificationName)}/delivery`, payload).pipe(
+      map(response => response),
+      catchError((error) => throwError(error)));
+  }
+
+  getDeliveryChannels(notificationName: string) {
+    return this.http.get(`${this.GET_NOTIFICATION_URL}/${encodeURIComponent(notificationName)}/delivery`).pipe(
+      map(response => response),
+      catchError((error) => throwError(error)));
+  }
+
+  public getNotificationConfiguration(categoryName) {
+    return this.http.get(this.CATEGORY_URL + '/' + encodeURIComponent(categoryName)).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  deleteDeliveryChannel(notificationName: string, channelName: string) {
+    return this.http.delete(`${this.GET_NOTIFICATION_URL}/${encodeURIComponent(notificationName)}/delivery/${encodeURIComponent(channelName)}`).pipe(
+      map(response => response),
+      catchError((error) => throwError(error)));
+  }
+
 }
