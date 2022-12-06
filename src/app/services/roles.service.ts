@@ -12,7 +12,8 @@ export class RolesService {
    * @returns true|false based on user role
    */
   public hasEditorRole(): boolean {
-    const uid = Number(sessionStorage.getItem('uid'));
-    return [appRoles.admin, appRoles.user].includes(uid);
+    const roleId = Number(sessionStorage.getItem('roleId'));
+    // roleId === 0 check for anonymous user
+    return [appRoles.admin, appRoles.user].includes(roleId) || roleId === 0;
   }
 }

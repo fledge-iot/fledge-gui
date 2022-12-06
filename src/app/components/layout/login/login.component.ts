@@ -178,6 +178,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
             'userName': userData['userName'],
             'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
           });
+          // save role id and user name in session storage
+          sessionStorage.setItem('roleId', userData['roleId']);
           sessionStorage.setItem('userName', userData['userName']);
         },
         error => {
