@@ -5,7 +5,8 @@ import { isEmpty } from 'lodash';
 import {
   ConfigurationService, AlertService,
   ProgressBarService,
-  NotificationsService
+  NotificationsService,
+  RolesService
 } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
@@ -45,7 +46,8 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     private notificationService: NotificationsService,
     private validateFormService: ValidateFormService,
     public ngProgress: ProgressBarService,
-    private docService: DocService) { }
+    private docService: DocService,
+    public rolesService: RolesService) { }
 
   ngOnInit() { }
 
