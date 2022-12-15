@@ -1,12 +1,13 @@
 import { Directive, ElementRef, OnChanges } from '@angular/core';
-import { RolesService } from '../services/roles.service';
+import { Subject } from 'rxjs';
 
 @Directive({
-  selector: '[requiredEditorRole]'
+  selector: '[requiredViewEditorRole]'
 })
 export class AccessControlDirective implements OnChanges {
+
+  destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
-    private rolesService: RolesService,
     private elRef: ElementRef
   ) {
     this.validateAccess();
@@ -17,11 +18,15 @@ export class AccessControlDirective implements OnChanges {
   }
 
   private validateAccess(): void {
-    console.log('access', this.rolesService.hasEditorRole());
-
-    if (!this.rolesService.hasEditorRole() && this.elRef.nativeElement) {
-      // remove action element from DOM for view and data_view user
+    const roleId = Number(sessionStorage.getItem('roleId'));
+    if (roleId === 4) {
+      // remove action element from DOM for data_view user
       this.elRef.nativeElement.remove();
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

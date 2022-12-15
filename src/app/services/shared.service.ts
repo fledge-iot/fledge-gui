@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 export class SharedService {
   public isUserLoggedIn: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public isAdmin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public dataViewUserSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public showLogs: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public theme: BehaviorSubject<any> = new BehaviorSubject<any>(localStorage.getItem('OPTED_THEME') != null ?
     localStorage.getItem('OPTED_THEME') : 'light');

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-enum appRoles { admin = 1, user = 2, view = 3, data_view = 4 };
+enum appRoles { anonymous = 0, admin = 1, user = 2, view = 3, data_view = 4 };
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class RolesService {
    */
   public hasEditorRole(): boolean {
     const roleId = Number(sessionStorage.getItem('roleId'));
-    // roleId === 0 check for anonymous user
-    return [appRoles.admin, appRoles.user].includes(roleId) || roleId === 0;
+
+    return [appRoles.admin, appRoles.user, appRoles.anonymous].includes(roleId);
   }
 }
