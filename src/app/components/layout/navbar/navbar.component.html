@@ -293,7 +293,7 @@
             <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item user-content">
               <i class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>&nbsp; Log Out
             </a>
-            <ng-container *ngIf="pingInfo.isAlive && isUserLoggedIn && rolesService?.hasEditorRole()">
+            <ng-container *ngIf="pingInfo.isAlive && isUserLoggedIn && rolesService?.hasEditPermissions()">
               <a (click)="openModal()" class="dropdown-item user-content">
                 <span class="icon"><i class="fa fa-power-off" aria-hidden="true"></i>
                 </span>&nbsp;Shut Down

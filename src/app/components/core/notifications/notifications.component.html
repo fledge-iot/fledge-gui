@@ -4,7 +4,7 @@
       <article class="message is-warning">
         <div class="message-body">
           Notification service is not added
-          and enabled.&nbsp; <a *ngIf="rolesService.hasEditorRole()"
+          and enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
             (click)="openNotificationServiceModal()"><strong>add & enable now</strong></a>
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
             <span class="icon">
@@ -21,7 +21,7 @@
     <ng-container *ngIf="isNotificationServiceAvailable && !isNotificationServiceEnabled">
       <article class="message is-warning">
         <div class="message-body">
-          Notification service is not enabled.&nbsp;<a *ngIf="rolesService.hasEditorRole()"
+          Notification service is not enabled.&nbsp;<a *ngIf="rolesService.hasEditPermissions()"
             (click)="enableNotificationService()"><strong>enable
               now</strong></a>
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
@@ -49,12 +49,12 @@
           </a>
         </p>
       </div>
-      <button *ngIf="rolesService.hasEditorRole()" [disabled]="!isNotificationServiceEnabled"
+      <button *ngIf="rolesService.hasEditPermissions()" [disabled]="!isNotificationServiceEnabled"
         id="add_notification_instance" class="button is-light" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
-      <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditorRole()" class="button"
+      <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
         (click)="openNotificationServiceModal()" id="refresh-check">
         <span class="icon">
           <i class="fa fa-cog" aria-hidden="true"></i>

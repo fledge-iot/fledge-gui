@@ -32,7 +32,7 @@
           <hr>
           <div class="columns">
             <div class="column has-text-centered">
-              <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditorRole(); else staticLabel">
+              <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon">
                     <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
@@ -48,11 +48,11 @@
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
-                  [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditorRole()">
+                  [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditPermissions()">
                   <header class="card-header" cdkDragHandle
-                    [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditorRole() }">
+                    [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissions() }">
                     <p class="card-header-title">
-                      <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditorRole()">
+                      <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissions()">
                         <i class="fa fa-sm fa-bars"></i>&nbsp;
                       </ng-container>
                       {{filter}}
@@ -75,7 +75,7 @@
                             <i class="far fa-question-circle"></i>
                           </span>
                         </div>
-                        <div class="field is-pulled-right" *ngIf="rolesService.hasEditorRole()">
+                        <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
                           <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span
                               class="icon is-medium"><i class="fa fa-sm fa-trash-alt fa-lg"
                                 aria-hidden="true"></i></span></button>
@@ -88,7 +88,7 @@
             </div>
           </div>
           <hr>
-          <div class="columns" *ngIf="rolesService.hasEditorRole()">
+          <div class="columns" *ngIf="rolesService.hasEditPermissions()">
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
@@ -100,8 +100,8 @@
               </div>
             </div>
           </div>
-          <hr *ngIf="rolesService.hasEditorRole()">
-          <button id="ss" *ngIf="service && rolesService.hasEditorRole()"
+          <hr *ngIf="rolesService.hasEditPermissions()">
+          <button id="ss" *ngIf="service && rolesService.hasEditPermissions()"
             class="is-hidden button is-small is-link is-pulled-right" (click)="saveChanges(service.name)">Save</button>
           <ng-container *ngIf="service != undefined">
             <div *ngIf="service.schedule_enabled" class="field is-horizontal">
@@ -134,7 +134,7 @@
               <button (click)="getAssetReadings(service)" class="button is-small">
                 <span>Export Readings</span>
               </button>
-              <button *ngIf="rolesService.hasEditorRole()" (click)="openModal('delete-service-dialog')"
+              <button *ngIf="rolesService.hasEditPermissions()" (click)="openModal('delete-service-dialog')"
                 class="button is-small">Delete Service</button>
             </p>
           </ng-container>
@@ -151,7 +151,7 @@
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
 
-<app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditorRole()">
+<app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">Delete Service</span>
     <button class="delete" aria-label="close" (click)="closeModal('delete-service-dialog')"></button>

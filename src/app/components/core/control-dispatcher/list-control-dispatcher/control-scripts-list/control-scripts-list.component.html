@@ -27,7 +27,7 @@
               <!-- <a *ngIf="script?.schedule?.name" class="dropdown-item" [routerLink]="['task', script?.schedule?.name]">
                 <span>View script schedule</span>
               </a> -->
-              <a *ngIf="rolesService.hasEditorRole()" class="dropdown-item"
+              <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item"
                 (click)="setScript(script);openModal('confirmation-dialog')">
                 <span>Delete</span>
               </a>

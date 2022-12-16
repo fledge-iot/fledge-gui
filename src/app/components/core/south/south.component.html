@@ -7,7 +7,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService?.hasEditorRole()" id="add_south_service" class="fix-pad button is-light"
+      <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service" class="fix-pad button is-light"
         (click)="addSouthService()">
         <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
@@ -77,7 +77,7 @@
                         <!-- Section to show asset & readings if asset == 1 -->
                         <ng-container *ngIf="i==0;else expandedTable">
                           <td>
-                            <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditorRole()"
+                            <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
                               id="deprecate_event_div"
                               (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
                               <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Deprecate asset">

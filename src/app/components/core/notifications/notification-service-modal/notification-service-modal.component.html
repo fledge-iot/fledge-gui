@@ -46,17 +46,17 @@
                 <div class="field-body">
                   <div class="field">
                     <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
-                      [(ngModel)]="enabled" [disabled]="!rolesService.hasEditorRole()">
+                      [(ngModel)]="enabled" [disabled]="!rolesService.hasEditPermissions()">
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <button *ngIf="rolesService.hasEditorRole()" id="hidden-save"
+        <button *ngIf="rolesService.hasEditPermissions()" id="hidden-save"
           class="is-hidden button is-small is-link is-pulled-right" form="notificationForm">Save</button>
       </form>
-      <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditorRole()">
+      <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditPermissions()">
       <div class="columns">
         <div class="column">
           <div class="field is-pulled-left">
@@ -66,7 +66,7 @@
               </span>
             </p>
           </div>
-          <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditorRole()">
+          <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
             <p class="control">
               <button [disabled]="pluginInstallationState" class="button is-small" id="cancel"
                 (click)="toggleModal(false)">Cancel</button>
@@ -106,7 +106,7 @@
               </span>
             </p>
           </div>
-          <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditorRole()">
+          <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
             <p class="buttons">
               <button (click)="openDeleteModal(notificationServiceName)" class="button is-small">
                 Delete Service

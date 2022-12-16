@@ -32,14 +32,14 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
-            <a *ngIf="rolesService.hasEditorRole()" [ngClass]="{'is-disable': pluginData}" class="dropdown-item"
+            <a *ngIf="rolesService.hasEditPermissions()" [ngClass]="{'is-disable': pluginData}" class="dropdown-item"
               (click)="openModal('import-plugin-data-dialog')">
               Import the data
             </a>
             <a [ngClass]="{'is-disable': !pluginData}" class="dropdown-item" (click)="exportPluginData(pluginData)">
               Export the data
             </a>
-            <a *ngIf="rolesService.hasEditorRole()" [ngClass]="{'is-disable': !pluginData}" class="dropdown-item"
+            <a *ngIf="rolesService.hasEditPermissions()" [ngClass]="{'is-disable': !pluginData}" class="dropdown-item"
               (click)="openModal('delete-plugin-data-confirmation-dialog')">
               Delete the data
             </a>

@@ -19,8 +19,8 @@ export class AccessControlDirective implements OnChanges {
 
   private validateAccess(): void {
     const roleId = Number(sessionStorage.getItem('roleId'));
-    if (roleId === 4) {
-      // remove action element from DOM for data_view user
+    if (roleId === 4) {  // 4 = data_view role
+      // remove sidebar action items from DOM for data_view user
       this.elRef.nativeElement.remove();
     }
   }

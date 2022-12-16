@@ -16,7 +16,7 @@
     </nav>
   </div>
   <div class="card">
-    <header *ngIf="rolesService.hasEditorRole()">
+    <header *ngIf="rolesService.hasEditPermissions()">
       <a class="button is-link is-light is-small is-pulled-right add-button" routerLink="/developer/python/package/add">
         <span *ngIf="viewPort !== 'mobile'">Add &nbsp;</span>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>

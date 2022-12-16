@@ -7,7 +7,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </p>
-      <div *ngIf="rolesService.hasEditorRole()">
+      <div *ngIf="rolesService.hasEditPermissions()">
         <a class="button is-light fix-pad" (click)="openUploadCertModal()">
           <p *ngIf="viewPort !== 'mobile'">Import &nbsp;</p>
           <i class="fa fa-sm fa-upload" aria-hidden="true"></i>

@@ -6,8 +6,8 @@ import { RolesService } from '../services';
 export class RolesGuard implements CanActivate {
   constructor(private router: Router, public rolesService: RolesService) { }
   canActivate() {
-    const isEditor = this.rolesService.hasEditorRole();
-    if (isEditor) {
+    const canEdit = this.rolesService.hasEditPermissions();
+    if (canEdit) {
       return true;
     }
     this.router.navigateByUrl('');

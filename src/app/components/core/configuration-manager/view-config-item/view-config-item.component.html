@@ -3,7 +3,7 @@
     class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
     <i class="far fa-question-circle"></i>
   </span>
-  <ng-container *ngIf="rolesService.hasEditorRole(); else staticView">
+  <ng-container *ngIf="rolesService.hasEditPermissions(); else staticView">
     <div class="column">
       <form name="form" (ngSubmit)="saveConfiguration(f)" #f="ngForm" novalidate>
         <ng-container *ngIf="categoryConfiguration && hasEditableConfigItems">

@@ -11,9 +11,8 @@ export class RolesService {
    * To check if user, who has the add/edit permission
    * @returns true|false based on user role
    */
-  public hasEditorRole(): boolean {
+  public hasEditPermissions(): boolean {
     const roleId = Number(sessionStorage.getItem('roleId'));
-
     return [appRoles.admin, appRoles.user, appRoles.anonymous].includes(roleId);
   }
 
@@ -23,8 +22,6 @@ export class RolesService {
    */
   public hasDataViewRole(): boolean {
     const roleId = Number(sessionStorage.getItem('roleId'));
-    console.log('role', roleId == 4);
-
     return roleId == 4;
   }
 }

@@ -52,7 +52,7 @@
       </ng-container>
     </li>
     <li>
-      <a *ngIf="rolesService.hasEditorRole()" id="backup-restore" routerLinkActive="is-active"
+      <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
         routerLink='/backup-restore'>
         Backup &amp; Restore
       </a>
@@ -90,7 +90,7 @@
     </li>
     <li>
       <a id="developer" routerLinkActive="is-active" routerLink='/developer'
-        *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditorRole()">
+        *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
         Developer
       </a>
     </li>

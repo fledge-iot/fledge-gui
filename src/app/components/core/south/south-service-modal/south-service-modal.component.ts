@@ -133,7 +133,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (isOpen) {
       this.notify.emit(false);
       this.svcCheckbox.setValue(this.service['schedule_enabled']);
-      if (!this.rolesService.hasEditorRole()) {
+      if (!this.rolesService.hasEditPermissions()) {
         this.svcCheckbox.disable()
       }
       modalWindow.classList.add('is-active');

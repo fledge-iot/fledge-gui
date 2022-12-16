@@ -2,13 +2,14 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">{{ rolesService.hasEditorRole() ? 'Update Schedule' : 'View Schedule' }}
+      <p class="modal-card-title is-size-5">{{ rolesService.hasEditPermissions() ? 'Update Schedule' : 'View Schedule'
+        }}
       </p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <form [formGroup]="form" #f="ngForm" novalidate>
-        <ng-container *ngIf="rolesService.hasEditorRole(); else staticForm">
+        <ng-container *ngIf="rolesService.hasEditPermissions(); else staticForm">
           <div class="columns is-mobile">
             <div class="column">
               <div class="field">
@@ -247,7 +248,7 @@
     </section>
     <footer class="modal-card-foot">
       <button type="button" id="cancel" class="button is-small" (click)="toggleModal(false)">Cancel</button>
-      <button *ngIf="rolesService.hasEditorRole()" id="save" type="submit" class="button is-info is-small"
+      <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
         (click)="f.form.valid && updateSchedule()">Save</button>
     </footer>
   </div>
