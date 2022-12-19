@@ -102,7 +102,7 @@ export class SouthComponent implements OnInit, OnDestroy {
           this.southboundServices = orderBy(enabledServices, 'name').concat(orderBy(disabledServices, 'name'));
           // add expanded key in service to show/hide the assets in the service row
           this.southboundServices.map((svc: any) => {
-            svc.expanded = true;
+            svc.expanded = false;
             const ss = this.southAseetsExpandedState.find(s => s.name === svc.name);
             if (ss) {
               svc.expanded = ss.expanded;
