@@ -15,7 +15,6 @@ import { AddNotificationWizardComponent } from './add-notification-wizard/add-no
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
 import { ServiceResolver } from '../../../resolver/service.resolver';
-import { NotificationLogComponent } from './notification-log/notification-log.component';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
 
@@ -30,19 +29,13 @@ const routes: Routes = [
     path: 'add',
     component: AddNotificationWizardComponent,
     canActivate: [AuthCheckGuard]
-  },
-  {
-    path: 'logs',
-    component: NotificationLogComponent,
-    canActivate: [AuthCheckGuard]
-  },
+  }
 ];
 
 @NgModule({
   declarations: [
     NotificationsComponent,
     AddNotificationWizardComponent,
-    NotificationLogComponent,
     NotificationModalComponent,
     NotificationServiceModalComponent
   ],

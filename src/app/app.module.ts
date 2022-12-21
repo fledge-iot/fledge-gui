@@ -11,7 +11,6 @@ import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog
 import { AlertComponent } from './components/common/alert/alert.component';
 import { RestartModalComponent } from './components/common/restart-modal/restart-modal.component';
 import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
-import { ListTasksComponent } from './components/core/logs/list-tasks/list-tasks.component';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 import { SettingsComponent } from './components/core/settings';
 import { FooterComponent } from './components/layout/footer';
@@ -48,6 +47,7 @@ import { ProgressBarService } from './services/progress-bar.service';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
 import { ValidateFormService } from './services/validate-form.service';
 import { Router } from '@angular/router';
+import { LogsModule } from './components/core/logs/logs.module';
 
 export function pingServiceFactory(ping: PingService, sharedService: SharedService, router: Router): Function {
   return () => ping.pingService()
@@ -90,7 +90,8 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     AlertDialogModule,
     SharedModule,
     DashboardModule,
-    DirectivesModule
+    DirectivesModule,
+    LogsModule
   ],
   declarations: [
     AppComponent,
@@ -104,8 +105,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     SettingsComponent,
     ServiceDiscoveryComponent,
     ShutdownModalComponent,
-    RestartModalComponent,
-    ListTasksComponent
+    RestartModalComponent
   ],
   providers: [
     AuthCheckGuard,

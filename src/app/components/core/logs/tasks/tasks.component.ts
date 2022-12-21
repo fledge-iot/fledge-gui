@@ -7,11 +7,11 @@ import { AlertService, PingService, SchedulesService, ProgressBarService } from 
 import { POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
-  selector: 'app-list-tasks',
-  templateUrl: './list-tasks.component.html',
-  styleUrls: ['./list-tasks.component.css']
+  selector: 'app-tasks',
+  templateUrl: './tasks.component.html',
+  styleUrls: ['./tasks.component.css']
 })
-export class ListTasksComponent implements OnInit, OnDestroy {
+export class TasksComponent implements OnInit, OnDestroy {
   public tasksData = [];
   public refreshInterval = POLLING_INTERVAL;
   private REQUEST_TIMEOUT_INTERVAL = 5000;

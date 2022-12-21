@@ -1,5 +1,4 @@
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { ListTasksComponent } from './components/core/logs';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery';
 import { SettingsComponent } from './components/core/settings';
 import { LoginComponent } from './components/layout/login';
@@ -30,17 +29,8 @@ export const appRoutes: Routes = [
       .then(m => m.SchedulerModule)
   },
   {
-    path: 'syslog', loadChildren: () => import('./components/core/system-log/system-log.module')
-      .then(m => m.SystemLogModule)
-  },
-  {
-    path: 'audit', loadChildren: () => import('./components/core/audit-log/audit-log.module')
-      .then(m => m.AuditLogModule)
-  },
-  { path: 'tasks', component: ListTasksComponent, canActivate: [AuthCheckGuard] },
-  {
-    path: 'packages', loadChildren: () => import('./components/core/packages-log/packages-log.module')
-      .then(m => m.PackagesLogModule)
+    path: 'logs', loadChildren: () => import('./components/core/logs/logs.module')
+      .then(m => m.LogsModule)
   },
   {
     path: 'notification', loadChildren: () => import('./components/core/notifications/notifications.module')

@@ -72,7 +72,7 @@ export class UserService {
    *
    * @param payload = > {"enabled": boolean}
    */
-   enableUser(id, payload) {
+  enableUser(id, payload) {
     return this.http.put(this.ADMIN_URL + '/' + id + '/enable', payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
@@ -98,11 +98,8 @@ export class UserService {
    *
    * @param Object payload = > {"roleId": "1"}
    */
-  updateRole(data) {
-    const payload: any = {
-      role_id: data.roleId
-    };
-    return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload).pipe(
+  updateRole(payload: any) {
+    return this.http.put(this.ADMIN_URL + '/' + payload.userId + '/reset', payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

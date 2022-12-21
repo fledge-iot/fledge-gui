@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { AlertService, AuditService, PingService, ProgressBarService } from '../../../services';
-import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
+import { AlertService, AuditService, PingService, ProgressBarService } from '../../../../services';
+import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
   selector: 'app-audit-log',
