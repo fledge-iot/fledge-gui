@@ -10,7 +10,7 @@ import {
   AlertService, ConfigurationService, SharedService
 } from '../../../../services/index';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
-import { ViewLogsComponent } from '../../packages-log/view-logs/view-logs.component';
+import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';

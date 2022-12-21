@@ -10,7 +10,7 @@ import {
 } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
-import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
+import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
 import { DocService } from '../../../services/doc.service';
 

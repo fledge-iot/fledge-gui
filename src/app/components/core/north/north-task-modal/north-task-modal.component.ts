@@ -489,7 +489,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   navToSyslogs(task) {
-    this.router.navigate(['syslog'], { queryParams: { source: task.name } });
+    this.router.navigate(['logs/syslog'], { queryParams: { source: task.name } });
   }
 
   discardChanges() {

@@ -412,7 +412,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   navToSyslogs(name: string) {
-    this.router.navigate(['syslog'], { queryParams: { source: name } });
+    this.router.navigate(['logs/syslog'], { queryParams: { source: name } });
   }
 
   goToLink() {

@@ -1,3 +1,22 @@
+## Unreleased [202x-xx-xx]
+
+#### Added
+
+-
+
+#### Changed
+
+- [FOGL-7049] Timestamps with YYYY-MM-DD for tabular data, latest reading and datapoint hover for assets & readings graphs [#217](https://github.com/fledge-iot/fledge-gui/pull/217)
+
+#### Fixed
+
+-
+
+#### Others
+
+- Certificate based login modal UI improvements [#214](https://github.com/fledge-iot/fledge-gui/pull/214)
+
+
 ## v2.0.1 [2022-10-20]
 
 #### Added
@@ -8,7 +27,6 @@
 
 - [FOGL-6994] Improved the way of showing build version and documentation help URL links for released vs nightly versions [#156](https://github.com/fledge-iot/fledge-gui/pull/156)
 
-#### Fixed
 
 ## v2.0.0 [2022-09-09]
 

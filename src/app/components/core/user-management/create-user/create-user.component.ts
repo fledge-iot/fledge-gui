@@ -1,5 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, HostListener, Input, OnChanges } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { User } from '../../../../models';
 import { AlertService, UserService } from '../../../../services';
@@ -20,12 +22,14 @@ export class CreateUserComponent implements OnInit, OnChanges {
   @Input() userRoles: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private userService: UserService,
     private alertService: AlertService) { }
 
   ngOnInit() {
     this.setModel();
-    this.authMethods = [{text: 'Any', value: 'any'}, {text: 'Password', value: 'pwd'}, {text: 'Certificate', value: 'cert'}];
+    this.authMethods = [{ text: 'Any', value: 'any' }, { text: 'Password', value: 'pwd' }, { text: 'Certificate', value: 'cert' }];
   }
 
   ngOnChanges(): void {
@@ -64,7 +68,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
       password: '',
       description: '',
       confirmPassword: '',
-      roleId: 2   // set "user" as a default role
+      role_id: 2   // set "user" as a default role
     };
   }
 
@@ -78,8 +82,10 @@ export class CreateUserComponent implements OnInit, OnChanges {
     if (this.selectedAuthMethod === 'Certificate') {
       delete this.model.password;
     }
-    this.userService.createUser(this.model).
-      subscribe(
+
+    this.userService.createUser(this.model)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         (data) => {
           this.notify.emit();
           this.toggleModal(false, null);
@@ -105,8 +111,8 @@ export class CreateUserComponent implements OnInit, OnChanges {
 
   setRole(role: any) {
     this.selectedRole = role.name;
-    const selectedRole = this.userRole.find(r => r.id = role.id);
-    if (role) { this.model.roleId = selectedRole.id; }
+    const selectedRole = this.userRole.find(r => r.id === role.id);
+    if (selectedRole) { this.model.role_id = selectedRole.id; }
   }
 
   setAuthMethod(authMethod: any) {
@@ -127,5 +133,10 @@ export class CreateUserComponent implements OnInit, OnChanges {
     }
     const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
