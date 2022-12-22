@@ -71,7 +71,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id === user.roleId) {
-                user['roleName'] = this.roleService.getRoleName(role.id); //this.roleNames.find(r => r.roleId == role.id)?.name;
+                user['roleName'] = this.roleService.getRoleName(role.id);
               }
             });
           });
