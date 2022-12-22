@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
-import { AlertService, ProgressBarService } from '../../../../services';
+import { AlertService, ProgressBarService, RolesService } from '../../../../services';
 import { PluginPersistDataService } from './plugin-persist-data.service';
 
 @Component({
@@ -26,7 +26,8 @@ export class PluginPersistDataComponent implements OnInit {
     public pluginDataService: PluginPersistDataService,
     private alertService: AlertService,
     private dialogService: DialogService,
-    public ngProgress: ProgressBarService) { }
+    public ngProgress: ProgressBarService,
+    public rolesService: RolesService) { }
 
   ngOnInit(): void {
     this.getPlugins();

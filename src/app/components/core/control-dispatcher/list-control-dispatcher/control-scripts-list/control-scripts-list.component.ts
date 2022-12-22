@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { orderBy } from 'lodash';
-import { AlertService, ProgressBarService, SharedService } from '../../../../../services';
+import { AlertService, ProgressBarService, RolesService, SharedService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
@@ -21,7 +21,8 @@ export class ControlScriptsListComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     private sharedService: SharedService,
-    private ngProgress: ProgressBarService) {
+    private ngProgress: ProgressBarService,
+    public rolesService: RolesService) {
     this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
       if (tab === 'scripts') {
         this.getControlScripts();

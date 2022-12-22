@@ -26,7 +26,8 @@
       </div>
       <ng-template #staticCategoryDiv>
         <div class="control">
-          <input name="category" class="input is-small" type="text" [ngModel]="config.category?config.category: 'None'"
+          <input name="category" size="50" class="input is-small" type="text"
+            [ngModel]="config.category?config.category: 'None'"
             [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.category}"
             [readonly]="!sharedService.checkAuth()">
         </div>
@@ -62,7 +63,7 @@
       </div>
       <ng-template #staticConfigItemDiv>
         <div class="control">
-          <input name="config" class="input is-small" type="text" [(ngModel)]="selectedConfigItem"
+          <input name="config" size="25" class="input is-small" type="text" [(ngModel)]="selectedConfigItem"
             [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
         </div>
       </ng-template>

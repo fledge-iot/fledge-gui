@@ -31,7 +31,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     private userService: UserService,
     public ngProgress: ProgressBarService,
     private sharedService: SharedService
-    ) { }
+  ) { }
 
   ngOnInit() {
     this.uid = sessionStorage.getItem('uid');
@@ -46,6 +46,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.userService.getAllUsers()
       .subscribe(
         (userData) => {
+          /** request completed */
+          this.ngProgress.done();
           this.getRole(userData['users']);
         },
         error => {
@@ -65,7 +67,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       .subscribe(
         (roleRecord) => {
           this.roles = roleRecord['roles'];
-          this.ngProgress.done();
           roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id === user.roleId) {
@@ -74,6 +75,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
             });
           });
           this.userRecord = users.sort();
+          this.ngProgress.done();
         },
         error => {
           /** request completed */

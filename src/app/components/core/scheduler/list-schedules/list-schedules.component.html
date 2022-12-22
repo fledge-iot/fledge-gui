@@ -30,13 +30,18 @@
             </td>
             <td>
               <ng-container *ngIf="schedule.type == 'TIMED'">
-              <small *ngIf="schedule.dayName !== 'None'"> {{schedule.dayName + ', '}} </small>
-              <small>{{ schedule.time }}</small>
-            </ng-container>
+                <small *ngIf="schedule.dayName !== 'None'"> {{schedule.dayName + ', '}} </small>
+                <small>{{ schedule.time }}</small>
+              </ng-container>
             </td>
             <td>
-              <a (click)="editSchedule(schedule.id)" class="button is-text ed-btn" name={{schedule.name}}>
+              <a *ngIf="rolesService.hasEditPermissions()" (click)="editSchedule(schedule.id)"
+                class="button is-text ed-btn" name={{schedule.name}}>
                 <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
+              </a>
+              <a *ngIf="!rolesService.hasEditPermissions()" (click)="editSchedule(schedule.id)"
+                class="button is-small is-text" name={{schedule.name}}>
+                View
               </a>
             </td>
           </tr>

@@ -1,8 +1,6 @@
 import { Component, Input } from '@angular/core';
-
-import { ConfigurationService } from '../../../../services';
+import { ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
-
 import { chain } from 'lodash';
 
 @Component({
@@ -25,7 +23,8 @@ export class ConfigChildrenComponent {
 
   constructor(
     private configService: ConfigurationService,
-    public developerFeaturesService: DeveloperFeaturesService
+    public developerFeaturesService: DeveloperFeaturesService,
+    public rolesService: RolesService
   ) { }
 
   ngOnInit() {
@@ -42,8 +41,6 @@ export class ConfigChildrenComponent {
         return { category: this.category.key, group: "Default Configuration", values: [Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } }))] }
       }
     }).value();
-    console.log('group', this.groups);
-    console.log('category', this.category);
 
     this.getChildConfigData();
   }
@@ -80,7 +77,6 @@ export class ConfigChildrenComponent {
 
     if (tab !== this.seletedTab) {
       this.seletedTab = tab;
-      // this.sharedService.configGroupSubject.next(true);
     }
   }
 

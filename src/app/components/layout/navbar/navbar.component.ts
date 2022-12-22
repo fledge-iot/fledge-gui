@@ -15,7 +15,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
   AlertService, AuthService, ConnectedServiceStatus, PingService,
-  ProgressBarService, ServicesApiService
+  ProgressBarService, ServicesApiService, RolesService
 } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';
@@ -62,7 +62,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
     private ping: PingService,
-    private router: Router) {
+    private router: Router,
+    public rolesService: RolesService) {
     // Subscribe to automatically update
     // "isUserLoggedIn" whenever a change to the subject is made.
     this.sharedService.isUserLoggedIn

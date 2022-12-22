@@ -20,15 +20,17 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item" id="create-backup" (click)="requestBackup()">
-                    <i class="far fa-plus-square fa-sm fa-fw" aria-hidden="true"></i>
-                    <span> Create New</span>
-                  </a>
-                  <a class="dropdown-item" id="upload-backup" (click)="uploadBackup()">
-                    <i class="fas fa-paperclip fa-sm fa-fw" aria-hidden="true"></i>
-                    <span> Upload a Backup</span>
-                  </a>
-                  <hr class="dropdown-divider">
+                  <ng-container *ngIf="rolesService.hasEditPermissions()">
+                    <a class="dropdown-item" id="create-backup" (click)="requestBackup()">
+                      <i class="far fa-plus-square fa-sm fa-fw" aria-hidden="true"></i>
+                      <span> Create New</span>
+                    </a>
+                    <a class="dropdown-item" id="upload-backup" (click)="uploadBackup()">
+                      <i class="fas fa-paperclip fa-sm fa-fw" aria-hidden="true"></i>
+                      <span> Upload a Backup</span>
+                    </a>
+                    <hr class="dropdown-divider">
+                  </ng-container>
                   <a class="dropdown-item" (click)="goToLink()">
                     <i class="far fa-question-circle fa-sm fa-fw"></i>
                     <span> Help</span>
@@ -80,16 +82,19 @@
                 <td class="align-content">
                   <small>{{ backup.status }}</small>
                 </td>
-                <td class="align-content">
-                  <a *ngIf="backup.status != 'RUNNING'" class="button is-text text-btn"
-                    (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
-                  </a>
-                </td>
-                <td class="align-content">
-                  <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="button is-text text-btn"
-                    (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
-                  </a>
-                </td>
+                <ng-container *ngIf="rolesService.hasEditPermissions()">
+                  <td class="align-content">
+                    <a *ngIf="backup.status != 'RUNNING'" class="button is-text text-btn"
+                      (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
+                    </a>
+                  </td>
+                  <td class="align-content">
+                    <a *ngIf="(backup.status == 'COMPLETED' || backup.status == 'RESTORED')"
+                      class="button is-text text-btn"
+                      (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
+                    </a>
+                  </td>
+                </ng-container>
                 <td class="align-content">
                   <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'"
                     (click)="downloadBackup(backup)" class="button is-text text-btn">

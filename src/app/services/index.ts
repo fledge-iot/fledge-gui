@@ -23,3 +23,4 @@ export * from './notifications.service';
 export * from './plugin.service';
 export * from './packages-log.service';
 export * from './shared.service';
+export * from './roles.service';

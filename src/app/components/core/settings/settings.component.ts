@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 
-import { PingService, SharedService } from '../../../services';
+import { PingService, RolesService, SharedService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
 import { ServiceDiscoveryComponent } from '../service-discovery';
 import { Subject } from 'rxjs';
@@ -37,7 +37,8 @@ export class SettingsComponent implements OnInit {
     public rangeSliderService: RangeSliderService,
     public developerFeaturesService: DeveloperFeaturesService,
     public storageService: StorageService,
-    public timezoneService: TimezoneService) {
+    public timezoneService: TimezoneService,
+    public rolesService: RolesService) {
     this.protocol = this.storageService.getProtocol() != null ? this.storageService.getProtocol() : location.protocol.replace(':', '').trim();
     this.host = this.storageService.getHost() != null ? this.storageService.getHost() : location.hostname;
     this.servicePort = this.storageService.getPort() != null ? this.storageService.getPort() : 8081;
