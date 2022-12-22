@@ -219,7 +219,7 @@
       <ng-container *ngIf="categoryConfiguration && hasEditableConfigItems">
         <ng-container *ngFor="let configItem of (categoryConfiguration | keys)"
           [ngSwitch]="getConfigAttributeType(configItem.value.type)">
-          <div class="config-div">
+          <div class="config-div" *ngIf="configItem.value.readonly != 'true'">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
                 <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label"
