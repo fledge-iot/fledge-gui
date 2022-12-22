@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { User } from '../../../../models';
-import { AlertService, UserService } from '../../../../services';
+import { AlertService, RolesService, UserService } from '../../../../services';
 
 @Component({
   selector: 'app-create-user',
@@ -15,7 +15,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   model: User;
   isUpdateForm = false;
   userRole = [];
-  selectedRole = 'user'; // set "user" as a default role
+  selectedRole = this.rolesService.getRoleName(2); // Set role id (2: Editor) as default
   selectedAuthMethod = 'Any';
   authMethods = [];
 
@@ -25,7 +25,8 @@ export class CreateUserComponent implements OnInit, OnChanges {
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private userService: UserService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private rolesService: RolesService) { }
 
   ngOnInit() {
     this.setModel();
@@ -68,7 +69,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
       password: '',
       description: '',
       confirmPassword: '',
-      role_id: 2   // set "user" as a default role
+      role_id: 2   // Set role id (2: Editor) as default
     };
   }
 
@@ -105,12 +106,12 @@ export class CreateUserComponent implements OnInit, OnChanges {
 
   public resetCreateUserForm(form: NgForm) {
     form.resetForm();
-    this.selectedRole = 'user';
+    this.selectedRole = this.setRoleName(2) // Set role id (2: Editor) as default in roles dropdown
     this.selectedAuthMethod = 'Any';
   }
 
   setRole(role: any) {
-    this.selectedRole = role.name;
+    this.selectedRole = this.setRoleName(role.id);
     const selectedRole = this.userRole.find(r => r.id === role.id);
     if (selectedRole) { this.model.role_id = selectedRole.id; }
   }
@@ -133,6 +134,10 @@ export class CreateUserComponent implements OnInit, OnChanges {
     }
     const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
+  }
+
+  setRoleName(roleId: number) {
+    return this.rolesService.getRoleName(roleId);
   }
 
   public ngOnDestroy(): void {

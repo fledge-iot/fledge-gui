@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { User } from '../../../../models';
-import { AlertService, UserService } from '../../../../services';
+import { AlertService, RolesService, UserService } from '../../../../services';
 
 @Component({
   selector: 'app-update-user',
@@ -20,14 +20,15 @@ export class UpdateUserComponent implements OnInit, OnChanges {
 
   showRoleSection = false;
   updateSection = 'pwd';
-  selectedRole = 'user'; // set "user" as a default role
+  selectedRole = this.rolesService.getRoleName(2); // set "user" as a default role
   selectedAuthMethod;
   isFieldChanged = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private alertService: AlertService,
-    private userService: UserService) { }
+    private userService: UserService,
+    private rolesService: RolesService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.toggleModal(false);
@@ -193,13 +194,17 @@ export class UpdateUserComponent implements OnInit, OnChanges {
   }
 
   public setUserRole(role: any) {
-    this.selectedRole = role.name;
+    this.selectedRole = this.setRoleName(role.id);
     this.userRecord.role_id = role.id;
   }
 
   public setAuthMethod(auth: any) {
     this.selectedAuthMethod = auth.text;
     this.userRecord.access_method = auth.value;
+  }
+
+  setRoleName(roleId: number) {
+    return this.rolesService.getRoleName(roleId);
   }
 
   public ngOnDestroy(): void {
