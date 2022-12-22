@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { AlertService, ProgressBarService } from '../../../../../services';
+import { AlertService, ProgressBarService, RolesService } from '../../../../../services';
 import { PackageManagerService } from '../../../../../services/package-manager.service';
 import { SharedService } from '../../../../../services/shared.service';
 import { sortBy } from 'lodash';
@@ -20,7 +20,8 @@ export class ListPythonPackagesComponent implements OnInit {
     public sharedService: SharedService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
-    public packageManagerService: PackageManagerService) { }
+    public packageManagerService: PackageManagerService,
+    public rolesService: RolesService) { }
 
   ngOnInit(): void {
     this.viewPortSubscription = this.sharedService.viewport

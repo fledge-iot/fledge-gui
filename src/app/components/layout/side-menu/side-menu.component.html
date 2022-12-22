@@ -9,89 +9,92 @@
       Assets &amp; Readings
     </a>
   </li>
-  <li>
-    <a id=" south" routerLinkActive="is-active" routerLink='/south'>
-      South
-    </a>
-  </li>
-  <li>
-    <a id="north" routerLinkActive="is-active" routerLink='/north'>
-      North
-    </a>
-  </li>
-  <li>
-    <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
-      Notifications
-    </a>
-  </li>
-  <li>
-    <a id="control-dispatcher" routerLinkActive="is-active" routerLink='/control-dispatcher'>
-      Control Dispatcher
-    </a>
-  </li>
-  <li>
-    <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
-      Configuration
-    </a>
-  </li>
-  <li>
-    <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
-      Schedules
-    </a>
-  </li>
-  <li>
-    <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
-      Certificate Store
-    </a>
-  </li>
-  <li>
-    <ng-container *ngFor="let mfe of microfrontends"><a *ngIf="mfe?.displayName" routerLinkActive="is-active"
-        [routerLink]="mfe.routePath">
-        {{mfe.displayName}}</a>
-    </ng-container>
-  </li>
-  <li>
-    <a id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
-      Backup &amp; Restore
-    </a>
-  </li>
-  <li>
-    <a>Logs</a>
-    <ul>
-      <li>
-        <a id=" audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
-      </li>
-      <li>
-        <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
-      </li>
-      <li>
-        <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
-      </li>
-      <li>
-        <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
-      </li>
-      <li>
-        <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
-      User Management
-    </a>
-  </li>
+  <article requiredViewEditorRole>
+    <li>
+      <a id=" south" routerLinkActive="is-active" routerLink='/south'>
+        South
+      </a>
+    </li>
+    <li>
+      <a id="north" routerLinkActive="is-active" routerLink='/north'>
+        North
+      </a>
+    </li>
+    <li>
+      <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
+        Notifications
+      </a>
+    </li>
+    <li>
+      <a id="control-dispatcher" routerLinkActive="is-active" routerLink='/control-dispatcher'>
+        Control Dispatcher
+      </a>
+    </li>
+    <li>
+      <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
+        Configuration
+      </a>
+    </li>
+    <li>
+      <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
+        Schedules
+      </a>
+    </li>
+    <li>
+      <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
+        Certificate Store
+      </a>
+    </li>
+    <li>
+      <ng-container *ngFor="let mfe of microfrontends"><a *ngIf="mfe?.displayName" routerLinkActive="is-active"
+          [routerLink]="mfe.routePath">
+          {{mfe.displayName}}</a>
+      </ng-container>
+    </li>
+    <li>
+      <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
+        routerLink='/backup-restore'>
+        Backup &amp; Restore
+      </a>
+    </li>
+    <li>
+      <a>Logs</a>
+      <ul>
+        <li>
+          <a id=" audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
+        </li>
+        <li>
+          <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
+        </li>
+        <li>
+          <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
+        </li>
+        <li>
+          <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
+        </li>
+        <li>
+          <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
+        User Management
+      </a>
+    </li>
 
-  <li>
-    <a id="support" routerLinkActive="is-active" routerLink='/support'>
-      Support
-    </a>
-  </li>
-  <li>
-    <a id="developer" routerLinkActive="is-active" routerLink='/developer'
-      *ngIf="developerFeaturesService.getDeveloperFeatureControl()">
-      Developer
-    </a>
-  </li>
+    <li>
+      <a id="support" routerLinkActive="is-active" routerLink='/support'>
+        Support
+      </a>
+    </li>
+    <li>
+      <a id="developer" routerLinkActive="is-active" routerLink='/developer'
+        *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
+        Developer
+      </a>
+    </li>
+  </article>
   <li>
     <a id="setting" routerLinkActive="is-active" routerLink='/setting'>
       Settings

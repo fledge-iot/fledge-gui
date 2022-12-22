@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil, takeWhile } from 'rxjs/operators';
 import { DateFormatterPipe } from '../../../pipes';
-import { AlertService, PingService, ProgressBarService, SharedService } from '../../../services';
+import { AlertService, PingService, ProgressBarService, RolesService, SharedService } from '../../../services';
 import { BackupRestoreService } from '../../../services/backup-restore.service';
 import { DocService } from '../../../services/doc.service';
 import { POLLING_INTERVAL } from '../../../utils';
@@ -44,7 +44,8 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     public ngProgress: ProgressBarService,
     private dateFormatter: DateFormatterPipe,
     private docService: DocService,
-    private ping: PingService) {
+    private ping: PingService,
+    public rolesService: RolesService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))

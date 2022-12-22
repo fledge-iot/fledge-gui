@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 import {
-  AlertService, NotificationsService, SharedService, ProgressBarService, SchedulesService, ServicesApiService
+  AlertService, NotificationsService, SharedService, ProgressBarService, SchedulesService, ServicesApiService, RolesService
 } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
@@ -52,7 +52,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public router: Router,
     public docService: DocService,
-    private sharedService: SharedService) { }
+    private sharedService: SharedService,
+    public rolesService: RolesService) { }
 
   ngOnInit() {
     this.onNotifySettingModal();

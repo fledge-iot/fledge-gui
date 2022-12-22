@@ -6,6 +6,7 @@ import { AlertService, AuthService, PingService, UserService, ProgressBarService
 import { SharedService } from '../../../services/shared.service';
 import { CertificateBaseLoginComponent } from '../certificate-base-login';
 import { Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   moduleId: module.id.toString(),
@@ -104,18 +105,17 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   loginUsingOttToken() {
     this.ngProgress.start();
-    this.authService.loginUsingOttToken(this.ottToken).
-      subscribe(
-        (data) => {
-          this.sslCertificateError = false;
-          const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
-          this.pingService.pingIntervalChanged.next(pingInterval);
-          this.ngProgress.done();
-          sessionStorage.setItem('token', data['token']);
-          sessionStorage.setItem('uid', data['uid']);
-          sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
-          this.getUser(data['uid']);
+    this.authService.loginUsingOttToken(this.ottToken)
+      .pipe(switchMap((data) => {
+        this.sslCertificateError = false;
+        this.setLoginToken(data);
+        return this.userService.getUser((data['uid']));
+      }))
+      .subscribe(
+        (user) => {
+          this.setUser(user);
           this.router.navigate([''], { replaceUrl: true });
+          this.ngProgress.done();
         },
         error => {
           this.ngProgress.done();
@@ -135,17 +135,16 @@ export class LoginComponent implements OnInit, AfterViewInit {
    */
   login() {
     this.ngProgress.start();
-    this.authService.login(this.model.username, this.model.password).
-      subscribe(
-        (data) => {
-          const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
-          this.pingService.pingIntervalChanged.next(pingInterval);
-          this.ngProgress.done();
-          sessionStorage.setItem('token', data['token']);
-          sessionStorage.setItem('uid', data['uid']);
-          sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
-          this.getUser(data['uid']);
+    this.authService.login(this.model.username, this.model.password)
+      .pipe(switchMap((data) => {
+        this.setLoginToken(data);
+        return this.userService.getUser((data['uid']));
+      }))
+      .subscribe(
+        (user) => {
+          this.setUser(user);
           this.router.navigate([''], { replaceUrl: true });
+          this.ngProgress.done();
         },
         error => {
           this.ngProgress.done();
@@ -168,25 +167,24 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/setting'], { queryParams: { id: '1' } });
   }
 
-  getUser(id) {
-    // Get SignedIn user details
-    this.userService.getUser(id)
-      .subscribe(
-        (userData) => {
-          this.sharedService.isUserLoggedIn.next({
-            'loggedIn': true,
-            'userName': userData['userName'],
-            'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
-          });
-          sessionStorage.setItem('userName', userData['userName']);
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+  setLoginToken(data: any) {
+    const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
+    this.pingService.pingIntervalChanged.next(pingInterval);
+    sessionStorage.setItem('token', data['token']);
+    sessionStorage.setItem('uid', data['uid']);
+    sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
+  }
+
+  setUser(user: any) {
+    this.sharedService.isUserLoggedIn.next({
+      'loggedIn': true,
+      'userName': user['userName'],
+      'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
+    });
+    // save role id and user name in session storage
+    sessionStorage.setItem('roleId', user['roleId']);
+    this.sharedService.dataViewUserSubject.next(user['roleId']);
+    sessionStorage.setItem('userName', user['userName']);
   }
 
   public forgotPassword() {

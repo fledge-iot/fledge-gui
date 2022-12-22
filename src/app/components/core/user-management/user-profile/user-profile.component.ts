@@ -171,6 +171,7 @@ export class UserProfileComponent implements OnInit {
           this.alertService.success('User updated successfully');
         },
         error => {
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
