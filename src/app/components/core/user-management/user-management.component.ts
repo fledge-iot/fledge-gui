@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 
-import { AlertService, AuthService, UserService, ProgressBarService, SharedService } from '../../../services';
+import { AlertService, AuthService, UserService, ProgressBarService, SharedService, RolesService } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
@@ -26,14 +26,12 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   private viewPortSubscription: Subscription;
   viewPort: any = '';
 
-  // role names array for gui mapping
-  roleNames = [{ roleId: 1, name: "Administrator" }, { roleId: 2, name: "Editor" }, { roleId: 3, name: "Viewer" }, { roleId: 4, name: "Data Viewer" }];
-
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
     public ngProgress: ProgressBarService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private roleService: RolesService
   ) { }
 
   ngOnInit() {
@@ -73,7 +71,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id === user.roleId) {
-                user['roleName'] = this.roleNames.find(r => r.roleId == role.id)?.name;
+                user['roleName'] = this.roleService.getRoleName(role.id); //this.roleNames.find(r => r.roleId == role.id)?.name;
               }
             });
           });
@@ -221,7 +219,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   setRoleName(roleId: number) {
-    return this.roleNames.find(r => r.roleId == roleId)?.name;
+    return this.roleService.getRoleName(roleId);
   }
 
   public ngOnDestroy(): void {

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AlertService, AuthService, UserService, ProgressBarService } from '../../../../services';
+import { AlertService, AuthService, UserService, ProgressBarService, RolesService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 
 @Component({
@@ -16,13 +16,11 @@ export class UserProfileComponent implements OnInit {
   isShow = false;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
-  // role names array for gui mapping
-  roleNames = [{ roleId: 1, name: "Administrator" }, { roleId: 2, name: "Editor" }, { roleId: 3, name: "Viewer" }, { roleId: 4, name: "Data Viewer" }];
-
 
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
+    private roleService: RolesService,
     public ngProgress: ProgressBarService,
     private router: Router) { }
 
@@ -48,7 +46,7 @@ export class UserProfileComponent implements OnInit {
                 this.ngProgress.done();
                 roleRecord['roles'].filter(role => {
                   if (role.id === userData['roleId']) {
-                    userData['roleName'] = this.roleNames.find(r => r.roleId == role.id)?.name;
+                    userData['roleName'] = this.roleService.getRoleName(role.id);
                   }
                 });
                 this.userRecord = {
