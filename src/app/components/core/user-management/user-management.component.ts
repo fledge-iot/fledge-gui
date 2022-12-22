@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 
-import { AlertService, AuthService, UserService, ProgressBarService, SharedService } from '../../../services';
+import { AlertService, AuthService, UserService, ProgressBarService, SharedService, RolesService } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
@@ -30,7 +30,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private userService: UserService,
     public ngProgress: ProgressBarService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private roleService: RolesService
   ) { }
 
   ngOnInit() {
@@ -70,7 +71,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id === user.roleId) {
-                user['roleName'] = role.name;
+                user['roleName'] = this.roleService.getRoleName(role.id);
               }
             });
           });
@@ -215,6 +216,10 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     if (id === 2) {
       this.seletedTab = id;
     }
+  }
+
+  setRoleName(roleId: number) {
+    return this.roleService.getRoleName(roleId);
   }
 
   public ngOnDestroy(): void {
