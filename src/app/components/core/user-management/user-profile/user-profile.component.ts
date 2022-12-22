@@ -16,6 +16,10 @@ export class UserProfileComponent implements OnInit {
   isShow = false;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
+  // role names array for gui mapping
+  roleNames = [{ roleId: 1, name: "Administrator" }, { roleId: 2, name: "Editor" }, { roleId: 3, name: "Viewer" }, { roleId: 4, name: "Data Viewer" }];
+
+
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
@@ -44,7 +48,7 @@ export class UserProfileComponent implements OnInit {
                 this.ngProgress.done();
                 roleRecord['roles'].filter(role => {
                   if (role.id === userData['roleId']) {
-                    userData['roleName'] = role.name;
+                    userData['roleName'] = this.roleNames.find(r => r.roleId == role.id)?.name;
                   }
                 });
                 this.userRecord = {

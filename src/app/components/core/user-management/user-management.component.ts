@@ -26,6 +26,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   private viewPortSubscription: Subscription;
   viewPort: any = '';
 
+  // role names array for gui mapping
+  roleNames = [{ roleId: 1, name: "Administrator" }, { roleId: 2, name: "Editor" }, { roleId: 3, name: "Viewer" }, { roleId: 4, name: "Data Viewer" }];
+
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
@@ -70,7 +73,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id === user.roleId) {
-                user['roleName'] = role.name;
+                user['roleName'] = this.roleNames.find(r => r.roleId == role.id)?.name;
               }
             });
           });
@@ -215,6 +218,10 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     if (id === 2) {
       this.seletedTab = id;
     }
+  }
+
+  setRoleName(roleId: number) {
+    return this.roleNames.find(r => r.roleId == roleId)?.name;
   }
 
   public ngOnDestroy(): void {
