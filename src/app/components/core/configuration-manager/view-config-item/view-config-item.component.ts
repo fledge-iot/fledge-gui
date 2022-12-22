@@ -59,6 +59,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public JSON;
 
   @Input() groupConfiguration;
+  @Input() group;
 
   constructor(
     private elementRef: ElementRef,
@@ -82,10 +83,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
 
-  ngOnChanges() {
-
-    console.log('changes', this.categoryConfigurationData);
-
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('changes', changes);
+    if (!changes?.group?.firstChange) {
+      if (changes?.group?.previousValue !== changes?.group?.currentValue) {
+        console.log('change', changes.group.currentValue);
+        this.validateGroupConfigOnPageLoad();
+        return;
+      }
+    }
 
     if (this.form) {
       this.form.resetForm();
@@ -109,6 +115,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       this.categoryConfiguration = sortBy(this.categoryConfiguration, (ca: any) => {
         return parseInt(ca.order, 10);
       });
+
 
       this.configItems = this.categoryConfiguration.map(el => {
         // Needs explicit service call to populate all acls as dropdown options
@@ -180,6 +187,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public saveConfiguration(form: NgForm) {
+    console.log('form', form.value);
+
     this.isValidForm = true;
     if (!form.valid || this.passwordMatched.value === false) {
       this.isValidForm = false;

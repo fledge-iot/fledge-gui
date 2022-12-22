@@ -20,14 +20,13 @@
 <div>
   <p class="highlight">
     <ng-container *ngFor="let g of groups">
-      <app-view-config-item *ngIf="seletedTab == g.group"
+      <app-view-config-item [hidden]="seletedTab !== g.group"
         [categoryConfigurationData]="{ key: g.category, value : g.values}" [useChildrenProxy]="useCategoryChildrenProxy"
-        [formId]="g.group" [groupConfiguration]="category">
+        [formId]="g.group" [groupConfiguration]="category" [group]="seletedTab">
       </app-view-config-item>
     </ng-container>
     <app-plugin-persist-data *ngIf="seletedTab == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
       [serviceName]="category?.key" [pluginName]="plugin">
     </app-plugin-persist-data>
-
   </p>
 </div>
