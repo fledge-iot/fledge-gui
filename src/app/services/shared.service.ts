@@ -11,6 +11,7 @@ export class SharedService {
   public viewport: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public connectionInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public loginScreenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public configGroupSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 
   public checkAuth() {

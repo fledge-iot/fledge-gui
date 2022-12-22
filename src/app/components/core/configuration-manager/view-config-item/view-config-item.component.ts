@@ -2,10 +2,10 @@ import {
   ChangeDetectorRef, Component,
   ElementRef, EventEmitter, Input, OnChanges,
   OnDestroy, OnInit,
-  Output, ViewChild
+  Output, SimpleChanges, ViewChild
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy, orderBy } from 'lodash';
+import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy, orderBy, chain } from 'lodash';
 import { Subscription } from 'rxjs';
 import { AclService } from '../../../../services/acl.service';
 import { AlertService, ConfigurationService, ProgressBarService, SharedService } from '../../../../services';
@@ -58,7 +58,10 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
   public JSON;
 
+  @Input() groupConfiguration;
+
   constructor(
+    private elementRef: ElementRef,
     private configService: ConfigurationService,
     private aclService: AclService,
     private alertService: AlertService,
@@ -78,7 +81,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+
   ngOnChanges() {
+
+    console.log('changes', this.categoryConfigurationData);
+
+
     if (this.form) {
       this.form.resetForm();
     }
@@ -89,6 +97,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     this.newFileName = '';
     this.isValidJson = true;
     this.isValidExtension = true;
+
     if (!isEmpty(this.categoryConfigurationData)) {
       this.categoryConfiguration = cloneDeep(this.categoryConfigurationData.value[0]);
       this.categoryConfiguration = Object.keys(this.categoryConfiguration).map(key => {
@@ -127,9 +136,14 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
           this.newFileName = '';
         }
       }
-      this.checkValidityOnPageLoad();
-      this.cdRef.detectChanges();
     }
+
+    if (!isEmpty(this.groupConfiguration)) {
+      this.validateGroupConfigOnPageLoad();
+    } else if (!isEmpty(this.categoryConfigurationData)) {
+      this.checkValidityOnPageLoad();
+    }
+    this.cdRef.detectChanges();
   }
 
   getAllACLs() {
@@ -411,67 +425,15 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
   checkValidityOnPageLoad() {
-    // reset password match condition
-    this.passwordOnChangeFired = false;
-    this.passwordMatched.value = true;
     if (!isEmpty(this.categoryConfigurationData)) {
-      const data = this.categoryConfigurationData.value[0];
-      const config = [];
-      for (const k in data) {
-        config.push({
-          key: k,
-          value: data[k].value !== undefined ? data[k].value : data[k].default
-        });
-      }
-
-      for (const k in data) {
-        data[k].key = k;
-        if (data[k].hasOwnProperty('validity')) {
-          data[k].validityExpression = data[k].validity;
-          config.forEach(el => {
-            const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
-            if (regex.test(data[k].validityExpression)) {
-              data[k].validityExpression = data[k].validityExpression.split(`${el.key}`).join(`"${el.value}"`);
-            }
-          });
-        }
-      }
-
-      for (const k in data) {
-        if (data.hasOwnProperty(k)) {
-          if (data[k].hasOwnProperty('validity')) {
-            if (data[k]['validity'].trim() !== '') {
-              try {
-                // tslint:disable-next-line: no-eval
-                const e = eval(data[k].validityExpression);
-                // console.log('Validity expression', data[k].validityExpression)
-                if (typeof (e) !== 'boolean') {
-                  console.log('Validity expression', data[k].validityExpression, 'for', k, 'evlauted to non-boolean value ', e);
-                }
-                data[k].editable = e === false ? false : true;
-              } catch (e) {
-                console.log(e);
-                data[k].editable = true;
-              }
-            }
-          }
-        }
-      }
-
-      map(this.categoryConfiguration, obj => {
-        return assign(obj, find(data, { key: obj.key }));
-      });
-
-      this.categoryConfiguration.map(obj => {
-        if (obj.type === 'password' && obj.editable === false) {
-          this.passwordMatched = { key: obj.key, value: true };
-        }
-      });
+      let data = this.categoryConfigurationData.value[0];
+      data = chain(data).map((v, k) => {
+        v.key = k;
+        v.value = data[k].value ? data[k].value : data[k].default;
+        return v;
+      }).value();
+      this.validateConfigItem(data);
     }
   }
 
@@ -479,6 +441,13 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     if (config?.type?.toLowerCase() === 'script') {
       this.oldFileName = config.file ? config.file.substring(config.file.lastIndexOf('/') + 1) : config.file;
     }
+
+    if (!isEmpty(this.groupConfiguration)) {
+      this.checkgroupConfigValidityOnChange(config, configValue);
+      return;
+    }
+
+
     this.categoryConfiguration.forEach(cnf => {
       if (cnf.hasOwnProperty('validity')) {
         let expression = cnf.validity;
@@ -514,6 +483,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
             }
             config.editable = e === false ? false : true;
           } catch (e) {
+            console.log(e);
             config.editable = true;
           }
         }
@@ -527,7 +497,132 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  checkgroupConfigValidityOnChange(config: any, configValue: string) {
+    if (!isEmpty(this.groupConfiguration)) {
+      const data = chain(this.groupConfiguration.value[0]).map((v) => v).value();
+      data.map(config => {
+        if (config.hasOwnProperty('validity')) {
+          if (config.validity.trim() !== '') {
+            try {
+              // tslint:disable-next-line: no-eval
+              const e = eval(config.validityExpression);
+
+              if (typeof (e) !== 'boolean') {
+                console.log('Validity expression', config.validityExpression, 'for', config.key, 'evlauted to non-boolean value ', e);
+              }
+              config.editable = e === false ? false : true;
+            } catch (e) {
+              config.editable = true;
+            }
+          }
+        }
+      });
+
+      this.categoryConfiguration.forEach(cnf => {
+        if (cnf.hasOwnProperty('validity')) {
+          let expression = cnf.validity;
+          data.forEach(el => {
+            if (el.key === config.key) {
+              el.value = configValue;
+            }
+
+            const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
+            if (regex.test(expression)) {
+              expression = expression
+                .split(new RegExp(`${el.key.trim()}+(?=.*=)`)).join(`"${el.value !== undefined ? el.value : el.default}"`);
+            }
+          });
+          cnf.validityExpression = expression;
+        }
+
+        if (cnf.hasOwnProperty('mandatory') && cnf['key'] === config.key) {
+          if (cnf['mandatory'] === 'true' && configValue.trim().length === 0) {
+            this.form.controls[config.key].setErrors({ 'required': true });
+          }
+        }
+      });
+
+      this.categoryConfiguration.map(config => {
+        if (config.hasOwnProperty('validity')) {
+          if (config.validity.trim() !== '') {
+            try {
+              // tslint:disable-next-line: no-eval
+              const e = eval(config.validityExpression);
+              if (typeof (e) !== 'boolean') {
+                console.log('Validity expression', config.validityExpression, 'for', config.key, 'evlauted to non-boolean value ', e);
+              }
+              config.editable = e === false ? false : true;
+            } catch (e) {
+              console.log(e);
+              config.editable = true;
+            }
+          }
+        }
+      });
+    }
+  }
+
+  validateGroupConfigOnPageLoad() {
+    console.log('validityon load');
+
+    if (!isEmpty(this.groupConfiguration)) {
+      const data = chain(this.groupConfiguration.value[0]).map((v) => v).value();
+      this.validateConfigItem(data);
+    }
+  }
+
+
+  validateConfigItem(categoryConfiguration: any) {
+    // reset password match condition
+    this.passwordOnChangeFired = false;
+    this.passwordMatched.value = true;
+    for (const k in categoryConfiguration) {
+      if (categoryConfiguration[k].hasOwnProperty('validity')) {
+        categoryConfiguration[k].validityExpression = categoryConfiguration[k].validity;
+        categoryConfiguration.forEach(el => {
+          const regex = new RegExp(`${el.key}[^"]?\\s?.=`);
+          if (regex.test(categoryConfiguration[k].validityExpression)) {
+            categoryConfiguration[k].validityExpression = categoryConfiguration[k].validityExpression.split(`${el.key}`).join(`"${el.value}"`);
+          }
+        });
+      }
+    }
+
+    for (const k in categoryConfiguration) {
+      if (categoryConfiguration.hasOwnProperty(k)) {
+        if (categoryConfiguration[k].hasOwnProperty('validity')) {
+          if (categoryConfiguration[k]['validity'].trim() !== '') {
+            try {
+              // tslint:disable-next-line: no-eval
+              const e = eval(categoryConfiguration[k].validityExpression);
+              if (typeof (e) !== 'boolean') {
+                console.log('Validity expression', categoryConfiguration[k].validityExpression, 'for', k, 'evlauted to non-boolean value ', e);
+              }
+              categoryConfiguration[k].editable = e === false ? false : true;
+            } catch (e) {
+              console.log(e);
+              categoryConfiguration[k].editable = true;
+            }
+          }
+        }
+      }
+    }
+    map(this.categoryConfiguration, obj => {
+      return assign(obj, find(categoryConfiguration, { key: obj.key }));
+    });
+
+    this.categoryConfiguration.map(obj => {
+      if (obj.type === 'password' && obj.editable === false) {
+        this.passwordMatched = { key: obj.key, value: true };
+      }
+    });
+  }
+
   goToLink() {
     this.docService.goToPluginLink(this.pluginInfo);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

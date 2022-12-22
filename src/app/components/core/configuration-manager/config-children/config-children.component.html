@@ -1,18 +1,13 @@
 <div class="tabs is-boxed">
   <ul>
-    <li [ngClass]="{'is-active': seletedTab == category?.key}" *ngIf="category">
+    <li *ngFor="let g of groups" [ngClass]="{'is-active': seletedTab == g.group}">
       <h6 class="is-6 has-text-weight-semibold">
-        <a (click)="seletedTab = category?.key">Configuration</a>
+        <a (click)="selectTab(g.group)">
+          {{g.group.includes('Advanced')? 'Advanced Configuration' :
+          (g.group.includes('Security')? 'Security Configuration' : g.group)}}
+        </a>
       </h6>
     </li>
-    <ng-container *ngFor="let child of categoryChildren">
-      <li [ngClass]="{'is-active': seletedTab == child?.displayName}">
-        <h6 class="is-6 has-text-weight-semibold">
-          <a (click)="selectTab(child)">{{child?.displayName.includes('Advanced')? 'Advanced Configuration' :
-            (child?.displayName.includes('Security')? 'Security Configuration' : child?.displayName)}}</a>
-        </h6>
-      </li>
-    </ng-container>
     <!-- Developer tab to show plugin data -->
     <li [ngClass]="{'is-active': seletedTab == 'developer'}"
       *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from)">
@@ -24,22 +19,15 @@
 </div>
 <div>
   <p class="highlight">
-    <app-view-config-item #childrenConfigView [hidden]="seletedTab !== category?.key"
-      [categoryConfigurationData]="category" [useChildrenProxy]="useCategoryChildrenProxy" [formId]="category?.key">
-    </app-view-config-item>
-
-    <app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Advanced')"
-      [categoryConfigurationData]="advanceConfiguration" [useChildrenProxy]="useCategoryChildrenProxy"
-      formId="advanced">
-    </app-view-config-item>
-
-    <app-view-config-item #childrenConfigView [hidden]="!seletedTab.includes('Security')"
-      [categoryConfigurationData]="securityConfiguration" [useChildrenProxy]="useCategoryChildrenProxy"
-      formId="security">
-    </app-view-config-item>
-
+    <ng-container *ngFor="let g of groups">
+      <app-view-config-item *ngIf="seletedTab == g.group"
+        [categoryConfigurationData]="{ key: g.category, value : g.values}" [useChildrenProxy]="useCategoryChildrenProxy"
+        [formId]="g.group" [groupConfiguration]="category">
+      </app-view-config-item>
+    </ng-container>
     <app-plugin-persist-data *ngIf="seletedTab == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
       [serviceName]="category?.key" [pluginName]="plugin">
     </app-plugin-persist-data>
+
   </p>
 </div>
