@@ -20,8 +20,8 @@
           <div class="column is-6">
             <label class="label is-small">Username</label>
             <p class="control is-fullwidth">
-              <input [disabled]='true' type="text" class="input is-small" placeholder="username" name='username'
-                [(ngModel)]="userRecord.userName" />
+              <input type="text" class="input is-small is-static" name='username' [(ngModel)]="userRecord.userName"
+                readonly />
             </p>
           </div>
         </div>
@@ -29,8 +29,8 @@
           <div class="column is-6">
             <label class="label is-small">Role</label>
             <p class="control is-fullwidth">
-              <input [disabled]='true' type="text" class="input is-small" placeholder="role" name='role'
-                [(ngModel)]="userRecord.roleName">
+              <input type="text" class="input is-small is-static" name='role' [(ngModel)]="userRecord.roleName"
+                readonly>
             </p>
           </div>
         </div>
@@ -38,7 +38,8 @@
           <div class="column is-6">
             <label class="label is-small">Authentication Method</label>
             <p class="control is-fullwidth">
-              <input [disabled]='true' type="text" class="input is-small" name='access_method' [(ngModel)]="userRecord.access_method">
+              <input type="text" class="input is-small is-static" name='access_method'
+                [(ngModel)]="userRecord.access_method" readonly>
             </p>
           </div>
         </div>
@@ -46,15 +47,16 @@
           <div class="column is-6">
             <label class="label is-small">Description</label>
             <p class="control is-fullwidth">
-              <textarea [disabled]='true' type="text" class="textarea is-small" placeholder="description" name='description'
-                [(ngModel)]="userRecord.description"></textarea>
+              <textarea [disabled]='true' type="text" class="textarea is-small" placeholder="description"
+                name='description' [(ngModel)]="userRecord.description"></textarea>
             </p>
           </div>
         </div>
         <div class="columns">
           <div class="column is-6">
             <a class="link-is-small" (click)="toggleModal(true)">Change Password</a>&nbsp;&nbsp;&nbsp;
-            <a class="link-is-small" (click)="openModal(userRecord.userId, '', 'clearSessions', 'Are you sure, You want to clear your all active sessions')">Log
+            <a class="link-is-small"
+              (click)="openModal(userRecord.userId, '', 'clearSessions', 'Are you sure, You want to clear your all active sessions')">Log
               Out Active Sessions</a>
           </div>
         </div>
@@ -85,8 +87,9 @@
             <label class="label is-small">Current Password</label>
             <input type="password" class="input is-small" placeholder="current password" name='currentPassword'
               [(ngModel)]="userRecord.currentPassword" #currentPassword="ngModel" required />
-            <small *ngIf="f.submitted && !currentPassword.valid" class="help is-danger level-left">Wrong password</small>
-          </div>         
+            <small *ngIf="f.submitted && !currentPassword.valid" class="help is-danger level-left">Wrong
+              password</small>
+          </div>
         </div>
         <div class="columns">
           <div class="column is-6">
@@ -94,9 +97,10 @@
             <input type="password" class="input is-small" placeholder="new password" name='password'
               [(ngModel)]="userRecord.password" #password="ngModel" validateEqual="confirmPassword" reverse="true"
               required />
-            <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minimum 6
+            <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required(minimum
+              6
               characters)</small>
-          </div>        
+          </div>
         </div>
         <div class="columns">
           <div class="column is-6">
@@ -105,7 +109,7 @@
               [(ngModel)]="userRecord.confirmPassword" #confirmPassword="ngModel" validateEqual="password" required />
             <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password
               mismatch</small>
-            </div>         
+          </div>
         </div>
       </form>
     </section>
