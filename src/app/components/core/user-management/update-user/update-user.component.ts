@@ -20,7 +20,7 @@ export class UpdateUserComponent implements OnInit, OnChanges {
 
   showRoleSection = false;
   updateSection = 'pwd';
-  selectedRole = this.rolesService.getRoleName(2); // set "user" as a default role
+  selectedRole = this.rolesService.getRoleName(2); // Set role id (2: Editor) as default
   selectedAuthMethod;
   isFieldChanged = false;
 
