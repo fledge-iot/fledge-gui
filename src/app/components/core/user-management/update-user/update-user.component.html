@@ -13,8 +13,8 @@
           <div class="column is-6">
             <label class="label is-small">Username</label>
             <p class="control is-fullwidth">
-              <input [disabled]='true' type="text" class="input is-small" placeholder="username" name='username'
-                [(ngModel)]="userRecord.username" #username="ngModel" minlength="4" maxlength="8" required />
+              <input type="text" class="input is-small is-static" placeholder="username" name='username'
+                [(ngModel)]="userRecord.username" #username="ngModel" minlength="4" maxlength="8" readonly />
             </p>
           </div>
         </div>
