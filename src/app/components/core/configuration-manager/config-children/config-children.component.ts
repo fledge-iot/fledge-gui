@@ -76,8 +76,6 @@ export class ConfigChildrenComponent {
    * @param category Object{key, description, displayName}
    */
   selectTab(tab: string) {
-    console.log(tab);
-
     if (tab !== this.seletedTab) {
       this.seletedTab = tab;
     }

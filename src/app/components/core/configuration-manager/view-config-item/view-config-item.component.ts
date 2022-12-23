@@ -62,7 +62,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @Input() group;
 
   constructor(
-    private elementRef: ElementRef,
     private configService: ConfigurationService,
     private aclService: AclService,
     private alertService: AlertService,
