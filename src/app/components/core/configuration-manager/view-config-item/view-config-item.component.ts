@@ -85,10 +85,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
 
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('changes', changes);
     if (!changes?.group?.firstChange) {
       if (changes?.group?.previousValue !== changes?.group?.currentValue) {
-        console.log('change', changes.group.currentValue);
         this.validateGroupConfigOnPageLoad();
         return;
       }
@@ -188,8 +186,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public saveConfiguration(form: NgForm) {
-    console.log('form', form.value);
-
     this.isValidForm = true;
     if (!form.valid || this.passwordMatched.value === false) {
       this.isValidForm = false;
@@ -573,10 +569,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   validateGroupConfigOnPageLoad() {
-    console.log('validityon load');
-
     if (!isEmpty(this.groupConfiguration)) {
-      const data = chain(this.groupConfiguration.value[0]).map((v) => v).value();
+      let data = chain(this.groupConfiguration.value[0]);
+      data = chain(data).map((v, k) => {
+        v.key = k;
+        return v;
+      }).value();
       this.validateConfigItem(data);
     }
   }

@@ -3,8 +3,6 @@
     <li *ngFor="let g of groups" [ngClass]="{'is-active': seletedTab == g.group}">
       <h6 class="is-6 has-text-weight-semibold">
         <a (click)="selectTab(g.group)">
-          <!-- {{g.group.includes('Advanced')? 'Advanced Configuration' :
-          (g.group.includes('Security')? 'Security Configuration' : g.group)}} -->
           {{g.group}}
         </a>
       </h6>

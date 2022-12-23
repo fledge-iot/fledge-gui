@@ -28,6 +28,11 @@ export class ConfigChildrenComponent {
   ) { }
 
   ngOnInit() {
+    this.categeryConfiguration();
+    this.getChildConfigData();
+  }
+
+  categeryConfiguration() {
     const configItems = Object.keys(this.category.value[0]).map(k => {
       this.category.value[0][k].key = k;
       return this.category.value[0][k];
@@ -41,8 +46,6 @@ export class ConfigChildrenComponent {
         return { category: this.category.key, group: "Default Configuration", values: [Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } }))] }
       }
     }).value();
-
-    this.getChildConfigData();
   }
 
   public getChildConfigData() {
