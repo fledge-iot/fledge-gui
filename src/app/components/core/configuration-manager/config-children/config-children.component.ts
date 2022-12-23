@@ -88,16 +88,27 @@ export class ConfigChildrenComponent {
     this.configService.getCategory(category.key).
       subscribe(
         (data: any) => {
-          // set configuration to pass on view-config-item-component page
-          if (category.key.includes('Advanced')) {
-            this.groups.push({ category: category.key, group: category.key, values: [data] })
-          } else if (category.key.includes('Security')) {
-            this.groups.push({ category: category.key, group: category.key, values: [data] })
+          let group = category.key;
+          if (category.key === `${this.categoryKey}Advanced`) {
+            group = 'Advance Configuration';
+          } else if (category.key === `${this.categoryKey}Security`) {
+            group = 'Security Configuration';
           }
+          this.upsertConfiguration(this.groups, { category: category.key, group, values: [data] });
         },
         error => {
           console.log('error ', error);
         }
       );
+  }
+
+  upsertConfiguration(array, element) {
+    const i = array.findIndex(_element => _element.category === element.category);
+    if (i > -1) {
+      array[i] = element;
+    }
+    else {
+      array.push(element);
+    }
   }
 }
