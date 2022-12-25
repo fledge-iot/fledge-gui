@@ -42,7 +42,9 @@ export class PluginPersistDataComponent implements OnInit {
           this.plugins = res.persistent;
           /** request completed */
           this.ngProgress.done();
-          this.getData(this.plugins[0]); // show data of the first plugin in the list
+          if (this.plugins.length > 0) {
+            this.getData(this.plugins[0]); // show data of the first plugin in the list
+          }
         },
         error => {
           /** request completed but error */
