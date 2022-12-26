@@ -1,28 +1,9 @@
-## Unreleased [202x-xx-xx]
-
-#### Added
-
-- 
-
-#### Changed
-
-- 
-
-#### Fixed
-
--
-
-#### Others
-
-- 
-
-
 ## v2.1.0 [2022-12-26]
 
 #### Added
 
 - [FOGL-7126] South and North Plugin's configuration grouping based on group key [#234](https://github.com/fledge-iot/fledge-gui/pull/234)
-- [FOGL-7108]: Role based access for view & data_view role users [231]: (https://github.com/fledge-iot/fledge-gui/pull/231)
+- [FOGL-7108] Role based access for view & data_view role users [231](https://github.com/fledge-iot/fledge-gui/pull/231)
 
 #### Changed
 
