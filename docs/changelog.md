@@ -12,7 +12,8 @@
 
 #### Fixed
 
--
+- [FOGL-7065] Fixed add user and update user for different roles
+[#227](https://github.com/fledge-iot/fledge-gui/pull/227)
 
 #### Others
 
