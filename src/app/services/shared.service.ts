@@ -13,7 +13,6 @@ export class SharedService {
   public connectionInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public loginScreenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-
   public checkAuth() {
     const auth = !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
     const admin = JSON.parse(sessionStorage.getItem('isAdmin'));
