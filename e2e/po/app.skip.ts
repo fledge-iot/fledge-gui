@@ -128,7 +128,7 @@ export class SkipLogin {
   }
 
   navToSystemLogs() {
-    return browser.get('/#/syslog');
+    return browser.get('/#/logs/syslog');
   }
 
   getSystemLogTitle() {
