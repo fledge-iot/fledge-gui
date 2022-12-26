@@ -3,12 +3,12 @@
 #### Added
 
 - [FOGL-7126] South and North Plugin's configuration grouping based on group key [#234](https://github.com/fledge-iot/fledge-gui/pull/234)
-- [FOGL-7108] Role based access for view & data_view role users [231](https://github.com/fledge-iot/fledge-gui/pull/231)
+- [FOGL-7108] Role based access for view & data_view role users [#231](https://github.com/fledge-iot/fledge-gui/pull/231)
 
 #### Changed
 
 - [FOGL-7049] Timestamps with YYYY-MM-DD for tabular data, latest reading and datapoint hover for assets & readings graphs [#217](https://github.com/fledge-iot/fledge-gui/pull/217)
-- [FOGL-7193] collapse assets & readings by default on south service page [232](https://github.com/fledge-iot/fledge-gui/pull/232)
+- [FOGL-7193] collapse assets & readings by default on south service page [#232](https://github.com/fledge-iot/fledge-gui/pull/232)
 
 #### Fixed
 
