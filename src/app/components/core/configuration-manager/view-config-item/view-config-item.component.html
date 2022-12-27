@@ -27,7 +27,7 @@
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </label>
                     </ng-container>
-                    <div class="field">
+                    <div class="field" [ngClass]="{'codemirror-field': getConfigAttributeType(configItem.value.type) === 'LONG_TEXT' || getConfigAttributeType(configItem.value.type) === 'RAW_TEXT' || getConfigAttributeType(configItem.value.type) === 'SCRIPT'}">
                       <input *ngSwitchCase="'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                         type="text" [ngModel]="setConfigValue(configItem.value)"
                         (input)="checkValidityOnChange(configItem.value, $event.target.value)"
@@ -228,7 +228,7 @@
                 </label>
               </div>
               <div class="field-body">
-                <div class="field">
+                <div class="field" [ngClass]="{'codemirror-field': getConfigAttributeType(configItem.value.type) === 'LONG_TEXT' || getConfigAttributeType(configItem.value.type) === 'RAW_TEXT' || getConfigAttributeType(configItem.value.type) === 'SCRIPT'}">
                   <ng-container *ngSwitchCase="'BOOLEAN'">
                     <label class="checkbox">
                       <input type="checkbox" name='{{configItem.value.key}}' [disabled]="true"
@@ -237,17 +237,16 @@
                   </ng-container>
                   <ng-container *ngSwitchCase="'LONG_TEXT'">
                     <ngx-codemirror name="{{configItem.value.key}}" class="readonly-editor"
-                      [options]="{ readOnly: true, className: 'readOnly', lineNumbers: true,lineWrapping: true,foldGutter: true}"
-                      [disabled]="true" [ngModel]="JSON.parse(setConfigValue(configItem.value)) | json ">
+                        [options]="{ readOnly: true, className: 'readOnly', lineNumbers: true,lineWrapping: true,foldGutter: true}"
+                        [disabled]="true" [ngModel]="JSON.parse(setConfigValue(configItem.value)) | json ">
                     </ngx-codemirror>
                   </ng-container>
                   <ng-container *ngSwitchCase="'SCRIPT'">
                     <ngx-codemirror name="{{configItem.value.key}}" class="readonly-editor"
-                      [options]="{ readOnly: true, className: 'readOnly', lineNumbers: true,lineWrapping: true,foldGutter: true}"
-                      [disabled]="true" [ngModel]="fileContent || setConfigValue(configItem.value)">
+                        [options]="{ readOnly: true, className: 'readOnly', lineNumbers: true,lineWrapping: true,foldGutter: true}"
+                        [disabled]="true" [ngModel]="fileContent || setConfigValue(configItem.value)">
                     </ngx-codemirror>
                   </ng-container>
-
                   <div class="field" *ngSwitchDefault>
                     <input name="{{configItem.value.key}}" class="input is-fullwidth is-small is-static" type="text"
                       [ngClass]="{'has-text-grey-light': configItem.value.value === '' && configItem.value.default === ''}"
