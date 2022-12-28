@@ -27,7 +27,7 @@
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </label>
                     </ng-container>
-                    <div class="field" [ngClass]="{'codemirror-field': getConfigAttributeType(configItem.value.type) === 'LONG_TEXT' || getConfigAttributeType(configItem.value.type) === 'RAW_TEXT' || getConfigAttributeType(configItem.value.type) === 'SCRIPT'}">
+                    <div class="field" [style.max-width.px]=cdmrTextareaWidth id="cdmr-field" [ngClass]="{'codemirror-field': getConfigAttributeType(configItem.value.type) === 'LONG_TEXT' || getConfigAttributeType(configItem.value.type) === 'RAW_TEXT' || getConfigAttributeType(configItem.value.type) === 'SCRIPT'}">
                       <input *ngSwitchCase="'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                         type="text" [ngModel]="setConfigValue(configItem.value)"
                         (input)="checkValidityOnChange(configItem.value, $event.target.value)"
@@ -228,7 +228,7 @@
                 </label>
               </div>
               <div class="field-body">
-                <div class="field" [ngClass]="{'codemirror-field': getConfigAttributeType(configItem.value.type) === 'LONG_TEXT' || getConfigAttributeType(configItem.value.type) === 'RAW_TEXT' || getConfigAttributeType(configItem.value.type) === 'SCRIPT'}">
+                <div class="field" [style.max-width.px]=cdmrTextareaWidth id="cdmr-field" [ngClass]="{'codemirror-field': getConfigAttributeType(configItem.value.type) === 'LONG_TEXT' || getConfigAttributeType(configItem.value.type) === 'RAW_TEXT' || getConfigAttributeType(configItem.value.type) === 'SCRIPT'}">
                   <ng-container *ngSwitchCase="'BOOLEAN'">
                     <label class="checkbox">
                       <input type="checkbox" name='{{configItem.value.key}}' [disabled]="true"

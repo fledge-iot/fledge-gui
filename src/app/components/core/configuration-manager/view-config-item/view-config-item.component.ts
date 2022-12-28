@@ -44,6 +44,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public selectedTheme = 'default';
   public isValidExtension = true;
   private subscription: Subscription;
+  public cdmrTextareaWidth;
 
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('jsoneditor') jsoneditor: ElementRef;
@@ -81,7 +82,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
   }
-
 
   ngOnChanges(changes: SimpleChanges) {
     if (!changes?.group?.firstChange) {
@@ -149,6 +149,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       this.checkValidityOnPageLoad();
     }
     this.cdRef.detectChanges();
+
+    // get width of codemirror textarea (if exist)
+    let codemirrorTextarea = document.getElementById('cdmr-field');
+    if (codemirrorTextarea) {
+      this.cdmrTextareaWidth = codemirrorTextarea.offsetWidth;
+    }
   }
 
   getAllACLs() {
