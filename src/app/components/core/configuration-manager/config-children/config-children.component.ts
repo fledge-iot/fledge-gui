@@ -21,9 +21,6 @@ export class ConfigChildrenComponent {
 
   pages = ['south', 'north'];
 
-  advanceConfiguration;
-  securityConfiguration;
-
   constructor(
     private configService: ConfigurationService,
     public developerFeaturesService: DeveloperFeaturesService,
