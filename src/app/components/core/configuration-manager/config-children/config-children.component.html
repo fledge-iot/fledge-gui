@@ -7,6 +7,13 @@
         </a>
       </h6>
     </li>
+    <ng-container *ngFor="let child of categoryChildren">
+      <li [ngClass]="{'is-active': seletedTab == child?.group}">
+        <h6 class="is-6 has-text-weight-semibold">
+          <a (click)="selectTab(child?.group)">{{child?.group}}</a>
+        </h6>
+      </li>
+    </ng-container>
     <!-- Developer tab to show plugin data -->
     <li [ngClass]="{'is-active': seletedTab == 'developer'}"
       *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
@@ -24,6 +31,13 @@
         [formId]="g.group" [groupConfiguration]="category" [group]="seletedTab">
       </app-view-config-item>
     </ng-container>
+
+    <ng-container *ngFor="let child of categoryChildren">
+      <app-view-config-item [hidden]="!seletedTab.includes(child.group)" [categoryConfigurationData]="child.config"
+        [useChildrenProxy]="useCategoryChildrenProxy" [formId]="child?.key">
+      </app-view-config-item>
+    </ng-container>
+
     <app-plugin-persist-data *ngIf="seletedTab == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
       [serviceName]="category?.key" [pluginName]="plugin">
     </app-plugin-persist-data>
