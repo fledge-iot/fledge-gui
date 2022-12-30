@@ -19,7 +19,7 @@ export class ConfigChildrenComponent {
   @Input() serviceStatus = false;
   @Input() from;
 
-  pages = ['south', 'north']
+  pages = ['south', 'north'];
 
   constructor(
     private configService: ConfigurationService,
@@ -61,6 +61,9 @@ export class ConfigChildrenComponent {
         (data: any) => {
           this.categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
           this.categoryChildren.forEach(cat => {
+            // Set group of advance/security configuration
+            cat.group = cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced Configuration' :
+              (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security Configuration' : cat?.displayName);
             // Get child category configuration
             this.getConfig(cat);
           });
@@ -89,13 +92,11 @@ export class ConfigChildrenComponent {
     this.configService.getCategory(category.key).
       subscribe(
         (data: any) => {
-          let group = category.key;
           if (category.key === `${this.categoryKey}Advanced`) {
-            group = 'Advance Configuration';
+            category.config = { key: category.key, value: [data] };
           } else if (category.key === `${this.categoryKey}Security`) {
-            group = 'Security Configuration';
+            category.config = { key: category.key, value: [data] };
           }
-          this.upsertConfiguration(this.groups, { category: category.key, group, values: [data] });
         },
         error => {
           console.log('error ', error);
