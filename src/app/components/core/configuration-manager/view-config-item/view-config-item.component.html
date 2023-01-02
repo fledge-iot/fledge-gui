@@ -27,7 +27,8 @@
                           [disabled]="configItem?.value?.hasOwnProperty('editable') && !configItem?.value?.editable" />
                       </label>
                     </ng-container>
-                    <div class="field" [style.max-width.px]=cdmrTextareaWidth id="cdmr-field" [ngClass]="{'codemirror-field': getConfigAttributeType(configItem.value.type) === 'LONG_TEXT' || getConfigAttributeType(configItem.value.type) === 'RAW_TEXT' || getConfigAttributeType(configItem.value.type) === 'SCRIPT'}">
+                    <div class="field" #cdmrField [style.max-width.px]="['LONG_TEXT', 'RAW_TEXT', 'SCRIPT'].includes(getConfigAttributeType(configItem.value.type)) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
+                    [ngClass]="{'codemirror-field': ['LONG_TEXT', 'RAW_TEXT', 'SCRIPT'].includes(getConfigAttributeType(configItem.value.type))}">
                       <input *ngSwitchCase="'TEXT'" name="{{configItem.value.key}}" class="input is-fullwidth is-small"
                         type="text" [ngModel]="setConfigValue(configItem.value)"
                         (input)="checkValidityOnChange(configItem.value, $event.target.value)"
@@ -228,7 +229,8 @@
                 </label>
               </div>
               <div class="field-body">
-                <div class="field" [style.max-width.px]=cdmrTextareaWidth id="cdmr-field" [ngClass]="{'codemirror-field': getConfigAttributeType(configItem.value.type) === 'LONG_TEXT' || getConfigAttributeType(configItem.value.type) === 'RAW_TEXT' || getConfigAttributeType(configItem.value.type) === 'SCRIPT'}">
+                <div class="field" #cdmrField [style.max-width.px]="['LONG_TEXT', 'RAW_TEXT', 'SCRIPT'].includes(getConfigAttributeType(configItem.value.type)) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
+                [ngClass]="{'codemirror-field': ['LONG_TEXT', 'RAW_TEXT', 'SCRIPT'].includes(getConfigAttributeType(configItem.value.type))}">
                   <ng-container *ngSwitchCase="'BOOLEAN'">
                     <label class="checkbox">
                       <input type="checkbox" name='{{configItem.value.key}}' [disabled]="true"

@@ -2,7 +2,7 @@ import {
   ChangeDetectorRef, Component,
   ElementRef, EventEmitter, Input, OnChanges,
   OnDestroy, OnInit,
-  Output, SimpleChanges, ViewChild
+  Output, SimpleChanges, ViewChild, ViewChildren, QueryList
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy, orderBy, chain } from 'lodash';
@@ -44,12 +44,12 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   public selectedTheme = 'default';
   public isValidExtension = true;
   private subscription: Subscription;
-  public cdmrTextareaWidth;
 
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('jsoneditor') jsoneditor: ElementRef;
   @ViewChild('pwd') pwd: ElementRef;
   @ViewChild('f', { static: false }) form: NgForm;
+  @ViewChildren('cdmrField') codemirrorField: QueryList<ViewConfigItemComponent>;
 
   public passwordOnChangeFired = false;
   public passwordMatched = {
@@ -149,12 +149,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       this.checkValidityOnPageLoad();
     }
     this.cdRef.detectChanges();
-
-    // get width of codemirror textarea (if exist)
-    let codemirrorTextarea = document.getElementById('cdmr-field');
-    if (codemirrorTextarea) {
-      this.cdmrTextareaWidth = codemirrorTextarea.offsetWidth;
-    }
   }
 
   getAllACLs() {
