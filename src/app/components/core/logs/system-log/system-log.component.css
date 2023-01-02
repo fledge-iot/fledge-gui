@@ -11,6 +11,7 @@
   margin: 0px;
   padding: 4px;
   background: white;
+  word-break: break-word;
 }
 
 .pagination-section {
