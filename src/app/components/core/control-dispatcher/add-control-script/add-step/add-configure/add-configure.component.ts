@@ -57,10 +57,16 @@ export class AddConfigureComponent implements OnInit {
   }
 
   stepControlGroup(): FormGroup {
+    if (this.stepsFormGroup() === undefined) {
+      return;
+    }
     return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
   }
 
   configureControlGroup() {
+    if (this.stepControlGroup() === undefined) {
+      return;
+    }
     return this.stepControlGroup().controls['configure'] as FormGroup;
   }
 
@@ -195,6 +201,9 @@ export class AddConfigureComponent implements OnInit {
     }
     this.selectedConfigItem = '';
     this.configValue = '';
+    if (this.configureControlGroup() === undefined) {
+      return;
+    }
     this.configureControlGroup().controls['item'].setValue('');
     this.configureControlGroup().controls['value'].setValue('');
 
