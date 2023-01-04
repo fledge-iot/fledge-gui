@@ -13,8 +13,8 @@
           <div class="column is-6">
             <label class="label is-small">Username</label>
             <p class="control is-fullwidth">
-              <input [disabled]='true' type="text" class="input is-small" placeholder="username" name='username'
-                [(ngModel)]="userRecord.username" #username="ngModel" minlength="4" maxlength="8" required />
+              <input type="text" class="input is-small is-static" placeholder="username" name='username'
+                [(ngModel)]="userRecord.username" #username="ngModel" minlength="4" maxlength="8" readonly />
             </p>
           </div>
         </div>
@@ -35,7 +35,7 @@
                 <div class="dropdown-content">
                   <a class="dropdown-item" *ngFor="let role of userRole"
                     (click)="toggleDropDown('update-user-dropdown');setUserRole(role)">
-                    {{role.name}}
+                    {{setRoleName(role.id)}}
                   </a>
                 </div>
               </div>
@@ -94,7 +94,8 @@
                 [(ngModel)]="userRecord.password" #password="ngModel" validateEqual="confirmPassword" reverse="true"
                 required />
             </p>
-            <small *ngIf="f.submitted && !password.valid && !f.pristine" class="help is-danger level-left">Password is required(minimum
+            <small *ngIf="f.submitted && !password.valid && !f.pristine" class="help is-danger level-left">Password is
+              required(minimum
               6 characters)</small>
           </div>
         </div>
@@ -105,14 +106,16 @@
               <input type="password" class="input is-small" placeholder="confirm password" name='confirmPassword'
                 [(ngModel)]="userRecord.confirmPassword" #confirmPassword="ngModel" validateEqual="password" required />
             </p>
-            <small *ngIf="f.submitted && !confirmPassword.valid && !f.pristine" class="help is-danger level-left is-small">Password
+            <small *ngIf="f.submitted && !confirmPassword.valid && !f.pristine"
+              class="help is-danger level-left is-small">Password
               mismatch</small>
           </div>
         </div>
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button [disabled]="f.pristine && !isFieldChanged" id="update" form="updateForm" type="submit" class="button is-info is-small">Update</button>
+      <button [disabled]="f.pristine && !isFieldChanged" id="update" form="updateForm" type="submit"
+        class="button is-info is-small">Update</button>
     </footer>
   </div>
 </div>

@@ -4,11 +4,11 @@ import { orderBy } from 'lodash';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { interval, Subscription, Subject } from 'rxjs';
 
-import { PingService, ServicesApiService, ProgressBarService, SharedService, AssetsService } from '../../../services';
+import { PingService, ServicesApiService, ProgressBarService, SharedService, AssetsService, RolesService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
 import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
-import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
+import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 
@@ -45,7 +45,8 @@ export class SouthComponent implements OnInit, OnDestroy {
     private router: Router,
     private ping: PingService,
     private dialogService: DialogService,
-    private sharedService: SharedService) {
+    private sharedService: SharedService,
+    public rolesService: RolesService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
@@ -101,7 +102,7 @@ export class SouthComponent implements OnInit, OnDestroy {
           this.southboundServices = orderBy(enabledServices, 'name').concat(orderBy(disabledServices, 'name'));
           // add expanded key in service to show/hide the assets in the service row
           this.southboundServices.map((svc: any) => {
-            svc.expanded = true;
+            svc.expanded = false;
             const ss = this.southAseetsExpandedState.find(s => s.name === svc.name);
             if (ss) {
               svc.expanded = ss.expanded;

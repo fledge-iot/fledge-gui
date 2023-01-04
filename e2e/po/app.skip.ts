@@ -109,7 +109,7 @@ export class SkipLogin {
   }
 
   navToAuditLogs() {
-    return browser.get('/#/audit');
+    return browser.get('/#/logs/audit');
   }
 
   getAuditLogsTitle() {
@@ -128,7 +128,7 @@ export class SkipLogin {
   }
 
   navToSystemLogs() {
-    return browser.get('/#/syslog');
+    return browser.get('/#/logs/syslog');
   }
 
   getSystemLogTitle() {

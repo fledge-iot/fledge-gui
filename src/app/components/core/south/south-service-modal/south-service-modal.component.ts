@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, AssetsService, ConfigurationService, FilterService, GenerateCsvService, ProgressBarService, SchedulesService,
+  AlertService, AssetsService, ConfigurationService, FilterService, GenerateCsvService, ProgressBarService, RolesService, SchedulesService,
   ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
@@ -67,7 +67,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService,
     private dialogService: DialogService,
-    private docService: DocService) { }
+    private docService: DocService,
+    public rolesService: RolesService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
@@ -132,6 +133,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (isOpen) {
       this.notify.emit(false);
       this.svcCheckbox.setValue(this.service['schedule_enabled']);
+      if (!this.rolesService.hasEditPermissions()) {
+        this.svcCheckbox.disable()
+      }
       modalWindow.classList.add('is-active');
       return;
     }
@@ -515,7 +519,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   navToSyslogs(service) {
-    this.router.navigate(['syslog'], { queryParams: { source: service.name } });
+    this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
 
   discardChanges() {

@@ -8,7 +8,7 @@ import { isEmpty } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, ConfigurationService, FilterService, NorthService, ProgressBarService, SchedulesService, ServicesApiService
+  AlertService, ConfigurationService, FilterService, NorthService, ProgressBarService, RolesService, SchedulesService, ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { ValidateFormService } from '../../../../services/validate-form.service';
@@ -69,7 +69,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private dialogService: DialogService,
     public ngProgress: ProgressBarService,
     private servicesApiService: ServicesApiService,
-    private docService: DocService
+    private docService: DocService,
+    public rolesService: RolesService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -489,7 +490,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   navToSyslogs(task) {
-    this.router.navigate(['syslog'], { queryParams: { source: task.name } });
+    this.router.navigate(['logs/syslog'], { queryParams: { source: task.name } });
   }
 
   discardChanges() {

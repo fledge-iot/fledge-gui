@@ -4,13 +4,15 @@
       <article class="message is-warning">
         <div class="message-body">
           Notification service is not added
-          and enabled.&nbsp; <a (click)="openNotificationServiceModal()"><strong>add & enable now</strong></a>
+          and enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
+            (click)="openNotificationServiceModal()"><strong>add & enable now</strong></a>
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
             <span class="icon">
               <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
             </span>
           </button>
-          <span class="icon is-small tooltip is-pulled-right is-hovered custom-pad" data-tooltip="Help" (click)="goToLink('starting-the-notification-service')">
+          <span class="icon is-small tooltip is-pulled-right is-hovered custom-pad" data-tooltip="Help"
+            (click)="goToLink('starting-the-notification-service')">
             <i class="far fa-question-circle"></i>
           </span>
         </div>
@@ -19,14 +21,16 @@
     <ng-container *ngIf="isNotificationServiceAvailable && !isNotificationServiceEnabled">
       <article class="message is-warning">
         <div class="message-body">
-          Notification service is not enabled.&nbsp;<a (click)="enableNotificationService()"><strong>enable
+          Notification service is not enabled.&nbsp;<a *ngIf="rolesService.hasEditPermissions()"
+            (click)="enableNotificationService()"><strong>enable
               now</strong></a>
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
             <span class="icon">
               <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
             </span>
           </button>
-          <span class="icon is-small tooltip is-pulled-right is-hovered custom-pad" data-tooltip="Help" (click)="goToLink('starting-the-notification-service')">
+          <span class="icon is-small tooltip is-pulled-right is-hovered custom-pad" data-tooltip="Help"
+            (click)="goToLink('starting-the-notification-service')">
             <i class="far fa-question-circle"></i>
           </span>
         </div>
@@ -45,17 +49,20 @@
           </a>
         </p>
       </div>
-      <button [disabled]="!isNotificationServiceEnabled" id="add_notification_instance" class="button is-light"
-        (click)="addNotificationInstance()">
+      <button *ngIf="rolesService.hasEditPermissions()" [disabled]="!isNotificationServiceEnabled"
+        id="add_notification_instance" class="button is-light" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
-      <a class="button" (click)="openNotificationServiceModal()" id="refresh-check">
+      <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
+        (click)="openNotificationServiceModal()" id="refresh-check">
         <span class="icon">
           <i class="fa fa-cog" aria-hidden="true"></i>
         </span>
       </a>
-      <span *ngIf="isNotificationServiceEnabled" class="icon is-small tooltip is-pulled-right is-hovered notification-help-pad" data-tooltip="Help" (click)="goToLink('using-the-notification-service')">
+      <span *ngIf="isNotificationServiceEnabled"
+        class="icon is-small tooltip is-pulled-right is-hovered notification-help-pad" data-tooltip="Help"
+        (click)="goToLink('using-the-notification-service')">
         <i class="far fa-question-circle"></i>
       </span>
     </header>

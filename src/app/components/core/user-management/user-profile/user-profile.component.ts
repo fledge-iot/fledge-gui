@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AlertService, AuthService, UserService, ProgressBarService } from '../../../../services';
+import { AlertService, AuthService, UserService, ProgressBarService, RolesService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 
 @Component({
@@ -16,9 +16,11 @@ export class UserProfileComponent implements OnInit {
   isShow = false;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
+
   constructor(private authService: AuthService,
     private alertService: AlertService,
     private userService: UserService,
+    private roleService: RolesService,
     public ngProgress: ProgressBarService,
     private router: Router) { }
 
@@ -44,7 +46,7 @@ export class UserProfileComponent implements OnInit {
                 this.ngProgress.done();
                 roleRecord['roles'].filter(role => {
                   if (role.id === userData['roleId']) {
-                    userData['roleName'] = role.name;
+                    userData['roleName'] = this.roleService.getRoleName(role.id);
                   }
                 });
                 this.userRecord = {
@@ -171,6 +173,7 @@ export class UserProfileComponent implements OnInit {
           this.alertService.success('User updated successfully');
         },
         error => {
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

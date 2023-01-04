@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
-
-import { ConfigurationService } from '../../../../services';
+import { ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
-
+import { chain } from 'lodash';
 
 @Component({
   selector: 'app-config-children',
@@ -10,32 +9,47 @@ import { DeveloperFeaturesService } from '../../../../services/developer-feature
   styleUrls: ['./config-children.component.css']
 })
 export class ConfigChildrenComponent {
-  seletedTab = '';
+  seletedTab = 'Default Configuration';
   useCategoryChildrenProxy = 'true';
   categoryKey = '';
-  advanceConfiguration: any;
-  securityConfiguration: any;
-
   categoryChildren = [];
   @Input() category;
+  groups = [];
   @Input() plugin;
   @Input() serviceStatus = false;
   @Input() from;
 
-  pages = ['south', 'north']
+  pages = ['south', 'north'];
 
   constructor(
     private configService: ConfigurationService,
     public developerFeaturesService: DeveloperFeaturesService,
+    public rolesService: RolesService
   ) { }
 
   ngOnInit() {
+    this.categeryConfiguration();
     this.getChildConfigData();
+  }
+
+  categeryConfiguration() {
+    const configItems = Object.keys(this.category.value[0]).map(k => {
+      this.category.value[0][k].key = k;
+      return this.category.value[0][k];
+    });
+
+    this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
+      if (k != "undefined") {
+        return { category: this.category.key, group: k, values: [Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } }))] }
+      } else {
+        // return { group: "Default", values: v }
+        return { category: this.category.key, group: "Default Configuration", values: [Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } }))] }
+      }
+    }).value();
   }
 
   public getChildConfigData() {
     if (this.category) {
-      this.seletedTab = this.category.key
       this.categoryKey = this.category.key;
       this.checkIfAdvanceConfig(this.category.key)
     }
@@ -47,6 +61,9 @@ export class ConfigChildrenComponent {
         (data: any) => {
           this.categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
           this.categoryChildren.forEach(cat => {
+            // Set group of advance/security configuration
+            cat.group = cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced Configuration' :
+              (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security Configuration' : cat?.displayName);
             // Get child category configuration
             this.getConfig(cat);
           });
@@ -61,10 +78,10 @@ export class ConfigChildrenComponent {
    * Set configuration of the selected child category
    * @param category Object{key, description, displayName}
    */
-  selectTab(category: any) {
-    this.seletedTab = category?.displayName;
-    this.categoryKey = category?.key;
-    this.useCategoryChildrenProxy = 'true';
+  selectTab(tab: string) {
+    if (tab !== this.seletedTab) {
+      this.seletedTab = tab;
+    }
   }
 
   /**
@@ -75,16 +92,25 @@ export class ConfigChildrenComponent {
     this.configService.getCategory(category.key).
       subscribe(
         (data: any) => {
-          // set configuration to pass on view-config-item-component page
-          if (category.key.includes('Advanced')) {
-            this.advanceConfiguration = { key: category.key, value: [data] };
-          } else if (category.key.includes('Security')) {
-            this.securityConfiguration = { key: category.key, value: [data] };
+          if (category.key === `${this.categoryKey}Advanced`) {
+            category.config = { key: category.key, value: [data] };
+          } else if (category.key === `${this.categoryKey}Security`) {
+            category.config = { key: category.key, value: [data] };
           }
         },
         error => {
           console.log('error ', error);
         }
       );
+  }
+
+  upsertConfiguration(array, element) {
+    const i = array.findIndex(_element => _element.category === element.category);
+    if (i > -1) {
+      array[i] = element;
+    }
+    else {
+      array.push(element);
+    }
   }
 }

@@ -9,3 +9,12 @@
 .is-fullwidth {
     width: 100%;
 }
+
+.btn-txt {
+    padding-right: 0;
+}
+
+.browse-crt-modal {
+    padding-top: 40px;
+    padding-bottom: 48px;
+}

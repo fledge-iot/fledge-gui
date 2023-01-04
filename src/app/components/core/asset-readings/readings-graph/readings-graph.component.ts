@@ -391,7 +391,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             imageReadings.push({
               datapoint: k,
               imageData: value,
-              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss')
+              timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
             });
           } else {
             strReadings.push({
@@ -410,7 +410,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
     this.imageReadings = imageReadings.length > 0 ? this.getImage(imageReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
-      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
+      (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
 
@@ -436,7 +436,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             imageReadings.push({
               datapoint: k,
               imageData: value,
-              timestamp: this.dateFormatter.transform(r.timestamp, 'HH:mm:ss')
+              timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
             });
           } else {
             strReadings.push({
@@ -465,7 +465,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
-      (reading) => this.dateFormatter.transform(reading.timestamp, 'HH:mm:ss')), rlist => rlist.map(read => omit(read, 'timestamp')));
+      (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
   }
 
@@ -559,7 +559,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     assetReadings = orderBy(assetReadings, [reading => reading.key.toLowerCase()], ['asc']);
     for (const r of assetReadings) {
       r.read = r.read.map(dt => {
-        dt.x = this.dateFormatter.transform(dt.x, 'YYYY-MM-DD HH:mm:ss')
+        dt.x = this.dateFormatter.transform(dt.x, 'YYYY-MM-DD HH:mm:ss.SSS')
         return dt;
       });
       const dsColor = Utils.namedColor(dataset.length);
@@ -622,7 +622,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           type: 'time',
           time: {
             unit: 'second',
-            tooltipFormat: 'HH:mm:ss:SSS',
+            tooltipFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
             displayFormats: {
               unit: 'second',
               second: 'HH:mm:ss'
@@ -663,7 +663,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   create3DGraph(readings: any, ts: any) {
     readings = orderBy(readings, [reading => reading.key.toLowerCase()], ['asc']);
-    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss:SSS'));
+    const timestamps = ts.map((t: any) => this.dateFormatter.transform(t, 'HH:mm:ss.SSS'));
     this.polyGraphData = {
       data: [
         {

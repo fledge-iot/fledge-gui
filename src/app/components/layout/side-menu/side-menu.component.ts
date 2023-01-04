@@ -6,6 +6,7 @@ import { DocService } from '../../../services/doc.service';
 import { SharedService } from '../../../services/shared.service';
 import { buildRoutes } from '../../../../menu-utils';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
+import { RolesService, } from '../../../services';
 
 @Component({
   selector: 'app-side-menu',
@@ -24,6 +25,7 @@ export class SideMenuComponent implements OnInit {
     private sharedService: SharedService,
     private lookupService: LookupService,
     public developerFeaturesService: DeveloperFeaturesService,
+    public rolesService: RolesService
   ) { }
 
   async ngOnInit() {

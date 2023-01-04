@@ -4,10 +4,10 @@ import { sortBy } from 'lodash';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { interval, Subscription, Subject } from 'rxjs';
 
-import { AlertService, NorthService, PingService, ProgressBarService, SharedService } from '../../../services';
+import { AlertService, NorthService, PingService, ProgressBarService, RolesService, SharedService } from '../../../services';
 import { POLLING_INTERVAL } from '../../../utils';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
-import { ViewLogsComponent } from '../packages-log/view-logs/view-logs.component';
+import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 
 @Component({
   selector: 'app-north',
@@ -31,7 +31,8 @@ export class NorthComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private router: Router,
     public ngProgress: ProgressBarService,
-    private sharedService: SharedService) {
+    private sharedService: SharedService,
+    public rolesService: RolesService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))

@@ -14,24 +14,26 @@
         <div class="columns">
           <div class="column">
             <div class="field">
-              <app-view-config-item *ngIf="ruleConfiguration" [categoryConfigurationData]="ruleConfiguration" [formId]="rule"
-                [useRuleProxy]="useRuleProxy" #ruleConfigView>
+              <app-view-config-item *ngIf="ruleConfiguration" [categoryConfigurationData]="ruleConfiguration"
+                [formId]="rule" [useRuleProxy]="useRuleProxy" #ruleConfigView>
               </app-view-config-item>
             </div>
           </div>
         </div>
-        <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Delivery Channel - ' + notification.channel">
+        <hr *ngIf="notification != undefined" class="hr-text"
+          [attr.data-content]="'Delivery Channel - ' + notification.channel">
         <div class="columns">
           <div class="column">
             <div class="field">
               <app-view-config-item *ngIf="deliveryConfiguration" #deliveryConfigView
-                [categoryConfigurationData]="deliveryConfiguration" [useDeliveryProxy]="useDeliveryProxy" [formId]="delivery">
+                [categoryConfigurationData]="deliveryConfiguration" [useDeliveryProxy]="useDeliveryProxy"
+                [formId]="delivery">
               </app-view-config-item>
             </div>
           </div>
         </div>
-        <hr class="hr-text" data-content="">
-        <div class="columns">
+        <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditPermissions()">
+        <div class="columns" *ngIf="rolesService.hasEditPermissions()">
           <div class="column">
             <div class="field is-grouped is-pulled-right">
               <p class="control">
@@ -46,12 +48,14 @@
         <hr class="hr-text" data-content="">
         <ng-container *ngIf="notification != undefined">
           <p class="buttons is-pulled-left">
-            <span class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help" (click)="goToLink()">
+            <span class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon"
+              data-tooltip="Help" (click)="goToLink()">
               <i class="far fa-question-circle"></i>
             </span>
           </p>
-          <p class="buttons is-pulled-right">
-            <button (click)="openDeleteModal(notification.name)" class="button is-small" [disabled]="!notification.notificationEnabled ? 'disabled' : null">Delete Instance</button>
+          <p class="buttons is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
+            <button (click)="openDeleteModal(notification.name)" class="button is-small"
+              [disabled]="!notification.notificationEnabled ? 'disabled' : null">Delete Instance</button>
           </p>
         </ng-container>
       </div>

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 
-import { AlertService, AuthService, UserService, ProgressBarService, SharedService } from '../../../services';
+import { AlertService, AuthService, UserService, ProgressBarService, SharedService, RolesService } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
@@ -30,8 +30,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private userService: UserService,
     public ngProgress: ProgressBarService,
-    private sharedService: SharedService
-    ) { }
+    private sharedService: SharedService,
+    private roleService: RolesService
+  ) { }
 
   ngOnInit() {
     this.uid = sessionStorage.getItem('uid');
@@ -46,6 +47,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.userService.getAllUsers()
       .subscribe(
         (userData) => {
+          /** request completed */
+          this.ngProgress.done();
           this.getRole(userData['users']);
         },
         error => {
@@ -65,15 +68,15 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       .subscribe(
         (roleRecord) => {
           this.roles = roleRecord['roles'];
-          this.ngProgress.done();
           roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id === user.roleId) {
-                user['roleName'] = role.name;
+                user['roleName'] = this.roleService.getRoleName(role.id);
               }
             });
           });
           this.userRecord = users.sort();
+          this.ngProgress.done();
         },
         error => {
           /** request completed */
@@ -213,6 +216,10 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     if (id === 2) {
       this.seletedTab = id;
     }
+  }
+
+  setRoleName(roleId: number) {
+    return this.roleService.getRoleName(roleId);
   }
 
   public ngOnDestroy(): void {

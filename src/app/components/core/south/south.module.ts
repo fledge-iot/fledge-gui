@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-
+import { DirectivesModule } from '../../../directives/directives.module';
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AssetsService, SchedulesService, ServicesApiService, FilterService, PluginService } from '../../../services';
@@ -42,6 +42,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     AlertDialogModule,
     SharedModule,
+    DirectivesModule,
     FilterModule,
     PipesModule
   ],

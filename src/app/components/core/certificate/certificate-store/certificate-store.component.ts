@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 
-import { AlertService, CertificateService, ProgressBarService, SharedService } from '../../../../services';
+import { AlertService, CertificateService, ProgressBarService, RolesService, SharedService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
 import { sortBy } from 'lodash';
@@ -33,7 +33,8 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
   constructor(private certService: CertificateService,
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
-    private sharedService: SharedService) { }
+    private sharedService: SharedService,
+    public rolesService: RolesService) { }
 
   ngOnInit() {
     this.sharedService.isAdmin.subscribe(_isAdmin => {
@@ -65,7 +66,7 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
           this.keys = sortBy(data['keys'], function (obj) {
             return obj.split('.')[1] + obj.substr(0, obj.indexOf('.'));
           });
-          const certExtensions = ['cert', 'cer', 'crt', 'csr', 'crl', 'pem', 'json', 'p12', 'pfx','der'];
+          const certExtensions = ['cert', 'cer', 'crt', 'csr', 'crl', 'pem', 'json', 'p12', 'pfx', 'der'];
           for (let i = 0; i < certExtensions.length; i++) {
             let certificates = [];
             data['certs'].forEach(c => {

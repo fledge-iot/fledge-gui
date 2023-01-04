@@ -2,7 +2,8 @@ import { Component, OnChanges, Input, SimpleChanges, ViewChild, HostListener } f
 import { FormBuilder, NgForm } from '@angular/forms';
 import {
   ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
-  ConfigurationService
+  ConfigurationService,
+  RolesService
 } from '../../../../services';
 
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
@@ -55,7 +56,8 @@ export class NotificationServiceModalComponent implements OnChanges {
     public servicesApiService: ServicesApiService,
     public alertService: AlertService,
     private docService: DocService,
-    private notificationService: NotificationsService) { }
+    private notificationService: NotificationsService,
+    public rolesService: RolesService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['notificationServiceData']) {
@@ -412,7 +414,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   navToSyslogs(name: string) {
-    this.router.navigate(['syslog'], { queryParams: { source: name } });
+    this.router.navigate(['logs/syslog'], { queryParams: { source: name } });
   }
 
   goToLink() {
