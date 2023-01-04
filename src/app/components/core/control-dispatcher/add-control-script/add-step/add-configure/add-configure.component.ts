@@ -57,11 +57,11 @@ export class AddConfigureComponent implements OnInit {
   }
 
   stepControlGroup(): FormGroup {
-    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
+    return this.stepsFormGroup()?.controls[`step-${this.controlIndex}`] as FormGroup;
   }
 
   configureControlGroup() {
-    return this.stepControlGroup().controls['configure'] as FormGroup;
+    return this.stepControlGroup()?.controls['configure'] as FormGroup;
   }
 
   public toggleDropDown(id: string) {
@@ -195,8 +195,8 @@ export class AddConfigureComponent implements OnInit {
     }
     this.selectedConfigItem = '';
     this.configValue = '';
-    this.configureControlGroup().controls['item'].setValue('');
-    this.configureControlGroup().controls['value'].setValue('');
+    this.configureControlGroup()?.controls['item'].setValue('');
+    this.configureControlGroup()?.controls['value'].setValue('');
 
   }
 
