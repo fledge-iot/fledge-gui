@@ -7,6 +7,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ConfirmationDialogComponent } from './components/common/confirmation-dialog/confirmation-dialog.component';
 import { RangeSliderComponent } from './components/common/range-slider/range-slider.component';
 import { TimeDropdownComponent } from './components/common/time-dropdown/time-dropdown.component';
+import { ConfigurationGroupComponent } from './components/core/configuration-manager/configuration-group/configuration-group.component';
 import { ConfigChildrenComponent } from './components/core/configuration-manager/config-children/config-children.component';
 import { PluginPersistDataComponent } from './components/core/configuration-manager/plugin-persist-data/plugin-persist-data.component';
 import {
@@ -18,6 +19,7 @@ import {
 import { PluginModalComponent } from './components/core/plugin-modal/plugin-modal.component';
 import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
+import { ShowConfigurationComponent } from './components/core/configuration-manager/show-configuration/show-configuration.component';
 
 @NgModule({
   imports: [
@@ -32,6 +34,8 @@ import { PipesModule } from './pipes/pipes.module';
   declarations: [
     ViewConfigItemComponent,
     ConfigChildrenComponent,
+    ConfigurationGroupComponent,
+    ShowConfigurationComponent,
     PluginPersistDataComponent,
     PluginModalComponent,
     ViewLogsComponent,
@@ -42,6 +46,8 @@ import { PipesModule } from './pipes/pipes.module';
   exports: [
     ViewConfigItemComponent,
     ConfigChildrenComponent,
+    ConfigurationGroupComponent,
+    ShowConfigurationComponent,
     PluginPersistDataComponent,
     PluginModalComponent,
     ViewLogsComponent,

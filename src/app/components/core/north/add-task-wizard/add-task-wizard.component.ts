@@ -51,7 +51,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
   @Input() categoryConfigurationData;
-  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
@@ -119,10 +118,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Back';
         nxtButton.disabled = false;
-        if (!this.viewConfigItemComponent !== undefined) {
-          this.viewConfigItemComponent.passwordOnChangeFired = false;
-          this.viewConfigItemComponent.passwordMatched.value = true;
-        }
         break;
       case 3:
         nxtButton.textContent = 'Next';
@@ -205,11 +200,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         this.getConfiguration();
         break;
       case 2:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
-          return;
-        }
-        this.viewConfigItemComponent.callFromWizard();
-        document.getElementById('vci-proxy').click();
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -296,19 +286,16 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
    *  Get default configuration of a selected plugin
    */
   private getConfiguration(): void {
-    const config = this.plugins.map(p => {
-      if (p.name === this.payload.plugin) {
-        return p.config;
-      }
-    }).filter(value => value !== undefined);
-
-    // array to hold data to display on configuration page
-    this.configurationData = { value: config };
-    this.useProxy = 'true';
+    const plugin = this.plugins.find(p => p.name === this.payload.plugin);
+    if (plugin) {
+      this.configurationData = plugin;
+      this.useProxy = 'true';
+    }
   }
 
 
   private addScheduledTask(payload) {
+    console.log('payload', payload);
     this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
@@ -381,14 +368,14 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
-  getChangedConfig(changedConfig) {
-    const defaultConfig = map(this.configurationData.value[0], (v, key) => ({ key, ...v }));
+  getChangedConfig(changedConfig: any) {
+    const defaultConfig = map(this.configurationData.config, (v, key) => ({ key, ...v }));
+    console.log('defaultConfig', defaultConfig);
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.some(e2 => {
-        return e1.key === e2.key;
-      });
+      return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
     });
+    console.log('matchedConfig', matchedConfig);
 
     // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
     const matchedConfigCopy = cloneDeep(matchedConfig);
@@ -397,13 +384,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
      * merge new configuration with old configuration,
      * where value key hold changed data in config object
     */
-    matchedConfigCopy.forEach(e => {
-      changedConfig.forEach(c => {
-        if (e.key === c.key) {
-          e.value = c.type === 'script' ? c.value : c.value.toString();
-        }
-      });
-    });
+    matchedConfigCopy.forEach(e => e.value = changedConfig[e.key]);
 
     // final array to hold changed configuration
     let finalConfig = [];
@@ -420,6 +401,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     // convert finalConfig array in object of objects to pass in add task
     finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     this.payload.config = finalConfig;
+    console.log('payload', this.payload);
+
   }
 
   validateTaskName(event) {

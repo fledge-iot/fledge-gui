@@ -1,0 +1,81 @@
+<div class="view-content columns">
+  <ng-container *ngIf="rolesService?.hasEditPermissions(); else staticView">
+    <div class="column">
+      <ng-container *ngFor="let configuration of configurations$ | async">
+        <div [formGroup]="form">
+          <div class="config-div" *ngIf="configuration.readonly != 'true'">
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label"
+                  [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
+                  {{configuration.label}}
+                </label>
+              </div>
+              <div class="field-body">
+                <div [ngSwitch]="configuration.controlType" class="field">
+                  <input *ngSwitchCase="'TEXT'" [formControlName]="configuration.key" [id]="configuration.key"
+                    [type]="configuration.type" class="input is-fullwidth is-small">
+
+                  <div *ngSwitchCase="'DROPDOWN'" class="select is-small">
+                    <select [id]="configuration.key" [formControlName]="configuration.key">
+                      <option *ngFor="let opt of configuration.options" [value]="opt">{{opt}}</option>
+                    </select>
+                  </div>
+
+                  <label *ngSwitchCase="'CHECKBOX'" class="checkbox" [id]="configuration.key">
+                    <input [formControlName]="configuration.key" [type]="configuration.type"
+                      [checked]="configuration.value.toLowerCase() == 'true'"
+                      (change)="setCheckboxState(configuration.key,$event)" />
+                  </label>
+
+                  <input *ngSwitchCase="'INTEGER'" [formControlName]="configuration.key" [id]="configuration.key"
+                    [type]="configuration.type" class="input is-fullwidth is-small" [minValue]="configuration.minimum"
+                    [maxValue]="configuration.maximum" appNumberOnly />
+
+                  <input *ngSwitchCase="'FLOAT'" [formControlName]="configuration.key" [id]="configuration.key"
+                    [type]="configuration.type" class="input is-fullwidth is-small" [minValue]="configuration.minimum"
+                    [maxValue]="configuration.maximum" appNumberOnly />
+
+                  <ngx-codemirror *ngSwitchCase="'JSON'" [formControlName]="configuration.key" #jsoneditor
+                    [options]="configuration.editorOptions" [autoFocus]="true" [jsonValue]="isValidJson">
+                  </ngx-codemirror>
+
+                  <div *ngSwitchCase="'SCRIPT'">
+                    <ngx-codemirror [formControlName]="configuration.key" #scriptCode
+                      [options]="configuration.editorOptions" [autoFocus]="true"
+                      [required]="configuration.mandatory=='true'">
+                    </ngx-codemirror>
+                    <span *ngIf="!configuration.validFileExtension" class="help is-danger">
+                      Invalid file. Please upload file with .py extension.
+                    </span>
+                    <div class="config-div is-fullwidth">
+                      <input #fileInput class="input is-small is-fullwidth" multiple type="file"
+                        (change)="fileChange($event, configuration)" />
+                    </div>
+                  </div>
+
+                  <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
+                    <div class="control">
+                      <input #pwd class="input is-fullwidth is-small" [formControlName]="configuration.key"
+                        [type]="configuration.type" placeholder="password" [attr.maxLength]="configuration?.length"
+                        [required]="configuration.mandatory=='true'" trim="blur" />
+                    </div>
+                    <div class="control">
+                      <button type="button" class="button is-small" (click)="togglePassword(pwd)"
+                        [disabled]="!configuration.editable">
+                        <span class="icon is-small">
+                          <i class="{{pwd.type === 'password'? 'fa fa-sm fa-eye-slash' : 'fa fa-sm fa-eye'}}"></i>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+  <ng-template #staticView></ng-template>
+</div>

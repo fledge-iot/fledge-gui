@@ -21,7 +21,8 @@
     <div class="steps-content">
       <form [formGroup]="serviceForm" validate>
         <div class="box step-content is-active" id="c-1">
-          <span *ngIf="plugin" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help" (click)="goToLink()">
+          <span *ngIf="plugin" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+            data-tooltip="Help" (click)="goToLink()">
             <i class="far fa-question-circle"></i>
           </span>
           <div *ngIf="showSpinner" class="app-loading">
@@ -92,10 +93,11 @@
           </div>
         </div>
         <div class="box step-content" id="c-2">
-          <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
+          <app-configuration-group></app-configuration-group>
+          <!-- <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
             [pluginInfo]="{name: plugin,  type:serviceType}" (onConfigChanged)="getChangedConfig($event)"
             [pageId]="'wizard'">
-          </app-view-config-item>
+          </app-view-config-item> -->
         </div>
         <div class="box step-content" id="c-3">
           <div class="field is-horizontal">
