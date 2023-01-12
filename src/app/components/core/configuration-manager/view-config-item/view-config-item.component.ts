@@ -2,7 +2,7 @@ import {
   ChangeDetectorRef, Component,
   ElementRef, EventEmitter, Input, OnChanges,
   OnDestroy, OnInit,
-  Output, SimpleChanges, ViewChild
+  Output, SimpleChanges, ViewChild, ViewChildren, QueryList
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { assign, cloneDeep, differenceWith, find, has, isEmpty, isEqual, map, sortBy, orderBy, chain } from 'lodash';
@@ -49,6 +49,7 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('jsoneditor') jsoneditor: ElementRef;
   @ViewChild('pwd') pwd: ElementRef;
   @ViewChild('f', { static: false }) form: NgForm;
+  @ViewChildren('cdmrField') codemirrorField: QueryList<ViewConfigItemComponent>;
 
   public passwordOnChangeFired = false;
   public passwordMatched = {
@@ -81,7 +82,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
   }
-
 
   ngOnChanges(changes: SimpleChanges) {
     if (!changes?.group?.firstChange) {
