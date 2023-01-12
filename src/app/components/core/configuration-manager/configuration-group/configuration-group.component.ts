@@ -2,8 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain } from 'lodash';
-import { FormBuilder } from '@angular/forms';
-import { ConfigurationControlService } from '../show-configuration/show-configuration.component';
 
 @Component({
   selector: 'app-configuration-group',
@@ -43,9 +41,6 @@ export class ConfigurationGroupComponent implements OnInit {
         return { category: this.category.name, group: "Default Configuration", config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
       }
     }).value();
-
-    // console.log('groups', this.groups);
-
   }
 
 

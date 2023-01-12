@@ -22,6 +22,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
+  public pluginConfiguration: any;
   public useProxy;
 
   public isValidName = true;
@@ -288,6 +289,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     const plugin = this.plugins.find(p => p.name === this.payload.plugin);
     if (plugin) {
       this.configurationData = plugin;
+      this.pluginConfiguration = cloneDeep(plugin);
       this.useProxy = 'true';
     }
   }
@@ -368,7 +370,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig: any) {
-    const defaultConfig = map(this.configurationData.config, (v, key) => ({ key, ...v }));
+    const defaultConfig = map(this.pluginConfiguration.config, (v, key) => ({ key, ...v }));
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
       return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
