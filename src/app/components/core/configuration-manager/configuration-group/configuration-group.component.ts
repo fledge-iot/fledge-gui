@@ -25,6 +25,8 @@ export class ConfigurationGroupComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('configuration category', this.category);
+
     this.categeryConfiguration();
   }
 

@@ -5,9 +5,7 @@ import { Subscription } from 'rxjs';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 
 import { AlertService, SchedulesService, SharedService, ServicesApiService, PluginService, ProgressBarService, ConfigurationService } from '../../../../services';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
@@ -19,7 +17,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
-  public useProxy;
+  public pluginConfiguration: any;
   public isValidPlugin = true;
   public isSinglePlugin = true;
   public selectedPluginDescription = '';
@@ -39,7 +37,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   });
 
   @Input() categoryConfigurationData;
-  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
@@ -52,7 +49,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private pluginService: PluginService,
     private alertService: AlertService,
     private router: Router,
-    private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
@@ -190,11 +186,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         this.getConfiguration();
         break;
       case 2:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
-          return;
-        }
-        this.viewConfigItemComponent.callFromWizard();
-        document.getElementById('vci-proxy').click();
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -232,28 +223,22 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
    *  Get default configuration of a selected plugin
    */
   private getConfiguration(): void {
-    const config = this.plugins.map(p => {
-      if (p.name === this.payload.plugin) {
-        return p.config;
-      }
-    }).filter(value => value !== undefined);
-
-    // array to hold data to display on configuration page
-    this.configurationData = { value: config };
-    this.useProxy = 'true';
+    const plugin = this.plugins.find(p => p.name === this.payload.plugin);
+    if (plugin) {
+      this.configurationData = plugin;
+      this.pluginConfiguration = cloneDeep(plugin);
+    }
   }
 
   /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
-  getChangedConfig(changedConfig) {
-    const defaultConfig = map(this.configurationData.value[0], (v, key) => ({ key, ...v }));
+  getChangedConfig(changedConfig: any) {
+    const defaultConfig = map(this.pluginConfiguration.config, (v, key) => ({ key, ...v }));
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.some(e2 => {
-        return e1.key === e2.key;
-      });
+      return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
     });
 
     // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
@@ -262,19 +247,13 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
      * merge new configuration with old configuration,
      * where value key hold changed data in config object
     */
-    matchedConfigCopy.forEach(e => {
-      changedConfig.forEach(c => {
-        if (e.key === c.key) {
-          e.value = c.type === 'script' ? c.value : c.value.toString();
-        }
-      });
-    });
+    matchedConfigCopy.forEach(e => e.value = changedConfig[e.key]);
 
     // final array to hold changed configuration
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
       if (item.type === 'script') {
-        this.filesToUpload.push(item);
+        this.filesToUpload = item.value;
       } else {
         finalConfig.push({
           [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
@@ -316,11 +295,13 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   public uploadScript() {
     this.filesToUpload.forEach(data => {
-      const configItem = data.key;
-      const file = data.value[0].script;
+      // get config item
+      const [configProperty] = Object.entries(data)[0];
+      // get file
+      const file = data[configProperty];
       const formData = new FormData();
       formData.append('script', file);
-      this.configService.uploadFile(this.payload.name, configItem, formData)
+      this.configService.uploadFile(this.payload.name, configProperty, formData)
         .subscribe(() => {
           this.filesToUpload = [];
           this.alertService.success('Script uploaded successfully.');

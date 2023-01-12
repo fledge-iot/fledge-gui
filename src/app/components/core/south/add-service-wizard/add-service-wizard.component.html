@@ -93,7 +93,10 @@
           </div>
         </div>
         <div class="box step-content" id="c-2">
-          <app-configuration-group></app-configuration-group>
+
+          <app-configuration-group *ngIf="configurationData" [category]="configurationData"
+            (changedConfigEvent)="getChangedConfig($event)"
+            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
           <!-- <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
             [pluginInfo]="{name: plugin,  type:serviceType}" (onConfigChanged)="getChangedConfig($event)"
             [pageId]="'wizard'">

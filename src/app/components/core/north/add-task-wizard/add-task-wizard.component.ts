@@ -10,7 +10,6 @@ import {
 } from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
@@ -23,8 +22,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public plugins = [];
   public configurationData;
   public pluginConfiguration: any;
-  public useProxy;
-
   public isValidName = true;
   public isValidPlugin = true;
   public isSinglePlugin = true;
@@ -66,7 +63,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private schedulesService: SchedulesService,
     private router: Router,
     private ngProgress: ProgressBarService,
-    private validateFormService: ValidateFormService,
     private sharedService: SharedService,
     private servicesApiService: ServicesApiService,
     private docService: DocService,
@@ -292,7 +288,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     if (plugin) {
       this.configurationData = plugin;
       this.pluginConfiguration = cloneDeep(plugin);
-      this.useProxy = 'true';
     }
   }
 
