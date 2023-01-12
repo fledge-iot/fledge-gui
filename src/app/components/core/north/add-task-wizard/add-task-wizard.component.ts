@@ -9,7 +9,6 @@ import {
   ServicesApiService, ConfigurationService
 } from '../../../../services';
 import Utils from '../../../../utils';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
@@ -370,13 +369,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
    */
   getChangedConfig(changedConfig: any) {
     const defaultConfig = map(this.configurationData.config, (v, key) => ({ key, ...v }));
-    console.log('defaultConfig', defaultConfig);
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
       return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
     });
-    console.log('matchedConfig', matchedConfig);
-
     // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
     const matchedConfigCopy = cloneDeep(matchedConfig);
 
@@ -401,8 +397,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     // convert finalConfig array in object of objects to pass in add task
     finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     this.payload.config = finalConfig;
-    console.log('payload', this.payload);
-
   }
 
   validateTaskName(event) {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Injectable, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { filter, map, pairwise, startWith } from 'rxjs/operators';
@@ -11,7 +11,7 @@ export class ConfigurationBase<T> {
   description: string;
   required: boolean;
   readonly: string;
-  editable: string;
+  editable: boolean;
   mandatory: string;
   maximum: string;
   minimum: string;
@@ -23,6 +23,8 @@ export class ConfigurationBase<T> {
   file: string;
   files: {}[];
   validFileExtension?: boolean;
+  validity?: string;
+  validityExpression?: string;
 
   constructor(options: {
     value?: T;
@@ -31,7 +33,7 @@ export class ConfigurationBase<T> {
     description?: string,
     required?: boolean;
     readonly?: string;
-    editable?: string,
+    editable?: boolean,
     mandatory?: string,
     maximum?: string,
     minimum?: string;
@@ -43,6 +45,8 @@ export class ConfigurationBase<T> {
     file?: string;
     files?: {}[];
     validFileExtension?: boolean;
+    validity?: string;
+    validityExpression?: string;
   } = {}) {
     this.value = options.value;
     this.key = options.key || '';
@@ -50,7 +54,7 @@ export class ConfigurationBase<T> {
     this.description = options.description;
     this.required = !!options.required;
     this.readonly = options.readonly === undefined ? 'false' : options.readonly;
-    this.editable = options.editable === undefined ? 'true' : options.editable;
+    this.editable = options.editable === undefined ? true : options.editable;
     this.mandatory = options.mandatory === undefined ? 'false' : options.mandatory;
     this.order = options.order === undefined ? 1 : options.order;
     this.minimum = options.minimum;
@@ -62,10 +66,10 @@ export class ConfigurationBase<T> {
     this.file = options.file || '';
     this.files = options.files || [];
     this.validFileExtension = options.validFileExtension || true;
+    this.validity = options.validity;
+    this.validityExpression = '';
   }
 }
-
-
 
 export class TextboxConfig extends ConfigurationBase<string> {
   override controlType = 'TEXT';
@@ -113,15 +117,29 @@ export class ACLConfig extends ConfigurationBase<string> {
   providedIn: 'root'
 })
 export class ConfigurationControlService {
+  private configuration: any;
+
+
+  public set updatedConfiguration(config: any) {
+    this.configuration = config;
+  }
+
+
+  public get updatedConfiguration(): any {
+    return this.configuration;
+  }
+
+  /**
+   * Create configuration form control based on configuration property type
+   * @param configuration plugin configuration
+   * @returns configuration formcontrols array
+   */
   createConfigurationBase(configuration: any): ConfigurationBase<string>[] {
-    // console.log('config', configuration);
     const configurations: ConfigurationBase<string>[] = [];
     Object.keys(configuration).forEach(key => {
       const element = configuration[key];
       element.key = key;
       element.value = element.value ? element.value : element.default;
-      console.log('el', element);
-
       switch (element.type.toUpperCase()) {
         case 'INTEGER':
           configurations.push(new IntegerConfig({
@@ -133,7 +151,8 @@ export class ConfigurationControlService {
             minimum: element.minimum,
             maximum: element.maximum,
             readonly: element.readonly,
-            order: element.order
+            order: element.order,
+            validity: element.validity
           }));
           break;
         case 'FLOAT':
@@ -146,7 +165,8 @@ export class ConfigurationControlService {
             minimum: element.minimum,
             maximum: element.maximum,
             readonly: element.readonly,
-            order: element.order
+            order: element.order,
+            validity: element.validity
           }));
           break;
         case 'BOOLEAN':
@@ -157,7 +177,8 @@ export class ConfigurationControlService {
             description: element.description,
             value: element.value,
             readonly: element.readonly,
-            order: element.order
+            order: element.order,
+            validity: element.validity
           }));
           break;
         case 'ENUMERATION':
@@ -169,7 +190,8 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             options: element.options,
-            order: element.order
+            order: element.order,
+            validity: element.validity
           }));
           break;
         case 'JSON':
@@ -183,7 +205,8 @@ export class ConfigurationControlService {
             readonly: element.readonly,
             options: element.options,
             order: element.order,
-            editorOptions: this.setEditorConfig(key)
+            editorOptions: this.setEditorConfig(key),
+            validity: element.validity
           }));
           break;
         case 'ACL':
@@ -202,7 +225,8 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             options: element.options,
-            order: element.order
+            order: element.order,
+            validity: element.validity
           }));
           break;
         case 'SCRIPT':
@@ -216,7 +240,8 @@ export class ConfigurationControlService {
             options: element.options,
             order: element.order,
             file: element.file,
-            editorOptions: this.setEditorConfig(key)
+            editorOptions: this.setEditorConfig(key),
+            validity: element.validity
           }));
           break;
         case 'IPV4':
@@ -229,15 +254,12 @@ export class ConfigurationControlService {
             description: element.description,
             value: element.value,
             readonly: element.readonly,
-            order: element.order
+            order: element.order,
+            validity: element.validity
           }));
           break;
       }
     });
-
-
-    console.log('c', configurations);
-
     return configurations.sort((a, b) => a.order - b.order);
   }
 
@@ -266,17 +288,121 @@ export class ConfigurationControlService {
     return configItem.key;
   }
 
-  toFormGroup(configuration: ConfigurationBase<string>[]) {
+  /**
+   *
+   * @param pluginConfiguration plugin configuration
+   * @param groupConfigurations  group item configuration
+   * @returns
+   */
+  toFormGroup(pluginConfiguration: any, groupConfigurations: ConfigurationBase<string>[]) {
     const group: any = {};
-    configuration.forEach(configuration => {
-      group[configuration.key] = configuration.required ? new FormControl(configuration.value || '', Validators.required)
-        : new FormControl(configuration.value || '');
+    groupConfigurations.forEach(configuration => {
+      group[configuration.key] = new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, Validators.required);
     });
     return new FormGroup(group);
   }
+
+  /**
+   * validate form control on page init based on validation expression;
+   *
+   * @param pluginConfiguration complete configuration of a plugin
+   * @param config single config item
+   * @returns
+   */
+  validateConfigItem(pluginConfiguration: any, config: ConfigurationBase<string>) {
+    if (config.validity) {
+      config.validityExpression = config.validity;
+      Object.keys(pluginConfiguration).forEach(key => {
+        const el = pluginConfiguration[key];
+        el.key = key;
+        el.value = el.value ? el.value : el.default;
+        // generate validation expression on page load based on configuration property values
+        config.validityExpression = this.generateValidationExpression(el, config.validityExpression);
+      });
+      const isValidExpression = this.validateExpression(config.key, config.validityExpression);
+      this.updatedConfiguration = pluginConfiguration;
+      this.updatedConfiguration[config.key].validityExpression = config?.validityExpression;
+      return !isValidExpression;
+    }
+  }
+
+  checkConfigItemValidityOnChange(form: FormGroup, config: ConfigurationBase<string>) {
+    // update config value in a global config object
+    this.updatedConfiguration[config.key].value = config.value;
+    // buid validation expression
+    Object.keys(this.updatedConfiguration).forEach(key => {
+      const cnf = this.updatedConfiguration[key];
+      if (cnf.validity) {
+        let expression = cnf.validity;
+        Object.keys(this.updatedConfiguration).forEach(key => {
+          const el = this.updatedConfiguration[key];
+          // generate validation expression based on changed config item value
+          expression = this.generateValidationExpression(el, expression);
+        });
+        // update validitionExpression property of the configuration item
+        cnf.validityExpression = expression;
+      }
+    });
+
+    // validate expression to enable/disable form control
+    Object.keys(this.updatedConfiguration).forEach(key => {
+      const cnf = this.updatedConfiguration[key];
+      if (cnf.validity) {
+        const isValidExpression = this.validateExpression(key, cnf.validityExpression);
+        isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
+      }
+    });
+  }
+
+  /**
+   * Validate form control on cofiguration tab switch
+   * @param form : FormGroup
+   */
+  checkConfigItemOnGroupChange(form: FormGroup) {
+    Object.keys(this.updatedConfiguration).forEach(key => {
+      const cnf = this.updatedConfiguration[key];
+      if (cnf.hasOwnProperty('validityExpression')) {
+        const isValidExpression = this.validateExpression(key, cnf.validityExpression);
+        isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
+      }
+    });
+  }
+
+  /**
+   * Generate validation expression based on config property values
+   * @param config configuration item
+   * @param expression validation expression
+   * @returns
+   */
+  generateValidationExpression(config: any, expression: string) {
+    const regex = new RegExp(`${config.key}[^"]?\\s?.=`);
+    // check if validity expression has the config key
+    if (regex.test(expression)) {
+      expression = expression
+        .split(new RegExp(`${config.key.trim()}+(?=.*=)`)).join(`"${config.value}"`);
+    }
+    return expression;
+  }
+
+  /**
+   * evaluate validation expresison to enable/disable form control
+   * @param key config property
+   * @param expression validation expression
+   * @returns
+   */
+  validateExpression(key: string, expression: string) {
+    try {
+      const e = eval(expression);
+      if (typeof (e) !== 'boolean') {
+        console.log('Validity expression', expression, 'for', key, 'evlauted to non-boolean value ', e);
+      }
+      return e === false ? false : true;
+    } catch (e) {
+      console.log(e);
+      return true;
+    }
+  }
 }
-
-
 
 
 @Component({
@@ -285,11 +411,14 @@ export class ConfigurationControlService {
   styleUrls: ['./show-configuration.component.css']
 })
 export class ShowConfigurationComponent implements OnInit {
-  @Input() configuration: ConfigurationBase<string>[] | null = [];
+  @Input() fullConfiguration: any;
+  @Input() groupConfiguration: ConfigurationBase<string>[] | null = [];
+  @Input() group: string = '';
+  @Input() selectedGroup = '';
+
   @Output() event = new EventEmitter<any>();
-  form: FormGroup;
   configurations$: Observable<ConfigurationBase<any>[]>;
-  // get isValid() { return this.form.controls[this.configuration.key].valid; }
+  form: FormGroup;
 
   constructor(private fb: FormBuilder,
     public rolesService: RolesService,
@@ -298,10 +427,20 @@ export class ShowConfigurationComponent implements OnInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (!changes?.selectedGroup?.firstChange) {
+      if (changes?.selectedGroup?.currentValue == this.group) {
+        this.configControlService.checkConfigItemOnGroupChange(this.form);
+        return;
+      }
+    }
+  }
+
   ngOnInit(): void {
-    this.configuration = this.configControlService.createConfigurationBase(this.configuration);
-    this.configurations$ = of(this.configuration);
-    this.form = this.configControlService.toFormGroup(this.configuration as ConfigurationBase<string>[]);
+    this.groupConfiguration = this.configControlService.createConfigurationBase(this.groupConfiguration);
+    this.configurations$ = of(this.groupConfiguration);
+    this.form = this.configControlService.toFormGroup(this.fullConfiguration, this.groupConfiguration as ConfigurationBase<string>[]);
+    this.configControlService.updatedConfiguration = this.fullConfiguration;
 
     this.form.valueChanges.pipe(
       startWith(this.form.value),
@@ -318,7 +457,12 @@ export class ShowConfigurationComponent implements OnInit {
       filter(changes => Object.keys(changes).length !== 0 && !this.form.invalid)
     ).subscribe(
       data => {
-        console.log('d', data);
+        const [key, value] = Object.entries(data)[0];
+        const configuration = this.groupConfiguration.find(c => c.key === key);
+        if (configuration) {
+          configuration.value = value.toString();
+          this.configControlService.checkConfigItemValidityOnChange(this.form, configuration);
+        }
         this.event.emit(data);
       });
   }
@@ -328,8 +472,6 @@ export class ShowConfigurationComponent implements OnInit {
   }
 
   public fileChange(event, config: ConfigurationBase<string>) {
-    console.log('event', event);
-    console.log('config', config);
     const fileReader = new FileReader();
     const fi = event.target;
     if (fi.files.length !== 0) {

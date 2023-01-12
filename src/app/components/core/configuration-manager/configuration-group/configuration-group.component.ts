@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
-import { ConfigurationService, RolesService } from '../../../../services';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain } from 'lodash';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ConfigurationControlService, ShowConfigurationComponent } from '../show-configuration/show-configuration.component';
+import { FormBuilder } from '@angular/forms';
+import { ConfigurationControlService } from '../show-configuration/show-configuration.component';
 
 @Component({
   selector: 'app-configuration-group',
@@ -12,7 +12,7 @@ import { ConfigurationControlService, ShowConfigurationComponent } from '../show
 })
 export class ConfigurationGroupComponent implements OnInit {
 
-  seletedTab = 'Default Configuration';
+  selectedGroup = 'Default Configuration';
   @Input() category;
   groups = [];
   @Input() pageId;
@@ -21,10 +21,8 @@ export class ConfigurationGroupComponent implements OnInit {
 
   configFormValues = {};
   constructor(
-    private configService: ConfigurationControlService,
     public developerFeaturesService: DeveloperFeaturesService,
     public rolesService: RolesService,
-    private fb: FormBuilder
   ) { }
 
   ngOnInit() {
@@ -56,15 +54,13 @@ export class ConfigurationGroupComponent implements OnInit {
    * @param category Object{key, description, displayName}
    */
   selectTab(tab: string) {
-    if (tab !== this.seletedTab) {
-      this.seletedTab = tab;
+    if (tab !== this.selectedGroup) {
+      this.selectedGroup = tab;
     }
   }
 
   show(values: {}) {
-    console.log('v', values);
     this.configFormValues = Object.assign({}, this.configFormValues, values);
-    console.log('configView', this.configFormValues);
     this.changedConfigEvent.emit(this.configFormValues)
   }
 }

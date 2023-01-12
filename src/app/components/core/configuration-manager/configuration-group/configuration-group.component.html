@@ -1,6 +1,6 @@
 <div class="tabs">
   <ul>
-    <li *ngFor="let g of groups" [ngClass]="{'is-active': seletedTab == g.group}">
+    <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
       <h6 class="is-6 has-text-weight-semibold">
         <a (click)="selectTab(g.group)">
           {{g.group}}
@@ -11,7 +11,8 @@
 </div>
 <div class="highlight">
   <ng-container *ngFor="let g of groups">
-    <app-show-configuration [hidden]="seletedTab !== g.group" [configuration]="g.config" [group]="seletedTab"
-      [parent]="form" (event)="show($event)"></app-show-configuration>
+    <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
+      [selectedGroup]="selectedGroup" [fullConfiguration]="category?.config" [parent]="form"
+      (event)="show($event)"></app-show-configuration>
   </ng-container>
 </div>
