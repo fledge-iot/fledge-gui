@@ -58,11 +58,11 @@ export class ShowConfigurationComponent implements OnInit {
       data => {
         const [key, value] = Object.entries(data)[0];
         const configuration = this.groupConfiguration.find(c => c.key === key);
-        if (configuration) {
+        if (configuration && configuration.type !== 'script') {
           configuration.value = value.toString();
           this.configControlService.checkConfigItemValidityOnChange(this.form, configuration);
+          this.event.emit(data);
         }
-        this.event.emit(data);
       });
   }
 
@@ -89,6 +89,7 @@ export class ShowConfigurationComponent implements OnInit {
         config.validFileExtension = false;
       } else {
         config.files.push({ [config.key]: file });
+        this.event.emit({ [config.key]: config.files });
       }
     }
   }

@@ -294,7 +294,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     }
   }
 
-
   private addScheduledTask(payload) {
     console.log('payload', payload);
     this.taskForm.get('name').markAsTouched();
@@ -346,11 +345,13 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public uploadScript() {
     this.filesToUpload.forEach(data => {
-      const configItem = data.key;
-      const file = data.value[0].script;
+      // get config item
+      const [configProperty] = Object.entries(data)[0];
+      // get file
+      const file = data[configProperty];
       const formData = new FormData();
       formData.append('script', file);
-      this.configService.uploadFile(this.payload.name, configItem, formData)
+      this.configService.uploadFile(this.payload.name, configProperty, formData)
         .subscribe(() => {
           this.filesToUpload = [];
           this.alertService.success('Script uploaded successfully.');
@@ -370,6 +371,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig: any) {
+    console.log('changed', changedConfig);
     const defaultConfig = map(this.pluginConfiguration.config, (v, key) => ({ key, ...v }));
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
@@ -383,12 +385,13 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
      * where value key hold changed data in config object
     */
     matchedConfigCopy.forEach(e => e.value = changedConfig[e.key]);
+    console.log('matchedConfigCopy', matchedConfigCopy);
 
     // final array to hold changed configuration
     let finalConfig = [];
     matchedConfigCopy.forEach(item => {
       if (item.type === 'script') {
-        this.filesToUpload.push(item);
+        this.filesToUpload = item.value;
       } else {
         finalConfig.push({
           [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }

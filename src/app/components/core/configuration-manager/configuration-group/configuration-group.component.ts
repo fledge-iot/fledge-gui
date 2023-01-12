@@ -55,6 +55,8 @@ export class ConfigurationGroupComponent implements OnInit {
   }
 
   show(values: {}) {
+    // console.log('show', values);
+
     this.configFormValues = Object.assign({}, this.configFormValues, values);
     this.changedConfigEvent.emit(this.configFormValues)
   }
