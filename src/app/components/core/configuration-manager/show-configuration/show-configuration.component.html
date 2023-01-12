@@ -2,7 +2,7 @@
   <ng-container *ngIf="rolesService?.hasEditPermissions(); else staticView">
     <div class="column">
       <ng-container *ngFor="let configuration of configurations$ | async">
-        <div [formGroup]="form">
+        <div [formGroup]="form" novalidate>
           <div class="config-div" *ngIf="configuration.readonly != 'true'">
             <div class="field is-horizontal">
               <div class="field-label has-text-left">
@@ -58,7 +58,7 @@
                     <div class="control">
                       <input #pwd class="input is-fullwidth is-small" [formControlName]="configuration.key"
                         [type]="configuration.type" placeholder="password" [attr.maxLength]="configuration?.length"
-                        [required]="configuration.mandatory=='true'" trim="blur" />
+                        trim="blur" />
                     </div>
                     <div class="control">
                       <button type="button" class="button is-small" (click)="togglePassword(pwd)"
@@ -69,6 +69,19 @@
                       </button>
                     </div>
                   </div>
+
+                  <span *ngIf="form?.controls[configuration.key]?.hasError('required')" class="help is-danger">
+                    <sup>*</sup>required
+                  </span>
+                  <span *ngIf="form?.controls[configuration.key]?.hasError('minValue')" class="help is-danger">
+                    <sup>*</sup>Value should not be less than {{configuration.minimum}}.
+                  </span>
+                  <span *ngIf="form?.controls[configuration.key]?.hasError('maxValue')" class="help is-danger">
+                    <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
+                  </span>
+                  <span *ngIf="form?.controls[configuration.key]?.hasError('jsonValue')" class="help is-danger">
+                    Invalid JSON
+                  </span>
                 </div>
               </div>
             </div>

@@ -143,7 +143,8 @@
 
         <div class="box step-content" id="c-2">
           <app-configuration-group *ngIf="configurationData" [category]="configurationData"
-            (changedConfigEvent)="getChangedConfig($event)"></app-configuration-group>
+            (changedConfigEvent)="getChangedConfig($event)"
+            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
 
         <div class="box step-content" id="c-3">
@@ -167,7 +168,8 @@
         <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
       </div>
       <div class="steps-action">
-        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
+          [disabled]="taskForm.invalid || !validConfigurationForm ">Next</button>
       </div>
     </div>
   </div>

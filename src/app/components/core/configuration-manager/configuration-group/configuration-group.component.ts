@@ -16,6 +16,7 @@ export class ConfigurationGroupComponent implements OnInit {
   @Input() pageId;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
+  @Output() formStatusEvent = new EventEmitter<boolean>();
 
   configFormValues = {};
   constructor(
@@ -54,11 +55,13 @@ export class ConfigurationGroupComponent implements OnInit {
     }
   }
 
-  show(values: {}) {
-    // console.log('show', values);
-
+  getChangeConfiguration(values: {}) {
     this.configFormValues = Object.assign({}, this.configFormValues, values);
     this.changedConfigEvent.emit(this.configFormValues)
+  }
+
+  formStatus(status: boolean) {
+    this.formStatusEvent.emit(status);
   }
 }
 

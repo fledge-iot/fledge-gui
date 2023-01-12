@@ -41,6 +41,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   private filesToUpload = []
 
   public taskType = 'North';
+  // to hold child form state
+  validConfigurationForm = true;
 
   taskForm = new FormGroup({
     name: new FormControl('', Validators.required),

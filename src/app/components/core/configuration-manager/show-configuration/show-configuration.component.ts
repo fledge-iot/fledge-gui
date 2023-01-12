@@ -16,6 +16,7 @@ export class ShowConfigurationComponent implements OnInit {
   @Input() selectedGroup = '';
 
   @Output() event = new EventEmitter<any>();
+  @Output() formStatusEvent = new EventEmitter<boolean>();
   configurations$: Observable<ConfigurationBase<any>[]>;
   form: FormGroup;
 
@@ -53,7 +54,7 @@ export class ShowConfigurationComponent implements OnInit {
         }
         return changes;
       }),
-      filter(changes => Object.keys(changes).length !== 0 && !this.form.invalid)
+      filter(changes => Object.keys(changes).length !== 0)
     ).subscribe(
       data => {
         const [key, value] = Object.entries(data)[0];
@@ -62,6 +63,7 @@ export class ShowConfigurationComponent implements OnInit {
           configuration.value = value.toString();
           this.configControlService.checkConfigItemValidityOnChange(this.form, configuration);
           this.event.emit(data);
+          this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
         }
       });
   }

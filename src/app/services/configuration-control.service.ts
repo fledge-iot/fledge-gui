@@ -49,10 +49,10 @@ export class ConfigurationBase<T> {
     this.key = options.key || '';
     this.label = options.label || '';
     this.description = options.description;
-    this.required = !!options.required;
     this.readonly = options.readonly === undefined ? 'false' : options.readonly;
-    this.editable = options.editable === undefined ? true : options.editable;
     this.mandatory = options.mandatory === undefined ? 'false' : options.mandatory;
+    this.required = options.mandatory === undefined ? false : (options.mandatory == 'true');
+    this.editable = options.editable === undefined ? true : options.editable;
     this.order = options.order === undefined ? 1 : options.order;
     this.minimum = options.minimum;
     this.maximum = options.maximum;
@@ -147,6 +147,7 @@ export class ConfigurationControlService {
             minimum: element.minimum,
             maximum: element.maximum,
             readonly: element.readonly,
+            mandatory: element.mandatory,
             order: element.order,
             validity: element.validity
           }));
@@ -161,6 +162,7 @@ export class ConfigurationControlService {
             minimum: element.minimum,
             maximum: element.maximum,
             readonly: element.readonly,
+            mandatory: element.mandatory,
             order: element.order,
             validity: element.validity
           }));
@@ -173,6 +175,7 @@ export class ConfigurationControlService {
             description: element.description,
             value: element.value,
             readonly: element.readonly,
+            mandatory: element.mandatory,
             order: element.order,
             validity: element.validity
           }));
@@ -185,6 +188,7 @@ export class ConfigurationControlService {
             description: element.description,
             value: element.value,
             readonly: element.readonly,
+            mandatory: element.mandatory,
             options: element.options,
             order: element.order,
             validity: element.validity
@@ -199,6 +203,7 @@ export class ConfigurationControlService {
             description: element.description,
             value: element.value,
             readonly: element.readonly,
+            mandatory: element.mandatory,
             options: element.options,
             order: element.order,
             editorOptions: this.setEditorConfig(key),
@@ -220,6 +225,7 @@ export class ConfigurationControlService {
             description: element.description,
             value: element.value,
             readonly: element.readonly,
+            mandatory: element.mandatory,
             options: element.options,
             order: element.order,
             validity: element.validity
@@ -233,6 +239,7 @@ export class ConfigurationControlService {
             description: element.description,
             value: element.value,
             readonly: element.readonly,
+            mandatory: element.mandatory,
             options: element.options,
             order: element.order,
             file: element.file,
@@ -250,6 +257,7 @@ export class ConfigurationControlService {
             description: element.description,
             value: element.value,
             readonly: element.readonly,
+            mandatory: element.mandatory,
             order: element.order,
             validity: element.validity
           }));
@@ -293,7 +301,9 @@ export class ConfigurationControlService {
   toFormGroup(pluginConfiguration: any, groupConfigurations: ConfigurationBase<string>[]) {
     const group: any = {};
     groupConfigurations.forEach(configuration => {
-      group[configuration.key] = new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) });
+      group[configuration.key] = configuration.required ?
+        new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, Validators.required)
+        : new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) });
     });
     return new FormGroup(group);
   }

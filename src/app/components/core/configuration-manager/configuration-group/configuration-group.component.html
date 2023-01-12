@@ -12,7 +12,7 @@
 <div class="highlight">
   <ng-container *ngFor="let g of groups">
     <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
-      [selectedGroup]="selectedGroup" [fullConfiguration]="category?.config" [parent]="form"
-      (event)="show($event)"></app-show-configuration>
+      [selectedGroup]="selectedGroup" [fullConfiguration]="category?.config" (event)="getChangeConfiguration($event)"
+      (formStatusEvent)="formStatus($event)"></app-show-configuration>
   </ng-container>
 </div>
