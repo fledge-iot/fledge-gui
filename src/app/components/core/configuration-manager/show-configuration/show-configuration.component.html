@@ -12,7 +12,9 @@
                 </label>
               </div>
               <div class="field-body">
-                <div [ngSwitch]="configuration.controlType" class="field">
+                <div [ngSwitch]="configuration.controlType" class="field" #cdmrField
+                  [style.max-width.px]="['SCRIPT'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
+                  [ngClass]="{'codemirror-field': ['SCRIPT'].includes(configuration.controlType)}">
                   <input *ngSwitchCase="'TEXT'" [formControlName]="configuration.key" [id]="configuration.key"
                     [type]="configuration.type" class="input is-fullwidth is-small">
 
@@ -37,10 +39,11 @@
                     [maxValue]="configuration.maximum" appNumberOnly />
 
                   <ngx-codemirror *ngSwitchCase="'JSON'" [formControlName]="configuration.key" #jsoneditor
-                    [options]="configuration.editorOptions" [autoFocus]="true" [jsonValue]="isValidJson">
+                    [options]="configuration.editorOptions" [autoFocus]="true"
+                    [jsonValue]="form.controls[configuration.key]">
                   </ngx-codemirror>
 
-                  <div *ngSwitchCase="'SCRIPT'">
+                  <ng-container *ngSwitchCase="'SCRIPT'">
                     <ngx-codemirror [formControlName]="configuration.key" #scriptCode
                       [options]="configuration.editorOptions" [autoFocus]="true"
                       [required]="configuration.mandatory=='true'">
@@ -52,7 +55,7 @@
                       <input #fileInput class="input is-small is-fullwidth" multiple type="file"
                         (change)="fileChange($event, configuration)" />
                     </div>
-                  </div>
+                  </ng-container>
 
                   <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
                     <div class="control">

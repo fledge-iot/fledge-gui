@@ -61,8 +61,10 @@ export class ShowConfigurationComponent implements OnInit {
         if (configuration && configuration.type !== 'script') {
           configuration.value = value.toString();
           this.configControlService.checkConfigItemValidityOnChange(this.form, configuration);
-          this.event.emit(data);
           this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
+          if (this.form.valid) {
+            this.event.emit(data);
+          }
         }
       });
   }
