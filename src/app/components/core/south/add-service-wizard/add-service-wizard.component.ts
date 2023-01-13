@@ -29,7 +29,10 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   public schedulesName = [];
   public showSpinner = false;
   private subscription: Subscription;
-  private filesToUpload = []
+  private filesToUpload = [];
+
+  // to hold child form state
+  validConfigurationForm = true;
 
   serviceForm = new FormGroup({
     name: new FormControl(),

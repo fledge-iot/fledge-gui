@@ -31,7 +31,6 @@ export class ShowConfigurationComponent implements OnInit {
     if (!changes?.selectedGroup?.firstChange) {
       if (changes?.selectedGroup?.currentValue == this.group) {
         this.configControlService.checkConfigItemOnGroupChange(this.form);
-        return;
       }
     }
   }
@@ -83,7 +82,6 @@ export class ShowConfigurationComponent implements OnInit {
       fileReader.onload = () => {
         config.value = fileReader.result.toString();
         this.form.controls[config.key].patchValue(config.value);
-        // this.fileContent = fileReader.result.toString();
       };
       fileReader.readAsText(file);
       const ext = file.name.substring(file.name.lastIndexOf('.') + 1);

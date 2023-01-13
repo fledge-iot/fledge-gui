@@ -26,7 +26,6 @@ export class ConfigurationGroupComponent implements OnInit {
 
   ngOnInit() {
     console.log('configuration category', this.category);
-
     this.categeryConfiguration();
   }
 
@@ -45,7 +44,6 @@ export class ConfigurationGroupComponent implements OnInit {
       }
     }).value();
   }
-
 
   /**
    * Set configuration of the selected child category

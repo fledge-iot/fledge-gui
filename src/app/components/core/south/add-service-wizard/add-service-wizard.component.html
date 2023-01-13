@@ -93,14 +93,9 @@
           </div>
         </div>
         <div class="box step-content" id="c-2">
-
           <app-configuration-group *ngIf="configurationData" [category]="configurationData"
             (changedConfigEvent)="getChangedConfig($event)"
             (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
-          <!-- <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
-            [pluginInfo]="{name: plugin,  type:serviceType}" (onConfigChanged)="getChangedConfig($event)"
-            [pageId]="'wizard'">
-          </app-view-config-item> -->
         </div>
         <div class="box step-content" id="c-3">
           <div class="field is-horizontal">
@@ -124,7 +119,7 @@
       </div>
       <div class="steps-action">
         <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
-          [disabled]="plugins.length === 0">Next</button>
+          [disabled]="serviceForm.invalid || !validConfigurationForm">Next</button>
       </div>
     </div>
   </div>
