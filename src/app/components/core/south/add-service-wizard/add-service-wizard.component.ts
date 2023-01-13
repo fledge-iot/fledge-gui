@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
 
-import { AlertService, SchedulesService, SharedService, ServicesApiService, PluginService, ProgressBarService, ConfigurationService } from '../../../../services';
+import { AlertService, SchedulesService, SharedService, ServicesApiService, PluginService, ProgressBarService, FileUploaderService } from '../../../../services';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
 
@@ -56,7 +56,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
     private docService: DocService,
-    private configService: ConfigurationService
+    private fileUploaderService: FileUploaderService
   ) { }
 
   ngOnInit() {
@@ -254,9 +254,10 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
     // final array to hold changed configuration
     let finalConfig = [];
+    this.filesToUpload = [];
     matchedConfigCopy.forEach(item => {
       if (item.type === 'script') {
-        this.filesToUpload = item.value;
+        this.filesToUpload.push(...item.value);
       } else {
         finalConfig.push({
           [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
@@ -297,27 +298,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   }
 
   public uploadScript() {
-    this.filesToUpload.forEach(data => {
-      // get config item
-      const [configProperty] = Object.entries(data)[0];
-      // get file
-      const file = data[configProperty];
-      const formData = new FormData();
-      formData.append('script', file);
-      this.configService.uploadFile(this.payload.name, configProperty, formData)
-        .subscribe(() => {
-          this.filesToUpload = [];
-          this.alertService.success('Script uploaded successfully.');
-        },
-          error => {
-            this.filesToUpload = [];
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
-    });
+    this.fileUploaderService.uploadConfigurationScript(this.payload.name, this.filesToUpload);
   }
 
   validateServiceName(event) {

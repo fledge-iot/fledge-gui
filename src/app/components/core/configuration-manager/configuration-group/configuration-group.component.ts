@@ -13,12 +13,13 @@ export class ConfigurationGroupComponent implements OnInit {
   selectedGroup = 'Default Configuration';
   @Input() category;
   groups = [];
-  @Input() pageId;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
 
+  // To hold the changed configuration values of a plugin
   configFormValues = {};
+
   constructor(
     public developerFeaturesService: DeveloperFeaturesService,
     public rolesService: RolesService,
