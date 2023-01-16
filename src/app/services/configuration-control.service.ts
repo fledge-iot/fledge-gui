@@ -148,7 +148,7 @@ export class ConfigurationControlService {
    */
   createConfigurationBase(configuration: any): ConfigurationBase<string>[] {
     const configurations: ConfigurationBase<string>[] = [];
-    Object.keys(configuration).forEach(async key => {
+    Object.keys(configuration).forEach(key => {
       const element = configuration[key];
       element.key = key;
       element.value = element.value ? element.value : element.default;
@@ -451,7 +451,6 @@ export class ConfigurationControlService {
       .subscribe((data: any) => {
         this.acls = orderBy(data.acls, 'name');
         this.acls.unshift({ name: '' }) // add empty acl as first item in the ACLs array to mapped to None text
-        console.log('this.pluginACLs', this.acls);
       }, error => {
         if (error.status === 0) {
           console.log('service down ', error);
