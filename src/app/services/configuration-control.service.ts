@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AclService } from './acl.service';
+import { orderBy, } from 'lodash';
 
 export class ConfigurationBase<T> {
   value: T | undefined;
@@ -13,6 +15,7 @@ export class ConfigurationBase<T> {
   maximum: string;
   minimum: string;
   order: number;
+  length: string; // hold password max length
   controlType: string;
   type: string;
   options: { key: string, value: string }[];
@@ -37,7 +40,8 @@ export class ConfigurationBase<T> {
     order?: number;
     controlType?: string;
     type?: string;
-    options?: { key: string, value: string }[];
+    options?: [];
+    length?: string;
     editorOptions?: {};
     file?: string;
     files?: {}[];
@@ -54,6 +58,7 @@ export class ConfigurationBase<T> {
     this.required = options.mandatory === undefined ? false : (options.mandatory == 'true');
     this.editable = options.editable === undefined ? true : options.editable;
     this.order = options.order === undefined ? 1 : options.order;
+    this.length = options.length;
     this.minimum = options.minimum;
     this.maximum = options.maximum;
     this.controlType = options.controlType || '';
@@ -116,6 +121,7 @@ export class ACLConfig extends ConfigurationBase<string> {
 })
 export class ConfigurationControlService {
   private configuration: any;
+  private allACLs = [];
 
   public set updatedConfiguration(config: any) {
     this.configuration = config;
@@ -125,6 +131,16 @@ export class ConfigurationControlService {
     return this.configuration;
   }
 
+  public set acls(acls: []) {
+    this.allACLs = acls;
+  }
+
+  public get acls(): any {
+    return this.allACLs;
+  }
+
+  constructor(private aclService: AclService) { }
+
   /**
    * Create configuration form control based on configuration property type
    * @param configuration plugin configuration
@@ -132,10 +148,14 @@ export class ConfigurationControlService {
    */
   createConfigurationBase(configuration: any): ConfigurationBase<string>[] {
     const configurations: ConfigurationBase<string>[] = [];
-    Object.keys(configuration).forEach(key => {
+    Object.keys(configuration).forEach(async key => {
       const element = configuration[key];
       element.key = key;
       element.value = element.value ? element.value : element.default;
+      if (element.type == 'acl') {
+        // fetch all acls if property type is 'acl'
+        this.getAllACLs();
+      }
       switch (element.type.toUpperCase()) {
         case 'INTEGER':
           configurations.push(new IntegerConfig({
@@ -204,18 +224,36 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
-            options: element.options,
             order: element.order,
             editorOptions: this.setEditorConfig(key),
             validity: element.validity
           }));
           break;
         case 'ACL':
-
+          configurations.push(new ACLConfig({
+            key: key,
+            type: 'dropdown',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            validity: element.validity,
+          }));
           break;
-
         case 'URL':
-
+          configurations.push(new URLConfig({
+            key: key,
+            type: 'url',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            validity: element.validity
+          }));
           break;
         case 'PASSWORD':
           configurations.push(new PasswordConfig({
@@ -226,7 +264,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
-            options: element.options,
+            length: element.length,
             order: element.order,
             validity: element.validity
           }));
@@ -240,7 +278,6 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
-            options: element.options,
             order: element.order,
             file: element.file,
             editorOptions: this.setEditorConfig(key),
@@ -408,4 +445,18 @@ export class ConfigurationControlService {
       return true;
     }
   }
+
+  getAllACLs() {
+    this.aclService.fetchAllACL()
+      .subscribe((data: any) => {
+        this.acls = orderBy(data.acls, 'name');
+        this.acls.unshift({ name: '' }) // add empty acl as first item in the ACLs array to mapped to None text
+        console.log('this.pluginACLs', this.acls);
+      }, error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        }
+      });
+  }
+
 }
