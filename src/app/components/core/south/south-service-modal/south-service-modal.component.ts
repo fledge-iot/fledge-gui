@@ -7,7 +7,7 @@ import { assign, cloneDeep, reduce, isEmpty, map } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, AssetsService, ConfigurationService, FilterService, GenerateCsvService, ProgressBarService, RolesService, SchedulesService,
+  AlertService, AssetsService, ConfigurationService, FileUploaderService, FilterService, GenerateCsvService, ProgressBarService, RolesService, SchedulesService,
   ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
@@ -71,6 +71,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private schedulesService: SchedulesService,
     private dialogService: DialogService,
     private docService: DocService,
+    private fileUploaderService: FileUploaderService,
     public rolesService: RolesService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -562,6 +563,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.', true);
+          if (this.filesToUpload.length > 0) {
+            this.uploadScript();
+          }
         },
         error => {
           /** request completed */
@@ -572,5 +576,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public uploadScript() {
+    this.fileUploaderService.uploadConfigurationScript(this.pluginConfiguration.key, this.filesToUpload);
   }
 }

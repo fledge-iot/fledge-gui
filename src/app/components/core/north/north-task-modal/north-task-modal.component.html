@@ -23,10 +23,6 @@
             (formStatusEvent)="validConfigurationForm = $event">
           </app-config-children>
 
-          <!-- <app-configuration-group *ngIf="configurationData" [category]="configurationData"
-          (changedConfigEvent)="getChangedConfig($event)"
-          (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group> -->
-
           <form name=" task-form" id="taskForm" #fg="ngForm" novalidate>
             <div class="columns">
               <div class="column">
@@ -78,10 +74,8 @@
                 </ng-container>
               </div>
             </div>
-            <!-- <button *ngIf="rolesService.hasEditPermissions()" class="is-hidden button is-small is-link is-pulled-right"
-            form="taskForm">Save</button> -->
           </form>
-          <!-- </div> -->
+
           <hr>
           <div class="columns">
             <div class="column has-text-centered">

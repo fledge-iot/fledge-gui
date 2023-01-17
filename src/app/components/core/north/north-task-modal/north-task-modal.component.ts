@@ -8,7 +8,7 @@ import { assign, cloneDeep, reduce, isEmpty, map } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, ConfigurationService, FilterService, NorthService, ProgressBarService, RolesService, SchedulesService, ServicesApiService
+  AlertService, ConfigurationService, FileUploaderService, FilterService, NorthService, ProgressBarService, RolesService, SchedulesService, ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import Utils from '../../../../utils';
@@ -72,7 +72,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     public ngProgress: ProgressBarService,
     private servicesApiService: ServicesApiService,
     private docService: DocService,
-    public rolesService: RolesService
+    public rolesService: RolesService,
+    private fileUploaderService: FileUploaderService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -522,6 +523,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.', true);
+          if (this.filesToUpload.length > 0) {
+            this.uploadScript();
+          }
         },
         error => {
           /** request completed */
@@ -532,5 +536,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public uploadScript() {
+    this.fileUploaderService.uploadConfigurationScript(this.pluginConfiguration.key, this.filesToUpload);
   }
 }

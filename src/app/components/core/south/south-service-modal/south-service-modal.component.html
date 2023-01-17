@@ -96,14 +96,13 @@
                   <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
                 </p>
                 <p class="control">
-                  <button class="button is-small is-link" (click)="saveChanges(service.name)">Save</button>
+                  <button class="button is-small is-link"
+                    (click)="saveChanges(service.name);updateConfiguration();">Save</button>
                 </p>
               </div>
             </div>
           </div>
           <hr *ngIf="rolesService.hasEditPermissions()">
-          <!-- <button id="ss" *ngIf="service && rolesService.hasEditPermissions()"
-            class="is-hidden button is-small is-link is-pulled-right" (click)="saveChanges(service.name)">Save</button> -->
           <ng-container *ngIf="service != undefined">
             <div *ngIf="service.schedule_enabled" class="field is-horizontal">
               <div class="field-label has-text-left">
