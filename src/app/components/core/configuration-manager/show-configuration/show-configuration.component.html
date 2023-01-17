@@ -45,9 +45,9 @@
                   </ngx-codemirror>
 
                   <ng-container *ngSwitchCase="'SCRIPT'">
-                    <ngx-codemirror [formControlName]="configuration.key" #scriptCode
-                      [options]="configuration.editorOptions" [autoFocus]="true"
-                      [required]="configuration.mandatory=='true'">
+                    <ngx-codemirror #scriptCode
+                      [ngClass]="{'readonly-editor': !configuration.file , 'dark-bg-color': !configuration.file && selectedTheme === 'darcula'}"
+                      [formControlName]="configuration.key" [options]="configuration.editorOptions" [autoFocus]="true">
                     </ngx-codemirror>
                     <p class="help" *ngIf="configuration?.file">
                       {{configuration?.file | truncate:"/" }}

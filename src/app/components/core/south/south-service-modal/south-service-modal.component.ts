@@ -3,7 +3,7 @@ import {
   Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { isEmpty } from 'lodash';
+import { assign, cloneDeep, reduce, isEmpty, map } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
@@ -11,7 +11,6 @@ import {
   ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
-import { ValidateFormService } from '../../../../services/validate-form.service';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
@@ -28,8 +27,6 @@ import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.com
 export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   public category: any;
-  public useProxy: 'true';
-  public useFilterProxy: 'true';
   public isEnabled = false;
   svcCheckbox: FormControl = new FormControl();
   public filterPipeline = [];
@@ -42,7 +39,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   assetReadings = [];
   public filterItemIndex;
-  public isWizard;
+  public isAddFilterWizard;
   // Object to hold data of south service to delete
   public selectedFilterPlugin;
 
@@ -55,6 +52,13 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
+  // to hold child form state
+  validConfigurationForm = true;
+  validFilterConfigForm = true;
+  private filesToUpload = [];
+  pluginConfiguration;
+  changedConfig = {};
+
   constructor(
     private router: Router,
     private configService: ConfigurationService,
@@ -64,7 +68,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     public ngProgress: ProgressBarService,
     public generateCsv: GenerateCsvService,
     private servicesApiService: ServicesApiService,
-    private validateFormService: ValidateFormService,
     private schedulesService: SchedulesService,
     private dialogService: DialogService,
     private docService: DocService,
@@ -124,9 +127,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       activeContentBody.hidden = true;
     }
 
-    if (this.isWizard) {
+    if (this.isAddFilterWizard) {
       this.getCategory();
-      this.isWizard = false;
+      this.isAddFilterWizard = false;
     }
 
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
@@ -148,14 +151,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   public getCategory(): void {
     /** request started */
     this.ngProgress.start();
-    const categoryValues = [];
     this.configService.getCategory(this.service['name']).
       subscribe(
         (data) => {
           if (!isEmpty(data)) {
-            categoryValues.push(data);
-            this.category = { key: this.service['name'], value: categoryValues };
-            // this.useProxy = 'true';
+            this.category = { key: this.service['name'], config: data };
+            this.pluginConfiguration = cloneDeep({ key: this.service['name'], config: data });
           }
           /** request completed */
           this.ngProgress.done();
@@ -250,30 +251,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.disableSchedule(serviceName);
       this.svcCheckbox.reset(false);
     }
-  }
-
-  proxy() {
-    const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {
-      return this.validateFormService.checkViewConfigItemFormValidity(component);
-    });
-
-    if (!filterFormStatus) {
-      return;
-    }
-
-    if (this.useProxy === 'true') {
-      document.getElementById('vci-proxy').click();
-    }
-    const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
-    for (const e of <any>el) {
-      e.click();
-    }
-
-    const securityCel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
-    for (const e of <any>securityCel) {
-      e.click();
-    }
-    document.getElementById('ss').click();
   }
 
   openModal(id: string) {
@@ -380,7 +357,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       this.showConfirmationDialog();
       return;
     }
-    this.isWizard = isClicked;
+    this.isAddFilterWizard = isClicked;
     this.category = '';
     this.isFilterOrderChanged = false;
     this.isFilterDeleted = false;
@@ -389,7 +366,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   onNotify() {
     this.getCategory();
-    this.isWizard = false;
+    this.isAddFilterWizard = false;
     this.getFilterPipeline();
   }
 
@@ -408,7 +385,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   activeAccordion(id, filterName: string) {
-    this.useFilterProxy = 'true';
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
       const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
@@ -527,9 +503,74 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.isFilterDeleted = false;
     this.deletedFilterPipeline = [];
     if (this.applicationTagClicked) {
-      this.isWizard = this.applicationTagClicked;
+      this.isAddFilterWizard = this.applicationTagClicked;
       return;
     }
     this.toggleModal(false);
+  }
+
+  /**
+   * Get edited configuration from view config child page
+   * @param changedConfig changed configuration of a selected plugin
+   */
+  getChangedConfig(changedConfig: any) {
+    const defaultConfig = map(this.pluginConfiguration.config, (v, key) => ({ key, ...v }));
+    // make a copy of matched config items having changed values
+    const matchedConfig = defaultConfig.filter(e1 => {
+      return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
+    });
+    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
+    const matchedConfigCopy = cloneDeep(matchedConfig);
+
+    /**
+     * merge new configuration with old configuration,
+     * where value key hold changed data in config object
+    */
+    matchedConfigCopy.forEach(e => e.value = changedConfig[e.key]);
+    // final array to hold changed configuration
+    let finalConfig = [];
+    this.filesToUpload = [];
+    matchedConfigCopy.forEach(item => {
+      if (item.type === 'script') {
+        this.filesToUpload.push(...item.value);
+      } else {
+        finalConfig.push({
+          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
+        });
+      }
+    });
+
+    // convert finalConfig array in object of objects to pass in add task
+    this.changedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
+  }
+
+  /**
+  * update plugin configuration
+  */
+  updateConfiguration() {
+    console.log('changed config', this.changedConfig);
+    if (isEmpty(this.changedConfig)) {
+      return;
+    }
+    /** request started */
+    this.ngProgress.start();
+    this.configService.updateBulkConfiguration(this.pluginConfiguration.key, this.changedConfig).
+      subscribe(
+        (data: any) => {
+          console.log('data', data);
+          this.changedConfig = {};
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success('Configuration updated successfully.', true);
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }

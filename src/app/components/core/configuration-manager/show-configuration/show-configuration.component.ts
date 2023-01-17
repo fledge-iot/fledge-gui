@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, of } from 'rxjs';
 import { filter, map, pairwise, startWith } from 'rxjs/operators';
 import { RolesService, ConfigurationControlService, ConfigurationBase } from '../../../../services';
@@ -20,8 +21,11 @@ export class ShowConfigurationComponent implements OnInit {
   configurations$: Observable<ConfigurationBase<any>[]>;
   form: FormGroup;
 
+  @ViewChildren('scriptCode') codeMirrorCmpt: QueryList<CodemirrorComponent>;
+
   constructor(private fb: FormBuilder,
     public rolesService: RolesService,
+    public changeDetectorRef: ChangeDetectorRef,
     private configControlService: ConfigurationControlService) {
     this.form = this.fb.group({
     });
@@ -32,17 +36,20 @@ export class ShowConfigurationComponent implements OnInit {
       if (changes?.selectedGroup?.currentValue == this.group) {
         this.configControlService.checkConfigItemOnGroupChange(this.form);
       }
+      // refresh codemirror editor to reflect changed values
+      if (this.codeMirrorCmpt) {
+        this.codeMirrorCmpt.forEach((comp: CodemirrorComponent) => {
+          comp.codeMirror?.refresh();
+        })
+      }
     }
   }
 
   ngOnInit(): void {
-    console.log('group', this.group);
-
     this.groupConfiguration = this.configControlService.createConfigurationBase(this.groupConfiguration);
     this.configurations$ = of(this.groupConfiguration);
     this.form = this.configControlService.toFormGroup(this.fullConfiguration, this.groupConfiguration as ConfigurationBase<string>[]);
     this.configControlService.updatedConfiguration = this.fullConfiguration;
-
     this.form.valueChanges.pipe(
       startWith(this.form.value),
       pairwise(),
@@ -92,6 +99,8 @@ export class ShowConfigurationComponent implements OnInit {
       if (ext !== 'py') {
         config.validFileExtension = false;
       } else {
+        console.log('file', file);
+        config.file = file.name;
         config.files.push({ [config.key]: file });
         this.event.emit({ [config.key]: config.files });
       }
