@@ -283,7 +283,9 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
-          this.uploadScript();
+          if (this.filesToUpload.length > 0) {
+            this.uploadScript();
+          }
           this.router.navigate(['/south']);
         },
         (error) => {

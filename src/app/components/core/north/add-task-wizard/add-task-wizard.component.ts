@@ -302,7 +302,9 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('North instance added successfully.', true);
-          this.uploadScript();
+          if (this.filesToUpload.length > 0) {
+            this.uploadScript();
+          }
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -326,7 +328,9 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
-          this.uploadScript();
+          if (this.filesToUpload.length > 0) {
+            this.uploadScript();
+          }
           this.router.navigate(['/north']);
         },
         (error) => {

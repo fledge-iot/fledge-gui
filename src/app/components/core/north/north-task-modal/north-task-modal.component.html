@@ -16,12 +16,18 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <ng-container *ngIf="!isWizard">
+      <ng-container *ngIf="!isAddFilterWizard">
         <div class="box">
           <app-config-children #configChildComponent *ngIf="category" [category]="category" [plugin]="task?.plugin.name"
-            [serviceStatus]="task['enabled']" [from]="'north'">
+            [serviceStatus]="task['enabled']" [from]="'north'" (changedConfigEvent)="getChangedConfig($event)"
+            (formStatusEvent)="validConfigurationForm = $event">
           </app-config-children>
-          <form name=" task-form" id="taskForm" #fg="ngForm" (ngSubmit)="saveScheduleFields(fg)" novalidate>
+
+          <!-- <app-configuration-group *ngIf="configurationData" [category]="configurationData"
+          (changedConfigEvent)="getChangedConfig($event)"
+          (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group> -->
+
+          <form name=" task-form" id="taskForm" #fg="ngForm" novalidate>
             <div class="columns">
               <div class="column">
                 <div class="field is-horizontal">
@@ -72,8 +78,8 @@
                 </ng-container>
               </div>
             </div>
-            <button *ngIf="rolesService.hasEditPermissions()" id="ss"
-              class="is-hidden button is-small is-link is-pulled-right" form="taskForm">Save</button>
+            <!-- <button *ngIf="rolesService.hasEditPermissions()" class="is-hidden button is-small is-link is-pulled-right"
+            form="taskForm">Save</button> -->
           </form>
           <!-- </div> -->
           <hr>
@@ -91,7 +97,7 @@
               </ng-template>
             </div>
           </div>
-          <div *ngIf="filterPipeline != undefined" class="view-content columns">
+          <div *ngIf="filterPipeline != undefined" class="columns">
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
@@ -112,10 +118,15 @@
                     </a>
                   </header>
                   <div class="card-content" hidden>
-                    <div class="content" *ngIf="filterConfiguration">
-                      <app-view-config-item #filterConfigView
-                        [categoryConfigurationData]="setFilterConfiguration(filter)" [useFilterProxy]="useFilterProxy"
-                        [formId]="item"></app-view-config-item>
+                    <ng-container *ngIf="filterConfiguration?.key === task['name'] + '_' + filter">
+                      <div class="field">
+                        <app-configuration-group #configChildComponent [category]="filterConfiguration"
+                          [plugin]="task?.plugin.name" [serviceStatus]="task['enabled']" [from]="'north'"
+                          (changedConfigEvent)="getChangedConfig($event)"
+                          (formStatusEvent)="validFilterConfigForm = $event">
+                        </app-configuration-group>
+                      </div>
+
                       <div class="field">
                         <div class="field has-text-left">
                           <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
@@ -129,7 +140,7 @@
                                 aria-hidden="true"></i></span></button>
                         </div>
                       </div>
-                    </div>
+                    </ng-container>
                   </div>
                 </div>
               </div>
@@ -143,7 +154,8 @@
                   <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
                 </p>
                 <p class="control">
-                  <button class="button is-small is-link" (click)="proxy()">Save</button>
+                  <button class="button is-small is-link"
+                    (click)="saveScheduleFields(fg);updateConfiguration();">Save</button>
                 </p>
               </div>
             </div>
@@ -183,15 +195,16 @@
                   (click)="openDeleteModal(task.name, 'Deleting this ' + btnTxt + ' can not be undone. Continue?')"
                   class="button is-small">Delete {{btnTxt}}</button> -->
                 <button *ngIf="task != undefined" (click)="openModal('delete-task-dialog')"
-                  class="button is-small">Delete {{btnTxt}}</button>
+                  class="button is-small">Delete
+                  {{btnTxt}}</button>
               </p>
             </div>
           </div>
         </div>
       </ng-container>
-      <ng-container *ngIf="isWizard">
+      <ng-container *ngIf="isAddFilterWizard">
         <div class="box animated slideInRight">
-          <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="task.name"></app-add-filter-wizard>
+          <app-add-filter-wizard (notify)="onNotify()" [serviceName]="task?.name"></app-add-filter-wizard>
         </div>
       </ng-container>
     </section>

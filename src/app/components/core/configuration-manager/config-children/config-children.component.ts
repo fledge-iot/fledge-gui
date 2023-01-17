@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain } from 'lodash';
@@ -9,7 +9,7 @@ import { chain } from 'lodash';
   styleUrls: ['./config-children.component.css']
 })
 export class ConfigChildrenComponent {
-  seletedTab = 'Default Configuration';
+  selectedGroup = 'Default Configuration';
   useCategoryChildrenProxy = 'true';
   categoryKey = '';
   categoryChildren = [];
@@ -20,6 +20,13 @@ export class ConfigChildrenComponent {
   @Input() from;
 
   pages = ['south', 'north'];
+
+  @Output() changedConfigEvent = new EventEmitter<any>();
+  @Output() formStatusEvent = new EventEmitter<boolean>();
+
+  // To hold the changed configuration values of a plugin
+  configFormValues = {};
+
 
   constructor(
     private configService: ConfigurationService,
@@ -33,20 +40,25 @@ export class ConfigChildrenComponent {
   }
 
   categeryConfiguration() {
-    const configItems = Object.keys(this.category.value[0]).map(k => {
-      this.category.value[0][k].key = k;
-      return this.category.value[0][k];
+    console.log('category', this.category);
+    const configItems = Object.keys(this.category.config).map(k => {
+      this.category.config[k].key = k;
+      return this.category.config[k];
     });
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       if (k != "undefined") {
-        return { category: this.category.key, group: k, values: [Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } }))] }
+        return { category: this.category.key, group: k, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
       } else {
         // return { group: "Default", values: v }
-        return { category: this.category.key, group: "Default Configuration", values: [Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } }))] }
+        return { category: this.category.key, group: "Default Configuration", config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
       }
     }).value();
+
+    console.log('groups', this.groups);
+
   }
+
 
   public getChildConfigData() {
     if (this.category) {
@@ -79,8 +91,8 @@ export class ConfigChildrenComponent {
    * @param category Object{key, description, displayName}
    */
   selectTab(tab: string) {
-    if (tab !== this.seletedTab) {
-      this.seletedTab = tab;
+    if (tab !== this.selectedGroup) {
+      this.selectedGroup = tab;
     }
   }
 
@@ -112,5 +124,14 @@ export class ConfigChildrenComponent {
     else {
       array.push(element);
     }
+  }
+
+  getChangeConfiguration(values: {}) {
+    this.configFormValues = Object.assign({}, this.configFormValues, values);
+    this.changedConfigEvent.emit(this.configFormValues)
+  }
+
+  formStatus(status: boolean) {
+    this.formStatusEvent.emit(status);
   }
 }

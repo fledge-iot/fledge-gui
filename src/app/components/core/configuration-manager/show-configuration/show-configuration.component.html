@@ -49,6 +49,9 @@
                       [options]="configuration.editorOptions" [autoFocus]="true"
                       [required]="configuration.mandatory=='true'">
                     </ngx-codemirror>
+                    <p class="help" *ngIf="configuration?.file">
+                      {{configuration?.file | truncate:"/" }}
+                    </p>
                     <span *ngIf="!configuration.validFileExtension" class="help is-danger">
                       Invalid file. Please upload file with .py extension.
                     </span>

@@ -99,7 +99,6 @@ export class JSONConfig extends ConfigurationBase<string> {
 
 export class ScriptConfig extends ConfigurationBase<string> {
   override controlType = 'SCRIPT';
-  override file = '';
   override validFileExtension = true;
 }
 

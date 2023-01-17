@@ -36,6 +36,8 @@ export class ShowConfigurationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('group', this.group);
+
     this.groupConfiguration = this.configControlService.createConfigurationBase(this.groupConfiguration);
     this.configurations$ = of(this.groupConfiguration);
     this.form = this.configControlService.toFormGroup(this.fullConfiguration, this.groupConfiguration as ConfigurationBase<string>[]);
