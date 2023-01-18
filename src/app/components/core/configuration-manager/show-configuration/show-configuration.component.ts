@@ -100,9 +100,9 @@ export class ShowConfigurationComponent implements OnInit {
         config.validFileExtension = false;
       } else {
         console.log('file', file);
-        config.file = file.name;
-        config.files.push({ [config.key]: file });
-        this.event.emit({ [config.key]: config.files });
+        config.fileName = file.name;
+        config.file = file;
+        this.event.emit({ [config.key]: config.file });
       }
     }
   }

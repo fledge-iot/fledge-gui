@@ -39,6 +39,11 @@ export class ConfigChildrenComponent {
     this.getChildConfigData();
   }
 
+  public updateCategroyConfig(config) {
+    this.category.config = config;
+    this.categeryConfiguration();
+  }
+
   categeryConfiguration() {
     console.log('category', this.category);
     const configItems = Object.keys(this.category.config).map(k => {

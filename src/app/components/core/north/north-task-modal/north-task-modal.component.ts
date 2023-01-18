@@ -1,23 +1,21 @@
 import {
-  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild
 } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { assign, cloneDeep, reduce, isEmpty, map } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, ConfigurationService, FileUploaderService, FilterService, NorthService, ProgressBarService, RolesService, SchedulesService, ServicesApiService
+  AlertService, ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, NorthService, ProgressBarService, RolesService, SchedulesService, ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import Utils from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
-import {
-  ViewConfigItemComponent
-} from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
+import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -38,7 +36,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public isFilterOrderChanged = false;
   public filterPipeline = [];
   public deletedFilterPipeline = [];
-  public filterConfiguration;
+  public filterConfiguration: any;
   public isFilterDeleted = false;
   public confirmationDialogData = {};
   public btnTxt = '';
@@ -49,16 +47,18 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   @Input() task: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
+  @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigChildrenComponent;
+  @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
-  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
 
   // to hold child form state
   validConfigurationForm = true;
   validFilterConfigForm = true;
-  private filesToUpload = [];
   pluginConfiguration;
   changedConfig = {};
+
+  filterConfigurationCopy: any;
+  changedFilterConfig: any;
 
   constructor(
     private router: Router,
@@ -73,6 +73,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private servicesApiService: ServicesApiService,
     private docService: DocService,
     public rolesService: RolesService,
+    private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService
   ) { }
 
@@ -85,23 +86,37 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   ngOnInit() { }
 
-  ngOnChanges() {
-    this.getNorthData();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes?.task?.previousValue !== changes?.task?.currentValue) {
+      this.getNorthData();
+    }
   }
 
   refreshPageData() {
-    this.getNorthData();
-    if (this.configChildComponent) {
-      this.configChildComponent.getChildConfigData();
+    if (this.pluginConfiguration) {
+      const pluginConfigCopy = cloneDeep(this.pluginConfiguration);
+      this.pluginConfigComponent?.updateCategroyConfig(pluginConfigCopy.config);
+    }
+    if (this.filterConfigurationCopy) {
+      const filterConfig = cloneDeep(this.filterConfigurationCopy.config);
+      this.filterConfigComponent?.updateCategroyConfig(filterConfig);
+    }
+
+    if (this.form !== undefined) {
+      this.enabled = this.task['enabled'];
+      this.exclusive = this.task['exclusive'];
+      const repeatInterval = Utils.secondsToDhms(this.task['repeat']);
+      this.repeatTime = repeatInterval.time;
+      this.repeatDays = repeatInterval.days;
+      this.name = this.task['name'];
     }
   }
 
+
   getNorthData() {
-    if (this.task !== undefined) {
-      this.getCategory();
-      this.getFilterPipeline();
-      this.btnTxt = this.task['processName'] === 'north_C' ? 'Service' : 'Instance';
-    }
+    this.getCategory();
+    this.getFilterPipeline();
+    this.btnTxt = this.task['processName'] === 'north_C' ? 'Service' : 'Instance';
   }
 
   onDrop(event: CdkDragDrop<string[]>) {
@@ -160,7 +175,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.form.reset();
     }
     this.category = null;
-    this.filterConfiguration = [];
     modal.classList.remove('is-active');
   }
 
@@ -366,6 +380,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       .subscribe((data: any) => {
         this.selectedFilterPlugin = data.plugin.value;
         this.filterConfiguration = { key: catName, config: data };
+        this.filterConfigurationCopy = cloneDeep({ key: catName, config: data });
       },
         error => {
           if (error.status === 0) {
@@ -469,53 +484,50 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Get edited configuration from view config child page
-   * @param changedConfig changed configuration of a selected plugin
-   */
-  getChangedConfig(changedConfig: any) {
-    console.log('config', changedConfig);
-
-    const defaultConfig = map(this.pluginConfiguration.config, (v, key) => ({ key, ...v }));
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
-    });
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
-
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => e.value = changedConfig[e.key]);
-    // final array to hold changed configuration
-    let finalConfig = [];
-    this.filesToUpload = [];
-    matchedConfigCopy.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload.push(...item.value);
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-        });
-      }
-    });
-
-    // convert finalConfig array in object of objects to pass in add task
-    this.changedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
+  * Get edited south service configuration from show configuration page
+  * @param changedConfiguration changed configuration of a selected plugin
+  */
+  getChangedConfig(changedConfiguration: any) {
+    this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
+    console.log('plugin changed configuration', this.changedConfig);
   }
+
+
+  /**
+ * Get edited filter configuration from show configuration page
+ * @param changedConfiguration changed configuration of a selected filter
+ */
+  getChangedFilterConfig(changedConfiguration: any) {
+    this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
+    console.log('filter changed configuration', this.changedFilterConfig);
+  }
+
+  /**
+  * Get scripts to upload from a configuration item
+  * @param configuration  edited configuration from show configuration page
+  * @returns script files to upload
+  */
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
+  }
+
 
   /**
    * update plugin configuration
    */
-  updateConfiguration() {
-    console.log('changed config', this.changedConfig);
-    if (isEmpty(this.changedConfig)) {
+  updateConfiguration(categoryName: string, configuration: any) {
+    const files = this.getScriptFilesToUpload(configuration);
+    if (files.length > 0) {
+      this.uploadScript(categoryName, files);
+    }
+
+    console.log('changed config', configuration);
+    if (!categoryName || isEmpty(configuration)) {
       return;
     }
     /** request started */
     this.ngProgress.start();
-    this.configService.updateBulkConfiguration(this.pluginConfiguration.key, this.changedConfig).
+    this.configService.updateBulkConfiguration(categoryName, configuration).
       subscribe(
         (data: any) => {
           console.log('data', data);
@@ -523,9 +535,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.', true);
-          if (this.filesToUpload.length > 0) {
-            this.uploadScript();
-          }
         },
         error => {
           /** request completed */
@@ -538,7 +547,22 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
   }
 
-  public uploadScript() {
-    this.fileUploaderService.uploadConfigurationScript(this.pluginConfiguration.key, this.filesToUpload);
+  save() {
+    this.saveScheduleFields(this.form);
+    if (!isEmpty(this.changedConfig)) {
+      this.updateConfiguration(this.pluginConfiguration?.key, this.changedConfig);
+    }
+    if (!isEmpty(this.changedFilterConfig)) {
+      this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
+    }
+  }
+
+  /**
+  * To upload script files of a configuration property
+  * @param categoryName name of the configuration category
+  * @param files : Scripts array to uplaod
+  */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
 }

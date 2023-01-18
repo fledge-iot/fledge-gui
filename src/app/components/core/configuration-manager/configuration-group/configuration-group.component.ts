@@ -30,6 +30,11 @@ export class ConfigurationGroupComponent implements OnInit {
     this.categeryConfiguration();
   }
 
+  public updateCategroyConfig(config) {
+    this.category.config = config;
+    this.categeryConfiguration();
+  }
+
   categeryConfiguration() {
     const configItems = Object.keys(this.category.config).map(k => {
       this.category.config[k].key = k;

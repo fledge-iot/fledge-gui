@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AclService } from './acl.service';
-import { orderBy, } from 'lodash';
+import { orderBy, map, cloneDeep, reduce, assign } from 'lodash';
 
 export class ConfigurationBase<T> {
   value: T | undefined;
@@ -20,8 +20,8 @@ export class ConfigurationBase<T> {
   type: string;
   options: { key: string, value: string }[];
   editorOptions: {};
-  file: string;
-  files: {}[];
+  fileName: string;
+  file: File;
   validFileExtension?: boolean;
   validity?: string;
   validityExpression?: string;
@@ -44,7 +44,7 @@ export class ConfigurationBase<T> {
     length?: string;
     editorOptions?: {};
     file?: string;
-    files?: {}[];
+    files?: File;
     validFileExtension?: boolean;
     validity?: string;
     validityExpression?: string;
@@ -65,8 +65,8 @@ export class ConfigurationBase<T> {
     this.type = options.type || '';
     this.options = options.options || [];
     this.editorOptions = options.editorOptions || {};
-    this.file = options.file || '';
-    this.files = options.files || [];
+    this.fileName = options.file || '';
+    this.file = options.files;
     this.validFileExtension = options.validFileExtension || true;
     this.validity = options.validity;
     this.validityExpression = '';
@@ -370,30 +370,32 @@ export class ConfigurationControlService {
 
   checkConfigItemValidityOnChange(form: FormGroup, config: ConfigurationBase<string>) {
     // update config value in a global config object
-    this.updatedConfiguration[config.key].value = config.value;
-    // buid validation expression
-    Object.keys(this.updatedConfiguration).forEach(key => {
-      const cnf = this.updatedConfiguration[key];
-      if (cnf.validity) {
-        let expression = cnf.validity;
-        Object.keys(this.updatedConfiguration).forEach(key => {
-          const el = this.updatedConfiguration[key];
-          // generate validation expression based on changed config item value
-          expression = this.generateValidationExpression(el, expression);
-        });
-        // update validitionExpression property of the configuration item
-        cnf.validityExpression = expression;
-      }
-    });
+    if (this.updatedConfiguration) {
+      this.updatedConfiguration[config.key].value = config.value;
+      // buid validation expression
+      Object.keys(this.updatedConfiguration).forEach(key => {
+        const cnf = this.updatedConfiguration[key];
+        if (cnf.validity) {
+          let expression = cnf.validity;
+          Object.keys(this.updatedConfiguration).forEach(key => {
+            const el = this.updatedConfiguration[key];
+            // generate validation expression based on changed config item value
+            expression = this.generateValidationExpression(el, expression);
+          });
+          // update validitionExpression property of the configuration item
+          cnf.validityExpression = expression;
+        }
+      });
 
-    // validate expression to enable/disable form control
-    Object.keys(this.updatedConfiguration).forEach(key => {
-      const cnf = this.updatedConfiguration[key];
-      if (cnf.validity) {
-        const isValidExpression = this.validateExpression(key, cnf.validityExpression);
-        isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
-      }
-    });
+      // validate expression to enable/disable form control
+      Object.keys(this.updatedConfiguration).forEach(key => {
+        const cnf = this.updatedConfiguration[key];
+        if (cnf.validity) {
+          const isValidExpression = this.validateExpression(key, cnf.validityExpression);
+          isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
+        }
+      });
+    }
   }
 
   /**
@@ -401,13 +403,15 @@ export class ConfigurationControlService {
    * @param form : FormGroup
    */
   checkConfigItemOnGroupChange(form: FormGroup) {
-    Object.keys(this.updatedConfiguration).forEach(key => {
-      const cnf = this.updatedConfiguration[key];
-      if (cnf.hasOwnProperty('validityExpression')) {
-        const isValidExpression = this.validateExpression(key, cnf.validityExpression);
-        isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
-      }
-    });
+    if (this.updatedConfiguration) {
+      Object.keys(this.updatedConfiguration).forEach(key => {
+        const cnf = this.updatedConfiguration[key];
+        if (cnf.hasOwnProperty('validityExpression')) {
+          const isValidExpression = this.validateExpression(key, cnf.validityExpression);
+          isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
+        }
+      });
+    }
   }
 
   /**
@@ -455,6 +459,33 @@ export class ConfigurationControlService {
           console.log('service down ', error);
         }
       });
+  }
+
+  getChangedConfiguration(changedConfiguration: any, defaultConfiguration: any) {
+    const defaultConfig = map(defaultConfiguration.config, (v, key) => ({ key, ...v }));
+    // make a copy of matched config items having changed values
+    const matchedConfig = defaultConfig.filter(e1 => {
+      return changedConfiguration.hasOwnProperty(e1.key) && e1.value !== changedConfiguration[e1.key]
+    });
+    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
+    const matchedConfigCopy = cloneDeep(matchedConfig);
+
+    /**
+     * merge new configuration with old configuration,
+     * where value key hold changed data in config object
+    */
+    matchedConfigCopy.forEach(e => e.value = changedConfiguration[e.key]);
+    // final array to hold changed configuration
+    let finalConfig = [];
+    matchedConfigCopy.forEach(item => {
+      finalConfig.push({
+        [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
+      });
+    });
+
+    // convert finalConfig array in object of objects
+    const finalConfiguration = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
+    return finalConfiguration;
   }
 
 }

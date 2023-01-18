@@ -131,7 +131,7 @@
     </div>
   </div>
 </div>
-<app-south-service-modal (notify)='onNotify()' [service]="service"></app-south-service-modal>
+<app-south-service-modal [hidden]="!service" (notify)='onNotify()' [service]="service"></app-south-service-modal>
 <app-view-logs></app-view-logs>
 <app-confirmation-dialog id="asset-tracking-dialog">
   <header class="modal-card-head">

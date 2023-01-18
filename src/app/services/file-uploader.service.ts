@@ -37,6 +37,20 @@ export class FileUploaderService {
     });
   }
 
+  getConfigurationPropertyFiles(configuration: any) {
+    const files = [];
+    if (configuration) {
+      const keys = Object.keys(configuration).filter(k => (configuration[k] instanceof File));
+      keys.forEach(k => {
+        if (configuration.hasOwnProperty(k)) {
+          files.push({ [k]: configuration[k] });
+          delete configuration[k]; // delete object properties having value as file, from the changed object to update
+        }
+      })
+    }
+    return files;
+  }
+
   /**
   *  POST  | /fledge/category/{categoryName}/{config_item}/upload
   */

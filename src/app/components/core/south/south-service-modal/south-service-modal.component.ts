@@ -1,23 +1,22 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { assign, cloneDeep, reduce, isEmpty, map } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, AssetsService, ConfigurationService, FileUploaderService, FilterService, GenerateCsvService, ProgressBarService, RolesService, SchedulesService,
-  ServicesApiService
+  AlertService, AssetsService, ConfigurationControlService, ConfigurationService,
+  FileUploaderService, FilterService, GenerateCsvService, ProgressBarService, RolesService,
+  SchedulesService, ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
-import {
-  ViewConfigItemComponent
-} from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
+import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -31,7 +30,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   svcCheckbox: FormControl = new FormControl();
   public filterPipeline = [];
   public deletedFilterPipeline = [];
-  public filterConfiguration = [];
+  public filterConfiguration: any;
+  filterConfigurationCopy: any;
 
   public isFilterOrderChanged = false;
   public isFilterDeleted = false;
@@ -48,16 +48,16 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
-  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
+  @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigChildrenComponent;
+  @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   // to hold child form state
   validConfigurationForm = true;
   validFilterConfigForm = true;
-  private filesToUpload = [];
   pluginConfiguration;
-  changedConfig = {};
+  changedConfig: any;
+  changedFilterConfig: any;
 
   constructor(
     private router: Router,
@@ -72,6 +72,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     private dialogService: DialogService,
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
+    private configurationControlService: ConfigurationControlService,
     public rolesService: RolesService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -87,21 +88,25 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     });
   }
 
-  ngOnChanges() {
-    this.getCateogryData();
-  }
-
-  getCateogryData() {
-    if (this.service !== undefined) {
-      this.getCategory();
-      this.getFilterPipeline();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes?.service?.previousValue !== changes?.service?.currentValue) {
+      this.getCateogryData();
     }
   }
 
+  getCateogryData() {
+    this.getCategory();
+    this.getFilterPipeline();
+  }
+
   refreshPageData() {
-    this.getCateogryData();
-    if (this.configChildComponent) {
-      this.configChildComponent.getChildConfigData();
+    if (this.pluginConfiguration) {
+      const pluginConfigCopy = cloneDeep(this.pluginConfiguration);
+      this.pluginConfigComponent?.updateCategroyConfig(pluginConfigCopy.config);
+    }
+    if (this.filterConfigurationCopy) {
+      const filterConfig = cloneDeep(this.filterConfigurationCopy.config);
+      this.filterConfigComponent?.updateCategroyConfig(filterConfig);
     }
     this.svcCheckbox.setValue(this.service['schedule_enabled']);
   }
@@ -144,7 +149,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       return;
     }
     this.notify.emit(false);
-    this.filterConfiguration = [];
     this.category = null;
     modalWindow.classList.remove('is-active');
   }
@@ -158,6 +162,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
           if (!isEmpty(data)) {
             this.category = { key: this.service['name'], config: data };
             this.pluginConfiguration = cloneDeep({ key: this.service['name'], config: data });
+            this.refreshPageData();
           }
           /** request completed */
           this.ngProgress.done();
@@ -230,7 +235,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  saveChanges(serviceName) {
+  saveChanges(serviceName: string) {
     if (this.isFilterDeleted) {
       this.deleteFilter();
     }
@@ -241,7 +246,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.toggleModal(false);
   }
 
-  changeServiceStatus(serviceName) {
+  changeServiceStatus(serviceName: string) {
     if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
       return false;
     }
@@ -415,8 +420,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     const catName = this.service['name'] + '_' + filterName;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
-        this.filterConfiguration.push({ key: catName, 'value': [data] });
         this.selectedFilterPlugin = data.plugin.value;
+        this.filterConfiguration = { key: catName, config: data };
+        this.filterConfigurationCopy = cloneDeep({ key: catName, config: data });
       },
         error => {
           if (error.status === 0) {
@@ -427,18 +433,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  setFilterConfiguration(filterName: string) {
-    const catName = this.service['name'] + '_' + filterName;
-    return this.filterConfiguration.find(f => f.key === catName);
-  }
-
   deleteFilterReference(filter) {
     this.deletedFilterPipeline.push(filter);
     this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
     this.isFilterDeleted = true;
     this.isFilterOrderChanged = false;
   }
-
 
   deleteFilter() {
     this.isFilterDeleted = false;
@@ -511,61 +511,57 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Get edited configuration from view config child page
-   * @param changedConfig changed configuration of a selected plugin
+   * Get edited south service configuration from show configuration page
+   * @param changedConfiguration changed configuration of a selected plugin
    */
-  getChangedConfig(changedConfig: any) {
-    const defaultConfig = map(this.pluginConfiguration.config, (v, key) => ({ key, ...v }));
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
-    });
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
+  getChangedConfig(changedConfiguration: any) {
+    this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
+    console.log('plugin changed configuration', this.changedConfig);
+  }
 
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => e.value = changedConfig[e.key]);
-    // final array to hold changed configuration
-    let finalConfig = [];
-    this.filesToUpload = [];
-    matchedConfigCopy.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload.push(...item.value);
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-        });
-      }
-    });
+  /**
+  * Get edited filter configuration from show configuration page
+  * @param changedConfiguration changed configuration of a selected filter
+  */
+  getChangedFilterConfig(changedConfiguration: any) {
+    this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
+    console.log('filter changed configuration', this.changedFilterConfig);
+  }
 
-    // convert finalConfig array in object of objects to pass in add task
-    this.changedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
+  /**
+   * Get scripts to upload from a configuration item
+   * @param configuration  edited configuration from show configuration page
+   * @returns script files to upload
+   */
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
   }
 
   /**
   * update plugin configuration
   */
-  updateConfiguration() {
-    console.log('changed config', this.changedConfig);
-    if (isEmpty(this.changedConfig)) {
+  updateConfiguration(categoryName: string, configuration: any) {
+    const files = this.getScriptFilesToUpload(configuration);
+    if (files.length > 0) {
+      this.uploadScript(categoryName, files);
+    }
+
+    if (!categoryName || isEmpty(configuration)) {
       return;
     }
     /** request started */
     this.ngProgress.start();
-    this.configService.updateBulkConfiguration(this.pluginConfiguration.key, this.changedConfig).
+    this.configService.updateBulkConfiguration(categoryName, configuration).
       subscribe(
         (data: any) => {
           console.log('data', data);
-          this.changedConfig = {};
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.', true);
-          if (this.filesToUpload.length > 0) {
-            this.uploadScript();
-          }
+          this.pluginConfiguration = {};
+          this.changedConfig = {};
+          this.changedFilterConfig = {};
+          this.getCateogryData();
         },
         error => {
           /** request completed */
@@ -578,7 +574,23 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         });
   }
 
-  public uploadScript() {
-    this.fileUploaderService.uploadConfigurationScript(this.pluginConfiguration.key, this.filesToUpload);
+  /**
+   * To upload script files of a configuration property
+   * @param categoryName name of the configuration category
+   * @param files : Scripts array to uplaod
+   */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+    this.getCateogryData();
+  }
+
+  save() {
+    this.saveChanges(this.service['name']);
+    if (!isEmpty(this.changedConfig)) {
+      this.updateConfiguration(this.pluginConfiguration?.key, this.changedConfig);
+    }
+    if (!isEmpty(this.changedFilterConfig)) {
+      this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
+    }
   }
 }
