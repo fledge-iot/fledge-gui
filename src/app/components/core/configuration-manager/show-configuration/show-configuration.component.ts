@@ -34,7 +34,7 @@ export class ShowConfigurationComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if (!changes?.selectedGroup?.firstChange) {
       if (changes?.selectedGroup?.currentValue == this.group) {
-        this.configControlService.checkConfigItemOnGroupChange(this.form);
+        this.configControlService.checkConfigItemOnGroupChange(this.form, this.fullConfiguration);
       }
       // refresh codemirror editor to reflect changed values
       if (this.codeMirrorCmpt) {
@@ -49,7 +49,7 @@ export class ShowConfigurationComponent implements OnInit {
     this.groupConfiguration = this.configControlService.createConfigurationBase(this.groupConfiguration);
     this.configurations$ = of(this.groupConfiguration);
     this.form = this.configControlService.toFormGroup(this.fullConfiguration, this.groupConfiguration as ConfigurationBase<string>[]);
-    this.configControlService.updatedConfiguration = this.fullConfiguration;
+    // this.configControlService.updatedConfiguration = this.fullConfiguration;
     this.form.valueChanges.pipe(
       startWith(this.form.value),
       pairwise(),
@@ -69,7 +69,7 @@ export class ShowConfigurationComponent implements OnInit {
         const configuration = this.groupConfiguration.find(c => c.key === key);
         if (configuration && configuration.type !== 'script') {
           configuration.value = value.toString();
-          this.configControlService.checkConfigItemValidityOnChange(this.form, configuration);
+          this.configControlService.checkConfigItemValidityOnChange(this.form, configuration, this.fullConfiguration);
           this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
           if (this.form.valid) {
             this.event.emit(data);

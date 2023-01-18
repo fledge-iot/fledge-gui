@@ -119,16 +119,7 @@ export class ACLConfig extends ConfigurationBase<string> {
   providedIn: 'root'
 })
 export class ConfigurationControlService {
-  private configuration: any;
   private allACLs = [];
-
-  public set updatedConfiguration(config: any) {
-    this.configuration = config;
-  }
-
-  public get updatedConfiguration(): any {
-    return this.configuration;
-  }
 
   public set acls(acls: []) {
     this.allACLs = acls;
@@ -362,23 +353,22 @@ export class ConfigurationControlService {
         config.validityExpression = this.generateValidationExpression(el, config.validityExpression);
       });
       const isValidExpression = this.validateExpression(config.key, config.validityExpression);
-      this.updatedConfiguration = pluginConfiguration;
-      this.updatedConfiguration[config.key].validityExpression = config?.validityExpression;
+      pluginConfiguration[config.key].validityExpression = config?.validityExpression;
       return !isValidExpression;
     }
   }
 
-  checkConfigItemValidityOnChange(form: FormGroup, config: ConfigurationBase<string>) {
+  checkConfigItemValidityOnChange(form: FormGroup, config: ConfigurationBase<string>, fullConfiguration: any) {
     // update config value in a global config object
-    if (this.updatedConfiguration) {
-      this.updatedConfiguration[config.key].value = config.value;
+    if (fullConfiguration) {
+      fullConfiguration[config.key].value = config.value;
       // buid validation expression
-      Object.keys(this.updatedConfiguration).forEach(key => {
-        const cnf = this.updatedConfiguration[key];
+      Object.keys(fullConfiguration).forEach(key => {
+        const cnf = fullConfiguration[key];
         if (cnf.validity) {
           let expression = cnf.validity;
-          Object.keys(this.updatedConfiguration).forEach(key => {
-            const el = this.updatedConfiguration[key];
+          Object.keys(fullConfiguration).forEach(key => {
+            const el = fullConfiguration[key];
             // generate validation expression based on changed config item value
             expression = this.generateValidationExpression(el, expression);
           });
@@ -388,8 +378,8 @@ export class ConfigurationControlService {
       });
 
       // validate expression to enable/disable form control
-      Object.keys(this.updatedConfiguration).forEach(key => {
-        const cnf = this.updatedConfiguration[key];
+      Object.keys(fullConfiguration).forEach(key => {
+        const cnf = fullConfiguration[key];
         if (cnf.validity) {
           const isValidExpression = this.validateExpression(key, cnf.validityExpression);
           isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
@@ -400,12 +390,13 @@ export class ConfigurationControlService {
 
   /**
    * Validate form control on cofiguration tab switch
-   * @param form : FormGroup
+   * @param form Configuration control form
+   * @param fullConfiguration plugin configuration
    */
-  checkConfigItemOnGroupChange(form: FormGroup) {
-    if (this.updatedConfiguration) {
-      Object.keys(this.updatedConfiguration).forEach(key => {
-        const cnf = this.updatedConfiguration[key];
+  checkConfigItemOnGroupChange(form: FormGroup, fullConfiguration: any) {
+    if (fullConfiguration) {
+      Object.keys(fullConfiguration).forEach(key => {
+        const cnf = fullConfiguration[key];
         if (cnf.hasOwnProperty('validityExpression')) {
           const isValidExpression = this.validateExpression(key, cnf.validityExpression);
           isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
