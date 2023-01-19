@@ -142,7 +142,7 @@ export class ConfigurationControlService {
       const element = configuration[key];
       element.key = key;
       element.value = element.value ? element.value : element.default;
-      if (element.type == 'acl') {
+      if (element.type.toLowerCase() == 'acl') {
         // fetch all acls if property type is 'acl'
         this.getAllACLs();
       }

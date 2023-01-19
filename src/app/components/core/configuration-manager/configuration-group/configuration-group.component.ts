@@ -119,7 +119,7 @@ export class ConfigurationGroupComponent implements OnInit {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
           }
 
-          this.groups.push({ category: category.key, group: category.group, config: data });
+          this.upsertAdvanceConfiguration(this.groups, { category: category.key, group: category.group, config: data });
         },
         error => {
           console.log('error ', error);
@@ -158,6 +158,16 @@ export class ConfigurationGroupComponent implements OnInit {
     this.changedSecurityConfiguration = Object.assign({}, this.changedSecurityConfiguration, changedConfiguration);
     const change = this.configurationControlService.getChangedConfiguration(this.changedSecurityConfiguration, this.securityConfiguration);
     this.changedAdvanceConfigEvent.emit({ key: this.securityConfiguration.key, config: change });
+  }
+
+  upsertAdvanceConfiguration(array, element) {
+    const i = array.findIndex(_element => _element.category === element.category);
+    if (i > -1) {
+      array[i] = element;
+    }
+    else {
+      array.push(element);
+    }
   }
 
   formStatus(status: boolean) {
