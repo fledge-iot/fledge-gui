@@ -37,13 +37,28 @@ export class FileUploaderService {
     });
   }
 
-  getConfigurationPropertyFiles(configuration: any) {
+  /**
+   *
+   * @param configuration configuration property holding script file
+   * @param flag From Add service/task or update page
+   * @returns
+   */
+  getConfigurationPropertyFiles(configuration: any, flag = false) {
     const files = [];
     if (configuration) {
-      const keys = Object.keys(configuration).filter(k => (configuration[k] instanceof File));
+      const keys = Object.keys(configuration).filter(k => {
+        if (flag) {
+          return (configuration[k].value instanceof File)
+        }
+        return (configuration[k] instanceof File)
+      });
       keys.forEach(k => {
         if (configuration.hasOwnProperty(k)) {
-          files.push({ [k]: configuration[k] });
+          if (flag) {
+            files.push({ [k]: configuration[k].value });
+          } else {
+            files.push({ [k]: configuration[k] });
+          }
           delete configuration[k]; // delete object properties having value as file, from the changed object to update
         }
       })
@@ -60,5 +75,4 @@ export class FileUploaderService {
         map(response => response),
         catchError(error => throwError(error)));
   }
-
 }

@@ -18,10 +18,11 @@
     <section class="modal-card-body">
       <ng-container *ngIf="!isAddFilterWizard">
         <div class="box">
-          <app-config-children #pluginConfigComponent *ngIf="category" [category]="category"
+          <app-configuration-group #pluginConfigComponent *ngIf="category" [category]="category"
             [plugin]="task?.plugin.name" [serviceStatus]="task['enabled']" [from]="'north'"
+            (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
             (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validConfigurationForm = $event">
-          </app-config-children>
+          </app-configuration-group>
 
           <form name=" task-form" id="taskForm" #fg="ngForm" novalidate>
             <div class="columns">
@@ -115,7 +116,7 @@
                     <ng-container *ngIf="filterConfiguration?.key === task['name'] + '_' + filter">
                       <div class="field">
                         <app-configuration-group #filterConfigComponent [category]="filterConfiguration"
-                          [plugin]="task?.plugin.name" [serviceStatus]="task['enabled']" [from]="'north'"
+                          [plugin]="task?.plugin.name" [serviceStatus]="task['enabled']" [from]="'north-filter'"
                           (changedConfigEvent)="getChangedFilterConfig($event)"
                           (formStatusEvent)="validFilterConfigForm = $event">
                         </app-configuration-group>

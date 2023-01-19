@@ -49,7 +49,6 @@ export class ShowConfigurationComponent implements OnInit {
     this.groupConfiguration = this.configControlService.createConfigurationBase(this.groupConfiguration);
     this.configurations$ = of(this.groupConfiguration);
     this.form = this.configControlService.toFormGroup(this.fullConfiguration, this.groupConfiguration as ConfigurationBase<string>[]);
-    // this.configControlService.updatedConfiguration = this.fullConfiguration;
     this.form.valueChanges.pipe(
       startWith(this.form.value),
       pairwise(),

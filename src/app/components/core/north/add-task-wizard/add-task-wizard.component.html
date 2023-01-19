@@ -143,7 +143,7 @@
 
         <div class="box step-content" id="c-2">
           <app-configuration-group *ngIf="configurationData" [category]="configurationData"
-            (changedConfigEvent)="getChangedConfig($event)"
+            (changedConfigEvent)="getChangedConfig($event)" [from]="'add-task-form'"
             (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
 

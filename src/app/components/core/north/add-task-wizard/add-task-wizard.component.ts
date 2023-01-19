@@ -1,12 +1,12 @@
 import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
+import { cloneDeep, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 import {
   AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
-  ServicesApiService, FileUploaderService
+  ServicesApiService, FileUploaderService, ConfigurationControlService
 } from '../../../../services';
 import Utils from '../../../../utils';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
@@ -35,8 +35,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   public isService = false;
   private subscription: Subscription;
-  private filesToUpload = []
-
   public taskType = 'North';
   // to hold child form state
   validConfigurationForm = true;
@@ -66,7 +64,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private servicesApiService: ServicesApiService,
     private docService: DocService,
-    private fileUploaderService: FileUploaderService
+    private fileUploaderService: FileUploaderService,
+    private configurationControlService: ConfigurationControlService
   ) { }
 
   ngOnInit() {
@@ -292,7 +291,9 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   private addScheduledTask(payload) {
-    console.log('payload', payload);
+    // extract script files to upload from final payload
+    const files = this.getScriptFilesToUpload(payload.config);
+
     this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
@@ -302,8 +303,9 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('North instance added successfully.', true);
-          if (this.filesToUpload.length > 0) {
-            this.uploadScript();
+          if (files.length > 0) {
+            const name = this.payload.name
+            this.uploadScript(name, files);
           }
           this.router.navigate(['/north']);
         },
@@ -318,7 +320,14 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         });
   }
 
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration, true);
+  }
+
   public addService(payload) {
+    // extract script files to upload from final payload
+    const files = this.getScriptFilesToUpload(payload.config);
+
     this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
@@ -328,8 +337,9 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
-          if (this.filesToUpload.length > 0) {
-            this.uploadScript();
+          if (files.length > 0) {
+            const name = this.payload.name
+            this.uploadScript(name, files);
           }
           this.router.navigate(['/north']);
         },
@@ -345,10 +355,12 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Upload script file of a configuration property
-   */
-  public uploadScript() {
-    this.fileUploaderService.uploadConfigurationScript(this.payload.name, this.filesToUpload);
+  * To upload script files of a configuration property
+  * @param categoryName name of the configuration category
+  * @param files : Scripts array to uplaod
+  */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
 
   /**
@@ -356,38 +368,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig: any) {
-    console.log('changed', changedConfig);
-    const defaultConfig = map(this.pluginConfiguration.config, (v, key) => ({ key, ...v }));
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
-    });
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
-
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => e.value = changedConfig[e.key]);
-    console.log('matchedConfigCopy', matchedConfigCopy);
-
-    // final array to hold changed configuration
-    let finalConfig = [];
-    this.filesToUpload = [];
-    matchedConfigCopy.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload.push(...item.value);
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
-        });
-      }
-    });
-
-    // convert finalConfig array in object of objects to pass in add task
-    finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    this.payload.config = finalConfig;
+    this.payload.config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration, true);;
   }
 
   validateTaskName(event) {

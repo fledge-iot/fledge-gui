@@ -7,13 +7,6 @@
         </a>
       </h6>
     </li>
-    <ng-container *ngFor="let child of categoryChildren">
-      <li [ngClass]="{'is-active': selectedGroup == child?.group}">
-        <h6 class="is-6 has-text-weight-semibold">
-          <a (click)="selectTab(child?.group)">{{child?.group}}</a>
-        </h6>
-      </li>
-    </ng-container>
     <!-- Developer tab to show plugin data -->
     <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
       *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
@@ -26,20 +19,19 @@
 <div>
   <p class="highlight">
     <ng-container *ngFor="let g of groups">
-      <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
-        [selectedGroup]="selectedGroup" [fullConfiguration]="category.config" (event)="getChangeConfiguration($event)"
-        (formStatusEvent)="formStatus($event)"></app-show-configuration>
-      <!-- <app-view-config-item [hidden]="seletedTab !== g.group"
-        [categoryConfigurationData]="{ key: g.category, value : g.values}" [useChildrenProxy]="useCategoryChildrenProxy"
-        [formId]="g.group" [groupConfiguration]="category" [group]="seletedTab">
-      </app-view-config-item> -->
+      <ng-container
+        *ngIf="(g.category == categoryKey+'Advanced') || (g.category == categoryKey+'Security'); else configGroup">
+        <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
+          [selectedGroup]="selectedGroup" [fullConfiguration]="g.config" (event)="getChangeConfiguration($event)"
+          (formStatusEvent)="formStatus($event)"></app-show-configuration>
+      </ng-container>
+      <ng-template #configGroup>
+        <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
+          [selectedGroup]="selectedGroup" [fullConfiguration]="category.config" (event)="getChangeConfiguration($event)"
+          (formStatusEvent)="formStatus($event)"></app-show-configuration>
+      </ng-template>
     </ng-container>
 
-    <ng-container *ngFor="let child of categoryChildren">
-      <app-view-config-item [hidden]="!selectedGroup.includes(child.group)" [categoryConfigurationData]="child.config"
-        [useChildrenProxy]="useCategoryChildrenProxy" [formId]="child?.key">
-      </app-view-config-item>
-    </ng-container>
 
     <app-plugin-persist-data *ngIf="selectedGroup == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
       [serviceName]="category?.key" [pluginName]="plugin">

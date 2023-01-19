@@ -141,11 +141,10 @@
       </div>
       <div class="box step-content" id="c-2">
         <app-configuration-group *ngIf="configurationData" #configChildComponent [category]="configurationData"
-          (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validChildConfigurationForm = $event">
+          (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validChildConfigurationForm = $event"
+          [from]="'add-filter'">
         </app-configuration-group>
-        <!-- <app-view-config-item [hidden]="!configurationData" [categoryConfigurationData]="configurationData"
-        [pluginInfo]="{name: payload?.plugin,  type:'Filter'}"
-        [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'wizard'"></app-view-config-item> -->
+
       </div>
     </form>
   </div>

@@ -1,8 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { assign, reduce, sortBy, isEmpty, cloneDeep, map } from 'lodash';
+import { sortBy, isEmpty, cloneDeep } from 'lodash';
 
-import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService, FileUploaderService } from '../../../../services';
+import {
+  AlertService, ConfigurationService, FilterService, ServicesApiService,
+  ProgressBarService, FileUploaderService,
+  ConfigurationControlService
+} from '../../../../services';
 import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
@@ -25,7 +29,6 @@ export class AddFilterWizardComponent implements OnInit {
   public selectedPluginDescription = '';
   public plugin: any;
   public pluginData = [];
-  public filesToUpload = [];
   public requestInProgress = false;
   public show = false;
   public stopLoading = false;
@@ -59,6 +62,7 @@ export class AddFilterWizardComponent implements OnInit {
     private alertService: AlertService,
     private service: ServicesApiService,
     private docService: DocService,
+    private configurationControlService: ConfigurationControlService,
     private ngProgress: ProgressBarService) { }
 
   ngOnInit() {
@@ -371,42 +375,11 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   /**
-   * Get edited configuration from view filter config child page
+   * Get edited configuration of filter plugin
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig: any) {
-    console.log('changed config filter', changedConfig);
-    const defaultConfig = map(this.pluginConfiguration.config, (v, key) => ({ key, ...v }));
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.hasOwnProperty(e1.key) && e1.value !== changedConfig[e1.key]
-    });
-
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => e.value = changedConfig[e.key]);
-
-    // final array to hold changed configuration
-    let finalConfig = [];
-    this.filesToUpload = [];
-    matchedConfigCopy.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload.push(...item.value);
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-        });
-      }
-    });
-
-    // convert finalConfig array in object of objects to pass in add service
-    finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    console.log('final config filter', finalConfig);
-    this.payload.filter_config = finalConfig;
+    this.payload.filter_config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration);
   }
 
   /**
@@ -414,11 +387,13 @@ export class AddFilterWizardComponent implements OnInit {
    * @param payload  to pass in request
    */
   public addFilter(payload) {
+    // extract script files to upload from final payload
+    const files = this.getScriptFilesToUpload(payload.filter_config);
     this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
           this.alertService.success(data.filter + ' filter added successfully.', true);
-          this.addFilterPipeline({ 'pipeline': [payload.name] });
+          this.addFilterPipeline({ 'pipeline': [payload.name], files });
         },
         (error) => {
           if (error.status === 0) {
@@ -429,17 +404,22 @@ export class AddFilterWizardComponent implements OnInit {
         });
   }
 
-  public uploadScript() {
-    const filterName = this.serviceName + '_' + this.payload.name
-    this.fileUploaderService.uploadConfigurationScript(filterName, this.filesToUpload);
+  /**
+   * To upload script files of a configuration property
+   * @param categoryName name of the configuration category
+   * @param files : Scripts array to uplaod
+   */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
 
   public addFilterPipeline(payload) {
     this.filterService.addFilterPipeline(payload, this.serviceName)
       .subscribe((data: any) => {
         this.notify.emit(data);
-        if (this.filesToUpload.length > 0) {
-          this.uploadScript();
+        if (payload?.files.length > 0) {
+          const filterName = this.serviceName + '_' + this.payload.name
+          this.uploadScript(filterName, payload?.files);
         }
       },
         (error) => {
@@ -449,6 +429,10 @@ export class AddFilterWizardComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
   }
 
   validateServiceName(event) {

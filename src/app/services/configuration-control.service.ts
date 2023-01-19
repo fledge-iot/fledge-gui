@@ -452,12 +452,21 @@ export class ConfigurationControlService {
       });
   }
 
-  getChangedConfiguration(changedConfiguration: any, defaultConfiguration: any) {
+  /**
+   *
+   * @param changedConfiguration edited configuration
+   * @param defaultConfiguration Configuration of the plugin
+   * @param flag To see if request coming form add or update page
+   * @returns updated configuration
+   */
+  getChangedConfiguration(changedConfiguration: any, defaultConfiguration: any, flag = false) {
     const defaultConfig = map(defaultConfiguration.config, (v, key) => ({ key, ...v }));
+
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
       return changedConfiguration.hasOwnProperty(e1.key) && e1.value !== changedConfiguration[e1.key]
     });
+
     // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
     const matchedConfigCopy = cloneDeep(matchedConfig);
 
@@ -468,11 +477,19 @@ export class ConfigurationControlService {
     matchedConfigCopy.forEach(e => e.value = changedConfiguration[e.key]);
     // final array to hold changed configuration
     let finalConfig = [];
-    matchedConfigCopy.forEach(item => {
-      finalConfig.push({
-        [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
+    if (flag) {
+      matchedConfigCopy.forEach(item => {
+        finalConfig.push({
+          [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
+        });
       });
-    });
+    } else {
+      matchedConfigCopy.forEach(item => {
+        finalConfig.push({
+          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
+        });
+      });
+    }
 
     // convert finalConfig array in object of objects
     const finalConfiguration = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});

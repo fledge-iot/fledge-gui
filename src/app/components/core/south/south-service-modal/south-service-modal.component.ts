@@ -14,7 +14,6 @@ import {
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE } from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 
@@ -48,7 +47,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
 
   @Input() service: { service: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigChildrenComponent;
+  @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigurationGroupComponent;
   @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
@@ -58,6 +57,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   pluginConfiguration;
   changedConfig: any;
   changedFilterConfig: any;
+  advancedConfiguration = [];
 
   constructor(
     private router: Router,
@@ -160,8 +160,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       subscribe(
         (data) => {
           if (!isEmpty(data)) {
-            this.category = { key: this.service['name'], config: data };
-            this.pluginConfiguration = cloneDeep({ key: this.service['name'], config: data });
+            this.category = { name: this.service['name'], config: data };
+            this.pluginConfiguration = cloneDeep({ name: this.service['name'], config: data });
             this.refreshPageData();
           }
           /** request completed */
@@ -516,7 +516,22 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
    */
   getChangedConfig(changedConfiguration: any) {
     this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
-    console.log('plugin changed configuration', this.changedConfig);
+  }
+
+  /**
+  * Get edited south service advance configuration
+  * @param changedConfiguration changed configuration
+  */
+  getChangedAdvanceConfiguration(advanceConfig: any) {
+    const configItem = this.advancedConfiguration.find(c => c.key == advanceConfig.key);
+    if (configItem) {
+      configItem.config = advanceConfig.config;
+      if (isEmpty(configItem.config)) {
+        this.advancedConfiguration = this.advancedConfiguration.filter(conf => (conf.key !== configItem.key));
+      }
+    } else {
+      this.advancedConfiguration.push(advanceConfig)
+    }
   }
 
   /**
@@ -525,7 +540,6 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   */
   getChangedFilterConfig(changedConfiguration: any) {
     this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
-    console.log('filter changed configuration', this.changedFilterConfig);
   }
 
   /**
@@ -553,8 +567,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     this.ngProgress.start();
     this.configService.updateBulkConfiguration(categoryName, configuration).
       subscribe(
-        (data: any) => {
-          console.log('data', data);
+        () => {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('Configuration updated successfully.', true);
@@ -587,10 +600,16 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   save() {
     this.saveChanges(this.service['name']);
     if (!isEmpty(this.changedConfig)) {
-      this.updateConfiguration(this.pluginConfiguration?.key, this.changedConfig);
+      this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig);
     }
     if (!isEmpty(this.changedFilterConfig)) {
-      this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
+      this.updateConfiguration(this.filterConfigurationCopy?.name, this.changedFilterConfig);
+    }
+
+    if (!isEmpty(this.advancedConfiguration)) {
+      this.advancedConfiguration.forEach(element => {
+        this.updateConfiguration(element.key, element.config);
+      });
     }
   }
 }

@@ -12,7 +12,7 @@ export class ConfigChildrenComponent {
   selectedGroup = 'Default Configuration';
   useCategoryChildrenProxy = 'true';
   categoryKey = '';
-  categoryChildren = [];
+  // categoryChildren = [];
   @Input() category;
   groups = [];
   @Input() plugin;
@@ -76,8 +76,8 @@ export class ConfigChildrenComponent {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
-          this.categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
-          this.categoryChildren.forEach(cat => {
+          const categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
+          categoryChildren.forEach(cat => {
             // Set group of advance/security configuration
             cat.group = cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced Configuration' :
               (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security Configuration' : cat?.displayName);
@@ -110,9 +110,10 @@ export class ConfigChildrenComponent {
       subscribe(
         (data: any) => {
           if (category.key === `${this.categoryKey}Advanced`) {
-            category.config = { key: category.key, value: [data] };
+            // category.config = { key: category.key, value: data };
+            this.groups.push({ category: category.key, group: category.group, config: data });
           } else if (category.key === `${this.categoryKey}Security`) {
-            category.config = { key: category.key, value: [data] };
+            this.groups.push({ category: category.key, group: category.group, config: data });
           }
         },
         error => {
