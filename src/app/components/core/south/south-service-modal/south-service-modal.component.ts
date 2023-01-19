@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild
+  Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -16,16 +16,17 @@ import { MAX_INT_SIZE } from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-south-service-modal',
   templateUrl: './south-service-modal.component.html',
   styleUrls: ['./south-service-modal.component.css']
 })
-export class SouthServiceModalComponent implements OnInit, OnChanges {
+export class SouthServiceModalComponent implements OnInit {
 
   public category: any;
-  public isEnabled = false;
   svcCheckbox: FormControl = new FormControl();
   public filterPipeline = [];
   public deletedFilterPipeline = [];
@@ -59,6 +60,9 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   changedFilterConfig: any;
   advancedConfiguration = [];
 
+  // hold all api calls in stack
+  apiCallsStack = [];
+
   constructor(
     private router: Router,
     private configService: ConfigurationService,
@@ -82,17 +86,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() {
-    this.svcCheckbox.valueChanges.subscribe(val => {
-      this.isEnabled = val;
-    });
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes?.service?.previousValue !== changes?.service?.currentValue) {
-      this.getCateogryData();
-    }
-  }
+  ngOnInit() { }
 
   getCateogryData() {
     this.getCategory();
@@ -134,12 +128,13 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     }
 
     if (this.isAddFilterWizard) {
-      this.getCategory();
+      this.getCateogryData();
       this.isAddFilterWizard = false;
     }
 
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
+      this.getCateogryData();
       this.notify.emit(false);
       this.svcCheckbox.setValue(this.service['schedule_enabled']);
       if (!this.rolesService.hasEditPermissions()) {
@@ -148,8 +143,13 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
       modalWindow.classList.add('is-active');
       return;
     }
-    this.notify.emit(false);
+    this.pluginConfiguration = {};
+    this.changedConfig = {};
+    this.changedFilterConfig = {};
+    this.advancedConfiguration = [];
+    this.apiCallsStack = [];
     this.category = null;
+    this.notify.emit(false);
     modalWindow.classList.remove('is-active');
   }
 
@@ -192,68 +192,37 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   public disableSchedule(serviceName) {
-    /** request started */
-    this.ngProgress.start();
-    this.schedulesService.disableScheduleByName(serviceName).
-      subscribe(
-        (data) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.notify.emit();
-          this.alertService.success(data['message'], true);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.apiCallsStack.push(this.schedulesService.disableScheduleByName(serviceName)
+      .pipe(catchError(e => of(e))));
   }
 
   public enableSchedule(serviceName) {
-    /** request started */
-    this.ngProgress.start();
-    this.schedulesService.enableScheduleByName(serviceName).
-      subscribe(
-        (data) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.notify.emit();
-          this.alertService.success(data['message'], true);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.apiCallsStack.push(this.schedulesService.enableScheduleByName(serviceName)
+      .pipe(catchError(e => of(e))));
   }
 
-  saveChanges(serviceName: string) {
+  saveChanges() {
     if (this.isFilterDeleted) {
       this.deleteFilter();
     }
     if (this.isFilterOrderChanged) {
       this.updateFilterPipeline(this.filterPipeline);
     }
-    this.changeServiceStatus(serviceName);
-    this.toggleModal(false);
+    this.changeServiceStatus();
   }
 
-  changeServiceStatus(serviceName: string) {
-    if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
-      return false;
+  changeServiceStatus() {
+    const serviceName = this.service['name'];
+    const serviceCurrentStatus = this.service['schedule_enabled'];
+    const serviceChangedStatus = this.svcCheckbox.value;
+    if (serviceCurrentStatus === serviceChangedStatus) {
+      return;
     }
-    if (this.isEnabled) {
+
+    if (serviceChangedStatus) {
       this.enableSchedule(serviceName);
       this.svcCheckbox.reset(true);
-    } else if (!this.isEnabled) {
+    } else {
       this.disableSchedule(serviceName);
       this.svcCheckbox.reset(false);
     }
@@ -423,6 +392,7 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         this.selectedFilterPlugin = data.plugin.value;
         this.filterConfiguration = { key: catName, config: data };
         this.filterConfigurationCopy = cloneDeep({ key: catName, config: data });
+        this.filterConfigComponent?.updateCategroyConfig(data);
       },
         error => {
           if (error.status === 0) {
@@ -563,28 +533,8 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
     if (!categoryName || isEmpty(configuration)) {
       return;
     }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(categoryName, configuration).
-      subscribe(
-        () => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.', true);
-          this.pluginConfiguration = {};
-          this.changedConfig = {};
-          this.changedFilterConfig = {};
-          this.getCateogryData();
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.apiCallsStack.push(this.configService.
+      updateBulkConfiguration(categoryName, configuration).pipe(catchError(e => of(e))));
   }
 
   /**
@@ -598,12 +548,12 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
   }
 
   save() {
-    this.saveChanges(this.service['name']);
+    this.saveChanges();
     if (!isEmpty(this.changedConfig)) {
       this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig);
     }
     if (!isEmpty(this.changedFilterConfig)) {
-      this.updateConfiguration(this.filterConfigurationCopy?.name, this.changedFilterConfig);
+      this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
     }
 
     if (!isEmpty(this.advancedConfiguration)) {
@@ -611,5 +561,16 @@ export class SouthServiceModalComponent implements OnInit, OnChanges {
         this.updateConfiguration(element.key, element.config);
       });
     }
+
+    if (this.apiCallsStack.length > 0) {
+      this.ngProgress.start();
+      forkJoin(this.apiCallsStack).subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Configuration updated successfully.', true);
+        this.notify.emit();
+        this.toggleModal(false);
+      });
+    }
+
   }
 }

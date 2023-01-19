@@ -157,13 +157,18 @@ export class ConfigurationGroupComponent implements OnInit {
     this.changedAdvanceConfigEvent.emit({ key: this.securityConfiguration.key, config: change });
   }
 
-  upsertAdvanceConfiguration(array, element) {
-    const i = array.findIndex(_element => _element.category === element.category);
+  /**
+   *
+   * @param groups configuration groups
+   * @param config advance cofiguration
+   */
+  upsertAdvanceConfiguration(groups, config) {
+    const i = groups.findIndex(_config => _config.category === config.category);
     if (i > -1) {
-      array[i] = element;
+      groups[i] = config;
     }
     else {
-      array.push(element);
+      groups.push(config);
     }
   }
 
