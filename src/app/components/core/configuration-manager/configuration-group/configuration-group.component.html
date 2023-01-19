@@ -17,13 +17,13 @@
 </div>
 <div class="highlight">
   <ng-container *ngFor="let g of groups">
-    <ng-container *ngIf="g.category == categoryKey+'Advanced'; else SecurityGroup">
+    <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
       <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
         [selectedGroup]="selectedGroup" [fullConfiguration]="g.config" (event)="getChangedAdvanceConfiguration($event)"
         (formStatusEvent)="formStatus($event)"></app-show-configuration>
     </ng-container>
     <ng-template #SecurityGroup>
-      <ng-container *ngIf="g.category == categoryKey+'Security'; else pluginGroup">
+      <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
         <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
           [selectedGroup]="selectedGroup" [fullConfiguration]="g.config"
           (event)="getChangedSecurityConfiguration($event)"

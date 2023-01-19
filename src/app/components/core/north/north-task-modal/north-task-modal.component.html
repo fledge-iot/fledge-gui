@@ -116,7 +116,7 @@
                     <ng-container *ngIf="filterConfiguration?.key === task['name'] + '_' + filter">
                       <div class="field">
                         <app-configuration-group #filterConfigComponent [category]="filterConfiguration"
-                          [plugin]="task?.plugin.name" [serviceStatus]="task['enabled']" [from]="'north-filter'"
+                          [plugin]="task?.plugin.name" [serviceStatus]="task['enabled']" [from]="'filter-modal'"
                           (changedConfigEvent)="getChangedFilterConfig($event)"
                           (formStatusEvent)="validFilterConfigForm = $event">
                         </app-configuration-group>

@@ -70,8 +70,8 @@
                     <ng-container *ngIf="filterConfiguration?.key === service['name'] + '_' + filter">
                       <div class="field">
                         <app-configuration-group #filterConfigComponent [category]="filterConfiguration"
-                          [plugin]="service?.plugin.name" [serviceStatus]="service['schedule_enabled']" [from]="'south'"
-                          (changedConfigEvent)="getChangedFilterConfig($event)"
+                          [plugin]="service?.plugin.name" [serviceStatus]="service['schedule_enabled']"
+                          [from]="'filter-modal'" (changedConfigEvent)="getChangedFilterConfig($event)"
                           (formStatusEvent)="validFilterConfigForm = $event">
                         </app-configuration-group>
                       </div>

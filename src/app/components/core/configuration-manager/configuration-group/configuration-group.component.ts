@@ -76,10 +76,7 @@ export class ConfigurationGroupComponent implements OnInit {
 
   public getChildConfigData() {
     // No advance configuration on add form
-    if (['add-task-form', 'add-service-form', 'add-filter', 'north-filter'].includes(this.from)) {
-      return;
-    }
-    if (this.category) {
+    if (this.pages.includes(this.from) && this.category) {
       this.categoryKey = this.category.name;
       this.checkIfAdvanceConfig(this.category.name)
     }
