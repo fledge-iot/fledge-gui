@@ -343,8 +343,6 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public uploadScript() {
-    console.log(this.filesToUpload);
-
     this.filesToUpload.forEach(data => {
       let configItem: any;
       configItem = Object.keys(data)[0];
