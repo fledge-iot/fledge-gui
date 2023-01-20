@@ -215,7 +215,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
     }) : [];
 
     this.filesToUpload = changedConfigValues.map((d) => {
-      if (d.type === 'script') {
+      // validate empty value
+      if (d.type === 'script' && !(/^(""|''|)$/.test(d.value))) {
         return this.createFileToUpload(d);
       }
     }).filter(f => f !== undefined);
@@ -342,6 +343,8 @@ export class ViewConfigItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public uploadScript() {
+    console.log(this.filesToUpload);
+
     this.filesToUpload.forEach(data => {
       let configItem: any;
       configItem = Object.keys(data)[0];
