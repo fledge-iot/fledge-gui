@@ -49,6 +49,8 @@ export class ConfigurationGroupComponent implements OnInit {
   }
 
   categeryConfiguration() {
+    console.log('cat', this.category);
+
     this.groups = [];
     const configItems = Object.keys(this.category.config).map(k => {
       this.category.config[k].key = k;
