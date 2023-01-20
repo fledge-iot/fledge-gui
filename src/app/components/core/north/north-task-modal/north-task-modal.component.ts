@@ -8,13 +8,17 @@ import { cloneDeep, isEmpty } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, NorthService, ProgressBarService, RolesService, SchedulesService, ServicesApiService
+  AlertService, ConfigurationControlService, ConfigurationService,
+  FileUploaderService, FilterService, NorthService, ProgressBarService,
+  RolesService, SchedulesService, ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import Utils from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -59,6 +63,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   filterConfigurationCopy: any;
   changedFilterConfig: any;
   advancedConfiguration = [];
+
+  // To hold api calls to execute
+  apiCallsStack = [];
 
   constructor(
     private router: Router,
@@ -269,12 +276,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.isFilterOrderChanged) {
       this.updateFilterPipeline(this.filterPipeline);
     }
-    // 'touched' means the user has entered the form
-    // 'dirty' / '!pristine' means the user has made a modification
-    if (!form.dirty && !form.touched) {
-      this.toggleModal(false);
-      return false;
-    }
+
     const updatePayload: any = {
       'enabled': form.controls['enabled'].value
     };
@@ -287,27 +289,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       updatePayload.exclusive = form.controls['exclusive'].value;
     }
 
-    /** request started */
-    this.ngProgress.start();
-    this.schedulesService.updateSchedule(this.task['id'], updatePayload).
-      subscribe(
-        () => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Schedule updated successfully.');
-          this.notify.emit();
-          this.toggleModal(false);
-          form.reset();
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.apiCallsStack.push(this.schedulesService.updateSchedule(this.task['id'], updatePayload).pipe(catchError(e => of(e))));
   }
 
   getTimeIntervalValue(event) {
@@ -537,25 +519,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (!categoryName || isEmpty(configuration)) {
       return;
     }
-    /** request started */
-    this.ngProgress.start();
-    this.configService.updateBulkConfiguration(categoryName, configuration).
-      subscribe(
-        () => {
-          this.changedConfig = {};
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Configuration updated successfully.', true);
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+
+    this.apiCallsStack.push(this.configService.
+      updateBulkConfiguration(categoryName, configuration).pipe(catchError(e => of(e))));
   }
 
   save() {
@@ -570,6 +536,17 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
+      });
+    }
+
+    if (this.apiCallsStack.length > 0) {
+      this.ngProgress.start();
+      forkJoin(this.apiCallsStack).subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Configuration updated successfully.', true);
+        this.notify.emit();
+        this.toggleModal(false);
+        this.form.reset();
       });
     }
   }

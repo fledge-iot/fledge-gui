@@ -571,6 +571,5 @@ export class SouthServiceModalComponent implements OnInit {
         this.toggleModal(false);
       });
     }
-
   }
 }
