@@ -7,16 +7,18 @@
     </header>
     <section class="modal-card-body">
       <div class="box">
-        <app-view-config-item *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"
-          #notificationConfigView>
-        </app-view-config-item>
+        <app-configuration-group #notificationConfigView *ngIf="category" [category]="category" [from]="'notification'"
+          (changedConfigEvent)="getChangedNotificationConfig($event)"
+          (formStatusEvent)="validConfigurationForm = $event">
+        </app-configuration-group>
         <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Rule - ' + notification.rule">
         <div class="columns">
           <div class="column">
             <div class="field">
-              <app-view-config-item *ngIf="ruleConfiguration" [categoryConfigurationData]="ruleConfiguration"
-                [formId]="rule" [useRuleProxy]="useRuleProxy" #ruleConfigView>
-              </app-view-config-item>
+              <app-configuration-group #ruleConfigView *ngIf="ruleConfiguration" [category]="ruleConfiguration"
+                [from]="'rule-modal'" (changedConfigEvent)="getChangedRuleConfig($event)"
+                (formStatusEvent)="validConfigurationForm = $event">
+              </app-configuration-group>
             </div>
           </div>
         </div>
@@ -25,10 +27,11 @@
         <div class="columns">
           <div class="column">
             <div class="field">
-              <app-view-config-item *ngIf="deliveryConfiguration" #deliveryConfigView
-                [categoryConfigurationData]="deliveryConfiguration" [useDeliveryProxy]="useDeliveryProxy"
-                [formId]="delivery">
-              </app-view-config-item>
+              <app-configuration-group #deliveryConfigView *ngIf="deliveryConfiguration"
+                [category]="deliveryConfiguration" [from]="'delivery-modal'"
+                (changedConfigEvent)="getChangedDeliveryConfig($event)"
+                (formStatusEvent)="validConfigurationForm = $event">
+              </app-configuration-group>
             </div>
           </div>
         </div>
@@ -40,7 +43,7 @@
                 <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
               </p>
               <p class="control">
-                <button class="button is-small is-link" (click)="proxy()">Save</button>
+                <button class="button is-small is-link" (click)="save()">Save</button>
               </p>
             </div>
           </div>

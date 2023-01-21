@@ -119,7 +119,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
   }
 
-
   getNorthData() {
     this.getCategory();
     this.getFilterPipeline();
@@ -466,7 +465,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   /**
-  * Get edited south service configuration from show configuration page
+  * Get edited configuration from show configuration page
   * @param changedConfiguration changed configuration of a selected plugin
   */
   getChangedConfig(changedConfiguration: any) {
@@ -474,7 +473,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   /**
-  * Get edited south service advance configuration
+  * Get edited advance configuration
   * @param changedConfiguration changed configuration
   */
   getChangedAdvanceConfiguration(advanceConfig: any) {
@@ -490,9 +489,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   /**
- * Get edited filter configuration from show configuration page
- * @param changedConfiguration changed configuration of a selected filter
- */
+   * Get edited filter configuration from show configuration page
+   * @param changedConfiguration changed configuration of a selected filter
+   */
   getChangedFilterConfig(changedConfiguration: any) {
     this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
   }
