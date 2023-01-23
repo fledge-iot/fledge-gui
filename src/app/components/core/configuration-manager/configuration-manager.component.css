@@ -26,3 +26,7 @@
 .empty-tree {
   display: none;
 }
+
+.button {
+  margin-left: 10px !important;
+}
