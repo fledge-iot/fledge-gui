@@ -135,6 +135,8 @@ export class SouthServiceModalComponent implements OnInit {
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
       this.getCateogryData();
+      this.validConfigurationForm = true;
+      this.validFilterConfigForm = true;
       this.notify.emit(false);
       this.svcCheckbox.setValue(this.service['schedule_enabled']);
       if (!this.rolesService.hasEditPermissions()) {

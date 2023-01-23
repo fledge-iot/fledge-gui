@@ -22,6 +22,7 @@ export class ShowConfigurationComponent implements OnInit {
   form: FormGroup;
 
   @ViewChildren('scriptCode') codeMirrorCmpt: QueryList<CodemirrorComponent>;
+  @ViewChildren('jsonEditor') josnElements: QueryList<CodemirrorComponent>;
 
   constructor(private fb: FormBuilder,
     public rolesService: RolesService,
@@ -35,6 +36,12 @@ export class ShowConfigurationComponent implements OnInit {
     if (!changes?.selectedGroup?.firstChange) {
       if (changes?.selectedGroup?.currentValue == this.group) {
         this.configControlService.checkConfigItemOnGroupChange(this.form, this.fullConfiguration);
+      }
+
+      if (this.josnElements) {
+        this.josnElements.forEach((jsonComp: CodemirrorComponent) => {
+          jsonComp.codeMirror.refresh();
+        });
       }
       // refresh codemirror editor to reflect changed values
       if (this.codeMirrorCmpt) {

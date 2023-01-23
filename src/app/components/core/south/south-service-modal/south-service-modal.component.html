@@ -102,7 +102,8 @@
                   <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
                 </p>
                 <p class="control">
-                  <button class="button is-small is-link" (click)="save()">Save</button>
+                  <button [disabled]="!validConfigurationForm || !validFilterConfigForm" class="button is-small is-link"
+                    (click)="save()">Save</button>
                 </p>
               </div>
             </div>

@@ -24,59 +24,63 @@
             (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validConfigurationForm = $event">
           </app-configuration-group>
 
-          <form name=" task-form" id="taskForm" #fg="ngForm" novalidate>
-            <div class="columns">
-              <div class="column">
-                <div class="field is-horizontal">
-                  <div class="field-label has-text-left">
-                    <label class="label">Enabled</label>
-                  </div>
-                  <div class="field-body">
-                    <div class="field">
-                      <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
-                        [(ngModel)]="enabled" [disabled]="!rolesService.hasEditPermissions()">
+          <div class="columns">
+            <div class="column">
+              <form name=" task-form" id="taskForm" #fg="ngForm" novalidate>
+                <div class="columns">
+                  <div class="column">
+                    <div class="field is-horizontal">
+                      <div class="field-label has-text-left">
+                        <label class="label">Enabled</label>
+                      </div>
+                      <div class="field-body">
+                        <div class="field">
+                          <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
+                            [(ngModel)]="enabled" [disabled]="!rolesService.hasEditPermissions()">
+                        </div>
+                      </div>
                     </div>
+                    <ng-container *ngIf="task?.processName !== 'north_C'">
+                      <div class="field is-horizontal">
+                        <div class="field-label has-text-left">
+                          <label class="label">Exclusive</label>
+                        </div>
+                        <div class="field-body">
+                          <div class="field">
+                            <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive"
+                              [value]="exclusive" [(ngModel)]="exclusive"
+                              [disabled]="!rolesService.hasEditPermissions()">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="field is-horizontal">
+                        <div class="field-label has-text-left">
+                          <label class="label">Interval</label>
+                        </div>
+                        <div class="field-body">
+                          <div class="field">
+                            <input name="repeatDays" class="input is-small"
+                              [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" type='number' appNumberOnly
+                              min="0" max="365" placeholder="days" [(ngModel)]="repeatDays"
+                              [readOnly]="!rolesService.hasEditPermissions()">
+                          </div>
+                          <div class="field">
+                            <input class="input is-small" [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
+                              name="repeatTime" type="text" [pattern]='regExp' placeholder="HH:mm:ss" mask="00:00:00"
+                              [(ngModel)]="repeatTime" required (change)="getTimeIntervalValue($event)"
+                              [readOnly]="!rolesService.hasEditPermissions()">
+                            <span *ngIf="fg?.controls['repeatTime']?.invalid" class="help is-danger">
+                              <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
                   </div>
                 </div>
-                <ng-container *ngIf="task?.processName !== 'north_C'">
-                  <div class="field is-horizontal">
-                    <div class="field-label has-text-left">
-                      <label class="label">Exclusive</label>
-                    </div>
-                    <div class="field-body">
-                      <div class="field">
-                        <input class="checkbox" name="exclusive" type="checkbox" [checked]="exclusive"
-                          [value]="exclusive" [(ngModel)]="exclusive" [disabled]="!rolesService.hasEditPermissions()">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="field is-horizontal">
-                    <div class="field-label has-text-left">
-                      <label class="label">Interval</label>
-                    </div>
-                    <div class="field-body">
-                      <div class="field">
-                        <input name="repeatDays" class="input is-small"
-                          [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" type='number' appNumberOnly
-                          min="0" max="365" placeholder="days" [(ngModel)]="repeatDays"
-                          [readOnly]="!rolesService.hasEditPermissions()">
-                      </div>
-                      <div class="field">
-                        <input class="input is-small" [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
-                          name="repeatTime" type="text" [pattern]='regExp' placeholder="HH:mm:ss" mask="00:00:00"
-                          [(ngModel)]="repeatTime" required (change)="getTimeIntervalValue($event)"
-                          [readOnly]="!rolesService.hasEditPermissions()">
-                        <span *ngIf="fg?.controls['repeatTime']?.invalid" class="help is-danger">
-                          <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </ng-container>
-              </div>
+              </form>
             </div>
-          </form>
-
+          </div>
           <hr>
           <div class="columns">
             <div class="column has-text-centered">
@@ -149,7 +153,8 @@
                   <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
                 </p>
                 <p class="control">
-                  <button class="button is-small is-link" (click)="save()">Save</button>
+                  <button [disabled]="!validConfigurationForm || !validFilterConfigForm" class="button is-small is-link"
+                    (click)="save()">Save</button>
                 </p>
               </div>
             </div>

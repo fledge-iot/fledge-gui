@@ -153,6 +153,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   public toggleModal(isOpen: Boolean) {
     this.applicationTagClicked = false;
+    this.validConfigurationForm = true;
+    this.validFilterConfigForm = true;
     if (this.isFilterOrderChanged || this.isFilterDeleted) {
       this.showConfirmationDialog();
       return;
