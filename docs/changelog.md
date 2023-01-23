@@ -1,9 +1,10 @@
-## v2.1.1[2023-01-23]
+## v2.1.1 [2023-01-20]
 
 #### Fixed
 
 [FOGL-7271]: Fixed undefined error on Control Dispatcher page [#242](https://github.com/fledge-iot/fledge-gui/pull/242)
 [FOGL-6853]: Fixed text wrapping issue for long words in syslog [#241](https://github.com/fledge-iot/fledge-gui/pull/241)
+[FOGL-7247]: Codemirror editor width issue for large content [#238](https://github.com/fledge-iot/fledge-gui/pull/238)
 
 ## v2.1.0 [2022-12-26]
 
