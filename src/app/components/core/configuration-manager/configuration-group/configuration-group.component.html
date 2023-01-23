@@ -7,12 +7,14 @@
         </a>
       </h6>
     </li>
-    <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
-      *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
-      <h6 class="is-6 has-text-weight-semibold">
-        <a (click)="selectedGroup = 'developer'">Developer</a>
-      </h6>
-    </li>
+    <ng-container *ngIf="from !== 'notification'">
+      <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
+        *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
+        <h6 class="is-6 has-text-weight-semibold">
+          <a (click)="selectedGroup = 'developer'">Developer</a>
+        </h6>
+      </li>
+    </ng-container>
   </ul>
 </div>
 <div [ngClass]="{'highlight': from !== 'config-manager'}">
@@ -36,8 +38,10 @@
         (formStatusEvent)="formStatus($event)"></app-show-configuration>
     </ng-template>
   </ng-container>
-  <app-plugin-persist-data *ngIf="selectedGroup == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
-    [serviceName]="category?.name" [pluginName]="plugin">
-  </app-plugin-persist-data>
+  <ng-container *ngIf="from !== 'notification'">
+    <app-plugin-persist-data *ngIf="selectedGroup == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
+      [serviceName]="category?.name" [pluginName]="plugin">
+    </app-plugin-persist-data>
+  </ng-container>
 
 </div>

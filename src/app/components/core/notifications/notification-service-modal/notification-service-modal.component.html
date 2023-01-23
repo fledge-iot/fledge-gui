@@ -35,7 +35,7 @@
         </div>
         <div>
           <app-configuration-group #configComponent *ngIf="category" [category]="category" [from]="'notification'"
-            (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validConfigurationForm = $event"
+            (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validForm = $event"
             (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)">
           </app-configuration-group>
           <div class="columns">
@@ -71,8 +71,9 @@
                 (click)="toggleModal(false)">Cancel</button>
             </p>
             <p class="control">
-              <button [disabled]="pluginInstallationState" class="button is-small is-link"
-                (click)="save()">{{btnText}}</button>
+              <button
+                [disabled]="pluginInstallationState || fg.controls['notificationServiceName']?.invalid || !validForm"
+                class="button is-small is-link" (click)="save()">{{btnText}}</button>
             </p>
           </div>
         </div>

@@ -52,6 +52,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   changedConfig: any;
   categoryCopy: { name: string; config: Object; };
   advancedConfiguration = [];
+  validForm = true;
 
   constructor(
     private router: Router,
@@ -87,8 +88,12 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   refreshPageData() {
+    this.changedConfig = null;
+    this.validForm = true;
+    this.advancedConfiguration = [];
     this.getCategory();
     if (this.configComponent) {
+      this.configComponent?.updateCategroyConfig(this.categoryCopy.config);
       this.configComponent.getChildConfigData();
     }
     this.enabled = this.isNotificationServiceEnabled;
@@ -105,6 +110,8 @@ export class NotificationServiceModalComponent implements OnChanges {
     const notificationServiceModal = <HTMLDivElement>document.getElementById('notification-service-modal');
     if (notificationServiceModal) {
       if (isOpen) {
+        this.changedConfig = null;
+        this.advancedConfiguration = [];
         if (this.form.controls['notificationServiceName'] !== undefined) {
           this.form.controls['notificationServiceName'].markAsPristine();
           this.form.controls['enabled'].markAsUntouched();
@@ -126,8 +133,9 @@ export class NotificationServiceModalComponent implements OnChanges {
         this.service = res.services[0];
       },
         (error) => {
-          this.ngProgress.done();
-          console.log('service down ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          }
         });
   }
 
@@ -407,7 +415,6 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   getChangedConfig(changedConfiguration: any) {
-    console.log('cahnged config', changedConfiguration);
     this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.categoryCopy);
   }
 
@@ -463,7 +470,6 @@ export class NotificationServiceModalComponent implements OnChanges {
       .subscribe(() => {
         this.ngProgress.done();
         this.alertService.success('Configuration updated successfully.', true);
-        this.changedConfig = null;
       },
         (error) => {
           this.ngProgress.done();
