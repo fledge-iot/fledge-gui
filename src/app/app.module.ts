@@ -45,7 +45,6 @@ import { SharedModule } from './shared.module';
 import { ProgressBarComponent } from './components/common/progress-bar/progress-bar.component';
 import { ProgressBarService } from './services/progress-bar.service';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
-import { ValidateFormService } from './services/validate-form.service';
 import { Router } from '@angular/router';
 import { LogsModule } from './components/core/logs/logs.module';
 
@@ -133,7 +132,6 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     NorthService,
     SchedulesService,
     ProgressBarService,
-    ValidateFormService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

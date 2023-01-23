@@ -7,7 +7,6 @@ import {
   ProgressBarService, FileUploaderService,
   ConfigurationControlService
 } from '../../../../services';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
@@ -49,8 +48,6 @@ export class AddFilterWizardComponent implements OnInit {
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @Input() serviceName: any;
-
-  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItem: ViewConfigItemComponent;
 
   validChildConfigurationForm = true;
   pluginConfiguration: any;
