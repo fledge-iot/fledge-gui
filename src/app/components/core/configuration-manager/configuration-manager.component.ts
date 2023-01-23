@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from '@circlon/angular-tree-component';
-import { isEmpty, findIndex } from 'lodash';
+import { isEmpty, findIndex, cloneDeep } from 'lodash';
 
-import { AlertService, ConfigurationService, ProgressBarService, RolesService } from '../../../services';
+import { AlertService, ConfigurationControlService, ConfigurationService, FileUploaderService, ProgressBarService, RolesService } from '../../../services';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -22,11 +22,15 @@ export class ConfigurationManagerComponent implements OnInit {
 
   @ViewChild(TreeComponent, { static: true })
   private tree: TreeComponent;
+  changedConfig: any;
+  categoryDataCopy: any;
 
   constructor(private configService: ConfigurationService,
     public rolesService: RolesService,
     private alertService: AlertService,
-    public ngProgress: ProgressBarService
+    public ngProgress: ProgressBarService,
+    private configurationControlService: ConfigurationControlService,
+    private fileUploaderService: FileUploaderService
   ) {
     this.JSON = JSON;
   }
@@ -193,6 +197,7 @@ export class ConfigurationManagerComponent implements OnInit {
           if (!isEmpty(data)) {
             // categoryValues.push(data);
             this.categoryData = [{ name: categoryKey, config: data, description: categoryDesc }];
+            this.categoryDataCopy = cloneDeep(this.categoryData);
           }
         },
         error => {
@@ -229,6 +234,74 @@ export class ConfigurationManagerComponent implements OnInit {
           }
         });
   }
+
+  /**
+   * Get edited south service configuration from show configuration page
+   * @param changedConfiguration changed configuration of a selected plugin
+   */
+  getChangedConfig(changedConfiguration: any, category: any) {
+    const cat = this.categoryDataCopy.find(cat => cat.key === category.key);
+    this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, cat);
+  }
+
+  save(catName: string) {
+    if (!isEmpty(this.changedConfig)) {
+      this.updateConfiguration(catName, this.changedConfig);
+    }
+  }
+
+
+  /**
+  * Update configuration
+  * @param categoryName Name of the cateogry
+  * @param configuration category updated configuration
+  */
+  updateConfiguration(categoryName: string, configuration: any) {
+    const files = this.getScriptFilesToUpload(configuration);
+    if (files.length > 0) {
+      this.uploadScript(categoryName, files);
+    }
+
+    if (!categoryName || isEmpty(configuration)) {
+      return;
+    }
+    this.ngProgress.start();
+    this.configService.
+      updateBulkConfiguration(categoryName, configuration)
+      .subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Configuration updated successfully.', true);
+        this.changedConfig = null;
+        this.ngProgress.done();
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  /**
+   * Get scripts to upload from a configuration item
+   * @param configuration  edited configuration from show configuration page
+   * @returns script files to upload
+   */
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
+  }
+
+  /**
+   * To upload script files of a configuration property
+   * @param categoryName name of the configuration category
+   * @param files : Scripts array to uplaod
+   */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+  }
+
 
   /**
    * Check if object has a specific key

@@ -42,7 +42,7 @@
               <div class="media-content">
                 <p class="subtitle is-6">{{ category.description }}
                   <button class="button is-small" id="refresh-check"
-                    (click)="refreshCategory(category.key, category.description)">
+                    (click)="refreshCategory(category.name, category.description)">
                     <span class="icon is-small">
                       <i class="fa fa-sm fa-sync"></i>
                     </span>
@@ -54,15 +54,14 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <!-- <app-view-config-item [categoryConfigurationData]="category" [pageId]="'page'"></app-view-config-item> -->
-            <app-configuration-group [category]="category" [from]="'config-manager'"
-              (changedConfigEvent)="getChangedFilterConfig($event)" (formStatusEvent)="validFilterConfigForm = $event">
+            <app-configuration-group *ngIf="category" [category]="category" [from]="'config-manager'"
+              (changedConfigEvent)="getChangedConfig($event, category)" (formStatusEvent)="validConfigForm = $event">
             </app-configuration-group>
             <div class="columns" *ngIf="rolesService.hasEditPermissions()">
               <div class="column">
                 <div class="field is-grouped is-pulled-right">
                   <p class="control">
-                    <button class="button is-small is-link" (click)="save()">Save</button>
+                    <button class="button is-small is-link" (click)="save(category.name)">Save</button>
                   </p>
                 </div>
               </div>
