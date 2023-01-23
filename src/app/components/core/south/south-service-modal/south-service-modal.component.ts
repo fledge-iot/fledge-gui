@@ -201,7 +201,7 @@ export class SouthServiceModalComponent implements OnInit {
       .pipe(catchError(e => of(e))));
   }
 
-  saveChanges() {
+  saveServiceChanges() {
     if (this.isFilterDeleted) {
       this.deleteFilter();
     }
@@ -548,7 +548,7 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   save() {
-    this.saveChanges();
+    this.saveServiceChanges();
     if (!isEmpty(this.changedConfig)) {
       this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig);
     }

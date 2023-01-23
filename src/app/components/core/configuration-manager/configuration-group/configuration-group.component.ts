@@ -21,7 +21,7 @@ export class ConfigurationGroupComponent implements OnInit {
   // To hold the changed configuration values of a plugin
   configFormValues = {};
 
-  pages = ['south', 'north'];
+  pages = ['south', 'north', 'notification'];
   @Input() from;
   categoryKey = '';
 
@@ -49,8 +49,6 @@ export class ConfigurationGroupComponent implements OnInit {
   }
 
   categeryConfiguration() {
-    console.log('cat', this.category);
-
     this.groups = [];
     const configItems = Object.keys(this.category.config).map(k => {
       this.category.config[k].key = k;

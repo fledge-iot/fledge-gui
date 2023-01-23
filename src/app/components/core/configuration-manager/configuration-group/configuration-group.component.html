@@ -1,4 +1,4 @@
-<div class="tabs is-boxed">
+<div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
   <ul>
     <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
       <h6 class="is-6 has-text-weight-semibold">
@@ -15,7 +15,7 @@
     </li>
   </ul>
 </div>
-<div class="highlight">
+<div [ngClass]="{'highlight': from !== 'config-manager'}">
   <ng-container *ngFor="let g of groups">
     <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
       <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"

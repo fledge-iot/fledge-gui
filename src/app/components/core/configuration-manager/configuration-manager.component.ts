@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from '@circlon/angular-tree-component';
 import { isEmpty, findIndex } from 'lodash';
 
-import { AlertService, ConfigurationService, ProgressBarService } from '../../../services';
+import { AlertService, ConfigurationService, ProgressBarService, RolesService } from '../../../services';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -24,6 +24,7 @@ export class ConfigurationManagerComponent implements OnInit {
   private tree: TreeComponent;
 
   constructor(private configService: ConfigurationService,
+    public rolesService: RolesService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService
   ) {
@@ -190,8 +191,8 @@ export class ConfigurationManagerComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           if (!isEmpty(data)) {
-            categoryValues.push(data);
-            this.categoryData = [{ key: categoryKey, value: categoryValues, description: categoryDesc }];
+            // categoryValues.push(data);
+            this.categoryData = [{ name: categoryKey, config: data, description: categoryDesc }];
           }
         },
         error => {

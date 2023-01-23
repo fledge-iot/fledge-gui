@@ -19,7 +19,7 @@
                 <a class="dropdown-item" *ngFor="let rootCategory of rootCategories"
                   (click)="toggleDropDown();getSelectedCategoryConfig(rootCategory)">
                   {{ hasProperty(rootCategory, 'displayName') === true ?
-                        rootCategory.displayName:rootCategory.description}}
+                  rootCategory.displayName:rootCategory.description}}
                 </a>
               </div>
             </div>
@@ -41,7 +41,8 @@
             <div class="media">
               <div class="media-content">
                 <p class="subtitle is-6">{{ category.description }}
-                  <button class="button is-small" id="refresh-check" (click)="refreshCategory(category.key, category.description)">
+                  <button class="button is-small" id="refresh-check"
+                    (click)="refreshCategory(category.key, category.description)">
                     <span class="icon is-small">
                       <i class="fa fa-sm fa-sync"></i>
                     </span>
@@ -53,7 +54,19 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <app-view-config-item [categoryConfigurationData]="category" [pageId]="'page'"></app-view-config-item>
+            <!-- <app-view-config-item [categoryConfigurationData]="category" [pageId]="'page'"></app-view-config-item> -->
+            <app-configuration-group [category]="category" [from]="'config-manager'"
+              (changedConfigEvent)="getChangedFilterConfig($event)" (formStatusEvent)="validFilterConfigForm = $event">
+            </app-configuration-group>
+            <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+              <div class="column">
+                <div class="field is-grouped is-pulled-right">
+                  <p class="control">
+                    <button class="button is-small is-link" (click)="save()">Save</button>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

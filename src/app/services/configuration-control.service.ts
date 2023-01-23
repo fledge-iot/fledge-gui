@@ -461,6 +461,7 @@ export class ConfigurationControlService {
    */
   getChangedConfiguration(changedConfiguration: any, defaultConfiguration: any, flag = false) {
     const defaultConfig = map(defaultConfiguration.config, (v, key) => ({ key, ...v }));
+    console.log('default', defaultConfig);
 
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
