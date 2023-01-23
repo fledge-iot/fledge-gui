@@ -2,7 +2,10 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from '@circlon/angular-tree-component';
 import { isEmpty, findIndex, cloneDeep } from 'lodash';
 
-import { AlertService, ConfigurationControlService, ConfigurationService, FileUploaderService, ProgressBarService, RolesService } from '../../../services';
+import {
+  AlertService, ConfigurationControlService, ConfigurationService,
+  FileUploaderService, ProgressBarService, RolesService
+} from '../../../services';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -15,6 +18,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public JSON;
   public selectedRootCategory = 'General';
   public isChild = true;
+  validConfigForm = false;
 
   @Input() categoryConfigurationData;
   nodes: any[] = [];
@@ -188,14 +192,12 @@ export class ConfigurationManagerComponent implements OnInit {
   private getCategory(categoryKey: string, categoryDesc: string): void {
     /** request started */
     this.ngProgress.start();
-    const categoryValues = [];
     this.configService.getCategory(categoryKey).
       subscribe(
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
           if (!isEmpty(data)) {
-            // categoryValues.push(data);
             this.categoryData = [{ name: categoryKey, config: data, description: categoryDesc }];
             this.categoryDataCopy = cloneDeep(this.categoryData);
           }
@@ -212,17 +214,21 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public refreshCategory(categoryKey: string, categoryDesc: string): void {
+    this.changedConfig = null;
+    this.validConfigForm = false;
     /** request started */
     this.ngProgress.start();
-    const categoryValues = [];
+    // const categoryValues = [];
     this.configService.getCategory(categoryKey).
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          categoryValues.push(data);
-          const index = findIndex(this.categoryData, ['key', categoryKey]);
-          this.categoryData[index] = { key: categoryKey, value: categoryValues, description: categoryDesc };
+          // categoryValues.push(data);
+          const index = findIndex(this.categoryData, ['name', categoryKey]);
+          this.categoryData[index] = { name: categoryKey, config: data, description: categoryDesc };
+          // clear edited config
+
         },
         error => {
           /** request completed */
@@ -250,7 +256,6 @@ export class ConfigurationManagerComponent implements OnInit {
     }
   }
 
-
   /**
   * Update configuration
   * @param categoryName Name of the cateogry
@@ -272,6 +277,7 @@ export class ConfigurationManagerComponent implements OnInit {
         this.ngProgress.done();
         this.alertService.success('Configuration updated successfully.', true);
         this.changedConfig = null;
+        this.validConfigForm = false;
         this.ngProgress.done();
       },
         (error) => {

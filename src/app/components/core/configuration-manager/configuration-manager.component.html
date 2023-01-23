@@ -61,7 +61,8 @@
               <div class="column is-4">
               </div>
               <div class="column">
-                <button class="button is-small is-link" (click)="save(category.name)">Save</button>
+                <button [disabled]="!validConfigForm" class="button is-small is-link"
+                  (click)="save(category.name)">Save</button>
               </div>
             </div>
           </div>
