@@ -37,7 +37,9 @@ export class ConfigurationGroupComponent implements OnInit {
     private configurationControlService: ConfigurationControlService,
   ) { }
 
-  ngOnInit() {
+  ngOnInit() { }
+
+  ngOnChanges() {
     this.categeryConfiguration();
     this.getChildConfigData();
   }

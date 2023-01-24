@@ -238,6 +238,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
         this.alertService.success('Configuration updated successfully.', true);
         this.notify.emit();
         this.toggleModal(false);
+        this.apiCallsStack = [];
       });
     }
   }

@@ -20,15 +20,12 @@ import { DocService } from '../../../../services/doc.service';
   styleUrls: ['./add-notification-wizard.component.css']
 })
 export class AddNotificationWizardComponent implements OnInit, OnDestroy {
-  @ViewChild('desc') description: ElementRef;
-  @ViewChild('name') name: ElementRef;
   @ViewChild('retriggerTime') retriggerTime: ElementRef;
 
   public notificationRulePlugins = [];
   public notificationDeliveryPlugins = [];
   public notificationTypeList = [];
 
-  public isValidName = true;
   public isRulePlugin = true;
   public isDeliveryPlugin = true;
   public isSinglePlugin = true;
@@ -98,7 +95,20 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         showPackageLogs.isSubscribed = false;
       }
     });
+
+    this.name?.valueChanges?.subscribe(v => {
+      if (v.length > 0) {
+        this.description?.patchValue(`${v} notification instance`)
+      } else {
+        this.description.patchValue('');
+      }
+      this.notificationForm?.updateValueAndValidity();
+    })
   }
+
+  get name() { return this.notificationForm.get('name'); }
+
+  get description() { return this.notificationForm.get('description'); }
 
   /**
    * Open plugin modal
@@ -138,6 +148,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
             }
           },
           () => {
+            /** request completed */
+            this.ngProgress.done();
             setTimeout(() => {
               if (isPluginInstalled) {
                 this.pluginData.modalState = false;
@@ -202,7 +214,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   }
 
   moveNext() {
-    this.isValidName = true;
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
     const formValues = this.notificationForm.value;
@@ -212,15 +223,11 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 1:
-        if (formValues['name'].trim() === '') {
-          this.isValidName = false;
-          return;
-        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (formValues['name'].trim() !== '') {
           this.payload.name = formValues['name'];
-          this.payload.description = this.description.nativeElement.value;
+          this.payload.description = formValues['description'];
         }
         if (this.notificationRulePlugins.length === 0) {
           nxtButton.disabled = true;
@@ -355,17 +362,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     if (plugin) {
       this.rulePluginConfiguration = plugin;
       this.rulePluginConfigurationCopy = cloneDeep(plugin);
-    }
-  }
-
-  validateNotificationName(event: any) {
-    if (event.target.value.trim().length > 0) {
-      this.isValidName = true;
-    }
-    if (this.name.nativeElement.value.length > 0) {
-      this.description.nativeElement.value = this.name.nativeElement.value + ' notification instance';
-    } else {
-      this.description.nativeElement.value = '';
     }
   }
 

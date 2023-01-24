@@ -278,6 +278,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.updateFilterPipeline(this.filterPipeline);
     }
 
+    // 'touched' means the user has entered the form
+    // 'dirty' / '!pristine' means the user has made a modification
+    if (!form.dirty && !form.touched) {
+      return false;
+    }
+
     const updatePayload: any = {
       'enabled': form.controls['enabled'].value
     };
@@ -548,6 +554,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.notify.emit();
         this.toggleModal(false);
         this.form.reset();
+        this.apiCallsStack = [];
       });
     }
   }

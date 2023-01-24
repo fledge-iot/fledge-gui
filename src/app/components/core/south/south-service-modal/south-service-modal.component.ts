@@ -214,6 +214,9 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   changeServiceStatus() {
+    if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
+      return false;
+    }
     const serviceName = this.service['name'];
     const serviceCurrentStatus = this.service['schedule_enabled'];
     const serviceChangedStatus = this.svcCheckbox.value;
@@ -571,6 +574,7 @@ export class SouthServiceModalComponent implements OnInit {
         this.alertService.success('Configuration updated successfully.', true);
         this.notify.emit();
         this.toggleModal(false);
+        this.apiCallsStack = [];
       });
     }
   }
