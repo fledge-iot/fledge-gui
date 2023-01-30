@@ -27,3 +27,115 @@
 .tabs {
   margin-bottom: 0px !important;
 }
+
+
+ #ProductNav2 .nav {
+  display: inherit;
+  flex-wrap: inherit;
+  padding-left: inherit;
+  margin-bottom: inherit;
+  list-style: inherit;
+}
+
+/*--- Wrap Up ---*/
+.ProductNav_Wrapper {
+  position: relative;
+  padding: 0 11px;
+  box-sizing: border-box;
+}
+
+.ProductNav {
+  /* Make this scrollable when needed */
+  overflow-x: auto;
+  /* We don't want vertical scrolling */
+  overflow-y: hidden;
+  /* For WebKit implementations, provide inertia scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* We don't want internal inline elements to wrap */
+  white-space: nowrap;
+  /* If JS present, let's hide the default scrollbar */
+  position: relative;
+  font-size: 0;
+}
+.js .ProductNav {
+  /* Make an auto-hiding scroller for the 3 people using a IE */
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  /* Remove the default scrollbar for WebKit implementations */
+}
+.js .ProductNav::-webkit-scrollbar {
+  display: none;
+  /* positioning context for advancers */
+}
+.ProductNav_Contents {
+  float: left;
+  transition: transform 0.2s ease-in-out;
+  position: relative;
+}
+.ProductNav_Contents-no-transition {
+  transition: none;
+}
+.ProductNav_Link {
+  text-decoration: none;
+  color: #7f868b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: table-cell;
+  vertical-align: middle;
+  padding: 8px 12px;
+  line-height: 1.35;
+}
+.ProductNav_Link[aria-selected="true"] {
+  color: #6a2c79;
+}
+
+
+
+.Advancer {
+  /* Reset the button */
+  appearance: none;
+  background: transparent;
+  padding: 0;
+  border: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.Advancer:focus {
+  outline: 0;
+}
+.Advancer:hover {
+  cursor: pointer;
+  /* Now style it as needed */
+  /* Set the buttons invisible by default */
+}
+.Advancer_Left {
+  left: 0;
+}
+[data-overflowing="both"] ~ .Advancer_Left, [data-overflowing="left"] ~ .Advancer_Left {
+  opacity: 1;
+}
+.Advancer_Right {
+  right: 0;
+}
+[data-overflowing="both"] ~ .Advancer_Right, [data-overflowing="right"] ~ .Advancer_Right {
+  opacity: 1;
+}
+.Advancer_Icon {
+  width: 12px;
+  height: 44px;
+  fill: #bbb;
+}
+.ProductNav_Indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100px;
+  background-color: transparent;
+  transform-origin: 0 0;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+
