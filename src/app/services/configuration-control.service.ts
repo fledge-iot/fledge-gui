@@ -102,6 +102,10 @@ export class ScriptConfig extends ConfigurationBase<string> {
   override validFileExtension = true;
 }
 
+export class CodeConfig extends ConfigurationBase<string> {
+  override controlType = 'CODE';
+}
+
 export class PasswordConfig extends ConfigurationBase<string> {
   override controlType = 'PASSWORD';
 }
@@ -270,6 +274,20 @@ export class ConfigurationControlService {
             mandatory: element.mandatory,
             order: element.order,
             file: element.file,
+            editorOptions: this.setEditorConfig(key),
+            validity: element.validity
+          }));
+          break;
+        case 'CODE':
+          configurations.push(new CodeConfig({
+            key: key,
+            type: 'code',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
             editorOptions: this.setEditorConfig(key),
             validity: element.validity
           }));

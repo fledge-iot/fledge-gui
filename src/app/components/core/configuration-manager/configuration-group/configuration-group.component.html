@@ -1,4 +1,4 @@
-<div class="tabs is-boxed is-small" *ngIf="from !== 'config-manager'">
+<div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
   <ul>
     <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
       <h6 class="is-6 has-text-weight-semibold">

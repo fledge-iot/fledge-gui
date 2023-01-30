@@ -23,6 +23,7 @@ export class ShowConfigurationComponent implements OnInit {
 
   @ViewChildren('scriptCode') codeMirrorCmpt: QueryList<CodemirrorComponent>;
   @ViewChildren('jsonEditor') josnElements: QueryList<CodemirrorComponent>;
+  @ViewChildren('codeEditor') codeElements: QueryList<CodemirrorComponent>;
 
   constructor(private fb: FormBuilder,
     public rolesService: RolesService,
@@ -41,6 +42,12 @@ export class ShowConfigurationComponent implements OnInit {
       if (this.josnElements) {
         this.josnElements.forEach((jsonComp: CodemirrorComponent) => {
           jsonComp.codeMirror.refresh();
+        });
+      }
+
+      if (this.codeElements) {
+        this.codeElements.forEach((codeElmt: CodemirrorComponent) => {
+          codeElmt.codeMirror.refresh();
         });
       }
       // refresh codemirror editor to reflect changed values
