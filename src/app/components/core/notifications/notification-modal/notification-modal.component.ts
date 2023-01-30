@@ -75,6 +75,12 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       modalWindow.classList.add('is-active');
       return;
     }
+
+    this.rulePluginChangedConfig = {};
+    this.deliveryPluginChangedConfig = {};
+    this.notificationChangedConfig = {};
+    this.apiCallsStack = [];
+    this.category = null;
     this.notify.emit(false);
     modalWindow.classList.remove('is-active');
   }
@@ -250,6 +256,10 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+    if (isEmpty(this.notificationChangedConfig) && isEmpty(this.rulePluginChangedConfig)
+      && isEmpty(this.deliveryPluginChangedConfig)) {
+      this.toggleModal(false);
+    }
   }
 
   goToLink() {

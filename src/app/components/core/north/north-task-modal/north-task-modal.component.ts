@@ -566,5 +566,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+    if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)
+      && isEmpty(this.changedFilterConfig)) {
+      this.toggleModal(false);
+    }
   }
 }
