@@ -20,8 +20,10 @@ export class FileUploaderService {
       const [configProperty] = Object.entries(data)[0];
       // get file
       const file = data[configProperty];
+      // rebuild file name before uploading, backend append the name of the cateogry and config item in file name.
+      const fileName = (file.name.substring(file.name.lastIndexOf("/") + 1)).replace(`${name.toLowerCase()}_${configProperty.toLowerCase()}_`, '');
       const formData = new FormData();
-      formData.append('script', file);
+      formData.append('script', file, fileName);
       this.uploadFile(name, configProperty, formData)
         .subscribe(() => {
           this.alertService.success('Script uploaded successfully.');

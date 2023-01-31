@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, HostListener } from '@angular/core';
 
 import { isEmpty, cloneDeep } from 'lodash';
 
@@ -20,7 +20,7 @@ import { forkJoin, of } from 'rxjs';
   templateUrl: './notification-modal.component.html',
   styleUrls: ['./notification-modal.component.css']
 })
-export class NotificationModalComponent implements OnInit, OnChanges {
+export class NotificationModalComponent implements OnInit {
 
   @Input() notification: { notification: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -54,18 +54,18 @@ export class NotificationModalComponent implements OnInit, OnChanges {
 
   ngOnInit() { }
 
-  ngOnChanges() {
-    if (this.notification !== undefined) {
-      this.getCategory();
-      this.getRuleConfiguration();
-      this.getDeliveryConfiguration();
-    }
-  }
-
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
       this.toggleModal(false);
+    }
+  }
+
+  getNotificationCategory() {
+    if (this.notification) {
+      this.getCategory();
+      this.getRuleConfiguration();
+      this.getDeliveryConfiguration();
     }
   }
 
@@ -81,9 +81,9 @@ export class NotificationModalComponent implements OnInit, OnChanges {
     this.notificationChangedConfig = {};
     this.apiCallsStack = [];
     this.category = null;
+    this.notify.emit(false);
     this.ruleConfiguration = null;
     this.deliveryConfiguration = null;
-    this.notify.emit(false);
     modalWindow.classList.remove('is-active');
   }
 

@@ -87,8 +87,18 @@ export class ShowConfigurationComponent implements OnInit {
           if (this.form.valid) {
             this.event.emit(data);
           }
+        } else {
+          configuration.value = value.toString();
+          const file = this.createScriptFile(value.toString(), configuration);
+          this.event.emit({ [configuration.key]: file });
         }
       });
+  }
+
+  createScriptFile(value: string, config: any) {
+    const blob = new Blob([value], { type: 'plain/text' });
+    const file = new File([blob], config.fileName.substring(config.fileName.lastIndexOf(config + 1)));
+    return file;
   }
 
   setCheckboxState(key: string, evt: any) {
