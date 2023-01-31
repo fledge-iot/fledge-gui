@@ -76,6 +76,8 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       return;
     }
 
+    this.ruleConfiguration = {};
+    this.deliveryConfiguration = {};
     this.rulePluginChangedConfig = {};
     this.deliveryPluginChangedConfig = {};
     this.notificationChangedConfig = {};

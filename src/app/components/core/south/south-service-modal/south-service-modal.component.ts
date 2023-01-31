@@ -146,6 +146,7 @@ export class SouthServiceModalComponent implements OnInit {
       return;
     }
     this.pluginConfiguration = {};
+    this.filterConfiguration = {};
     this.changedConfig = {};
     this.changedFilterConfig = {};
     this.advancedConfiguration = [];
@@ -549,7 +550,6 @@ export class SouthServiceModalComponent implements OnInit {
    */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-    this.getCateogryData();
     if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)
       && isEmpty(this.changedFilterConfig)) {
       this.toggleModal(false);
@@ -580,6 +580,8 @@ export class SouthServiceModalComponent implements OnInit {
         this.toggleModal(false);
         this.apiCallsStack = [];
       });
+    } else {
+      this.toggleModal(false);
     }
   }
 }

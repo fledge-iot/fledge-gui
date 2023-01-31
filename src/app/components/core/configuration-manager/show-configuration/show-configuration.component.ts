@@ -112,7 +112,6 @@ export class ShowConfigurationComponent implements OnInit {
       if (ext !== 'py') {
         config.validFileExtension = false;
       } else {
-        console.log('file', file);
         config.fileName = file.name;
         config.file = file;
         this.event.emit({ [config.key]: config.file });
