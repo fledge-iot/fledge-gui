@@ -76,13 +76,13 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.ruleConfiguration = {};
-    this.deliveryConfiguration = {};
     this.rulePluginChangedConfig = {};
     this.deliveryPluginChangedConfig = {};
     this.notificationChangedConfig = {};
     this.apiCallsStack = [];
     this.category = null;
+    this.ruleConfiguration = null;
+    this.deliveryConfiguration = null;
     this.notify.emit(false);
     modalWindow.classList.remove('is-active');
   }
@@ -244,7 +244,6 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       forkJoin(this.apiCallsStack).subscribe(() => {
         this.ngProgress.done();
         this.alertService.success('Configuration updated successfully.', true);
-        this.notify.emit();
         this.toggleModal(false);
         this.apiCallsStack = [];
       });
