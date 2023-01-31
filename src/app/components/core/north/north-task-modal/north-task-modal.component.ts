@@ -562,6 +562,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.form.reset();
         this.apiCallsStack = [];
       });
+    } else {
+      this.toggleModal(false);
     }
   }
 
