@@ -1,7 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, HostListener } from '@angular/core';
-
 import { isEmpty, cloneDeep } from 'lodash';
-
 import {
   ConfigurationService, AlertService,
   ProgressBarService,
@@ -247,6 +245,8 @@ export class NotificationModalComponent implements OnInit {
         this.toggleModal(false);
         this.apiCallsStack = [];
       });
+    } else {
+      this.toggleModal(false);
     }
   }
 
