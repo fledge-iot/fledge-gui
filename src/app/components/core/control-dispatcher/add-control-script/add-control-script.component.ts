@@ -232,7 +232,6 @@ export class AddControlScriptComponent implements OnInit {
         payload['acl'] = this.selectedACL ? this.selectedACL : '';
       }
     }
-    console.log('payload', payload);
     if (this.editMode) {
       this.updateControlScript(payload)
     } else {

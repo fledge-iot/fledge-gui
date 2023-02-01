@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
+import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep } from 'lodash';
 
@@ -35,6 +35,7 @@ export class ConfigurationGroupComponent implements OnInit {
     public rolesService: RolesService,
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
+    private alertService: AlertService
   ) { }
 
   ngOnInit() { }
@@ -46,8 +47,8 @@ export class ConfigurationGroupComponent implements OnInit {
 
   public updateCategroyConfig(config) {
     this.category.config = config;
-    this.getChildConfigData();
     this.categeryConfiguration();
+    this.getChildConfigData();
   }
 
   categeryConfiguration() {
@@ -80,11 +81,11 @@ export class ConfigurationGroupComponent implements OnInit {
     // No advance configuration on add form
     if (this.pages.includes(this.from) && this.category) {
       this.categoryKey = this.category.name;
-      this.checkIfAdvanceConfig(this.category.name)
+      this.getCategoryConfigChildren(this.category.name)
     }
   }
 
-  checkIfAdvanceConfig(categoryName: string) {
+  getCategoryConfigChildren(categoryName: string) {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
@@ -99,6 +100,11 @@ export class ConfigurationGroupComponent implements OnInit {
         },
         error => {
           console.log('error ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
         }
       );
   }
@@ -117,16 +123,26 @@ export class ConfigurationGroupComponent implements OnInit {
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
           }
-
           this.upsertAdvanceConfiguration(this.groups, { category: category.key, group: category.group, config: data });
         },
         error => {
           console.log('error ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
         }
       );
   }
 
-  getChangeConfiguration(values: {}) {
+
+  /**
+   * Get the change config item values form show-child
+   * component and emit that value to parent component.
+   * @param values config item updated values
+   */
+  getChangedConfiguration(values: {}) {
     this.configFormValues = Object.assign({}, this.configFormValues, values);
     this.changedConfigEvent.emit(this.configFormValues)
   }
@@ -160,7 +176,8 @@ export class ConfigurationGroupComponent implements OnInit {
   }
 
   /**
-   *
+   * To update the values in the already existed group those are holding advance &
+   * security configuration, after fetching configuration from API
    * @param groups configuration groups
    * @param config advance cofiguration
    */

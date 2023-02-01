@@ -34,7 +34,7 @@ export class NotificationModalComponent implements OnInit {
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
-  // To hold api calls to execute
+  // To hold API calls to execute
   apiCallsStack = [];
 
   categoryCopy: any;
@@ -115,8 +115,12 @@ export class NotificationModalComponent implements OnInit {
             this.deliveryConfiguration = { key: `delivery${notificationName}`, config: data };
             this.deliveryConfigurationCopy = cloneDeep({ key: `delivery${notificationName}`, config: data });
           }
+          /** request completed */
+          this.ngProgress.done();
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -217,7 +221,7 @@ export class NotificationModalComponent implements OnInit {
       this.uploadScript(categoryName, files);
     }
 
-    if (!categoryName || isEmpty(configuration)) {
+    if (isEmpty(configuration)) {
       return;
     }
 
@@ -226,14 +230,14 @@ export class NotificationModalComponent implements OnInit {
   }
 
   save() {
-    if (!isEmpty(this.notificationChangedConfig)) {
+    if (!isEmpty(this.notificationChangedConfig) && this.category?.name) {
       this.updateConfiguration(this.category?.name, this.notificationChangedConfig);
     }
-    if (!isEmpty(this.ruleConfiguration)) {
+    if (!isEmpty(this.ruleConfiguration) && this.ruleConfiguration?.key) {
       this.updateConfiguration(this.ruleConfiguration?.key, this.rulePluginChangedConfig);
     }
 
-    if (!isEmpty(this.deliveryConfiguration)) {
+    if (!isEmpty(this.deliveryConfiguration) && this.deliveryConfiguration?.key) {
       this.updateConfiguration(this.deliveryConfiguration?.key, this.deliveryPluginChangedConfig);
     }
 

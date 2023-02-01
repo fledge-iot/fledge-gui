@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { AlertService } from './alert.service';
+import { ProgressBarService } from './progress-bar.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,10 @@ import { AlertService } from './alert.service';
 export class FileUploaderService {
 
   private CATEGORY_URL = environment.BASE_URL + 'category';
-  constructor(private http: HttpClient, private alertService: AlertService) { }
+  constructor(
+    private http: HttpClient,
+    private alertService: AlertService,
+    private ngProgress: ProgressBarService) { }
 
   public uploadConfigurationScript(name: string, files: any[]) {
     files.forEach(data => {
@@ -24,12 +28,17 @@ export class FileUploaderService {
       const fileName = (file.name.substring(file.name.lastIndexOf("/") + 1)).replace(`${name.toLowerCase()}_${configProperty.toLowerCase()}_`, '');
       const formData = new FormData();
       formData.append('script', file, fileName);
+      /** request started */
+      this.ngProgress.start();
       this.uploadFile(name, configProperty, formData)
         .subscribe(() => {
           this.alertService.success('Script uploaded successfully.');
+          /** request done */
+          this.ngProgress.done();
         },
           error => {
-
+            /** request done */
+            this.ngProgress.done();
             if (error.status === 0) {
               console.log('service down ', error);
             } else {

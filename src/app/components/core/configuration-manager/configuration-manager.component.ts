@@ -218,17 +218,13 @@ export class ConfigurationManagerComponent implements OnInit {
     this.validConfigForm = false;
     /** request started */
     this.ngProgress.start();
-    // const categoryValues = [];
     this.configService.getCategory(categoryKey).
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          // categoryValues.push(data);
           const index = findIndex(this.categoryData, ['name', categoryKey]);
           this.categoryData[index] = { name: categoryKey, config: data, description: categoryDesc };
-          // clear edited config
-
         },
         error => {
           /** request completed */
@@ -274,10 +270,9 @@ export class ConfigurationManagerComponent implements OnInit {
     this.configService.
       updateBulkConfiguration(categoryName, configuration)
       .subscribe(() => {
-        this.ngProgress.done();
-        this.alertService.success('Configuration updated successfully.', true);
         this.changedConfig = null;
         this.validConfigForm = false;
+        this.alertService.success('Configuration updated successfully.', true);
         this.ngProgress.done();
       },
         (error) => {

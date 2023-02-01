@@ -64,7 +64,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   changedFilterConfig: any;
   advancedConfiguration = [];
 
-  // To hold api calls to execute
+  // To hold API calls to execute
   apiCallsStack = [];
 
   constructor(
@@ -529,7 +529,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.uploadScript(categoryName, files);
     }
 
-    if (!categoryName || isEmpty(configuration)) {
+    if (isEmpty(configuration)) {
       return;
     }
 
@@ -539,10 +539,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   save() {
     this.saveScheduleFields(this.form);
-    if (!isEmpty(this.changedConfig)) {
+    if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig);
     }
-    if (!isEmpty(this.changedFilterConfig)) {
+    if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
       this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
     }
 

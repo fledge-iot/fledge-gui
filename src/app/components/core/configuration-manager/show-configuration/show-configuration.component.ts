@@ -22,7 +22,7 @@ export class ShowConfigurationComponent implements OnInit {
   form: FormGroup;
 
   @ViewChildren('scriptCode') codeMirrorCmpt: QueryList<CodemirrorComponent>;
-  @ViewChildren('jsonEditor') josnElements: QueryList<CodemirrorComponent>;
+  @ViewChildren('jsonEditor') jsonElements: QueryList<CodemirrorComponent>;
   @ViewChildren('codeEditor') codeElements: QueryList<CodemirrorComponent>;
 
   constructor(private fb: FormBuilder,
@@ -39,8 +39,8 @@ export class ShowConfigurationComponent implements OnInit {
         this.configControlService.checkConfigItemOnGroupChange(this.form, this.fullConfiguration);
       }
 
-      if (this.josnElements) {
-        this.josnElements.forEach((jsonComp: CodemirrorComponent) => {
+      if (this.jsonElements) {
+        this.jsonElements.forEach((jsonComp: CodemirrorComponent) => {
           jsonComp.codeMirror.refresh();
         });
       }
@@ -108,10 +108,10 @@ export class ShowConfigurationComponent implements OnInit {
   public fileChange(event, config: ConfigurationBase<string>) {
     const fileReader = new FileReader();
     const fi = event.target;
-    if (fi.files.length !== 0) {
+    if (fi?.files?.length !== 0) {
       config.validFileExtension = true;
     }
-    if (fi.files && fi.files[0]) {
+    if (fi?.files && fi?.files[0]) {
       const file = fi.files[0];
       fileReader.onload = () => {
         config.value = fileReader.result.toString();

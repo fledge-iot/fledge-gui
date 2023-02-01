@@ -449,7 +449,7 @@ export class ConfigurationControlService {
     try {
       const e = eval(expression);
       if (typeof (e) !== 'boolean') {
-        console.log('Validity expression', expression, 'for', key, 'evlauted to non-boolean value ', e);
+        console.log('Validity expression', expression, 'for', key, 'evaluated to non-boolean value ', e);
       }
       return e === false ? false : true;
     } catch (e) {
