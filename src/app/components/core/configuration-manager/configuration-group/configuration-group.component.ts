@@ -1,7 +1,9 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
 import { ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep } from 'lodash';
+import { TabHeader } from './tab-header-slider';
+
 
 @Component({
   selector: 'app-configuration-group',
@@ -13,6 +15,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   selectedGroup = 'Default Configuration';
   @Input() category;
   groups = [];
+
+  tabs: TabHeader;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -35,167 +39,22 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     public rolesService: RolesService,
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
-  ) { }
+  ) {
+
+
+  }
 
   ngAfterViewInit() {
-
-    var SETTINGS = {
-      navBarTravelling: false,
-      navBarTravelDirection: "",
-      navBarTravelDistance: 150
-    }
-
-    var colours = {
-      0: "#fead00"
-      /*
-      Add Numbers And Colors if you want to make each tab's indicator in different color for eg:
-      1: "#FF0000",
-      2: "#00FF00", and so on...
-      */
-    }
-
-    var AdvancerLeft2 = document.getElementById("AdvancerLeft2");
-    var AdvancerRight2 = document.getElementById("AdvancerRight2");
-
-    var Indicator2 = document.getElementById("Indicator2");
-    var ProductNav2 = document.getElementById("ProductNav2");
-    var ProductNavContents2 = document.getElementById("ProductNavContents2");
-    ProductNav2.setAttribute("data-overflowing", this.determineOverflow(ProductNavContents2, ProductNav2));
-    this.moveIndicator2(ProductNav2.querySelector("[aria-selected=\"true\"]"), colours[0]);
-    // Handle the scroll of the horizontal container
-    var last_known_scroll_position = 0;
-    var ticking = false;
-
-    ProductNav2.addEventListener("scroll", () => {
-      last_known_scroll_position = window.scrollY;
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          this.doSomething();
-          ticking = false;
-        });
-      }
-      ticking = true;
-    });
-
-    AdvancerLeft2.addEventListener("click", () => {
-      // If in the middle of a move return
-      if (SETTINGS.navBarTravelling === true) {
-        return;
-      }
-      // If we have content overflowing both sides or on the left
-      if (this.determineOverflow(ProductNavContents2, ProductNav2) === "left" || this.determineOverflow(ProductNavContents2, ProductNav2) === "both") {
-        // Find how far this panel has been scrolled
-        var availableScrollLeft = ProductNav2.scrollLeft;
-        // If the space available is less than two lots of our desired distance, just move the whole amount
-        // otherwise, move by the amount in the settings
-        if (availableScrollLeft < SETTINGS.navBarTravelDistance * 2) {
-          ProductNavContents2.style.transform = "translateX(" + availableScrollLeft + "px)";
-        } else {
-          ProductNavContents2.style.transform = "translateX(" + SETTINGS.navBarTravelDistance + "px)";
-        }
-        // We do want a transition (this is set in CSS) when moving so remove the class that would prevent that
-        ProductNavContents2.classList.remove("ProductNav_Contents-no-transition");
-        // Update our settings
-        SETTINGS.navBarTravelDirection = "left";
-        SETTINGS.navBarTravelling = true;
-      }
-      // Now update the attribute in the DOM
-      ProductNav2.setAttribute("data-overflowing", this.determineOverflow(ProductNavContents2, ProductNav2));
-    });
-
-    AdvancerRight2.addEventListener("click", () => {
-      // If in the middle of a move return
-      if (SETTINGS.navBarTravelling === true) {
-        return;
-      }
-      // If we have content overflowing both sides or on the right
-      if (this.determineOverflow(ProductNavContents2, ProductNav2) === "right" || this.determineOverflow(ProductNavContents2, ProductNav2) === "both") {
-        // Get the right edge of the container and content
-        var navBarRightEdge = ProductNavContents2.getBoundingClientRect().right;
-        var navBarScrollerRightEdge = ProductNav2.getBoundingClientRect().right;
-        // Now we know how much space we have available to scroll
-        var availableScrollRight = Math.floor(navBarRightEdge - navBarScrollerRightEdge);
-        // If the space available is less than two lots of our desired distance, just move the whole amount
-        // otherwise, move by the amount in the settings
-        if (availableScrollRight < SETTINGS.navBarTravelDistance * 2) {
-          ProductNavContents2.style.transform = "translateX(-" + availableScrollRight + "px)";
-        } else {
-          ProductNavContents2.style.transform = "translateX(-" + SETTINGS.navBarTravelDistance + "px)";
-        }
-        // We do want a transition (this is set in CSS) when moving so remove the class that would prevent that
-        ProductNavContents2.classList.remove("ProductNav_Contents-no-transition");
-        // Update our settings
-        SETTINGS.navBarTravelDirection = "right";
-        SETTINGS.navBarTravelling = true;
-      }
-      // Now update the attribute in the DOM
-      ProductNav2.setAttribute("data-overflowing", this.determineOverflow(ProductNavContents2, ProductNav2));
-    });
-
-    ProductNavContents2.addEventListener(
-      "transitionend",
-      function () {
-        // get the value of the transform, apply that to the current scroll position (so get the scroll pos first) and then remove the transform
-        var styleOfTransform = window.getComputedStyle(ProductNavContents2, null);
-        var tr = styleOfTransform.getPropertyValue("-webkit-transform") || styleOfTransform.getPropertyValue("transform");
-        // If there is no transition we want to default to 0 and not null
-        var amount = Math.abs(parseInt(tr.split(",")[4]) || 0);
-        ProductNavContents2.style.transform = "none";
-        ProductNavContents2.classList.add("ProductNav_Contents-no-transition");
-        // Now lets set the scroll position
-        if (SETTINGS.navBarTravelDirection === "left") {
-          ProductNav2.scrollLeft = ProductNav2.scrollLeft - amount;
-        } else {
-          ProductNav2.scrollLeft = ProductNav2.scrollLeft + amount;
-        }
-        SETTINGS.navBarTravelling = false;
-      },
-      false
-    );
-
-
+    const groupNavContents = document.getElementById("groupNavContents");
+    this.tabs = new TabHeader(groupNavContents);
   }
 
-  doSomething() {
-
-    var ProductNav2 = document.getElementById("ProductNav2");
-    var ProductNavContents2 = document.getElementById("ProductNavContents2");
-    ProductNav2.setAttribute("data-overflowing", this.determineOverflow(ProductNavContents2, ProductNav2));
+  left() {
+    this.tabs.AdvancerLeft2.click();
   }
 
-  // var count = 0;
-  moveIndicator2(item, color) {
-    var Indicator2 = document.getElementById("Indicator2");
-    var textPosition = item.getBoundingClientRect();
-    var ProductNavContents2 = document.getElementById("ProductNavContents2");
-    var container = ProductNavContents2.getBoundingClientRect().left;
-    var distance = textPosition.left - container;
-    var scroll = ProductNavContents2.scrollLeft;
-    Indicator2.style.transform = "translateX(" + (distance + scroll) + "px) scaleX(" + textPosition.width * 0.01 + ")";
-    // count = count += 100;
-    // Indicator.style.transform = "translateX(" + count + "px)";
-
-    if (color) {
-      Indicator2.style.backgroundColor = color;
-    }
-  }
-
-  determineOverflow(content, container) {
-    var containerMetrics = container.getBoundingClientRect();
-    var containerMetricsRight = Math.floor(containerMetrics.right);
-    var containerMetricsLeft = Math.floor(containerMetrics.left);
-    var contentMetrics = content.getBoundingClientRect();
-    var contentMetricsRight = Math.floor(contentMetrics.right);
-    var contentMetricsLeft = Math.floor(contentMetrics.left);
-    if (containerMetricsLeft > contentMetricsLeft && containerMetricsRight < contentMetricsRight) {
-      return "both";
-    } else if (contentMetricsLeft < containerMetricsLeft) {
-      return "left";
-    } else if (contentMetricsRight > containerMetricsRight) {
-      return "right";
-    } else {
-      return "none";
-    }
+  right() {
+    this.tabs.AdvancerRight2.click();
   }
 
   ngOnChanges() {

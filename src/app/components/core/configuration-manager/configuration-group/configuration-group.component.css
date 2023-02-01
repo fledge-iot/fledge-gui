@@ -4,13 +4,13 @@
   }
 }
 
-.config-div {
+/* .config-div {
   margin-top: 1vw;
-}
+} */
 
-.tooltip.is-tooltip-multiline::before {
+/* .tooltip.is-tooltip-multiline::before {
   min-width: 16rem !important;
-}
+} */
 
 .highlight {
   border: 1px solid transparent;
@@ -25,11 +25,13 @@
 }
 
 .tabs {
+  margin-right: auto;
+  margin-left: auto;
   margin-bottom: 0px !important;
 }
 
 
- #ProductNav2 .nav {
+ #group_navigation .nav {
   display: inherit;
   flex-wrap: inherit;
   padding-left: inherit;
@@ -38,13 +40,13 @@
 }
 
 /*--- Wrap Up ---*/
-.ProductNav_Wrapper {
+.configuration_group_wrapper {
   position: relative;
-  padding: 0 11px;
+  /* padding: 0 1px; */
   box-sizing: border-box;
 }
 
-.ProductNav {
+.groupNav {
   /* Make this scrollable when needed */
   overflow-x: auto;
   /* We don't want vertical scrolling */
@@ -57,24 +59,24 @@
   position: relative;
   font-size: 0;
 }
-.js .ProductNav {
+.js .groupNav {
   /* Make an auto-hiding scroller for the 3 people using a IE */
-  -ms-overflow-style: -ms-autohiding-scrollbar;
+  /* -ms-overflow-style: -ms-autohiding-scrollbar; */
   /* Remove the default scrollbar for WebKit implementations */
 }
-.js .ProductNav::-webkit-scrollbar {
-  display: none;
+.js .groupNav::-webkit-scrollbar {
+  /* display: none; */
   /* positioning context for advancers */
 }
-.ProductNav_Contents {
+.groupNav_Contents {
   float: left;
   transition: transform 0.2s ease-in-out;
   position: relative;
 }
-.ProductNav_Contents-no-transition {
+.groupNav_Contents-no-transition {
   transition: none;
 }
-.ProductNav_Link {
+/* .groupNav_Link {
   text-decoration: none;
   color: #7f868b;
   font-size: 0.85rem;
@@ -83,24 +85,24 @@
   vertical-align: middle;
   padding: 8px 12px;
   line-height: 1.35;
-}
-.ProductNav_Link[aria-selected="true"] {
+} */
+/* .groupNav_Link[aria-selected="true"] {
   color: #6a2c79;
-}
+} */
 
 
 
 .Advancer {
   /* Reset the button */
-  appearance: none;
-  background: transparent;
-  padding: 0;
+  /* appearance: none; */
+  /* background: transparent; */
+  /* padding: 0; */
   border: 0;
   position: absolute;
   top: 0;
   bottom: 0;
   opacity: 0;
-  transition: opacity 0.3s;
+  /* transition: opacity 0.3s; */
 }
 .Advancer:focus {
   outline: 0;
@@ -122,12 +124,12 @@
 [data-overflowing="both"] ~ .Advancer_Right, [data-overflowing="right"] ~ .Advancer_Right {
   opacity: 1;
 }
-.Advancer_Icon {
-  width: 12px;
+/* .Advancer_Icon {
+  width: 15px;
   height: 44px;
   fill: #bbb;
-}
-.ProductNav_Indicator {
+} */
+/* .groupNav_Indicator {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -136,6 +138,6 @@
   background-color: transparent;
   transform-origin: 0 0;
   transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
-}
+} */
 
 
