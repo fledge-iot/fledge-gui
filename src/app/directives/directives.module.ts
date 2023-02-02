@@ -7,13 +7,14 @@ import { EqualValidatorDirective } from './equal-validator.directive';
 import { InputMaskDirective } from './input-mask.directive';
 import { InputTrimDirective } from './input-trim.directive';
 import { NumberOnlyDirective } from './number-only.directive';
+import { RestrictDoubleQuoteDirective } from './restrict-double-quote.directive';
 import { AccessControlDirective } from './access-control.directive';
 
 @NgModule({
   imports: [],
-  declarations: [NumberOnlyDirective, CustomMinDirective, EqualValidatorDirective, InputMaskDirective,
+  declarations: [NumberOnlyDirective, RestrictDoubleQuoteDirective, CustomMinDirective, EqualValidatorDirective, InputMaskDirective,
     InputTrimDirective, CustomMinDirective, CustomMaxDirective, CustomJsonDirective, AccessControlDirective],
-  exports: [NumberOnlyDirective, EqualValidatorDirective, InputMaskDirective, InputTrimDirective,
+  exports: [NumberOnlyDirective, RestrictDoubleQuoteDirective, EqualValidatorDirective, InputMaskDirective, InputTrimDirective,
     CustomMinDirective, CustomMaxDirective, CustomJsonDirective, AccessControlDirective]
 })
 export class DirectivesModule { }

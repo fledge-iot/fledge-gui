@@ -82,7 +82,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" type="text" placeholder="name" formControlName="name"
+                  <input class="input" type="text" placeholder="name" formControlName="name" appRestrictDoubleQuote
                     (change)="validateTaskName($event)" required>
                   <span *ngIf="!isValidName || (name.errors?.required && name.touched)" class="help is-danger">
                     <sup>*</sup>North instance name is required.

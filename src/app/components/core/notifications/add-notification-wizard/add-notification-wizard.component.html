@@ -45,7 +45,7 @@
               <div class="field">
                 <div class="control">
                   <input class="input" id="name" type="text" placeholder="name" #name formControlName="name" required
-                    (input)="validateNotificationName($event)">
+                    (input)="validateNotificationName($event)" appRestrictDoubleQuote>
                   <small *ngIf="!isValidName" class="help is-danger level-left">Notification instance name is
                     required</small>
                 </div>
