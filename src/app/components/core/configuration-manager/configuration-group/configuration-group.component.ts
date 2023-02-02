@@ -50,11 +50,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   left() {
-    this.tabs.AdvancerLeft2.click();
+    this.tabs.scrollToLeft();
   }
 
   right() {
-    this.tabs.AdvancerRight2.click();
+    this.tabs.scrollToRight();
   }
 
   ngOnChanges() {

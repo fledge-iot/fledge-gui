@@ -5,7 +5,7 @@
         <div class="tabs" *ngIf="from !== 'config-manager'">
           <ul>
             <li class="groupNav_Link" *ngFor="let g of groups;let i = index"
-              [ngClass]="{'is-active': selectedGroup == g.group}" aria-selected="true">
+              [ngClass]="{'is-active': selectedGroup == g.group}" [aria-selected]="selectedGroup == g.group">
               <h6 class="is-6 has-text-weight-semibold">
                 <a (click)="selectTab(g.group)">
                   {{g.group}}
@@ -25,19 +25,11 @@
         <span id="Indicator2" class="groupNav_Indicator"></span>
       </div>
     </nav>
-    <button (click)="left()" id="AdvancerLeft2" class="Advancer Advancer_Left" type="button">
+    <button (click)="left()" id="leftScroll" class="Advancer Advancer_Left" type="button">
       <i class="fas fa-angle-left fa-xl"></i>
-      <!-- <svg class="Advancer_Icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 551 1024">
-        <path
-          d="M445.44 38.183L-2.53 512l447.97 473.817 85.857-81.173-409.6-433.23v81.172l409.6-433.23L445.44 38.18z" />
-      </svg> -->
     </button>
-    <button (click)="right()" id="AdvancerRight2" class="Advancer Advancer_Right" type="button">
+    <button (click)="right()" id="rightScroll" class="Advancer Advancer_Right" type="button">
       <i class="fas fa-angle-right fa-xl"></i>
-      <!-- <svg class="Advancer_Icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 551 1024">
-        <path
-          d="M105.56 985.817L553.53 512 105.56 38.183l-85.857 81.173 409.6 433.23v-81.172l-409.6 433.23 85.856 81.174z" />
-      </svg> -->
     </button>
   </div>
 
@@ -68,5 +60,5 @@
         [serviceStaus]="serviceStatus" [serviceName]="category?.name" [pluginName]="plugin">
       </app-plugin-persist-data>
     </ng-container>
-
   </div>
+</div>
