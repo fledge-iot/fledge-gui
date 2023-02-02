@@ -16,7 +16,6 @@ export class RestrictDoubleQuoteDirective {
 
   isDoubleQuote(event) {
     const charCode = (event.which) ? event.which : event.keyCode;
-    console.log('appRestrictDoubleQuote', charCode);
     if (charCode === 34) {
       return false;
     }
