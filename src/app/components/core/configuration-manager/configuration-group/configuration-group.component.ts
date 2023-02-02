@@ -65,6 +65,16 @@ export class ConfigurationGroupComponent implements OnInit {
         return { category: this.category.name, group: "Default Configuration", config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
       }
     }).value();
+
+    // sort group items having default configuration as first element
+    this.groups = this.groups
+      .sort((a, b) => a.group.localeCompare(b.group))
+      .reduce((acc, e) => {
+        e.group === 'Default Configuration' ? acc.unshift(e) : acc.push(e);
+        return acc;
+      }, []);
+
+    console.log(this.groups);
   }
 
   /**
