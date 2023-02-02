@@ -62,6 +62,12 @@
                     </div>
                   </ng-container>
 
+                  <ngx-codemirror *ngSwitchCase="'CODE'" [formControlName]="configuration.key" #codeEditor
+                    [ngClass]="{'readonly-editor': form.controls[configuration.key]?.status === 'DISABLED' }"
+                    [options]="configuration.editorOptions" [autoFocus]="true"
+                    [jsonValue]="form.controls[configuration.key]">
+                  </ngx-codemirror>
+
                   <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
                     <div class="control">
                       <input #pwd class="input is-fullwidth is-small" [formControlName]="configuration.key"
@@ -110,5 +116,52 @@
       </ng-container>
     </div>
   </ng-container>
-  <ng-template #staticView></ng-template>
+  <!-- Read only form for View user -->
+  <ng-template #staticView>
+    <div class="column">
+      <ng-container *ngFor="let configuration of configurations$ | async">
+        <div class="config-div" *ngIf="configuration.readonly != 'true'">
+          <div class="field is-horizontal">
+            <div class="field-label has-text-left">
+              <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label"
+                [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
+                {{configuration.label}}
+              </label>
+            </div>
+            <div class="field-body">
+              <div [ngSwitch]="configuration.controlType" class="field" #cdmrField
+                [style.max-width.px]="['SCRIPT'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
+                [ngClass]="{'codemirror-field': ['SCRIPT'].includes(configuration.controlType)}">
+
+                <label *ngSwitchCase="'CHECKBOX'" class="checkbox" [id]="configuration.key">
+                  <input [type]="configuration.type" [checked]="configuration.value.toLowerCase() == 'true'"
+                    disabled="true" />
+                </label>
+
+                <ngx-codemirror *ngSwitchCase="'JSON'" #jsonEditor [options]="configuration.editorOptions"
+                  [disabled]="true" [ngModel]="configuration.value" class="readonly-editor">
+                </ngx-codemirror>
+
+                <ng-container *ngSwitchCase="'SCRIPT'">
+                  <ngx-codemirror #scriptCode [ngModel]="configuration.value" [options]="configuration.editorOptions"
+                    class="readonly-editor" [disabled]="true">
+                  </ngx-codemirror>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'CODE'">
+                  <ngx-codemirror [ngModel]="configuration.value" [options]="configuration.editorOptions"
+                    class="readonly-editor" [disabled]="true">
+                  </ngx-codemirror>
+                </ng-container>
+
+                <input *ngSwitchDefault [id]="configuration.key" [type]="configuration.type"
+                  class="input is-fullwidth is-small is-static has-text-grey-dark" type="text"
+                  [value]='(configuration.value ? configuration.value : "None")' readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </ng-template>
 </div>

@@ -64,7 +64,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   changedFilterConfig: any;
   advancedConfiguration = [];
 
-  // To hold api calls to execute
+  // To hold API calls to execute
   apiCallsStack = [];
 
   constructor(
@@ -178,11 +178,17 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       modal.classList.add('is-active');
       return;
     }
-    this.notify.emit(true);
     if (this.form !== undefined) {
       this.form.reset();
     }
+    this.pluginConfiguration = {};
+    this.filterConfiguration = {};
+    this.changedConfig = {};
+    this.changedFilterConfig = {};
+    this.advancedConfiguration = [];
+    this.apiCallsStack = [];
     this.category = null;
+    this.notify.emit(false);
     modal.classList.remove('is-active');
   }
 
@@ -523,7 +529,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.uploadScript(categoryName, files);
     }
 
-    if (!categoryName || isEmpty(configuration)) {
+    if (isEmpty(configuration)) {
       return;
     }
 
@@ -533,10 +539,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   save() {
     this.saveScheduleFields(this.form);
-    if (!isEmpty(this.changedConfig)) {
+    if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig);
     }
-    if (!isEmpty(this.changedFilterConfig)) {
+    if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
       this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
     }
 
@@ -556,6 +562,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.form.reset();
         this.apiCallsStack = [];
       });
+    } else {
+      this.toggleModal(false);
     }
   }
 
@@ -566,5 +574,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+    if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)
+      && isEmpty(this.changedFilterConfig)) {
+      this.toggleModal(false);
+    }
   }
 }

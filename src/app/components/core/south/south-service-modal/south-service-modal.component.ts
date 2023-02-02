@@ -88,7 +88,7 @@ export class SouthServiceModalComponent implements OnInit {
 
   ngOnInit() { }
 
-  getCateogryData() {
+  getCategoryData() {
     this.getCategory();
     this.getFilterPipeline();
   }
@@ -128,13 +128,13 @@ export class SouthServiceModalComponent implements OnInit {
     }
 
     if (this.isAddFilterWizard) {
-      this.getCateogryData();
+      this.getCategoryData();
       this.isAddFilterWizard = false;
     }
 
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
-      this.getCateogryData();
+      this.getCategoryData();
       this.validConfigurationForm = true;
       this.validFilterConfigForm = true;
       this.notify.emit(false);
@@ -146,6 +146,7 @@ export class SouthServiceModalComponent implements OnInit {
       return;
     }
     this.pluginConfiguration = {};
+    this.filterConfiguration = {};
     this.changedConfig = {};
     this.changedFilterConfig = {};
     this.advancedConfiguration = [];
@@ -494,7 +495,7 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   /**
-  * Get edited south service advance configuration
+  * Get edited south service advanced & security configuration
   * @param changedConfiguration changed configuration
   */
   getChangedAdvanceConfiguration(advanceConfig: any) {
@@ -535,7 +536,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.uploadScript(categoryName, files);
     }
 
-    if (!categoryName || isEmpty(configuration)) {
+    if (isEmpty(configuration)) {
       return;
     }
     this.apiCallsStack.push(this.configService.
@@ -549,16 +550,19 @@ export class SouthServiceModalComponent implements OnInit {
    */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-    this.getCateogryData();
+    if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)
+      && isEmpty(this.changedFilterConfig)) {
+      this.toggleModal(false);
+    }
   }
 
   save() {
     this.saveServiceChanges();
-    if (!isEmpty(this.changedConfig)) {
-      this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig);
+    if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
+      this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig);
     }
-    if (!isEmpty(this.changedFilterConfig)) {
-      this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
+    if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
+      this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig);
     }
 
     if (!isEmpty(this.advancedConfiguration)) {
@@ -576,6 +580,8 @@ export class SouthServiceModalComponent implements OnInit {
         this.toggleModal(false);
         this.apiCallsStack = [];
       });
+    } else {
+      this.toggleModal(false);
     }
   }
 }

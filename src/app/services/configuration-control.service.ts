@@ -102,6 +102,10 @@ export class ScriptConfig extends ConfigurationBase<string> {
   override validFileExtension = true;
 }
 
+export class CodeConfig extends ConfigurationBase<string> {
+  override controlType = 'CODE';
+}
+
 export class PasswordConfig extends ConfigurationBase<string> {
   override controlType = 'PASSWORD';
 }
@@ -274,6 +278,20 @@ export class ConfigurationControlService {
             validity: element.validity
           }));
           break;
+        case 'CODE':
+          configurations.push(new CodeConfig({
+            key: key,
+            type: 'code',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            editorOptions: this.setEditorConfig(key),
+            validity: element.validity
+          }));
+          break;
         case 'IPV4':
         case 'IPV6':
         default:
@@ -431,7 +449,7 @@ export class ConfigurationControlService {
     try {
       const e = eval(expression);
       if (typeof (e) !== 'boolean') {
-        console.log('Validity expression', expression, 'for', key, 'evlauted to non-boolean value ', e);
+        console.log('Validity expression', expression, 'for', key, 'evaluated to non-boolean value ', e);
       }
       return e === false ? false : true;
     } catch (e) {

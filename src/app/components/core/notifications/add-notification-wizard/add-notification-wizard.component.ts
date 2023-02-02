@@ -355,7 +355,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   }
 
   /**
- *  Get default configuration of a selected plugin
+ *  Get default configuration of the selected plugin
  */
   private getRulePluginConfiguration(): void {
     const plugin = this.notificationRulePlugins.find(p => p.name === this.payload.rule);

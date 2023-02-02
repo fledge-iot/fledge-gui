@@ -1,7 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener } from '@angular/core';
-
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, HostListener } from '@angular/core';
 import { isEmpty, cloneDeep } from 'lodash';
-
 import {
   ConfigurationService, AlertService,
   ProgressBarService,
@@ -20,7 +18,7 @@ import { forkJoin, of } from 'rxjs';
   templateUrl: './notification-modal.component.html',
   styleUrls: ['./notification-modal.component.css']
 })
-export class NotificationModalComponent implements OnInit, OnChanges {
+export class NotificationModalComponent implements OnInit {
 
   @Input() notification: { notification: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -36,7 +34,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
 
-  // To hold api calls to execute
+  // To hold API calls to execute
   apiCallsStack = [];
 
   categoryCopy: any;
@@ -54,18 +52,18 @@ export class NotificationModalComponent implements OnInit, OnChanges {
 
   ngOnInit() { }
 
-  ngOnChanges() {
-    if (this.notification !== undefined) {
-      this.getCategory();
-      this.getRuleConfiguration();
-      this.getDeliveryConfiguration();
-    }
-  }
-
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
       this.toggleModal(false);
+    }
+  }
+
+  getNotificationCategory() {
+    if (this.notification) {
+      this.getCategory();
+      this.getRuleConfiguration();
+      this.getDeliveryConfiguration();
     }
   }
 
@@ -75,7 +73,15 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       modalWindow.classList.add('is-active');
       return;
     }
+
+    this.rulePluginChangedConfig = {};
+    this.deliveryPluginChangedConfig = {};
+    this.notificationChangedConfig = {};
+    this.apiCallsStack = [];
+    this.category = null;
     this.notify.emit(false);
+    this.ruleConfiguration = null;
+    this.deliveryConfiguration = null;
     modalWindow.classList.remove('is-active');
   }
 
@@ -109,8 +115,12 @@ export class NotificationModalComponent implements OnInit, OnChanges {
             this.deliveryConfiguration = { key: `delivery${notificationName}`, config: data };
             this.deliveryConfigurationCopy = cloneDeep({ key: `delivery${notificationName}`, config: data });
           }
+          /** request completed */
+          this.ngProgress.done();
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -211,7 +221,7 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       this.uploadScript(categoryName, files);
     }
 
-    if (!categoryName || isEmpty(configuration)) {
+    if (isEmpty(configuration)) {
       return;
     }
 
@@ -220,14 +230,14 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   }
 
   save() {
-    if (!isEmpty(this.notificationChangedConfig)) {
+    if (!isEmpty(this.notificationChangedConfig) && this.category?.name) {
       this.updateConfiguration(this.category?.name, this.notificationChangedConfig);
     }
-    if (!isEmpty(this.ruleConfiguration)) {
+    if (!isEmpty(this.ruleConfiguration) && this.ruleConfiguration?.key) {
       this.updateConfiguration(this.ruleConfiguration?.key, this.rulePluginChangedConfig);
     }
 
-    if (!isEmpty(this.deliveryConfiguration)) {
+    if (!isEmpty(this.deliveryConfiguration) && this.deliveryConfiguration?.key) {
       this.updateConfiguration(this.deliveryConfiguration?.key, this.deliveryPluginChangedConfig);
     }
 
@@ -236,10 +246,11 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       forkJoin(this.apiCallsStack).subscribe(() => {
         this.ngProgress.done();
         this.alertService.success('Configuration updated successfully.', true);
-        this.notify.emit();
         this.toggleModal(false);
         this.apiCallsStack = [];
       });
+    } else {
+      this.toggleModal(false);
     }
   }
 
@@ -250,6 +261,10 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+    if (isEmpty(this.notificationChangedConfig) && isEmpty(this.rulePluginChangedConfig)
+      && isEmpty(this.deliveryPluginChangedConfig)) {
+      this.toggleModal(false);
+    }
   }
 
   goToLink() {

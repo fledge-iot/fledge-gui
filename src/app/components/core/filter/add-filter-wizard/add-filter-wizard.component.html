@@ -31,7 +31,7 @@
               <div class="field-body">
                 <div class="column">
                   <ng-select #pluginToInstall [items]="pluginData" [searchable]="pluginData.length"
-                    [placeholder]="placeholderText" notFoundText="No plugin available to install"
+                    [placeholder]="placeholderText" notFoundText="No plugins available to install"
                     [loading]="!pluginData.length && !stopLoading" (change)="filterSelectionChanged($event)"
                     bindLabel="pluginToInstall" formControlName="pluginToInstall">
                   </ng-select>
@@ -113,7 +113,7 @@
               <div class="column" style="padding: 0;">
                 <ng-select #pluginToInstall *ngIf="show" [items]="pluginData" [searchable]="pluginData.length"
                   [placeholder]="placeholderText" [loading]="!pluginData.length && !stopLoading"
-                  notFoundText="No plugin available to install" (change)="filterSelectionChanged($event)"
+                  notFoundText="No plugins available to install" (change)="filterSelectionChanged($event)"
                   bindLabel="pluginToInstall" formControlName="pluginToInstall">
                 </ng-select>
                 <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>

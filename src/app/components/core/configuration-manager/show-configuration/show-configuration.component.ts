@@ -22,7 +22,8 @@ export class ShowConfigurationComponent implements OnInit {
   form: FormGroup;
 
   @ViewChildren('scriptCode') codeMirrorCmpt: QueryList<CodemirrorComponent>;
-  @ViewChildren('jsonEditor') josnElements: QueryList<CodemirrorComponent>;
+  @ViewChildren('jsonEditor') jsonElements: QueryList<CodemirrorComponent>;
+  @ViewChildren('codeEditor') codeElements: QueryList<CodemirrorComponent>;
 
   constructor(private fb: FormBuilder,
     public rolesService: RolesService,
@@ -38,9 +39,15 @@ export class ShowConfigurationComponent implements OnInit {
         this.configControlService.checkConfigItemOnGroupChange(this.form, this.fullConfiguration);
       }
 
-      if (this.josnElements) {
-        this.josnElements.forEach((jsonComp: CodemirrorComponent) => {
+      if (this.jsonElements) {
+        this.jsonElements.forEach((jsonComp: CodemirrorComponent) => {
           jsonComp.codeMirror.refresh();
+        });
+      }
+
+      if (this.codeElements) {
+        this.codeElements.forEach((codeElmt: CodemirrorComponent) => {
+          codeElmt.codeMirror.refresh();
         });
       }
       // refresh codemirror editor to reflect changed values
@@ -80,8 +87,18 @@ export class ShowConfigurationComponent implements OnInit {
           if (this.form.valid) {
             this.event.emit(data);
           }
+        } else {
+          configuration.value = value.toString();
+          const file = this.createScriptFile(value.toString(), configuration);
+          this.event.emit({ [configuration.key]: file });
         }
       });
+  }
+
+  createScriptFile(value: string, config: any) {
+    const blob = new Blob([value], { type: 'plain/text' });
+    const file = new File([blob], config.fileName.substring(config.fileName.lastIndexOf(config + 1)));
+    return file;
   }
 
   setCheckboxState(key: string, evt: any) {
@@ -91,10 +108,10 @@ export class ShowConfigurationComponent implements OnInit {
   public fileChange(event, config: ConfigurationBase<string>) {
     const fileReader = new FileReader();
     const fi = event.target;
-    if (fi.files.length !== 0) {
+    if (fi?.files?.length !== 0) {
       config.validFileExtension = true;
     }
-    if (fi.files && fi.files[0]) {
+    if (fi?.files && fi?.files[0]) {
       const file = fi.files[0];
       fileReader.onload = () => {
         config.value = fileReader.result.toString();
@@ -105,7 +122,6 @@ export class ShowConfigurationComponent implements OnInit {
       if (ext !== 'py') {
         config.validFileExtension = false;
       } else {
-        console.log('file', file);
         config.fileName = file.name;
         config.file = file;
         this.event.emit({ [config.key]: config.file });

@@ -1,9 +1,8 @@
 import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
+import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep } from 'lodash';
 import { TabHeader } from './tab-header-slider';
-
 
 @Component({
   selector: 'app-configuration-group',
@@ -39,20 +38,20 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     public rolesService: RolesService,
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
-  ) {
-
-
-  }
+    private alertService: AlertService
+  ) { }
 
   ngAfterViewInit() {
     const groupNavContents = document.getElementById("groupNavContents");
     this.tabs = new TabHeader(groupNavContents);
   }
 
+  // left slider click
   left() {
     this.tabs.scrollToLeft();
   }
 
+  // right slider click
   right() {
     this.tabs.scrollToRight();
   }
@@ -64,8 +63,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   public updateCategroyConfig(config) {
     this.category.config = config;
-    this.getChildConfigData();
     this.categeryConfiguration();
+    this.getChildConfigData();
   }
 
   categeryConfiguration() {
@@ -82,6 +81,14 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return { category: this.category.name, group: "Default Configuration", config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
       }
     }).value();
+
+    // sort group items having default configuration as first element
+    this.groups = this.groups
+      .sort((a, b) => a.group.localeCompare(b.group))
+      .reduce((acc, e) => {
+        e.group === 'Default Configuration' ? acc.unshift(e) : acc.push(e);
+        return acc;
+      }, []);
   }
 
   /**
@@ -98,11 +105,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     // No advance configuration on add form
     if (this.pages.includes(this.from) && this.category) {
       this.categoryKey = this.category.name;
-      this.checkIfAdvanceConfig(this.category.name)
+      this.getCategoryConfigChildren(this.category.name)
     }
   }
 
-  checkIfAdvanceConfig(categoryName: string) {
+  getCategoryConfigChildren(categoryName: string) {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
@@ -117,6 +124,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         },
         error => {
           console.log('error ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
         }
       );
   }
@@ -135,16 +147,26 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
           }
-
           this.upsertAdvanceConfiguration(this.groups, { category: category.key, group: category.group, config: data });
         },
         error => {
           console.log('error ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
         }
       );
   }
 
-  getChangeConfiguration(values: {}) {
+
+  /**
+   * Get the change config item values form show-child
+   * component and emit that value to parent component.
+   * @param values config item updated values
+   */
+  getChangedConfiguration(values: {}) {
     this.configFormValues = Object.assign({}, this.configFormValues, values);
     this.changedConfigEvent.emit(this.configFormValues)
   }
@@ -178,7 +200,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   /**
-   *
+   * To update the values in the already existed group those are holding advance &
+   * security configuration, after fetching configuration from API
    * @param groups configuration groups
    * @param config advance cofiguration
    */

@@ -294,12 +294,10 @@ export class NotificationServiceModalComponent implements OnChanges {
   public getCategory(): void {
     /** request started */
     this.ngProgress.start();
-    // const categoryValues = [];
     this.configService.getCategory(this.notificationServiceName).
       subscribe(
         (data) => {
           if (!isEmpty(data)) {
-            // categoryValues.push(data);
             this.category = { name: this.notificationServiceName, config: data };
             this.categoryCopy = cloneDeep({ name: this.notificationServiceName, config: data });
           }
@@ -438,7 +436,7 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   save() {
     this.notificationStateUpdate();
-    if (!isEmpty(this.changedConfig)) {
+    if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
     }
     if (!isEmpty(this.advancedConfiguration)) {
@@ -461,7 +459,7 @@ export class NotificationServiceModalComponent implements OnChanges {
       this.uploadScript(categoryName, files);
     }
 
-    if (!categoryName || isEmpty(configuration)) {
+    if (isEmpty(configuration)) {
       return;
     }
 
