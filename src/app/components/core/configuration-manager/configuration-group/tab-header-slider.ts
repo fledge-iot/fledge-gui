@@ -116,17 +116,13 @@ export class TabHeader {
 
 
   determineOverflow(content, container) {
-    console.log('content', content);
-    console.log('container', container);
     const containerMetrics = container.getBoundingClientRect();
     const containerMetricsRight = Math.floor(containerMetrics.right);
     const containerMetricsLeft = Math.floor(containerMetrics.left);
-    console.log('containerMetrics', containerMetrics);
 
     const contentMetrics = content.getBoundingClientRect();
     const contentMetricsRight = Math.floor(contentMetrics.right);
     const contentMetricsLeft = Math.floor(contentMetrics.left);
-    console.log('content', contentMetrics);
 
     if (containerMetricsLeft > contentMetricsLeft && containerMetricsRight < contentMetricsRight) {
       return "both";
@@ -134,8 +130,7 @@ export class TabHeader {
       return "left";
     } else if ((contentMetricsRight) >= containerMetricsRight) {
       return "right";
-    }
-    else {
+    } else {
       return "none";
     }
   }

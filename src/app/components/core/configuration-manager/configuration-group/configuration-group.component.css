@@ -4,19 +4,11 @@
   }
 }
 
-/* .config-div {
-  margin-top: 1vw;
-} */
-
-/* .tooltip.is-tooltip-multiline::before {
-  min-width: 16rem !important;
-} */
-
 .highlight {
   border: 1px solid transparent;
   border-color: #dbdbdb;
   /* border-top-color: transparent!important; */
-  border-radius: 4px;
+  border-radius: 2px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
   position: relative;
@@ -30,21 +22,15 @@
   margin-bottom: 0px !important;
 }
 
-
  #group_navigation .nav {
   display: flex;
   flex-wrap: inherit;
-  /* padding-left: inherit; */
   margin-bottom: inherit;
-  /* list-style: inherit; */
-
-
 }
 
 /*--- Wrap Up ---*/
 .configuration_group_wrapper {
   position: relative;
-  /* padding: 0 1px; */
   box-sizing: border-box;
 }
 
@@ -61,38 +47,16 @@
   position: relative;
   /* font-size: 0; */
 }
-.js .groupNav {
-  /* Make an auto-hiding scroller for the 3 people using a IE */
-  /* -ms-overflow-style: -ms-autohiding-scrollbar; */
-  /* Remove the default scrollbar for WebKit implementations */
-}
-.js .groupNav::-webkit-scrollbar {
-  /* display: none; */
-  /* positioning context for advancers */
-}
+
 .groupNav_Contents {
   float: left;
-  overflow: auto;
+  padding-right: 10%;
   transition: transform 0.2s ease-in-out;
 }
+
 .groupNav_Contents-no-transition {
   transition: none;
 }
-/* .groupNav_Link {
-  text-decoration: none;
-  color: #7f868b;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: table-cell;
-  vertical-align: middle;
-  padding: 8px 12px;
-  line-height: 1.35;
-} */
-/* .groupNav_Link[aria-selected="true"] {
-  color: #6a2c79;
-} */
-
-
 
 .Advancer {
   /* Reset the button */
@@ -126,20 +90,6 @@
 [data-overflowing="both"] ~ .Advancer_Right, [data-overflowing="right"] ~ .Advancer_Right {
   opacity: 1;
 }
-/* .Advancer_Icon {
-  width: 15px;
-  height: 44px;
-  fill: #bbb;
-} */
-/* .groupNav_Indicator {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  width: 100px;
-  background-color: transparent;
-  transform-origin: 0 0;
-  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
-} */
+
 
 
