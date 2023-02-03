@@ -21,7 +21,8 @@
     <div class="steps-content">
       <form [formGroup]="serviceForm" validate>
         <div class="box step-content is-active" id="c-1">
-          <span *ngIf="plugin" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help" (click)="goToLink()">
+          <span *ngIf="plugin" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+            data-tooltip="Help" (click)="goToLink()">
             <i class="far fa-question-circle"></i>
           </span>
           <div *ngIf="showSpinner" class="app-loading">
@@ -92,10 +93,9 @@
           </div>
         </div>
         <div class="box step-content" id="c-2">
-          <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
-            [pluginInfo]="{name: plugin,  type:serviceType}" (onConfigChanged)="getChangedConfig($event)"
-            [pageId]="'wizard'">
-          </app-view-config-item>
+          <app-configuration-group *ngIf="configurationData" [category]="configurationData"
+            (changedConfigEvent)="getChangedConfig($event)" [from]="'add-service-form'"
+            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-3">
           <div class="field is-horizontal">
@@ -119,7 +119,7 @@
       </div>
       <div class="steps-action">
         <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
-          [disabled]="plugins.length === 0">Next</button>
+          [disabled]="serviceForm.invalid || !validConfigurationForm">Next</button>
       </div>
     </div>
   </div>

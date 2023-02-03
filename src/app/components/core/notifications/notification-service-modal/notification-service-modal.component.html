@@ -13,8 +13,7 @@
         (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="notification-form" id="notificationForm" #fg="ngForm" (ngSubmit)="fg.form.valid && saveChanges()"
-        novalidate>
+      <form name="notification-form" id="notificationForm" #fg="ngForm">
         <div *ngIf="!isNotificationServiceAvailable" class="columns is-mobile">
           <div class="column">
             <div class="field is-horizontal">
@@ -35,8 +34,10 @@
           </div>
         </div>
         <div>
-          <app-config-children #configChildComponent *ngIf="category" [category]="category" [from]="'notification'">
-          </app-config-children>
+          <app-configuration-group #configComponent *ngIf="category" [category]="category" [from]="'notification'"
+            (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validForm = $event"
+            (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)">
+          </app-configuration-group>
           <div class="columns">
             <div class="column">
               <div class="field is-horizontal" [ngClass]="{'enable-div': category}">
@@ -53,8 +54,6 @@
             </div>
           </div>
         </div>
-        <button *ngIf="rolesService.hasEditPermissions()" id="hidden-save"
-          class="is-hidden button is-small is-link is-pulled-right" form="notificationForm">Save</button>
       </form>
       <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditPermissions()">
       <div class="columns">
@@ -72,8 +71,9 @@
                 (click)="toggleModal(false)">Cancel</button>
             </p>
             <p class="control">
-              <button [disabled]="pluginInstallationState" class="button is-small is-link"
-                (click)="proxy()">{{btnText}}</button>
+              <button
+                [disabled]="pluginInstallationState || fg.controls['notificationServiceName']?.invalid || !validForm"
+                class="button is-small is-link" (click)="save()">{{btnText}}</button>
             </p>
           </div>
         </div>

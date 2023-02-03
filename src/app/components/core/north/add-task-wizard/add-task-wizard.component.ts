@@ -1,17 +1,15 @@
 import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
+import { cloneDeep, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 import {
   AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
-  ServicesApiService, ConfigurationService
+  ServicesApiService, FileUploaderService, ConfigurationControlService
 } from '../../../../services';
 import Utils from '../../../../utils';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
@@ -23,8 +21,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
-  public useProxy;
-
+  public pluginConfiguration: any;
   public isValidName = true;
   public isValidPlugin = true;
   public isSinglePlugin = true;
@@ -38,9 +35,9 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public showSpinner = false;
   public isService = false;
   private subscription: Subscription;
-  private filesToUpload = []
-
   public taskType = 'North';
+  // to hold child form state
+  validConfigurationForm = true;
 
   taskForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -51,7 +48,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
   @Input() categoryConfigurationData;
-  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
@@ -65,11 +61,11 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private schedulesService: SchedulesService,
     private router: Router,
     private ngProgress: ProgressBarService,
-    private validateFormService: ValidateFormService,
     private sharedService: SharedService,
     private servicesApiService: ServicesApiService,
     private docService: DocService,
-    private configService: ConfigurationService
+    private fileUploaderService: FileUploaderService,
+    private configurationControlService: ConfigurationControlService
   ) { }
 
   ngOnInit() {
@@ -119,10 +115,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Back';
         nxtButton.disabled = false;
-        if (!this.viewConfigItemComponent !== undefined) {
-          this.viewConfigItemComponent.passwordOnChangeFired = false;
-          this.viewConfigItemComponent.passwordMatched.value = true;
-        }
         break;
       case 3:
         nxtButton.textContent = 'Next';
@@ -205,11 +197,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         this.getConfiguration();
         break;
       case 2:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
-          return;
-        }
-        this.viewConfigItemComponent.callFromWizard();
-        document.getElementById('vci-proxy').click();
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -296,19 +283,17 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
    *  Get default configuration of a selected plugin
    */
   private getConfiguration(): void {
-    const config = this.plugins.map(p => {
-      if (p.name === this.payload.plugin) {
-        return p.config;
-      }
-    }).filter(value => value !== undefined);
-
-    // array to hold data to display on configuration page
-    this.configurationData = { value: config };
-    this.useProxy = 'true';
+    const plugin = this.plugins.find(p => p.name === this.payload.plugin);
+    if (plugin) {
+      this.configurationData = plugin;
+      this.pluginConfiguration = cloneDeep(plugin);
+    }
   }
 
-
   private addScheduledTask(payload) {
+    // extract script files to upload from final payload
+    const files = this.getScriptFilesToUpload(payload.config);
+
     this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
@@ -318,7 +303,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('North instance added successfully.', true);
-          this.uploadScript();
+          if (files.length > 0) {
+            const name = this.payload.name
+            this.uploadScript(name, files);
+          }
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -332,7 +320,14 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         });
   }
 
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration, true);
+  }
+
   public addService(payload) {
+    // extract script files to upload from final payload
+    const files = this.getScriptFilesToUpload(payload.config);
+
     this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
@@ -342,7 +337,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
-          this.uploadScript();
+          if (files.length > 0) {
+            const name = this.payload.name
+            this.uploadScript(name, files);
+          }
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -356,70 +354,21 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public uploadScript() {
-    this.filesToUpload.forEach(data => {
-      const configItem = data.key;
-      const file = data.value[0].script;
-      const formData = new FormData();
-      formData.append('script', file);
-      this.configService.uploadFile(this.payload.name, configItem, formData)
-        .subscribe(() => {
-          this.filesToUpload = [];
-          this.alertService.success('Script uploaded successfully.');
-        },
-          error => {
-            this.filesToUpload = [];
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
-    });
+  /**
+  * To upload script files of a configuration property
+  * @param categoryName name of the configuration category
+  * @param files : Scripts array to uplaod
+  */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
+
   /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
-  getChangedConfig(changedConfig) {
-    const defaultConfig = map(this.configurationData.value[0], (v, key) => ({ key, ...v }));
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.some(e2 => {
-        return e1.key === e2.key;
-      });
-    });
-
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
-
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => {
-      changedConfig.forEach(c => {
-        if (e.key === c.key) {
-          e.value = c.type === 'script' ? c.value : c.value.toString();
-        }
-      });
-    });
-
-    // final array to hold changed configuration
-    let finalConfig = [];
-    matchedConfigCopy.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload.push(item);
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
-        });
-      }
-    });
-
-    // convert finalConfig array in object of objects to pass in add task
-    finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    this.payload.config = finalConfig;
+  getChangedConfig(changedConfig: any) {
+    this.payload.config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration, true);;
   }
 
   validateTaskName(event) {

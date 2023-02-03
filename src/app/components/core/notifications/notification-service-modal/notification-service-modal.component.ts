@@ -3,16 +3,18 @@ import { FormBuilder, NgForm } from '@angular/forms';
 import {
   ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService,
-  RolesService
+  RolesService,
+  ConfigurationControlService,
+  FileUploaderService
 } from '../../../../services';
 
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import { isEmpty } from 'lodash';
+import { isEmpty, cloneDeep } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { Router } from '@angular/router';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
+import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -45,7 +47,12 @@ export class NotificationServiceModalComponent implements OnChanges {
   };
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
+  @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
+
+  changedConfig: any;
+  categoryCopy: { name: string; config: Object; };
+  advancedConfiguration = [];
+  validForm = true;
 
   constructor(
     private router: Router,
@@ -56,6 +63,8 @@ export class NotificationServiceModalComponent implements OnChanges {
     public servicesApiService: ServicesApiService,
     public alertService: AlertService,
     private docService: DocService,
+    private fileUploaderService: FileUploaderService,
+    private configurationControlService: ConfigurationControlService,
     private notificationService: NotificationsService,
     public rolesService: RolesService) { }
 
@@ -79,9 +88,13 @@ export class NotificationServiceModalComponent implements OnChanges {
   }
 
   refreshPageData() {
+    this.changedConfig = null;
+    this.validForm = true;
+    this.advancedConfiguration = [];
     this.getCategory();
-    if (this.configChildComponent) {
-      this.configChildComponent.getChildConfigData();
+    if (this.configComponent) {
+      this.configComponent?.updateCategroyConfig(this.categoryCopy.config);
+      this.configComponent.getChildConfigData();
     }
     this.enabled = this.isNotificationServiceEnabled;
   }
@@ -97,6 +110,8 @@ export class NotificationServiceModalComponent implements OnChanges {
     const notificationServiceModal = <HTMLDivElement>document.getElementById('notification-service-modal');
     if (notificationServiceModal) {
       if (isOpen) {
+        this.changedConfig = null;
+        this.advancedConfiguration = [];
         if (this.form.controls['notificationServiceName'] !== undefined) {
           this.form.controls['notificationServiceName'].markAsPristine();
           this.form.controls['enabled'].markAsUntouched();
@@ -118,8 +133,9 @@ export class NotificationServiceModalComponent implements OnChanges {
         this.service = res.services[0];
       },
         (error) => {
-          this.ngProgress.done();
-          console.log('service down ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          }
         });
   }
 
@@ -278,13 +294,12 @@ export class NotificationServiceModalComponent implements OnChanges {
   public getCategory(): void {
     /** request started */
     this.ngProgress.start();
-    const categoryValues = [];
     this.configService.getCategory(this.notificationServiceName).
       subscribe(
         (data) => {
           if (!isEmpty(data)) {
-            categoryValues.push(data);
-            this.category = { key: this.notificationServiceName, value: categoryValues };
+            this.category = { name: this.notificationServiceName, config: data };
+            this.categoryCopy = cloneDeep({ name: this.notificationServiceName, config: data });
           }
           /** request completed */
           this.ngProgress.done();
@@ -383,7 +398,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
   }
 
-  saveChanges() {
+  notificationStateUpdate() {
     this.state$.next(this.form.value);
     if (!this.isNotificationServiceAvailable) {
       this.addServiceEvent();
@@ -394,23 +409,90 @@ export class NotificationServiceModalComponent implements OnChanges {
       if (!this.isNotificationServiceEnabled && this.form.controls['enabled'].value) {
         this.enableNotificationService();
       }
-      this.toggleModal(false);
     }
   }
 
-  proxy() {
-    if (!this.form.valid) {
-      this.form.controls['notificationServiceName'].markAsTouched();
+  getChangedConfig(changedConfiguration: any) {
+    this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.categoryCopy);
+  }
+
+  /**
+  * Get scripts to upload from a configuration item
+  * @param configuration  edited configuration from show configuration page
+  * @returns script files to upload
+  */
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
+  }
+
+  /**
+   * To upload script files of a configuration property
+   * @param categoryName name of the configuration category
+   * @param files : Scripts array to uplaod
+   */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+  }
+
+  save() {
+    this.notificationStateUpdate();
+    if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
+      this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
+    }
+    if (!isEmpty(this.advancedConfiguration)) {
+      this.advancedConfiguration.forEach(element => {
+        this.updateConfiguration(element.key, element.config);
+      });
+    }
+
+    this.toggleModal(false);
+  }
+
+  /**
+   * Update configuration
+   * @param categoryName Name of the cateogry
+   * @param configuration category updated configuration
+   */
+  updateConfiguration(categoryName: string, configuration: any) {
+    const files = this.getScriptFilesToUpload(configuration);
+    if (files.length > 0) {
+      this.uploadScript(categoryName, files);
+    }
+
+    if (isEmpty(configuration)) {
       return;
     }
 
-    const cel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
-    for (const e of <any>cel) {
-      e.click();
-    }
+    this.configService.
+      updateBulkConfiguration(categoryName, configuration)
+      .subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Configuration updated successfully.', true);
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
 
-    document.getElementById('hidden-save').click();
-    this.notificationService.notifyServiceEmitter.next({ isConfigChanged: true });
+  /**
+  * Get edited service advance configuration
+  * @param changedConfiguration changed configuration
+  */
+  getChangedAdvanceConfiguration(advanceConfig: any) {
+    const configItem = this.advancedConfiguration.find(c => c.key == advanceConfig.key);
+    if (configItem) {
+      configItem.config = advanceConfig.config;
+      if (isEmpty(configItem.config)) {
+        this.advancedConfiguration = this.advancedConfiguration.filter(conf => (conf.key !== configItem.key));
+      }
+    } else {
+      this.advancedConfiguration.push(advanceConfig)
+    }
   }
 
   navToSyslogs(name: string) {

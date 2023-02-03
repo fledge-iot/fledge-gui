@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="steps-content">
-      <form [formGroup]="notificationForm" validate>
+      <form [formGroup]="notificationForm" novalidate>
         <div class="box step-content  is-active" id="c-1">
           <div class="field is-horizontal form-group">
             <div class="field-label is-normal">
@@ -44,9 +44,9 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" #name formControlName="name" required
-                    (input)="validateNotificationName($event)" appRestrictSpecialChars>
-                  <small *ngIf="!isValidName" class="help is-danger level-left">Notification instance name is
+                  <input class="input" id="name" type="text" placeholder="name" formControlName="name" appRestrictSpecialChars>
+                  <small *ngIf="name.invalid && (name.dirty || name.touched)"
+                    class="help is-danger level-left"><sup>*</sup>Notification instance name is
                     required</small>
                 </div>
               </div>
@@ -60,7 +60,7 @@
               <div class="field">
                 <div class="control">
                   <input class="input" id="description" type="text" #desc placeholder="description"
-                    formControlName="description" required>
+                    formControlName="description">
                 </div>
               </div>
             </div>
@@ -81,7 +81,7 @@
               <div class="column is-vertical-center">
                 <div class="select is-multiple">
                   <select multiple name="type" #selectedPlugin formControlName="rule" id="rule"
-                    (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)" required>
+                    (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)">
                     <option *ngFor="let p of notificationRulePlugins" [value]="p.name"> {{ p.name }}</option>
                   </select>
                 </div>
@@ -118,10 +118,9 @@
           </div>
         </div>
         <div class="box step-content" id="c-3">
-          <app-view-config-item #ruleConfigView [categoryConfigurationData]="rulePluginConfigurationData"
-            [pluginInfo]="{name: payload?.rule,  type:'rule'}" [useRuleProxy]="useRuleProxy"
-            (onConfigChanged)="getPluginChangedConfig($event, 'rule')" [pageId]="'wizard'">
-          </app-view-config-item>
+          <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
+            (changedConfigEvent)="getChangedRuleConfig($event)" [from]="'add-notification-form'"
+            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
@@ -139,7 +138,7 @@
               <div class="column is-vertical-center">
                 <div class="select is-multiple">
                   <select multiple name="type" #deliveryPlugin formControlName="delivery" id="notify"
-                    (change)="isPluginSelected(deliveryPlugin.value, notificationDeliveryPlugins[0].type)" required>
+                    (change)="isPluginSelected(deliveryPlugin.value, notificationDeliveryPlugins[0].type)">
                     <option *ngFor="let d of notificationDeliveryPlugins" [value]="d.name"> {{ d.name }}</option>
                   </select>
                 </div>
@@ -177,10 +176,10 @@
           </div>
         </div>
         <div class="box step-content" id="c-5">
-          <app-view-config-item #deliveryConfigView [categoryConfigurationData]="deliveryPluginConfigurationData"
-            [useDeliveryProxy]="useDeliveryProxy" [pluginInfo]="{name: payload?.channel,  type:'notify'}"
-            (onConfigChanged)="getPluginChangedConfig($event, 'delivery')" [pageId]="'wizard'">
-          </app-view-config-item>
+          <app-configuration-group #deliveryConfigView *ngIf="deliveryPluginConfiguration"
+            [category]="deliveryPluginConfiguration" (changedConfigEvent)="getChangedDeliveryConfig($event)"
+            [from]="'add-notification-form'"
+            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-6">
           <div class="field is-horizontal">
@@ -254,7 +253,9 @@
         <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
       </div>
       <div class="steps-action">
-        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+
+        <button [disabled]="name.invalid || !validConfigurationForm" (click)="moveNext()" data-nav="next"
+          class="button is-link" id="next">Next</button>
       </div>
     </div>
   </div>
