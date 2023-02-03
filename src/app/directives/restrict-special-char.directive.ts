@@ -1,10 +1,10 @@
 import { Directive, HostListener, Input } from '@angular/core';
 
 @Directive({
-  selector: '[appRestrictSpecialChar]'
+  selector: '[appRestrictSpecialChars]'
 })
 export class RestrictSpecialCharDirective {
-  @Input() restrictedCharCode: any[];
+  @Input() restrictedCharCodes: any[];
 
   constructor() { }
 
@@ -16,10 +16,10 @@ export class RestrictSpecialCharDirective {
   }
 
   isRestrictedChar(event) {
-    if (this.restrictedCharCode.length === 0) {
-      this.restrictedCharCode = ['34'];
+    if (this.restrictedCharCodes?.length === 0) {
+      this.restrictedCharCodes = ['34'];
     }
     const charCode = (event.which) ? event.which : event.keyCode;
-    return !this.restrictedCharCode.includes(charCode);
+    return !this.restrictedCharCodes?.includes(charCode);
   }
 }
