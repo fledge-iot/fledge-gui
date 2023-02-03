@@ -83,7 +83,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" appRestrictDoubleQuote type="text" placeholder="name" formControlName="name" required
+                  <input class="input" id="name" appRestrictSpecialChar [restrictedChars]="[34]" type="text" placeholder="name" formControlName="name" required
                     (input)="validateServiceName($event)">
                   <small *ngIf="!isValidName" class="help is-danger level-left">Service name is required</small>
                 </div>

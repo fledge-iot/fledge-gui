@@ -30,7 +30,7 @@
               <div class="field">
                 <div class="control">
                   <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
-                    [(ngModel)]="controlScript.name" appRestrictDoubleQuote
+                    [(ngModel)]="controlScript.name" appRestrictSpecialChar
                     [ngClass]="{'is-static': editMode, 'is-small':sharedService.checkAuth() && !editMode}"
                     [readonly]="editMode">
                 </div>
