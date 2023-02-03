@@ -32,7 +32,6 @@
       <i class="fas fa-angle-right fa-xl"></i>
     </button>
   </div>
-
   <div [ngClass]="{'highlight': from !== 'config-manager'}">
     <ng-container *ngFor="let g of groups">
       <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
@@ -61,4 +60,3 @@
       </app-plugin-persist-data>
     </ng-container>
   </div>
-</div>

@@ -346,9 +346,8 @@ export class ConfigurationControlService {
   toFormGroup(pluginConfiguration: any, groupConfigurations: ConfigurationBase<string>[]) {
     const group: any = {};
     groupConfigurations.forEach(configuration => {
-      group[configuration.key] = configuration.required ?
-        new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, Validators.required)
-        : new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) });
+      group[configuration.key] =
+        new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
     });
     return new FormGroup(group);
   }

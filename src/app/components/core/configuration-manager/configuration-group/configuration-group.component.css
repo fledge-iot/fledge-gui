@@ -4,11 +4,19 @@
   }
 }
 
+.config-div {
+  margin-top: 1vw;
+}
+
+.tooltip.is-tooltip-multiline::before {
+  min-width: 16rem !important;
+}
+
 .highlight {
   border: 1px solid transparent;
   border-color: #dbdbdb;
-  /* border-top-color: transparent!important; */
-  border-radius: 2px;
+  border-top-color: transparent!important;
+  border-radius: 4px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
   position: relative;
@@ -17,79 +25,5 @@
 }
 
 .tabs {
-  margin-right: auto !important;
-  margin-left: auto !important;
   margin-bottom: 0px !important;
 }
-
- #group_navigation .nav {
-  display: flex;
-  flex-wrap: inherit;
-  margin-bottom: inherit;
-}
-
-/*--- Wrap Up ---*/
-.configuration_group_wrapper {
-  position: relative;
-  box-sizing: border-box;
-}
-
-.groupNav {
-  /* Make this scrollable when needed */
-  overflow-x: auto;
-  /* We don't want vertical scrolling */
-  overflow-y: hidden;
-  /* For WebKit implementations, provide inertia scrolling */
-  -webkit-overflow-scrolling: touch;
-  /* We don't want internal inline elements to wrap */
-  white-space: nowrap;
-  /* If JS present, let's hide the default scrollbar */
-  position: relative;
-  /* font-size: 0; */
-}
-
-.groupNav_Contents {
-  float: left;
-  padding-right: 10%;
-  transition: transform 0.2s ease-in-out;
-}
-
-.groupNav_Contents-no-transition {
-  transition: none;
-}
-
-.Advancer {
-  /* Reset the button */
-  /* appearance: none; */
-  /* background: transparent; */
-  /* padding: 0; */
-  border: 0;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  opacity: 0;
-  /* transition: opacity 0.3s; */
-}
-.Advancer:focus {
-  outline: 0;
-}
-.Advancer:hover {
-  cursor: pointer;
-  /* Now style it as needed */
-  /* Set the buttons invisible by default */
-}
-.Advancer_Left {
-  left: 0;
-}
-[data-overflowing="both"] ~ .Advancer_Left, [data-overflowing="left"] ~ .Advancer_Left {
-  opacity: 1;
-}
-.Advancer_Right {
-  right: 0;
-}
-[data-overflowing="both"] ~ .Advancer_Right, [data-overflowing="right"] ~ .Advancer_Right {
-  opacity: 1;
-}
-
-
-
