@@ -59,11 +59,8 @@ export class ConfigurationGroupComponent implements OnInit {
     });
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
-      if (k != "undefined") {
-        return { category: this.category.name, group: k, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
-      } else {
-        return { category: this.category.name, group: "Default Configuration", config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
-      }
+      const g = k != "undefined" ? k : "Default Configuration";
+      return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
     }).value();
 
     // sort group items having default configuration as first element
