@@ -1,24 +1,24 @@
 import {
-  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, QueryList, ViewChild, ViewChildren
+  Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild
 } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { isEmpty } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, ConfigurationService, FilterService, NorthService, ProgressBarService, RolesService, SchedulesService, ServicesApiService
+  AlertService, ConfigurationControlService, ConfigurationService,
+  FileUploaderService, FilterService, NorthService, ProgressBarService,
+  RolesService, SchedulesService, ServicesApiService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
-import { ValidateFormService } from '../../../../services/validate-form.service';
 import Utils from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
-import { ConfigChildrenComponent } from '../../configuration-manager/config-children/config-children.component';
-import {
-  ViewConfigItemComponent
-} from '../../configuration-manager/view-config-item/view-config-item.component';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
+import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -27,22 +27,19 @@ import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.com
 })
 export class NorthTaskModalComponent implements OnInit, OnChanges {
   category: any;
-  useProxy: 'true';
-  useFilterProxy: 'true';
-
   enabled: Boolean;
   exclusive: Boolean;
   repeatTime: any;
   repeatDays: any;
   name: string;
-  isWizard = false;
+  isAddFilterWizard = false;
   public applicationTagClicked = false;
 
   public filterItemIndex;
   public isFilterOrderChanged = false;
   public filterPipeline = [];
   public deletedFilterPipeline = [];
-  public filterConfiguration = [];
+  public filterConfiguration: any;
   public isFilterDeleted = false;
   public confirmationDialogData = {};
   public btnTxt = '';
@@ -51,11 +48,24 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @ViewChild('fg') form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
 
-  @Input() task: { task: any };
+  @Input() task: any;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChildren('filterConfigView') filterConfigViewComponents: QueryList<ViewConfigItemComponent>;
+  @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigurationGroupComponent;
+  @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
-  @ViewChild('configChildComponent') configChildComponent: ConfigChildrenComponent;
+
+  // to hold child form state
+  validConfigurationForm = true;
+  validFilterConfigForm = true;
+  pluginConfiguration;
+  changedConfig = {};
+
+  filterConfigurationCopy: any;
+  changedFilterConfig: any;
+  advancedConfiguration = [];
+
+  // To hold API calls to execute
+  apiCallsStack = [];
 
   constructor(
     private router: Router,
@@ -64,13 +74,14 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private northService: NorthService,
     private filterService: FilterService,
-    private validateFormService: ValidateFormService,
     public fb: FormBuilder,
     private dialogService: DialogService,
     public ngProgress: ProgressBarService,
     private servicesApiService: ServicesApiService,
     private docService: DocService,
-    public rolesService: RolesService
+    public rolesService: RolesService,
+    private configurationControlService: ConfigurationControlService,
+    private fileUploaderService: FileUploaderService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -82,23 +93,36 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   ngOnInit() { }
 
-  ngOnChanges() {
-    this.getNorthData();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes?.task?.previousValue !== changes?.task?.currentValue) {
+      this.getNorthData();
+    }
   }
 
   refreshPageData() {
-    this.getNorthData();
-    if (this.configChildComponent) {
-      this.configChildComponent.getChildConfigData();
+    if (this.pluginConfiguration) {
+      const pluginConfigCopy = cloneDeep(this.pluginConfiguration);
+      this.pluginConfigComponent?.updateCategroyConfig(pluginConfigCopy.config);
+    }
+    if (this.filterConfigurationCopy) {
+      const filterConfig = cloneDeep(this.filterConfigurationCopy.config);
+      this.filterConfigComponent?.updateCategroyConfig(filterConfig);
+    }
+
+    if (this.form !== undefined) {
+      this.enabled = this.task['enabled'];
+      this.exclusive = this.task['exclusive'];
+      const repeatInterval = Utils.secondsToDhms(this.task['repeat']);
+      this.repeatTime = repeatInterval.time;
+      this.repeatDays = repeatInterval.days;
+      this.name = this.task['name'];
     }
   }
 
   getNorthData() {
-    if (this.task !== undefined) {
-      this.getCategory();
-      this.getFilterPipeline();
-      this.btnTxt = this.task['processName'] === 'north_C' ? 'Service' : 'Instance';
-    }
+    this.getCategory();
+    this.getFilterPipeline();
+    this.btnTxt = this.task['processName'] === 'north_C' ? 'Service' : 'Instance';
   }
 
   onDrop(event: CdkDragDrop<string[]>) {
@@ -129,6 +153,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   public toggleModal(isOpen: Boolean) {
     this.applicationTagClicked = false;
+    this.validConfigurationForm = true;
+    this.validFilterConfigForm = true;
     if (this.isFilterOrderChanged || this.isFilterDeleted) {
       this.showConfirmationDialog();
       return;
@@ -141,9 +167,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       activeContentBody.hidden = true;
     }
 
-    if (this.isWizard) {
+    if (this.isAddFilterWizard) {
       this.getCategory();
-      this.isWizard = false;
+      this.isAddFilterWizard = false;
     }
 
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
@@ -152,12 +178,17 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       modal.classList.add('is-active');
       return;
     }
-    this.notify.emit(true);
     if (this.form !== undefined) {
       this.form.reset();
     }
+    this.pluginConfiguration = {};
+    this.filterConfiguration = {};
+    this.changedConfig = {};
+    this.changedFilterConfig = {};
+    this.advancedConfiguration = [];
+    this.apiCallsStack = [];
     this.category = null;
-    this.filterConfiguration = [];
+    this.notify.emit(false);
     modal.classList.remove('is-active');
   }
 
@@ -179,12 +210,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.repeatTime = repeatInterval.time;
     this.repeatDays = repeatInterval.days;
     this.name = this.task['name'];
-    const categoryValues = [];
     this.configService.getCategory(this.name).subscribe(
       (data: any) => {
         if (!isEmpty(data)) {
-          categoryValues.push(data);
-          this.category = { key: this.name, value: categoryValues };
+          this.category = { name: this.name, config: data };
+          this.pluginConfiguration = cloneDeep({ name: this.name, config: data });
         }
         /** request completed */
         this.ngProgress.done();
@@ -215,7 +245,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   toggleAccordion(id, filterName) {
-    this.useFilterProxy = 'true';
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
       const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
@@ -254,12 +283,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.isFilterOrderChanged) {
       this.updateFilterPipeline(this.filterPipeline);
     }
+
     // 'touched' means the user has entered the form
     // 'dirty' / '!pristine' means the user has made a modification
     if (!form.dirty && !form.touched) {
-      this.toggleModal(false);
       return false;
     }
+
     const updatePayload: any = {
       'enabled': form.controls['enabled'].value
     };
@@ -272,58 +302,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       updatePayload.exclusive = form.controls['exclusive'].value;
     }
 
-    /** request started */
-    this.ngProgress.start();
-    this.schedulesService.updateSchedule(this.task['id'], updatePayload).
-      subscribe(
-        () => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success('Schedule updated successfully.');
-          this.notify.emit();
-          this.toggleModal(false);
-          form.reset();
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  proxy() {
-    if (!this.form.valid) {
-      return;
-    }
-
-    const filterFormStatus = this.filterConfigViewComponents.toArray().every(component => {
-      return this.validateFormService.checkViewConfigItemFormValidity(component);
-    });
-
-    if (!filterFormStatus) {
-      return;
-    }
-
-    if (this.useProxy === 'true') {
-      document.getElementById('vci-proxy').click();
-    }
-
-    const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-filter');
-    for (const e of <any>el) {
-      e.click();
-    }
-
-    const securityCel = <HTMLCollection>document.getElementsByClassName('vci-proxy-children');
-    for (const e of <any>securityCel) {
-      e.click();
-    }
-
-    // this.updateAdvanceConfigConfiguration(this.changedChildConfig);
-    document.getElementById('ss').click();
+    this.apiCallsStack.push(this.schedulesService.updateSchedule(this.task['id'], updatePayload).pipe(catchError(e => of(e))));
   }
 
   getTimeIntervalValue(event) {
@@ -391,11 +370,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   getFilterConfiguration(filterName) {
-    const catName = this.task['name'] + '_' + filterName;
+    const catName = `${this.task['name']}_${filterName}`;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
         this.selectedFilterPlugin = data.plugin.value;
-        this.filterConfiguration.push({ key: catName, 'value': [data] });
+        this.filterConfiguration = { key: catName, config: data };
+        this.filterConfigurationCopy = cloneDeep({ key: catName, config: data });
       },
         error => {
           if (error.status === 0) {
@@ -406,18 +386,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
   }
 
-  setFilterConfiguration(filterName: string) {
-    const catName = this.task['name'] + '_' + filterName;
-    return this.filterConfiguration.find(f => f.key === catName);
-  }
-
   openAddFilterModal(isClicked) {
     this.applicationTagClicked = isClicked;
     if (this.isFilterOrderChanged || this.isFilterDeleted) {
       this.showConfirmationDialog();
       return;
     }
-    this.isWizard = isClicked;
+    this.isAddFilterWizard = isClicked;
     this.category = '';
     this.isFilterOrderChanged = false;
     this.isFilterDeleted = false;
@@ -426,7 +401,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   onNotify() {
     this.getCategory();
-    this.isWizard = false;
+    this.isAddFilterWizard = false;
     this.getFilterPipeline();
   }
 
@@ -450,7 +425,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.isFilterDeleted = true;
     this.isFilterOrderChanged = false;
   }
-
 
   deleteFilter() {
     this.isFilterDeleted = false;
@@ -498,9 +472,111 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.isFilterDeleted = false;
     this.deletedFilterPipeline = [];
     if (this.applicationTagClicked) {
-      this.isWizard = this.applicationTagClicked;
+      this.isAddFilterWizard = this.applicationTagClicked;
       return;
     }
     this.toggleModal(false);
+  }
+
+  /**
+  * Get edited configuration from show configuration page
+  * @param changedConfiguration changed configuration of a selected plugin
+  */
+  getChangedConfig(changedConfiguration: any) {
+    this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
+  }
+
+  /**
+  * Get edited advance configuration
+  * @param changedConfiguration changed configuration
+  */
+  getChangedAdvanceConfiguration(advanceConfig: any) {
+    const configItem = this.advancedConfiguration.find(c => c.key == advanceConfig.key);
+    if (configItem) {
+      configItem.config = advanceConfig.config;
+      if (isEmpty(configItem.config)) {
+        this.advancedConfiguration = this.advancedConfiguration.filter(conf => (conf.key !== configItem.key));
+      }
+    } else {
+      this.advancedConfiguration.push(advanceConfig)
+    }
+  }
+
+  /**
+   * Get edited filter configuration from show configuration page
+   * @param changedConfiguration changed configuration of a selected filter
+   */
+  getChangedFilterConfig(changedConfiguration: any) {
+    this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
+  }
+
+  /**
+  * Get scripts to upload from a configuration item
+  * @param configuration  edited configuration from show configuration page
+  * @returns script files to upload
+  */
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
+  }
+
+
+  /**
+   * update plugin configuration
+   */
+  updateConfiguration(categoryName: string, configuration: any) {
+    const files = this.getScriptFilesToUpload(configuration);
+    if (files.length > 0) {
+      this.uploadScript(categoryName, files);
+    }
+
+    if (isEmpty(configuration)) {
+      return;
+    }
+
+    this.apiCallsStack.push(this.configService.
+      updateBulkConfiguration(categoryName, configuration).pipe(catchError(e => of(e))));
+  }
+
+  save() {
+    this.saveScheduleFields(this.form);
+    if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
+      this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig);
+    }
+    if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
+      this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
+    }
+
+    if (!isEmpty(this.advancedConfiguration)) {
+      this.advancedConfiguration.forEach(element => {
+        this.updateConfiguration(element.key, element.config);
+      });
+    }
+
+    if (this.apiCallsStack.length > 0) {
+      this.ngProgress.start();
+      forkJoin(this.apiCallsStack).subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Configuration updated successfully.', true);
+        this.notify.emit();
+        this.toggleModal(false);
+        this.form.reset();
+        this.apiCallsStack = [];
+      });
+    } else {
+      this.toggleModal(false);
+    }
+  }
+
+  /**
+  * To upload script files of a configuration property
+  * @param categoryName name of the configuration category
+  * @param files : Scripts array to uplaod
+  */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+    if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)
+      && isEmpty(this.changedFilterConfig)) {
+      this.toggleModal(false);
+    }
   }
 }

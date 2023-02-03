@@ -30,8 +30,10 @@
               </div>
               <div class="field-body">
                 <div class="column">
-                  <ng-select #pluginToInstall [items]="pluginData" [searchable]="pluginData.length" [placeholder]="placeholderText" notFoundText="No plugin available to install"
-                    [loading]="!pluginData.length && !stopLoading" (change)="filterSelectionChanged($event)" bindLabel="pluginToInstall" formControlName="pluginToInstall">
+                  <ng-select #pluginToInstall [items]="pluginData" [searchable]="pluginData.length"
+                    [placeholder]="placeholderText" notFoundText="No plugins available to install"
+                    [loading]="!pluginData.length && !stopLoading" (change)="filterSelectionChanged($event)"
+                    bindLabel="pluginToInstall" formControlName="pluginToInstall">
                   </ng-select>
                   <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
                 </div>
@@ -69,17 +71,17 @@
             </div>
             <div class="field-body">
               <div class="column is-vertical-center">
-              <div class="select is-multiple">
-                <select #selectedPlugin multiple name="type" formControlName="plugin"
-                  (change)="getDescription(selectedPlugin.value)" required>
-                  <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
-                </select>
+                <div class="select is-multiple">
+                  <select #selectedPlugin multiple name="type" formControlName="plugin"
+                    (change)="getDescription(selectedPlugin.value)" required>
+                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
+                  </select>
+                </div>
+                &nbsp;
+                <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin"
+                  class="help description level-left">{{ selectedPluginDescription }}</small>
+                <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
-              &nbsp;
-              <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin"
-                class="help description level-left">{{ selectedPluginDescription }}</small>
-              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
-            </div>
             </div>
             <div *ngIf="plugin" class="column is-1">
               <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
@@ -109,8 +111,10 @@
             </div>
             <div class="field-body">
               <div class="column" style="padding: 0;">
-                <ng-select #pluginToInstall *ngIf="show" [items]="pluginData" [searchable]="pluginData.length" [placeholder]="placeholderText" [loading]="!pluginData.length && !stopLoading"
-                  notFoundText="No plugin available to install" (change)="filterSelectionChanged($event)" bindLabel="pluginToInstall" formControlName="pluginToInstall">
+                <ng-select #pluginToInstall *ngIf="show" [items]="pluginData" [searchable]="pluginData.length"
+                  [placeholder]="placeholderText" [loading]="!pluginData.length && !stopLoading"
+                  notFoundText="No plugins available to install" (change)="filterSelectionChanged($event)"
+                  bindLabel="pluginToInstall" formControlName="pluginToInstall">
                 </ng-select>
                 <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
                 <p id="requestInProgress" class="help has-text-centered"></p>
@@ -136,9 +140,11 @@
         </ng-container>
       </div>
       <div class="box step-content" id="c-2">
-        <app-view-config-item [hidden]="!configurationData" [categoryConfigurationData]="configurationData"
-        [pluginInfo]="{name: payload?.plugin,  type:'Filter'}"
-        [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'wizard'"></app-view-config-item>
+        <app-configuration-group *ngIf="configurationData" #configChildComponent [category]="configurationData"
+          (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validChildConfigurationForm = $event"
+          [from]="'add-filter'">
+        </app-configuration-group>
+
       </div>
     </form>
   </div>
@@ -147,7 +153,8 @@
       <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
     </div>
     <div class="steps-action">
-      <button (click)="gotoNext()" data-nav="next" [disabled]="disabledBtn" class="button is-link" id="next">Next</button>
+      <button (click)="gotoNext()" data-nav="next" [disabled]="disabledBtn" class="button is-link"
+        id="next">Next</button>
     </div>
   </div>
 </div>

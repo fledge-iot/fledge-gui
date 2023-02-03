@@ -1,0 +1,47 @@
+<div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
+  <ul>
+    <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
+      <h6 class="is-6 has-text-weight-semibold">
+        <a (click)="selectTab(g.group)">
+          {{g.group}}
+        </a>
+      </h6>
+    </li>
+    <ng-container *ngIf="from !== 'notification'">
+      <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
+        *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
+        <h6 class="is-6 has-text-weight-semibold">
+          <a (click)="selectedGroup = 'developer'">Developer</a>
+        </h6>
+      </li>
+    </ng-container>
+  </ul>
+</div>
+<div [ngClass]="{'highlight': from !== 'config-manager'}">
+  <ng-container *ngFor="let g of groups">
+    <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
+      <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
+        [selectedGroup]="selectedGroup" [fullConfiguration]="g.config" (event)="getChangedAdvanceConfiguration($event)"
+        (formStatusEvent)="formStatus($event)"></app-show-configuration>
+    </ng-container>
+    <ng-template #SecurityGroup>
+      <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
+        <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
+          [selectedGroup]="selectedGroup" [fullConfiguration]="g.config"
+          (event)="getChangedSecurityConfiguration($event)"
+          (formStatusEvent)="formStatus($event)"></app-show-configuration>
+      </ng-container>
+    </ng-template>
+    <ng-template #pluginGroup>
+      <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
+        [selectedGroup]="selectedGroup" [fullConfiguration]="category.config" (event)="getChangedConfiguration($event)"
+        (formStatusEvent)="formStatus($event)"></app-show-configuration>
+    </ng-template>
+  </ng-container>
+  <ng-container *ngIf="from !== 'notification'">
+    <app-plugin-persist-data *ngIf="selectedGroup == 'developer' && pages.includes(from)" [serviceStaus]="serviceStatus"
+      [serviceName]="category?.name" [pluginName]="plugin">
+    </app-plugin-persist-data>
+  </ng-container>
+
+</div>
