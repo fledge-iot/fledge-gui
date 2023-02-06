@@ -16,8 +16,8 @@ export class RestrictSpecialCharDirective {
   }
 
   isRestrictedChar(event) {
-    if (this.restrictedCharCodes?.length === 0) {
-      this.restrictedCharCodes = ['34'];
+    if (!this.restrictedCharCodes || this.restrictedCharCodes?.length === 0) {
+      this.restrictedCharCodes = [34];
     }
     const charCode = (event.which) ? event.which : event.keyCode;
     return !this.restrictedCharCodes?.includes(charCode);
