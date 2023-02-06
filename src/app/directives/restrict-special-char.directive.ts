@@ -4,7 +4,7 @@ import { Directive, HostListener, Input } from '@angular/core';
   selector: '[appRestrictSpecialChars]'
 })
 export class RestrictSpecialCharDirective {
-  @Input() restrictedCharCodes: any[];
+  @Input() restrictedCharCodes: any[] = [];
 
   constructor() { }
 
@@ -16,7 +16,8 @@ export class RestrictSpecialCharDirective {
   }
 
   isRestrictedChar(event) {
-    if (!this.restrictedCharCodes || this.restrictedCharCodes?.length === 0) {
+    // For now, only double quote character (i.e. ") is restricted
+    if (this.restrictedCharCodes?.length === 0) {
       this.restrictedCharCodes = [34];
     }
     const charCode = (event.which) ? event.which : event.keyCode;
