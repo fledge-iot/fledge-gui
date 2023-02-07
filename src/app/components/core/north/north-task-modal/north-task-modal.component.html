@@ -177,7 +177,7 @@
             <div class="field is-grouped is-pulled-left">
               <div class="control">
                 <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
-                  data-tooltip="Help" (click)="goToLink({name: category['value'][0].plugin.value, type: 'North'})">
+                  data-tooltip="Help" (click)="goToLink({name: category?.config?.plugin?.value, type: 'North'})">
                   <i class="far fa-question-circle"></i>
                 </span>
               </div>
