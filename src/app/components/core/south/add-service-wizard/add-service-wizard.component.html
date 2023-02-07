@@ -84,8 +84,8 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" appRestrictSpecialChars autocomplete="off" type="text" placeholder="name" formControlName="name" required
-                    (input)="validateServiceName($event)">
+                  <input class="input" id="name" autocomplete="off" type="text" placeholder="name" formControlName="name" required
+                    (input)="validateServiceName($event)" title="No double quotes!" pattern="[^\x22]+">
                   <small *ngIf="!isValidName" class="help is-danger level-left">Service name is required</small>
                 </div>
               </div>
