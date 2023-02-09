@@ -69,7 +69,7 @@ export class AddFilterWizardComponent implements OnInit {
     });
     this.getInstalledFilterPlugins();
   }
-  // [Validators.required, Validators.pattern('^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})$')]
+  
   toggleAvailablePlugins() {
     if (this.show) {
       this.show = false;
