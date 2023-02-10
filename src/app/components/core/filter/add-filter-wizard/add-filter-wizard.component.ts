@@ -32,8 +32,6 @@ export class AddFilterWizardComponent implements OnInit {
   public show = false;
   public stopLoading = false;
   public placeholderText = 'fetching available plugins...';
-  public disabledBtn = false;
-
   increment = 1;
   maxRetry = 15;
   initialDelay = 1000;
@@ -65,13 +63,13 @@ export class AddFilterWizardComponent implements OnInit {
   ngOnInit() {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.pattern('[^\x22]+')]],
       plugin: [{ value: '', disabled: false }, Validators.required],
-      pluginToInstall: [{ value: null, disabled: false }, Validators.required]
+      pluginToInstall: [{ value: null, disabled: false }]
     });
     this.getInstalledFilterPlugins();
   }
-
+  
   toggleAvailablePlugins() {
     if (this.show) {
       this.show = false;
@@ -273,7 +271,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.ngProgress.start();
     this.serviceForm.controls.pluginToInstall.disable();
     this.serviceForm.controls.plugin.disable();
-    this.disabledBtn = true;
+    this.serviceForm.setErrors({ 'invalid': true });
     this.alertService.activityMessage('Installing ' + pluginName + ' filter plugin...', true);
     this.service.installPlugin(pluginData).
       subscribe(
@@ -286,7 +284,7 @@ export class AddFilterWizardComponent implements OnInit {
           this.ngProgress.done();
           this.serviceForm.controls.pluginToInstall.enable();
           this.serviceForm.controls.plugin.enable();
-          this.disabledBtn = false;
+          this.serviceForm.setErrors({ 'invalid': false });
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -343,7 +341,7 @@ export class AddFilterWizardComponent implements OnInit {
         this.getInstalledFilterPlugins(true);
         this.serviceForm.controls.pluginToInstall.enable();
         this.serviceForm.controls.plugin.enable();
-        this.disabledBtn = false;
+        this.serviceForm.setErrors({ 'invalid': false });
       });
   }
 
