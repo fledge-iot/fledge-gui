@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
@@ -11,11 +11,7 @@ import {
 } from '../../../../services';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
-
-export function pluginsCountValidator(control: AbstractControl): { [s: string]: boolean } {
-  const value = control.value;
-  return value && value.length > 1 ? { multiplePlugins: true } : null;
-}
+import { CustomValidator } from '../../../../directives/custom-validator';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -58,14 +54,15 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
-    private fileUploaderService: FileUploaderService
+    private fileUploaderService: FileUploaderService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
     this.getSchedules();
     this.serviceForm = this.formBuilder.group({
-      name: new FormControl('', [Validators.required]),
-      plugin: new FormControl('', [Validators.required, pluginsCountValidator]),
+      name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+      plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
       config: new FormControl(null)
     });
     this.getInstalledSouthPlugins();
@@ -120,9 +117,17 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     }
   }
 
-  getDescription(selectedPlugin) {
+  selectPlugin(selectedPlugin: string) {
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-    this.selectedPluginDescription = this.plugins?.find(p => p.name === this.plugin)?.description;
+    const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
+    if (pluginInfo) {
+      this.configurationData = pluginInfo;
+      this.pluginConfiguration = cloneDeep(pluginInfo);
+      this.selectedPluginDescription = pluginInfo.description;
+      this.serviceForm.controls['config'].patchValue(pluginInfo?.config);
+      this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.cdRef.detectChanges();
+    }
   }
 
   /**
@@ -155,9 +160,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           this.alertService.error('A service/task already exists with this name.');
           return false;
         }
-
-        const plugin = formValues['plugin'][0];
-        this.getConfiguration(plugin);
         break;
       case 2:
         nxtButton.textContent = 'Done';
@@ -194,23 +196,13 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   *  Get default configuration of a selected plugin
-   */
-  private getConfiguration(selectedPlugin: string): void {
-    const plugin = this.plugins.find(p => p.name === selectedPlugin);
-    if (plugin) {
-      this.configurationData = plugin;
-      this.pluginConfiguration = cloneDeep(plugin);
-    }
-  }
-
-  /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig: any) {
     const config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration, true);
-    this.serviceForm.controls['config'].setValue(config);
+    this.serviceForm.controls['config'].patchValue(config);
+    this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
   }
 
   /**
@@ -219,7 +211,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
    */
   public addService() {
     const payload = {
-      name: this.serviceForm.value['name'],
+      name: this.serviceForm.value['name'].trim(),
       type: this.serviceType.toLowerCase(),
       plugin: this.serviceForm.value['plugin'][0],
       ...this.serviceForm.value['config'] && { config: this.serviceForm.value['config'] },

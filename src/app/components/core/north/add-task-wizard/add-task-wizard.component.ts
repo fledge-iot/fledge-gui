@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { cloneDeep, sortBy } from 'lodash';
@@ -11,6 +11,7 @@ import {
 import Utils from '../../../../utils';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
+import { CustomValidator } from '../../../../directives/custom-validator';
 
 @Component({
   selector: 'app-add-task-wizard',
@@ -22,13 +23,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public plugins = [];
   public configurationData;
   public pluginConfiguration: any;
-  public isValidName = true;
-  public isValidPlugin = true;
-  public isSinglePlugin = true;
-  public isValidDay = true;
-  public isValidTime = true;
   public isScheduleEnabled = true;
-  public payload: any;
   public schedulesName = [];
   public selectedPluginDescription = '';
   public plugin: any;
@@ -40,10 +35,11 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   validConfigurationForm = true;
 
   taskForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    plugin: new FormControl('', Validators.required),
+    name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+    plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
     repeatDays: new FormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
-    repeatTime: new FormControl('', [Validators.required])
+    repeatTime: new FormControl('', [Validators.required]),
+    config: new FormControl(null)
   });
 
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
@@ -65,7 +61,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private servicesApiService: ServicesApiService,
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
-    private configurationControlService: ConfigurationControlService
+    private configurationControlService: ConfigurationControlService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -126,10 +123,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   moveNext() {
-    this.isValidName = true;
-    this.isValidPlugin = true;
-    this.isValidDay = true;
-    this.isValidTime = true;
     const formValues = this.taskForm.value;
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = first.getAttribute('id');
@@ -138,43 +131,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
     switch (+id) {
       case 1:
-        if (formValues['plugin'] === '') {
-          this.isValidPlugin = false;
-          return;
-        }
-
-        if (formValues['plugin'].length !== 1) {
-          this.isSinglePlugin = false;
-          return;
-        }
-
-        if (formValues['name'] === '') {
-          this.isValidName = false;
-          return;
-        }
         nxtButton.textContent = 'Next';
         previousButton.disabled = false;
-        if (formValues['repeatDays'] === null || formValues['repeatDays'] === '') {
-          this.isValidDay = false;
-          return;
-        }
-        if (formValues['repeatTime'] === '' || formValues['repeatTime'] === 0) {
-          this.isValidTime = false;
-          return;
-        }
-
-        const repeatTime = formValues['repeatTime'] !== ('' || undefined) ? Utils.convertTimeToSec(
-          formValues['repeatTime'], formValues['repeatDays']) : 0;
-
-        if (repeatTime === 0) {
-          this.isValidTime = false;
-          return;
-        }
-
-        if (this.taskForm.invalid) {
-          return false;
-        }
-
         // To verify if task with given name already exist
         const isTaskNameExist = this.schedulesName.some(item => {
           return formValues['name'].trim() === item.name;
@@ -183,18 +141,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           this.alertService.error('A service/task already exists with this name.');
           return false;
         }
-
-        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['repeatTime'].length > 0) {
-          this.payload = {
-            'name': formValues['name'],
-            'plugin': formValues['plugin'][0],
-            'type': this.taskType.toLowerCase(),
-            'schedule_repeat': repeatTime,
-            'schedule_type': '3',
-            'schedule_enabled': this.isScheduleEnabled
-          };
-        }
-        this.getConfiguration();
         break;
       case 2:
         nxtButton.textContent = 'Done';
@@ -202,13 +148,9 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         break;
       case 3:
         if (this.isService) {
-          delete this.payload.schedule_repeat;
-          delete this.payload.schedule_type;
-          delete this.payload.schedule_enabled;
-          this.payload.enabled = this.isScheduleEnabled;
-          this.addService(this.payload);
+          this.addService();
         } else {
-          this.addScheduledTask(this.payload);
+          this.addScheduledTask();
         }
         break;
       default:
@@ -279,22 +221,25 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   *  Get default configuration of a selected plugin
-   */
-  private getConfiguration(): void {
-    const plugin = this.plugins.find(p => p.name === this.payload.plugin);
-    if (plugin) {
-      this.configurationData = plugin;
-      this.pluginConfiguration = cloneDeep(plugin);
-    }
-  }
+  private addScheduledTask() {
 
-  private addScheduledTask(payload) {
+    const repeatTime = this.taskForm.value['repeatTime'] !== ('' || undefined) ? Utils.convertTimeToSec(
+      this.taskForm.value['repeatTime'], this.taskForm.value['repeatDays']) : 0;
+
+    const payload = {
+      name: this.taskForm.value['name'].trim(),
+      type: this.taskType.toLowerCase(),
+      plugin: this.taskForm.value['plugin'][0],
+      ...this.taskForm.value['config'] && { config: this.taskForm.value['config'] },
+      schedule_type: '3',
+      schedule_repeat: repeatTime,
+      schedule_enabled: this.isScheduleEnabled
+    };
+
+    console.log('task  ', payload);
     // extract script files to upload from final payload
     const files = this.getScriptFilesToUpload(payload.config);
 
-    this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
     this.schedulesService.createScheduledTask(payload)
@@ -304,7 +249,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           this.ngProgress.done();
           this.alertService.success('North instance added successfully.', true);
           if (files.length > 0) {
-            const name = this.payload.name
+            const name = payload.name;
             this.uploadScript(name, files);
           }
           this.router.navigate(['/north']);
@@ -324,7 +269,17 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     return this.fileUploaderService.getConfigurationPropertyFiles(configuration, true);
   }
 
-  public addService(payload) {
+  public addService() {
+    const payload = {
+      name: this.taskForm.value['name'],
+      type: this.taskType.toLowerCase(),
+      plugin: this.taskForm.value['plugin'][0],
+      ...this.taskForm.value['config'] && { config: this.taskForm.value['config'] },
+      enabled: this.isScheduleEnabled
+    };
+
+    console.log('service ', payload);
+
     // extract script files to upload from final payload
     const files = this.getScriptFilesToUpload(payload.config);
 
@@ -338,7 +293,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
           if (files.length > 0) {
-            const name = this.payload.name
+            const name = payload.name
             this.uploadScript(name, files);
           }
           this.router.navigate(['/north']);
@@ -368,46 +323,32 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig: any) {
-    this.payload.config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration, true);;
+    const config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration, true);
+    this.taskForm.controls['config'].patchValue(config);
+    this.taskForm.controls['config'].updateValueAndValidity({ onlySelf: true });
   }
 
-  validateTaskName(event) {
-    if (event.target.value.trim().length > 0) {
-      this.isValidName = true;
-    }
-  }
 
-  validateRepeatDays(event) {
-    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeatDays.invalid) {
-      this.isValidDay = true;
-    }
-  }
-
-  validateRepeatTime(event) {
-    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeatTime.invalid) {
-      this.isValidTime = true;
-    }
-  }
   setRepeatIntervalValue(event) {
-    this.taskForm.controls['repeatTime'].setValue(event.target.value.trim());
+    this.taskForm.controls['repeatTime'].patchValue(event.target.value.trim());
+    this.taskForm.controls['repeatTime'].updateValueAndValidity({ onlySelf: true });
   }
 
-  getDescription(selectedPlugin) {
-    if (selectedPlugin === '') {
-      this.isValidPlugin = false;
-      this.selectedPluginDescription = '';
-      this.taskForm.value['plugin'] = '';
-    } else {
-      this.isSinglePlugin = true;
-      this.isValidPlugin = true;
-      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
+  selectPlugin(selectedPlugin: string) {
+    this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
+    if (pluginInfo) {
+      this.configurationData = pluginInfo;
+      this.pluginConfiguration = cloneDeep(pluginInfo);
+      this.selectedPluginDescription = pluginInfo.description;
+      this.taskForm.controls['config'].patchValue(pluginInfo?.config);
+      this.taskForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.cdRef.detectChanges();
     }
   }
 
   onCheckboxClicked(event) {
     this.isScheduleEnabled = event.target.checked ? true : false;
-    this.payload.schedule_enabled = this.isScheduleEnabled;
   }
 
   onServiceCheckboxClicked(event) {
