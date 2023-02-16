@@ -70,6 +70,9 @@ export class ConfigurationGroupComponent implements OnInit {
         e.group === 'Default Configuration' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
+
+    // set initial group
+    this.selectedGroup = this.groups[0]?.group;
   }
 
   /**

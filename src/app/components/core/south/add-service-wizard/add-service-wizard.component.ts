@@ -118,6 +118,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   }
 
   selectPlugin(selectedPlugin: string) {
+    this.configurationData = null;
+    this.pluginConfiguration = null;
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
     if (pluginInfo) {
@@ -126,6 +128,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
       this.selectedPluginDescription = pluginInfo.description;
       this.serviceForm.controls['config'].patchValue(pluginInfo?.config);
       this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.isScheduleEnabled = true; // reset to default
       this.cdRef.detectChanges();
     }
   }

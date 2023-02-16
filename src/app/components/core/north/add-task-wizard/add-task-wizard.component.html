@@ -153,7 +153,8 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+                  <input class="checkbox" type="checkbox" [checked]="isScheduleEnabled"
+                    (click)="onCheckboxClicked($event)">
                 </div>
               </div>
             </div>

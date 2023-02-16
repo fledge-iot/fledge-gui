@@ -335,6 +335,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   selectPlugin(selectedPlugin: string) {
+    this.configurationData = null;
+    this.pluginConfiguration = null;
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
     if (pluginInfo) {
@@ -343,6 +345,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
       this.selectedPluginDescription = pluginInfo.description;
       this.taskForm.controls['config'].patchValue(pluginInfo?.config);
       this.taskForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.isScheduleEnabled = true; // set to default
       this.cdRef.detectChanges();
     }
   }
