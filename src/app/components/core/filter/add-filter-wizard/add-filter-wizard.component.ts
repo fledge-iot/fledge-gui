@@ -195,11 +195,12 @@ export class AddFilterWizardComponent implements OnInit {
           this.alertService.error('A filter (or category) with this name already exists.');
           return;
         }
-
-        let pluginValue = formValues['plugin'][0];
-        if (formValues['name'].trim() !== '' && (formValues['plugin'].length > 0 || formValues['pluginToInstall'].length > 0)) {
+        let pluginValue = '';
+        if (formValues['name']?.trim() !== '' && (formValues['plugin']?.length > 0 || formValues['pluginToInstall']?.length > 0)) {
           if (formValues['pluginToInstall']) {
             pluginValue = this.plugins.find(p => p.name.toLowerCase() === formValues['pluginToInstall'].toLowerCase()).name;
+          } else {
+            pluginValue = this.serviceForm.value['plugin'][0];
           }
         }
         this.getConfiguration(formValues['name'].trim(), pluginValue);
@@ -330,7 +331,6 @@ export class AddFilterWizardComponent implements OnInit {
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
     if (pluginInfo) {
-      this.serviceForm.controls.pluginToInstall.disable();
       this.configurationData = null;
       this.pluginConfiguration = null;
       this.configurationData = pluginInfo;
@@ -338,6 +338,9 @@ export class AddFilterWizardComponent implements OnInit {
       this.selectedPluginDescription = pluginInfo.description;
       this.serviceForm.controls['config'].patchValue(null);
       this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.serviceForm.controls.pluginToInstall.reset();
+      this.serviceForm.controls.pluginToInstall.clearValidators();
+      this.serviceForm.controls.pluginToInstall.updateValueAndValidity();
     }
   }
 
@@ -436,6 +439,9 @@ export class AddFilterWizardComponent implements OnInit {
           return p.name.toLowerCase();
         });
         if (pluginInstalled) {
+          this.serviceForm.controls.plugin.disable();
+          this.serviceForm.controls.plugin.clearValidators();
+          this.serviceForm.controls.plugin.updateValueAndValidity();
           this.moveNext();
         }
       },
@@ -471,6 +477,8 @@ export class AddFilterWizardComponent implements OnInit {
     } else {
       this.serviceForm.controls.plugin.enable();
       this.serviceForm.controls.pluginToInstall.reset();
+      this.serviceForm.controls.pluginToInstall.clearValidators();
+      this.serviceForm.controls.pluginToInstall.updateValueAndValidity();
     }
   }
 
