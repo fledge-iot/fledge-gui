@@ -69,7 +69,8 @@ export class ShowConfigurationComponent implements OnInit {
       map(([oldState, newState]) => {
         let changes = {};
         for (const key in newState) {
-          if (oldState[key] !== newState[key]) {
+          if (oldState[key] !== newState[key] &&
+            oldState[key] !== undefined) {
             changes[key] = newState[key];
           }
         }
