@@ -170,7 +170,7 @@ export class AddFilterWizardComponent implements OnInit {
     }
   }
 
-  moveNext() {
+  moveNext(pluginInstalled = false) {
     const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     if (first === undefined) {
@@ -203,7 +203,10 @@ export class AddFilterWizardComponent implements OnInit {
             pluginValue = this.serviceForm.value['plugin'][0];
           }
         }
-        this.getConfiguration(formValues['name'].trim(), pluginValue);
+        if (pluginInstalled) {
+          this.getConfiguration(formValues['name'].trim(), pluginValue);
+        }
+
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -442,7 +445,7 @@ export class AddFilterWizardComponent implements OnInit {
           this.serviceForm.controls.plugin.disable();
           this.serviceForm.controls.plugin.clearValidators();
           this.serviceForm.controls.plugin.updateValueAndValidity();
-          this.moveNext();
+          this.moveNext(pluginInstalled);
         }
       },
       (error) => {
