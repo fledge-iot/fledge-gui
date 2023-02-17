@@ -29,6 +29,7 @@ export class ConfigurationGroupComponent implements OnInit {
   securityConfiguration: any;
   changedAdvanceConfiguration: any;
   changedSecurityConfiguration: any;
+  advanceCategoriesGroup = [];
 
   constructor(
     public developerFeaturesService: DeveloperFeaturesService,
@@ -86,6 +87,7 @@ export class ConfigurationGroupComponent implements OnInit {
   }
 
   public getChildConfigData() {
+    this.advanceCategoriesGroup = [];
     // No advance configuration on add form
     if (this.pages.includes(this.from) && this.category) {
       this.categoryKey = this.category.name;
@@ -97,6 +99,7 @@ export class ConfigurationGroupComponent implements OnInit {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
+          this.advanceCategoriesGroup = [];
           const categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
           categoryChildren.forEach(cat => {
             // Set group of advance/security configuration
@@ -131,7 +134,7 @@ export class ConfigurationGroupComponent implements OnInit {
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
           }
-          this.upsertAdvanceConfiguration(this.groups, { category: category.key, group: category.group, config: data });
+          this.upsertAdvanceConfiguration(this.advanceCategoriesGroup, { category: category.key, group: category.group, config: data });
         },
         error => {
           console.log('error ', error);
@@ -143,7 +146,6 @@ export class ConfigurationGroupComponent implements OnInit {
         }
       );
   }
-
 
   /**
    * Get the change config item values form show-child
@@ -197,6 +199,13 @@ export class ConfigurationGroupComponent implements OnInit {
     else {
       groups.push(config);
     }
+
+    groups = groups
+      .sort((a, b) => a.group.localeCompare(b.group))
+      .reduce((acc, e) => {
+        e.group === 'Default Configuration' ? acc.unshift(e) : acc.push(e);
+        return acc;
+      }, []);
   }
 
   formStatus(status: boolean) {
