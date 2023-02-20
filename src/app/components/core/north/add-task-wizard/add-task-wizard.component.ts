@@ -236,7 +236,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
       schedule_enabled: this.isScheduleEnabled
     };
 
-    console.log('task  ', payload);
     // extract script files to upload from final payload
     const files = this.getScriptFilesToUpload(payload.config);
 
@@ -277,8 +276,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
       ...this.taskForm.value['config'] && { config: this.taskForm.value['config'] },
       enabled: this.isScheduleEnabled
     };
-
-    console.log('service ', payload);
 
     // extract script files to upload from final payload
     const files = this.getScriptFilesToUpload(payload.config);

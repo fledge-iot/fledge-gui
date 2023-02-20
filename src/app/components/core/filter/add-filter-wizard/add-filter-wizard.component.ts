@@ -22,9 +22,6 @@ export class AddFilterWizardComponent implements OnInit {
   public plugins = [];
   public categories = [];
   public configurationData;
-  //public isValidPlugin = true;
-  //public isSinglePlugin = true;
-  // public isValidName = true;
   public selectedPluginDescription = '';
   public plugin: any;
   public pluginData = [];
