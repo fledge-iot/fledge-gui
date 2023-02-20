@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { sortBy, isEmpty, cloneDeep } from 'lodash';
 
@@ -10,6 +10,7 @@ import {
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
+import { CustomValidator } from '../../../../directives/custom-validator';
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -21,10 +22,6 @@ export class AddFilterWizardComponent implements OnInit {
   public plugins = [];
   public categories = [];
   public configurationData;
-  public isValidPlugin = true;
-  public isSinglePlugin = true;
-  public isValidName = true;
-  public payload: any;
   public selectedPluginDescription = '';
   public plugin: any;
   public pluginData = [];
@@ -41,7 +38,8 @@ export class AddFilterWizardComponent implements OnInit {
   serviceForm = new FormGroup({
     name: new FormControl(),
     plugin: new FormControl(),
-    pluginToInstall: new FormControl()
+    pluginToInstall: new FormControl(),
+    config: new FormControl(null)
   });
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -58,24 +56,33 @@ export class AddFilterWizardComponent implements OnInit {
     private service: ServicesApiService,
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
-    private ngProgress: ProgressBarService) { }
+    private ngProgress: ProgressBarService,
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('[^\x22]+')]],
-      plugin: [{ value: '', disabled: false }, Validators.required],
-      pluginToInstall: [{ value: null, disabled: false }]
+      name: ['', [Validators.required, Validators.pattern('[^\x22]+'), CustomValidator.nospaceValidator]],
+      plugin: [{ value: '', disabled: false }, [Validators.required, CustomValidator.pluginsCountValidator]],
+      pluginToInstall: [{ value: null, disabled: false }, [Validators.required]],
+      config: [null]
     });
     this.getInstalledFilterPlugins();
   }
-  
+
+  ngAfterContentChecked() {
+    this.cdRef.detectChanges();
+  }
+
   toggleAvailablePlugins() {
     if (this.show) {
+      this.serviceForm.controls.pluginToInstall.disable();
+      this.serviceForm.controls.plugin.enable();
       this.show = false;
       return;
     }
     this.show = true;
+    this.serviceForm.controls.pluginToInstall.enable();
     this.getAvailablePlugins('Filter');
   }
 
@@ -152,25 +159,15 @@ export class AddFilterWizardComponent implements OnInit {
     if (this.serviceForm.value['pluginToInstall']) {
       pluginToInstall = this.serviceForm.value['pluginToInstall'];
     }
-    if (pluginToInstall === null || pluginToInstall === undefined) {
-      this.isValidPlugin = false;
-      return;
-    }
     const isPluginInstalled = this.plugins.filter(p => p.name.toLowerCase() === pluginToInstall.toLowerCase());
     if (this.serviceForm.value['pluginToInstall'] && isPluginInstalled.length === 0) {
-      if (this.serviceForm.value['name'].trim() === '') {
-        this.isValidName = false;
-        return;
-      }
       this.installPlugin(this.serviceForm.value['pluginToInstall']);
     } else {
       this.moveNext();
     }
   }
 
-  moveNext() {
-    this.isValidPlugin = true;
-    this.isValidName = true;
+  moveNext(pluginInstalled = false) {
     const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     if (first === undefined) {
@@ -182,20 +179,7 @@ export class AddFilterWizardComponent implements OnInit {
 
     switch (+id) {
       case 1:
-        if (formValues['plugin'] === '' && formValues['pluginToInstall'] === '') {
-          this.isValidPlugin = false;
-          return;
-        }
 
-        if (formValues['plugin'].length !== 1 && formValues['pluginToInstall'] === '') {
-          this.isSinglePlugin = false;
-          return;
-        }
-
-        if (formValues['name'].trim() === '') {
-          this.isValidName = false;
-          return;
-        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
 
@@ -208,27 +192,23 @@ export class AddFilterWizardComponent implements OnInit {
           this.alertService.error('A filter (or category) with this name already exists.');
           return;
         }
-
-        // create payload
-        if (formValues['name'].trim() !== '' && (formValues['plugin'].length > 0 || formValues['pluginToInstall'].length > 0)) {
-          let pluginValue;
+        let pluginValue = '';
+        if (formValues['name']?.trim() !== '' && (formValues['plugin']?.length > 0 || formValues['pluginToInstall']?.length > 0)) {
           if (formValues['pluginToInstall']) {
             pluginValue = this.plugins.find(p => p.name.toLowerCase() === formValues['pluginToInstall'].toLowerCase()).name;
           } else {
-            pluginValue = formValues['plugin'][0];
+            pluginValue = this.serviceForm.value['plugin'][0];
           }
-          this.payload = {
-            name: formValues['name'],
-            plugin: pluginValue
-          };
-
         }
-        this.getConfiguration(formValues['name'].trim());
+        if (pluginInstalled) {
+          this.getConfiguration(formValues['name'].trim(), pluginValue);
+        }
+
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
       case 2:
-        this.addFilter(this.payload);
+        this.addFilter();
         break;
       default:
         break;
@@ -270,7 +250,7 @@ export class AddFilterWizardComponent implements OnInit {
     /** request started */
     this.ngProgress.start();
     this.serviceForm.controls.pluginToInstall.disable();
-    this.serviceForm.controls.plugin.disable();
+    this.serviceForm.controls.plugin.disable({ onlySelf: true });
     this.serviceForm.setErrors({ 'invalid': true });
     this.alertService.activityMessage('Installing ' + pluginName + ' filter plugin...', true);
     this.service.installPlugin(pluginData).
@@ -337,32 +317,38 @@ export class AddFilterWizardComponent implements OnInit {
       ).subscribe(() => {
         this.ngProgress.done();
         this.alertService.closeMessage();
-        this.alertService.success(`Plugin ${pluginName} installed successfully.`);
         this.getInstalledFilterPlugins(true);
+        this.alertService.success(`Plugin ${pluginName} installed successfully.`);
         this.serviceForm.controls.pluginToInstall.enable();
         this.serviceForm.controls.plugin.enable();
+        this.serviceForm.controls.plugin.clearValidators();
+        this.serviceForm.controls.plugin.updateValueAndValidity();
         this.serviceForm.setErrors({ 'invalid': false });
       });
   }
 
-  getDescription(selectedPlugin) {
-    if (selectedPlugin === '') {
-      this.isValidPlugin = false;
-      this.selectedPluginDescription = '';
-      this.serviceForm.value['plugin'] = '';
-    } else {
-      this.isSinglePlugin = true;
-      this.isValidPlugin = true;
-      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
+  selectPlugin(selectedPlugin: string) {
+    this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
+    if (pluginInfo) {
+      this.configurationData = null;
+      this.pluginConfiguration = null;
+      this.configurationData = pluginInfo;
+      this.pluginConfiguration = cloneDeep(pluginInfo);
+      this.selectedPluginDescription = pluginInfo.description;
+      this.serviceForm.controls['config'].patchValue(null);
+      this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.serviceForm.controls.pluginToInstall.reset();
+      this.serviceForm.controls.pluginToInstall.clearValidators();
+      this.serviceForm.controls.pluginToInstall.updateValueAndValidity();
     }
   }
 
   /**
    *  Get default configuration of a selected plugin
    */
-  private getConfiguration(filterName: string): void {
-    const plugin = this.plugins.find(p => p.name.toLowerCase() === this.payload.plugin.toLowerCase());
+  private getConfiguration(filterName: string, pluginName: string): void {
+    const plugin = this.plugins.find(p => p.name.toLowerCase() === pluginName.toLowerCase());
     if (plugin) {
       this.configurationData = { key: this.serviceName + '_' + filterName, config: plugin.config };
       this.pluginConfiguration = cloneDeep(plugin);
@@ -374,14 +360,29 @@ export class AddFilterWizardComponent implements OnInit {
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig: any) {
-    this.payload.filter_config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration);
+    const filterConfig = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration);
+    this.serviceForm.controls['config'].patchValue(filterConfig);
+    this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
   }
 
   /**
    * Method to add filter
    * @param payload  to pass in request
    */
-  public addFilter(payload) {
+  public addFilter() {
+    let pluginValue;
+    if (this.serviceForm.value['pluginToInstall']) {
+      pluginValue = this.plugins.find(p => p.name.toLowerCase() === this.serviceForm.value['pluginToInstall'].toLowerCase()).name;
+    } else {
+      pluginValue = this.serviceForm.value['plugin'][0];
+    }
+
+    const payload = {
+      name: this.serviceForm.value['name'],
+      plugin: pluginValue,
+      ...this.serviceForm.value['config'] && { filter_config: this.serviceForm.value['config'] }
+    }
+
     // extract script files to upload from final payload
     const files = this.getScriptFilesToUpload(payload.filter_config);
     this.filterService.saveFilter(payload)
@@ -409,11 +410,12 @@ export class AddFilterWizardComponent implements OnInit {
   }
 
   public addFilterPipeline(payload) {
+    const name = this.serviceForm.value['name'];
     this.filterService.addFilterPipeline(payload, this.serviceName)
       .subscribe((data: any) => {
         this.notify.emit(data);
         if (payload?.files.length > 0) {
-          const filterName = this.serviceName + '_' + this.payload.name
+          const filterName = this.serviceName + '_' + name
           this.uploadScript(filterName, payload?.files);
         }
       },
@@ -430,12 +432,6 @@ export class AddFilterWizardComponent implements OnInit {
     return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
   }
 
-  validateServiceName(event) {
-    if (event.target.value.trim().length > 0) {
-      this.isValidName = true;
-    }
-  }
-
   public getInstalledFilterPlugins(pluginInstalled?: boolean) {
     this.filterService.getInstalledFilterPlugins().subscribe(
       (data: any) => {
@@ -443,7 +439,10 @@ export class AddFilterWizardComponent implements OnInit {
           return p.name.toLowerCase();
         });
         if (pluginInstalled) {
-          this.moveNext();
+          this.serviceForm.controls.plugin.disable();
+          this.serviceForm.controls.plugin.clearValidators();
+          this.serviceForm.controls.plugin.updateValueAndValidity();
+          this.moveNext(pluginInstalled);
         }
       },
       (error) => {
@@ -473,9 +472,13 @@ export class AddFilterWizardComponent implements OnInit {
 
   filterSelectionChanged(event: any) {
     if (event !== undefined) {
-      this.isValidPlugin = true;
+      this.serviceForm.controls.plugin.disable();
+      this.serviceForm.controls.pluginToInstall.enable();
     } else {
+      this.serviceForm.controls.plugin.enable();
       this.serviceForm.controls.pluginToInstall.reset();
+      this.serviceForm.controls.pluginToInstall.clearValidators();
+      this.serviceForm.controls.pluginToInstall.updateValueAndValidity();
     }
   }
 
