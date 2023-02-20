@@ -248,7 +248,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         if (formValues['rule'].length > 0) {
           this.payload.rule = formValues['rule'][0];
         }
-        this.getRulePluginConfiguration();
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         break;
@@ -276,7 +275,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
-        this.getDeliveryPluginConfiguration();
         break;
       case 5:
         nxtButton.textContent = 'Done';
@@ -339,15 +337,18 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       this.selectedRulePlugin = plugin;
       this.selectedRulePluginDescription = this.notificationRulePlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
+      this.getRulePluginConfiguration(plugin);
     } else {
       this.selectedDeliveryPlugin = plugin;
       this.selectedDeliveryPluginDescription = this.notificationDeliveryPlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
+      this.getDeliveryPluginConfiguration(plugin);
     }
+
   }
 
-  private getDeliveryPluginConfiguration(): void {
-    const plugin = this.notificationDeliveryPlugins.find(p => p.name === this.payload.channel);
+  private getDeliveryPluginConfiguration(selectedPlugin: string): void {
+    const plugin = this.notificationDeliveryPlugins.find(p => p.name === selectedPlugin);
     if (plugin) {
       this.deliveryPluginConfiguration = plugin;
       this.deliveryPluginConfigurationCopy = cloneDeep(plugin);
@@ -357,8 +358,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   /**
  *  Get default configuration of the selected plugin
  */
-  private getRulePluginConfiguration(): void {
-    const plugin = this.notificationRulePlugins.find(p => p.name === this.payload.rule);
+  private getRulePluginConfiguration(selectedPlugin: string): void {
+    const plugin = this.notificationRulePlugins.find(p => p.name === selectedPlugin);
     if (plugin) {
       this.rulePluginConfiguration = plugin;
       this.rulePluginConfigurationCopy = cloneDeep(plugin);
