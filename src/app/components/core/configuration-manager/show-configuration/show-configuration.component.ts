@@ -38,24 +38,6 @@ export class ShowConfigurationComponent implements OnInit {
       if (changes?.selectedGroup?.currentValue == this.group) {
         this.configControlService.checkConfigItemOnGroupChange(this.form, this.fullConfiguration);
       }
-
-      if (this.jsonElements) {
-        this.jsonElements.forEach((jsonComp: CodemirrorComponent) => {
-          jsonComp.codeMirror.refresh();
-        });
-      }
-
-      if (this.codeElements) {
-        this.codeElements.forEach((codeElmt: CodemirrorComponent) => {
-          codeElmt.codeMirror.refresh();
-        });
-      }
-      // refresh codemirror editor to reflect changed values
-      if (this.codeMirrorCmpt) {
-        this.codeMirrorCmpt.forEach((comp: CodemirrorComponent) => {
-          comp.codeMirror?.refresh();
-        })
-      }
     }
   }
 
@@ -78,21 +60,46 @@ export class ShowConfigurationComponent implements OnInit {
       filter(changes => Object.keys(changes).length !== 0)
     ).subscribe(
       data => {
-        const [key, value] = Object.entries(data)[0];
-        const configuration = this.groupConfiguration.find(c => c.key === key);
-        if (configuration && configuration.type !== 'script') {
-          configuration.value = value.toString();
-          this.configControlService.checkConfigItemValidityOnChange(this.form, configuration, this.fullConfiguration);
-          this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
-          if (this.form.valid) {
-            this.event.emit(data);
+        Object.keys(data).forEach(k => {
+          if (data[k] !== this.fullConfiguration[k].value) {
+            const configuration = this.groupConfiguration.find(c => c.key === k);
+            if (configuration && configuration.type !== 'script') {
+              configuration.value = data[k].toString();
+              this.configControlService.checkConfigItemValidityOnChange(this.form, configuration, this.fullConfiguration);
+              this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
+              if (this.form.valid) {
+                this.event.emit(data);
+              }
+            } else {
+              configuration.value = data[k].toString();
+              const file = this.createScriptFile(data[k].toString(), configuration);
+              this.event.emit({ [configuration.key]: file });
+            }
           }
-        } else {
-          configuration.value = value.toString();
-          const file = this.createScriptFile(value.toString(), configuration);
-          this.event.emit({ [configuration.key]: file });
-        }
+        })
       });
+  }
+
+  ngAfterViewChecked() {
+    // refresh code mirror content after page load
+    if (this.jsonElements) {
+      this.jsonElements.forEach((jsonComp: CodemirrorComponent) => {
+        jsonComp.codeMirror?.refresh();
+      });
+    }
+
+    if (this.codeElements) {
+      this.codeElements.forEach((codeElmt: CodemirrorComponent) => {
+        codeElmt.codeMirror?.refresh();
+      });
+    }
+
+    // refresh codemirror editor to reflect changed values
+    if (this.codeMirrorCmpt) {
+      this.codeMirrorCmpt.forEach((comp: CodemirrorComponent) => {
+        comp.codeMirror?.refresh();
+      })
+    }
   }
 
   createScriptFile(value: string, config: any) {

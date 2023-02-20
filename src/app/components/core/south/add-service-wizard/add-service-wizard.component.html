@@ -48,16 +48,16 @@
             <div class="field-body">
               <div class="select is-multiple">
                 <select multiple name="type" #selectedPlugin formControlName="plugin" id="pluginSelect"
-                  (change)="getDescription(selectedPlugin.value)" required>
+                  (change)="selectPlugin(selectedPlugin.value)" required>
                   <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
                 </select>
               </div>
               &nbsp;
-              <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin"
+              <small *ngIf="!serviceForm.controls['plugin'].hasError('multiplePlugins')"
                 class="help description level-left">{{
                 selectedPluginDescription }}</small>
-              <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
-              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+              <small *ngIf="serviceForm.controls['plugin'].hasError('multiplePlugins')"
+                class="help is-danger level-left">* Please select a single plugin</small>
             </div>
           </div>
           <div class="field is-horizontal form-group is-right">
@@ -84,9 +84,11 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" autocomplete="off" type="text" placeholder="name" formControlName="name" required
-                    (input)="validateServiceName($event)" title="No double quotes!" pattern="[^\x22]+">
-                  <small *ngIf="!isValidName" class="help is-danger level-left">Service name is required</small>
+                  <input class="input" id="name" autocomplete="off" type="text" placeholder="name"
+                    formControlName="name" title="No double quotes!" pattern="[^\x22]+">
+                  <small
+                    *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
+                    class="help is-danger level-left">Service name is required</small>
                 </div>
               </div>
             </div>
@@ -105,7 +107,8 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+                  <input class="checkbox" type="checkbox" [checked]="isScheduleEnabled"
+                    (click)="onCheckboxClicked($event)">
                 </div>
               </div>
             </div>
