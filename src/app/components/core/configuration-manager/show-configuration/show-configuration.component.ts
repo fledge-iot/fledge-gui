@@ -39,17 +39,6 @@ export class ShowConfigurationComponent implements OnInit {
         this.configControlService.checkConfigItemOnGroupChange(this.form, this.fullConfiguration);
       }
 
-      if (this.jsonElements) {
-        this.jsonElements.forEach((jsonComp: CodemirrorComponent) => {
-          jsonComp.codeMirror.refresh();
-        });
-      }
-
-      if (this.codeElements) {
-        this.codeElements.forEach((codeElmt: CodemirrorComponent) => {
-          codeElmt.codeMirror.refresh();
-        });
-      }
       // refresh codemirror editor to reflect changed values
       if (this.codeMirrorCmpt) {
         this.codeMirrorCmpt.forEach((comp: CodemirrorComponent) => {
@@ -94,6 +83,21 @@ export class ShowConfigurationComponent implements OnInit {
           this.event.emit({ [configuration.key]: file });
         }
       });
+  }
+
+  ngAfterViewChecked() {
+    // refresh code mirror content after page load
+    if (this.jsonElements) {
+      this.jsonElements.forEach((jsonComp: CodemirrorComponent) => {
+        jsonComp.codeMirror?.refresh();
+      });
+    }
+
+    if (this.codeElements) {
+      this.codeElements.forEach((codeElmt: CodemirrorComponent) => {
+        codeElmt.codeMirror?.refresh();
+      });
+    }
   }
 
   createScriptFile(value: string, config: any) {
