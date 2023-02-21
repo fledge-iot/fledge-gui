@@ -1,16 +1,16 @@
 ## v2.1.1 [2023-02-21]
 
 #### Added
-- [FOGL-7291] Configuration grouping on add wizard for South, North, Notification & Filter [#245](https://github.com/fledge-iot/fledge-gui/pull/245)
+- [FOGL-7291] Configuration group based tabs on add wizard for South, North, Notification & Filter [#245](https://github.com/fledge-iot/fledge-gui/pull/245)
 
 
 #### Fixed
-- [FOGL-7191] Fixed creating a service with " in the name causes the service to be hidden [#249](https://github.com/fledge-iot/fledge-gui/pull/249)
-- [FOGL-7271] Fixed undefined error on Control Dispatcher page [#242](https://github.com/fledge-iot/fledge-gui/pull/242)
-- [FOGL-6853] Fixed text wrapping issue for long words in syslog [#241](https://github.com/fledge-iot/fledge-gui/pull/241)
-- [FOGL-7247] Fixed Codemirror JSON/Script configuration editor width expand/shrink issues with large content [#238](https://github.com/fledge-iot/fledge-gui/pull/238)
+- [FOGL-7191] Creating a service with " in the name causes the service to be hidden [#249](https://github.com/fledge-iot/fledge-gui/pull/249)
+- [FOGL-7271] Undefined error on Control Dispatcher page [#242](https://github.com/fledge-iot/fledge-gui/pull/242)
+- [FOGL-6853] Text wrapping issue for long words in syslog [#241](https://github.com/fledge-iot/fledge-gui/pull/241)
+- [FOGL-7247] Codemirror JSON/Script configuration editor width expand/shrink issues with large content [#238](https://github.com/fledge-iot/fledge-gui/pull/238)
 
-- Fixed 
+
 ## v2.1.0 [2022-12-26]
 
 #### Added
