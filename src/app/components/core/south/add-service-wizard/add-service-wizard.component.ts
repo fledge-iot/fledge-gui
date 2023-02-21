@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -11,6 +11,7 @@ import {
 } from '../../../../services';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
+import { CustomValidator } from '../../../../directives/custom-validator';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -22,14 +23,10 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   public plugins = [];
   public configurationData;
   public pluginConfiguration: any;
-  public isValidPlugin = true;
-  public isSinglePlugin = true;
   public selectedPluginDescription = '';
   public plugin: any;
-  public isValidName = true;
   public serviceType = 'South';
   public isScheduleEnabled = true;
-  public payload: any;
   public schedulesName = [];
   public showSpinner = false;
   private subscription: Subscription;
@@ -37,10 +34,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   // to hold child form state
   validConfigurationForm = true;
 
-  serviceForm = new FormGroup({
-    name: new FormControl(),
-    plugin: new FormControl()
-  });
+  serviceForm: FormGroup;
 
   @Input() categoryConfigurationData;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
@@ -60,14 +54,16 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
-    private fileUploaderService: FileUploaderService
+    private fileUploaderService: FileUploaderService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
     this.getSchedules();
     this.serviceForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      plugin: ['', Validators.required]
+      name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+      plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
+      config: new FormControl(null)
     });
     this.getInstalledSouthPlugins();
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
@@ -121,16 +117,19 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     }
   }
 
-  getDescription(selectedPlugin) {
-    if (selectedPlugin === '') {
-      this.isValidPlugin = false;
-      this.selectedPluginDescription = '';
-      this.serviceForm.value['plugin'] = '';
-    } else {
-      this.isSinglePlugin = true;
-      this.isValidPlugin = true;
-      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
+  selectPlugin(selectedPlugin: string) {
+    this.configurationData = null;
+    this.pluginConfiguration = null;
+    this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
+    if (pluginInfo) {
+      this.configurationData = pluginInfo;
+      this.pluginConfiguration = cloneDeep(pluginInfo);
+      this.selectedPluginDescription = pluginInfo.description;
+      this.serviceForm.controls['config'].patchValue(pluginInfo?.config);
+      this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.isScheduleEnabled = true; // reset to default
+      this.cdRef.detectChanges();
     }
   }
 
@@ -146,8 +145,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   }
 
   moveNext() {
-    this.isValidPlugin = true;
-    this.isValidName = true;
     const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = first.getAttribute('id');
@@ -155,20 +152,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 1:
-        if (formValues['plugin'] === '') {
-          this.isValidPlugin = false;
-          return;
-        }
-
-        if (formValues['plugin'].length !== 1) {
-          this.isSinglePlugin = false;
-          return;
-        }
-
-        if (formValues['name'].trim() === '') {
-          this.isValidName = false;
-          return;
-        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
 
@@ -180,24 +163,13 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           this.alertService.error('A service/task already exists with this name.');
           return false;
         }
-
-        // create payload to pass in add service
-        if (formValues['name'].trim() !== '' && formValues['plugin'].length > 0) {
-          this.payload = {
-            name: formValues['name'],
-            type: this.serviceType.toLowerCase(),
-            plugin: formValues['plugin'][0],
-            enabled: this.isScheduleEnabled
-          };
-        }
-        this.getConfiguration();
         break;
       case 2:
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
       case 3:
-        this.addService(this.payload);
+        this.addService();
         break;
       default:
         break;
@@ -227,29 +199,28 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   *  Get default configuration of a selected plugin
-   */
-  private getConfiguration(): void {
-    const plugin = this.plugins.find(p => p.name === this.payload.plugin);
-    if (plugin) {
-      this.configurationData = plugin;
-      this.pluginConfiguration = cloneDeep(plugin);
-    }
-  }
-
-  /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
   getChangedConfig(changedConfig: any) {
-    this.payload.config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration, true);
+    const config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration, true);
+    this.serviceForm.controls['config'].patchValue(config);
+    this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
   }
 
   /**
    * Method to add service
    * @param payload  to pass in request
    */
-  public addService(payload) {
+  public addService() {
+    const payload = {
+      name: this.serviceForm.value['name'].trim(),
+      type: this.serviceType.toLowerCase(),
+      plugin: this.serviceForm.value['plugin'][0],
+      ...this.serviceForm.value['config'] && { config: this.serviceForm.value['config'] },
+      enabled: this.isScheduleEnabled
+    };
+
     // extract script files to upload from final payload
     const files = this.getScriptFilesToUpload(payload.config);
 
@@ -262,7 +233,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
           if (files.length > 0) {
-            const name = this.payload.name
+            const name = payload.name
             this.uploadScript(name, files);
           }
           this.router.navigate(['/south']);
@@ -289,12 +260,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-  }
-
-  validateServiceName(event) {
-    if (event.target.value.trim().length > 0) {
-      this.isValidName = true;
-    }
   }
 
   public getInstalledSouthPlugins(pluginInstalled?: boolean) {
@@ -332,7 +297,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     } else {
       this.isScheduleEnabled = false;
     }
-    this.payload.enabled = this.isScheduleEnabled;
   }
 
   public getSchedules(): void {
