@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from '@circlon/angular-tree-component';
-import { isEmpty, findIndex, cloneDeep } from 'lodash';
+import { isEmpty, find, cloneDeep } from 'lodash';
 
 import {
   AlertService, ConfigurationControlService, ConfigurationService,
@@ -213,7 +213,7 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  public refreshCategory(categoryKey: string, categoryDesc: string): void {
+  public refreshCategory(categoryKey: string): void {
     this.changedConfig = null;
     this.validConfigForm = false;
     /** request started */
@@ -223,8 +223,8 @@ export class ConfigurationManagerComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
-          const index = findIndex(this.categoryData, ['name', categoryKey]);
-          this.categoryData[index] = { name: categoryKey, config: data, description: categoryDesc };
+          const category = find(this.categoryDataCopy, ['name', categoryKey]);
+          category.config = data;
         },
         error => {
           /** request completed */
@@ -274,6 +274,7 @@ export class ConfigurationManagerComponent implements OnInit {
         this.validConfigForm = false;
         this.alertService.success('Configuration updated successfully.', true);
         this.ngProgress.done();
+        this.refreshCategory(categoryName);
       },
         (error) => {
           this.ngProgress.done();

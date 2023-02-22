@@ -176,7 +176,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addFormControls(index, urlData: any = null) {
-    this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator]);
+    this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern('^[^\x22]+$')]);
     this.aclForm.form.addControl('urls', new FormGroup({}));
     this.initURLControl(index, urlData);
   }

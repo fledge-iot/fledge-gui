@@ -215,11 +215,11 @@ export class ConfigurationControlService {
             type: 'json',
             label: this.setDisplayName(element),
             description: element.description,
-            value: element.value,
+            value: JSON.stringify(JSON.parse(element.value), null, ' '),
             readonly: element.readonly,
             mandatory: element.mandatory,
             order: element.order,
-            editorOptions: this.setEditorConfig(key),
+            editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
           }));
           break;
@@ -274,7 +274,7 @@ export class ConfigurationControlService {
             mandatory: element.mandatory,
             order: element.order,
             file: element.file,
-            editorOptions: this.setEditorConfig(key),
+            editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
           }));
           break;
@@ -288,7 +288,7 @@ export class ConfigurationControlService {
             readonly: element.readonly,
             mandatory: element.mandatory,
             order: element.order,
-            editorOptions: this.setEditorConfig(key),
+            editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
           }));
           break;

@@ -44,7 +44,7 @@
 
 .groupNav {
   /* Make this scrollable when needed */
-  overflow-x: auto;
+  overflow-x: hidden;
   /* We don't want vertical scrolling */
   overflow-y: hidden;
   /* For WebKit implementations, provide inertia scrolling */

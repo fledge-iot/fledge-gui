@@ -4,8 +4,15 @@
       <div id="groupNavContents" class="nav groupNav_Contents">
         <div class="tabs" *ngIf="from !== 'config-manager'">
           <ul>
-            <li class="groupNav_Link" *ngFor="let g of groups;let i = index"
-              [ngClass]="{'is-active': selectedGroup == g.group}" [aria-selected]="selectedGroup == g.group">
+            <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
+              <h6 class="is-6 has-text-weight-semibold">
+                <a (click)="selectTab(g.group)">
+                  {{g.group}}
+                </a>
+              </h6>
+            </li>
+            <!-- Advanced and security group -->
+            <li *ngFor="let g of advanceCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 has-text-weight-semibold">
                 <a (click)="selectTab(g.group)">
                   {{g.group}}
@@ -13,7 +20,7 @@
               </h6>
             </li>
             <ng-container *ngIf="from !== 'notification'">
-              <li class="groupNav_Link" [ngClass]="{'is-active': selectedGroup == 'developer'}"
+              <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
                 <h6 class="is-6 has-text-weight-semibold">
                   <a (click)="selectedGroup = 'developer'">Developer</a>
@@ -34,6 +41,12 @@
   </div>
   <div [ngClass]="{'highlight': from !== 'config-manager'}">
     <ng-container *ngFor="let g of groups">
+      <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
+        [selectedGroup]="selectedGroup" [fullConfiguration]="category.config" (event)="getChangedConfiguration($event)"
+        (formStatusEvent)="formStatus($event)"></app-show-configuration>
+    </ng-container>
+    <!-- Advanced and security group configuration -->
+    <ng-container *ngFor="let g of advanceCategoriesGroup">
       <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
         <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
           [selectedGroup]="selectedGroup" [fullConfiguration]="g.config"
@@ -44,14 +57,9 @@
         <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
           <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
             [selectedGroup]="selectedGroup" [fullConfiguration]="g.config"
-            (event)="getChangedSecurityConfiguration($event)"
+            (event)="getChangedAdvanceConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-show-configuration>
         </ng-container>
-      </ng-template>
-      <ng-template #pluginGroup>
-        <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
-          [selectedGroup]="selectedGroup" [fullConfiguration]="category.config"
-          (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"></app-show-configuration>
       </ng-template>
     </ng-container>
     <ng-container *ngIf="from !== 'notification'">
@@ -60,3 +68,4 @@
       </app-plugin-persist-data>
     </ng-container>
   </div>
+</div>

@@ -48,16 +48,15 @@
             <div class="field-body">
               <div class="select is-multiple">
                 <select multiple #selectedPlugin name="plugin" formControlName="plugin" id="pluginSelect"
-                  (change)="getDescription(selectedPlugin.value)" required>
+                  (change)="selectPlugin(selectedPlugin.value)" required>
                   <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
                 </select>
               </div>
               &nbsp;
-              <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin"
-                class="help description level-left">{{
-                selectedPluginDescription }}</small>
-              <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
-              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+              <small *ngIf="!taskForm.controls['plugin'].hasError('multiplePlugins')"
+                class="help description level-left">{{ selectedPluginDescription }}</small>
+              <small *ngIf="taskForm.controls['plugin'].hasError('multiplePlugins')" class="help is-danger level-left">*
+                Please select a single plugin</small>
             </div>
           </div>
           <div class="field is-horizontal form-group">
@@ -84,11 +83,13 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" type="text" placeholder="name" formControlName="name"
-                    (change)="validateTaskName($event)" required>
-                  <span *ngIf="!isValidName || (name.errors?.required && name.touched)" class="help is-danger">
+                  <input class="input" type="text" placeholder="name" formControlName="name" title="No double quotes!"
+                    pattern="[^\x22]+" autocomplete="off" required>
+                  <span *ngIf="taskForm.controls['name'].hasError('required') && taskForm.controls['name'].touched"
+                    class="help is-danger">
                     <sup>*</sup>North instance name is required.
                   </span>
+
                 </div>
               </div>
             </div>
@@ -119,18 +120,17 @@
                   <div class="columns is-mobile">
                     <div class="column">
                       <input class="input" type='number' appNumberOnly min="0" max="365" placeholder="days"
-                        formControlName="repeatDays" (change)="validateRepeatDays($event)">
-                      <span *ngIf="!isValidDay || (repeatDays.errors?.min || repeatDays.errors?.max)"
+                        formControlName="repeatDays">
+                      <span *ngIf="repeatDays.errors?.required || repeatDays.errors?.min || repeatDays.errors?.max"
                         class="help is-danger">
                         <sup>*</sup>Repeat days must be in range 0 - 365.
                       </span>
                     </div>
                     <div class="column">
                       <input class="input" type='text' placeholder="HH:mm:ss" formControlName="repeatTime"
-                        mask='00:00:00' (input)="setRepeatIntervalValue($event)" [pattern]='regExp'
-                        (change)="validateRepeatTime($event)">
+                        mask='00:00:00' (input)="setRepeatIntervalValue($event)" [pattern]='regExp'>
 
-                      <span *ngIf="!isValidTime || repeatTime.errors?.pattern" class="help is-danger">
+                      <span *ngIf="repeatTime.errors?.required || repeatTime.errors?.pattern" class="help is-danger">
                         <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
                       </span>
                     </div>
@@ -140,13 +140,11 @@
             </div>
           </div>
         </div>
-
         <div class="box step-content" id="c-2">
           <app-configuration-group *ngIf="configurationData" [category]="configurationData"
             (changedConfigEvent)="getChangedConfig($event)" [from]="'add-task-form'"
             (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
-
         <div class="box step-content" id="c-3">
           <div class="field is-horizontal">
             <div class="field-label">
@@ -155,7 +153,8 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+                  <input class="checkbox" type="checkbox" [checked]="isScheduleEnabled"
+                    (click)="onCheckboxClicked($event)">
                 </div>
               </div>
             </div>
