@@ -3,7 +3,6 @@
 #### Added
 - [FOGL-7291] Configuration grouping on add wizard for South, North, Notification & Filter [#245](https://github.com/fledge-iot/fledge-gui/pull/245)
 
-
 #### Fixed
 - [FOGL-7191] Fixed creating a service with " in the name causes the service to be hidden [#249](https://github.com/fledge-iot/fledge-gui/pull/249)
 - [FOGL-7271] Fixed undefined error on Control Dispatcher page [#242](https://github.com/fledge-iot/fledge-gui/pull/242)
@@ -16,7 +15,6 @@
 
 - [FOGL-7108] Role based access for view & data_view role users [#231](https://github.com/fledge-iot/fledge-gui/pull/231)
 - [FOGL-7126] South and North instances's details modal configuration grouping based on group key [#234](https://github.com/fledge-iot/fledge-gui/pull/234)
-
 
 #### Changed
 
