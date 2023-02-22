@@ -2,7 +2,7 @@
   <div class="configuration_group_wrapper">
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div id="groupNavContents" class="nav groupNav_Contents">
-        <div class="tabs" *ngIf="from !== 'config-manager'">
+        <div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 has-text-weight-semibold">
@@ -29,7 +29,6 @@
             </ng-container>
           </ul>
         </div>
-        <span id="Indicator2" class="groupNav_Indicator"></span>
       </div>
     </nav>
     <button (click)="left()" id="leftScroll" class="Advancer Advancer_Left" type="button">
