@@ -57,7 +57,8 @@ export class ConfigurationBase<T> {
     this.mandatory = options.mandatory === undefined ? 'false' : options.mandatory;
     this.required = options.mandatory === undefined ? false : (options.mandatory == 'true');
     this.editable = options.editable === undefined ? true : options.editable;
-    this.order = options.order === undefined ? 1 : options.order;
+    // assign a big number to the property which doesn't have 'order' key to show the property at last
+    this.order = options.order === undefined ? 999 : options.order;
     this.length = options.length;
     this.minimum = options.minimum;
     this.maximum = options.maximum;
