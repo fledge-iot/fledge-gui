@@ -146,7 +146,7 @@ export class ConfigurationControlService {
     Object.keys(configuration).forEach(key => {
       const element = configuration[key];
       element.key = key;
-      element.value = element.value ? element.value : element.default;
+      element.value = element.value !== undefined ? element.value : element.default;
       if (element.type.toLowerCase() == 'acl') {
         // fetch all acls if property type is 'acl'
         this.getAllACLs();
