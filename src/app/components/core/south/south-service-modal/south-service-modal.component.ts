@@ -8,8 +8,8 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { Router } from '@angular/router';
 import {
   AlertService, AssetsService, ConfigurationControlService, ConfigurationService,
-  FileUploaderService, FilterService, GenerateCsvService, ProgressBarService, RolesService,
-  SchedulesService, ServicesApiService
+  FileUploaderService, FilterService, GenerateCsvService, ProgressBarService, ResponseHandler, RolesService,
+  SchedulesService, ServicesApiService, ToastService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE } from '../../../../utils';
@@ -17,7 +17,7 @@ import { DialogService } from '../../../common/confirmation-dialog/dialog.servic
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -77,7 +77,9 @@ export class SouthServiceModalComponent implements OnInit {
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
-    public rolesService: RolesService) { }
+    public rolesService: RolesService,
+    private response: ResponseHandler,
+    private toastService: ToastService) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
@@ -196,12 +198,14 @@ export class SouthServiceModalComponent implements OnInit {
 
   public disableSchedule(serviceName) {
     this.apiCallsStack.push(this.schedulesService.disableScheduleByName(serviceName)
-      .pipe(catchError(e => of(e))));
+      .pipe(map(() => ({ type: 'schedule', success: true })))
+      .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 
   public enableSchedule(serviceName) {
     this.apiCallsStack.push(this.schedulesService.enableScheduleByName(serviceName)
-      .pipe(catchError(e => of(e))));
+      .pipe(map(() => ({ type: 'schedule', success: true })))
+      .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 
   saveServiceChanges() {
@@ -530,7 +534,7 @@ export class SouthServiceModalComponent implements OnInit {
   /**
   * update plugin configuration
   */
-  updateConfiguration(categoryName: string, configuration: any) {
+  updateConfiguration(categoryName: string, configuration: any, type: string) {
     const files = this.getScriptFilesToUpload(configuration);
     if (files.length > 0) {
       this.uploadScript(categoryName, files);
@@ -540,7 +544,9 @@ export class SouthServiceModalComponent implements OnInit {
       return;
     }
     this.apiCallsStack.push(this.configService.
-      updateBulkConfiguration(categoryName, configuration).pipe(catchError(e => of(e))));
+      updateBulkConfiguration(categoryName, configuration)
+      .pipe(map(() => ({ type, success: true })))
+      .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 
   /**
@@ -559,26 +565,36 @@ export class SouthServiceModalComponent implements OnInit {
   save() {
     this.saveServiceChanges();
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
-      this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig);
+      this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
     }
     if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
-      this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig);
+      this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
     }
 
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
-        this.updateConfiguration(element.key, element.config);
+        this.updateConfiguration(element.key, element.config, 'advance-config');
       });
     }
 
     if (this.apiCallsStack.length > 0) {
       this.ngProgress.start();
-      forkJoin(this.apiCallsStack).subscribe(() => {
-        this.ngProgress.done();
-        this.alertService.success('Configuration updated successfully.', true);
-        this.notify.emit();
-        this.toggleModal(false);
-        this.apiCallsStack = [];
+      forkJoin(this.apiCallsStack).subscribe((result) => {
+        result.forEach((r: any) => {
+          this.ngProgress.done();
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.toastService.error(r.error.statusText);
+            }
+          } else {
+            this.response.handleResponseMessage(r.type);
+            this.notify.emit();
+            this.toggleModal(false);
+            this.apiCallsStack = [];
+          }
+        })
       });
     } else {
       this.toggleModal(false);
