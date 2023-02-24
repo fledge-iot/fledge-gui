@@ -573,7 +573,7 @@ export class SouthServiceModalComponent implements OnInit {
 
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
-        this.updateConfiguration(element.key, element.config, 'advance-config');
+        this.updateConfiguration(element.key, element.config, 'plugin-config');
       });
     }
 

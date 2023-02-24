@@ -15,8 +15,6 @@ export class ResponseHandler {
       this.toastService.success('Configuration updated successfully.');
     else if (type === 'filter-config') {
       this.toastService.success('Filter configuration updated successfully.');
-    } else if (type === 'advance-config') {
-      this.toastService.success('Advance configuration updated successfully.');
     }
   }
 }
