@@ -366,7 +366,6 @@ export class ConfigurationControlService {
       Object.keys(pluginConfiguration).forEach(key => {
         const el = pluginConfiguration[key];
         el.key = key;
-        el.value = el.value ? el.value : el.default;
         // generate validation expression on page load based on configuration property values
         config.validityExpression = this.generateValidationExpression(el, config.validityExpression);
       });
