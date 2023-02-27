@@ -280,7 +280,7 @@
       <div [ngClass]="{'is-hoverable': viewPort == 'desktop'}" class="dropdown is-right" id="dropdown-box"
         (click)="viewPort !== 'desktop'? toggleDropdown(): false">
         <div [ngClass]="{'dropdown-trigger': pingInfo.isAlive}">
-          <a [ngClass]="{'navbar-link': pingInfo.isAlive}">
+          <a [ngClass]="{'navbar-link': pingInfo.isAlive , 'default-cursor': !pingInfo.isAlive }">
             <b class="has-text-grey">{{userName}}</b>
           </a>
         </div>
