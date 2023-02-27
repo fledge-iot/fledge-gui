@@ -580,7 +580,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.apiCallsStack = [];
       });
     } else {
-      this.toast.info('Nothing to save', 5000);
+      this.toast.info('Nothing to save', 3000);
       this.toggleModal(false);
     }
   }

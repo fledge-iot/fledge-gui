@@ -597,7 +597,7 @@ export class SouthServiceModalComponent implements OnInit {
         this.apiCallsStack = [];
       });
     } else {
-      this.toastService.info('Nothing to save', 5000);
+      this.toastService.info('Nothing to save', 3000);
       this.toggleModal(false);
     }
   }
