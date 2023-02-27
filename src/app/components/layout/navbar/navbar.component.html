@@ -279,13 +279,13 @@
     <div *ngIf='isUserLoggedIn' class="navbar-item user-dropdown">
       <div [ngClass]="{'is-hoverable': viewPort == 'desktop'}" class="dropdown is-right" id="dropdown-box"
         (click)="viewPort !== 'desktop'? toggleDropdown(): false">
-        <div class="dropdown-trigger">
-          <a class="navbar-link">
+        <div [ngClass]="{'dropdown-trigger': pingInfo.isAlive}">
+          <a [ngClass]="{'navbar-link': pingInfo.isAlive}">
             <b class="has-text-grey">{{userName}}</b>
           </a>
         </div>
 
-        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+        <div *ngIf="pingInfo.isAlive" class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item user-content">
               <i class="fa fa-sm fa-user" aria-hidden="true"></i>&nbsp; Profile
