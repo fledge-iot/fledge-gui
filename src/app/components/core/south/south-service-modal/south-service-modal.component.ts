@@ -580,7 +580,6 @@ export class SouthServiceModalComponent implements OnInit {
     if (this.apiCallsStack.length > 0) {
       this.ngProgress.start();
       forkJoin(this.apiCallsStack).subscribe((result) => {
-        console.log('result', result);
         result.forEach((r: any) => {
           this.ngProgress.done();
           if (r.failed) {
@@ -598,6 +597,7 @@ export class SouthServiceModalComponent implements OnInit {
         this.apiCallsStack = [];
       });
     } else {
+      this.toast.info('Nothing to save', 5000);
       this.toggleModal(false);
     }
   }
