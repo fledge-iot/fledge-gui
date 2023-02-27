@@ -572,12 +572,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             }
           } else {
             this.response.handleResponseMessage(r.type);
-            this.notify.emit();
-            this.toggleModal(false);
-            this.form.reset();
-            this.apiCallsStack = [];
           }
-        })
+        });
+        this.notify.emit();
+        this.toggleModal(false);
+        this.form.reset();
+        this.apiCallsStack = [];
       });
     } else {
       this.toggleModal(false);

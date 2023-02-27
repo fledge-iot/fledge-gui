@@ -580,6 +580,7 @@ export class SouthServiceModalComponent implements OnInit {
     if (this.apiCallsStack.length > 0) {
       this.ngProgress.start();
       forkJoin(this.apiCallsStack).subscribe((result) => {
+        console.log('result', result);
         result.forEach((r: any) => {
           this.ngProgress.done();
           if (r.failed) {
@@ -590,11 +591,11 @@ export class SouthServiceModalComponent implements OnInit {
             }
           } else {
             this.response.handleResponseMessage(r.type);
-            this.notify.emit();
-            this.toggleModal(false);
-            this.apiCallsStack = [];
           }
-        })
+        });
+        this.notify.emit();
+        this.toggleModal(false);
+        this.apiCallsStack = [];
       });
     } else {
       this.toggleModal(false);
