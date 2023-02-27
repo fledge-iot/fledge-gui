@@ -545,6 +545,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   save() {
+    console.log('save');
+
     this.saveScheduleFields(this.form);
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig, 'plugin-config');
@@ -580,6 +582,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.apiCallsStack = [];
       });
     } else {
+      this.toast.info('Nothing to save', 5000);
       this.toggleModal(false);
     }
   }
