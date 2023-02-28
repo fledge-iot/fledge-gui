@@ -4,14 +4,6 @@
   }
 }
 
-/* .config-div {
-  margin-top: 1vw;
-}
-
-.tooltip.is-tooltip-multiline::before {
-  min-width: 16rem !important;
-} */
-
 .highlight {
   border: 1px solid transparent;
   border-color: #dbdbdb;
@@ -56,21 +48,15 @@
   /* font-size: 0; */
 }
 
-.groupNav_Contents {
+.groupNav_contents {
   float: left;
   padding-right: 10%;
   transition: transform 0.2s ease-in-out;
 }
 
-.groupNav_Contents-no-transition {
-  transition: none;
-}
 
-.Advancer {
+.advancer {
   /* Reset the button */
-  /* appearance: none; */
-  /* background: transparent; */
-  /* padding: 0; */
   border: 0;
   position: absolute;
   top: 0;
@@ -78,24 +64,24 @@
   opacity: 0;
   /* transition: opacity 0.3s; */
 }
-.Advancer:focus {
+.advancer:focus {
   outline: 0;
 }
-.Advancer:hover {
+.advancer:hover {
   cursor: pointer;
   /* Now style it as needed */
   /* Set the buttons invisible by default */
 }
-.Advancer_Left {
+.advancer_left {
   left: 0;
 }
-[data-overflowing="both"] ~ .Advancer_Left, [data-overflowing="left"] ~ .Advancer_Left {
+[data-overflowing="both"] ~ .advancer_left, [data-overflowing="left"] ~ .advancer_left {
   opacity: 1;
 }
-.Advancer_Right {
+.advancer_right {
   right: 0;
 }
-[data-overflowing="both"] ~ .Advancer_Right, [data-overflowing="right"] ~ .Advancer_Right {
+[data-overflowing="both"] ~ .advancer_right, [data-overflowing="right"] ~ .advancer_right {
   opacity: 1;
 }
 

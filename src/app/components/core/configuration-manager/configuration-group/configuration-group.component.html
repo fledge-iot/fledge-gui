@@ -1,7 +1,7 @@
 <div class="container">
   <div class="configuration_group_wrapper">
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
-      <div id="groupNavContents" class="nav groupNav_Contents">
+      <div id="groupNavContents" class="nav groupNav_contents">
         <div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
@@ -31,10 +31,10 @@
         </div>
       </div>
     </nav>
-    <button (click)="left()" id="leftScroll" class="Advancer Advancer_Left" type="button">
+    <button (click)="left()" id="leftScroll" class="advancer advancer_left" type="button">
       <i class="fas fa-angle-left fa-xl"></i>
     </button>
-    <button (click)="right()" id="rightScroll" class="Advancer Advancer_Right" type="button">
+    <button (click)="right()" id="rightScroll" class="advancer advancer_right" type="button">
       <i class="fas fa-angle-right fa-xl"></i>
     </button>
   </div>
