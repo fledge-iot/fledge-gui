@@ -86,6 +86,8 @@
   font-size: 0.7rem;
 }
 
-.default-cursor {
-  cursor: default;
-}
+.disabled {
+  opacity: .95;
+  background-color: whitesmoke;
+  pointer-events: none;
+ }
