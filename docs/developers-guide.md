@@ -114,6 +114,7 @@ Set API base URL in `environments/environment.prod.ts`, you can always change it
 | @kurkle/color                   | 0.1.9   | 0.1.9                 | MIT     |
 | Animate.css                     | 4.1.1   | 4.1.1                 | MIT     |
 | ngx-build-plus                  | 13.0.1  | 14.0.0                | MIT     |
+| bulma-toast                     | 2.4.2   | 2.4.2                 | MIT     |
 
 ## Update Dependencies
 
