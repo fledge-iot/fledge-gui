@@ -72,6 +72,7 @@ export class ShowConfigurationComponent implements OnInit {
               }
             } else {
               configuration.value = data[k].toString();
+              this.configControlService.checkConfigItemValidityOnChange(this.form, configuration, this.fullConfiguration);
               const file = this.createScriptFile(data[k].toString(), configuration);
               this.event.emit({ [configuration.key]: file });
             }

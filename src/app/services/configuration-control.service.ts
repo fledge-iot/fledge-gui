@@ -322,7 +322,8 @@ export class ConfigurationControlService {
       autoCloseBrackets: true,
       matchBrackets: true,
       lint: true,
-      inputStyle: 'textarea'
+      inputStyle: 'textarea',
+      readOnly: false
     };
     if (type === 'JSON') {
       editorOptions.mode = 'application/json';
@@ -371,7 +372,17 @@ export class ConfigurationControlService {
       });
       const isValidExpression = this.validateExpression(config.key, config.validityExpression);
       pluginConfiguration[config.key].validityExpression = config?.validityExpression;
+      if(!isValidExpression){
+        if(config.editorOptions.hasOwnProperty('readOnly')){
+          config.editorOptions["readOnly"] = true;
+        }
+      }
       return !isValidExpression;
+    }
+    else{
+      if(config.type === 'script'){
+        this.enableScriptEditingIfFileIsAvailable(config);
+      }
     }
   }
 
@@ -400,6 +411,11 @@ export class ConfigurationControlService {
         if (cnf.validity) {
           const isValidExpression = this.validateExpression(key, cnf.validityExpression);
           isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
+        }
+        else {
+          if (config.type === 'script') {
+            this.enableScriptEditingIfFileIsAvailable(config);
+          }
         }
       });
     }
@@ -513,4 +529,12 @@ export class ConfigurationControlService {
     return finalConfiguration;
   }
 
+  enableScriptEditingIfFileIsAvailable(config){
+    if (config.fileName === "" || config.fileName === null) {
+        config.editorOptions["readOnly"] = true;
+    }
+    else {
+        config.editorOptions["readOnly"] = false;
+    }
+  }
 }
