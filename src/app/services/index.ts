@@ -24,5 +24,7 @@ export * from './plugin.service';
 export * from './packages-log.service';
 export * from './shared.service';
 export * from './roles.service';
+export * from './toast.service';
+export * from './response-handler.service';
 export * from './configuration-control.service';
 export * from './file-uploader.service';

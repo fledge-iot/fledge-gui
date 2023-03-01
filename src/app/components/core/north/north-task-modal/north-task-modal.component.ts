@@ -10,7 +10,8 @@ import { Router } from '@angular/router';
 import {
   AlertService, ConfigurationControlService, ConfigurationService,
   FileUploaderService, FilterService, NorthService, ProgressBarService,
-  RolesService, SchedulesService, ServicesApiService
+  ResponseHandler,
+  RolesService, SchedulesService, ServicesApiService, ToastService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import Utils from '../../../../utils';
@@ -18,7 +19,7 @@ import { DialogService } from '../../../common/confirmation-dialog/dialog.servic
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -81,7 +82,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private docService: DocService,
     public rolesService: RolesService,
     private configurationControlService: ConfigurationControlService,
-    private fileUploaderService: FileUploaderService
+    private fileUploaderService: FileUploaderService,
+    private response: ResponseHandler,
+    private toast: ToastService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -302,7 +305,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       updatePayload.exclusive = form.controls['exclusive'].value;
     }
 
-    this.apiCallsStack.push(this.schedulesService.updateSchedule(this.task['id'], updatePayload).pipe(catchError(e => of(e))));
+    this.apiCallsStack.push(this.schedulesService.updateSchedule(this.task['id'], updatePayload)
+      .pipe(map(() => ({ type: 'schedule', success: true })))
+      .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 
   getTimeIntervalValue(event) {
@@ -523,7 +528,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   /**
    * update plugin configuration
    */
-  updateConfiguration(categoryName: string, configuration: any) {
+  updateConfiguration(categoryName: string, configuration: any, type: string) {
     const files = this.getScriptFilesToUpload(configuration);
     if (files.length > 0) {
       this.uploadScript(categoryName, files);
@@ -534,35 +539,48 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
 
     this.apiCallsStack.push(this.configService.
-      updateBulkConfiguration(categoryName, configuration).pipe(catchError(e => of(e))));
+      updateBulkConfiguration(categoryName, configuration)
+      .pipe(map(() => ({ type, success: true })))
+      .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 
   save() {
     this.saveScheduleFields(this.form);
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
-      this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig);
+      this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig, 'plugin-config');
     }
     if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
-      this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig);
+      this.updateConfiguration(this.filterConfigurationCopy?.key, this.changedFilterConfig, 'filter-config');
     }
 
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
-        this.updateConfiguration(element.key, element.config);
+        this.updateConfiguration(element.key, element.config, 'plugin-config');
       });
     }
 
     if (this.apiCallsStack.length > 0) {
       this.ngProgress.start();
-      forkJoin(this.apiCallsStack).subscribe(() => {
-        this.ngProgress.done();
-        this.alertService.success('Configuration updated successfully.', true);
+      forkJoin(this.apiCallsStack).subscribe((result) => {
+        result.forEach((r: any) => {
+          this.ngProgress.done();
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.toast.error(r.error.statusText);
+            }
+          } else {
+            this.response.handleResponseMessage(r.type);
+          }
+        });
         this.notify.emit();
         this.toggleModal(false);
         this.form.reset();
         this.apiCallsStack = [];
       });
     } else {
+      this.toast.info('Nothing to save', 3000);
       this.toggleModal(false);
     }
   }
