@@ -48,6 +48,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   uptime: any = '';
   viewPort: any = '';
   public showSpinner = false;
+  isManualRefresh = false;
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -82,8 +83,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((pingTime: number) => {
         if (pingTime === -1) {
+          this.isManualRefresh = true;
           this.stop();
         } else {
+          this.isManualRefresh = false;
           this.start(pingTime);
         }
       });
