@@ -91,3 +91,8 @@
   background-color: whitesmoke;
   pointer-events: none;
  }
+
+ .help {
+  margin-top: 0px;
+  font-size: 0.6rem;
+ }
