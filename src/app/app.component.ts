@@ -1,6 +1,8 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { PingService } from './services';
 import { SharedService } from './services/shared.service';
@@ -23,6 +25,8 @@ export class AppComponent implements OnInit {
   isServiceRunning = true;
   modalWindow: HTMLElement | null;
 
+  private destroySubject: Subject<void> = new Subject();
+
   constructor(private router: Router,
     private ping: PingService,
     private sharedService: SharedService) { }
@@ -38,19 +42,24 @@ export class AppComponent implements OnInit {
       this.navMode = 'over';
       this._opened = false;
     }
-    this.sharedService.loginScreenSubject.subscribe((isLoginView: boolean) => {
-      this.isLoginView = isLoginView;
-    })
+    this.sharedService.loginScreenSubject
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe((isLoginView: boolean) => {
+        this.isLoginView = isLoginView;
+      })
 
     this.setPingIntervalOnAppLaunch();
     this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        this.isActive(event.url);
-      }
-    });
+    this.router.events
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(event => {
+        if (event instanceof NavigationEnd) {
+          this.isActive(event.url);
+        }
+      });
 
     this.sharedService.connectionInfo
+      .pipe(takeUntil(this.destroySubject))
       .subscribe(connectionInfo => {
         if (connectionInfo) {
           this.url = this.router.url;
@@ -115,6 +124,11 @@ export class AppComponent implements OnInit {
     this.ping.setDefaultRefreshGraphTime();
     const refreshInterval = JSON.parse(localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL'));
     this.ping.refreshIntervalChanged.next(refreshInterval);
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe from all observables
+    this.destroySubject.next();
   }
 }
 
