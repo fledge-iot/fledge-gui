@@ -129,6 +129,7 @@ export class AppComponent implements OnInit {
   ngOnDestroy() {
     // Unsubscribe from all observables
     this.destroySubject.next();
+    this.destroySubject.unsubscribe();
   }
 }
 
