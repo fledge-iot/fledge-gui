@@ -309,6 +309,7 @@ a.dropdown-item:hover {
   opacity: 0.8;
 }
 
+/* For modal card window */
 .modal-disabled {
   pointer-events: none;
  }
@@ -316,3 +317,9 @@ a.dropdown-item:hover {
  div:has(div.modal-disabled) {
   cursor: not-allowed;
  }
+
+ .blur {
+  filter: blur(1px);
+ }
+
+ /*****************/

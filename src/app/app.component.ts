@@ -63,15 +63,16 @@ export class AppComponent implements OnInit {
       .subscribe(connectionInfo => {
         if (connectionInfo) {
           this.url = this.router.url;
+          this.modalWindow = document.querySelector('.modal.is-active');
+          let modalCard = this.modalWindow?.querySelector('.modal-card');
           if (!connectionInfo?.isServiceUp) {
-            this.modalWindow = document.querySelector('.modal.is-active');
             if (this.modalWindow) {
               this.modalWindow?.classList.add('modal-disabled');
-            } else {
-              this.modalWindow = document.querySelector('.modal.modal-disabled');
-              this.modalWindow?.classList.remove('modal-disabled')
-              this.modalWindow = null;
+              modalCard.classList.add('blur');
             }
+          } else {
+            this.modalWindow?.classList.remove('modal-disabled');
+            modalCard?.classList.remove('blur');
           }
           this.isServiceRunning = connectionInfo?.isServiceUp;
         }
