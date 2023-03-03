@@ -10,3 +10,7 @@
   opacity: .7;
   pointer-events: none;
  }
+
+ ul:has(section.disabled) {
+  cursor: not-allowed;
+ }

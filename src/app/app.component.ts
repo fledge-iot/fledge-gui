@@ -17,7 +17,11 @@ export class AppComponent implements OnInit {
 
   public _opened = true;
   public returnUrl: string;
+  public url: string;
   public isLoginView = false;
+
+  isServiceRunning = true;
+  modalWindow: HTMLElement | null;
 
   constructor(private router: Router,
     private ping: PingService,
@@ -45,6 +49,27 @@ export class AppComponent implements OnInit {
         this.isActive(event.url);
       }
     });
+
+    this.sharedService.connectionInfo
+      .subscribe(connectionInfo => {
+        if (connectionInfo) {
+          this.url = this.router.url;
+          if (!connectionInfo?.isServiceUp) {
+            this.modalWindow = document.querySelector('.modal.is-active');
+            console.log('active', this.modalWindow);
+
+            if (this.modalWindow) {
+              this.modalWindow?.classList.add('modal-disabled');
+            } else {
+              this.modalWindow = document.querySelector('.modal.modal-disabled');
+              console.log('close', this.modalWindow);
+              this.modalWindow?.classList.remove('modal-disabled')
+              this.modalWindow = null;
+            }
+          }
+          this.isServiceRunning = connectionInfo?.isServiceUp;
+        }
+      });
   }
 
   @HostListener('window:resize', ['$event'])
