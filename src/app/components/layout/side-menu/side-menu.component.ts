@@ -61,5 +61,6 @@ export class SideMenuComponent implements OnInit {
   ngOnDestroy() {
     // Unsubscribe from all observables
     this.destroySubject.next();
+    this.destroySubject.unsubscribe();
   }
 }
