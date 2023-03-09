@@ -27,6 +27,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   page = 1;
   offset = 0;
   searchTerm = '';
+  keyword = "";
+  searchDelay: number = 300;
+  setTimeoutID;
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
@@ -173,7 +176,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.offset).
+    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.offset, this.keyword).
       subscribe(
         (data) => {
           if (autoRefresh === false) {
@@ -232,5 +235,14 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
     this.subscription.unsubscribe();
+  }
+
+  getFilteredSysLog() {
+    let inputElement = <HTMLInputElement>document.getElementById('syslog-search');
+    this.keyword = inputElement.value;
+    clearTimeout(this.setTimeoutID);
+    this.setTimeoutID = setTimeout(() => {
+      this.getSysLogs();
+    }, this.searchDelay);
   }
 }

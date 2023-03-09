@@ -79,11 +79,11 @@
           <div class="column">
             <label class="label is-small">Search</label>
             <input type="search" class="input is-fullwidth is-small" placeholder="search text on current page"
-              [(ngModel)]="searchTerm" />
+              [(ngModel)]="searchTerm" id="syslog-search" (keyup)="getFilteredSysLog()"/>
           </div>
         </div>
       </div>
-      <ng-container *ngFor="let log of logs | SearchPipe:searchTerm">
+      <ng-container *ngFor="let log of logs">
         <p class="s-log" [innerHTML]="log"> </p>
       </ng-container>
       <ng-container *ngIf="logs?.length == 0">
