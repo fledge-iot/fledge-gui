@@ -378,7 +378,7 @@ export class AddFilterWizardComponent implements OnInit {
     }
 
     const payload = {
-      name: this.serviceForm.value['name'],
+      name: this.serviceForm.value['name'].trim(),
       plugin: pluginValue,
       ...this.serviceForm.value['config'] && { filter_config: this.serviceForm.value['config'] }
     }

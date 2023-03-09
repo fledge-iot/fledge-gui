@@ -226,7 +226,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (formValues['name'].trim() !== '') {
-          this.payload.name = formValues['name'];
+          this.payload.name = formValues['name'].trim();
           this.payload.description = formValues['description'];
         }
         if (this.notificationRulePlugins.length === 0) {
