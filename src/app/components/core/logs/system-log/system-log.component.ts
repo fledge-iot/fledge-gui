@@ -28,7 +28,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   offset = 0;
   searchTerm = '';
   keyword = "";
-  searchDelay: number = 300;
+  searchDelay: number = 800;
   setTimeoutID;
 
   constructor(private systemLogService: SystemLogService,
