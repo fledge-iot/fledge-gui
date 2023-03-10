@@ -20,7 +20,10 @@ export class SystemLogService {
     params = params.set('limit', limit.toString());
     params = params.set('offset', offset.toString());
     params = params.set('nontotals', true);
-    params = params.set('keyword', keyword);
+
+    if (keyword.trim().length > 0) {
+      params = params.set('keyword', keyword);
+    }
 
     if (level.toString() !== '') {
       params = params.set('level', level.toString());

@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { interval, Subject, Subscription } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
+import { fromEvent, interval, Subject, Subscription } from 'rxjs';
+import { takeWhile, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { sortBy } from 'lodash';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../../services';
 import { POLLING_INTERVAL } from '../../../../utils';
@@ -24,12 +24,12 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
 
+  @ViewChild('search', { static: true }) search: ElementRef
+
   page = 1;
   offset = 0;
   searchTerm = '';
   keyword = "";
-  searchDelay: number = 800;
-  setTimeoutID;
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
@@ -64,6 +64,13 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.getSysLogs(true);
         this.getSchedules();
       });
+
+    fromEvent(this.search.nativeElement, 'input')    // handle search query
+      .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.keyword = this.search.nativeElement.value;
+        this.getSysLogs();
+      })
   }
 
   public getSchedules(): void {
@@ -235,14 +242,5 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
     this.subscription.unsubscribe();
-  }
-
-  getFilteredSysLog() {
-    let inputElement = <HTMLInputElement>document.getElementById('syslog-search');
-    this.keyword = inputElement.value;
-    clearTimeout(this.setTimeoutID);
-    this.setTimeoutID = setTimeout(() => {
-      this.getSysLogs();
-    }, this.searchDelay);
   }
 }

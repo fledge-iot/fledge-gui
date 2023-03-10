@@ -79,7 +79,7 @@
           <div class="column">
             <label class="label is-small">Search</label>
             <input type="search" class="input is-fullwidth is-small" placeholder="search text"
-              [(ngModel)]="searchTerm" id="syslog-search" (keyup)="getFilteredSysLog()"/>
+              [(ngModel)]="searchTerm" #search/>
           </div>
         </div>
       </div>
