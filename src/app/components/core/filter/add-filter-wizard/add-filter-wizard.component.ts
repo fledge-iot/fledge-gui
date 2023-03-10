@@ -62,7 +62,7 @@ export class AddFilterWizardComponent implements OnInit {
   ngOnInit() {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('[^\x22]+'), CustomValidator.nospaceValidator]],
+      name: ['', [Validators.required, Validators.pattern('[^\x22\x27]+'), CustomValidator.nospaceValidator]],
       plugin: [{ value: '', disabled: false }, [Validators.required, CustomValidator.pluginsCountValidator]],
       pluginToInstall: [{ value: null, disabled: false }, [Validators.required]],
       config: [null]
