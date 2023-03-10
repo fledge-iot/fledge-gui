@@ -44,7 +44,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" formControlName="name" title="No single quotes and double quotes!" pattern="[^\x22\x27]+" autocomplete="off">
+                  <input class="input" id="name" type="text" placeholder="name" formControlName="name" title="No single quotes and double quotes!" [pattern]="REGEX_PATTERN" autocomplete="off">
                   <small *ngIf="name.invalid && (name.dirty || name.touched)"
                     class="help is-danger level-left"><sup>*</sup>Notification instance name is
                     required</small>

@@ -24,7 +24,7 @@
                 <div class="field is-narrow">
                   <input *ngIf="!isNotificationServiceAvailable" type="text" class="input is-small"
                     name="notificationServiceName" [(ngModel)]="notificationServiceName"
-                    placeholder="Fledge Notifications" required trim="blur" title="No single quotes and double quotes!" pattern="[^\x22\x27]+" autocomplete="off"/>
+                    placeholder="Fledge Notifications" required trim="blur" title="No single quotes and double quotes!" [pattern]="REGEX_PATTERN" autocomplete="off"/>
                   <small
                     *ngIf="(fg?.touched || fg?.controls['notificationServiceName']?.dirty) && fg?.controls['notificationServiceName']?.invalid"
                     class="help is-danger level-left">*required</small>

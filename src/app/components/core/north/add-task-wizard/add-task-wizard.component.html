@@ -84,7 +84,7 @@
               <div class="field">
                 <div class="control">
                   <input class="input" type="text" placeholder="name" formControlName="name" title="No single quotes and double quotes!"
-                    pattern="[^\x22\x27]+" autocomplete="off" required>
+                  [pattern]="REGEX_PATTERN" autocomplete="off" required>
                   <span *ngIf="taskForm.controls['name'].hasError('required') && taskForm.controls['name'].touched"
                     class="help is-danger">
                     <sup>*</sup>North instance name is required.

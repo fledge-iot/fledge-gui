@@ -11,6 +11,8 @@ import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
+import {REGEX_PATTERN} from '../../../../utils';
+
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -62,7 +64,7 @@ export class AddFilterWizardComponent implements OnInit {
   ngOnInit() {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('[^\x22\x27]+'), CustomValidator.nospaceValidator]],
+      name: ['', [Validators.required, Validators.pattern(REGEX_PATTERN), CustomValidator.nospaceValidator]],
       plugin: [{ value: '', disabled: false }, [Validators.required, CustomValidator.pluginsCountValidator]],
       pluginToInstall: [{ value: null, disabled: false }, [Validators.required]],
       config: [null]

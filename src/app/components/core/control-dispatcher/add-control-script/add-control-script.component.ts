@@ -8,6 +8,8 @@ import { ControlDispatcherService } from '../../../../services/control-dispatche
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AddStepComponent } from './add-step/add-step.component';
+import {REGEX_PATTERN} from '../../../../utils';
+
 
 @Component({
   selector: 'app-add-control-script',
@@ -26,6 +28,7 @@ export class AddControlScriptComponent implements OnInit {
   editMode = false;
   scriptName = '';
   controlScript = { name: '', steps: [], acl: '' };
+  REGEX_PATTERN = REGEX_PATTERN;
 
   constructor(
     private cdRef: ChangeDetectorRef,

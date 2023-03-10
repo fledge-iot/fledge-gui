@@ -15,6 +15,7 @@ import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { Router } from '@angular/router';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
+import {REGEX_PATTERN} from '../../../../utils';
 
 @Component({
   selector: 'app-notification-service-modal',
@@ -53,6 +54,7 @@ export class NotificationServiceModalComponent implements OnChanges {
   categoryCopy: { name: string; config: Object; };
   advancedConfiguration = [];
   validForm = true;
+  REGEX_PATTERN = REGEX_PATTERN;
 
   constructor(
     private router: Router,
