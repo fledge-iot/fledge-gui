@@ -5,6 +5,7 @@ export const MAX_INT_SIZE = 2147483647;
 export const GRAPH_REFRESH_INTERVAL = 5000; // milliseconds
 export const STATS_HISTORY_TIME_FILTER = '10'; // minutes
 export const ASSET_READINGS_TIME_FILTER = 600; // seconds
+export const DEBOUNCE_TIME = 1000; // milliseconds
 
 export const SUPPORTED_SERVICE_TYPES = ["Core", "Storage", "Southbound", "Northbound", "Notification", "Management", "Dispatcher", "BucketStorage"];
 

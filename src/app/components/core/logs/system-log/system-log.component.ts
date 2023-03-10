@@ -4,7 +4,7 @@ import { fromEvent, interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { sortBy } from 'lodash';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../../services';
-import { POLLING_INTERVAL } from '../../../../utils';
+import { POLLING_INTERVAL, DEBOUNCE_TIME } from '../../../../utils';
 
 @Component({
   selector: 'app-system-log',
@@ -23,6 +23,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
+  private fromEventSub: Subscription;
 
   @ViewChild('search', { static: true }) search: ElementRef
 
@@ -65,8 +66,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.getSchedules();
       });
 
-    fromEvent(this.search.nativeElement, 'input')    // handle search query
-      .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this.destroy$))
+    this.fromEventSub = fromEvent(this.search.nativeElement, 'input')    // handle search query
+      .pipe(distinctUntilChanged(), debounceTime(DEBOUNCE_TIME))
       .subscribe(() => {
         this.keyword = this.search.nativeElement.value;
         this.getSysLogs();
@@ -242,5 +243,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
     this.subscription.unsubscribe();
+    this.fromEventSub.unsubscribe();
   }
 }
