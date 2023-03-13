@@ -17,9 +17,9 @@
                   <label class="label is-small">Name</label>
                   <p class="control is-fullwidth">
                     <input type="text" class="input is-small" formControlName="name" placeholder="name" required
-                      trim="blur" />
+                      trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN"/>
                   </p>
-                  <small *ngIf="!form.controls.name.valid" class="help is-danger level-left">Name is required</small>
+                  <small *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched" class="help is-danger level-left">Name is required</small>
                 </div>
               </div>
             </div>
@@ -249,7 +249,7 @@
     <footer class="modal-card-foot">
       <button type="button" id="cancel" class="button is-small" (click)="toggleModal(false)">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
-        (click)="f.form.valid && updateSchedule()">Save</button>
+        [disabled]="f.form.invalid" (click)="f.form.valid && updateSchedule()">Save</button>
     </footer>
   </div>
 </div>

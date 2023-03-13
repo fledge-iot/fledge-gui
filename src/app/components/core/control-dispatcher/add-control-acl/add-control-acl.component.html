@@ -32,6 +32,10 @@
                   <input name="name" class="input" type="text" placeholder="Name" required [(ngModel)]="name" title="No single quotes and double quotes!" autocomplete="off"
                     [ngClass]="{'is-static static-acl':editMode, 'is-small':sharedService.checkAuth() && !editMode}"
                     [readonly]="!sharedService.checkAuth()">
+                  <small
+                    *ngIf="aclForm.controls['name']?.hasError('required') && (aclForm.controls['name']?.dirty || aclForm.controls['name']?.touched)"
+                    class="help is-danger level-left"><sup>*</sup>
+                    required</small>
                 </div>
               </div>
             </div>
