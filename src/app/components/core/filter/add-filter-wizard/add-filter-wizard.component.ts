@@ -143,6 +143,7 @@ export class AddFilterWizardComponent implements OnInit {
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     switch (+id) {
       case 2:
+        this.serviceForm.controls.plugin.enable();
         nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
@@ -206,6 +207,9 @@ export class AddFilterWizardComponent implements OnInit {
 
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        if (!this.validChildConfigurationForm) {
+          nxtButton.disabled = true;
+        }
         break;
       case 2:
         this.addFilter();
@@ -331,6 +335,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
     if (pluginInfo) {
+      this.validChildConfigurationForm = true;
       this.configurationData = null;
       this.pluginConfiguration = null;
       this.configurationData = pluginInfo;
