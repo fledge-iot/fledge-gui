@@ -121,7 +121,7 @@
         <div class="box step-content" id="c-3">
           <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
             (changedConfigEvent)="getChangedRuleConfig($event)" [from]="'add-notification-form'"
-            (formStatusEvent)="validRuleConfigurationForm = $event"></app-configuration-group>
+            (formStatusEvent)="checkRuleFormValidity($event)"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
