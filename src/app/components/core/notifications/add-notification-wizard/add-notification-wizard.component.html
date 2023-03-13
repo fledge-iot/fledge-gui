@@ -44,7 +44,8 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" formControlName="name" title="No double quotes!" pattern="[^\x22]+" autocomplete="off">
+                  <input class="input" id="name" type="text" placeholder="name" formControlName="name"
+                    title="No double quotes!" pattern="[^\x22]+" autocomplete="off">
                   <small *ngIf="name.invalid && (name.dirty || name.touched)"
                     class="help is-danger level-left"><sup>*</sup>Notification instance name is
                     required</small>
@@ -120,7 +121,7 @@
         <div class="box step-content" id="c-3">
           <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
             (changedConfigEvent)="getChangedRuleConfig($event)" [from]="'add-notification-form'"
-            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
+            (formStatusEvent)="validRuleConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
@@ -179,7 +180,7 @@
           <app-configuration-group #deliveryConfigView *ngIf="deliveryPluginConfiguration"
             [category]="deliveryPluginConfiguration" (changedConfigEvent)="getChangedDeliveryConfig($event)"
             [from]="'add-notification-form'"
-            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
+            (formStatusEvent)="validDeliveryConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-6">
           <div class="field is-horizontal">
@@ -253,9 +254,8 @@
         <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
       </div>
       <div class="steps-action">
-
-        <button [disabled]="name.invalid || !validConfigurationForm" (click)="moveNext()" data-nav="next"
-          class="button is-link" id="next">Next</button>
+        <button [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm"
+          (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
       </div>
     </div>
   </div>

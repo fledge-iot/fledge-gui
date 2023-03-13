@@ -63,7 +63,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     pluginName: ''
   };
 
-  validConfigurationForm = true;
+  validRuleConfigurationForm = true;
+  validDeliveryConfigurationForm = true;
 
   constructor(private formBuilder: FormBuilder,
     private notificationService: NotificationsService,
@@ -326,8 +327,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const nxtButton = <HTMLButtonElement>document.getElementById('next');
-    nxtButton.disabled = false;
+    // const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    // nxtButton.disabled = false;
 
     this.isSinglePlugin = true;
     this.isRulePlugin = true;
