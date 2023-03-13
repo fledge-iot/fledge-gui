@@ -7,7 +7,7 @@ import { DialogService } from '../../../common/confirmation-dialog/dialog.servic
 import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { SUPPORTED_SERVICE_TYPES, REGEX_PATTERN} from '../../../../utils';
+import { SUPPORTED_SERVICE_TYPES, QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -176,7 +176,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addFormControls(index, urlData: any = null) {
-    this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(REGEX_PATTERN)]);
+    this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);
     this.aclForm.form.addControl('urls', new FormGroup({}));
     this.initURLControl(index, urlData);
   }

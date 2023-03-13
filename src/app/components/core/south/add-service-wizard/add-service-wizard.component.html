@@ -85,7 +85,7 @@
               <div class="field">
                 <div class="control">
                   <input class="input" id="name" autocomplete="off" type="text" placeholder="name"
-                    formControlName="name" title="No single quotes and double quotes!" [pattern]="REGEX_PATTERN">
+                    formControlName="name" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN">
                   <small
                     *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
                     class="help is-danger level-left">Service name is required</small>

@@ -13,7 +13,7 @@ import {
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
 import { DocService } from '../../../../services/doc.service';
-import {REGEX_PATTERN} from '../../../../utils';
+import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
 
 
 @Component({
@@ -66,7 +66,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   };
 
   validConfigurationForm = true;
-  REGEX_PATTERN = REGEX_PATTERN;
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
   constructor(private formBuilder: FormBuilder,
     private notificationService: NotificationsService,

@@ -12,7 +12,7 @@ import {
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import {REGEX_PATTERN} from '../../../../utils';
+import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -34,7 +34,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   // to hold child form state
   validConfigurationForm = true;
-  REGEX_PATTERN = REGEX_PATTERN;
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
   serviceForm: FormGroup;
 

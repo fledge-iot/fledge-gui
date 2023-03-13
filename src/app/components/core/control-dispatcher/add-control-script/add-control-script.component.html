@@ -30,7 +30,7 @@
               <div class="field">
                 <div class="control">
                   <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
-                    [(ngModel)]="controlScript.name" title="No single quotes and double quotes!" [pattern]="REGEX_PATTERN" autocomplete="off"
+                    [(ngModel)]="controlScript.name" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
                     [ngClass]="{'is-static': editMode, 'is-small':sharedService.checkAuth() && !editMode}"
                     [readonly]="editMode">
                 </div>
