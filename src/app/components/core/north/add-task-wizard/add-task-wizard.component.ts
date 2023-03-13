@@ -272,7 +272,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public addService() {
     const payload = {
-      name: this.taskForm.value['name'],
+      name: this.taskForm.value['name'].trim(),
       type: this.taskType.toLowerCase(),
       plugin: this.taskForm.value['plugin'][0],
       ...this.taskForm.value['config'] && { config: this.taskForm.value['config'] },
