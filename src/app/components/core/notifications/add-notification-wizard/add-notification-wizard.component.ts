@@ -12,6 +12,8 @@ import {
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
 import { DocService } from '../../../../services/doc.service';
+import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+
 
 @Component({
   selector: 'app-add-notification-wizard',
@@ -62,6 +64,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     pluginName: ''
   };
 
+
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   validRuleConfigurationForm = true;
   validDeliveryConfigurationForm = true;
 

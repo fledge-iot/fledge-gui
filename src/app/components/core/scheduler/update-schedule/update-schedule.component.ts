@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { AlertService, RolesService, SchedulesService } from '../../../../services';
-import Utils from '../../../../utils';
+import Utils, {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
 
 @Component({
   selector: 'app-update-schedule',
@@ -22,6 +22,8 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   public scheduleType = [];
   public days = [];
   public scheduleName: string;
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
+
 
   @Input() childData: { id: Number, schedule_process: any, schedule_type: any, day: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
