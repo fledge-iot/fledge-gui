@@ -142,6 +142,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           this.alertService.error('A service/task already exists with this name.');
           return false;
         }
+        // check if configuration form is valid or invalid
+        this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
         nxtButton.textContent = 'Done';
@@ -333,6 +335,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   selectPlugin(selectedPlugin: string) {
+    this.validConfigurationForm = true;
     this.configurationData = null;
     this.pluginConfiguration = null;
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');

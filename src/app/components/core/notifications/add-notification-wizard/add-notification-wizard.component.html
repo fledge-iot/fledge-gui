@@ -120,7 +120,7 @@
         <div class="box step-content" id="c-3">
           <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
             (changedConfigEvent)="getChangedRuleConfig($event)" [from]="'add-notification-form'"
-            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
+            (formStatusEvent)="checkRuleFormValidity($event)"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
@@ -179,7 +179,7 @@
           <app-configuration-group #deliveryConfigView *ngIf="deliveryPluginConfiguration"
             [category]="deliveryPluginConfiguration" (changedConfigEvent)="getChangedDeliveryConfig($event)"
             [from]="'add-notification-form'"
-            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
+            (formStatusEvent)="validDeliveryConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-6">
           <div class="field is-horizontal">
@@ -253,9 +253,8 @@
         <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
       </div>
       <div class="steps-action">
-
-        <button [disabled]="name.invalid || !validConfigurationForm" (click)="moveNext()" data-nav="next"
-          class="button is-link" id="next">Next</button>
+        <button [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm"
+          (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
       </div>
     </div>
   </div>

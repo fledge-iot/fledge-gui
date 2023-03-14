@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/co
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-
 import { cloneDeep, sortBy } from 'lodash';
 
 import {
@@ -65,8 +64,10 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     pluginName: ''
   };
 
-  validConfigurationForm = true;
+
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
+  validRuleConfigurationForm = true;
+  validDeliveryConfigurationForm = true;
 
   constructor(private formBuilder: FormBuilder,
     private notificationService: NotificationsService,
@@ -253,6 +254,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
+        if (!this.validRuleConfigurationForm) {
+          nxtButton.disabled = true;
+        }
         break;
       case 3:
         nxtButton.textContent = 'Next';
@@ -278,6 +282,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
+        if (!this.validDeliveryConfigurationForm) {
+          nxtButton.disabled = true;
+        }
         break;
       case 5:
         nxtButton.textContent = 'Done';
@@ -329,9 +336,10 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const nxtButton = <HTMLButtonElement>document.getElementById('next');
-    nxtButton.disabled = false;
-
+    // const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    // nxtButton.disabled = false;
+    this.validRuleConfigurationForm = true;
+    this.validDeliveryConfigurationForm = true;
     this.isSinglePlugin = true;
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
@@ -352,7 +360,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   }
 
   private getDeliveryPluginConfiguration(selectedPlugin: string): void {
-    const plugin = this.notificationDeliveryPlugins.find(p => p.name === selectedPlugin);
+    const plugin = cloneDeep(this.notificationDeliveryPlugins.find(p => p.name === selectedPlugin));
     if (plugin) {
       this.deliveryPluginConfiguration = plugin;
       this.deliveryPluginConfigurationCopy = cloneDeep(plugin);
@@ -363,7 +371,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
  *  Get default configuration of the selected plugin
  */
   private getRulePluginConfiguration(selectedPlugin: string): void {
-    const plugin = this.notificationRulePlugins.find(p => p.name === selectedPlugin);
+    const plugin = cloneDeep(this.notificationRulePlugins.find(p => p.name === selectedPlugin));
     if (plugin) {
       this.rulePluginConfiguration = plugin;
       this.rulePluginConfigurationCopy = cloneDeep(plugin);
@@ -522,6 +530,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   goToNotificationTypeLink() {
     const urlSlug = 'notification-types';
     this.docService.goToNotificationDocLink(urlSlug);
+  }
+
+  checkRuleFormValidity(formStatus: boolean) {
+    this.validRuleConfigurationForm = formStatus;
+    const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    !this.validRuleConfigurationForm ? nxtButton.disabled = true : nxtButton.disabled = false;
   }
 
 
