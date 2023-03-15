@@ -11,6 +11,8 @@ import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
+import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -62,7 +64,7 @@ export class AddFilterWizardComponent implements OnInit {
   ngOnInit() {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('[^\x22]+'), CustomValidator.nospaceValidator]],
+      name: ['', [Validators.required, Validators.pattern(QUOTATION_VALIDATION_PATTERN), CustomValidator.nospaceValidator]],
       plugin: [{ value: '', disabled: false }, [Validators.required, CustomValidator.pluginsCountValidator]],
       pluginToInstall: [{ value: null, disabled: false }, [Validators.required]],
       config: [null]
@@ -143,6 +145,7 @@ export class AddFilterWizardComponent implements OnInit {
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     switch (+id) {
       case 2:
+        this.serviceForm.controls.plugin.enable();
         nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
@@ -206,6 +209,9 @@ export class AddFilterWizardComponent implements OnInit {
 
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        if (!this.validChildConfigurationForm) {
+          nxtButton.disabled = true;
+        }
         break;
       case 2:
         this.addFilter();
@@ -331,6 +337,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
     if (pluginInfo) {
+      this.validChildConfigurationForm = true;
       this.configurationData = null;
       this.pluginConfiguration = null;
       this.configurationData = pluginInfo;
@@ -378,7 +385,7 @@ export class AddFilterWizardComponent implements OnInit {
     }
 
     const payload = {
-      name: this.serviceForm.value['name'],
+      name: this.serviceForm.value['name'].trim(),
       plugin: pluginValue,
       ...this.serviceForm.value['config'] && { filter_config: this.serviceForm.value['config'] }
     }
