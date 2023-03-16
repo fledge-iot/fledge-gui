@@ -62,7 +62,6 @@ export class AppComponent implements OnInit {
       .pipe(takeUntil(this.destroySubject))
       .subscribe(connectionInfo => {
         if (connectionInfo) {
-          this.url = this.router.url;
           this.modalWindow = document.querySelector('.modal.is-active');
           let modalCard = this.modalWindow?.querySelector('.modal-card');
           if (!connectionInfo?.isServiceUp) {
@@ -106,6 +105,7 @@ export class AppComponent implements OnInit {
    *
    */
   isActive(href) {
+    this.url = this.router?.url;
     const withoutSidebarRoutes = (href.includes('/login') || href.includes('/setting?id=1') || href.indexOf('user/reset-password') >= 0);
     const tokenMissingWhenAuthMandatory = sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
     if (withoutSidebarRoutes || tokenMissingWhenAuthMandatory) {
@@ -116,6 +116,7 @@ export class AppComponent implements OnInit {
   }
 
   setPingIntervalOnAppLaunch() {
+    this.url = this.router?.url;
     this.ping.setDefaultPingTime();
     const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
     this.ping.pingIntervalChanged.next(pingInterval);
