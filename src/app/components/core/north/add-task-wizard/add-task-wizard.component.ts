@@ -8,7 +8,7 @@ import {
   AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
   ServicesApiService, FileUploaderService, ConfigurationControlService
 } from '../../../../services';
-import Utils from '../../../../utils';
+import Utils, {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
@@ -33,6 +33,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public taskType = 'North';
   // to hold child form state
   validConfigurationForm = true;
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
   taskForm = new FormGroup({
     name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
@@ -141,6 +142,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           this.alertService.error('A service/task already exists with this name.');
           return false;
         }
+        // check if configuration form is valid or invalid
+        this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
         nxtButton.textContent = 'Done';
@@ -332,6 +335,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   selectPlugin(selectedPlugin: string) {
+    this.validConfigurationForm = true;
     this.configurationData = null;
     this.pluginConfiguration = null;
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
