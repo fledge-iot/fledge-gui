@@ -42,7 +42,8 @@ export class TabHeader {
         // If there is no transition we want to default to 0 and not null
         var amount = Math.abs(parseInt(tr.split(",")[4]) || 0);
         this.groupNavContents.style.transform = "none";
-        this.groupNavContents.classList.add("groupNav_Contents-no-transition");
+        // We do not want to show backward transition that is why transition duration is 0s
+        this.groupNavContents.style.transition = "transform 0s";
         // Now lets set the scroll position
         if (SETTINGS.navBarTravelDirection === "left") {
           this.groupNavigation.scrollLeft = this.groupNavigation.scrollLeft - amount;
@@ -71,8 +72,8 @@ export class TabHeader {
       } else {
         this.groupNavContents.style.transform = "translateX(" + SETTINGS.navBarTravelDistance + "px)";
       }
-      // We do want a transition (this is set in CSS) when moving so remove the class that would prevent that
-      this.groupNavContents.classList.remove("groupNav_Contents-no-transition");
+      // Show transition only in forward stroke
+      this.groupNavContents.style.transition = "transform 0.2s ease-in-out";
       // Update settings
       SETTINGS.navBarTravelDirection = "left";
       SETTINGS.navBarTravelling = true;
@@ -100,8 +101,8 @@ export class TabHeader {
       } else {
         this.groupNavContents.style.transform = "translateX(-" + SETTINGS.navBarTravelDistance + "px)";
       }
-      // We do want a transition (this is set in CSS) when moving so remove the class that would prevent that
-      this.groupNavContents.classList.remove("groupNav_Contents-no-transition");
+      // Show transition only in forward stroke
+      this.groupNavContents.style.transition = "transform 0.2s ease-in-out";
       // Update settings
       SETTINGS.navBarTravelDirection = "right";
       SETTINGS.navBarTravelling = true;
