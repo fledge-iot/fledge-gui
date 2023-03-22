@@ -545,6 +545,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   save() {
+    let isFilterPipeLineChanged = this.isFilterDeleted || this.isFilterOrderChanged;
     this.saveScheduleFields(this.form);
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration?.name, this.changedConfig, 'plugin-config');
@@ -580,7 +581,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.apiCallsStack = [];
       });
     } else {
-      this.toast.info('Nothing to save', 3000);
+      if(!isFilterPipeLineChanged){
+        this.toast.info('Nothing to save', 3000);
+      }
       this.toggleModal(false);
     }
   }
