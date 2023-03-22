@@ -12,6 +12,7 @@ import {
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
+import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -33,6 +34,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
   // to hold child form state
   validConfigurationForm = true;
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
   serviceForm: FormGroup;
 
@@ -118,6 +120,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   }
 
   selectPlugin(selectedPlugin: string) {
+    this.validConfigurationForm = true;
     this.configurationData = null;
     this.pluginConfiguration = null;
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
@@ -163,6 +166,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           this.alertService.error('A service/task already exists with this name.');
           return false;
         }
+        // check if configuration form is valid or invalid
+        this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
         nxtButton.textContent = 'Done';

@@ -15,11 +15,15 @@ export class SystemLogService {
   /**
    *  GET | fledge/syslog
    */
-  public getSysLogs(source: String, level: String, limit: Number = 0, offset: Number = 0) {
+  public getSysLogs(source: String, level: String, limit: Number = 0, offset: Number = 0, keyword: string) {
     let params = new HttpParams();
     params = params.set('limit', limit.toString());
     params = params.set('offset', offset.toString());
     params = params.set('nontotals', true);
+
+    if (keyword.trim().length > 0) {
+      params = params.set('keyword', keyword);
+    }
 
     if (level.toString() !== '') {
       params = params.set('level', level.toString());

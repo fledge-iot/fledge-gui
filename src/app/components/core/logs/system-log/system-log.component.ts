@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { interval, Subject, Subscription } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
+import { fromEvent, interval, Subject, Subscription } from 'rxjs';
+import { takeWhile, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { sortBy } from 'lodash';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../../services';
-import { POLLING_INTERVAL } from '../../../../utils';
+import { POLLING_INTERVAL, DEBOUNCE_TIME } from '../../../../utils';
 
 @Component({
   selector: 'app-system-log',
@@ -23,10 +23,14 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
+  private fromEventSub: Subscription;
+
+  @ViewChild('search', { static: true }) search: ElementRef
 
   page = 1;
   offset = 0;
   searchTerm = '';
+  keyword = "";
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
@@ -61,6 +65,13 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.getSysLogs(true);
         this.getSchedules();
       });
+
+    this.fromEventSub = fromEvent(this.search.nativeElement, 'input')    // handle search query
+      .pipe(distinctUntilChanged(), debounceTime(DEBOUNCE_TIME))
+      .subscribe(() => {
+        this.keyword = this.search.nativeElement.value;
+        this.getSysLogs();
+      })
   }
 
   public getSchedules(): void {
@@ -173,7 +184,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.offset).
+    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.offset, this.keyword).
       subscribe(
         (data) => {
           if (autoRefresh === false) {
@@ -232,5 +243,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
     this.subscription.unsubscribe();
+    this.fromEventSub.unsubscribe();
   }
 }
