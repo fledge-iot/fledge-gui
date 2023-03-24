@@ -203,8 +203,6 @@
                   <span *ngIf="graphDefaultTimespan === '1800'">30 minutes</span>
                   <span *ngIf="graphDefaultTimespan === '3600'">1 hour</span>
                   <span *ngIf="graphDefaultTimespan === '28800'">8 hours</span>
-                  <span *ngIf="graphDefaultTimespan === '86400'">1 day</span>
-                  <span *ngIf="graphDefaultTimespan === '604800'">1 week</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -224,10 +222,6 @@
                     (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('3600')">1 hour</a>
                   <a class="dropdown-item"
                     (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('28800')">8 hours</a>
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('86400')">1 day</a>
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('604800')">1 week</a>
                 </div>
               </div>
             </div>
