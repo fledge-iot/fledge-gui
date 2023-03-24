@@ -31,6 +31,7 @@ export class SettingsComponent implements OnInit {
   scheme; // default protocol
   showAlertMessage = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
+  graphDefaultTimespan: string;
 
   constructor(private pingService: PingService,
     private sharedService: SharedService,
@@ -58,6 +59,7 @@ export class SettingsComponent implements OnInit {
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
+    this.graphDefaultTimespan = localStorage.getItem('READINGS_GRAPH_DEFAULT_TIMESPAN') !== null ? localStorage.getItem('READINGS_GRAPH_DEFAULT_TIMESPAN') : '600';
   }
 
   public testServiceConnection(): void {
@@ -133,6 +135,11 @@ export class SettingsComponent implements OnInit {
     this.refreshInterval = time;
     localStorage.setItem('DASHBOARD_GRAPH_REFRESH_INTERVAL', time);
     this.pingService.refreshIntervalChanged.next(+time);
+  }
+
+  setReadingsGraphDefaultTimespan(time: string) {
+    this.graphDefaultTimespan = time;
+    localStorage.setItem('READINGS_GRAPH_DEFAULT_TIMESPAN', time);
   }
 
   setDeveloperFeatures(devStatus: boolean) {

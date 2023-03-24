@@ -188,6 +188,53 @@
           </div>
         </div>
       </div>
+
+      <div class="columns">
+        <div class="column is-6">
+          <label class="label is-small">Readings Graph Default Timespan</label>
+          <div class="control">
+            <div id="readings-graph-default-timespan" class="dropdown">
+              <div class="dropdown-trigger">
+                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                  (click)="toggleDropDown('readings-graph-default-timespan')">
+                  <span *ngIf="graphDefaultTimespan === '60'">1 minute</span>
+                  <span *ngIf="graphDefaultTimespan === '300'">5 minutes</span>
+                  <span *ngIf="graphDefaultTimespan === '600'">10 minutes</span>
+                  <span *ngIf="graphDefaultTimespan === '1800'">30 minutes</span>
+                  <span *ngIf="graphDefaultTimespan === '3600'">1 hour</span>
+                  <span *ngIf="graphDefaultTimespan === '28800'">8 hours</span>
+                  <span *ngIf="graphDefaultTimespan === '86400'">1 day</span>
+                  <span *ngIf="graphDefaultTimespan === '604800'">1 week</span>
+                  <span class="icon is-small">
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('60')">1 minute</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('300')">5 minutes</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('600')">10 minutes</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('1800')">30 minutes</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('3600')">1 hour</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('28800')">8 hours</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('86400')">1 day</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-timespan');setReadingsGraphDefaultTimespan('604800')">1 week</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <hr>
       <div class="columns">
         <div class="column is-6" *ngIf="rolesService.hasEditPermissions()">
