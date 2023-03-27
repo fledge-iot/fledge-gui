@@ -38,6 +38,28 @@ export class AssetsService {
     if (+offset !== 0) {
       params = params.set('offset', offset.toString());
     }
+    console.log('params', params);
+    return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  public getMultipleAssetReadings(assetCode, limit: number = 0, offset: number = 0, time: number = 0, additionalAssets) {
+    console.log('additionalAssets', additionalAssets);
+    let params = new HttpParams();
+    if (+time !== 0) {
+      params = params.append('seconds', time.toString());
+    }
+    if (+limit !== 0) {
+      params = params.set('limit', limit.toString());
+    }
+    if (+offset !== 0) {
+      params = params.set('offset', offset.toString());
+    }
+    if (+additionalAssets !== 0) {
+      params = params.set('additional', additionalAssets.toString());
+    }
+    console.log('params', params);
     return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
       map(response => response),
       catchError(error => throwError(error)));

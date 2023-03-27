@@ -165,7 +165,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
   * Open asset chart modal dialog
   */
   public showAssetChart(assetCode) {
-    this.readingsGraphComponent.getAssetCode(assetCode);
+    let allAssetcodes = [];
+    this.assets.forEach(asset => {
+      allAssetcodes.push(asset.assetCode);
+    });
+    this.readingsGraphComponent.getAssetCode(assetCode, allAssetcodes);
     this.readingsGraphComponent.toggleModal(true);
   }
 
