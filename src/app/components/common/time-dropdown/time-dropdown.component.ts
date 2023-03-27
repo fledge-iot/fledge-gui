@@ -25,7 +25,10 @@ export class TimeDropdownComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.optedTime = localStorage.getItem('READINGS_GRAPH_DEFAULT_TIMESPAN') !== null ? parseInt(localStorage.getItem('READINGS_GRAPH_DEFAULT_TIMESPAN')) : this.optedTime;
+    let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
+    if (rGraphDefaultDuration !== null) {
+      this.optedTime = parseInt(rGraphDefaultDuration);
+    }
   }
 
   setDropdownLabel(optedTime: number) {
