@@ -39,7 +39,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public polyGraphData: any;
   public timeDropDownOpened = false;
   public isModalOpened = false;
-  public assets = [];
+  public availableAssets = [];
   public selectedAsset;
   public additionalAssets = [];
 
@@ -147,13 +147,13 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.selectedTab = 1;
     this.loadPage = true;
     this.notify.emit(false);
-    this.assets = allAssets;
+    this.availableAssets = allAssets;
     this.selectedAsset = assetCode;
     
     // remove selected graph asset from the dropdown list
-    const index: number = this.assets.indexOf(assetCode);
+    const index: number = this.availableAssets.indexOf(assetCode);
     if (index !== -1) {
-        this.assets.splice(index, 1);
+        this.availableAssets.splice(index, 1);
     }  
     
     if (this.latestReadingSubscription) {
