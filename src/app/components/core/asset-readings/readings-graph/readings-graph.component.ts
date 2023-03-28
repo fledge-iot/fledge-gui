@@ -132,7 +132,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (activeDropDowns.length > 0) {
       activeDropDowns[0].classList.remove('is-active');
     }
-    this.optedTime = ASSET_READINGS_TIME_FILTER;
+    let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
+    this.optedTime = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : ASSET_READINGS_TIME_FILTER;
   }
 
   getTimeBasedAssetReadingsAndSummary(time: number) {
@@ -165,6 +166,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else {
       this.isAlive = true;
     }
+
+    let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
+    this.optedTime = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : ASSET_READINGS_TIME_FILTER;
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;

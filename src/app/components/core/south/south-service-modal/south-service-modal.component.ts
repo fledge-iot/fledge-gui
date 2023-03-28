@@ -563,6 +563,7 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   save() {
+    let isFilterPipeLineChanged = this.isFilterDeleted || this.isFilterOrderChanged;
     this.saveServiceChanges();
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
@@ -597,7 +598,9 @@ export class SouthServiceModalComponent implements OnInit {
         this.apiCallsStack = [];
       });
     } else {
-      this.toastService.info('Nothing to save', 3000);
+      if(!isFilterPipeLineChanged){
+        this.toastService.info('Nothing to save', 3000);
+      }
       this.toggleModal(false);
     }
   }
