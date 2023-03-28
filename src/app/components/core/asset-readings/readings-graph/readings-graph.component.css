@@ -74,3 +74,7 @@ table.is-borderless tr {
   padding-right: 3px;
   top: 0;
 }
+
+::ng-deep .ng-select > div > div > div:nth-child(2) > span.ng-value-icon.left {
+  display: none !important;
+}

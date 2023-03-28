@@ -447,24 +447,12 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.setTabData();
   }
 
-  reduce(allAssetsReading){
-  //   let newArray = [
-  //     {  description: 'Group1', Amount: {a: 133, b: 2551}},
-  //     {  description: 'Group1', Amount: {c: 32}},
-  //     {  description: 'Group2', Amount: {a: 134, b: 35}},
-  //     {  description: 'Group3', Amount: {a: 123, b: 455}},
-  //     {  description: 'Group4', Amount: {a: 533, b: 555} },
-  //     {  description: 'Group2', Amount: {d: 33, e: 51}},
-  //     {  description: 'Group2', Amount: {c: 52}},
-  //     {  description: 'Group3', Amount: {c: 83, d: 91}},
-  //     {  description: 'Group3', Amount: {e: 22}},
-  //  ];
-
+  getMergedReadings(allAssetsReading){
     let mergedReadings =[];
     allAssetsReading.map(function (item) {
-      var existItem = mergedReadings.find(x=> x.timestamp === item.timestamp);
-      if (existItem) {
-        existItem.timestamp = Object.assign(existItem.timestamp, item.timestamp);
+      let existingReading = mergedReadings.find(x=> x.timestamp === item.timestamp);
+      if (existingReading) {
+        existingReading.timestamp = Object.assign(existingReading.timestamp, item.timestamp);
       } else {
         mergedReadings.push(item);
       }
@@ -486,7 +474,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.additionalAssets.forEach((asset)=> {
         allAssetsReading.push(...readings[asset]);
       });
-      readings = this.reduce(allAssetsReading);
+      readings = this.getMergedReadings(allAssetsReading);
     }
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
 

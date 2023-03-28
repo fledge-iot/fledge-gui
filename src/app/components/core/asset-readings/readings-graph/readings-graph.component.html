@@ -27,7 +27,7 @@
             <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
-          <div class="column is-10" *ngIf="!isLatestReadings && numberTypeReadingsList?.length > 0">
+          <div class="column is-10" *ngIf="!isLatestReadings && arrayTypeReadingsList?.length === 0 && assets.length > 1">
             <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="assets" [multiple]="true" [(ngModel)]="additionalAssets" (add)="addAsset()"
               (remove)="removeAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
             </ng-select>
