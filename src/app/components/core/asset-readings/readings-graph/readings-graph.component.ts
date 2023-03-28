@@ -452,7 +452,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     allAssetsReading.map(function (item) {
       let existingReading = mergedReadings.find(x=> x.timestamp === item.timestamp);
       if (existingReading) {
-        existingReading.timestamp = Object.assign(existingReading.timestamp, item.timestamp);
+        existingReading.timestamp = Object.assign({}, existingReading.timestamp, item.timestamp);
       } else {
         mergedReadings.push(item);
       }
@@ -460,7 +460,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     console.log('mergedReadings', mergedReadings);
     return mergedReadings;
   }
- 
 
   getReadings(readings: any) {
     const numReadings = [];
