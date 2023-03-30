@@ -12,7 +12,7 @@
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
     </header>
-    <section class="modal-card-body" [ngClass]="{overflow: timeDropDownOpened}">
+    <section class="modal-card-body" [ngClass]="{overflow: timeDropDownOpened} || numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">
       <ng-container *ngIf="loadPage; else tabs">
         <div class="app-loading">
           &nbsp;
@@ -79,6 +79,10 @@
                 </div>
               </ng-container>
               <ng-template #DataDiv>
+                <div *ngIf="numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">                 
+                  <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No readings available.</small>
+                  </div>
+                </div>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
                   <div *ngIf="rangeSliderService.getAlphControlStatus()" class="range-wrap is-pulled-right">
                     <app-range-slider></app-range-slider>

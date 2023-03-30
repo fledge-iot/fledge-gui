@@ -41,7 +41,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public timeDropDownOpened = false;
   public isModalOpened = false;
   public availableAssets = [];
-  public selectedAsset;
+  public selectedAsset = '';
   public additionalAssets = [];
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -149,6 +149,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.notify.emit(true);
     }
     this.isAlive = false;
+    this.selectedAsset = '';
     chart_modal.classList.remove('is-active');
     const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
     if (activeDropDowns.length > 0) {
@@ -171,12 +172,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.loadPage = true;
     this.notify.emit(false);
     this.selectedAsset = assetCode;
-    
-    // remove selected graph asset from the dropdown list
-    const index: number = this.availableAssets.indexOf(assetCode);
-    if (index !== -1) {
-        this.availableAssets.splice(index, 1);
-    }  
     
     if (this.latestReadingSubscription) {
       this.latestReadingSubscription.unsubscribe();
@@ -692,7 +687,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetReadingValues = {
       datasets: ds
     };
-
     this.assetChartType = 'line';
     this.assetChartOptions = {
       elements: {
