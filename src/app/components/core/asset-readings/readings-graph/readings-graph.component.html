@@ -35,7 +35,7 @@
         </div>
         <div class="columns">
           <div class="column" *ngIf="!isLatestReadings">
-            <div class="tabs is-boxed is-fullwidth is-small" id="tabs">
+            <div *ngIf="!(numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList))" class="tabs is-boxed is-fullwidth is-small" id="tabs">
               <ul>
                 <li *ngIf="numberTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 1}" data-tab="1">
                   <a (click)="selectTab(1)">
@@ -80,7 +80,7 @@
               </ng-container>
               <ng-template #DataDiv>
                 <div *ngIf="numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">                 
-                  <div class="has-text-centered"><small class="text-secondary has-text-grey-light">No readings available.</small>
+                  <div class="has-text-centered no-data"><small class="text-secondary has-text-grey-light">No readings available.</small>
                   </div>
                 </div>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">

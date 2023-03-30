@@ -464,7 +464,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     const strReadings = [];
     const arrReadings = [];
     const imageReadings = [];
-    console.log('readings', readings);
     
     if (this.additionalAssets.length > 1) {
       let allAssetsReading = [];
@@ -474,6 +473,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
       readings = this.getMergedReadings(allAssetsReading);
     }
+    console.log('readings', readings);
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
 
     for (const r of readings) {

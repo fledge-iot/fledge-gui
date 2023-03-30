@@ -12,6 +12,11 @@
   padding: 15px !important;
 }
 
+.no-data {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
 @media screen and (min-width: 769px) {
   .modal-card {
     width: 85%;
