@@ -78,22 +78,6 @@ export class ReadingsGraphComponent implements OnDestroy {
           }
           this.graphRefreshInterval = timeInterval;
         });
-      this.assetsSubscription = this.sharedService.assets.subscribe(assets => {
-        if (assets) {
-          this.availableAssets = [];
-          assets.forEach(asset => {
-            this.availableAssets.push(asset.assetCode);
-          });
-          
-          // remove selected graph asset from the dropdown list
-          if (this.selectedAsset) {
-            const index: number = this.availableAssets.indexOf(this.selectedAsset);
-            if (index !== -1) {
-                this.availableAssets.splice(index, 1);
-            } 
-          }       
-        }
-      });
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -176,6 +160,23 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.latestReadingSubscription) {
       this.latestReadingSubscription.unsubscribe();
     }
+
+    this.assetsSubscription = this.sharedService.assets.subscribe(assets => {
+      if (assets) {
+        this.availableAssets = [];
+        assets.forEach(asset => {
+          this.availableAssets.push(asset.assetCode);
+        });
+        
+        // remove selected graph asset from the dropdown list
+        if (this.selectedAsset) {
+          const index: number = this.availableAssets.indexOf(this.selectedAsset);
+          if (index !== -1) {
+              this.availableAssets.splice(index, 1);
+          } 
+        }      
+      }
+    });
 
     if (this.graphRefreshInterval === -1) {
       this.isAlive = false;
