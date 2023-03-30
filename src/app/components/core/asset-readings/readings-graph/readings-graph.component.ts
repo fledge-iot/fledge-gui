@@ -205,17 +205,8 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  addAsset() {
+  addOrRemoveAsset() {
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-  }
-
-  removeAsset(assetCode) {
-    if (this.selectedAsset === assetCode.value) {
-      this.additionalAssets.push(assetCode.value);
-      this.additionalAssets = [...this.additionalAssets];
-    } else {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
-    }
   }
 
   clearAdditionalAssets() {
@@ -430,7 +421,6 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-
   setLatestReadings(readings: any) {
     const strReadings = [];
     const imageReadings = [];
@@ -469,20 +459,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.setTabData();
   }
 
-  getMergedReadings(allAssetsReading){
-    let mergedReadings =[];
-    allAssetsReading.map(function (item) {
-      let existingReading = mergedReadings.find(x=> x.timestamp === item.timestamp);
-      if (existingReading) {
-        existingReading.timestamp = Object.assign({}, existingReading.timestamp, item.timestamp);
-      } else {
-        mergedReadings.push(item);
-      }
-    });
-    console.log('mergedReadings', mergedReadings);
-    return mergedReadings;
-  }
-
   getReadings(readings: any) {
     const numReadings = [];
     const strReadings = [];
@@ -492,6 +468,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     
     if (this.additionalAssets.length > 1) {
       let allAssetsReading = [];
+      
       this.additionalAssets.forEach((asset)=> {
         allAssetsReading.push(...readings[asset]);
       });
@@ -546,6 +523,20 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData();
+  }
+
+  getMergedReadings(allAssetsReading){  
+    let mergedReadings =[];
+    allAssetsReading.map(function (item) {
+      let existingReading = mergedReadings.find(x=> x.timestamp === item.timestamp);
+      if (existingReading) {
+        existingReading.reading = Object.assign({}, existingReading.reading, item.reading);
+      } else {
+        mergedReadings.push(item);
+      }
+    });
+    console.log('mergedReadings', mergedReadings);
+    return mergedReadings;
   }
 
   setTabData() {

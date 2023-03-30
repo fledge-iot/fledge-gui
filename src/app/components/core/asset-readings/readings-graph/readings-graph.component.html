@@ -28,8 +28,8 @@
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
           <div class="column is-10" *ngIf="!isLatestReadings && arrayTypeReadingsList?.length === 0 && availableAssets.length > 0">
-            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true" [(ngModel)]="additionalAssets" (add)="addAsset()"
-            [clearable]="additionalAssets.length > 1" (remove)="removeAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
+            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()"
+            [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
             </ng-select>
           </div>
         </div>
