@@ -407,7 +407,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
     let optedAssets = this.additionalAssets;
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
-
     this.limit = limit;
     this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets)
       .pipe(takeUntil(this.destroy$))
@@ -465,9 +464,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     const arrReadings = [];
     const imageReadings = [];
     
-    if (this.additionalAssets.length > 1) {
-      let allAssetsReading = [];
-      
+    if ((this.additionalAssets.length > 1 && readings.length !== 0) || !(Array.isArray(readings))) {
+      let allAssetsReading = [];     
       this.additionalAssets.forEach((asset)=> {
         allAssetsReading.push(...readings[asset]);
       });
