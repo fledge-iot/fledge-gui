@@ -38,7 +38,6 @@ export class AssetsService {
     if (+offset !== 0) {
       params = params.set('offset', offset.toString());
     }
-    console.log('params', params);
     return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(
       map(response => response),
       catchError(error => throwError(error)));

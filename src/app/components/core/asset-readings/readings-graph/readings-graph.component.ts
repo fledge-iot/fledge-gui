@@ -4,7 +4,7 @@ import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 
 import { Chart } from 'chart.js';
-import { AlertService, AssetsService, PingService } from '../../../../services';
+import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
 import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
@@ -18,6 +18,7 @@ declare var Plotly: any;
   styleUrls: ['./readings-graph.component.css']
 })
 export class ReadingsGraphComponent implements OnDestroy {
+  @Output() refreshAssets = new EventEmitter<boolean>();
   public assetCode: string;
   public assetChartType: string;
   public assetReadingValues = {};
@@ -58,22 +59,40 @@ export class ReadingsGraphComponent implements OnDestroy {
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
   private latestReadingSubscription: Subscription;
+  private assetsSubscription: Subscription;
 
   constructor(
     private assetService: AssetsService,
     private alertService: AlertService,
     private ping: PingService,
+    private sharedService: SharedService,
     private dateFormatter: DateFormatterPipe,
     public rangeSliderService: RangeSliderService) {
-    this.assetChartType = 'line';
-    this.assetReadingValues = {};
-    this.ping.pingIntervalChanged
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((timeInterval: number) => {
-        if (timeInterval === -1) {
-          this.isAlive = false;
+      this.assetChartType = 'line';
+      this.assetReadingValues = {};
+      this.ping.pingIntervalChanged
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((timeInterval: number) => {
+          if (timeInterval === -1) {
+            this.isAlive = false;
+          }
+          this.graphRefreshInterval = timeInterval;
+        });
+      this.assetsSubscription = this.sharedService.assets.subscribe(assets => {
+        if (assets) {
+          this.availableAssets = [];
+          assets.forEach(asset => {
+            this.availableAssets.push(asset.assetCode);
+          });
+          
+          // remove selected graph asset from the dropdown list
+          if (this.selectedAsset) {
+            const index: number = this.availableAssets.indexOf(this.selectedAsset);
+            if (index !== -1) {
+                this.availableAssets.splice(index, 1);
+            } 
+          }       
         }
-        this.graphRefreshInterval = timeInterval;
       });
   }
 
@@ -120,6 +139,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.latestReadingSubscription) {
       this.latestReadingSubscription.unsubscribe();
     }
+    if (this.assetsSubscription) {
+      this.assetsSubscription.unsubscribe();
+    }
 
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
@@ -142,13 +164,12 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
   }
 
-  public getAssetCode(assetCode: string, allAssets) {
+  public getAssetCode(assetCode: string) {
     this.isLatestReadings = false;
     this.isModalOpened = true;
     this.selectedTab = 1;
     this.loadPage = true;
     this.notify.emit(false);
-    this.availableAssets = allAssets;
     this.selectedAsset = assetCode;
     
     // remove selected graph asset from the dropdown list
@@ -183,6 +204,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
           this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+          this.refreshAssets.next();
         }
       });
   }
