@@ -12,6 +12,10 @@
   padding: 15px !important;
 }
 
+::ng-deep .button.is-small {
+  font-size: 0.90rem !important;
+}
+
 .no-data {
   padding-top: 5rem;
   padding-bottom: 5rem;
