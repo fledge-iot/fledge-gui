@@ -464,14 +464,18 @@ export class ReadingsGraphComponent implements OnDestroy {
     const arrReadings = [];
     const imageReadings = [];
     
+    // In case of multiple assets readings, merge all readings
     if ((this.additionalAssets.length > 1 && readings.length !== 0) || !(Array.isArray(readings))) {
-      let allAssetsReading = [];     
-      this.additionalAssets.forEach((asset)=> {
-        allAssetsReading.push(...readings[asset]);
-      });
-      readings = this.getMergedReadings(allAssetsReading);
+      if (Object.keys(readings).length === this.additionalAssets.length) {
+        let allAssetsReading = [];     
+        this.additionalAssets.forEach((asset)=> {
+          allAssetsReading.push(...readings[asset]);
+        });
+        readings = this.getMergedReadings(allAssetsReading);
+      } else {
+        return;
+      }
     }
-    console.log('readings', readings);
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
 
     for (const r of readings) {
@@ -533,7 +537,6 @@ export class ReadingsGraphComponent implements OnDestroy {
         mergedReadings.push(item);
       }
     });
-    console.log('mergedReadings', mergedReadings);
     return mergedReadings;
   }
 
