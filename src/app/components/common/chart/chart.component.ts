@@ -26,6 +26,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     if (this.chart) {
       if (!isEmpty(this.data)) {
         this.chart.data = this.data;
+        this.chart.options = this.options;
         this.chart.update(0);
       }
     } else {

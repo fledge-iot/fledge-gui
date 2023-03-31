@@ -728,6 +728,11 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
+    if(this.optedTime > 86400){
+      this.assetChartOptions.scales.xAxes[0].time.unit = 'hour';
+      this.assetChartOptions.scales.xAxes[0].time.displayFormats.unit = 'hour';
+      this.assetChartOptions.scales.xAxes[0].time.displayFormats.hour = 'L HH:mm:ss';
+    }
   }
 
   create3DGraph(readings: any, ts: any) {
