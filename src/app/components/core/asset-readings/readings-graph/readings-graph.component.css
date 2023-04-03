@@ -12,6 +12,15 @@
   padding: 15px !important;
 }
 
+::ng-deep .button.is-small {
+  font-size: 0.90rem !important;
+}
+
+.no-data {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
 @media screen and (min-width: 769px) {
   .modal-card {
     width: 85%;
@@ -73,4 +82,8 @@ table.is-borderless tr {
   margin: -30px 2px 0 0;
   padding-right: 3px;
   top: 0;
+}
+
+::ng-deep .ng-select > div > div > div:nth-child(2) > span.ng-value-icon.left {
+  display: none !important;
 }
