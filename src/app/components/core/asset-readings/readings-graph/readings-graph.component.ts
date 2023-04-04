@@ -690,7 +690,6 @@ export class ReadingsGraphComponent implements OnDestroy {
           distribution: 'linear',
           type: 'time',
           time: {
-            unit: 'second',
             tooltipFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
             displayFormats: {
               unit: 'second',
