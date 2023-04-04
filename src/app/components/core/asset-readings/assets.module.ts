@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
@@ -35,6 +36,7 @@ const routes: Routes = [
     ChartModule,
     NumberInputDebounceModule,
     PaginationModule,
+    NgSelectModule,
     SharedModule
   ],
   providers: [AssetsService],
