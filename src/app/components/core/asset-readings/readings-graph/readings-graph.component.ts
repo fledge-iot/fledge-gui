@@ -731,7 +731,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     if(this.optedTime > 86400){
       this.assetChartOptions.scales.xAxes[0].time.unit = 'hour';
       this.assetChartOptions.scales.xAxes[0].time.displayFormats.unit = 'hour';
-      this.assetChartOptions.scales.xAxes[0].time.displayFormats.hour = 'HH:mm:ss';
+      this.assetChartOptions.scales.xAxes[0].time.displayFormats.hour = 'ddd HH:mm:ss';
     }
   }
 
