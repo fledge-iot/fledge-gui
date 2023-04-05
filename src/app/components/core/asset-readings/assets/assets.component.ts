@@ -4,7 +4,7 @@ import { interval, Subject } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
-import { AlertService, AssetsService, PingService, GenerateCsvService, ProgressBarService, RolesService } from '../../../../services';
+import { AlertService, AssetsService, SharedService, PingService, GenerateCsvService, ProgressBarService, RolesService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
@@ -36,6 +36,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     public developerFeaturesService: DeveloperFeaturesService,
     private ngProgress: ProgressBarService,
     private ping: PingService,
+    private sharedService: SharedService,
     public rolesService: RolesService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -58,9 +59,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
       });
   }
 
-  public getAsset(): void {
+  public getAsset(showProgressBar = true): void {
     /** request started */
-    if (!this.isAlive) {
+    if (!this.isAlive && showProgressBar) {
       this.ngProgress.start();
     }
     this.assetService.getAsset()
@@ -71,6 +72,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           this.ngProgress.done();
           this.assets = data;
           this.assets = orderBy(this.assets, ['assetCode'], ['asc']);
+          this.sharedService.assets.next(this.assets);
           this.hideLoadingSpinner();
         },
         error => {

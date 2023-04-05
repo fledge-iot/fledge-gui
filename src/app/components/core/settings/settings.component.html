@@ -188,6 +188,47 @@
           </div>
         </div>
       </div>
+
+      <div class="columns">
+        <div class="column is-6">
+          <label class="label is-small">Readings Graph Default Duration</label>
+          <div class="control">
+            <div id="readings-graph-default-duration" class="dropdown">
+              <div class="dropdown-trigger">
+                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                  (click)="toggleDropDown('readings-graph-default-duration')">
+                  <span *ngIf="graphDefaultDuration === '60'">1 minute</span>
+                  <span *ngIf="graphDefaultDuration === '300'">5 minutes</span>
+                  <span *ngIf="graphDefaultDuration === '600'">10 minutes</span>
+                  <span *ngIf="graphDefaultDuration === '1800'">30 minutes</span>
+                  <span *ngIf="graphDefaultDuration === '3600'">1 hour</span>
+                  <span *ngIf="graphDefaultDuration === '28800'">8 hours</span>
+                  <span class="icon is-small">
+                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-duration');setReadingsGraphDefaultDuration('60')">1 minute</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-duration');setReadingsGraphDefaultDuration('300')">5 minutes</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-duration');setReadingsGraphDefaultDuration('600')">10 minutes</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-duration');setReadingsGraphDefaultDuration('1800')">30 minutes</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-duration');setReadingsGraphDefaultDuration('3600')">1 hour</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('readings-graph-default-duration');setReadingsGraphDefaultDuration('28800')">8 hours</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <hr>
       <div class="columns">
         <div class="column is-6" *ngIf="rolesService.hasEditPermissions()">
