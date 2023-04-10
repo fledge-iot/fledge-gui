@@ -413,7 +413,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       .subscribe(
         (data: any[]) => {
           this.loadPage = false;
-          this.getReadings(data);
+          this.getReadings(data, time);
         },
         error => {
           console.log('error in response', error);
@@ -455,10 +455,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.imageReadings = imageReadings.length > 0 ? this.getImage(imageReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
-    this.setTabData();
+    this.setTabData(this.optedTime);
   }
 
-  getReadings(readings: any) {
+  getReadings(readings: any, optedTime: number) {
     const numReadings = [];
     const strReadings = [];
     const arrReadings = [];
@@ -524,7 +524,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
-    this.setTabData();
+    this.setTabData(optedTime);
   }
 
   getMergedReadings(allAssetsReading){  
@@ -540,7 +540,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     return mergedReadings;
   }
 
-  setTabData() {
+  setTabData(optedTime: number) {
     this.showSpinner = false;
     if (this.isModalOpened) {
       if (this.numberTypeReadingsList.length > 0) {
@@ -596,7 +596,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     if (this.selectedTab === 1 && this.numberTypeReadingsList.length > 0) {
-      this.statsAssetReadingsGraph(this.numberTypeReadingsList);
+      this.statsAssetReadingsGraph(this.numberTypeReadingsList, optedTime);
     } else if (this.selectedTab === 2 && this.arrayTypeReadingsList.length > 0) {
       this.create3DGraph(this.arrayTypeReadingsList, this.timestamps);
     }
@@ -624,7 +624,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  private statsAssetReadingsGraph(assetReadings: any): void {
+  private statsAssetReadingsGraph(assetReadings: any, optedTime: number): void {
     const dataset = [];
     assetReadings = orderBy(assetReadings, [reading => reading.key.toLowerCase()], ['asc']);
     for (const r of assetReadings) {
@@ -646,7 +646,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         dataset.push(dt);
       }
     }
-    this.setAssetReadingValues(dataset);
+    this.setAssetReadingValues(dataset, optedTime);
   }
 
   getColorCode(readKey, dsColor) {
@@ -676,7 +676,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  private setAssetReadingValues(ds: any) {
+  private setAssetReadingValues(ds: any, optedTime: number) {
     this.assetReadingValues = {
       datasets: ds
     };
@@ -728,6 +728,11 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
+    if(optedTime > 86400){
+      this.assetChartOptions.scales.xAxes[0].time.unit = 'hour';
+      this.assetChartOptions.scales.xAxes[0].time.displayFormats.unit = 'hour';
+      this.assetChartOptions.scales.xAxes[0].time.displayFormats.hour = 'ddd HH:mm';
+    }
   }
 
   create3DGraph(readings: any, ts: any) {
