@@ -236,7 +236,7 @@ table.scroll tbody {
 }
 
 .page-container {
-  margin-bottom: -144px; 
+  margin-bottom: -144px;
 }
 
 .page-container:after {
@@ -245,7 +245,7 @@ table.scroll tbody {
 }
 
 .footer, .page-container:after {
-  height: 144px; 
+  height: 144px;
 }
 
 .footer {
@@ -308,3 +308,18 @@ a.dropdown-item:hover {
 .icon:hover {
   opacity: 0.8;
 }
+
+/* For modal card window */
+.modal-disabled {
+  pointer-events: none;
+ }
+
+ div:has(div.modal-disabled) {
+  cursor: not-allowed;
+ }
+
+ .blur {
+  filter: blur(1px);
+ }
+
+ /*****************/
