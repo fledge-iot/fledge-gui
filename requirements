@@ -23,11 +23,13 @@ install_nodejs () {
   requiredNodeVer="v14.15.5"
   # Check if Node.js is installed or if installed version is < 14.x
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
-      sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | sudo  bash
+      sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | sudo -E bash -
       export NVM_DIR="$HOME/.nvm"
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
       [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
       nvm install ${requiredNodeVer}
+      sudo ln -s "$NVM_DIR/versions/node/$(nvm version)/bin/node" "/usr/local/bin/node"
+      sudo ln -s "$NVM_DIR/versions/node/$(nvm version)/bin/npm" "/usr/local/bin/npm"
   fi
 }
 
