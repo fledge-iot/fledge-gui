@@ -7,6 +7,8 @@ import { SharedService } from '../../../services/shared.service';
 import { buildRoutes } from '../../../../menu-utils';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { RolesService, } from '../../../services';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-side-menu',
@@ -19,6 +21,9 @@ export class SideMenuComponent implements OnInit {
   microfrontends: Microfrontend[] = [];
 
   isAdmin = false;
+  isServiceRunning = true;
+  private destroySubject: Subject<void> = new Subject();
+
   constructor(
     private router: Router,
     private docService: DocService,
@@ -34,13 +39,28 @@ export class SideMenuComponent implements OnInit {
     // reconfigure routes after dyanmic route load
     this.router.resetConfig(routes);
 
-    this.sharedService.isAdmin.subscribe(value => {
-      this.isAdmin = value;
-    });
+    this.sharedService.isAdmin
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(value => {
+        this.isAdmin = value;
+      });
+
+    // Check whether the service is up or not
+    this.sharedService.connectionInfo
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(connectionInfo => {
+        this.isServiceRunning = connectionInfo?.isServiceUp;
+      });
   }
 
 
   goToLink() {
     this.docService.goToLink();
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe from all observables
+    this.destroySubject.next();
+    this.destroySubject.unsubscribe();
   }
 }

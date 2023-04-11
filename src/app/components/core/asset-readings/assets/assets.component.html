@@ -107,5 +107,5 @@
       </div>
     </div>
   </div>
-  <app-readings-graph (notify)='onNotify($event)'></app-readings-graph>
+  <app-readings-graph (notify)='onNotify($event)' (refreshAssets)="getAsset(false)"></app-readings-graph>
 </div>
