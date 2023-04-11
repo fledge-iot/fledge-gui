@@ -125,11 +125,11 @@ export class TabHeader {
     const contentMetricsRight = Math.floor(contentMetrics.right);
     const contentMetricsLeft = Math.floor(contentMetrics.left);
 
-    if (containerMetricsLeft > contentMetricsLeft && containerMetricsRight < contentMetricsRight) {
+    if (containerMetricsLeft > contentMetricsLeft && containerMetricsRight < contentMetricsRight-2) {
       return "both";
     } else if (contentMetricsLeft < containerMetricsLeft) {
       return "left";
-    } else if ((contentMetricsRight) >= containerMetricsRight) {
+    } else if ((contentMetricsRight) > containerMetricsRight) {
       return "right";
     } else {
       return "none";

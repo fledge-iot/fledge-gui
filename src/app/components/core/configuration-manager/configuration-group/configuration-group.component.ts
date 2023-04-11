@@ -45,6 +45,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngAfterViewInit() {
     const groupNavContents = document.getElementById("groupNavContents");
     this.tabs = new TabHeader(groupNavContents);
+    window.addEventListener('resize', ()=>{
+      this.tabs.setOverFlow();
+    })
   }
 
   // left slider click
@@ -151,6 +154,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
           }
           this.upsertAdvanceConfiguration(this.advanceCategoriesGroup, { category: category.key, group: category.group, config: data });
+          setTimeout(()=>{
+            this.tabs.setOverFlow();
+          },1);
         },
         error => {
           console.log('error ', error);
