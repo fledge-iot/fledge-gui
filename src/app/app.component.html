@@ -7,7 +7,10 @@
   </ng-sidebar>
   <div ng-sidebar-content class="fixed-overflow c1" [ngClass]="{'column is-offset-2 is-10':!isLoginView}">
 
-    <div [ngClass]="{'overlay': !isServiceRunning && !url?.includes('setting') && !modalWindow}"></div>
+    <div [ngClass]="{'overlay': !isServiceRunning
+      && !url?.includes('setting')
+      && !url?.includes('login') && !modalWindow}">
+    </div>
 
     <div class="page-container">
       <app-alert></app-alert>
