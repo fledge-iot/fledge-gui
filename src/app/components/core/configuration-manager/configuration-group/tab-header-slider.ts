@@ -1,28 +1,20 @@
 const SETTINGS = {
   navBarTravelling: false,
   navBarTravelDirection: "",
+  // no. of pixels content will travel on left or right slider click
   navBarTravelDistance: 150
 }
 
 export class TabHeader {
 
-  colours = {
-    0: "#fead00"
-    /*
-    Add Numbers And Colors if you want to make each tab's indicator in different color for eg:
-    1: "#FF0000",
-    2: "#00FF00", and so on...
-    */
-  }
-
   groupNavigation = document.getElementById("group_navigation");
-  groupNavContents
+  groupNavContents: any;
 
   constructor(domElement) {
     this.groupNavContents = domElement;
-    this.groupNavigation.setAttribute("data-overflowing", this.determineOverflow(this.groupNavContents, this.groupNavigation));
-    let ticking = false;
+    this.setOverFlow();
 
+    let ticking = false;
     this.groupNavigation.addEventListener("scroll", () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
@@ -37,18 +29,18 @@ export class TabHeader {
       "transitionend",
       () => {
         // get the value of the transform, apply that to the current scroll position (so get the scroll pos first) and then remove the transform
-        var styleOfTransform = window.getComputedStyle(this.groupNavContents, null);
-        var tr = styleOfTransform.getPropertyValue("-webkit-transform") || styleOfTransform.getPropertyValue("transform");
+        let styleOfTransform = window.getComputedStyle(this.groupNavContents, null);
+        let transform = styleOfTransform.getPropertyValue("-webkit-transform") || styleOfTransform.getPropertyValue("transform");
         // If there is no transition we want to default to 0 and not null
-        var amount = Math.abs(parseInt(tr.split(",")[4]) || 0);
+        let contentTravelDistance = Math.abs(parseInt(transform.split(",")[4]) || 0);
         this.groupNavContents.style.transform = "none";
         // We do not want to show backward transition that is why transition duration is 0s
         this.groupNavContents.style.transition = "transform 0s";
         // Now lets set the scroll position
         if (SETTINGS.navBarTravelDirection === "left") {
-          this.groupNavigation.scrollLeft = this.groupNavigation.scrollLeft - amount;
+          this.groupNavigation.scrollLeft = this.groupNavigation.scrollLeft - contentTravelDistance;
         } else {
-          this.groupNavigation.scrollLeft = this.groupNavigation.scrollLeft + amount;
+          this.groupNavigation.scrollLeft = this.groupNavigation.scrollLeft + contentTravelDistance;
         }
         SETTINGS.navBarTravelling = false;
       },
@@ -62,9 +54,9 @@ export class TabHeader {
       return;
     }
     // If we have content overflowing both sides or on the left
-    if (this.determineOverflow(this.groupNavContents, this.groupNavigation) === "left" || this.determineOverflow(this.groupNavContents, this.groupNavigation) === "both") {
+    if (this.determineOverflow() === "left" || this.determineOverflow() === "both") {
       // Find how far this panel has been scrolled
-      var availableScrollLeft = this.groupNavigation.scrollLeft;
+      let availableScrollLeft = this.groupNavigation.scrollLeft;
       // If the space available is less than two lots of our desired distance, just move the whole amount
       // otherwise, move by the amount in the settings
       if (availableScrollLeft < SETTINGS.navBarTravelDistance * 2) {
@@ -79,7 +71,7 @@ export class TabHeader {
       SETTINGS.navBarTravelling = true;
     }
     // Now update the attribute in the DOM
-    this.groupNavigation.setAttribute("data-overflowing", this.determineOverflow(this.groupNavContents, this.groupNavigation));
+    this.setOverFlow();
   }
 
   scrollToRight() {
@@ -88,12 +80,12 @@ export class TabHeader {
       return;
     }
     // If we have content overflowing both sides or on the right
-    if (this.determineOverflow(this.groupNavContents, this.groupNavigation) === "right" || this.determineOverflow(this.groupNavContents, this.groupNavigation) === "both") {
+    if (this.determineOverflow() === "right" || this.determineOverflow() === "both") {
       // Get the right edge of the container and content
-      var navBarRightEdge = this.groupNavContents.getBoundingClientRect().right;
-      var navBarScrollerRightEdge = this.groupNavigation.getBoundingClientRect().right;
+      let navBarRightEdge = this.groupNavContents.getBoundingClientRect().right;
+      let navBarScrollerRightEdge = this.groupNavigation.getBoundingClientRect().right;
       // Now we know how much space we have available to scroll
-      var availableScrollRight = Math.floor(navBarRightEdge - navBarScrollerRightEdge);
+      let availableScrollRight = Math.floor(navBarRightEdge - navBarScrollerRightEdge);
       // If the space available is less than two lots of our desired distance, just move the whole amount
       // otherwise, move by the amount in the settings
       if (availableScrollRight < SETTINGS.navBarTravelDistance * 2) {
@@ -108,15 +100,17 @@ export class TabHeader {
       SETTINGS.navBarTravelling = true;
     }
     // Now update the attribute in the DOM
-    this.groupNavigation.setAttribute("data-overflowing", this.determineOverflow(this.groupNavContents, this.groupNavigation));
+    this.setOverFlow();
   }
 
   setOverFlow() {
-    this.groupNavigation.setAttribute("data-overflowing", this.determineOverflow(this.groupNavContents, this.groupNavigation));
+    this.groupNavigation.setAttribute("data-overflowing", this.determineOverflow());
   }
 
 
-  determineOverflow(content, container) {
+  determineOverflow() {
+    let content = this.groupNavContents;
+    let container = this.groupNavigation;
     const containerMetrics = container.getBoundingClientRect();
     const containerMetricsRight = Math.floor(containerMetrics.right);
     const containerMetricsLeft = Math.floor(containerMetrics.left);
@@ -125,16 +119,15 @@ export class TabHeader {
     const contentMetricsRight = Math.floor(contentMetrics.right);
     const contentMetricsLeft = Math.floor(contentMetrics.left);
 
-    if (containerMetricsLeft > contentMetricsLeft && containerMetricsRight < contentMetricsRight-2) {
+    if (containerMetricsLeft > contentMetricsLeft && containerMetricsRight < contentMetricsRight - 2) {
       return "both";
-    } else if (contentMetricsLeft < containerMetricsLeft) {
-      return "left";
-    } else if ((contentMetricsRight) > containerMetricsRight) {
-      return "right";
-    } else {
-      return "none";
     }
+    if (contentMetricsLeft < containerMetricsLeft) {
+      return "left";
+    }
+    if (contentMetricsRight > containerMetricsRight) {
+      return "right";
+    }
+    return "none";
   }
-
 }
-

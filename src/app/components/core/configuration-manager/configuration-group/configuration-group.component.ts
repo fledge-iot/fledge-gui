@@ -45,7 +45,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngAfterViewInit() {
     const groupNavContents = document.getElementById("groupNavContents");
     this.tabs = new TabHeader(groupNavContents);
-    window.addEventListener('resize', ()=>{
+    window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
   }
@@ -154,9 +154,10 @@ export class ConfigurationGroupComponent implements AfterViewInit {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
           }
           this.upsertAdvanceConfiguration(this.advanceCategoriesGroup, { category: category.key, group: category.group, config: data });
-          setTimeout(()=>{
+          // check overflow after loading advanced & security group
+          setTimeout(() => {
             this.tabs.setOverFlow();
-          },1);
+          }, 1);
         },
         error => {
           console.log('error ', error);

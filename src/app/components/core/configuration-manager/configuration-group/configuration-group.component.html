@@ -56,7 +56,7 @@
         <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
           <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
             [selectedGroup]="selectedGroup" [fullConfiguration]="g.config"
-            (event)="getChangedAdvanceConfiguration($event)"
+            (event)="getChangedSecurityConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-show-configuration>
         </ng-container>
       </ng-template>

@@ -1,13 +1,12 @@
 @media screen and (min-width: 769px) {
   .field-body {
-    flex-grow : 2 !important;
+    flex-grow: 2 !important;
   }
 }
 
 .highlight {
   border: 1px solid transparent;
   border-color: #dbdbdb;
-  /* border-top-color: transparent!important; */
   border-radius: 4px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
@@ -28,24 +27,17 @@
   margin-bottom: inherit;
 }
 
-/*--- Wrap Up ---*/
 .configuration_group_wrapper {
   position: relative;
   box-sizing: border-box;
 }
 
 .groupNav {
-  /* Make this scrollable when needed */
   overflow-x: hidden;
-  /* We don't want vertical scrolling */
   overflow-y: hidden;
-  /* For WebKit implementations, provide inertia scrolling */
-  -webkit-overflow-scrolling: touch;
-  /* We don't want internal inline elements to wrap */
+  -webkit-overflow-scrolling: touch; /* For WebKit implementations, provide inertia scrolling */
   white-space: nowrap;
-  /* If JS present, let's hide the default scrollbar */
   position: relative;
-  /* font-size: 0; */
 }
 
 .groupNav_contents {
@@ -53,35 +45,36 @@
   padding-right: 20px;
 }
 
-
 .advancer {
-  /* Reset the button */
   border: 0;
   position: absolute;
   top: 0;
   bottom: 0;
   opacity: 0;
-  /* transition: opacity 0.3s; */
 }
+
 .advancer:focus {
   outline: 0;
 }
+
 .advancer:hover {
   cursor: pointer;
-  /* Now style it as needed */
-  /* Set the buttons invisible by default */
 }
+
 .advancer_left {
   left: 0;
 }
-[data-overflowing="both"] ~ .advancer_left, [data-overflowing="left"] ~ .advancer_left {
+
+[data-overflowing="both"]~.advancer_left,
+[data-overflowing="left"]~.advancer_left {
   opacity: 1;
 }
+
 .advancer_right {
   right: 0;
 }
-[data-overflowing="both"] ~ .advancer_right, [data-overflowing="right"] ~ .advancer_right {
+
+[data-overflowing="both"]~.advancer_right,
+[data-overflowing="right"]~.advancer_right {
   opacity: 1;
 }
-
-
