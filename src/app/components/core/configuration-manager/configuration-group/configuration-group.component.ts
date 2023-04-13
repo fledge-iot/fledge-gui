@@ -1,18 +1,21 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep } from 'lodash';
+import { TabHeader } from './tab-header-slider';
 
 @Component({
   selector: 'app-configuration-group',
   templateUrl: './configuration-group.component.html',
   styleUrls: ['./configuration-group.component.css']
 })
-export class ConfigurationGroupComponent implements OnInit {
+export class ConfigurationGroupComponent implements AfterViewInit {
 
   selectedGroup = 'Default Configuration';
   @Input() category;
   groups = [];
+
+  tabs: TabHeader;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -39,7 +42,23 @@ export class ConfigurationGroupComponent implements OnInit {
     private alertService: AlertService
   ) { }
 
-  ngOnInit() { }
+  ngAfterViewInit() {
+    const groupNavContents = document.getElementById("groupNavContents");
+    this.tabs = new TabHeader(groupNavContents);
+    window.addEventListener('resize', () => {
+      this.tabs.setOverFlow();
+    })
+  }
+
+  // left slider click
+  left() {
+    this.tabs.scrollToLeft();
+  }
+
+  // right slider click
+  right() {
+    this.tabs.scrollToRight();
+  }
 
   ngOnChanges() {
     this.categeryConfiguration();
@@ -135,6 +154,10 @@ export class ConfigurationGroupComponent implements OnInit {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
           }
           this.upsertAdvanceConfiguration(this.advanceCategoriesGroup, { category: category.key, group: category.group, config: data });
+          // check overflow after loading advanced & security group
+          setTimeout(() => {
+            this.tabs.setOverFlow();
+          }, 1);
         },
         error => {
           console.log('error ', error);

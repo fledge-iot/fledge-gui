@@ -1,21 +1,12 @@
 @media screen and (min-width: 769px) {
   .field-body {
-    flex-grow : 2 !important;
+    flex-grow: 2 !important;
   }
-}
-
-.config-div {
-  margin-top: 1vw;
-}
-
-.tooltip.is-tooltip-multiline::before {
-  min-width: 16rem !important;
 }
 
 .highlight {
   border: 1px solid transparent;
   border-color: #dbdbdb;
-  border-top-color: transparent!important;
   border-radius: 4px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
@@ -25,5 +16,65 @@
 }
 
 .tabs {
+  margin-right: auto !important;
+  margin-left: auto !important;
   margin-bottom: 0px !important;
+}
+
+#group_navigation .nav {
+  display: flex;
+  flex-wrap: inherit;
+  margin-bottom: inherit;
+}
+
+.configuration_group_wrapper {
+  position: relative;
+  box-sizing: border-box;
+}
+
+.groupNav {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* For WebKit implementations, provide inertia scrolling */
+  white-space: nowrap;
+  position: relative;
+}
+
+.groupNav_contents {
+  float: left;
+  padding-right: 20px;
+}
+
+.advancer {
+  border: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+}
+
+.advancer:focus {
+  outline: 0;
+}
+
+.advancer:hover {
+  cursor: pointer;
+}
+
+.advancer_left {
+  left: 0;
+}
+
+[data-overflowing="both"]~.advancer_left,
+[data-overflowing="left"]~.advancer_left {
+  opacity: 1;
+}
+
+.advancer_right {
+  right: 0;
+}
+
+[data-overflowing="both"]~.advancer_right,
+[data-overflowing="right"]~.advancer_right {
+  opacity: 1;
 }
