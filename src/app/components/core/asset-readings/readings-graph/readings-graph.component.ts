@@ -822,6 +822,35 @@ export class ReadingsGraphComponent implements OnDestroy {
     return a.key > b.key ? -1 : (b.key > a.key ? 1 : 0);
   }
 
+  toggleAutoRefresh(refresh: boolean) {
+    this.isAlive = refresh;
+    // clear interval subscription before initializing it again
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
+    /**
+     * Set graph refresh interval to default if Auto Refresh checked and
+     * pingInterval is set to manual on settings page
+     * */
+    if (this.isAlive && this.graphRefreshInterval === -1) {
+      this.graphRefreshInterval = POLLING_INTERVAL;
+    }
+
+    // start auto refresh
+    this.subscription = interval(this.graphRefreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.autoRefresh = true;
+        if (this.selectedTab === 4) {
+          this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+        } else {
+          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+          this.refreshAssets.next();
+        }
+      });
+  }
+
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.destroy$.next(true);

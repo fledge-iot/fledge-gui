@@ -87,3 +87,14 @@ table.is-borderless tr {
 ::ng-deep .ng-select > div > div > div:nth-child(2) > span.ng-value-icon.left {
   display: none !important;
 }
+
+.auto-refresh {
+  margin-right: 30px;
+  font-size: .75rem;
+  color: #363636;
+  font-weight: 700;
+}
+
+.checkmark {
+  vertical-align: middle !important;
+}

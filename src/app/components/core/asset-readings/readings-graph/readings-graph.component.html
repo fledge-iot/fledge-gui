@@ -8,6 +8,13 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </p>
+      <div *ngIf="graphRefreshInterval !== -1" class="auto-refresh">
+        <label class="checkbox">
+          <input class="checkmark" type="checkbox" [checked]='isAlive'
+            (click)="toggleAutoRefresh($event.target.checked)">
+          Auto Refresh
+        </label>
+      </div>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
