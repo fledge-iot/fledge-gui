@@ -88,13 +88,8 @@ table.is-borderless tr {
   display: none !important;
 }
 
-.auto-refresh {
-  margin-right: 30px;
-  font-size: .75rem;
-  color: #363636;
-  font-weight: 700;
-}
-
-.checkmark {
-  vertical-align: middle !important;
+.video-button {
+  vertical-align: middle;
+  background: none;
+  border: none;
 }

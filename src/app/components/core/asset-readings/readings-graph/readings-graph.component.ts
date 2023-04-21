@@ -55,6 +55,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   public selectedTab = 1;
   public timestamps = [];
   public isLatestReadings = false;
+  public pauseTime: number = Date.now();
+  public backwardReadingCounter: number = 0;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -109,6 +111,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetReadingValues = {};
     this.summaryLimit = 5;
     this.assetChartOptions = {};
+    this.pauseTime = Date.now();
+    this.backwardReadingCounter = 0;
     sessionStorage.removeItem(this.assetCode);
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
@@ -146,7 +150,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   getTimeBasedAssetReadingsAndSummary(time: number) {
     this.optedTime = time;
     this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   public getAssetCode(assetCode: string) {
@@ -190,7 +194,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.optedTime !== 0) {
       this.limit = 0;
       this.autoRefresh = false;
-      this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
+      this.plotReadingsGraph(assetCode, this.limit, this.optedTime, 0);
     }
     this.subscription = interval(this.graphRefreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
@@ -199,14 +203,14 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedTab === 4) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
-          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
           this.refreshAssets.next();
         }
       });
   }
 
   addOrRemoveAsset() {
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   clearAdditionalAssets() {
@@ -394,7 +398,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-  public plotReadingsGraph(assetCode, limit = null, time = null) {
+  public plotReadingsGraph(assetCode, limit = null, time = null, previous = 0) {
     if (assetCode === '') {
       return false;
     }
@@ -408,7 +412,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     let optedAssets = this.additionalAssets;
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
     this.limit = limit;
-    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets)
+    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
@@ -616,7 +620,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
         this.getLatestReading(this.assetCode);
       } else {
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
       }
       if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
@@ -806,7 +810,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
     } else if (this.graphRefreshInterval === -1) {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
   }
 
@@ -824,6 +828,8 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   toggleAutoRefresh(refresh: boolean) {
     this.isAlive = refresh;
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
     // clear interval subscription before initializing it again
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -845,10 +851,27 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedTab === 4) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
-          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
           this.refreshAssets.next();
         }
       });
+  }
+
+  showBackwardReadingsGraph(){
+    this.backwardReadingCounter++;
+    this.showReadingsGraph();
+  }
+  
+  showForwardReadingsGraph(){
+    this.backwardReadingCounter--;
+    this.showReadingsGraph();
+  }
+
+  showReadingsGraph(){
+    let currentTime = Date.now();
+    let timeDifference = Math.floor((currentTime - this.pauseTime)/1000);
+    let previous = timeDifference + this.backwardReadingCounter*this.optedTime;
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
   }
 
   public ngOnDestroy(): void {

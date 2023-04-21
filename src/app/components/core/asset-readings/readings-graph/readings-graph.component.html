@@ -8,13 +8,22 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </p>
-      <div *ngIf="graphRefreshInterval !== -1" class="auto-refresh">
-        <label class="checkbox">
-          <input class="checkmark" type="checkbox" [checked]='isAlive'
-            (click)="toggleAutoRefresh($event.target.checked)">
-          Auto Refresh
-        </label>
-      </div>
+      <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button is-small video-button">
+        <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
+      </button>
+      <ng-container *ngIf="isAlive">
+        <button (click)="toggleAutoRefresh(false)" class="button is-small video-button">
+          <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
+        </button>
+      </ng-container>
+      <ng-container *ngIf="!isAlive">
+        <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)" class="button is-small video-button">
+          <i class="fa fa-sm fa-play" aria-hidden="true"></i>
+        </button>
+      </ng-container>
+      <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()" class="button is-small video-button">
+        <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
+      </button>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
