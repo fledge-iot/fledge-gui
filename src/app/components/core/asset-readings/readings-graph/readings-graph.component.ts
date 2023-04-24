@@ -617,6 +617,8 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   refresh() {
     if (!this.isAlive) {
+      this.backwardReadingCounter = 0;
+      this.pauseTime = Date.now();
       if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
         this.getLatestReading(this.assetCode);
       } else {
@@ -805,11 +807,11 @@ export class ReadingsGraphComponent implements OnDestroy {
   selectTab(id: number, showSpinner = true) {
     this.showSpinner = showSpinner;
     this.selectedTab = id;
-    if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
+    if (!this.isAlive && this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    } else if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
+    } else if (!this.isAlive && this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
-    } else if (this.graphRefreshInterval === -1) {
+    } else if (!this.isAlive) {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
   }

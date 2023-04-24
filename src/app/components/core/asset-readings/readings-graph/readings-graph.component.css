@@ -88,7 +88,7 @@ table.is-borderless tr {
   display: none !important;
 }
 
-.video-button {
+.playback-button {
   vertical-align: middle;
   background: none;
   border: none;

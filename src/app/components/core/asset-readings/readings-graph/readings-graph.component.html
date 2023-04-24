@@ -8,20 +8,20 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </p>
-      <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button is-small video-button">
+      <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button is-small playback-button">
         <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
       </button>
       <ng-container *ngIf="isAlive">
-        <button (click)="toggleAutoRefresh(false)" class="button is-small video-button">
+        <button (click)="toggleAutoRefresh(false)" class="button is-small playback-button">
           <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
         </button>
       </ng-container>
       <ng-container *ngIf="!isAlive">
-        <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)" class="button is-small video-button">
+        <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)" class="button is-small playback-button">
           <i class="fa fa-sm fa-play" aria-hidden="true"></i>
         </button>
       </ng-container>
-      <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()" class="button is-small video-button">
+      <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()" class="button is-small playback-button">
         <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
       </button>
       <div class="close">
