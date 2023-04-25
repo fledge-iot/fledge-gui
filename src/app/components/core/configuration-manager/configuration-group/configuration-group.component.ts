@@ -80,7 +80,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
 
-      const g = k != "undefined" && k != 'basic' ? k : "Basic Configuration";
+      const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic Configuration";
       return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
     }).value();
 
