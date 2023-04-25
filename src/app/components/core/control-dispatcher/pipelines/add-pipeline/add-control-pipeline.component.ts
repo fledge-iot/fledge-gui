@@ -166,6 +166,7 @@ export class AddControlPipelineComponent implements OnInit {
         break;
       case 'sourceType':
         this.sourceNameList = [];
+        this.selectedSourceName = '';
         this.selectedSourceType = value === 'None' ? '' : value;
         this.getSourceNameList();
         break;
@@ -174,6 +175,7 @@ export class AddControlPipelineComponent implements OnInit {
         break;
       case 'destinationType':
         this.destinationNameList = [];
+        this.selectedDestinationName = '';
         this.selectedDestinationType = value === 'None' ? '' : value;
         this.getDestinationNameList();
         break;
@@ -237,6 +239,7 @@ export class AddControlPipelineComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+          nameList.push('Storage');
           data.schedules.forEach(sch => {
             if (this.selectedSourceType.name === 'Service' || this.selectedDestinationType.name === 'Service') {
               if (['STARTUP'].includes(sch.type)) {
@@ -371,7 +374,7 @@ export class AddControlPipelineComponent implements OnInit {
       this.controlPipelinesService.createPipeline(payload)
         .subscribe(() => {
           this.ngProgress.done();
-          this.alertService.success(`Script ${payload['name']} created successfully.`);
+          this.alertService.success(`Control Pipeline ${payload['name']} created successfully.`);
           this.pipelineForm.form.markAsUntouched();
           this.pipelineForm.form.markAsPristine();
           setTimeout(() => {
@@ -398,7 +401,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
         this.pipelineName = payload.name;
-        this.router.navigate(['control-dispatcher/pipeline/', payload.name]);
+        this.router.navigate(['control-dispatcher/pipelines']);
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
