@@ -1,23 +1,20 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Subscription, fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { DEBOUNCE_TIME } from '../../../utils';
 
 @Component({
   selector: 'app-time-dropdown',
   templateUrl: './time-dropdown.component.html',
   styleUrls: ['./time-dropdown.component.css']
 })
-export class TimeDropdownComponent implements OnInit {
-  graphTime = [
-    { key: '1 minute', value: 60 },
-    { key: '5 minutes', value: 300 },
-    { key: '10 minutes', value: 600 },
-    { key: '30 minutes', value: 1800 },
-    { key: '1 hour', value: 3600 },
-    { key: '8 hours', value: 28800 },
-    { key: '1 day', value: 86400 },
-    { key: '1 week', value: 604800 }
-  ];
+export class TimeDropdownComponent implements OnInit, OnDestroy {
+  graphUnit = ['seconds', 'minutes', 'hours', 'days'];
+  optedTime = 600; // Set graph optedTime to default 10 minutes
+  selectedUnit: string = 'minutes';
 
-  optedTime = this.graphTime[2].value; // Set graph optTime to default 10 minutes
+  @ViewChild('time', { static: true }) timeInput: ElementRef;
+  private fromEventSub: Subscription;
 
   @Output() updateGraphEvent = new EventEmitter<number>();
   @Output() dropdownOpenEvent = new EventEmitter<boolean>();
@@ -25,18 +22,25 @@ export class TimeDropdownComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    this.timeInput.nativeElement.value = 10;
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     if (rGraphDefaultDuration !== null) {
       this.optedTime = parseInt(rGraphDefaultDuration);
     }
-  }
 
-  setDropdownLabel(optedTime: number) {
-    return this.graphTime.find(t => t.value === optedTime).key;
+    this.fromEventSub = fromEvent(this.timeInput.nativeElement, 'input')
+      .pipe(distinctUntilChanged(), debounceTime(DEBOUNCE_TIME))
+      .subscribe(() => {
+        if (this.timeInput.nativeElement.value !== '') {
+          this.optedTime = this.calculateOptedTime();
+          this.updateGraphEvent.emit(this.optedTime);
+        }
+      })
+
   }
 
   public toggleDropdown() {
-    const dropDown = document.querySelector('#time-dropdown');
+    const dropDown = document.querySelector('#unit-dropdown');
     dropDown.classList.toggle('is-active');
     if (!dropDown.classList.contains('is-active')) {
       this.dropdownOpenEvent.emit(false);
@@ -45,11 +49,59 @@ export class TimeDropdownComponent implements OnInit {
     }
   }
 
-  setGraphTime(time: number) {
-    this.optedTime = time;
+  setGraphUnit(unit: string) {
+    this.selectedUnit = unit;
+    this.optedTime = this.calculateOptedTime();
     // emit changed graph time
-    this.updateGraphEvent.emit(time);
+    this.updateGraphEvent.emit(this.optedTime);
     this.toggleDropdown();
+  }
+
+  getMaxTime() {
+    if (this.selectedUnit === 'seconds') {
+      return 7 * 24 * 60 * 60;
+    }
+    if (this.selectedUnit === 'minutes') {
+      return 7 * 24 * 60;
+    }
+    if (this.selectedUnit === 'hours') {
+      return 7 * 24;
+    }
+    return 7;
+  }
+
+  calculateOptedTime() {
+    let value = this.timeInput.nativeElement.value;
+    if (this.selectedUnit === 'seconds') {
+      if (value > this.getMaxTime() || value === '0' || value === '') {
+        this.timeInput.nativeElement.value = 1;
+        return 1;
+      }
+      return value;
+    }
+    if (this.selectedUnit === 'minutes') {
+      if (value > this.getMaxTime() || value === '0' || value === '') {
+        this.timeInput.nativeElement.value = 1;
+        return 60;
+      }
+      return value * 60;
+    }
+    if (this.selectedUnit === 'hours') {
+      if (value > this.getMaxTime() || value === '0' || value === '') {
+        this.timeInput.nativeElement.value = 1;
+        return 60 * 60;
+      }
+      return value * 60 * 60;
+    }
+    if (value > this.getMaxTime() || value === '0' || value === '') {
+      this.timeInput.nativeElement.value = 1;
+      return 60 * 60 * 24;
+    }
+    return value * 60 * 60 * 24;
+  }
+
+  ngOnDestroy(): void {
+    this.fromEventSub.unsubscribe();
   }
 
 }
