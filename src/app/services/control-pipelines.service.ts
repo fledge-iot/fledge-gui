@@ -18,7 +18,7 @@ export class ControlPipelinesService {
   }
 
   getPipelineByID(id) {
-    return this.http.get(`${this.CONTROL_URL}/${id}`).pipe(
+    return this.http.get(`${this.CONTROL_URL}/pipeline/${id}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
@@ -30,7 +30,7 @@ export class ControlPipelinesService {
   }
 
   updatePipeline(id, payload: any) {
-    return this.http.put(`${this.CONTROL_URL}/${id}`, payload).pipe(
+    return this.http.put(`${this.CONTROL_URL}/pipeline/${id}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

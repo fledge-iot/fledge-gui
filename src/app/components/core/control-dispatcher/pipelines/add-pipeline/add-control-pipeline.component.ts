@@ -17,12 +17,12 @@ export class AddControlPipelineComponent implements OnInit {
 
   stepControlsList = [];
   pipelines = [{ name: 'None' }];
-  selectedExecution = 'Shared';
-  selectedSourceType = {cpsid: 1, name: "Any"};
+  selectedExecution = '';
+  selectedSourceType = {cpsid: null, name: ''};
   selectedSourceName = '';
-  selectedDestinationType = {cpdid: 4, name: "Broadcast"};
+  selectedDestinationType = {cpdid: null, name: ''};
   selectedDestinationName = '';
-  public isPipelineEnabled = true;
+  public isPipelineEnabled = 'true';
   pipeline;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   sourceTypeList = [];
@@ -30,9 +30,9 @@ export class AddControlPipelineComponent implements OnInit {
   sourceNameList = [];
   destinationNameList = [];
   editMode = false;
-  pipelineName = '';
-  controlPipeline = { id: '', name: '', execution: '', source: {"type": '', "name": ''}, destination: {"type": '', "name": ''}, enabled: false, filters: [] };
-
+  pipelineID : number;
+  pipelineName;
+  
   constructor(
     private cdRef: ChangeDetectorRef,
     private assetService: AssetsService,
@@ -48,16 +48,20 @@ export class AddControlPipelineComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.pipelineName = params['name'];
-      if (this.pipelineName) {
-        this.editMode = true;
-        this.getControlPipeline();
-      }
-    });
-    this.getAllPipelines();
     this.getSourceDestTypes('source');
     this.getSourceDestTypes('destination');
+    this.route.params.subscribe(params => {
+      this.pipelineID = params['name'];
+      if (this.pipelineID) {
+        this.editMode = true;
+        this.getControlPipeline();
+      } else {
+        this.selectedExecution = 'Shared';
+        this.selectedSourceType = {cpsid: 1, name: "Any"};
+        this.selectedDestinationType = {cpdid: 4, name: "Broadcast"};
+      }
+    });
+    this.getAllPipelines(); 
   }
 
   ngAfterContentChecked(): void {
@@ -68,19 +72,30 @@ export class AddControlPipelineComponent implements OnInit {
     this.getControlPipeline();
   }
 
-  updatePipelineName(name: string) {
-    this.controlPipeline.name = name;
-  }
-
   getControlPipeline() {
     /** request started */
     this.ngProgress.start();
-    this.controlPipelinesService.getPipelineByID(this.controlPipeline.id)
+    this.controlPipelinesService.getPipelineByID(this.pipelineID)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.controlPipeline.name = data.name;
         this.pipelineName = data.name;
-        // this.selectExecution(data.execution);
+        this.selectedExecution = data.execution;
+        this.isPipelineEnabled = data.enabled;
+        this.selectedSourceName = data.source.name;
+        this.selectedDestinationName = data.destination.name;
+
+        this.sourceTypeList.forEach(type => {
+          if (data.source.type === type.name) {
+            this.selectedSourceType = type;
+          }     
+        });
+
+        this.destinationTypeList.forEach(type => {
+          if (data.destination.type === type.name) {
+            this.selectedDestinationType = type;
+          }      
+        });
+
         this.pipelineForm.form.markAsUntouched();
         this.pipelineForm.form.markAsPristine();
       }, error => {
@@ -347,10 +362,10 @@ export class AddControlPipelineComponent implements OnInit {
       source: {"type": this.selectedSourceType.cpsid, "name": this.selectedSourceName},
       destination: {"type": this.selectedDestinationType.cpdid, "name": this.selectedDestinationName},
       filters: [],
-      enabled: this.isPipelineEnabled
+      enable: this.isPipelineEnabled
     }
     if (this.editMode) {
-      this.updateControlScript(payload)
+      this.updateControlScript(payload);
     } else {
       this.ngProgress.start();
       this.controlPipelinesService.createPipeline(payload)
@@ -374,13 +389,13 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   onCheckboxClicked(event) {
-    this.isPipelineEnabled = event.target.checked ? true : false;
+    this.isPipelineEnabled = event.target.checked ? 'true' : 'false';
   }
 
   updateControlScript(payload) {
     /** request started */
     this.ngProgress.start();
-    this.controlPipelinesService.updatePipeline(this.pipelineName, payload)
+    this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
         this.pipelineName = payload.name;
         this.router.navigate(['control-dispatcher/pipeline/', payload.name]);

@@ -26,9 +26,8 @@
                 <div class="field">
                   <div class="control">
                     <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
-                      [(ngModel)]="controlPipeline.name" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
-                      [ngClass]="{'is-static': editMode, 'is-small':sharedService.checkAuth() && !editMode}"
-                      [readonly]="editMode">
+                      [(ngModel)]="pipelineName" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
+                      [ngClass]="{'is-small':sharedService.checkAuth()}">
                   </div>
                   <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                     <div *ngIf="name.errors?.['required']">
@@ -57,8 +56,8 @@
                       </div>
                       <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
-                            <a (click)="selectValue('Shared', 'execution');toggleDropdown('#execution-dropdown')" class="dropdown-item">Shared</a>
-                            <a (click)="selectValue('Exclusive', 'execution');toggleDropdown('#execution-dropdown')" class="dropdown-item">Exclusive</a>
+                            <a (click)="selectValue('shared', 'execution');toggleDropdown('#execution-dropdown')" class="dropdown-item">shared</a>
+                            <a (click)="selectValue('exclusive', 'execution');toggleDropdown('#execution-dropdown')" class="dropdown-item">exclusive</a>
                         </div>
                       </div>
                     </div>

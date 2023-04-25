@@ -71,6 +71,10 @@ const routes: Routes = [
     path: 'pipeline/add',
     component: AddControlPipelineComponent,
     canActivate: [AuthTypeGuard]
+  },
+  {
+    path: 'pipeline/:name',
+    component: AddControlPipelineComponent
   }
 ];
 

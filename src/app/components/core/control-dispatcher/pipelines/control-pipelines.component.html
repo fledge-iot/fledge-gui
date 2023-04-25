@@ -42,7 +42,7 @@
                 <tbody>
                   <tr *ngFor="let pipeline of pipelines" [ngClass]="{'fade': (pipeline.enabled == 'false')}">
                     <td class="align-content">
-                      <a class="button is-text pipeline-name" (click)="showPipelineDetail(pipeline.id)">{{pipeline.name}}</a>
+                      <a class="button is-text pipeline-name" [routerLink]="['/control-dispatcher/pipeline', pipeline?.id]">{{pipeline.name}}</a>
                     </td>
                     <td class="align-content">
                       <div class="tags has-addons">
