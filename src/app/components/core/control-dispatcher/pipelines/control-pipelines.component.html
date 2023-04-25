@@ -40,7 +40,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let pipeline of pipelines" [ngClass]="{'fade': (pipeline.enabled == 'false')}">
+                  <tr *ngFor="let pipeline of pipelines; let i = index;" [ngClass]="{'fade': (pipeline.enabled == 'false')}">
                     <td class="align-content">
                       <a class="button is-text pipeline-name" [routerLink]="['/control-dispatcher/pipeline', pipeline?.id]">{{pipeline.name}}</a>
                     </td>
@@ -59,15 +59,13 @@
                       <span class="help dest-name">{{pipeline.destination.name}}</span>
                     </td>
                     <td class="align-content">
-                      <ng-container *ngFor="let filter of pipeline.filters">
-                        {{filter}}
-                      </ng-container>
+                      {{pipeline.filters.join(', ')}}
                     </td>
                     <td>
-                      <div id="dropdown" class="dropdown is-left">
+                      <div id="dropdown-{{i}}" class="dropdown is-left">
                         <div class="dropdown-trigger">
                           <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu"
-                            (click)="toggleDropdown()">
+                            (click)="toggleDropdown(i)">
                             <span class="icon is-small">
                               <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
                             </span>
@@ -75,8 +73,8 @@
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                           <div class="dropdown-content">
-                            <a class="dropdown-item" (click)="openModal(pipeline.id, pipeline.name, 'deletePipeline', 'Are you sure, you want to delete the pipeline')">                           
-                              <i class="fa fa-sm fa-trash-alt" aria-hidden="true"></i>
+                            <a class="dropdown-item" (click)="openModal(pipeline.id, pipeline.name, 'deletePipeline', 'Are you sure, you want to delete the pipeline')">
+                              <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
                               Delete
                             </a>
                           </div>

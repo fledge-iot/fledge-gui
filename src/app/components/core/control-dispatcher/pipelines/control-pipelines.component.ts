@@ -61,9 +61,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
-          console.log('pipelines', data)
-          this.pipelines = data.pipelines;
-          this.pipelines = orderBy(this.pipelines, ['name'], ['asc']);
+          this.pipelines = orderBy(data.pipelines, ['name'], ['asc']);
           this.hideLoadingSpinner();
         },
         error => {
@@ -78,8 +76,8 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
         });
   }
 
-  public toggleDropdown() {
-    const id = 'dropdown';
+  public toggleDropdown(contextMenu) {
+    const id = 'dropdown-' + contextMenu;
     const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
     if (activeDropDowns.length > 0) {
       if (activeDropDowns[0].id !== id) {
@@ -99,7 +97,12 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success(data['message']);
-          this.getControlPipelines();
+          // delete pipeline locally from pipelines array
+          const obj = this.pipelines.filter((pipeline) => pipeline.id === id);
+          const index: number = this.pipelines.indexOf(obj[0]);
+          if (index !== -1) {
+            this.pipelines.splice(index, 1);
+          }
         },
         error => {
           /** request completed */
@@ -139,10 +142,6 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
-  }
-
-  showPipelineDetail(){
-    
   }
 
   public ngOnDestroy(): void {
