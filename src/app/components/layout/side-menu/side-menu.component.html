@@ -26,11 +26,21 @@
           Notifications
         </a>
       </li>
+
       <li>
-        <a id="control-dispatcher" routerLinkActive="is-active" routerLink='/control-dispatcher'>
-          Control Dispatcher
-        </a>
+        <a>Control</a>
+        <ul>
+          <li>
+            <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher'>
+              Scripts & ACLs
+            </a>
+          </li>
+          <li>
+            <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
+          </li>
+        </ul>
       </li>
+
       <li>
         <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
           Configuration
