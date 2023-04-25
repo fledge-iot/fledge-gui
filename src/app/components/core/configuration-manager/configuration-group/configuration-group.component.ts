@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
-import { chain, cloneDeep } from 'lodash';
+import { chain, cloneDeep, uniqWith } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 
 @Component({
@@ -11,7 +11,7 @@ import { TabHeader } from './tab-header-slider';
 })
 export class ConfigurationGroupComponent implements AfterViewInit {
 
-  selectedGroup = 'Default Configuration';
+  selectedGroup = 'Basic Configuration';
   @Input() category;
   groups = [];
 
@@ -79,15 +79,25 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     });
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
-      const g = k != "undefined" ? k : "Default Configuration";
+
+      const g = k != "undefined" && k != 'basic' ? k : "Basic Configuration";
       return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
     }).value();
+
+    // merge configuration of same group
+    this.groups = uniqWith(this.groups, (pre, cur) => {
+      if (pre.group == cur.group) {
+        cur.config = { ...cur.config, ...pre.config };
+        return true;
+      }
+      return false;
+    });
 
     // sort group items having default configuration as first element
     this.groups = this.groups
       .sort((a, b) => a.group.localeCompare(b.group))
       .reduce((acc, e) => {
-        e.group === 'Default Configuration' ? acc.unshift(e) : acc.push(e);
+        e.group === 'Basic Configuration' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
 
@@ -226,7 +236,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     groups = groups
       .sort((a, b) => a.group.localeCompare(b.group))
       .reduce((acc, e) => {
-        e.group === 'Default Configuration' ? acc.unshift(e) : acc.push(e);
+        e.group === 'Basic Configuration' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
   }
