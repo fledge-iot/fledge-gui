@@ -11,7 +11,7 @@ import { TabHeader } from './tab-header-slider';
 })
 export class ConfigurationGroupComponent implements AfterViewInit {
 
-  selectedGroup = 'Basic Configuration';
+  selectedGroup = 'Basic';
   @Input() category;
   groups = [];
 
@@ -80,7 +80,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
 
-      const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic Configuration";
+      const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
       return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
     }).value();
 
@@ -97,7 +97,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.groups = this.groups
       .sort((a, b) => a.group.localeCompare(b.group))
       .reduce((acc, e) => {
-        e.group === 'Basic Configuration' ? acc.unshift(e) : acc.push(e);
+        e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
 
@@ -236,7 +236,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     groups = groups
       .sort((a, b) => a.group.localeCompare(b.group))
       .reduce((acc, e) => {
-        e.group === 'Basic Configuration' ? acc.unshift(e) : acc.push(e);
+        e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
   }
