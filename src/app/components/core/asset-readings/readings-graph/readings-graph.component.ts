@@ -809,6 +809,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   selectTab(id: number, showSpinner = true) {
     this.showSpinner = showSpinner;
     this.selectedTab = id;
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
     if (!this.isAlive && this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     } else if (!this.isAlive && this.isLatestReadings) {
@@ -839,12 +841,9 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.subscription.unsubscribe();
     }
 
-    /**
-     * Set graph refresh interval to default if Auto Refresh checked and
-     * pingInterval is set to manual on settings page
-     * */
-    if (this.isAlive && this.graphRefreshInterval === -1) {
-      this.graphRefreshInterval = POLLING_INTERVAL;
+    // Instantly make a call on clicking play button
+    if(this.isAlive){
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
 
     // start auto refresh
