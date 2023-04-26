@@ -9,6 +9,7 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
+import { FilterAlertComponent } from '../../../filter/filter-alert/filter-alert.component';
 
 @Component({
   selector: 'app-add-control-pipeline',
@@ -44,8 +45,11 @@ export class AddControlPipelineComponent implements OnInit {
   changedFilterConfig: any;
   public deletedFilterPipeline = [];
   public isFilterDeleted = false;
-
+  confirmationDialogData = {};
+  public applicationTagClicked = false;
+  public isAddFilterWizard;
   @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
+  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -103,6 +107,31 @@ export class AddControlPipelineComponent implements OnInit {
     if (this.isFilterOrderChanged) {
       this.updateFilterPipeline(this.filterPipeline);
     }
+  }
+
+  openAddFilterModal(isClicked) {
+    this.applicationTagClicked = isClicked;
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.showConfirmationDialog();
+      return;
+    }
+    this.isAddFilterWizard = isClicked;
+    this.isFilterOrderChanged = false;
+    this.isFilterDeleted = false;
+    this.deletedFilterPipeline = [];
+  }
+
+  /**
+  * Open confirmation modal
+  */
+   showConfirmationDialog() {
+    this.confirmationDialogData = {
+      id: '',
+      name: '',
+      message: 'Do you want to discard unsaved changes?',
+      key: 'unsavedConfirmation'
+    };
+    this.filterAlert.toggleModal(true);
   }
 
   public updateFilterPipeline(filterPipeline) {

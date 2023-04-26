@@ -28,6 +28,7 @@ import { ControlPipelinesComponent } from './pipelines/control-pipelines.compone
 import { AddControlPipelineComponent } from './pipelines/add-pipeline/add-control-pipeline.component';
 import { ControlPipelinesService, NotificationsService, AssetsService, FilterService } from '../../../services';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
+import { FilterModule } from '../filter/filter.module';
 
 const routes: Routes = [
 
@@ -109,6 +110,7 @@ const routes: Routes = [
     DirectivesModule,
     SharedModule,
     AlertDialogModule,
+    FilterModule,
     RouterModule.forChild(routes)
   ],
   providers: [AuthTypeGuard, ControlPipelinesService, NotificationsService,

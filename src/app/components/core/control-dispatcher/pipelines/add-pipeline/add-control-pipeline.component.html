@@ -16,7 +16,7 @@
     </div>
     <div class="card">
       <div class="card-content step-content">
-        <form #pipelineForm="ngForm">
+        <form #pipelineForm="ngForm" *ngIf="!isAddFilterWizard">
           <div class="column is-four-fifths">
             <div class="field is-horizontal">
               <div class="field-label">
@@ -303,8 +303,8 @@
                       </div>
                     </div>
                   </div>
-                  <a *ngIf="filterPipeline.length > 0">Add new filter</a>
-                  <a *ngIf="filterPipeline.length === 0">Add filter</a>
+                  <a *ngIf="filterPipeline.length > 0" (click)="openAddFilterModal(true)">Add new filter</a>
+                  <a *ngIf="filterPipeline.length === 0" (click)="openAddFilterModal(true)">Add filter</a>
                 </div>
               </div>
             </div>
@@ -362,6 +362,11 @@
             </div>
           </div>
         </form>
+        <ng-container *ngIf="isAddFilterWizard">
+          <div class="box animated slideInRight">
+            <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="pipelineName"></app-add-filter-wizard>
+          </div>
+        </ng-container>
       </div>
     </div>
   </div>
