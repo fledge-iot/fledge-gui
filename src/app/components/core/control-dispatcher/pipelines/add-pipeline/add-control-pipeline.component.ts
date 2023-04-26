@@ -1,11 +1,14 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep } from 'lodash';
-import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService } from '../../../../../services';
+import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService,
+  FilterService, ConfigurationControlService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
+import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
 
 @Component({
   selector: 'app-add-control-pipeline',
@@ -32,7 +35,18 @@ export class AddControlPipelineComponent implements OnInit {
   editMode = false;
   pipelineID : number;
   pipelineName;
-  
+
+  public filterPipeline = [];
+  public isFilterOrderChanged = false;
+  public filterConfiguration: any;
+  filterConfigurationCopy: any;
+  public selectedFilterPlugin;
+  changedFilterConfig: any;
+  public deletedFilterPipeline = [];
+  public isFilterDeleted = false;
+
+  @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
+
   constructor(
     private cdRef: ChangeDetectorRef,
     private assetService: AssetsService,
@@ -45,6 +59,8 @@ export class AddControlPipelineComponent implements OnInit {
     private schedulesService: SchedulesService,
     private controlService: ControlDispatcherService,
     public notificationService: NotificationsService,
+    private filterService: FilterService,
+    private configurationControlService: ConfigurationControlService,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -72,6 +88,125 @@ export class AddControlPipelineComponent implements OnInit {
     this.getControlPipeline();
   }
 
+  onDrop(event: CdkDragDrop<string[]>) {
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
+    moveItemInArray(this.filterPipeline, event.previousIndex, event.currentIndex);
+    this.isFilterOrderChanged = true;
+  }
+
+  savePipelineChanges() {
+    if (this.isFilterDeleted) {
+      this.deleteFilter();
+    }
+    if (this.isFilterOrderChanged) {
+      this.updateFilterPipeline(this.filterPipeline);
+    }
+  }
+
+  public updateFilterPipeline(filterPipeline) {
+    this.isFilterOrderChanged = false;
+    this.ngProgress.start();
+    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.pipelineName)
+      .subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Filter pipeline updated successfully.', true);
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  deleteFilter() {
+    this.isFilterDeleted = false;
+    this.ngProgress.start();
+    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.pipelineName)
+      .subscribe(() => {
+        this.deletedFilterPipeline.forEach((filter, index) => {
+          this.filterService.deleteFilter(filter).subscribe((data: any) => {
+            this.ngProgress.done();
+            if (this.deletedFilterPipeline.length === index + 1) {
+              this.deletedFilterPipeline = []; // clear deleted filter reference
+            }
+            this.alertService.success(data.result, true);
+          },
+            (error) => {
+              this.ngProgress.done();
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.alertService.error(error.statusText);
+              }
+            });
+        });
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  getFilterConfiguration(filterName: string) {
+    const catName = filterName;
+    this.filterService.getFilterConfiguration(catName)
+      .subscribe((data: any) => {
+        this.selectedFilterPlugin = data.plugin.value;
+        this.filterConfiguration = { key: catName, config: data };
+        this.filterConfigurationCopy = cloneDeep({ key: catName, config: data });
+        this.filterConfigComponent?.updateCategroyConfig(data);
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  deleteFilterReference(filter) {
+    this.deletedFilterPipeline.push(filter);
+    this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
+    this.isFilterDeleted = true;
+    this.isFilterOrderChanged = false;
+  }
+
+  activeAccordion(id, filterName: string) {
+    const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
+    if (last !== undefined) {
+      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
+      const activeId = last.getAttribute('id');
+      lastActiveContentBody.hidden = true;
+      last.classList.remove('is-active');
+      if (id !== +activeId) {
+        const next = <HTMLElement>document.getElementById(id);
+        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
+        nextActiveContentBody.hidden = false;
+        next.setAttribute('class', 'accordion card is-active');
+        this.getFilterConfiguration(filterName);
+      } else {
+        last.classList.remove('is-active');
+        lastActiveContentBody.hidden = true;
+      }
+    } else {
+      const element = <HTMLElement>document.getElementById(id);
+      const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
+      body.hidden = false;
+      element.setAttribute('class', 'accordion card is-active');
+      this.getFilterConfiguration(filterName);
+    }
+  }
+
   getControlPipeline() {
     /** request started */
     this.ngProgress.start();
@@ -83,7 +218,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.isPipelineEnabled = data.enabled;
         this.selectedSourceName = data.source.name;
         this.selectedDestinationName = data.destination.name;
-
+        this.filterPipeline = data.filters;
         this.sourceTypeList.forEach(type => {
           if (data.source.type === type.name) {
             this.selectedSourceType = type;
@@ -107,6 +242,14 @@ export class AddControlPipelineComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  /**
+  * Get edited filter configuration
+  * @param changedConfiguration changed configuration of a selected filter
+  */
+   getChangedFilterConfig(changedConfiguration: any) {
+    this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
   }
 
   deletePipeline(script) {

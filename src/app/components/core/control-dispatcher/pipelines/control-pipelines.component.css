@@ -26,3 +26,7 @@ table tr td {
 .source-name, .dest-name {
     color: #707070;
 }
+
+.is-hoverable.pipeline-table tr:hover .context-menu {
+    background-color: #fafafa; 
+}

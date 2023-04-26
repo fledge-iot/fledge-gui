@@ -26,7 +26,7 @@ import { ControlTasksListComponent } from './list-control-dispatcher/control-tas
 import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
 import { ControlPipelinesComponent } from './pipelines/control-pipelines.component';
 import { AddControlPipelineComponent } from './pipelines/add-pipeline/add-control-pipeline.component';
-import { ControlPipelinesService, NotificationsService, AssetsService } from '../../../services';
+import { ControlPipelinesService, NotificationsService, AssetsService, FilterService } from '../../../services';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 
 const routes: Routes = [
@@ -111,6 +111,7 @@ const routes: Routes = [
     AlertDialogModule,
     RouterModule.forChild(routes)
   ],
-  providers: [AuthTypeGuard, ControlPipelinesService, NotificationsService, AssetsService]
+  providers: [AuthTypeGuard, ControlPipelinesService, NotificationsService,
+    FilterService, AssetsService]
 })
 export class ControlDispatcherModule { }
