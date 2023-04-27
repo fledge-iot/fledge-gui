@@ -25,8 +25,13 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
     this.timeInput.nativeElement.value = 10;
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     if (rGraphDefaultDuration !== null) {
-      this.optedTime = parseInt(rGraphDefaultDuration);
+      this.timeInput.nativeElement.value = parseInt(rGraphDefaultDuration);
     }
+    let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
+    if (rGraphDefaultUnit !== null) {
+      this.selectedUnit = rGraphDefaultUnit;
+    }
+    this.optedTime = this.calculateOptedTime();
 
     this.fromEventSub = fromEvent(this.timeInput.nativeElement, 'input')
       .pipe(distinctUntilChanged(), debounceTime(DEBOUNCE_TIME))

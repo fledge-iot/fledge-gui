@@ -16,6 +16,10 @@
   font-size: 0.90rem !important;
 }
 
+::ng-deep .input.is-small {
+  font-size: 0.90rem !important;
+}
+
 .no-data {
   padding-top: 5rem;
   padding-bottom: 5rem;
@@ -92,4 +96,8 @@ table.is-borderless tr {
   vertical-align: middle;
   background: none;
   border: none;
+}
+
+.time-dropdown{
+  min-width: 200px;
 }

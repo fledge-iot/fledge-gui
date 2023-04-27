@@ -39,7 +39,7 @@
       </ng-container>
       <ng-template #tabs>
         <div class="columns">
-          <div class="column is-2" *ngIf="!isLatestReadings">
+          <div class="column is-2 time-dropdown" *ngIf="!isLatestReadings">
             <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
