@@ -53,6 +53,14 @@
             </ng-select>
           </div>
         </div>
+        <ng-container *ngIf="selectedTab == 1">
+          <span class="help">
+            <sup>*</sup>Showing {{graphDisplayDuration}} {{graphDisplayUnit}} data before now
+          </span>
+          <span class="help" *ngIf="backwardReadingCounter!=0">
+            - {{graphDisplayDuration*backwardReadingCounter}} {{graphDisplayUnit}}
+          </span>
+        </ng-container>
         <div class="columns">
           <div class="column" *ngIf="!isLatestReadings">
             <div *ngIf="!(numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList))" class="tabs is-boxed is-fullwidth is-small" id="tabs">

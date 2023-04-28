@@ -16,7 +16,7 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
   @ViewChild('time', { static: true }) timeInput: ElementRef;
   private fromEventSub: Subscription;
 
-  @Output() updateGraphEvent = new EventEmitter<number>();
+  @Output() updateGraphEvent = new EventEmitter<object>();
   @Output() dropdownOpenEvent = new EventEmitter<boolean>();
 
   constructor() { }
@@ -38,7 +38,8 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         if (this.timeInput.nativeElement.value !== '') {
           this.optedTime = this.calculateOptedTime();
-          this.updateGraphEvent.emit(this.optedTime);
+          let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit}
+          this.updateGraphEvent.emit(timeObject);
         }
       })
 
@@ -58,7 +59,8 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
     this.selectedUnit = unit;
     this.optedTime = this.calculateOptedTime();
     // emit changed graph time
-    this.updateGraphEvent.emit(this.optedTime);
+    let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit}
+    this.updateGraphEvent.emit(timeObject);
     this.toggleDropdown();
   }
 
