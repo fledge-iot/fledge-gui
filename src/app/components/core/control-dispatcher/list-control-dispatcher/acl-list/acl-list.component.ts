@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AlertService, SharedService, ProgressBarService } from '../../../../../services';
-import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
+import { DocService } from '../../../../../services/doc.service';
 
 @Component({
   selector: 'app-acl-list',
@@ -18,24 +18,20 @@ export class AclListComponent implements OnInit {
   acl;
   private subscription: Subscription;
   constructor(
-    private controlService: ControlDispatcherService,
     private aclService: AclService,
     private alertService: AlertService,
     private dialogService: DialogService,
+    public docService: DocService,
     public sharedService: SharedService,
     private ngProgress: ProgressBarService) {
-    this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
-      if (tab === 'acls') {
-        this.showACLs();
-      }
-    })
   }
 
   ngOnInit(): void {
-    this.showACLs();
+    this.getACLs();
   }
 
-  showACLs() {
+
+  getACLs() {
     /** request started */
     this.ngProgress.start();
     this.aclService.fetchAllACL()
@@ -109,7 +105,7 @@ export class AclListComponent implements OnInit {
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.showACLs();
+        this.getACLs();
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -121,6 +117,10 @@ export class AclListComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
   public ngOnDestroy(): void {
