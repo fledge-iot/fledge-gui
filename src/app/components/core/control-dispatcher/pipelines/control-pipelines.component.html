@@ -3,9 +3,6 @@
       <header class="card-header">
         <div id="north-tasks" class="card-header-title">
           Control Pipelines
-          <button *ngIf="!isAlive" (click)="getControlPipelines(true)" class="button is-small" id="refresh-check">
-            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-          </button>
         </div>
         <a *ngIf="rolesService?.hasEditPermissions()" class="fix-pad button is-light"
           (click)="addControlPipeline()" role="'admin'">

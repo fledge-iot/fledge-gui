@@ -281,16 +281,16 @@ export class AddControlPipelineComponent implements OnInit {
     this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
   }
 
-  deletePipeline(script) {
+  deletePipeline(id) {
     /** request started */
     this.ngProgress.start();
-    this.controlPipelinesService.deletePipeline(script)
+    this.controlPipelinesService.deletePipeline(id)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
         this.router.navigate(['control-dispatcher/pipelines']);
+        this.alertService.success(data.message);
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -313,7 +313,13 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   public toggleDropdown(id) {
-    const dropDown = document.querySelector(id);
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
+    }
+    const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
   }
 
@@ -411,7 +417,7 @@ export class AddControlPipelineComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
-          nameList.push('Storage');
+          nameList.push('Fledge Storage');
           data.schedules.forEach(sch => {
             if (this.selectedSourceType.name === 'Service' || this.selectedDestinationType.name === 'Service') {
               if (['STARTUP'].includes(sch.type)) {

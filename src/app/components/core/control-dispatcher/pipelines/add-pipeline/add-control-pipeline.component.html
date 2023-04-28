@@ -2,7 +2,7 @@
     <div class="navbar-item">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
-          <li><a [routerLink]="['/control-dispatcher/pipelines']">Pipelines</a></li>
+          <li><a [routerLink]="['/control-dispatcher/pipelines']">Control Pipelines</a></li>
           <li class="is-active">
             <a href="#" aria-current="page">
               {{pipelineName ? pipelineName : 'Add' }}
@@ -47,7 +47,7 @@
                     <div id="execution-dropdown" class="dropdown is-left">
                       <div class="dropdown-trigger">
                         <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                          (click)="toggleDropdown('#execution-dropdown')" placeholder="Select">
+                          (click)="toggleDropdown('execution-dropdown')" placeholder="Select">
                           <span>{{selectedExecution}}</span>
                           <span class="icon is-small">
                             <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -56,8 +56,8 @@
                       </div>
                       <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
-                            <a (click)="selectValue('shared', 'execution');toggleDropdown('#execution-dropdown')" class="dropdown-item">shared</a>
-                            <a (click)="selectValue('exclusive', 'execution');toggleDropdown('#execution-dropdown')" class="dropdown-item">exclusive</a>
+                            <a (click)="selectValue('shared', 'execution');toggleDropdown('execution-dropdown')" class="dropdown-item">shared</a>
+                            <a (click)="selectValue('exclusive', 'execution');toggleDropdown('execution-dropdown')" class="dropdown-item">exclusive</a>
                         </div>
                       </div>
                     </div>
@@ -97,7 +97,7 @@
                                       <div id="sourceType-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                            (click)="toggleDropdown('#sourceType-dropdown')">
+                                            (click)="toggleDropdown('sourceType-dropdown')">
                                             <span>{{selectedSourceType.name}}</span>
                                             <span class="icon is-small">
                                               <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -106,7 +106,7 @@
                                         </div>
                                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                           <div class="dropdown-content">
-                                              <a *ngFor="let sourceType of sourceTypeList" (click)="selectValue(sourceType, 'sourceType');toggleDropdown('#sourceType-dropdown')" class="dropdown-item">{{sourceType.name}}</a>
+                                              <a *ngFor="let sourceType of sourceTypeList" (click)="selectValue(sourceType, 'sourceType');toggleDropdown('sourceType-dropdown')" class="dropdown-item">{{sourceType.name}}</a>
                                           </div>
                                         </div>
                                       </div>
@@ -129,7 +129,7 @@
                                       <div id="sourceName-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                            (click)="toggleDropdown('#sourceName-dropdown')">
+                                            (click)="toggleDropdown('sourceName-dropdown')">
                                             <span>{{selectedSourceName ? selectedSourceName : 'None'}}</span>
                                             <span class="icon is-small">
                                               <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -138,7 +138,8 @@
                                         </div>
                                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                           <div class="dropdown-content">
-                                              <a *ngFor="let sourceName of sourceNameList" (click)="selectValue(sourceName, 'sourceName');toggleDropdown('#sourceName-dropdown')" class="dropdown-item">{{sourceName}}</a>
+                                              <a *ngIf="sourceNameList.length === 0 && selectedSourceType" class="dropdown-item">No {{selectedSourceType.name}} found.</a>
+                                              <a *ngFor="let sourceName of sourceNameList" (click)="selectValue(sourceName, 'sourceName');toggleDropdown('sourceName-dropdown')" class="dropdown-item">{{sourceName}}</a>
                                           </div>
                                         </div>
                                       </div>
@@ -185,7 +186,7 @@
                                       <div id="destinationType-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                            (click)="toggleDropdown('#destinationType-dropdown')">
+                                            (click)="toggleDropdown('destinationType-dropdown')">
                                             <span>{{selectedDestinationType.name}}</span>
                                             <span class="icon is-small">
                                               <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -194,7 +195,7 @@
                                         </div>
                                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                           <div class="dropdown-content">
-                                              <a *ngFor="let destinationType of destinationTypeList" (click)="selectValue(destinationType, 'destinationType');toggleDropdown('#destinationType-dropdown')" class="dropdown-item">{{destinationType.name}}</a>
+                                              <a *ngFor="let destinationType of destinationTypeList" (click)="selectValue(destinationType, 'destinationType');toggleDropdown('destinationType-dropdown')" class="dropdown-item">{{destinationType.name}}</a>
                                           </div>
                                         </div>
                                       </div>
@@ -217,7 +218,7 @@
                                       <div id="destinationName-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                            (click)="toggleDropdown('#destinationName-dropdown')">
+                                            (click)="toggleDropdown('destinationName-dropdown')">
                                             <span>{{selectedDestinationName ? selectedDestinationName : 'None'}}</span>
                                             <span class="icon is-small">
                                               <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -226,7 +227,8 @@
                                         </div>
                                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                           <div class="dropdown-content">
-                                              <a *ngFor="let destinationName of destinationNameList" (click)="selectValue(destinationName, 'destinationName');toggleDropdown('#destinationName-dropdown')" class="dropdown-item">{{destinationName}}</a>
+                                            <a *ngIf="destinationNameList.length === 0 && selectedDestinationType" class="dropdown-item">No {{selectedDestinationType.name}} found.</a>
+                                            <a *ngFor="let destinationName of destinationNameList" (click)="selectValue(destinationName, 'destinationName');toggleDropdown('destinationName-dropdown')" class="dropdown-item">{{destinationName}}</a>
                                           </div>
                                         </div>
                                       </div>
@@ -257,7 +259,7 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <div *ngIf="filterPipeline != undefined" class="view-content columns">
+                  <div *ngIf="filterPipeline?.length > 0" class="view-content columns">
                     <div class="column">
                       <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                         <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
@@ -303,8 +305,8 @@
                       </div>
                     </div>
                   </div>
-                  <a *ngIf="filterPipeline.length > 0" (click)="openAddFilterModal(true)">Add new filter</a>
-                  <a *ngIf="filterPipeline.length === 0" (click)="openAddFilterModal(true)">Add filter</a>
+                  <a *ngIf="filterPipeline.length > 0" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
+                  <a *ngIf="filterPipeline.length === 0" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add filter</a>
                 </div>
               </div>
             </div>
@@ -380,7 +382,7 @@
     </section>
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-      <button class="button is-small is-danger" (click)="deletePipeline(pipelineName)">Delete</button>
+      <button class="button is-small is-danger" (click)="deletePipeline(pipelineID)">Delete</button>
     </footer>
   </app-confirmation-dialog>
   
