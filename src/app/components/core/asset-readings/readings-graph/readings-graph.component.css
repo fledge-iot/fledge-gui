@@ -96,6 +96,7 @@ table.is-borderless tr {
   vertical-align: middle;
   background: none;
   border: none;
+  color: #36454f;
 }
 
 .time-dropdown{
@@ -104,4 +105,20 @@ table.is-borderless tr {
 
 .help{
   display: inline;
+  color: grey;
+  font-size: 0.68rem;
+}
+
+.close{
+  padding-left: 0.9em;
+}
+
+.asset-name{
+  height: 36px;
+  display: flex;
+}
+
+.asset-code{
+  display: flex;
+  align-items: center;
 }

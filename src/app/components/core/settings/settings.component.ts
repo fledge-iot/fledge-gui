@@ -32,9 +32,8 @@ export class SettingsComponent implements OnInit {
   scheme; // default protocol
   showAlertMessage = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
-  graphDefaultDuration: string;
   selectedUnit: string = 'minutes';
-  readingsGraphUnit = ['seconds', 'minutes', 'hours', 'days'];
+  readingsGraphUnit = ['seconds', 'minutes', 'hours'];
   @ViewChild('readings_graph_default_time', { static: true }) readings_graph_default_time: ElementRef;
   private fromEventSub: Subscription;
 
@@ -66,12 +65,9 @@ export class SettingsComponent implements OnInit {
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
-    if (rGraphDefaultDuration !== null) {
-      this.readings_graph_default_time.nativeElement.value = rGraphDefaultDuration;
-    }
-    this.readings_graph_default_time.nativeElement.value = rGraphDefaultDuration !== null ? rGraphDefaultDuration : 600;
+    this.readings_graph_default_time.nativeElement.value = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : 10;
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
-    this.selectedUnit = rGraphDefaultUnit;
+    this.selectedUnit = rGraphDefaultUnit !== null ? rGraphDefaultUnit : 'minutes';
 
     this.fromEventSub = fromEvent(this.readings_graph_default_time.nativeElement, 'input')
       .pipe(distinctUntilChanged(), debounceTime(DEBOUNCE_TIME))
@@ -189,15 +185,12 @@ export class SettingsComponent implements OnInit {
 
   getMaxTimeForReadings() {
     if (this.selectedUnit === 'seconds') {
-      return 7 * 24 * 60 * 60;
+      return 3 * 60 * 60;
     }
     if (this.selectedUnit === 'minutes') {
-      return 7 * 24 * 60;
+      return 3 * 60;
     }
-    if (this.selectedUnit === 'hours') {
-      return 7 * 24;
-    }
-    return 7;
+    return 3;
   }
 
   applyTimeValidation() {

@@ -77,7 +77,7 @@
     </header>
     <div id="settings-content" class="card-content">
       <div class="columns">
-        <div class="column is-6">
+        <div class="column is-3">
           <label class="label is-small">Ping/Auto Refresh Interval</label>
           <div class="control">
             <div id="ping-interval-dropdown" class="dropdown">
@@ -107,7 +107,8 @@
             </div>
           </div>
         </div>
-        <div class="column is-6">
+        <div class="column is-2"></div>
+        <div class="column is-3">
           <label class="label is-small">Timestamps</label>
           <div class="control">
             <div id="timezone-dropdown" class="dropdown">
@@ -133,7 +134,7 @@
         </div>
       </div>
       <div class="columns">
-        <div class="column is-6">
+        <div class="column is-3">
           <label class="label is-small"> Refresh Dashboard Graph</label>
           <div class="control">
             <div id="refresh-time-dropdown" class="dropdown">
@@ -164,7 +165,8 @@
             </div>
           </div>
         </div>
-        <div class="column is-6">
+        <div class="column is-2"></div>
+        <div class="column is-3">
           <label class="label is-small">Editor Theme</label>
           <div class="control">
             <div id="theme-dropdown" class="dropdown">
@@ -190,14 +192,14 @@
       </div>
 
       <div class="columns">
-        <div class="column is-6">
+        <div class="column is-3">
           <label class="label is-small">Readings Graph Default Duration</label>
           <div class="field has-addons">
-            <div class="control column is-7 no-padding">
+            <div class="control column is-5 no-padding">
               <input class="input is-small" type="number" #readings_graph_default_time min="1" [max]="getMaxTimeForReadings()"
                 appIntegerOnly>
             </div>
-            <div id="readings-graph-default-duration" class="dropdown control column is-5 no-padding">
+            <div id="readings-graph-default-duration" class="dropdown control column is-7 no-padding">
               <div class="dropdown-trigger">
                 <button class="button is-small has-background-white-ter" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('readings-graph-default-duration')">
@@ -220,14 +222,15 @@
 
       <hr>
       <div class="columns">
-        <div class="column is-6" *ngIf="rolesService.hasEditPermissions()">
+        <div class="column is-3" *ngIf="rolesService.hasEditPermissions()">
           <label class="label is-small">Developer Features</label>
           <div class="control">
             <input type="checkbox" (click)="setDeveloperFeatures($event.target.checked)"
               [checked]="developerFeaturesService.getDeveloperFeatureControl()">
           </div>
         </div>
-        <div class="column is-6">
+        <div class="column is-2"></div>
+        <div class="column is-3">
           <label class="label is-small">Readings Graph Alpha Control</label>
           <div class="control">
             <input type="checkbox" (click)="setAlphControlStatus($event.target.checked)"

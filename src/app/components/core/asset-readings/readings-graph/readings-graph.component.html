@@ -2,12 +2,24 @@
   <div class="modal-background"></div>
   <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">
-        {{assetCode}}
-        <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button>
-      </p>
+      <span class="modal-card-title is-size-5">
+        <div class="asset-name">
+          <span class="asset-code">
+            {{assetCode}}
+          </span>
+          <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          </button>
+        </div>
+        <ng-container *ngIf="selectedTab == 1">
+          <span class="help">
+            <sup>*</sup>Showing {{graphDisplayDuration}} {{graphDisplayUnit}} data before now
+          </span>
+          <span class="help" *ngIf="backwardReadingCounter!=0">
+            - {{graphDisplayDuration*backwardReadingCounter}} {{graphDisplayUnit}}
+          </span>
+        </ng-container>
+      </span>
       <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
         <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button is-small playback-button">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
@@ -53,14 +65,6 @@
             </ng-select>
           </div>
         </div>
-        <ng-container *ngIf="selectedTab == 1">
-          <span class="help">
-            <sup>*</sup>Showing {{graphDisplayDuration}} {{graphDisplayUnit}} data before now
-          </span>
-          <span class="help" *ngIf="backwardReadingCounter!=0">
-            - {{graphDisplayDuration*backwardReadingCounter}} {{graphDisplayUnit}}
-          </span>
-        </ng-container>
         <div class="columns">
           <div class="column" *ngIf="!isLatestReadings">
             <div *ngIf="!(numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList))" class="tabs is-boxed is-fullwidth is-small" id="tabs">
