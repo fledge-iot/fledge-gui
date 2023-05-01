@@ -75,6 +75,7 @@ export class SettingsComponent implements OnInit {
         if (this.readings_graph_default_time.nativeElement.value !== '') {
           let time = this.applyTimeValidation();
           localStorage.setItem('READINGS_GRAPH_DEFAULT_DURATION', time);
+          localStorage.setItem('READINGS_GRAPH_DEFAULT_UNIT', this.selectedUnit);
         }
       })
   }
