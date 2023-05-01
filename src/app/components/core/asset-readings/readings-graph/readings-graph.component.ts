@@ -57,6 +57,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   public isLatestReadings = false;
   public pauseTime: number = Date.now();
   public backwardReadingCounter: number = 0;
+  public graphDisplayDuration = "10";
+  public graphDisplayUnit = "minutes";
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -144,13 +146,23 @@ export class ReadingsGraphComponent implements OnDestroy {
       activeDropDowns[0].classList.remove('is-active');
     }
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
-    this.optedTime = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : ASSET_READINGS_TIME_FILTER;
+    let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
+    if (rGraphDefaultDuration !== null && rGraphDefaultUnit !== null) {
+      this.graphDisplayDuration = rGraphDefaultDuration;
+      this.graphDisplayUnit = rGraphDefaultUnit;
+      this.optedTime = this.calculateOptedTime(parseInt(rGraphDefaultDuration), rGraphDefaultUnit);
+    }
+    else {
+      this.optedTime = ASSET_READINGS_TIME_FILTER;
+    }
   }
 
-  getTimeBasedAssetReadingsAndSummary(time: number) {
+  getTimeBasedAssetReadingsAndSummary(timeObject) {
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
-    this.optedTime = time;
+    this.graphDisplayDuration = timeObject.displayDuration;
+    this.graphDisplayUnit = timeObject.selectedUnit;
+    this.optedTime = timeObject.optedTime;
     this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
@@ -191,7 +203,16 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
-    this.optedTime = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : ASSET_READINGS_TIME_FILTER;
+    let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
+    if (rGraphDefaultDuration !== null && rGraphDefaultUnit !== null) {
+      this.graphDisplayDuration = rGraphDefaultDuration;
+      this.graphDisplayUnit = rGraphDefaultUnit;
+      this.optedTime = this.calculateOptedTime(parseInt(rGraphDefaultDuration), rGraphDefaultUnit);
+    }
+    else {
+      this.optedTime = ASSET_READINGS_TIME_FILTER;
+    }
+
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;
@@ -875,6 +896,19 @@ export class ReadingsGraphComponent implements OnDestroy {
     let timeDifference = Math.floor((currentTime - this.pauseTime)/1000);
     let previous = timeDifference + this.backwardReadingCounter*this.optedTime;
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+  }
+
+  calculateOptedTime(value, unit) {
+    if (unit === 'seconds') {
+      return value;
+    }
+    if (unit === 'minutes') {
+      return value * 60;
+    }
+    if (unit === 'hours') {
+      return value * 60 * 60;
+    }
+    return value * 60 * 60 * 24;
   }
 
   public ngOnDestroy(): void {

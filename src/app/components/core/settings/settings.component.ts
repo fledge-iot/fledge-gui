@@ -1,14 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 
 import { PingService, RolesService, SharedService } from '../../../services';
 import { NavbarComponent } from '../../layout/navbar/navbar.component';
 import { ServiceDiscoveryComponent } from '../service-discovery';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Subscription, fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { TimezoneService } from '../../../services/timezone.service';
 import { RangeSliderService } from '../../common/range-slider/range-slider.service';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { StorageService } from '../../../services/storage.service';
+import { DEBOUNCE_TIME } from '../../../utils';
 
 @Component({
   selector: 'app-settings',
@@ -31,7 +32,10 @@ export class SettingsComponent implements OnInit {
   scheme; // default protocol
   showAlertMessage = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
-  graphDefaultDuration: string;
+  selectedUnit: string = 'minutes';
+  readingsGraphUnit = ['seconds', 'minutes', 'hours'];
+  @ViewChild('readings_graph_default_time', { static: true }) readings_graph_default_time: ElementRef;
+  private fromEventSub: Subscription;
 
   constructor(private pingService: PingService,
     private sharedService: SharedService,
@@ -54,13 +58,25 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.readings_graph_default_time.nativeElement.value = 10;
     this.serviceUrl = this.storageService.getServiceURL();
     // get last selected time interval
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
-    this.graphDefaultDuration = rGraphDefaultDuration !== null ? rGraphDefaultDuration : '600';
+    this.readings_graph_default_time.nativeElement.value = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : 10;
+    let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
+    this.selectedUnit = rGraphDefaultUnit !== null ? rGraphDefaultUnit : 'minutes';
+
+    this.fromEventSub = fromEvent(this.readings_graph_default_time.nativeElement, 'input')
+      .pipe(distinctUntilChanged(), debounceTime(DEBOUNCE_TIME))
+      .subscribe(() => {
+        if (this.readings_graph_default_time.nativeElement.value !== '') {
+          let time = this.applyTimeValidation();
+          localStorage.setItem('READINGS_GRAPH_DEFAULT_DURATION', time);
+        }
+      })
   }
 
   public testServiceConnection(): void {
@@ -138,11 +154,6 @@ export class SettingsComponent implements OnInit {
     this.pingService.refreshIntervalChanged.next(+time);
   }
 
-  setReadingsGraphDefaultDuration(time: string) {
-    this.graphDefaultDuration = time;
-    localStorage.setItem('READINGS_GRAPH_DEFAULT_DURATION', time);
-  }
-
   setDeveloperFeatures(devStatus: boolean) {
     this.developerFeaturesService.setDeveloperFeatureControl(devStatus);
   }
@@ -170,5 +181,32 @@ export class SettingsComponent implements OnInit {
         pingResponse = res;
       });
     return pingResponse;
+  }
+
+  getMaxTimeForReadings() {
+    if (this.selectedUnit === 'seconds') {
+      return 3 * 60 * 60;
+    }
+    if (this.selectedUnit === 'minutes') {
+      return 3 * 60;
+    }
+    return 3;
+  }
+
+  applyTimeValidation() {
+    let value = this.readings_graph_default_time.nativeElement.value;
+    if (value > this.getMaxTimeForReadings() || value === '0' || value === '') {
+      this.readings_graph_default_time.nativeElement.value = 1;
+      return 1;
+    }
+    return value;
+  }
+
+  setReadingsGraphDefaultUnit(unit: string) {
+    this.selectedUnit = unit;
+    let time = this.applyTimeValidation();
+    localStorage.setItem('READINGS_GRAPH_DEFAULT_DURATION', time);
+    localStorage.setItem('READINGS_GRAPH_DEFAULT_UNIT', unit);
+    this.toggleDropDown('readings-graph-default-duration');
   }
 }

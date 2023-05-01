@@ -16,6 +16,10 @@
   font-size: 0.90rem !important;
 }
 
+::ng-deep .input.is-small {
+  font-size: 0.90rem !important;
+}
+
 .no-data {
   padding-top: 5rem;
   padding-bottom: 5rem;
@@ -92,4 +96,29 @@ table.is-borderless tr {
   vertical-align: middle;
   background: none;
   border: none;
+  color: #36454f;
+}
+
+.time-dropdown{
+  min-width: 200px;
+}
+
+.help{
+  display: inline;
+  color: grey;
+  font-size: 0.68rem;
+}
+
+.close{
+  padding-left: 0.9em;
+}
+
+.asset-name{
+  height: 36px;
+  display: flex;
+}
+
+.asset-code{
+  display: flex;
+  align-items: center;
 }
