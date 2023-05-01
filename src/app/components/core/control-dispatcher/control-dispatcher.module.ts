@@ -26,6 +26,7 @@ import { ControlTasksListComponent } from './list-control-dispatcher/control-tas
 import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
 import { ControlPipelinesComponent } from './pipelines/control-pipelines.component';
 import { AddControlPipelineComponent } from './pipelines/add-pipeline/add-control-pipeline.component';
+import { AddPipelineFilterComponent } from './pipelines/add-pipeline-filter/add-pipeline-filter.component';
 import { ControlPipelinesService, NotificationsService, AssetsService, FilterService } from '../../../services';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { FilterModule } from '../filter/filter.module';
@@ -97,7 +98,8 @@ const routes: Routes = [
     ControlTasksListComponent,
     ControlScheduleTaskDetailsComponent,
     ControlPipelinesComponent,
-    AddControlPipelineComponent
+    AddControlPipelineComponent,
+    AddPipelineFilterComponent
   ],
   imports: [
     FormsModule,

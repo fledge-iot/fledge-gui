@@ -46,6 +46,7 @@ export class AddFilterWizardComponent implements OnInit {
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @Input() serviceName: any;
+  @Input() from: string;
 
   validChildConfigurationForm = true;
   pluginConfiguration: any;
@@ -396,7 +397,11 @@ export class AddFilterWizardComponent implements OnInit {
       .subscribe(
         (data: any) => {
           this.alertService.success(data.filter + ' filter added successfully.', true);
-          this.addFilterPipeline({ 'pipeline': [payload.name], files });
+          if (this.from === 'control-pipeline') {
+            this.notify.emit({ 'filters': [payload.name], files });
+          } else {
+            this.addFilterPipeline({ 'pipeline': [payload.name], files });
+          }
         },
         (error) => {
           if (error.status === 0) {

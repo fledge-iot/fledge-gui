@@ -365,9 +365,7 @@
           </div>
         </form>
         <ng-container *ngIf="isAddFilterWizard">
-          <div class="box animated slideInRight">
-            <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="pipelineName"></app-add-filter-wizard>
-          </div>
+          <app-add-pipeline-filter-modal [pipelineName]="pipelineName" (notify)="onNotify($event)"></app-add-pipeline-filter-modal>
         </ng-container>
       </div>
     </div>

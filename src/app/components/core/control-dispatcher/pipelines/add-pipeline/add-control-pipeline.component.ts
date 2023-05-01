@@ -48,6 +48,7 @@ export class AddControlPipelineComponent implements OnInit {
   confirmationDialogData = {};
   public applicationTagClicked = false;
   public isAddFilterWizard;
+
   @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
@@ -132,6 +133,16 @@ export class AddControlPipelineComponent implements OnInit {
       key: 'unsavedConfirmation'
     };
     this.filterAlert.toggleModal(true);
+  }
+
+  onNotify(data) {
+    const filterData = data ? data.filters : [];
+    this.filterPipeline = this.filterPipeline.concat(filterData);
+    if (this.pipelineID && data.filters.length !== 0) {
+      this.updateControlScript({filters: this.filterPipeline})
+      this.getControlPipeline();
+    }
+    this.isAddFilterWizard = false;
   }
 
   public updateFilterPipeline(filterPipeline) {
@@ -260,8 +271,10 @@ export class AddControlPipelineComponent implements OnInit {
           }      
         });
 
-        this.pipelineForm.form.markAsUntouched();
-        this.pipelineForm.form.markAsPristine();
+        if (this.isAddFilterWizard) {
+          this.pipelineForm.form.markAsUntouched();
+          this.pipelineForm.form.markAsPristine();
+        }
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -520,10 +533,8 @@ export class AddControlPipelineComponent implements OnInit {
       this.ngProgress.done();
       if (type === 'source') {
         this.sourceTypeList = data;
-        console.log('sourceTypeList', this.sourceTypeList);
       } else {
         this.destinationTypeList = data;
-        console.log('destinationTypeList', this.destinationTypeList);
       }
     }, error => {
       if (error.status === 0) {
@@ -542,7 +553,7 @@ export class AddControlPipelineComponent implements OnInit {
       execution: this.selectedExecution,
       source: {"type": this.selectedSourceType.cpsid, "name": this.selectedSourceName},
       destination: {"type": this.selectedDestinationType.cpdid, "name": this.selectedDestinationName},
-      filters: [],
+      filters: this.filterPipeline ? this.filterPipeline : [],
       enable: this.isPipelineEnabled
     }
     if (this.editMode) {
