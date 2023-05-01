@@ -23,19 +23,19 @@ import { ControlScheduleTaskDetailsComponent } from './control-schedule-task/con
 import { AclListComponent } from './list-control-dispatcher/acl-list/acl-list.component';
 import { ControlScriptsListComponent } from './list-control-dispatcher/control-scripts-list/control-scripts-list.component';
 import { ControlTasksListComponent } from './list-control-dispatcher/control-tasks-list/control-tasks-list.component';
-import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
 import { ControlPipelinesComponent } from './pipelines/control-pipelines.component';
 import { AddControlPipelineComponent } from './pipelines/add-pipeline/add-control-pipeline.component';
 import { AddPipelineFilterComponent } from './pipelines/add-pipeline-filter/add-pipeline-filter.component';
 import { ControlPipelinesService, NotificationsService, AssetsService, FilterService } from '../../../services';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { FilterModule } from '../filter/filter.module';
+import { AddDispatcherServiceComponent } from './add-dispatcher-service/add-dispatcher-service.component';
 
 const routes: Routes = [
 
   {
-    path: '',
-    component: ListControlDispatcherComponent,
+    path: 'script',
+    component: ControlScriptsListComponent,
   },
   {
     path: 'script/add',
@@ -43,8 +43,12 @@ const routes: Routes = [
     canActivate: [AuthTypeGuard]
   },
   {
-    path: 'script/:name',
+    path: 'script/:name/details',
     component: AddControlScriptComponent
+  },
+  {
+    path: 'acl',
+    component: AclListComponent,
   },
   {
     path: 'acl/add',
@@ -52,7 +56,7 @@ const routes: Routes = [
     canActivate: [AuthTypeGuard]
   },
   {
-    path: 'acl/:name',
+    path: 'acl/:name/details',
     component: AddControlAclComponent
   },
   {
@@ -82,7 +86,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    ListControlDispatcherComponent,
+    AddDispatcherServiceComponent,
     ControlScriptsListComponent,
     AddControlScriptComponent,
     AddStepComponent,

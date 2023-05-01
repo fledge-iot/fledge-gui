@@ -1,91 +1,93 @@
 <div class="container is-fluid">
-    <div class="card">
-      <header class="card-header">
-        <div id="north-tasks" class="card-header-title">
-          Control Pipelines
+  <app-add-dispatcher-service></app-add-dispatcher-service>
+  <div class="card">
+    <header class="card-header">
+      <div id="north-tasks" class="card-header-title">
+        Control Pipelines
+      </div>
+      <a *ngIf="rolesService?.hasEditPermissions()" class="fix-pad button is-light" (click)="addControlPipeline()"
+        role="'admin'">
+        <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
+        <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+      </a>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <div *ngIf="showSpinner" class="app-loading">
+          &nbsp;
+          <svg class="spinner" viewBox="0 0 100 100">
+            <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
+          </svg>
         </div>
-        <a *ngIf="rolesService?.hasEditPermissions()" class="fix-pad button is-light"
-          (click)="addControlPipeline()" role="'admin'">
-          <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
-          <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-        </a>
-      </header>
-      <div class="card-content">
-        <div class="content">
-          <div *ngIf="showSpinner" class="app-loading">
-            &nbsp;
-            <svg class="spinner" viewBox="0 0 100 100">
-              <circle class="path" cx="50%" cy="50%" r="10" fill="none" stroke-width="2" stroke-miterlimit="10" />
-            </svg>
+        <ng-container *ngIf="!showSpinner">
+          <div class="has-text-centered" *ngIf="pipelines != undefined && pipelines.length === 0">
+            <small class="no-rec">No Record</small>
           </div>
-          <ng-container *ngIf="!showSpinner">
-            <div class="has-text-centered"
-              *ngIf="pipelines != undefined && pipelines.length === 0">
-              <small class="no-rec">No Record</small>
-            </div>
-            <ng-container *ngIf="pipelines!= undefined && pipelines.length > 0">
-              <table id="pipeline-list" class="table is-fullwidth scroll is-responsive is-hoverable pipeline-table" cellpadding="0"
-                cellspacing="0">
-                <thead>
-                  <tr>
-                    <th class="align-content">Name</th>
-                    <th class="align-content">Status</th>
-                    <th class="align-content">Source</th>
-                    <th class="align-content">Destination</th>
-                    <th class="align-content">Filters</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let pipeline of pipelines; let i = index;" [ngClass]="{'fade': (pipeline.enabled == 'false')}">
-                    <td class="align-content">
-                      <a class="button is-text pipeline-name" [routerLink]="['/control-dispatcher/pipeline', pipeline?.id]">{{pipeline.name}}</a>
-                    </td>
-                    <td class="align-content">
-                      <div class="tags has-addons">
-                        <span *ngIf="pipeline.enabled === false" class="tag">disabled</span>
-                        <span *ngIf="pipeline.enabled === true" class="tag is-success">enabled</span>
+          <ng-container *ngIf="pipelines!= undefined && pipelines.length > 0">
+            <table id="pipeline-list" class="table is-fullwidth scroll is-responsive is-hoverable pipeline-table"
+              cellpadding="0" cellspacing="0">
+              <thead>
+                <tr>
+                  <th class="align-content">Name</th>
+                  <th class="align-content">Status</th>
+                  <th class="align-content">Source</th>
+                  <th class="align-content">Destination</th>
+                  <th class="align-content">Filters</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pipeline of pipelines; let i = index;"
+                  [ngClass]="{'fade': (pipeline.enabled == 'false')}">
+                  <td class="align-content">
+                    <a class="button is-text pipeline-name"
+                      [routerLink]="['/control-dispatcher/pipeline', pipeline?.id]">{{pipeline.name}}</a>
+                  </td>
+                  <td class="align-content">
+                    <div class="tags has-addons">
+                      <span *ngIf="pipeline.enabled === false" class="tag">disabled</span>
+                      <span *ngIf="pipeline.enabled === true" class="tag is-success">enabled</span>
+                    </div>
+                  </td>
+                  <td class="align-content">
+                    <span class="is-small">{{pipeline.source.type}}</span>
+                    <span class="help source-name">{{pipeline.source.name}}</span>
+                  </td>
+                  <td class="align-content">
+                    <span class="is-small">{{pipeline.destination.type}}</span>
+                    <span class="help dest-name">{{pipeline.destination.name}}</span>
+                  </td>
+                  <td class="align-content">
+                    {{pipeline.filters.join(', ')}}
+                  </td>
+                  <td>
+                    <div id="dropdown-{{i}}" class="dropdown is-left">
+                      <div class="dropdown-trigger">
+                        <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu"
+                          (click)="toggleDropdown(i)">
+                          <span class="icon is-small">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
+                          </span>
+                        </a>
                       </div>
-                    </td>
-                    <td class="align-content">
-                      <span class="is-small">{{pipeline.source.type}}</span>
-                      <span class="help source-name">{{pipeline.source.name}}</span>
-                    </td>
-                    <td class="align-content">
-                      <span class="is-small">{{pipeline.destination.type}}</span>
-                      <span class="help dest-name">{{pipeline.destination.name}}</span>
-                    </td>
-                    <td class="align-content">
-                      {{pipeline.filters.join(', ')}}
-                    </td>
-                    <td>
-                      <div id="dropdown-{{i}}" class="dropdown is-left">
-                        <div class="dropdown-trigger">
-                          <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu"
-                            (click)="toggleDropdown(i)">
-                            <span class="icon is-small">
-                              <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
-                            </span>
+                      <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                          <a class="dropdown-item"
+                            (click)="openModal(pipeline.id, pipeline.name, 'deletePipeline', 'Are you sure, you want to delete the pipeline')">
+                            <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
+                            Delete
                           </a>
                         </div>
-                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                          <div class="dropdown-content">
-                            <a class="dropdown-item" (click)="openModal(pipeline.id, pipeline.name, 'deletePipeline', 'Are you sure, you want to delete the pipeline')">
-                              <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
-                              Delete
-                            </a>
-                          </div>
-                        </div>
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </ng-container>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </ng-container>
-        </div>
+        </ng-container>
       </div>
     </div>
   </div>
-  <app-alert-dialog (deletePipeline)='deletePipeline($event)' [childData]='childData'></app-alert-dialog>
-  
+</div>
+<app-alert-dialog (deletePipeline)='deletePipeline($event)' [childData]='childData'></app-alert-dialog>
