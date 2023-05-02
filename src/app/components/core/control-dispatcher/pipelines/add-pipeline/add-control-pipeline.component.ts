@@ -99,16 +99,14 @@ export class AddControlPipelineComponent implements OnInit {
     }
     moveItemInArray(this.filterPipeline, event.previousIndex, event.currentIndex);
     this.isFilterOrderChanged = true;
+    this.pipelineForm.form.markAsDirty();
   }
 
-  savePipelineChanges() {
-    if (this.isFilterDeleted) {
-      this.deleteFilter();
-    }
-    if (this.isFilterOrderChanged) {
-      this.updateFilterPipeline(this.filterPipeline);
-    }
-  }
+  // savePipelineChanges() {
+  //   if (this.isFilterDeleted) {
+  //     this.deleteFilter();
+  //   }
+  // }
 
   openAddFilterModal(isClicked) {
     this.applicationTagClicked = isClicked;
@@ -137,30 +135,22 @@ export class AddControlPipelineComponent implements OnInit {
 
   onNotify(data) {
     const filterData = data ? data.filters : [];
-    this.filterPipeline = this.filterPipeline.concat(filterData);
-    if (this.pipelineID && data.filters.length !== 0) {
-      this.updateControlScript({filters: this.filterPipeline})
+    let filterNameList = [];
+    if (data && this.filterPipeline.length > 0) {
+      this.filterPipeline.forEach((filter) => {
+        const filterName = filter.split('_' + this.pipelineName + '_')[1];
+        filterNameList.push(filterName);
+      });
+    }
+    this.filterPipeline = filterNameList.concat(filterData);
+    if (this.pipelineID && data?.filters.length > 0) {
+      this.updateControlScript({filters: this.filterPipeline}, true)
+      this.getControlPipeline();
+    }
+    if (!data && this.pipelineID) {
       this.getControlPipeline();
     }
     this.isAddFilterWizard = false;
-  }
-
-  public updateFilterPipeline(filterPipeline) {
-    this.isFilterOrderChanged = false;
-    this.ngProgress.start();
-    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.pipelineName)
-      .subscribe(() => {
-        this.ngProgress.done();
-        this.alertService.success('Filter pipeline updated successfully.', true);
-      },
-        (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
   }
 
   deleteFilter() {
@@ -270,7 +260,6 @@ export class AddControlPipelineComponent implements OnInit {
             this.selectedDestinationType = type;
           }      
         });
-
         if (this.isAddFilterWizard) {
           this.pipelineForm.form.markAsUntouched();
           this.pipelineForm.form.markAsPristine();
@@ -584,13 +573,15 @@ export class AddControlPipelineComponent implements OnInit {
     this.isPipelineEnabled = event.target.checked ? 'true' : 'false';
   }
 
-  updateControlScript(payload) {
+  updateControlScript(payload, isFilterUpdated = false) {
     /** request started */
     this.ngProgress.start();
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
         this.pipelineName = payload.name;
-        this.router.navigate(['control-dispatcher/pipelines']);
+        if (!isFilterUpdated) {
+          this.router.navigate(['control-dispatcher/pipelines']);
+        }
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();

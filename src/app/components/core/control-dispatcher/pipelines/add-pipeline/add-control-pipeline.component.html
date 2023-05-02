@@ -356,7 +356,7 @@
                     <button [routerLink]="['/control-dispatcher/pipelines']" class="button is-small">Cancel</button>
                   </p>
                   <p class="control">
-                    <button [disabled]="!pipelineForm.valid || !pipelineForm.dirty" (click)="onSubmit(pipelineForm)"
+                    <button (click)="onSubmit(pipelineForm)"
                       type="button" class="button is-small is-link">Save</button>
                   </p>
                 </div>
