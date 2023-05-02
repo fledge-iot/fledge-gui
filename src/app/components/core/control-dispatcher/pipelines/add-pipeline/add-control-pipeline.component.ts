@@ -419,7 +419,6 @@ export class AddControlPipelineComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
-          nameList.push('Fledge Storage');
           data.schedules.forEach(sch => {
             if (this.selectedSourceType.name === 'Service' || this.selectedDestinationType.name === 'Service') {
               if (['STARTUP'].includes(sch.type)) {
