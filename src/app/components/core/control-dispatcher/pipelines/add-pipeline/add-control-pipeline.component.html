@@ -317,28 +317,12 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <input class="checkbox" type="checkbox" [checked]="isPipelineEnabled === 'true'"
+                  <input class="checkbox" type="checkbox" [checked]="isPipelineEnabled"
                     (click)="onCheckboxClicked($event)">
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- <hr>
-          <div class="columns">
-            <div class="column has-text-centered">
-              <span class="label is-size-6 add-application" *ngIf="sharedService.checkAuth(); else staticLabel">
-                <a (click)="openAddFilterModal(true)">Applications
-                  <span class="icon">
-                    <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
-                  </span>
-                </a>
-              </span>
-              <ng-template #staticLabel>
-                <span class="label is-size-6">Applications</span>
-              </ng-template>
-            </div>
-          </div> -->
           <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths">
             <div class="columns">
               <div class="column is-2"></div>

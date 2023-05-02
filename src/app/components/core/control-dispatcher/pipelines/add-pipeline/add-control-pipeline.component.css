@@ -72,4 +72,10 @@
   .is-hovered {
     cursor: pointer !important;
   }
+
+  .is-text {
+    color: #3273dc;
+    padding-left: 0;
+    padding-right: 0;
+  }
   

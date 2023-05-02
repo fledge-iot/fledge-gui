@@ -26,7 +26,7 @@ export class AddControlPipelineComponent implements OnInit {
   selectedSourceName = '';
   selectedDestinationType = {cpdid: null, name: ''};
   selectedDestinationName = '';
-  public isPipelineEnabled = 'true';
+  public isPipelineEnabled = true;
   pipeline;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   sourceTypeList = [];
@@ -543,7 +543,7 @@ export class AddControlPipelineComponent implements OnInit {
       source: {"type": this.selectedSourceType.cpsid, "name": this.selectedSourceName},
       destination: {"type": this.selectedDestinationType.cpdid, "name": this.selectedDestinationName},
       filters: this.filterPipeline ? this.filterPipeline : [],
-      enable: this.isPipelineEnabled
+      enabled: this.isPipelineEnabled
     }
     if (this.editMode) {
       this.updateControlScript(payload);
@@ -570,7 +570,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   onCheckboxClicked(event) {
-    this.isPipelineEnabled = event.target.checked ? 'true' : 'false';
+    this.isPipelineEnabled = event.target.checked ? true : false;
   }
 
   updateControlScript(payload, isFilterUpdated = false) {
