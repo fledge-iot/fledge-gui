@@ -30,11 +30,11 @@
     width: 85%;
   }
   :host ::ng-deep .chart-container canvas[style] {
-    height: calc(100vh - 181px) !important;
+    height: calc(100vh - 268px) !important;
   }
 
   :host ::ng-deep .svg-container {
-    height: calc(100vh - 181px) !important;
+    height: calc(100vh - 268px) !important;
   }
 }
 
