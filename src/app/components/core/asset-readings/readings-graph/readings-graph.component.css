@@ -97,6 +97,11 @@ table.is-borderless tr {
   background: none;
   border: none;
   color: #36454f;
+  opacity: 0.8;
+}
+
+.playback-button:disabled{
+  opacity: 0.6;
 }
 
 .time-dropdown{
@@ -114,11 +119,21 @@ table.is-borderless tr {
 }
 
 .asset-name{
-  height: 36px;
+  height: 16px;
   display: flex;
 }
 
 .asset-code{
   display: flex;
   align-items: center;
+  font-size: 1.15rem;
+}
+
+#refresh-check {
+  vertical-align: middle;
+  background: none;
+  border: none;
+  height: 16px;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 }

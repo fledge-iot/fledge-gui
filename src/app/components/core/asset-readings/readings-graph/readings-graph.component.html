@@ -13,7 +13,7 @@
         </div>
         <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
           <span class="help">
-            <sup>*</sup>Showing {{graphDisplayDuration}} {{graphDisplayUnit}} data before now
+            *Showing {{graphDisplayDuration}} {{graphDisplayUnit}} data before now
           </span>
           <span class="help" *ngIf="backwardReadingCounter!=0">
             - {{graphDisplayDuration*backwardReadingCounter}} {{graphDisplayUnit}}
