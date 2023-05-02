@@ -1,6 +1,5 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, of } from 'rxjs';
 import { filter, map, pairwise, startWith } from 'rxjs/operators';
 import { RolesService, ConfigurationControlService, ConfigurationBase } from '../../../../services';
@@ -20,10 +19,6 @@ export class ShowConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<boolean>();
   configurations$: Observable<ConfigurationBase<any>[]>;
   form: FormGroup;
-
-  @ViewChildren('scriptCode') codeMirrorCmpt: QueryList<CodemirrorComponent>;
-  @ViewChildren('jsonEditor') jsonElements: QueryList<CodemirrorComponent>;
-  @ViewChildren('codeEditor') codeElements: QueryList<CodemirrorComponent>;
 
   constructor(private fb: FormBuilder,
     public rolesService: RolesService,
@@ -80,26 +75,15 @@ export class ShowConfigurationComponent implements OnInit {
       });
   }
 
-  ngAfterViewChecked() {
-    // refresh code mirror content after page load
-    if (this.jsonElements) {
-      this.jsonElements.forEach((jsonComp: CodemirrorComponent) => {
-        jsonComp.codeMirror?.refresh();
-      });
-    }
+  setCodeMirrorOption(configuration: ConfigurationBase<string>) {
+    // condition to make codemirror editor readonly
+    if ((configuration.controlType.toLowerCase() == 'script' && (!configuration.fileName || configuration.fileName == '')) || this.form.controls[configuration.key]?.status === 'DISABLED') {
+      configuration.editorOptions['readOnly'] = true;
+    } else {
+      configuration.editorOptions['readOnly'] = false;
 
-    if (this.codeElements) {
-      this.codeElements.forEach((codeElmt: CodemirrorComponent) => {
-        codeElmt.codeMirror?.refresh();
-      });
     }
-
-    // refresh codemirror editor to reflect changed values
-    if (this.codeMirrorCmpt) {
-      this.codeMirrorCmpt.forEach((comp: CodemirrorComponent) => {
-        comp.codeMirror?.refresh();
-      })
-    }
+    return configuration.editorOptions;
   }
 
   createScriptFile(value: string, config: any) {

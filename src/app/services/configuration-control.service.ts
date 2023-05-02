@@ -323,7 +323,8 @@ export class ConfigurationControlService {
       autoCloseBrackets: true,
       matchBrackets: true,
       lint: true,
-      inputStyle: 'textarea'
+      inputStyle: 'textarea',
+      autoRefresh: true
     };
     if (type === 'JSON') {
       editorOptions.mode = 'application/json';
