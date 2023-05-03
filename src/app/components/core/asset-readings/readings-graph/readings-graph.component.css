@@ -133,7 +133,11 @@ table.is-borderless tr {
   vertical-align: middle;
   background: none;
   border: none;
-  height: 16px;
+  height: 18px;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
+}
+
+#time-dropdown-container {
+  margin-bottom: 0px !important;
 }
