@@ -41,7 +41,11 @@ export class ControlPipelinesService {
       catchError(error => throwError(error)));
   }
 
-  getLookup(type) {
+  /**
+  *   Get Source/Destination type list
+  *   GET  | /fledge/control/lookup?type={source/destination}
+  */
+  getSourceDestinationTypeList(type) {
     let params = new HttpParams();
     params = params.set('type', type);
     return this.http.get(this.CONTROL_URL + '/' + 'lookup', { params: params }).pipe(

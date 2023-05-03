@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
-import { interval, Subject } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { Router } from '@angular/router';
 
 import { AlertService, ControlPipelinesService, PingService, ProgressBarService, RolesService } from '../../../../services';
-import { POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -16,9 +15,7 @@ import { POLLING_INTERVAL } from '../../../../utils';
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   pipelines = [];
-  public refreshInterval = POLLING_INTERVAL;
   public showSpinner = false;
-  public isAlive: boolean;
   public childData = {};
 
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -26,33 +23,17 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
-    private ping: PingService,
     private router: Router,
-    public rolesService: RolesService) {
-    this.isAlive = true;
-    this.ping.pingIntervalChanged
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((timeInterval: number) => {
-        if (timeInterval === -1) {
-          this.isAlive = false;
-        }
-        this.refreshInterval = timeInterval;
-      });
-  }
+    public rolesService: RolesService) {}
 
   ngOnInit() {
     this.showLoadingSpinner();
     this.getControlPipelines();
-    interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
-      .subscribe(() => {
-        this.getControlPipelines();
-      });
   }
 
   public getControlPipelines(showProgressBar = true): void {
     /** request started */
-    if (!this.isAlive && showProgressBar) {
+    if (showProgressBar) {
       this.ngProgress.start();
     }
     this.controlPipelinesService.getAllPipelines()
@@ -145,7 +126,6 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.isAlive = false;
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
