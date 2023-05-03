@@ -252,9 +252,8 @@ export class AddControlPipelineComponent implements OnInit {
         this.sourceTypeList.forEach(type => {
           if (data.source.type === type.name) {
             this.selectedSourceType = type;
-          }     
+          }
         });
-
         this.destinationTypeList.forEach(type => {
           if (data.destination.type === type.name) {
             this.selectedDestinationType = type;
