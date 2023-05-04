@@ -105,7 +105,10 @@ export class AddControlPipelineComponent implements OnInit {
   //   }
   // }
 
-  openAddFilterModal(isClicked) {
+  openAddFilterModal(isClicked, nameValue) {
+    if (!nameValue || nameValue === ''){
+      return;
+    }
     if (this.isFilterOrderChanged || this.isFilterDeleted) {
       this.showConfirmationDialog();
       return;

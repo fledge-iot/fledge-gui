@@ -306,7 +306,7 @@
                     </div>
                   </div>
                   <a *ngIf="filterPipeline.length > 0" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
-                  <a *ngIf="filterPipeline.length === 0" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add filter</a>
+                  <a *ngIf="filterPipeline.length === 0" [ngClass]="{'disabled': !name.value || name.value === '' }" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
                 </div>
               </div>
             </div>
@@ -340,7 +340,7 @@
                   </p>
                   <p class="control">
                     <button (click)="onSubmit(pipelineForm)"
-                      type="button" class="button is-small is-link">Save</button>
+                      type="button" [disabled]="!pipelineForm.valid || !pipelineForm.dirty" class="button is-small is-link">Save</button>
                   </p>
                 </div>
               </div>
