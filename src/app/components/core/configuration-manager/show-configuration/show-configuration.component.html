@@ -58,8 +58,9 @@
                       Invalid file. Please upload file with .py extension.
                     </span>
                     <div class="config-div is-fullwidth">
-                      <input #fileInput class="input is-small is-fullwidth" multiple type="file"
-                        (change)="fileChange($event, configuration)" />
+                      <input class="input is-small is-fullwidth" multiple type="file"
+                        (change)="fileChange($event, configuration)"
+                        [formControlName]="configuration.key + '-file-control'" />
                     </div>
                   </ng-container>
 

@@ -23,7 +23,7 @@ export class ShowConfigurationComponent implements OnInit {
   constructor(private fb: FormBuilder,
     public rolesService: RolesService,
     public changeDetectorRef: ChangeDetectorRef,
-    private configControlService: ConfigurationControlService) {
+    public configControlService: ConfigurationControlService) {
     this.form = this.fb.group({
     });
   }
@@ -56,19 +56,20 @@ export class ShowConfigurationComponent implements OnInit {
     ).subscribe(
       data => {
         Object.keys(data).forEach(k => {
-          if (data[k] !== this.fullConfiguration[k].value) {
+          if (data[k] !== this.fullConfiguration[k]?.value) {
             const configuration = this.groupConfiguration.find(c => c.key === k);
-            if (configuration && configuration.type !== 'script') {
+            if (configuration) {
               configuration.value = data[k].toString();
               this.configControlService.checkConfigItemValidityOnChange(this.form, configuration, this.fullConfiguration);
-              this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
-              if (this.form.valid) {
-                this.event.emit(data);
+              if (configuration.type == 'script') {
+                const file = this.createScriptFile(data[k].toString(), configuration);
+                this.event.emit({ [configuration.key]: file });
+              } else {
+                this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
+                if (this.form.valid) {
+                  this.event.emit(data);
+                }
               }
-            } else {
-              configuration.value = data[k].toString();
-              const file = this.createScriptFile(data[k].toString(), configuration);
-              this.event.emit({ [configuration.key]: file });
             }
           }
         })
@@ -77,11 +78,10 @@ export class ShowConfigurationComponent implements OnInit {
 
   setCodeMirrorOption(configuration: ConfigurationBase<string>) {
     // condition to make codemirror editor readonly
-    if ((configuration.controlType.toLowerCase() == 'script' && (!configuration.fileName || configuration.fileName == '')) || this.form.controls[configuration.key]?.status === 'DISABLED') {
+    if ((configuration.controlType.toLowerCase() == 'script' && (!configuration.file && !configuration.fileName)) || this.form.controls[configuration.key]?.status === 'DISABLED') {
       configuration.editorOptions['readOnly'] = true;
     } else {
       configuration.editorOptions['readOnly'] = false;
-
     }
     return configuration.editorOptions;
   }
@@ -107,6 +107,7 @@ export class ShowConfigurationComponent implements OnInit {
       fileReader.onload = () => {
         config.value = fileReader.result.toString();
         this.form.controls[config.key].patchValue(config.value);
+        this.form.controls[config.key]?.enable({ emitEvent: false });
       };
       fileReader.readAsText(file);
       const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
@@ -116,6 +117,7 @@ export class ShowConfigurationComponent implements OnInit {
         config.fileName = file.name;
         config.file = file;
         this.event.emit({ [config.key]: config.file });
+        this.form.controls[config.key]?.enable({ emitEvent: false });
       }
     }
   }
