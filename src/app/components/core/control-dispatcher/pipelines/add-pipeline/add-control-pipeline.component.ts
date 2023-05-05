@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep } from 'lodash';
 import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService,
   FilterService, ConfigurationControlService } from '../../../../../services';
+import { DocService } from '../../../../../services/doc.service';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
@@ -62,6 +63,7 @@ export class AddControlPipelineComponent implements OnInit {
     private controlService: ControlDispatcherService,
     public notificationService: NotificationsService,
     private filterService: FilterService,
+    private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private router: Router) { }
 
@@ -69,7 +71,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.getSourceDestTypes('source');
     this.getSourceDestTypes('destination');
     this.route.params.subscribe(params => {
-      this.pipelineID = params['name'];
+      this.pipelineID = params['id'];
       if (this.pipelineID) {
         this.editMode = true;
         this.getControlPipeline();
@@ -566,6 +568,10 @@ export class AddControlPipelineComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  goToLink(pluginInfo) {
+    this.docService.goToPluginLink(pluginInfo);
   }
 
   onCheckboxClicked(event) {

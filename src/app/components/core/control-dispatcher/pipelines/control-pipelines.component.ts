@@ -114,7 +114,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   }
 
   addControlPipeline() {
-    this.router.navigate(['/control-dispatcher/pipeline/add']);
+    this.router.navigate(['/control-dispatcher/pipelines/add']);
   }
 
   public showLoadingSpinner() {
