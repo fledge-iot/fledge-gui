@@ -31,8 +31,8 @@
               cellpadding="0" cellspacing="0">
               <thead>
                 <tr>
+                  <th class="align-content">Enabled</th>
                   <th class="align-content">Name</th>
-                  <th class="align-content">Status</th>
                   <th class="align-content">Source</th>
                   <th class="align-content">Destination</th>
                   <th class="align-content">Filters</th>
@@ -43,15 +43,13 @@
                 <tr *ngFor="let pipeline of pipelines; let i = index;"
                   [ngClass]="{'fade': (pipeline.enabled == 'false')}">
                   <td class="align-content">
-                    <a class="button is-text pipeline-name"
-                      [routerLink]="['/control-dispatcher/pipelines', pipeline?.id]">{{pipeline.name}}</a>
+                    <input class="checkbox" type="checkbox" [checked]="pipeline.enabled"
+                    (click)="onCheckboxClicked($event, pipeline.id)">
                   </td>
                   <td class="align-content">
-                    <div class="tags has-addons">
-                      <span *ngIf="pipeline.enabled === false" class="tag">disabled</span>
-                      <span *ngIf="pipeline.enabled === true" class="tag is-success">enabled</span>
-                    </div>
-                  </td>
+                    <a class="button is-text pipeline-name"
+                      [routerLink]="['/control-dispatcher/pipelines', pipeline?.id]">{{pipeline.name}}</a>
+                  </td>              
                   <td class="align-content">
                     <span class="is-small">{{pipeline.source.type}}</span>
                     <span class="help source-name">{{pipeline.source.name}}</span>

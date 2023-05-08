@@ -341,7 +341,7 @@
                   </p>
                   <p class="control">
                     <button (click)="onSubmit(pipelineForm)"
-                      type="button" [disabled]="!pipelineForm.dirty" class="button is-small is-link">Save</button>
+                      type="button" [disabled]="!pipelineForm.valid || !pipelineForm.dirty" class="button is-small is-link">Save</button>
                   </p>
                 </div>
               </div>

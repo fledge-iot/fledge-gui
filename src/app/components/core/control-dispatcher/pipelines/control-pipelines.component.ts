@@ -117,6 +117,28 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     this.router.navigate(['/control-dispatcher/pipelines/add']);
   }
 
+  onCheckboxClicked(event, pipelineID) {
+    const payload = {
+      'enabled': event.target.checked
+    }
+    /** request started */
+    this.ngProgress.start();
+    this.controlPipelinesService.updatePipeline(pipelineID, payload)
+      .subscribe((data: any) => {
+        this.alertService.success(data.message, true)
+        /** request completed */
+        this.ngProgress.done();
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
+
   public showLoadingSpinner() {
     this.showSpinner = true;
   }

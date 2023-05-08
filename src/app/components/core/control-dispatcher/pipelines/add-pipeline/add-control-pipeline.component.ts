@@ -562,6 +562,7 @@ export class AddControlPipelineComponent implements OnInit {
 
   onCheckboxClicked(event) {
     this.isPipelineEnabled = event.target.checked ? true : false;
+    this.pipelineForm.form.markAsDirty();
   }
 
   updateControlPipeline(payload, isFilterUpdated = false) {
