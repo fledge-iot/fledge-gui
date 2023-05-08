@@ -19,7 +19,8 @@
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
     </header>
-    <section class="modal-card-body" [ngClass]="{overflow: timeDropDownOpened} || numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">
+    <section class="modal-card-body"
+      [ngClass]="{overflow: timeDropDownOpened} || numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">
       <ng-container *ngIf="loadPage; else tabs">
         <div class="app-loading">
           &nbsp;
@@ -35,14 +36,18 @@
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
           <div class="column is-10" *ngIf="!isLatestReadings && availableAssets.length > 0">
-            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()"
-            [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
+            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets"
+              [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()"
+              [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event)"
+              [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
             </ng-select>
           </div>
         </div>
         <div class="columns">
           <div class="column" *ngIf="!isLatestReadings">
-            <div *ngIf="!(numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList))" class="tabs is-boxed is-fullwidth is-small" id="tabs">
+            <div
+              *ngIf="!(numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList))"
+              class="tabs is-boxed is-fullwidth is-small" id="tabs">
               <ul>
                 <li *ngIf="numberTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 1}" data-tab="1">
                   <a (click)="selectTab(1)">
@@ -86,8 +91,10 @@
                 </div>
               </ng-container>
               <ng-template #DataDiv>
-                <div *ngIf="numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">                 
-                  <div class="has-text-centered no-data"><small class="text-secondary has-text-grey-light">No readings available.</small>
+                <div *ngIf="numberTypeReadingsList?.length == 0 && arrayTypeReadingsList?.length == 0
+                  && isEmptyObject(stringTypeReadingsList) && imageReadings?.length == 0">
+                  <div class="has-text-centered no-data"><small class="text-secondary has-text-grey-light">
+                      No readings available.</small>
                   </div>
                 </div>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
@@ -184,7 +191,7 @@
                       <div id="tab-content">
                         <img [src]="read.image" alt={{read.datapoint}}>
                       </div>
-                      <small class="has-text-centered text-secondary has-text-grey-light">{{read?.datapoint}},
+                      <small class="has-text-centered text-secondary has-text-grey">{{read?.datapoint}},
                         Timestamp:
                         {{read?.timestamp}}
                       </small>
