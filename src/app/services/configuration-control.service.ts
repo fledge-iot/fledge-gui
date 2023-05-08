@@ -431,7 +431,7 @@ export class ConfigurationControlService {
   setFormControlState(cnf: any, form: FormGroup, validExpression: boolean, configControl = null) {
     if (cnf.key == 'script') {
       if (validExpression) {
-        const control = configControl ? configControl : cnf;
+        const control = configControl?.key == 'script' ? configControl : cnf;
         form.controls[control.key]?.enable({ emitEvent: false });
         if (!control.file && !control.fileName && !control.value) {
           form.controls[control.key]?.disable({ emitEvent: false });
