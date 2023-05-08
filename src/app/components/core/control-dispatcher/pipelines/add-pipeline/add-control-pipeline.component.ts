@@ -80,8 +80,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.selectedSourceType = {cpsid: 1, name: "Any"};
         this.selectedDestinationType = {cpdid: 4, name: "Broadcast"};
       }
-    });
-    this.getAllPipelines(); 
+    }); 
   }
 
   ngAfterContentChecked(): void {
@@ -108,7 +107,7 @@ export class AddControlPipelineComponent implements OnInit {
   // }
 
   openAddFilterModal(isClicked, nameValue) {
-    if (!nameValue || nameValue === ''){
+    if ((!nameValue || nameValue === '') && !this.pipelineName){
       return;
     }
     if (this.isFilterOrderChanged || this.isFilterDeleted) {
@@ -136,24 +135,24 @@ export class AddControlPipelineComponent implements OnInit {
 
   onNotify(data) {
     const filterData = data ? data.filters : [];
-    let filterNameList = [];
+    let filtersList = [];
     // Append recently added filter to existing filter pipeline
     // format of previously added filter is ctrl_{control pipeline name}_{filter name}. To send filter in updated payload,
     // we have to change format of filter "ctrl_{control pipeline name}_{filter name}" to "{filter name}"
     if (data && this.filterPipeline.length > 0) {
       this.filterPipeline.forEach((filter) => {
-        const filterName = filter.split('_' + this.pipelineName + '_')[1];
-        filterNameList.push(filterName);
+        let fNamePrefix: string = `ctrl_${this.pipelineName}_`;
+        const filterName = filter.replace(fNamePrefix, '');
+        filtersList.push(filterName);
       });
     }
-    this.filterPipeline = filterNameList.concat(filterData);
-    if (this.pipelineID && data?.filters.length > 0) {
-      this.updateControlPipeline({filters: this.filterPipeline}, true)
-      this.getControlPipeline();
-    }
-    // Get Control Pipeline data when Back/Previous button is pressed on Detail Page
-    if (!data && this.pipelineID) {
-      this.getControlPipeline();
+    this.filterPipeline = filtersList.concat(filterData);
+
+    if (this.pipelineID) {
+      if (data?.filters.length > 0) {
+           this.updateControlPipeline({filters: this.filterPipeline}, true)
+        }
+       this.getControlPipeline();
     }
     this.isAddFilterWizard = false;
   }
@@ -250,20 +249,21 @@ export class AddControlPipelineComponent implements OnInit {
         this.ngProgress.done();
         this.pipelineName = data.name;
         this.selectedExecution = data.execution;
-        this.isPipelineEnabled = data.enabled;
-        this.selectedSourceName = data.source.name;
-        this.selectedDestinationName = data.destination.name;
-        this.filterPipeline = data.filters;
         this.sourceTypeList.forEach(type => {
           if (data.source.type === type.name) {
             this.selectedSourceType = type;
           }
         });
+        this.selectedSourceName = data.source.name;
         this.destinationTypeList.forEach(type => {
           if (data.destination.type === type.name) {
             this.selectedDestinationType = type;
           }      
         });
+        this.selectedDestinationName = data.destination.name;
+        this.filterPipeline = data.filters;
+        this.isPipelineEnabled = data.enabled;        
+             
         if (this.isAddFilterWizard) {
           this.pipelineForm.form.markAsUntouched();
           this.pipelineForm.form.markAsPristine();
@@ -327,20 +327,6 @@ export class AddControlPipelineComponent implements OnInit {
     }
     const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
-  }
-
-  getAllPipelines() {
-    this.controlPipelinesService.getAllPipelines()
-      .subscribe((data: any) => {
-        this.ngProgress.done();
-        this.pipelines = this.pipelines.concat(data.pipelines);
-      }, error => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
   }
 
   selectValue(value, property) {
@@ -588,11 +574,12 @@ export class AddControlPipelineComponent implements OnInit {
         // If info other than filter pipeline updated, then redirect to Control Pipeline list page otherwise stay on Add/Detail page
         if (!isFilterUpdated) {
           this.router.navigate(['control-dispatcher/pipelines']);
+        } else {
+          this.refresh();
         }
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
-        this.refresh();
       }, error => {
         /** request completed */
         this.ngProgress.done();
