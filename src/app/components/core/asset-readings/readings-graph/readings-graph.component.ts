@@ -55,6 +55,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   public selectedTab = 1;
   public timestamps = [];
   public isLatestReadings = false;
+  public pauseTime: number = Date.now();
+  public backwardReadingCounter: number = 0;
+  public graphDisplayDuration = "10";
+  public graphDisplayUnit = "minutes";
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -109,6 +113,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetReadingValues = {};
     this.summaryLimit = 5;
     this.assetChartOptions = {};
+    this.pauseTime = Date.now();
+    this.backwardReadingCounter = 0;
     sessionStorage.removeItem(this.assetCode);
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
@@ -140,13 +146,25 @@ export class ReadingsGraphComponent implements OnDestroy {
       activeDropDowns[0].classList.remove('is-active');
     }
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
-    this.optedTime = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : ASSET_READINGS_TIME_FILTER;
+    let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
+    if (rGraphDefaultDuration !== null && rGraphDefaultUnit !== null) {
+      this.graphDisplayDuration = rGraphDefaultDuration;
+      this.graphDisplayUnit = rGraphDefaultUnit;
+      this.optedTime = this.calculateOptedTime(parseInt(rGraphDefaultDuration), rGraphDefaultUnit);
+    }
+    else {
+      this.optedTime = ASSET_READINGS_TIME_FILTER;
+    }
   }
 
-  getTimeBasedAssetReadingsAndSummary(time: number) {
-    this.optedTime = time;
+  getTimeBasedAssetReadingsAndSummary(timeObject) {
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
+    this.graphDisplayDuration = timeObject.displayDuration;
+    this.graphDisplayUnit = timeObject.selectedUnit;
+    this.optedTime = timeObject.optedTime;
     this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   public getAssetCode(assetCode: string) {
@@ -185,12 +203,21 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
-    this.optedTime = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : ASSET_READINGS_TIME_FILTER;
+    let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
+    if (rGraphDefaultDuration !== null && rGraphDefaultUnit !== null) {
+      this.graphDisplayDuration = rGraphDefaultDuration;
+      this.graphDisplayUnit = rGraphDefaultUnit;
+      this.optedTime = this.calculateOptedTime(parseInt(rGraphDefaultDuration), rGraphDefaultUnit);
+    }
+    else {
+      this.optedTime = ASSET_READINGS_TIME_FILTER;
+    }
+
     this.assetCode = assetCode;
     if (this.optedTime !== 0) {
       this.limit = 0;
       this.autoRefresh = false;
-      this.plotReadingsGraph(assetCode, this.limit, this.optedTime);
+      this.plotReadingsGraph(assetCode, this.limit, this.optedTime, 0);
     }
     this.subscription = interval(this.graphRefreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
@@ -199,14 +226,14 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedTab === 4) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
-          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
           this.refreshAssets.next();
         }
       });
   }
 
   addOrRemoveAsset() {
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   clearAdditionalAssets() {
@@ -394,7 +421,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-  public plotReadingsGraph(assetCode, limit = null, time = null) {
+  public plotReadingsGraph(assetCode, limit = null, time = null, previous = 0) {
     if (assetCode === '') {
       return false;
     }
@@ -408,7 +435,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     let optedAssets = this.additionalAssets;
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
     this.limit = limit;
-    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets)
+    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
@@ -613,10 +640,12 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   refresh() {
     if (!this.isAlive) {
+      this.backwardReadingCounter = 0;
+      this.pauseTime = Date.now();
       if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
         this.getLatestReading(this.assetCode);
       } else {
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
       }
       if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
@@ -801,12 +830,14 @@ export class ReadingsGraphComponent implements OnDestroy {
   selectTab(id: number, showSpinner = true) {
     this.showSpinner = showSpinner;
     this.selectedTab = id;
-    if (this.graphRefreshInterval === -1 && this.selectedTab === 4) {
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
+    if (!this.isAlive && this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    } else if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
+    } else if (!this.isAlive && this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
-    } else if (this.graphRefreshInterval === -1) {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+    } else if (!this.isAlive) {
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
   }
 
@@ -824,17 +855,16 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   toggleAutoRefresh(refresh: boolean) {
     this.isAlive = refresh;
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
     // clear interval subscription before initializing it again
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
 
-    /**
-     * Set graph refresh interval to default if Auto Refresh checked and
-     * pingInterval is set to manual on settings page
-     * */
-    if (this.isAlive && this.graphRefreshInterval === -1) {
-      this.graphRefreshInterval = POLLING_INTERVAL;
+    // Instantly make a call on clicking play button
+    if(this.isAlive){
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
 
     // start auto refresh
@@ -845,10 +875,40 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedTab === 4) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
-          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime);
+          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
           this.refreshAssets.next();
         }
       });
+  }
+
+  showBackwardReadingsGraph(){
+    this.backwardReadingCounter++;
+    this.showReadingsGraph();
+  }
+  
+  showForwardReadingsGraph(){
+    this.backwardReadingCounter--;
+    this.showReadingsGraph();
+  }
+
+  showReadingsGraph(){
+    let currentTime = Date.now();
+    let timeDifference = Math.floor((currentTime - this.pauseTime)/1000);
+    let previous = timeDifference + this.backwardReadingCounter*this.optedTime;
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+  }
+
+  calculateOptedTime(value, unit) {
+    if (unit === 'seconds') {
+      return value;
+    }
+    if (unit === 'minutes') {
+      return value * 60;
+    }
+    if (unit === 'hours') {
+      return value * 60 * 60;
+    }
+    return value * 60 * 60 * 24;
   }
 
   public ngOnDestroy(): void {
