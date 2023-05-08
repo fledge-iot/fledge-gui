@@ -405,7 +405,7 @@ export class ConfigurationControlService {
         const cnf = fullConfiguration[key];
         if (cnf.validity) {
           let isValidExpression = this.validateExpression(key, cnf.validityExpression);
-          this.setFormControlState(cnf, form, isValidExpression);
+          this.setFormControlState(cnf, form, isValidExpression, config);
         }
       });
     }
@@ -423,20 +423,20 @@ export class ConfigurationControlService {
         if (cnf.hasOwnProperty('validityExpression')) {
           const isValidExpression = this.validateExpression(key, cnf.validityExpression);
           this.setFormControlState(cnf, form, isValidExpression);
-          //isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
         }
       });
     }
   }
 
-  setFormControlState(cnf: any, form: FormGroup, validExpression: boolean) {
+  setFormControlState(cnf: any, form: FormGroup, validExpression: boolean, configControl = null) {
     if (cnf.key == 'script') {
       if (validExpression) {
-        form.controls[cnf.key]?.enable({ emitEvent: false });
-        if (!cnf.file && !cnf.value) {
-          form.controls[cnf.key]?.disable({ emitEvent: false });
+        const control = configControl ? configControl : cnf;
+        form.controls[control.key]?.enable({ emitEvent: false });
+        if (!control.file && !control.fileName && !control.value) {
+          form.controls[control.key]?.disable({ emitEvent: false });
         }
-        form.controls[cnf.key + '-file-control']?.enable({ emitEvent: false });
+        form.controls[control.key + '-file-control']?.enable({ emitEvent: false });
       } else {
         form.controls[cnf.key]?.disable({ emitEvent: false });
         form.controls[cnf.key + '-file-control']?.disable({ emitEvent: false });

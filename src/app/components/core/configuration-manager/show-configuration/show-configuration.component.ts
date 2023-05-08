@@ -108,6 +108,7 @@ export class ShowConfigurationComponent implements OnInit {
         config.value = fileReader.result.toString();
         this.form.controls[config.key].patchValue(config.value);
         this.form.controls[config.key]?.enable({ emitEvent: false });
+        event.target.value = null;
       };
       fileReader.readAsText(file);
       const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
