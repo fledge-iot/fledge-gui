@@ -84,3 +84,10 @@
     pointer-events: none;
   }
   
+  .filter-name {
+    font-size: 0.9rem;
+  }
+
+  .filters {
+    padding-top: 0;
+  }

@@ -56,8 +56,8 @@
                       </div>
                       <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
-                            <a (click)="selectValue('shared', 'execution');toggleDropdown('execution-dropdown')" class="dropdown-item">shared</a>
-                            <a (click)="selectValue('exclusive', 'execution');toggleDropdown('execution-dropdown')" class="dropdown-item">exclusive</a>
+                            <a (click)="selectValue('Shared', 'execution');toggleDropdown('execution-dropdown')" class="dropdown-item">Shared</a>
+                            <a (click)="selectValue('Exclusive', 'execution');toggleDropdown('execution-dropdown')" class="dropdown-item">Exclusive</a>
                         </div>
                       </div>
                     </div>
@@ -260,13 +260,13 @@
               <div class="field-body">
                 <div class="field">
                   <div *ngIf="filterPipeline?.length > 0" class="view-content columns">
-                    <div class="column">
+                    <div class="column filters">
                       <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                         <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
                           [cdkDragDisabled]="filterPipeline?.length == 1 || !sharedService.checkAuth()">
                           <header class="card-header" cdkDragHandle
                             [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && sharedService.checkAuth() }">
-                            <p class="card-header-title">
+                            <p class="card-header-title filter-name">
                               <ng-container *ngIf="filterPipeline.length > 1 && sharedService.checkAuth()">
                                 <i class="fa fa-sm fa-bars"></i>&nbsp;
                               </ng-container>
@@ -274,7 +274,7 @@
                             </p>
                             <a (click)="activeAccordion(i, filter)" class="card-header-icon">
                               <span class="icon">
-                                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                                <i class="fa fa-xs fa-angle-down" aria-hidden="true"></i>
                               </span>
                             </a>
                           </header>
@@ -294,9 +294,10 @@
                                   </span>
                                 </div>
                                 <div class="field is-pulled-right" *ngIf="sharedService.checkAuth()">
-                                  <button class="button is-light btnDelete" (click)="deleteFilterReference(filter)"><span
-                                      class="icon is-medium"><i class="fa fa-sm fa-trash-alt fa-lg"
-                                        aria-hidden="true"></i></span></button>
+                                  <span class="icon is-small is-tooltip-left tooltip is-pulled-left is-hovered help-icon"
+                                    data-tooltip="Remove" (click)="deleteFilterReference(filter)">
+                                    <i class="fa fa-sm fa-trash-alt fa-lg"></i>
+                                  </span>
                                 </div>
                               </div>
                             </ng-container>
@@ -340,7 +341,7 @@
                   </p>
                   <p class="control">
                     <button (click)="onSubmit(pipelineForm)"
-                      type="button" [disabled]="!pipelineForm.valid || !pipelineForm.dirty" class="button is-small is-link">Save</button>
+                      type="button" [disabled]="!pipelineForm.dirty" class="button is-small is-link">Save</button>
                   </p>
                 </div>
               </div>
