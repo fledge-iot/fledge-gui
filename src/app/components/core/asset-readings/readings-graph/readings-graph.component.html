@@ -2,19 +2,44 @@
   <div class="modal-background"></div>
   <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">
-        {{assetCode}}
-        <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      <span class="modal-card-title is-size-5">
+        <div class="asset-name">
+          <span class="asset-code">
+            {{assetCode}}
+          </span>
+          <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          </button>
+        </div>
+        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
+          <span class="help">
+            *Showing {{graphDisplayDuration}} {{graphDisplayUnit}} data before now
+          </span>
+          <span class="help" *ngIf="backwardReadingCounter!=0">
+            - {{graphDisplayDuration*backwardReadingCounter}} {{graphDisplayUnit}}
+          </span>
+        </ng-container>
+      </span>
+      <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
+        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button is-small playback-button">
+          <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
-      </p>
-      <div *ngIf="graphRefreshInterval !== -1" class="auto-refresh">
-        <label class="checkbox">
-          <input class="checkmark" type="checkbox" [checked]='isAlive'
-            (click)="toggleAutoRefresh($event.target.checked)">
-          Auto Refresh
-        </label>
-      </div>
+        <ng-container *ngIf="isAlive">
+          <button (click)="toggleAutoRefresh(false)" class="button is-small playback-button">
+            <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!isAlive">
+          <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
+            class="button is-small playback-button">
+            <i class="fa fa-sm fa-play" aria-hidden="true"></i>
+          </button>
+        </ng-container>
+        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()"
+          class="button is-small playback-button">
+          <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
+        </button>
+      </ng-container>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
@@ -30,8 +55,8 @@
         </div>
       </ng-container>
       <ng-template #tabs>
-        <div class="columns">
-          <div class="column is-2" *ngIf="!isLatestReadings">
+        <div class="columns" id="time-dropdown-container">
+          <div class="column is-2 time-dropdown" *ngIf="!isLatestReadings">
             <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
