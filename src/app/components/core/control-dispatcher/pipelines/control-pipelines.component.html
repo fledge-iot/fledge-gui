@@ -59,7 +59,7 @@
                     <span class="help dest-name">{{pipeline.destination.name}}</span>
                   </td>
                   <td class="align-content">
-                    {{pipeline.filters.join(', ')}}
+                  {{getFiltersName(pipeline.filters, pipeline.name).join(', ')}}
                   </td>
                   <td>
                     <div id="dropdown-{{i}}" class="dropdown is-left">

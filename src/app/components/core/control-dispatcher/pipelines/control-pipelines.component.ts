@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { Router } from '@angular/router';
 
-import { AlertService, ControlPipelinesService, PingService, ProgressBarService, RolesService } from '../../../../services';
+import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -79,8 +79,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
           this.ngProgress.done();
           this.alertService.success(data['message']);
           // delete pipeline locally from pipelines array
-          const obj = this.pipelines.filter((pipeline) => pipeline.id === id);
-          const index: number = this.pipelines.indexOf(obj[0]);
+          const index: number = this.pipelines.findIndex((pipeline) => pipeline.id === id);
           if (index !== -1) {
             this.pipelines.splice(index, 1);
           }
@@ -137,6 +136,16 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  getFiltersName(filters, pipelineName) {
+    let filterPipeline = [];
+    filters.forEach((filter) => {
+      let fNamePrefix: string = `ctrl_${pipelineName}_`;
+      const filterName = filter.replace(fNamePrefix, '');
+      filterPipeline.push(filterName);
+    });
+    return filterPipeline;
   }
 
   public showLoadingSpinner() {

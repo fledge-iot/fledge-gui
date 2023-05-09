@@ -100,12 +100,6 @@ export class AddControlPipelineComponent implements OnInit {
     this.pipelineForm.form.markAsDirty();
   }
 
-  // savePipelineChanges() {
-  //   if (this.isFilterDeleted) {
-  //     this.deleteFilter();
-  //   }
-  // }
-
   openAddFilterModal(isClicked, nameValue) {
     if ((!nameValue || nameValue === '') && !this.pipelineName){
       return;
@@ -254,14 +248,23 @@ export class AddControlPipelineComponent implements OnInit {
             this.selectedSourceType = type;
           }
         });
+        // get Source Name list
+        this.selectValue(this.selectedSourceType, 'sourceType');
         this.selectedSourceName = data.source.name;
         this.destinationTypeList.forEach(type => {
           if (data.destination.type === type.name) {
             this.selectedDestinationType = type;
           }      
         });
+        // get Destination Name list
+        this.selectValue(this.selectedDestinationType, 'destinationType');
         this.selectedDestinationName = data.destination.name;
-        this.filterPipeline = data.filters;
+        this.filterPipeline = [];
+        data.filters.forEach((filter) => {
+          let fNamePrefix: string = `ctrl_${this.pipelineName}_`;
+          const filterName = filter.replace(fNamePrefix, '');
+          this.filterPipeline.push(filterName);
+        });
         this.isPipelineEnabled = data.enabled;        
              
         if (this.isAddFilterWizard) {

@@ -25,8 +25,13 @@ table tr td {
 
 .source-name, .dest-name {
     color: #707070;
+    font-size: .85rem;
 }
 
 .is-hoverable.pipeline-table tr:hover .context-menu {
     background-color: #fafafa; 
+}
+
+span.is-small {
+    font-size: 0.9rem;
 }
