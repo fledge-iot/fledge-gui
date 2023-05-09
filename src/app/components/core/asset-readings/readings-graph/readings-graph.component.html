@@ -2,24 +2,50 @@
   <div class="modal-background"></div>
   <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">
-        {{assetCode}}
-        <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      <span class="modal-card-title is-size-5">
+        <div class="asset-name">
+          <span class="asset-code">
+            {{assetCode}}
+          </span>
+          <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          </button>
+        </div>
+        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
+          <span class="help">
+            *Showing {{graphDisplayDuration}} {{graphDisplayUnit}} data before now
+          </span>
+          <span class="help" *ngIf="backwardReadingCounter!=0">
+            - {{graphDisplayDuration*backwardReadingCounter}} {{graphDisplayUnit}}
+          </span>
+        </ng-container>
+      </span>
+      <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
+        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button is-small playback-button">
+          <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
-      </p>
-      <div *ngIf="graphRefreshInterval !== -1" class="auto-refresh">
-        <label class="checkbox">
-          <input class="checkmark" type="checkbox" [checked]='isAlive'
-            (click)="toggleAutoRefresh($event.target.checked)">
-          Auto Refresh
-        </label>
-      </div>
+        <ng-container *ngIf="isAlive">
+          <button (click)="toggleAutoRefresh(false)" class="button is-small playback-button">
+            <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!isAlive">
+          <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
+            class="button is-small playback-button">
+            <i class="fa fa-sm fa-play" aria-hidden="true"></i>
+          </button>
+        </ng-container>
+        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()"
+          class="button is-small playback-button">
+          <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
+        </button>
+      </ng-container>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
     </header>
-    <section class="modal-card-body" [ngClass]="{overflow: timeDropDownOpened} || numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">
+    <section class="modal-card-body"
+      [ngClass]="{overflow: timeDropDownOpened} || numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">
       <ng-container *ngIf="loadPage; else tabs">
         <div class="app-loading">
           &nbsp;
@@ -29,20 +55,24 @@
         </div>
       </ng-container>
       <ng-template #tabs>
-        <div class="columns">
-          <div class="column is-2" *ngIf="!isLatestReadings">
+        <div class="columns" id="time-dropdown-container">
+          <div class="column is-2 time-dropdown" *ngIf="!isLatestReadings">
             <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
           <div class="column is-10" *ngIf="!isLatestReadings && availableAssets.length > 0">
-            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()"
-            [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
+            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets"
+              [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()"
+              [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event)"
+              [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
             </ng-select>
           </div>
         </div>
         <div class="columns">
           <div class="column" *ngIf="!isLatestReadings">
-            <div *ngIf="!(numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList))" class="tabs is-boxed is-fullwidth is-small" id="tabs">
+            <div
+              *ngIf="!(numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList))"
+              class="tabs is-boxed is-fullwidth is-small" id="tabs">
               <ul>
                 <li *ngIf="numberTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 1}" data-tab="1">
                   <a (click)="selectTab(1)">
@@ -86,8 +116,10 @@
                 </div>
               </ng-container>
               <ng-template #DataDiv>
-                <div *ngIf="numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">                 
-                  <div class="has-text-centered no-data"><small class="text-secondary has-text-grey-light">No readings available.</small>
+                <div *ngIf="numberTypeReadingsList?.length == 0 && arrayTypeReadingsList?.length == 0
+                  && isEmptyObject(stringTypeReadingsList) && imageReadings?.length == 0">
+                  <div class="has-text-centered no-data"><small class="text-secondary has-text-grey-light">
+                      No readings available.</small>
                   </div>
                 </div>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
@@ -184,7 +216,7 @@
                       <div id="tab-content">
                         <img [src]="read.image" alt={{read.datapoint}}>
                       </div>
-                      <small class="has-text-centered text-secondary has-text-grey-light">{{read?.datapoint}},
+                      <small class="has-text-centered text-secondary has-text-grey">{{read?.datapoint}},
                         Timestamp:
                         {{read?.timestamp}}
                       </small>
