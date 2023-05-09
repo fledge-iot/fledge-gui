@@ -31,8 +31,9 @@
               cellpadding="0" cellspacing="0">
               <thead>
                 <tr>
-                  <th class="align-content">Enabled</th>
+                  <th class="align-content"></th>
                   <th class="align-content">Name</th>
+                  <th></th>
                   <th class="align-content">Source</th>
                   <th class="align-content">Destination</th>
                   <th class="align-content">Filters</th>
@@ -49,7 +50,8 @@
                   <td class="align-content">
                     <a class="button is-text pipeline-name"
                       [routerLink]="['/control-dispatcher/pipelines', pipeline?.id]">{{pipeline.name}}</a>
-                  </td>              
+                  </td>
+                  <td><span class="tag is-rounded">{{pipeline.execution}}</span></td>            
                   <td class="align-content">
                     <span class="is-small">{{pipeline.source.type}}</span>
                     <span class="help source-name">{{pipeline.source.name}}</span>
