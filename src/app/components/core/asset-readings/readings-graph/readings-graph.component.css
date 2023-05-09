@@ -83,7 +83,7 @@ table.is-borderless tr {
 
 .range-wrap {
   position: relative;
-  margin: -30px 2px 0 0;
+  margin-left: 10px;
   padding-right: 3px;
   top: 0;
 }
@@ -140,4 +140,10 @@ table.is-borderless tr {
 
 #time-dropdown-container {
   margin-bottom: 0px !important;
+  width: max-content;
+}
+
+.time-dropdown-row{
+  display: flex;
+  justify-content: space-between;
 }
