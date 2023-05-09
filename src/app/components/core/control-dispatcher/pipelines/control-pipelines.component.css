@@ -35,3 +35,7 @@ table tr td {
 span.is-small {
     font-size: 0.9rem;
 }
+
+.pipeline-table {
+    display: block;
+}

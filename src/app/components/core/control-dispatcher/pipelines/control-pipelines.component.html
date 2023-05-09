@@ -27,7 +27,7 @@
             <small class="no-rec">No Record</small>
           </div>
           <ng-container *ngIf="pipelines!= undefined && pipelines.length > 0">
-            <table id="pipeline-list" class="table is-fullwidth scroll is-responsive is-hoverable pipeline-table"
+            <table id="pipeline-list" class="table is-fullwidth is-responsive is-hoverable pipeline-table"
               cellpadding="0" cellspacing="0">
               <thead>
                 <tr>
@@ -62,7 +62,7 @@
                   {{getFiltersName(pipeline.filters, pipeline.name).join(', ')}}
                   </td>
                   <td>
-                    <div id="dropdown-{{i}}" class="dropdown is-left">
+                    <div *ngIf="sharedService.checkAuth()" id="dropdown-{{i}}" class="dropdown is-left">
                       <div class="dropdown-trigger">
                         <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu"
                           (click)="toggleDropdown(i)">

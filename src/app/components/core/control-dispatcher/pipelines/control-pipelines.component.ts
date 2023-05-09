@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { Router } from '@angular/router';
 
-import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
+import { AlertService, SharedService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -22,6 +22,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
+    public sharedService: SharedService,
     private ngProgress: ProgressBarService,
     private router: Router,
     public rolesService: RolesService) {}
