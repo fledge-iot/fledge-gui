@@ -2,15 +2,17 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService,
-  FilterService, ConfigurationControlService } from '../../../../../services';
+  FilterService, ConfigurationControlService, FileUploaderService, ConfigurationService } from '../../../../../services';
 import { DocService } from '../../../../../services/doc.service';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
 import { FilterAlertComponent } from '../../../filter/filter-alert/filter-alert.component';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-control-pipeline',
@@ -48,7 +50,10 @@ export class AddControlPipelineComponent implements OnInit {
   public isFilterDeleted = false;
   confirmationDialogData = {};
   public isAddFilterWizard;
-
+  // To hold API calls to execute
+  apiCallsStack = [];
+  changedConfig = {};
+  
   constructor(
     private cdRef: ChangeDetectorRef,
     private assetService: AssetsService,
@@ -61,8 +66,10 @@ export class AddControlPipelineComponent implements OnInit {
     private schedulesService: SchedulesService,
     private controlService: ControlDispatcherService,
     public notificationService: NotificationsService,
+    private configService: ConfigurationService,
     private filterService: FilterService,
     private docService: DocService,
+    private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
     private router: Router) { }
 
@@ -347,25 +354,25 @@ export class AddControlPipelineComponent implements OnInit {
   selectValue(value, property) {
     switch (property) {
       case 'execution':
-        this.selectedExecution = value === 'None' ? '' : value;
+        this.selectedExecution = value === 'Select Execution' ? '' : value;
         break;
       case 'sourceType':
         this.sourceNameList = [];
         this.selectedSourceName = '';
-        this.selectedSourceType = value === 'None' ? '' : value;
+        this.selectedSourceType = value === 'Select Source Type' ? '' : value;
         this.getSourceNameList();
         break;
       case 'sourceName':
-        this.selectedSourceName = value === 'None' ? '' : value;
+        this.selectedSourceName = value === 'Select Source Name' ? '' : value;
         break;
       case 'destinationType':
         this.destinationNameList = [];
         this.selectedDestinationName = '';
-        this.selectedDestinationType = value === 'None' ? '' : value;
+        this.selectedDestinationType = value === 'Select Destination Type' ? '' : value;
         this.getDestinationNameList();
         break;
       case 'destinationName':
-        this.selectedDestinationName = value === 'None' ? '' : value;
+        this.selectedDestinationName = value === 'Select Destination Name' ? '' : value;
         break;
       default:
         break;
@@ -535,6 +542,43 @@ export class AddControlPipelineComponent implements OnInit {
     });
   }
 
+  /**
+  * To upload script files of a configuration property
+  * @param categoryName name of the configuration category
+  * @param files : Scripts array to uplaod
+  */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+  }
+
+  /**
+  * Get scripts to upload from a configuration item
+  * @param configuration  edited configuration from show configuration page
+  * @returns script files to upload
+  */
+   getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
+  }
+
+  /**
+   * update plugin configuration
+   */
+   updateConfiguration(categoryName: string, configuration: any, type: string) {
+    const files = this.getScriptFilesToUpload(configuration);
+    if (files.length > 0) {
+      this.uploadScript(categoryName, files);
+    }
+
+    if (isEmpty(configuration)) {
+      return;
+    }
+
+    this.apiCallsStack.push(this.configService.
+      updateBulkConfiguration(categoryName, configuration)
+      .pipe(map(() => ({ type, success: true })))
+      .pipe(catchError(e => of({ error: e, failed: true }))));
+  }
+
   onSubmit(form: NgForm) {
     const formData = cloneDeep(form.value);
     let { name } = formData;
@@ -546,10 +590,16 @@ export class AddControlPipelineComponent implements OnInit {
       filters: this.filterPipeline ? this.filterPipeline : [],
       enabled: this.isPipelineEnabled
     }
+    if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
+      this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
+    }
+    // if ((payload.source.type !== 1 || payload.source.type !== 3 && payload.source.name === '') || (payload.destination.type !== 4 && payload.destination.name === '')) {
+    //   return;
+    // }
     if (this.editMode) {
       this.updateControlPipeline(payload);
       return;
-    } 
+    }   
     this.ngProgress.start();
     this.controlPipelinesService.createPipeline(payload)
       .subscribe(() => {

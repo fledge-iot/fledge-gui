@@ -95,4 +95,10 @@
   .footer-padding {
     padding-top: 1rem;
   }
+
+  .static-field {
+    padding: 3px 0px 0px 0px !important;
+    height: 0%;
+    vertical-align: inherit !important;
+  }
   

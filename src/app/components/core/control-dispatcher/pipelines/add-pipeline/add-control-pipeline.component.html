@@ -27,7 +27,8 @@
                   <div class="control">
                     <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
                       [(ngModel)]="pipelineName" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
-                      [ngClass]="{'is-small':sharedService.checkAuth()}">
+                      [ngClass]="{'is-small':sharedService.checkAuth()}"
+                    [readonly]="!sharedService.checkAuth()">
                   </div>
                   <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                     <div *ngIf="name.errors?.['required']">
@@ -66,8 +67,8 @@
                 <ng-template #staticExecutionDiv>
                   <div class="field">
                     <div class="control">
-                      <input name="execution" class="input" type="text" [value]="selectedExecution ? selectedExecution : 'None'"
-                        [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedExecution}"
+                      <input name="execution" class="input" type="text" [value]="selectedExecution ? selectedExecution : 'Select Execution'"
+                        [ngClass]="{'is-static static-field':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedExecution}"
                         [readonly]="!sharedService.checkAuth()">
                     </div>
                   </div>
@@ -89,7 +90,7 @@
                             <div class="column">
                               <div class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label" *ngIf="sharedService.checkAuth()">Type</label>
+                                  <label class="label">Type</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -112,25 +113,25 @@
                                       </div>
                                     </div>
                                     <ng-template #staticSourceType>
-                                      <input class="input is-small" type="text" [value]="show(sourceTypeList)"
-                                        [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': sourceTypeList.length === 0}"
-                                        [readonly]="!sharedService.checkAuth()">
+                                      <input name="sourceType" class="input" type="text" [value]="selectedSourceType.name ? selectedSourceType.name : 'Select Source Type'"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedSourceType.name}"
+                                      [readonly]="!sharedService.checkAuth()">
                                     </ng-template>
                                   </div>
                                 </div>
                               </div>
                               <div *ngIf="!(selectedSourceType.name === 'Any' || selectedSourceType.name === 'API')" class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label" *ngIf="sharedService.checkAuth()">Name</label>
+                                  <label class="label">Name</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
-                                    <div class="control" *ngIf="sharedService.checkAuth(); else staticService">
+                                    <div class="control" *ngIf="sharedService.checkAuth(); else staticSourceName">
                                       <div id="sourceName-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                                             (click)="toggleDropdown('sourceName-dropdown')">
-                                            <span>{{selectedSourceName ? selectedSourceName : 'None'}}</span>
+                                            <span>{{selectedSourceName ? selectedSourceName : 'Select Source Name'}}</span>
                                             <span class="icon is-small">
                                               <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                                             </span>
@@ -144,10 +145,10 @@
                                         </div>
                                       </div>
                                     </div>
-                                    <ng-template #staticService>
-                                      <input class="input is-small" type="text" [value]="show(sourceNameList, true)"
-                                        [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': sourceNameList.length  === 0}"
-                                        [readonly]="!sharedService.checkAuth()">
+                                    <ng-template #staticSourceName>
+                                      <input name="sourceName" class="input" type="text" [value]="selectedSourceName ? selectedSourceName : 'Select Source Name'"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedSourceName}"
+                                      [readonly]="!sharedService.checkAuth()">
                                     </ng-template>
                                   </div>
                                 </div>
@@ -178,7 +179,7 @@
                             <div class="column">
                               <div class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label" *ngIf="sharedService.checkAuth()">Type</label>
+                                  <label class="label">Type</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -201,25 +202,25 @@
                                       </div>
                                     </div>
                                     <ng-template #staticDestinationType>
-                                      <input class="input is-small" type="text" [value]="show(destinationTypeList)"
-                                        [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': destinationTypeList.length === 0}"
-                                        [readonly]="!sharedService.checkAuth()">
+                                      <input name="destinationType" class="input" type="text" [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
+                                      [readonly]="!sharedService.checkAuth()">
                                     </ng-template>
                                   </div>
                                 </div>
                               </div>
                               <div *ngIf="selectedDestinationType.name !== 'Broadcast'" class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label" *ngIf="sharedService.checkAuth()">Name</label>
+                                  <label class="label">Name</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
-                                    <div class="control" *ngIf="sharedService.checkAuth(); else staticService">
+                                    <div class="control" *ngIf="sharedService.checkAuth(); else staticDestinationName">
                                       <div id="destinationName-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                                             (click)="toggleDropdown('destinationName-dropdown')">
-                                            <span>{{selectedDestinationName ? selectedDestinationName : 'None'}}</span>
+                                            <span>{{selectedDestinationName ? selectedDestinationName : 'Select Destination Name'}}</span>
                                             <span class="icon is-small">
                                               <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                                             </span>
@@ -233,10 +234,10 @@
                                         </div>
                                       </div>
                                     </div>
-                                    <ng-template #staticService>
-                                      <input class="input is-small" type="text" [value]="show(destinationNameList, true)"
-                                        [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': destinationNameList.length  === 0}"
-                                        [readonly]="!sharedService.checkAuth()">
+                                    <ng-template #staticDestinationName>
+                                      <input name="destinationName" class="input" type="text" [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
+                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
+                                      [readonly]="!sharedService.checkAuth()">
                                     </ng-template>
                                   </div>
                                 </div>
@@ -306,8 +307,8 @@
                       </div>
                     </div>
                   </div>
-                  <a *ngIf="filterPipeline.length > 0" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
-                  <a *ngIf="filterPipeline.length === 0" [ngClass]="{'disabled': !name.value || name.value === '' }" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
+                  <a *ngIf="filterPipeline.length > 0 && sharedService.checkAuth()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
+                  <a *ngIf="filterPipeline.length === 0 && sharedService.checkAuth()" [ngClass]="{'disabled': !name.value || name.value === '' }" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
                 </div>
               </div>
             </div>
@@ -317,7 +318,7 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <input class="checkbox" type="checkbox" [checked]="isPipelineEnabled"
+                  <input class="checkbox" [disabled]="!sharedService.checkAuth()" type="checkbox" [checked]="isPipelineEnabled"
                     (click)="onCheckboxClicked($event)">
                 </div>
               </div>
@@ -337,7 +338,7 @@
               <div class="column">
                 <div class="field is-grouped is-pulled-right">
                   <p class="control">
-                    <button class="button is-small" (click)="onCancel()">Cancel</button>
+                    <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
                   </p>
                   <p class="control">
                     <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link">Save</button>
