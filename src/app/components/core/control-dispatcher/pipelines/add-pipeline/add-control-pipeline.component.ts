@@ -430,7 +430,7 @@ export class AddControlPipelineComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           data.schedules.forEach(sch => {
-            if (this.selectedSourceType.name === 'Service' || this.selectedDestinationType.name === 'Service') {
+            if ((type === 'source' && this.selectedSourceType.name === 'Service') || (type === 'destination' && this.selectedDestinationType.name === 'Service')) {
               if (['STARTUP'].includes(sch.type)) {
                 nameList.push(sch.name);
               }
@@ -593,6 +593,7 @@ export class AddControlPipelineComponent implements OnInit {
     if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
       this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
     }
+
     // if ((payload.source.type !== 1 || payload.source.type !== 3 && payload.source.name === '') || (payload.destination.type !== 4 && payload.destination.name === '')) {
     //   return;
     // }
