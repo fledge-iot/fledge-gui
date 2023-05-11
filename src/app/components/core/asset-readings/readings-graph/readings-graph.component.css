@@ -106,6 +106,7 @@ table.is-borderless tr {
 
 .time-dropdown{
   min-width: 200px;
+  padding-left: 0px !important;
 }
 
 .help{
@@ -136,11 +137,6 @@ table.is-borderless tr {
   height: 18px;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
-}
-
-#time-dropdown-container {
-  margin-bottom: 0px !important;
-  width: max-content;
 }
 
 .time-dropdown-row{

@@ -56,20 +56,21 @@
       </ng-container>
       <ng-template #tabs>
         <div class="time-dropdown-row">
-          <div class="columns" id="time-dropdown-container">
-            <div class="column is-2 time-dropdown" *ngIf="!isLatestReadings">
-              <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
-                (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
-            </div>
-            <div class="column is-6" *ngIf="!isLatestReadings && availableAssets.length > 0">
-              <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()"
-              [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
-              </ng-select>
-            </div>
+          <div class="column is-2 time-dropdown" *ngIf="!isLatestReadings">
+            <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
+              (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
-          <div>
-            <div *ngIf="rangeSliderService.getAlphControlStatus() && selectedTab === 1" class="range-wrap is-pulled-right">
-                <app-range-slider></app-range-slider>
+          <div class="column"
+            [ngClass]="{'is-8': rangeSliderService.getAlphControlStatus() && selectedTab === 1, 'is-10': !rangeSliderService.getAlphControlStatus() || selectedTab !== 1}"
+            *ngIf="!isLatestReadings && availableAssets.length > 0">
+            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true"
+              [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()" [clearable]="additionalAssets.length > 1"
+              (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
+            </ng-select>
+          </div>
+          <div class="column is-2" *ngIf="rangeSliderService.getAlphControlStatus() && selectedTab === 1">
+            <div class="range-wrap is-pulled-left">
+              <app-range-slider></app-range-slider>
             </div>
           </div>
         </div>
