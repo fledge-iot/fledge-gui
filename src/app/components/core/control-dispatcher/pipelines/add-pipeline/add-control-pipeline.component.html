@@ -337,11 +337,10 @@
               <div class="column">
                 <div class="field is-grouped is-pulled-right">
                   <p class="control">
-                    <button [routerLink]="['/control-dispatcher/pipelines']" class="button is-small">Cancel</button>
+                    <button class="button is-small" (click)="onCancel()">Cancel</button>
                   </p>
                   <p class="control">
-                    <button (click)="onSubmit(pipelineForm)"
-                      type="button" [disabled]="!pipelineForm.valid || !pipelineForm.dirty" class="button is-small is-link">Save</button>
+                    <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link">Save</button>
                   </p>
                 </div>
               </div>
@@ -367,4 +366,5 @@
       <button class="button is-small is-danger" (click)="deletePipeline(pipelineID)">Delete</button>
     </footer>
   </app-confirmation-dialog>
-  
+  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
+  [filerDialogData]='confirmationDialogData'></app-filter-alert> 

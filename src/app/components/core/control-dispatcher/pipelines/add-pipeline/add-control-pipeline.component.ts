@@ -19,6 +19,8 @@ import { FilterAlertComponent } from '../../../filter/filter-alert/filter-alert.
 })
 export class AddControlPipelineComponent implements OnInit {
   @ViewChild('pipelineForm') pipelineForm: NgForm;
+  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
+  @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
 
   pipelines = [{ name: 'None' }];
   selectedExecution = '';
@@ -46,9 +48,6 @@ export class AddControlPipelineComponent implements OnInit {
   public isFilterDeleted = false;
   confirmationDialogData = {};
   public isAddFilterWizard;
-
-  @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
-  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -141,7 +140,6 @@ export class AddControlPipelineComponent implements OnInit {
       });
     }
     this.filterPipeline = filtersList.concat(filterData);
-
     if (this.pipelineID) {
       if (data?.filters.length > 0) {
            this.updateControlPipeline({filters: this.filterPipeline}, true)
@@ -265,8 +263,7 @@ export class AddControlPipelineComponent implements OnInit {
           const filterName = filter.replace(fNamePrefix, '');
           this.filterPipeline.push(filterName);
         });
-        this.isPipelineEnabled = data.enabled;        
-             
+        this.isPipelineEnabled = data.enabled;   
         if (this.isAddFilterWizard) {
           this.pipelineForm.form.markAsUntouched();
           this.pipelineForm.form.markAsPristine();
@@ -280,6 +277,21 @@ export class AddControlPipelineComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  onCancel() {
+    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+      this.showConfirmationDialog();
+      return;
+    }
+    this.router.navigate(['control-dispatcher/pipelines']);
+  }
+
+  discardChanges() {
+    this.isFilterOrderChanged = false;
+    this.isFilterDeleted = false;
+    this.deletedFilterPipeline = [];
+    this.router.navigate(['control-dispatcher/pipelines']);
   }
 
   /**
@@ -446,7 +458,6 @@ export class AddControlPipelineComponent implements OnInit {
           data['notifications'].forEach(n => {
             this.sourceNameList.push(n.name);
           });
-          console.log('sourceNameList2', this.sourceNameList);
         },
         error => {
           if (error.status === 0) {

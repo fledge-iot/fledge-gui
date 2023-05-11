@@ -70,8 +70,7 @@ const routes: Routes = [
   },
   {
     path: 'pipelines',
-    component: ControlPipelinesComponent,
-    canActivate: [AuthTypeGuard]
+    component: ControlPipelinesComponent
   },
   {
     path: 'pipelines/add',
