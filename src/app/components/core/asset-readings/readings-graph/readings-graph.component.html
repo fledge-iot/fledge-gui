@@ -216,7 +216,10 @@
                       <div id="tab-content">
                         <img [src]="read.image" alt={{read.datapoint}}>
                       </div>
-                      <small class="has-text-centered text-secondary has-text-grey">{{read?.datapoint}},
+                      <small class="has-text-centered text-secondary has-text-grey-dark is-block">Width: {{imageReadingsDimensions.width}}px, Height:
+                        {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
+                      </small>
+                      <small class="has-text-centered text-secondary has-text-grey-dark is-block">{{read?.datapoint}},
                         Timestamp:
                         {{read?.timestamp}}
                       </small>
