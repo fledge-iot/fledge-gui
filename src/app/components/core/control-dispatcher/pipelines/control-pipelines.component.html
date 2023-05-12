@@ -32,10 +32,13 @@
                 <tr>
                   <th class="align-content table-th">Enabled</th>
                   <th class="align-content table-th">Name</th>
-                  <th></th>
+                  
                   <th class="align-content table-th">Source</th>
+                  <th></th>
                   <th class="align-content table-th">Destination</th>
+                  <th></th>
                   <th class="align-content table-th">Filters</th>
+                  <th></th>
                   <th></th>
                 </tr>
               </thead>
@@ -50,18 +53,21 @@
                     <a class="button is-text pipeline-name"
                       [routerLink]="['/control-dispatcher/pipelines', pipeline?.id]">{{pipeline.name}}</a>
                   </td>
-                  <td><span class="tag is-rounded">{{pipeline.execution}}</span></td>            
+                             
                   <td class="align-content">
                     <span class="is-small">{{pipeline.source.type}}</span>
                     <span class="help source-name">{{pipeline.source.name ? pipeline.source.name : '*'}}</span>
                   </td>
+                  <td></td>
                   <td class="align-content">
                     <span class="is-small">{{pipeline.destination.type}}</span>
                     <span class="help dest-name">{{pipeline.destination.name ? pipeline.destination.name : '*'}}</span>
                   </td>
-                  <td class="align-content">
+                  <td></td>
+                  <td class="align-content" style="font-size: 0.9rem;">
                   {{getFiltersName(pipeline.filters, pipeline.name).join(', ')}}
                   </td>
+                  <td><span class="tag is-rounded">{{pipeline.execution}}</span></td> 
                   <td>
                     <div *ngIf="sharedService.checkAuth()" id="dropdown-{{i}}" class="dropdown is-left">
                       <div class="dropdown-trigger">
