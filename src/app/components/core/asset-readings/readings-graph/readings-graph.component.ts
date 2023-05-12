@@ -59,6 +59,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   public backwardReadingCounter: number = 0;
   public graphDisplayDuration = "10";
   public graphDisplayUnit = "minutes";
+  public imageReadingsWidth = 0;
+  public imageReadingsHeight = 0;
+  public imageReadingsDepth = 0;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -459,6 +462,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
         if (typeof value === 'string') {
           if (value.includes("__DPIMAGE")) {
+            this.getImageReadingsDimensions(value);
             imageReadings.push({
               datapoint: k,
               imageData: value,
@@ -518,6 +522,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           });
         } else if (typeof value === 'string') {
           if (value.includes("__DPIMAGE")) {
+            this.getImageReadingsDimensions(value);
             imageReadings.push({
               datapoint: k,
               imageData: value,
@@ -909,6 +914,15 @@ export class ReadingsGraphComponent implements OnDestroy {
       return value * 60 * 60;
     }
     return value * 60 * 60 * 24;
+  }
+
+  getImageReadingsDimensions(value){
+    let val = value.replace('__DPIMAGE:', '');
+    let index = val.indexOf('_');
+    let dimensions = val.slice(0, index).split(',');
+    this.imageReadingsWidth = dimensions[0];
+    this.imageReadingsHeight = dimensions[1];
+    this.imageReadingsDepth = dimensions[2];
   }
 
   public ngOnDestroy(): void {
