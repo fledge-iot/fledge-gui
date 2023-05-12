@@ -88,7 +88,7 @@
     pointer-events: none;
   }
   
-  .filter-name {
+  .filter-name, .label-name {
     font-size: 0.9rem;
   }
 

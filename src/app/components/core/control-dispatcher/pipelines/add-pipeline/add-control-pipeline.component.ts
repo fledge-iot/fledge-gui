@@ -192,12 +192,11 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   getFilterConfiguration(filterName: string) {
-    const catName = filterName;
-    this.filterService.getFilterConfiguration(catName)
+    this.filterService.getFilterConfiguration(filterName)
       .subscribe((data: any) => {
         this.selectedFilterPlugin = data.plugin.value;
-        this.filterConfiguration = { key: catName, config: data };
-        this.filterConfigurationCopy = cloneDeep({ key: catName, config: data });
+        this.filterConfiguration = { key: filterName, config: data };
+        this.filterConfigurationCopy = cloneDeep({ key: filterName, config: data });
         this.filterConfigComponent?.updateCategroyConfig(data);
       },
         error => {

@@ -39,3 +39,15 @@ span.is-small {
 .pipeline-table {
     display: block;
 }
+
+.table-th, .add-btn {
+    font-size: 0.9em;
+}
+
+.card-header-title, .add-btn {
+    font-size: 0.9rem;
+}
+
+.fa-plus {
+    font-size: .65em;
+}
