@@ -53,11 +53,11 @@
                   <td><span class="tag is-rounded">{{pipeline.execution}}</span></td>            
                   <td class="align-content">
                     <span class="is-small">{{pipeline.source.type}}</span>
-                    <span class="help source-name">{{pipeline.source.name}}</span>
+                    <span class="help source-name">{{pipeline.source.name ? pipeline.source.name : '*'}}</span>
                   </td>
                   <td class="align-content">
                     <span class="is-small">{{pipeline.destination.type}}</span>
-                    <span class="help dest-name">{{pipeline.destination.name}}</span>
+                    <span class="help dest-name">{{pipeline.destination.name ? pipeline.destination.name : '*'}}</span>
                   </td>
                   <td class="align-content">
                   {{getFiltersName(pipeline.filters, pipeline.name).join(', ')}}
