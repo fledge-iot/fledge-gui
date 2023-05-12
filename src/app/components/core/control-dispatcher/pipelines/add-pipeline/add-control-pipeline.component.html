@@ -23,12 +23,10 @@
                 <label class="label">Name</label>
               </div>
               <div class="field-body">
-                <div class="field">
+                <div class="field" *ngIf="rolesService.hasEditPermissions();else staticNameDiv">
                   <div class="control">
-                    <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
-                      [(ngModel)]="pipelineName" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
-                      [ngClass]="{'is-small':sharedService.checkAuth()}"
-                    [readonly]="!sharedService.checkAuth()">
+                    <input #name=ngModel name="name" class="input is-small name-field" type="text" placeholder="Name" required
+                      [(ngModel)]="pipelineName" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off">
                   </div>
                   <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                     <div *ngIf="name.errors?.['required']">
@@ -36,6 +34,15 @@
                     </div>
                   </div>
                 </div>
+                <ng-template #staticNameDiv>
+                  <div class="field">
+                    <div class="control">
+                      <input name="name" class="input" type="text" [value]="pipelineName ? pipelineName : 'Name'"
+                            [ngClass]="{'is-static static-field':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!pipelineName}"
+                            [readonly]="!rolesService.hasEditPermissions()">
+                    </div>
+                  </div>
+                </ng-template>
               </div>
             </div>
             <div class="field is-horizontal">
@@ -43,7 +50,7 @@
                 <label class="label">Execution</label>
               </div>
               <div class="field-body">
-                <div class="field" *ngIf="sharedService.checkAuth();else staticExecutionDiv">
+                <div class="field" *ngIf="rolesService.hasEditPermissions();else staticExecutionDiv">
                   <div class="control">
                     <div id="execution-dropdown" class="dropdown is-left">
                       <div class="dropdown-trigger">
@@ -68,8 +75,8 @@
                   <div class="field">
                     <div class="control">
                       <input name="execution" class="input" type="text" [value]="selectedExecution ? selectedExecution : 'Select Execution'"
-                        [ngClass]="{'is-static static-field':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedExecution}"
-                        [readonly]="!sharedService.checkAuth()">
+                        [ngClass]="{'is-static static-field':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedExecution}"
+                        [readonly]="!rolesService.hasEditPermissions()">
                     </div>
                   </div>
                 </ng-template>
@@ -94,7 +101,7 @@
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
-                                    <div class="control" *ngIf="sharedService.checkAuth(); else staticSourceType">
+                                    <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceType">
                                       <div id="sourceType-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -114,8 +121,8 @@
                                     </div>
                                     <ng-template #staticSourceType>
                                       <input name="sourceType" class="input" type="text" [value]="selectedSourceType.name ? selectedSourceType.name : 'Select Source Type'"
-                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedSourceType.name}"
-                                      [readonly]="!sharedService.checkAuth()">
+                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedSourceType.name}"
+                                      [readonly]="!rolesService.hasEditPermissions()">
                                     </ng-template>
                                   </div>
                                 </div>
@@ -126,7 +133,7 @@
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
-                                    <div class="control" *ngIf="sharedService.checkAuth(); else staticSourceName">
+                                    <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceName">
                                       <div id="sourceName-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -147,8 +154,8 @@
                                     </div>
                                     <ng-template #staticSourceName>
                                       <input name="sourceName" class="input" type="text" [value]="selectedSourceName ? selectedSourceName : 'Select Source Name'"
-                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedSourceName}"
-                                      [readonly]="!sharedService.checkAuth()">
+                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedSourceName}"
+                                      [readonly]="!rolesService.hasEditPermissions()">
                                     </ng-template>
                                   </div>
                                 </div>
@@ -183,7 +190,7 @@
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
-                                    <div class="control" *ngIf="sharedService.checkAuth(); else staticDestinationType">
+                                    <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticDestinationType">
                                       <div id="destinationType-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -203,8 +210,8 @@
                                     </div>
                                     <ng-template #staticDestinationType>
                                       <input name="destinationType" class="input" type="text" [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
-                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
-                                      [readonly]="!sharedService.checkAuth()">
+                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
+                                      [readonly]="!rolesService.hasEditPermissions()">
                                     </ng-template>
                                   </div>
                                 </div>
@@ -215,7 +222,7 @@
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
-                                    <div class="control" *ngIf="sharedService.checkAuth(); else staticDestinationName">
+                                    <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticDestinationName">
                                       <div id="destinationName-dropdown" class="dropdown is-left">
                                         <div class="dropdown-trigger">
                                           <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -236,8 +243,8 @@
                                     </div>
                                     <ng-template #staticDestinationName>
                                       <input name="destinationName" class="input" type="text" [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
-                                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
-                                      [readonly]="!sharedService.checkAuth()">
+                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
+                                      [readonly]="!rolesService.hasEditPermissions()">
                                     </ng-template>
                                   </div>
                                 </div>
@@ -264,11 +271,11 @@
                     <div class="column filters">
                       <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                         <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
-                          [cdkDragDisabled]="filterPipeline?.length == 1 || !sharedService.checkAuth()">
+                          [cdkDragDisabled]="filterPipeline?.length == 1 || !rolesService.hasEditPermissions()">
                           <header class="card-header" cdkDragHandle
-                            [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && sharedService.checkAuth() }">
+                            [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissions() }">
                             <p class="card-header-title filter-name">
-                              <ng-container *ngIf="filterPipeline.length > 1 && sharedService.checkAuth()">
+                              <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissions()">
                                 <i class="fa fa-sm fa-bars"></i>&nbsp;
                               </ng-container>
                               {{filter}}
@@ -294,7 +301,7 @@
                                     <i class="far fa-question-circle"></i>
                                   </span>
                                 </div>
-                                <div class="field is-pulled-right" *ngIf="sharedService.checkAuth()">
+                                <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
                                   <span class="icon is-small is-tooltip-left tooltip is-pulled-left is-hovered help-icon"
                                     data-tooltip="Remove" (click)="deleteFilterReference(filter)">
                                     <i class="fa fa-sm fa-trash-alt fa-lg"></i>
@@ -307,8 +314,8 @@
                       </div>
                     </div>
                   </div>
-                  <a *ngIf="filterPipeline.length > 0 && sharedService.checkAuth()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
-                  <a *ngIf="filterPipeline.length === 0 && sharedService.checkAuth()" [ngClass]="{'disabled': !name.value || name.value === '' }" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
+                  <a *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
+                  <a *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
                 </div>
               </div>
             </div>
@@ -318,13 +325,13 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <input class="checkbox" [disabled]="!sharedService.checkAuth()" type="checkbox" [checked]="isPipelineEnabled"
+                  <input class="checkbox" [disabled]="!rolesService.hasEditPermissions()" type="checkbox" [checked]="isPipelineEnabled"
                     (click)="onCheckboxClicked($event)">
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths footer-padding">
+          <div *ngIf="rolesService.hasEditPermissions()" class="column is-four-fifths footer-padding">
             <div class="columns">
               <div class="column is-2"></div>
               <div class="column" *ngIf="editMode">

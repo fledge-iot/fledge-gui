@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthTypeGuard } from '../../../guards';
+import { AuthTypeGuard, AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { AddControlAclComponent } from './add-control-acl/add-control-acl.component';
@@ -75,7 +75,7 @@ const routes: Routes = [
   {
     path: 'pipelines/add',
     component: AddControlPipelineComponent,
-    canActivate: [AuthTypeGuard]
+    canActivate: [AuthCheckGuard]
   },
   {
     path: 'pipelines/:id',

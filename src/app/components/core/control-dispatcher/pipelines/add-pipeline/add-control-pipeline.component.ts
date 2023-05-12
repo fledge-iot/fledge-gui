@@ -4,7 +4,7 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService,
-  FilterService, ConfigurationControlService, FileUploaderService, ConfigurationService } from '../../../../../services';
+  FilterService, ConfigurationControlService, FileUploaderService, RolesService, ConfigurationService } from '../../../../../services';
 import { DocService } from '../../../../../services/doc.service';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
@@ -61,6 +61,7 @@ export class AddControlPipelineComponent implements OnInit {
     private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
+    public rolesService: RolesService,
     private dialogService: DialogService,
     public sharedService: SharedService,
     private schedulesService: SchedulesService,
