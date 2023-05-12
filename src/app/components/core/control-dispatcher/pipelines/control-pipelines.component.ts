@@ -43,7 +43,18 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
-          this.pipelines = orderBy(data.pipelines, ['name'], ['asc']);
+          let enabledPipeline = [];
+          let disabledPipeline = [];
+          this.pipelines = [];
+          // Sort pipeline by name and group by enabled (enabled first)
+          data.pipelines.forEach((pipeline) => {
+            if (pipeline.enabled) {
+              enabledPipeline.push(pipeline)
+            } else {
+              disabledPipeline.push(pipeline)
+            }
+          });
+          this.pipelines = orderBy(enabledPipeline, 'name').concat(orderBy(disabledPipeline, 'name'));
           this.hideLoadingSpinner();
         },
         error => {
