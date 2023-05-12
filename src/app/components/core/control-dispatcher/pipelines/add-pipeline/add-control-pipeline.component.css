@@ -33,6 +33,10 @@
   .name-field {
     height: inherit;
   }
+
+  .filter-name .fa-bars {
+    opacity: 0.7;
+  }
   
   .cdk-drag-preview {
     box-sizing: border-box;
