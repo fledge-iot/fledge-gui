@@ -23,7 +23,7 @@
         </div>
         <ng-container *ngIf="!showSpinner">
           <div class="has-text-centered" *ngIf="pipelines != undefined && pipelines.length === 0">
-            <small class="no-rec">No Record</small>
+            <small class="no-rec">No Control Pipelines found.</small>
           </div>
           <ng-container *ngIf="pipelines!= undefined && pipelines.length > 0">
             <table id="pipeline-list" class="table is-fullwidth is-responsive is-hoverable pipeline-table"
