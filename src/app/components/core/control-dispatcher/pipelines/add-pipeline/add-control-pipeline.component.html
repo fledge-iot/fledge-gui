@@ -139,7 +139,7 @@
                                         </div>
                                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                           <div class="dropdown-content">
-                                              <a *ngIf="sourceNameList.length === 0 && selectedSourceType" class="dropdown-item">No {{selectedSourceType.name}} found.</a>
+                                              <a *ngIf="sourceNameList.length === 0 && selectedSourceType" class="dropdown-item is-size-7 has-text-grey">No {{selectedSourceType.name}}s found.</a>
                                               <a *ngFor="let sourceName of sourceNameList" (click)="selectValue(sourceName, 'sourceName');toggleDropdown('sourceName-dropdown')" class="dropdown-item">{{sourceName}}</a>
                                           </div>
                                         </div>
@@ -228,7 +228,7 @@
                                         </div>
                                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                           <div class="dropdown-content">
-                                            <a *ngIf="destinationNameList.length === 0 && selectedDestinationType" class="dropdown-item">No {{selectedDestinationType.name}} found.</a>
+                                            <a *ngIf="destinationNameList.length === 0 && selectedDestinationType" class="dropdown-item is-size-7 has-text-grey">No {{selectedDestinationType.name}}s found.</a>
                                             <a *ngFor="let destinationName of destinationNameList" (click)="selectValue(destinationName, 'destinationName');toggleDropdown('destinationName-dropdown')" class="dropdown-item">{{destinationName}}</a>
                                           </div>
                                         </div>
