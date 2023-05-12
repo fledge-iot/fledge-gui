@@ -23,10 +23,12 @@
                 <label class="label">Name</label>
               </div>
               <div class="field-body">
-                <div class="field" *ngIf="rolesService.hasEditPermissions();else staticNameDiv">
+                <div class="field">
                   <div class="control">
-                    <input #name=ngModel name="name" class="input is-small name-field" type="text" placeholder="Name" required
-                      [(ngModel)]="pipelineName" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off">
+                      <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
+                       [(ngModel)]="pipelineName" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
+                       [ngClass]="{'is-small':rolesService.hasEditPermissions(), 'is-static static-field':!rolesService.hasEditPermissions()}"
+                     [readonly]="!rolesService.hasEditPermissions()">
                   </div>
                   <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                     <div *ngIf="name.errors?.['required']">
@@ -34,15 +36,6 @@
                     </div>
                   </div>
                 </div>
-                <ng-template #staticNameDiv>
-                  <div class="field">
-                    <div class="control">
-                      <input name="name" class="input" type="text" [value]="pipelineName ? pipelineName : 'Name'"
-                            [ngClass]="{'is-static static-field':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!pipelineName}"
-                            [readonly]="!rolesService.hasEditPermissions()">
-                    </div>
-                  </div>
-                </ng-template>
               </div>
             </div>
             <div class="field is-horizontal">

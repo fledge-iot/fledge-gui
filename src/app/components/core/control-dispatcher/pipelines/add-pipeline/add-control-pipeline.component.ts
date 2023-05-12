@@ -4,7 +4,7 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService,
-  FilterService, ConfigurationControlService, FileUploaderService, RolesService, ConfigurationService } from '../../../../../services';
+  FilterService, ConfigurationControlService, ResponseHandler, FileUploaderService, RolesService, ConfigurationService } from '../../../../../services';
 import { DocService } from '../../../../../services/doc.service';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
@@ -63,6 +63,7 @@ export class AddControlPipelineComponent implements OnInit {
     private ngProgress: ProgressBarService,
     public rolesService: RolesService,
     private dialogService: DialogService,
+    private response: ResponseHandler,
     public sharedService: SharedService,
     private schedulesService: SchedulesService,
     private controlService: ControlDispatcherService,
@@ -593,6 +594,26 @@ export class AddControlPipelineComponent implements OnInit {
     }
     if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
       this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
+    }
+
+    if (this.apiCallsStack.length > 0) {
+      this.ngProgress.start();
+      forkJoin(this.apiCallsStack).subscribe((result) => {
+        result.forEach((r: any) => {
+          this.ngProgress.done();
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.alertService.error(r.error.statusText);
+            }
+          } else {
+            this.response.handleResponseMessage(r.type);
+          }
+        });
+        form.reset();
+        this.apiCallsStack = [];
+      });
     }
 
     // if ((payload.source.type !== 1 || payload.source.type !== 3 && payload.source.name === '') || (payload.destination.type !== 4 && payload.destination.name === '')) {
