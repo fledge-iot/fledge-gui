@@ -307,8 +307,8 @@
                       </div>
                     </div>
                   </div>
-                  <a *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
-                  <a *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
+                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
+                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
                 </div>
               </div>
             </div>

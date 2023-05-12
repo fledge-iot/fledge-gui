@@ -96,6 +96,11 @@
     padding-top: 0;
   }
 
+  .disabled-link {
+    pointer-events: none;
+    color: gray;
+  }
+
   .footer-padding {
     padding-top: 1rem;
   }
