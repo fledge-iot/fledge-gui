@@ -95,10 +95,6 @@ export class AddControlPipelineComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  refresh() {
-    this.getControlPipeline();
-  }
-
   onDrop(event: CdkDragDrop<string[]>) {
     if (event.previousIndex === event.currentIndex) {
       return;
@@ -662,7 +658,7 @@ export class AddControlPipelineComponent implements OnInit {
         if (!isFilterUpdated) {
           this.router.navigate(['control-dispatcher/pipelines']);
         } else {
-          this.refresh();
+          this.getControlPipeline();
         }
         this.alertService.success(data.message, true)
         /** request completed */
