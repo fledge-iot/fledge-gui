@@ -1,0 +1,16 @@
+<ng-container *ngIf="dispatcherServiceEnabled === false">
+  <article class="message is-warning">
+    <div class="message-body">
+      <span *ngIf="dispatcherServiceInstalled === false">Dispatcher service is not installed.</span>
+      <span *ngIf="dispatcherServiceInstalled && dispatcherServiceAdded === false">Dispatcher service is not
+        added.</span>
+      <span *ngIf="dispatcherServiceAdded && dispatcherServiceEnabled === false">Dispatcher service is not
+        enabled.</span>
+      <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
+        <span class="icon">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </span>
+      </button>
+    </div>
+  </article>
+</ng-container>

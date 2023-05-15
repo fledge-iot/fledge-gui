@@ -56,7 +56,7 @@
                     [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissions() }">
                     <p class="card-header-title">
                       <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissions()">
-                        <i class="fa fa-sm fa-bars"></i>&nbsp;
+                        <i class="fa fa-xs fa-bars"></i>&nbsp;
                       </ng-container>
                       {{filter}}
                     </p>
