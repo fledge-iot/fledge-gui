@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthTypeGuard } from '../../../guards';
+import { AuthTypeGuard, AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { AddControlAclComponent } from './add-control-acl/add-control-acl.component';
@@ -23,13 +23,19 @@ import { ControlScheduleTaskDetailsComponent } from './control-schedule-task/con
 import { AclListComponent } from './list-control-dispatcher/acl-list/acl-list.component';
 import { ControlScriptsListComponent } from './list-control-dispatcher/control-scripts-list/control-scripts-list.component';
 import { ControlTasksListComponent } from './list-control-dispatcher/control-tasks-list/control-tasks-list.component';
-import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
+import { ControlPipelinesComponent } from './pipelines/control-pipelines.component';
+import { AddControlPipelineComponent } from './pipelines/add-pipeline/add-control-pipeline.component';
+import { AddPipelineFilterComponent } from './pipelines/add-pipeline-filter/add-pipeline-filter.component';
+import { ControlPipelinesService, NotificationsService, AssetsService, FilterService } from '../../../services';
+import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
+import { FilterModule } from '../filter/filter.module';
+import { AddDispatcherServiceComponent } from './add-dispatcher-service/add-dispatcher-service.component';
 
 const routes: Routes = [
 
   {
-    path: '',
-    component: ListControlDispatcherComponent,
+    path: 'script',
+    component: ControlScriptsListComponent,
   },
   {
     path: 'script/add',
@@ -37,8 +43,12 @@ const routes: Routes = [
     canActivate: [AuthTypeGuard]
   },
   {
-    path: 'script/:name',
+    path: 'script/:name/details',
     component: AddControlScriptComponent
+  },
+  {
+    path: 'acl',
+    component: AclListComponent,
   },
   {
     path: 'acl/add',
@@ -46,7 +56,7 @@ const routes: Routes = [
     canActivate: [AuthTypeGuard]
   },
   {
-    path: 'acl/:name',
+    path: 'acl/:name/details',
     component: AddControlAclComponent
   },
   {
@@ -58,11 +68,24 @@ const routes: Routes = [
     path: 'task/:name',
     component: ControlScheduleTaskDetailsComponent
   },
+  {
+    path: 'pipelines',
+    component: ControlPipelinesComponent
+  },
+  {
+    path: 'pipelines/add',
+    component: AddControlPipelineComponent,
+    canActivate: [AuthCheckGuard]
+  },
+  {
+    path: 'pipelines/:id',
+    component: AddControlPipelineComponent
+  }
 ];
 
 @NgModule({
   declarations: [
-    ListControlDispatcherComponent,
+    AddDispatcherServiceComponent,
     ControlScriptsListComponent,
     AddControlScriptComponent,
     AddStepComponent,
@@ -76,7 +99,10 @@ const routes: Routes = [
     AclListComponent,
     AddControlAclComponent,
     ControlTasksListComponent,
-    ControlScheduleTaskDetailsComponent
+    ControlScheduleTaskDetailsComponent,
+    ControlPipelinesComponent,
+    AddControlPipelineComponent,
+    AddPipelineFilterComponent
   ],
   imports: [
     FormsModule,
@@ -88,8 +114,11 @@ const routes: Routes = [
     NgSelectModule,
     DirectivesModule,
     SharedModule,
+    AlertDialogModule,
+    FilterModule,
     RouterModule.forChild(routes)
   ],
-  providers: [AuthTypeGuard]
+  providers: [AuthTypeGuard, ControlPipelinesService, NotificationsService,
+    FilterService, AssetsService]
 })
 export class ControlDispatcherModule { }

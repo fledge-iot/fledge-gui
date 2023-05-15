@@ -1,0 +1,371 @@
+<div class="container is-fluid">
+    <div class="navbar-item">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li><a [routerLink]="['/control-dispatcher/pipelines']">Control Pipelines</a></li>
+          <li class="is-active">
+            <a href="#" aria-current="page">
+              {{pipelineName ? pipelineName : 'Add' }}
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <button *ngIf="editMode" (click)="getControlPipeline()" class="button is-small" id="refresh-check">
+        <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="card">
+      <div class="card-content step-content">
+        <form #pipelineForm="ngForm" *ngIf="!isAddFilterWizard">
+          <div class="column is-four-fifths">
+            <div [hidden]="editMode" class="field is-horizontal">
+              <div class="field-label">
+                <label class="label label-name">Name</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                      <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
+                       [(ngModel)]="pipelineName" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
+                       [ngClass]="{'is-small':rolesService.hasEditPermissions(), 'is-static static-field':!rolesService.hasEditPermissions()}"
+                     [readonly]="!rolesService.hasEditPermissions()">
+                  </div>
+                  <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
+                    <div *ngIf="name.errors?.['required']">
+                      Name is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label">
+                <label class="label label-name">Execution</label>
+              </div>
+              <div class="field-body">
+                <div class="field" *ngIf="rolesService.hasEditPermissions();else staticExecutionDiv">
+                  <div class="control">
+                    <div id="execution-dropdown" class="dropdown is-left">
+                      <div class="dropdown-trigger">
+                        <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                          (click)="toggleDropdown('execution-dropdown')" placeholder="Select">
+                          <span>{{selectedExecution}}</span>
+                          <span class="icon is-small">
+                            <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                          </span>
+                        </button>
+                      </div>
+                      <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <a (click)="selectValue('Shared', 'execution');toggleDropdown('execution-dropdown')" class="dropdown-item">Shared</a>
+                            <a (click)="selectValue('Exclusive', 'execution');toggleDropdown('execution-dropdown')" class="dropdown-item">Exclusive</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <ng-template #staticExecutionDiv>
+                  <div class="field">
+                    <div class="control">
+                      <input name="execution" class="input" type="text" [value]="selectedExecution ? selectedExecution : 'Select Execution'"
+                        [ngClass]="{'is-static static-field':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedExecution}"
+                        [readonly]="!rolesService.hasEditPermissions()">
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+
+            <div class="field is-horizontal">
+              <div class="field-label">
+                <label class="label label-name">Source</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="field is-horizontal">
+                    <div class="field-body">
+                      <div class="field">
+                        <div class="control box">
+                          <div class="columns">
+                            <div class="column">
+                              <div class="field is-horizontal">
+                                <div class="field-label is-small">
+                                  <label class="label">Type</label>
+                                </div>
+                                <div class="field-body">
+                                  <div class="field">
+                                    <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceType">
+                                      <div id="sourceType-dropdown" class="dropdown is-left">
+                                        <div class="dropdown-trigger">
+                                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                                            (click)="toggleDropdown('sourceType-dropdown')">
+                                            <span>{{selectedSourceType.name}}</span>
+                                            <span class="icon is-small">
+                                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                          </button>
+                                        </div>
+                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                          <div class="dropdown-content">
+                                              <a *ngFor="let sourceType of sourceTypeList" (click)="selectValue(sourceType, 'sourceType');toggleDropdown('sourceType-dropdown')" class="dropdown-item">{{sourceType.name}}</a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <ng-template #staticSourceType>
+                                      <input name="sourceType" class="input" type="text" [value]="selectedSourceType.name ? selectedSourceType.name : 'Select Source Type'"
+                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedSourceType.name}"
+                                      [readonly]="!rolesService.hasEditPermissions()">
+                                    </ng-template>
+                                  </div>
+                                </div>
+                              </div>
+                              <div *ngIf="!(selectedSourceType.name === 'Any' || selectedSourceType.name === 'API')" class="field is-horizontal">
+                                <div class="field-label is-small">
+                                  <label class="label">Name</label>
+                                </div>
+                                <div class="field-body">
+                                  <div class="field">
+                                    <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceName">
+                                      <div id="sourceName-dropdown" class="dropdown is-left">
+                                        <div class="dropdown-trigger">
+                                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                                            (click)="toggleDropdown('sourceName-dropdown')">
+                                            <span>{{selectedSourceName ? selectedSourceName : 'Select Source Name'}}</span>
+                                            <span class="icon is-small">
+                                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                          </button>
+                                        </div>
+                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                          <div class="dropdown-content">
+                                              <a *ngIf="sourceNameList.length === 0 && selectedSourceType" class="dropdown-item is-size-7 has-text-grey">No {{selectedSourceType.name}}s found.</a>
+                                              <a *ngFor="let sourceName of sourceNameList" (click)="selectValue(sourceName, 'sourceName');toggleDropdown('sourceName-dropdown')" class="dropdown-item">{{sourceName}}</a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <ng-template #staticSourceName>
+                                      <input name="sourceName" class="input" type="text" [value]="selectedSourceName ? selectedSourceName : 'Select Source Name'"
+                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedSourceName}"
+                                      [readonly]="!rolesService.hasEditPermissions()">
+                                    </ng-template>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="column is-1">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field is-horizontal">
+              <div class="field-label">
+                <label class="label label-name">Destination</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="field is-horizontal">
+                    <div class="field-body">
+                      <div class="field">
+                        <div class="control box">
+                          <div class="columns">
+                            <div class="column">
+                              <div class="field is-horizontal">
+                                <div class="field-label is-small">
+                                  <label class="label">Type</label>
+                                </div>
+                                <div class="field-body">
+                                  <div class="field">
+                                    <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticDestinationType">
+                                      <div id="destinationType-dropdown" class="dropdown is-left">
+                                        <div class="dropdown-trigger">
+                                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                                            (click)="toggleDropdown('destinationType-dropdown')">
+                                            <span>{{selectedDestinationType.name}}</span>
+                                            <span class="icon is-small">
+                                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                          </button>
+                                        </div>
+                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                          <div class="dropdown-content">
+                                              <a *ngFor="let destinationType of destinationTypeList" (click)="selectValue(destinationType, 'destinationType');toggleDropdown('destinationType-dropdown')" class="dropdown-item">{{destinationType.name}}</a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <ng-template #staticDestinationType>
+                                      <input name="destinationType" class="input" type="text" [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
+                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
+                                      [readonly]="!rolesService.hasEditPermissions()">
+                                    </ng-template>
+                                  </div>
+                                </div>
+                              </div>
+                              <div *ngIf="selectedDestinationType.name !== 'Broadcast'" class="field is-horizontal">
+                                <div class="field-label is-small">
+                                  <label class="label">Name</label>
+                                </div>
+                                <div class="field-body">
+                                  <div class="field">
+                                    <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticDestinationName">
+                                      <div id="destinationName-dropdown" class="dropdown is-left">
+                                        <div class="dropdown-trigger">
+                                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                                            (click)="toggleDropdown('destinationName-dropdown')">
+                                            <span>{{selectedDestinationName ? selectedDestinationName : 'Select Destination Name'}}</span>
+                                            <span class="icon is-small">
+                                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                          </button>
+                                        </div>
+                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                          <div class="dropdown-content">
+                                            <a *ngIf="destinationNameList.length === 0 && selectedDestinationType" class="dropdown-item is-size-7 has-text-grey">No {{selectedDestinationType.name}}s found.</a>
+                                            <a *ngFor="let destinationName of destinationNameList" (click)="selectValue(destinationName, 'destinationName');toggleDropdown('destinationName-dropdown')" class="dropdown-item">{{destinationName}}</a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <ng-template #staticDestinationName>
+                                      <input name="destinationName" class="input" type="text" [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
+                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
+                                      [readonly]="!rolesService.hasEditPermissions()">
+                                    </ng-template>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="column is-1">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label label-name">Filters</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div *ngIf="filterPipeline?.length > 0" class="view-content columns">
+                    <div class="column filters">
+                      <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
+                        <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
+                          [cdkDragDisabled]="filterPipeline?.length == 1 || !rolesService.hasEditPermissions()">
+                          <header class="card-header" cdkDragHandle
+                            [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissions() }">
+                            <p class="card-header-title filter-name">
+                              <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissions()">
+                                <i class="fa fa-xs fa-bars"></i>&nbsp;
+                              </ng-container>
+                              {{filter}}
+                            </p>
+                            <a (click)="activeAccordion(i, filter)" class="card-header-icon">
+                              <span class="icon">
+                                <i class="fa fa-xs fa-angle-down" aria-hidden="true"></i>
+                              </span>
+                            </a>
+                          </header>
+                          <div class="card-content" hidden>
+                            <ng-container *ngIf="filterConfiguration?.key === filter">
+                              <div class="field">
+                                <app-configuration-group #filterConfigComponent [category]="filterConfiguration"
+                                  [serviceStatus]="isPipelineEnabled" [from]="'filter-modal'" (changedConfigEvent)="getChangedFilterConfig($event)"
+                                  (formStatusEvent)="validFilterConfigForm = $event">
+                                </app-configuration-group>
+                              </div>
+                              <div class="field">
+                                <div class="field has-text-left">
+                                  <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
+                                    data-tooltip="Help" (click)="goToLink({name: selectedFilterPlugin, type: 'Filter'})">
+                                    <i class="far fa-question-circle"></i>
+                                  </span>
+                                </div>
+                                <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
+                                  <span class="icon is-small is-tooltip-left tooltip is-pulled-left is-hovered help-icon"
+                                    data-tooltip="Remove" (click)="deleteFilterReference(filter)">
+                                    <i class="fa fa-sm fa-trash-alt fa-lg"></i>
+                                  </span>
+                                </div>
+                              </div>
+                            </ng-container>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
+                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left">
+                <label class="label label-name">Enabled</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <input class="checkbox" [disabled]="!rolesService.hasEditPermissions()" type="checkbox" [checked]="isPipelineEnabled"
+                    (click)="onCheckboxClicked($event)">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="rolesService.hasEditPermissions()" class="column is-four-fifths footer-padding">
+            <div class="columns">
+              <div class="column is-2"></div>
+              <div class="column" *ngIf="editMode">
+                <div class="field is-grouped control-pad">
+                  <p class="control">
+                    <button (click)="openModal('confirmation-dialog')" type="button"
+                      class="button is-small is-danger is-outlined">Delete</button>
+                  </p>
+                </div>
+              </div>
+              <div class="column">
+                <div class="field is-grouped is-pulled-right">
+                  <p class="control">
+                    <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
+                  </p>
+                  <p class="control">
+                    <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link" [disabled]="name.value === '' || !name.value" >Save</button>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <ng-container *ngIf="isAddFilterWizard">
+          <app-add-pipeline-filter-modal [pipelineName]="pipelineName" (notify)="onNotify($event)"></app-add-pipeline-filter-modal>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <app-confirmation-dialog id="confirmation-dialog">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-6">Delete</p>
+      <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Are you sure, you want to delete the control pipeline <b>{{pipelineName}}</b>?
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" type="button" (click)="closeModal('confirmation-dialog')">Cancel</button>
+      <button class="button is-small is-danger" (click)="deletePipeline(pipelineID)">Delete</button>
+    </footer>
+  </app-confirmation-dialog>
+  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
+  [filerDialogData]='confirmationDialogData'></app-filter-alert> 

@@ -8,7 +8,7 @@ import { ControlDispatcherService } from '../../../../services/control-dispatche
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AddStepComponent } from './add-step/add-step.component';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 
 @Component({
@@ -102,7 +102,7 @@ export class AddControlScriptComponent implements OnInit {
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'scripts' } });
+        this.router.navigate(['control-dispatcher', 'script']);
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -246,7 +246,7 @@ export class AddControlScriptComponent implements OnInit {
           this.scriptForm.form.markAsUntouched();
           this.scriptForm.form.markAsPristine();
           setTimeout(() => {
-            this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'scripts' } });
+            this.router.navigate(['control-dispatcher', 'script']);
           }, 1000);
         }, error => {
           this.ngProgress.done();
@@ -265,7 +265,7 @@ export class AddControlScriptComponent implements OnInit {
     this.controlService.updateScript(this.scriptName, payload)
       .subscribe((data: any) => {
         this.scriptName = payload.name;
-        this.router.navigate(['control-dispatcher/script/', payload.name]);
+        this.router.navigate(['control-dispatcher/script/', payload.name, 'details']);
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
