@@ -114,4 +114,9 @@
   [hidden] {
     display: none !important;
   }
+
+  
+  .accordion.card {
+    margin: 0% !important;
+  }
   
