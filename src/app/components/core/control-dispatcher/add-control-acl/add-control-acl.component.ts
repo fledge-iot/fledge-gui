@@ -7,7 +7,7 @@ import { DialogService } from '../../../common/confirmation-dialog/dialog.servic
 import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { SUPPORTED_SERVICE_TYPES, QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import { SUPPORTED_SERVICE_TYPES, QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -297,7 +297,6 @@ export class AddControlAclComponent implements OnInit {
       service: services,
       url: urls
     }
-    console.log('payload', payload);
     if (this.editMode) {
       this.updateACL(payload);
       return;
@@ -308,7 +307,7 @@ export class AddControlAclComponent implements OnInit {
         this.ngProgress.done();
         this.alertService.success(`ACL ${payload['name']} created successfully.`);
         setTimeout(() => {
-          this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'acls' } });
+          this.router.navigate(['control-dispatcher', 'acl']);
         }, 1000);
       }, error => {
         this.ngProgress.done();
@@ -326,7 +325,7 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.updateACL(this.nameCopy, payload)
       .subscribe((data: any) => {
         this.name = this.nameCopy = payload.name;
-        this.router.navigate(['control-dispatcher/acl/', payload.name]);
+        this.router.navigate(['control-dispatcher/acl', payload.name, 'details']);
         this.alertService.success(data.message, true)
         /** request completed */
         this.ngProgress.done();
@@ -351,7 +350,7 @@ export class AddControlAclComponent implements OnInit {
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'acls' } });
+        this.router.navigate(['control-dispatcher', 'acl']);
       }, error => {
         /** request completed */
         this.ngProgress.done();
