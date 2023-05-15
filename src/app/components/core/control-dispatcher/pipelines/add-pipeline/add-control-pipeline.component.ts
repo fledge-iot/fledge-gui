@@ -76,19 +76,88 @@ export class AddControlPipelineComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
-    this.getSourceDestTypes('source');
-    this.getSourceDestTypes('destination');
-    this.route.params.subscribe(params => {
-      this.pipelineID = params['id'];
-      if (this.pipelineID) {
-        this.editMode = true;
-        this.getControlPipeline();
-      } else {
-        this.selectedExecution = 'Shared';
-        this.selectedSourceType = {cpsid: 1, name: "Any"};
-        this.selectedDestinationType = {cpdid: 4, name: "Broadcast"};
+    let callsStack = {
+      sources: this.controlPipelinesService.getSourceDestinationTypeList('source'),
+      destinations: this.controlPipelinesService.getSourceDestinationTypeList('destination')
+    }
+  this.route.params.subscribe(params => {
+    this.pipelineID = params['id'];
+    if (this.pipelineID) {
+      this.editMode = true;
+      callsStack['pipelines'] = this.controlPipelinesService.getPipelineByID(this.pipelineID);
+    } else {
+      this.selectedExecution = 'Shared';
+      this.selectedSourceType = {cpsid: 1, name: "Any"};
+      this.selectedDestinationType = {cpdid: 4, name: "Broadcast"};
+    }
+  });
+
+  forkJoin(callsStack)
+      .pipe(
+        map((response: any) => {
+          const sources = <Array<any>>response.sources;
+          const destinations = <Array<any>>response.destinations;
+          const pipelines = <Array<any>>response.pipelines;
+          const result: any[] = [];
+          result.push({
+            ...{ 'sources': sources}, 
+            ...{ 'destinations': destinations}, 
+            ...{ 'pipelines': pipelines}});
+
+          this.sourceTypeList = sources;
+          this.destinationTypeList = destinations;
+          if (this.pipelineID) {
+            this.getPipelineData(pipelines);
+          }
+          return result;
+        })
+      )
+      .subscribe((result) => {
+        result.forEach((r: any) => {
+          this.ngProgress.done();
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.alertService.error(r.error.statusText);
+            }
+          } else {
+            this.response.handleResponseMessage(r.type);
+          }
+        });
+      });
+  }
+
+  getPipelineData(pipelineData) {
+    this.pipelineName = pipelineData.name;
+    this.selectedExecution = pipelineData.execution;
+    this.sourceTypeList.forEach(type => {
+      if (pipelineData.source.type === type.name) {
+        this.selectedSourceType = type;
       }
-    }); 
+    });
+    // get Source Name list
+    this.selectValue(this.selectedSourceType, 'sourceType');
+    this.selectedSourceName = pipelineData.source.name;
+    this.destinationTypeList.forEach(type => {
+      if (pipelineData.destination.type === type.name) {
+        this.selectedDestinationType = type;
+      }      
+    });
+    // get Destination Name list
+    this.selectValue(this.selectedDestinationType, 'destinationType');
+    this.selectedDestinationName = pipelineData.destination.name;
+    this.filterPipeline = [];
+    pipelineData.filters.forEach((filter) => {
+      let fNamePrefix: string = `ctrl_${this.pipelineName}_`;
+      const filterName = filter.replace(fNamePrefix, '');
+      this.filterPipeline.push(filterName);
+    });
+    this.isPipelineEnabled = pipelineData.enabled;   
+    if (this.isAddFilterWizard) {
+      this.pipelineForm.form.markAsUntouched();
+      this.pipelineForm.form.markAsPristine();
+    }
   }
 
   ngAfterContentChecked(): void {
@@ -143,6 +212,10 @@ export class AddControlPipelineComponent implements OnInit {
         const filterName = filter.replace(fNamePrefix, '');
         filtersList.push(filterName);
       });
+    }
+    if (data?.files.length > 0) {
+      const filterName = data?.filters[0];
+      this.uploadScript(filterName, data?.files);
     }
     this.filterPipeline = filtersList.concat(filterData);
     if (this.pipelineID) {
@@ -243,35 +316,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.getPipelineByID(this.pipelineID)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.pipelineName = data.name;
-        this.selectedExecution = data.execution;
-        this.sourceTypeList.forEach(type => {
-          if (data.source.type === type.name) {
-            this.selectedSourceType = type;
-          }
-        });
-        // get Source Name list
-        this.selectValue(this.selectedSourceType, 'sourceType');
-        this.selectedSourceName = data.source.name;
-        this.destinationTypeList.forEach(type => {
-          if (data.destination.type === type.name) {
-            this.selectedDestinationType = type;
-          }      
-        });
-        // get Destination Name list
-        this.selectValue(this.selectedDestinationType, 'destinationType');
-        this.selectedDestinationName = data.destination.name;
-        this.filterPipeline = [];
-        data.filters.forEach((filter) => {
-          let fNamePrefix: string = `ctrl_${this.pipelineName}_`;
-          const filterName = filter.replace(fNamePrefix, '');
-          this.filterPipeline.push(filterName);
-        });
-        this.isPipelineEnabled = data.enabled;   
-        if (this.isAddFilterWizard) {
-          this.pipelineForm.form.markAsUntouched();
-          this.pipelineForm.form.markAsPristine();
-        }
+        this.getPipelineData(data);
       }, error => {
         /** request completed */
         this.ngProgress.done();
