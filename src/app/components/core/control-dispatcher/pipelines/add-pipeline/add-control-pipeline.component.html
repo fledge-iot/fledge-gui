@@ -18,7 +18,7 @@
       <div class="card-content step-content">
         <form #pipelineForm="ngForm" *ngIf="!isAddFilterWizard">
           <div class="column is-four-fifths">
-            <div class="field is-horizontal">
+            <div [hidden]="editMode" class="field is-horizontal">
               <div class="field-label">
                 <label class="label label-name">Name</label>
               </div>
@@ -341,7 +341,7 @@
                     <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
                   </p>
                   <p class="control">
-                    <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link">Save</button>
+                    <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link" [disabled]="name.value === '' || !name.value" >Save</button>
                   </p>
                 </div>
               </div>

@@ -110,4 +110,8 @@
     height: 0%;
     vertical-align: inherit !important;
   }
+
+  [hidden] {
+    display: none !important;
+  }
   

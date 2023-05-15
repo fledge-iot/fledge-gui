@@ -625,12 +625,14 @@ export class AddControlPipelineComponent implements OnInit {
     const formData = cloneDeep(form.value);
     let { name } = formData;
     const payload = {
-      name: name.trim(),
       execution: this.selectedExecution,
       source: {"type": this.selectedSourceType.cpsid, "name": this.selectedSourceName},
       destination: {"type": this.selectedDestinationType.cpdid, "name": this.selectedDestinationName},
       filters: this.filterPipeline ? this.filterPipeline : [],
       enabled: this.isPipelineEnabled
+    }
+    if (!this.editMode) {
+      payload['name'] = name.trim();
     }
     if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
       this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
