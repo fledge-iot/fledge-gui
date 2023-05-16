@@ -266,7 +266,7 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <div *ngIf="filterPipeline?.length > 0" class="view-content columns">
+                  <div *ngIf="filterPipeline?.length > 0" class="view-content columns filter-row">
                     <div class="column filters">
                       <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                         <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag

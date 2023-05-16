@@ -412,30 +412,37 @@ export class AddControlPipelineComponent implements OnInit {
         this.selectedSourceName = '';
         this.selectedSourceType = value === 'Select Source Type' ? '' : value;
         this.getSourceNameList();
+        // mark form invalid, if Source/Destination Name is not selected yet
+        if (!['API', 'Any'].includes(this.selectedSourceType.name)) {
+          this.pipelineForm.form.setErrors({'invalid': true});
+        }
         break;
       case 'sourceName':
         this.selectedSourceName = value === 'Select Source Name' ? '' : value;
+        // mark form valid, if Source/Destination Name selected Or Source/Destination Type is ['API', 'Any']/['Broadcast]
+        if (this.selectedDestinationType.name !== 'Broadcast' || (this.selectedDestinationName !== '' && this.selectedSourceName !== '')) {
+          this.pipelineForm.form.setErrors(null);
+        }
         break;
       case 'destinationType':
         this.destinationNameList = [];
         this.selectedDestinationName = '';
         this.selectedDestinationType = value === 'Select Destination Type' ? '' : value;
         this.getDestinationNameList();
+        // mark form invalid, if Source/Destination Name is not selected yet
+        if (this.selectedDestinationType.name !== 'Broadcast') {
+          this.pipelineForm.form.setErrors({'invalid': true});
+        }
         break;
       case 'destinationName':
         this.selectedDestinationName = value === 'Select Destination Name' ? '' : value;
+        // mark form valid, if Source/Destination Name selected Or Source/Destination Type is ['API', 'Any']/['Broadcast]
+        if (['API', 'Any'].includes(this.selectedSourceType.name) || (this.selectedSourceName !== '' && this.selectedDestinationName !== '')) {
+          this.pipelineForm.form.setErrors(null);
+        }
         break;
       default:
         break;
-    }
-    // mark form invalid, if Source/Destination Name is not selected yet
-    if ((property === 'sourceType' && this.selectedSourceName === '') || (property === 'destinationType' && this.selectedDestinationName === '')) {
-      this.pipelineForm.form.setErrors({'invalid': true});
-    }
-    // mark form valid, if Source/Destination Name selected Or Source/Destination Type is ['API', 'Any']/['Broadcast]
-    if ((property === 'sourceName' && this.selectedSourceName !== '') || (property === 'destinationName' && this.selectedDestinationName !== '')
-        || (property === 'sourceName' && ['API', 'Any'].includes(this.selectedSourceType.name)) || (property === 'destinationName' && this.selectedDestinationType.name === 'Broadcast')) {
-      this.pipelineForm.form.setErrors(null);
     }
   }
 

@@ -107,8 +107,8 @@
                   </td>
                   <td class="align-content">
                     <div class="tags has-addons">
-                      <span *ngIf="instance.enable === 'false'" class="tag">disabled</span>
-                      <span *ngIf="instance.enable === 'true'" class="tag is-success"
+                      <span *ngIf="instance.enable === 'false'" class="tag is-light">disabled</span>
+                      <span *ngIf="instance.enable === 'true'" class="tag is-light is-success"
                         [ngClass]="{'disable-tag': this.isNotificationServiceAvailable && !this.isNotificationServiceEnabled}">enabled</span>
                     </div>
                   </td>

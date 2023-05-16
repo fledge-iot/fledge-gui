@@ -115,7 +115,10 @@
     display: none !important;
   }
 
-  
+  .filter-row {
+    margin-bottom: 0;
+  }
+
   .accordion.card {
     margin: 0% !important;
   }
