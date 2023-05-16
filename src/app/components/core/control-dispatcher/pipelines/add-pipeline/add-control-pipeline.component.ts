@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { NgForm } from '@angular/forms';
+import { NgForm, Validators } from '@angular/forms';
+import { CustomValidator } from '../../../../../directives/custom-validator';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService,
@@ -162,6 +163,14 @@ export class AddControlPipelineComponent implements OnInit {
 
   ngAfterContentChecked(): void {
     this.cdRef.detectChanges();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (!this.editMode) {
+        this.pipelineForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);  
+      }
+    }, 0);
   }
 
   onDrop(event: CdkDragDrop<string[]>) {
@@ -419,7 +428,15 @@ export class AddControlPipelineComponent implements OnInit {
       default:
         break;
     }
-    this.pipelineForm.form.markAsDirty();
+    // mark form invalid, if Source/Destination Name is not selected yet
+    if ((property === 'sourceType' && this.selectedSourceName === '') || (property === 'destinationType' && this.selectedDestinationName === '')) {
+      this.pipelineForm.form.setErrors({'invalid': true});
+    }
+    // mark form valid, if Source/Destination Name selected Or Source/Destination Type is ['API', 'Any']/['Broadcast]
+    if ((property === 'sourceName' && this.selectedSourceName !== '') || (property === 'destinationName' && this.selectedDestinationName !== '')
+        || (property === 'sourceName' && ['API', 'Any'].includes(this.selectedSourceType.name)) || (property === 'destinationName' && this.selectedDestinationType.name === 'Broadcast')) {
+      this.pipelineForm.form.setErrors(null);
+    }
   }
 
   getSourceNameList() {

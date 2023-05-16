@@ -5,7 +5,7 @@
           <li><a [routerLink]="['/control-dispatcher/pipelines']">Control Pipelines</a></li>
           <li class="is-active">
             <a href="#" aria-current="page">
-              {{pipelineName ? pipelineName : 'Add' }}
+              {{ editMode ? pipelineName : 'Add' }}
             </a>
           </li>
         </ul>
@@ -145,6 +145,9 @@
                                         </div>
                                       </div>
                                     </div>
+                                    <div *ngIf="selectedSourceName === '' && selectedSourceType && (selectedSourceType !== 1 || selectedSourceType !== 3)" class="help is-danger">
+                                      Source Name is required.
+                                    </div>
                                     <ng-template #staticSourceName>
                                       <input name="sourceName" class="input" type="text" [value]="selectedSourceName ? selectedSourceName : 'Select Source Name'"
                                       [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedSourceName}"
@@ -233,6 +236,9 @@
                                           </div>
                                         </div>
                                       </div>
+                                    </div>
+                                    <div *ngIf="selectedDestinationName === '' && selectedDestinationType && selectedDestinationType !== 4" class="help is-danger">
+                                      Destination Name is required.
                                     </div>
                                     <ng-template #staticDestinationName>
                                       <input name="destinationName" class="input" type="text" [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
@@ -341,7 +347,7 @@
                     <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
                   </p>
                   <p class="control">
-                    <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link" [disabled]="name.value === '' || !name.value" >Save</button>
+                    <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link" [disabled]="name.value === '' || !name.value || pipelineForm.invalid" >Save</button>
                   </p>
                 </div>
               </div>
