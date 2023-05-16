@@ -4,8 +4,8 @@ import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
-import { AlertService } from './alert.service';
 import { ProgressBarService } from './progress-bar.service';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class FileUploaderService {
   private CATEGORY_URL = environment.BASE_URL + 'category';
   constructor(
     private http: HttpClient,
-    private alertService: AlertService,
+    private toastService: ToastService,
     private ngProgress: ProgressBarService) { }
 
   public uploadConfigurationScript(name: string, files: any[]) {
@@ -32,7 +32,7 @@ export class FileUploaderService {
       this.ngProgress.start();
       this.uploadFile(name, configProperty, formData)
         .subscribe(() => {
-          this.alertService.success('Script uploaded successfully.');
+          this.toastService.success('Script uploaded successfully.');
           /** request done */
           this.ngProgress.done();
         },
@@ -42,7 +42,7 @@ export class FileUploaderService {
             if (error.status === 0) {
               console.log('service down ', error);
             } else {
-              this.alertService.error(error.statusText);
+              this.toastService.error(error.statusText);
             }
           });
     });
