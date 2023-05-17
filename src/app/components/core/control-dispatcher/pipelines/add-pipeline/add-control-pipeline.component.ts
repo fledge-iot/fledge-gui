@@ -512,22 +512,21 @@ export class AddControlPipelineComponent implements OnInit {
               }
             }           
           });
+          let southboundSvc = [];
+          let northboundSvc = [];
+          nameList.forEach(svc => {
+            if (svc.processName === 'south_c') {
+              southboundSvc.push(svc);
+            } else {
+              northboundSvc.push(svc);
+            }
+          })
+          const SortedSouthboundSvc = southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
+          const SortedNorthboundSvc = northboundSvc.sort((a, b) => a.name.localeCompare(b.name));
           if (type === 'source') {
-            let southboundSvc = [];
-            let northboundSvc = [];
-            nameList.forEach(svc => {
-              if (svc.processName === 'south_c') {
-                southboundSvc.push(svc);
-              } else {
-                northboundSvc.push(svc);
-              }
-            })
-            const SortedSouthboundSvc = southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
-            const SortedNorthboundSvc = northboundSvc.sort((a, b) => a.name.localeCompare(b.name));
             this.sourceNameList = SortedSouthboundSvc.concat(SortedNorthboundSvc);
           } else {
-            nameList = nameList.sort((a, b) => a.name.localeCompare(b.name));
-            this.destinationNameList = nameList;
+            this.destinationNameList = SortedSouthboundSvc.concat(SortedNorthboundSvc);
           }
         },
         error => {
