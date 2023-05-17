@@ -347,7 +347,7 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.alertService.success(data.message);
+        this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
         this.router.navigate(['control-dispatcher', 'acl']);

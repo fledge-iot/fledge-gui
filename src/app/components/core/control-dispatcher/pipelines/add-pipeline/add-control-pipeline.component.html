@@ -95,22 +95,10 @@
                                 <div class="field-body">
                                   <div class="field">
                                     <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceType">
-                                      <div id="sourceType-dropdown" class="dropdown is-left">
-                                        <div class="dropdown-trigger">
-                                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                            (click)="toggleDropdown('sourceType-dropdown')">
-                                            <span>{{selectedSourceType.name}}</span>
-                                            <span class="icon is-small">
-                                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                                            </span>
-                                          </button>
-                                        </div>
-                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                          <div class="dropdown-content">
-                                              <a *ngFor="let sourceType of sourceTypeList" (click)="selectValue(sourceType, 'sourceType');toggleDropdown('sourceType-dropdown')" class="dropdown-item">{{sourceType.name}}</a>
-                                          </div>
-                                        </div>
-                                      </div>
+                                      <ng-select [clearable]="false" placeholder="Select Source Type" [items]="sourceTypeList" [multiple]="false"
+                                        bindLabel="name" (change)="selectValue($event, 'sourceType')"
+                                        [ngModel]="selectedSourceType.name" [ngModelOptions]="{standalone: true}">
+                                      </ng-select>
                                     </div>
                                     <ng-template #staticSourceType>
                                       <input name="sourceType" class="input" type="text" [value]="selectedSourceType.name ? selectedSourceType.name : 'Select Source Type'"
@@ -127,23 +115,10 @@
                                 <div class="field-body">
                                   <div class="field">
                                     <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceName">
-                                      <div id="sourceName-dropdown" class="dropdown is-left">
-                                        <div class="dropdown-trigger">
-                                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                            (click)="toggleDropdown('sourceName-dropdown')">
-                                            <span>{{selectedSourceName ? selectedSourceName : 'Select Source Name'}}</span>
-                                            <span class="icon is-small">
-                                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                                            </span>
-                                          </button>
-                                        </div>
-                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                          <div class="dropdown-content">
-                                              <a *ngIf="sourceNameList.length === 0 && selectedSourceType" class="dropdown-item is-size-7 has-text-grey">No {{selectedSourceType.name}}s found.</a>
-                                              <a *ngFor="let sourceName of sourceNameList" (click)="selectValue(sourceName, 'sourceName');toggleDropdown('sourceName-dropdown')" class="dropdown-item">{{sourceName}}</a>
-                                          </div>
-                                        </div>
-                                      </div>
+                                      <ng-select [clearable]="false" placeholder="Select Source name" [items]="sourceNameList" [multiple]="false"
+                                        bindLabel="name" groupBy="groupbyType" (change)="selectValue($event.name, 'sourceName')"
+                                        [ngModel]="selectedSourceName" [ngModelOptions]="{standalone: true}">
+                                      </ng-select>
                                     </div>
                                     <div *ngIf="selectedSourceName === '' && selectedSourceType && (selectedSourceType !== 1 || selectedSourceType !== 3)" class="help is-danger">
                                       Source Name is required.
@@ -187,22 +162,10 @@
                                 <div class="field-body">
                                   <div class="field">
                                     <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticDestinationType">
-                                      <div id="destinationType-dropdown" class="dropdown is-left">
-                                        <div class="dropdown-trigger">
-                                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                            (click)="toggleDropdown('destinationType-dropdown')">
-                                            <span>{{selectedDestinationType.name}}</span>
-                                            <span class="icon is-small">
-                                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                                            </span>
-                                          </button>
-                                        </div>
-                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                          <div class="dropdown-content">
-                                              <a *ngFor="let destinationType of destinationTypeList" (click)="selectValue(destinationType, 'destinationType');toggleDropdown('destinationType-dropdown')" class="dropdown-item">{{destinationType.name}}</a>
-                                          </div>
-                                        </div>
-                                      </div>
+                                      <ng-select [clearable]="false" placeholder="Select Destination Type" [items]="destinationTypeList" [multiple]="false"
+                                        bindLabel="name" (change)="selectValue($event, 'destinationType')"
+                                        [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
+                                      </ng-select>
                                     </div>
                                     <ng-template #staticDestinationType>
                                       <input name="destinationType" class="input" type="text" [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
@@ -219,23 +182,10 @@
                                 <div class="field-body">
                                   <div class="field">
                                     <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticDestinationName">
-                                      <div id="destinationName-dropdown" class="dropdown is-left">
-                                        <div class="dropdown-trigger">
-                                          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                                            (click)="toggleDropdown('destinationName-dropdown')">
-                                            <span>{{selectedDestinationName ? selectedDestinationName : 'Select Destination Name'}}</span>
-                                            <span class="icon is-small">
-                                              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                                            </span>
-                                          </button>
-                                        </div>
-                                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                          <div class="dropdown-content">
-                                            <a *ngIf="destinationNameList.length === 0 && selectedDestinationType" class="dropdown-item is-size-7 has-text-grey">No {{selectedDestinationType.name}}s found.</a>
-                                            <a *ngFor="let destinationName of destinationNameList" (click)="selectValue(destinationName, 'destinationName');toggleDropdown('destinationName-dropdown')" class="dropdown-item">{{destinationName}}</a>
-                                          </div>
-                                        </div>
-                                      </div>
+                                      <ng-select [clearable]="false" placeholder="Select Destination name" [items]="destinationNameList" [multiple]="false"
+                                        bindLabel="name" groupBy="groupbyType" (change)="selectValue($event.name, 'destinationName')"
+                                        [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
+                                      </ng-select>
                                     </div>
                                     <div *ngIf="selectedDestinationName === '' && selectedDestinationType && selectedDestinationType !== 4" class="help is-danger">
                                       Destination Name is required.

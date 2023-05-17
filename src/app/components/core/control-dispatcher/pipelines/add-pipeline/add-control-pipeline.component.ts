@@ -420,7 +420,7 @@ export class AddControlPipelineComponent implements OnInit {
       case 'sourceName':
         this.selectedSourceName = value === 'Select Source Name' ? '' : value;
         // mark form valid, if Source/Destination Name selected Or Source/Destination Type is ['API', 'Any']/['Broadcast]
-        if (this.selectedDestinationType.name !== 'Broadcast' || (this.selectedDestinationName !== '' && this.selectedSourceName !== '')) {
+        if (this.selectedDestinationType.name === 'Broadcast' || (this.selectedDestinationName !== '' && this.selectedSourceName !== '')) {
           this.pipelineForm.form.setErrors(null);
         }
         break;
@@ -497,12 +497,18 @@ export class AddControlPipelineComponent implements OnInit {
           this.ngProgress.done();
           data.schedules.forEach(sch => {
             if ((type === 'source' && this.selectedSourceType.name === 'Service') || (type === 'destination' && this.selectedDestinationType.name === 'Service')) {
-              if (['STARTUP'].includes(sch.type)) {
-                nameList.push(sch.name);
+              if (['STARTUP'].includes(sch.type) && ['south_c', 'north_C'].includes(sch.processName)) {
+                if (sch.processName === 'south_c') {
+                  sch.groupbyType = 'Southbound';
+                }
+                if (sch.processName === 'north_C') {
+                  sch.groupbyType = 'Northbound';
+                }
+                nameList.push(sch);
               }
             } else {
               if (!['STARTUP'].includes(sch.type)) {
-                nameList.push(sch.name);
+                nameList.push(sch);
               }
             }           
           });
@@ -524,13 +530,14 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   getNotificationNameList() {
-    this.sourceNameList = [];
+    let nameList = [];
     this.notificationService.getNotificationInstance().
       subscribe(
         (data: any) => {
-          data['notifications'].forEach(n => {
-            this.sourceNameList.push(n.name);
+          data['notifications'].forEach((n) => {
+            nameList.push(n);
           });
+          this.sourceNameList = nameList;
         },
         error => {
           if (error.status === 0) {
@@ -549,7 +556,7 @@ export class AddControlPipelineComponent implements OnInit {
       .subscribe((data: any) => {
         this.ngProgress.done();
         data.scripts.forEach(script => {
-          nameList.push(script.name);
+          nameList.push(script);
         });
         if (type === 'source') {
           this.sourceNameList = nameList;
@@ -568,6 +575,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   getAssetNameList() {
+    let nameList = [];
     /** request started */
     this.ngProgress.start();
     this.assetService.getAsset()
@@ -576,8 +584,10 @@ export class AddControlPipelineComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           data.forEach(asset => {
-            this.destinationNameList.push(asset.assetCode);
+            asset['name'] = asset.assetCode;
+            nameList.push(asset);
           });
+          this.destinationNameList = nameList;
         },
         error => {
           /** request completed but error */
