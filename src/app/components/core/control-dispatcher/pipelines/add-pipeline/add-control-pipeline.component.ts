@@ -28,9 +28,9 @@ export class AddControlPipelineComponent implements OnInit {
   pipelines = [{ name: 'None' }];
   selectedExecution = '';
   selectedSourceType = {cpsid: null, name: ''};
-  selectedSourceName = '';
+  selectedSourceName = null;
   selectedDestinationType = {cpdid: null, name: ''};
-  selectedDestinationName = '';
+  selectedDestinationName = null;
   public isPipelineEnabled = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   sourceTypeList = [];
@@ -409,7 +409,7 @@ export class AddControlPipelineComponent implements OnInit {
         break;
       case 'sourceType':
         this.sourceNameList = [];
-        this.selectedSourceName = '';
+        this.selectedSourceName = null;
         this.selectedSourceType = value === 'Select Source Type' ? '' : value;
         this.getSourceNameList();
         // mark form invalid, if Source/Destination Name is not selected yet
@@ -418,15 +418,15 @@ export class AddControlPipelineComponent implements OnInit {
         }
         break;
       case 'sourceName':
-        this.selectedSourceName = value === 'Select Source Name' ? '' : value;
+        this.selectedSourceName = value === 'Select Source Name' ? null : value;
         // mark form valid, if Source/Destination Name selected Or Source/Destination Type is ['API', 'Any']/['Broadcast]
-        if (this.selectedDestinationType.name === 'Broadcast' || (this.selectedDestinationName !== '' && this.selectedSourceName !== '')) {
+        if (this.selectedDestinationType.name === 'Broadcast' || (this.selectedDestinationName !== null && this.selectedSourceName !== null)) {
           this.pipelineForm.form.setErrors(null);
         }
         break;
       case 'destinationType':
         this.destinationNameList = [];
-        this.selectedDestinationName = '';
+        this.selectedDestinationName = null;
         this.selectedDestinationType = value === 'Select Destination Type' ? '' : value;
         this.getDestinationNameList();
         // mark form invalid, if Source/Destination Name is not selected yet
@@ -435,9 +435,9 @@ export class AddControlPipelineComponent implements OnInit {
         }
         break;
       case 'destinationName':
-        this.selectedDestinationName = value === 'Select Destination Name' ? '' : value;
+        this.selectedDestinationName = value === 'Select Destination Name' ? null : value;
         // mark form valid, if Source/Destination Name selected Or Source/Destination Type is ['API', 'Any']/['Broadcast]
-        if (['API', 'Any'].includes(this.selectedSourceType.name) || (this.selectedSourceName !== '' && this.selectedDestinationName !== '')) {
+        if (['API', 'Any'].includes(this.selectedSourceType.name) || (this.selectedSourceName !== null && this.selectedDestinationName !== null)) {
           this.pipelineForm.form.setErrors(null);
         }
         break;
@@ -450,7 +450,7 @@ export class AddControlPipelineComponent implements OnInit {
     switch (this.selectedSourceType.name) {
       case 'Any':
       case 'API':
-        this.selectedSourceName = '';
+        this.selectedSourceName = null;
         break;
       case 'Service':
       case 'Schedule':
@@ -470,7 +470,7 @@ export class AddControlPipelineComponent implements OnInit {
   getDestinationNameList() {
     switch (this.selectedDestinationType.name) {
       case 'Broadcast':
-        this.selectedDestinationName = '';
+        this.selectedDestinationName = null;
         break;
       case 'Service':
         this.getServiceNameList('destination');

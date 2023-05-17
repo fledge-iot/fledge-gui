@@ -120,7 +120,7 @@
                                         [ngModel]="selectedSourceName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
-                                    <div *ngIf="selectedSourceName === '' && selectedSourceType && (selectedSourceType !== 1 || selectedSourceType !== 3)" class="help is-danger">
+                                    <div *ngIf="selectedSourceName === null && selectedSourceType && (selectedSourceType !== 1 || selectedSourceType !== 3)" class="help is-danger">
                                       Source Name is required.
                                     </div>
                                     <ng-template #staticSourceName>
@@ -187,7 +187,7 @@
                                         [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
-                                    <div *ngIf="selectedDestinationName === '' && selectedDestinationType && selectedDestinationType !== 4" class="help is-danger">
+                                    <div *ngIf="selectedDestinationName === null && selectedDestinationType && selectedDestinationType !== 4" class="help is-danger">
                                       Destination Name is required.
                                     </div>
                                     <ng-template #staticDestinationName>
