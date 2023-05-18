@@ -108,7 +108,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.authService.loginUsingOttToken(this.ottToken)
       .pipe(switchMap((data) => {
         this.sslCertificateError = false;
-        this.setLoginToken(data);
+        this.userService.setUserSession(data);
         return this.userService.getUser((data['uid']));
       }))
       .subscribe(
@@ -137,7 +137,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.ngProgress.start();
     this.authService.login(this.model.username, this.model.password)
       .pipe(switchMap((data) => {
-        this.setLoginToken(data);
+        this.userService.setUserSession(data);
         return this.userService.getUser((data['uid']));
       }))
       .subscribe(
@@ -167,13 +167,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/setting'], { queryParams: { id: '1' } });
   }
 
-  setLoginToken(data: any) {
-    const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
-    this.pingService.pingIntervalChanged.next(pingInterval);
-    sessionStorage.setItem('token', data['token']);
-    sessionStorage.setItem('uid', data['uid']);
-    sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
-  }
+  // setLoginToken(data: any) {
+  //   const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
+  //   this.pingService.pingIntervalChanged.next(pingInterval);
+  //   sessionStorage.setItem('token', data['token']);
+  //   sessionStorage.setItem('uid', data['uid']);
+  //   sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
+  // }
 
   setUser(user: any) {
     this.sharedService.isUserLoggedIn.next({

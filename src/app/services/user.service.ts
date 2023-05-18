@@ -4,6 +4,7 @@ import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+import { PingService } from './ping.service';
 
 @Injectable()
 export class UserService {
@@ -11,7 +12,7 @@ export class UserService {
   private USER_URL = environment.BASE_URL + 'user';
   private ADMIN_URL = environment.BASE_URL + 'admin';
   private ROLE_URL = environment.BASE_URL + 'user/role';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private pingService: PingService) { }
 
   /**
    * Get all users
@@ -149,6 +150,15 @@ export class UserService {
     return this.http.put(this.ADMIN_URL + '/' + data.userId + '/reset', payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
+  }
+
+
+  setUserSession(data: any) {
+    const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
+    this.pingService.pingIntervalChanged.next(pingInterval);
+    sessionStorage.setItem('token', data['token']);
+    sessionStorage.setItem('uid', data['uid']);
+    sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
   }
 }
 
