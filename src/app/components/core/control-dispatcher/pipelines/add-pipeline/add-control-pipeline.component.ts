@@ -162,15 +162,10 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   ngAfterContentChecked(): void {
+    if (this.pipelineForm) {
+      this.pipelineForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);
+    }
     this.cdRef.detectChanges();
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => {
-      if (!this.editMode) {
-        this.pipelineForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);  
-      }
-    }, 0);
   }
 
   onDrop(event: CdkDragDrop<string[]>) {
@@ -232,6 +227,9 @@ export class AddControlPipelineComponent implements OnInit {
            this.updateControlPipeline({filters: this.filterPipeline}, true)
         }
        this.getControlPipeline();
+    }
+    if (this.pipelineForm) {
+      this.pipelineForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);
     }
     this.isAddFilterWizard = false;
   }
@@ -486,8 +484,8 @@ export class AddControlPipelineComponent implements OnInit {
     }
   }
 
-  getServiceNameList(type) {
-    let nameList = [];
+  getServiceNameList(direction) {
+    let names = [];
     /** request started */
     this.ngProgress.start();
     this.schedulesService.getSchedules().
@@ -496,7 +494,7 @@ export class AddControlPipelineComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           data.schedules.forEach(sch => {
-            if ((type === 'source' && this.selectedSourceType.name === 'Service') || (type === 'destination' && this.selectedDestinationType.name === 'Service')) {
+            if ((direction === 'source' && this.selectedSourceType.name === 'Service') || (direction === 'destination' && this.selectedDestinationType.name === 'Service')) {
               if (['STARTUP'].includes(sch.type) && ['south_c', 'north_C'].includes(sch.processName)) {
                 if (sch.processName === 'south_c') {
                   sch.groupbyType = 'Southbound';
@@ -504,17 +502,17 @@ export class AddControlPipelineComponent implements OnInit {
                 if (sch.processName === 'north_C') {
                   sch.groupbyType = 'Northbound';
                 }
-                nameList.push(sch);
+                names.push(sch);
               }
             } else {
               if (!['STARTUP'].includes(sch.type)) {
-                nameList.push(sch);
+                names.push(sch);
               }
             }           
           });
           let southboundSvc = [];
           let northboundSvc = [];
-          nameList.forEach(svc => {
+          names.forEach(svc => {
             if (svc.processName === 'south_c') {
               southboundSvc.push(svc);
             } else {
@@ -523,7 +521,7 @@ export class AddControlPipelineComponent implements OnInit {
           })
           const SortedSouthboundSvc = southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
           const SortedNorthboundSvc = northboundSvc.sort((a, b) => a.name.localeCompare(b.name));
-          if (type === 'source') {
+          if (direction === 'source') {
             this.sourceNameList = SortedSouthboundSvc.concat(SortedNorthboundSvc);
           } else {
             this.destinationNameList = SortedSouthboundSvc.concat(SortedNorthboundSvc);
@@ -544,7 +542,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.notificationService.getNotificationInstance().
       subscribe(
         (data: any) => {
-          this.sourceNameList = data['notifications'];
+          this.sourceNameList = data['notifications'].sort((a, b) => a.name.localeCompare(b.name))
         },
         error => {
           if (error.status === 0) {
@@ -562,9 +560,9 @@ export class AddControlPipelineComponent implements OnInit {
       .subscribe((data: any) => {
         this.ngProgress.done();
         if (type === 'source') {
-          this.sourceNameList = data.scripts;
+          this.sourceNameList = data.scripts.sort((a, b) => a.name.localeCompare(b.name));
         } else {
-          this.destinationNameList = data.scripts;
+          this.destinationNameList = data.scripts.sort((a, b) => a.name.localeCompare(b.name));
         }
       }, error => {
         /** request completed */
@@ -590,7 +588,7 @@ export class AddControlPipelineComponent implements OnInit {
             asset['name'] = asset.assetCode;
             nameList.push(asset);
           });
-          this.destinationNameList = nameList;
+          this.destinationNameList = nameList.sort((a, b) => a.name.localeCompare(b.name));
         },
         error => {
           /** request completed but error */

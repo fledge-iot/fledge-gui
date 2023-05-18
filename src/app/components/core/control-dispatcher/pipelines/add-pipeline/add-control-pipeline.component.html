@@ -32,7 +32,7 @@
                   </div>
                   <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                     <div *ngIf="name.errors?.['required']">
-                      Name is required.
+                      *required
                     </div>
                   </div>
                 </div>
@@ -115,13 +115,13 @@
                                 <div class="field-body">
                                   <div class="field">
                                     <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceName">
-                                      <ng-select [clearable]="false" placeholder="Select Source name" [items]="sourceNameList" [multiple]="false"
+                                      <ng-select [clearable]="false" placeholder="Select Source" [items]="sourceNameList" [multiple]="false"
                                         bindLabel="name" groupBy="groupbyType" (change)="selectValue($event.name, 'sourceName')"
                                         [ngModel]="selectedSourceName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
                                     <div *ngIf="selectedSourceName === null && selectedSourceType && (selectedSourceType !== 1 || selectedSourceType !== 3)" class="help is-danger">
-                                      Source Name is required.
+                                      *required
                                     </div>
                                     <ng-template #staticSourceName>
                                       <input name="sourceName" class="input" type="text" [value]="selectedSourceName ? selectedSourceName : 'Select Source Name'"
@@ -182,13 +182,13 @@
                                 <div class="field-body">
                                   <div class="field">
                                     <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticDestinationName">
-                                      <ng-select [clearable]="false" placeholder="Select Destination name" [items]="destinationNameList" [multiple]="false"
+                                      <ng-select [clearable]="false" placeholder="Select Destination" [items]="destinationNameList" [multiple]="false"
                                         bindLabel="name" groupBy="groupbyType" (change)="selectValue($event.name, 'destinationName')"
                                         [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
                                     <div *ngIf="selectedDestinationName === null && selectedDestinationType && selectedDestinationType !== 4" class="help is-danger">
-                                      Destination Name is required.
+                                      *required
                                     </div>
                                     <ng-template #staticDestinationName>
                                       <input name="destinationName" class="input" type="text" [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
@@ -263,8 +263,8 @@
                       </div>
                     </div>
                   </div>
-                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
-                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
+                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
+                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
                 </div>
               </div>
             </div>
