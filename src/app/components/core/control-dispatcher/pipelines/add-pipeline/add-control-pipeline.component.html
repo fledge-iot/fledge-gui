@@ -263,8 +263,8 @@
                       </div>
                     </div>
                   </div>
-                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn">Add new filter</a>
-                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn">Add filter</a>
+                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn add-filter">Add new filter</a>
+                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn add-filter">Add filter</a>
                 </div>
               </div>
             </div>
