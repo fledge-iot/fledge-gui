@@ -99,7 +99,7 @@
   .disabled-link {
     pointer-events: none;
     color: gray;
-    text-decoration: underline;
+    text-decoration: underline !important;
   }
 
   .footer-padding {
