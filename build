@@ -79,7 +79,7 @@ show_files_with_size () {
 
 clean(){
   echo -e  INFO: "${CINFO} Cleaning the build and dependencies ... ${CRESET}"
-  sleep 20
+  sleep 10
   yarn clean
 }
 
