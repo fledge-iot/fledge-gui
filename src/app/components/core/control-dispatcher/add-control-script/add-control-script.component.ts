@@ -99,7 +99,7 @@ export class AddControlScriptComponent implements OnInit {
     this.controlService.deleteScript(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.alertService.success(data.message);
+        this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
         this.router.navigate(['control-dispatcher', 'script']);

@@ -193,7 +193,8 @@ export class ReadingsGraphComponent implements OnDestroy {
           if (index !== -1) {
               this.availableAssets.splice(index, 1);
           } 
-        }      
+        }
+        this.availableAssets = this.availableAssets.sort((a, b) => a.name.localeCompare(b.name));     
       }
     });
 

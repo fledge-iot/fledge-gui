@@ -17,6 +17,7 @@ table tr td {
 
 .pipeline-name {
     color: #3273dc;
+    text-decoration: none;
 }
 
 .context-menu {

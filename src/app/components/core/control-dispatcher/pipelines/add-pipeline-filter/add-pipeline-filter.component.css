@@ -3,3 +3,11 @@
         width: 80%;
     }
 }
+
+.ctrl-pipeline {
+    padding-top: 2px;
+}
+
+.modal-card-title {
+    font-size: 0.9rem !important;
+}
