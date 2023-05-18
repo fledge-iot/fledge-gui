@@ -541,14 +541,10 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   getNotificationNameList() {
-    let nameList = [];
     this.notificationService.getNotificationInstance().
       subscribe(
         (data: any) => {
-          data['notifications'].forEach((n) => {
-            nameList.push(n);
-          });
-          this.sourceNameList = nameList;
+          this.sourceNameList = data['notifications'];
         },
         error => {
           if (error.status === 0) {
@@ -560,19 +556,15 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   getScriptNameList(type) {
-    let nameList = [];
     /** request started */
     this.ngProgress.start();
     this.controlService.fetchControlServiceScripts()
       .subscribe((data: any) => {
         this.ngProgress.done();
-        data.scripts.forEach(script => {
-          nameList.push(script);
-        });
         if (type === 'source') {
-          this.sourceNameList = nameList;
+          this.sourceNameList = data.scripts;
         } else {
-          this.destinationNameList = nameList;
+          this.destinationNameList = data.scripts;
         }
       }, error => {
         /** request completed */
