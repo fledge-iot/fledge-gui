@@ -108,12 +108,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.authService.loginUsingOttToken(this.ottToken)
       .pipe(switchMap((data) => {
         this.sslCertificateError = false;
+        const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
+        this.pingService.pingIntervalChanged.next(pingInterval);
         this.userService.setUserSession(data);
         return this.userService.getUser((data['uid']));
       }))
       .subscribe(
         (user) => {
-          this.setUser(user);
+          this.userService.emitUser(user);
           this.router.navigate([''], { replaceUrl: true });
           this.ngProgress.done();
         },
@@ -137,12 +139,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.ngProgress.start();
     this.authService.login(this.model.username, this.model.password)
       .pipe(switchMap((data) => {
+        const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
+        this.pingService.pingIntervalChanged.next(pingInterval);
         this.userService.setUserSession(data);
         return this.userService.getUser((data['uid']));
       }))
       .subscribe(
         (user) => {
-          this.setUser(user);
+          console.log('user', user);
+          this.userService.emitUser(user);
           this.router.navigate([''], { replaceUrl: true });
           this.ngProgress.done();
         },
@@ -165,26 +170,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   public setupInstance() {
     this.router.navigate(['/setting'], { queryParams: { id: '1' } });
-  }
-
-  // setLoginToken(data: any) {
-  //   const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
-  //   this.pingService.pingIntervalChanged.next(pingInterval);
-  //   sessionStorage.setItem('token', data['token']);
-  //   sessionStorage.setItem('uid', data['uid']);
-  //   sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
-  // }
-
-  setUser(user: any) {
-    this.sharedService.isUserLoggedIn.next({
-      'loggedIn': true,
-      'userName': user['userName'],
-      'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
-    });
-    // save role id and user name in session storage
-    sessionStorage.setItem('roleId', user['roleId']);
-    this.sharedService.dataViewUserSubject.next(user['roleId']);
-    sessionStorage.setItem('userName', user['userName']);
   }
 
   public forgotPassword() {

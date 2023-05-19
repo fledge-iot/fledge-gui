@@ -1,8 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ProgressBarService, AlertService, AuthService, PingService, UserService } from '../../../services';
-import { SharedService } from '../../../services/shared.service';
 import { Router } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-certificate-base-login',
@@ -22,7 +22,6 @@ export class CertificateBaseLoginComponent implements OnInit {
     private ping: PingService,
     private router: Router,
     private userService: UserService,
-    private sharedService: SharedService,
     public formBuilder: FormBuilder) { }
 
   ngOnInit() {
@@ -68,32 +67,35 @@ export class CertificateBaseLoginComponent implements OnInit {
   }
 
   LoginWithCertificate() {
-    const certificateTextValue = this.form.get('certificateText').value;
+    const certificate = this.form.get('certificateText').value;
     // If neither the certificate file nor the certificate text value exist, then show error
-    if (this.certificateContent.length <= 0 && certificateTextValue.length <= 0) {
+    if (this.certificateContent.length <= 0 && certificate.length <= 0) {
       this.alertService.error('Certificate is required');
       return;
     }
     // If certificate text value exists
-    if (certificateTextValue !== '') {
-      this.certificateContent = certificateTextValue;
+    if (certificate !== '') {
+      this.certificateContent = certificate;
     }
 
     /** request started */
     this.ngProgress.start();
-    this.authService.loginWithCertificate(this.certificateContent).
+    this.authService.loginWithCertificate(this.certificateContent)
+      .pipe(switchMap((data) => {
+        this.userService.setUserSession(data);
+        return this.userService.getUser((data['uid']));
+      })).
       subscribe(
-        (data) => {
+        (user) => {
+          this.ngProgress.done();
           const pingInterval = JSON.parse(localStorage.getItem('PING_INTERVAL'));
           this.ping.pingIntervalChanged.next(pingInterval);
-          this.ngProgress.done();
-          sessionStorage.setItem('token', data['token']);
-          sessionStorage.setItem('uid', data['uid']);
-          sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
-          this.getUser(data['uid']);
+          this.userService.emitUser(user);
           this.router.navigate([''], { replaceUrl: true });
         },
         error => {
+          console.log(error);
+
           /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
@@ -118,27 +120,6 @@ export class CertificateBaseLoginComponent implements OnInit {
         this.readCertificateFileContent(event.target.files[0]);
       }
     }
-  }
-
-  getUser(id) {
-    // Get SignedIn user details
-    this.userService.getUser(id)
-      .subscribe(
-        (userData) => {
-          this.sharedService.isUserLoggedIn.next({
-            'loggedIn': true,
-            'userName': userData['userName'],
-            'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
-          });
-          sessionStorage.setItem('userName', userData['userName']);
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
   }
 
   protected resetForm() {
