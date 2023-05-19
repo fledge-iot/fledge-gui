@@ -90,6 +90,10 @@
   cursor: pointer !important;
 }
 
+.config-label {
+  width: 50%;
+}
+
 /* causing inconsistency on wizards and service/task details page (Advanced config + enabled) */
 /* commenting until we fix all such label as font-s .9rem pad top 3px and font-w 500 */
 /* .config-label {
