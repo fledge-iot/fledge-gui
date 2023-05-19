@@ -325,8 +325,8 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.updateACL(this.nameCopy, payload)
       .subscribe((data: any) => {
         this.name = this.nameCopy = payload.name;
-        this.router.navigate(['control-dispatcher/acl', payload.name, 'details']);
-        this.alertService.success(data.message, true)
+        this.router.navigate(['control-dispatcher', 'acl']);
+        this.alertService.success(data.message, true);
         /** request completed */
         this.ngProgress.done();
         this.aclForm.form.markAsPristine();
@@ -347,7 +347,7 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.alertService.success(data.message);
+        this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
         this.router.navigate(['control-dispatcher', 'acl']);
