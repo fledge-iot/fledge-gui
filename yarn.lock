@@ -2680,6 +2680,11 @@ builtins@^1.0.3:
   resolved "https://registry.yarnpkg.com/builtins/-/builtins-1.0.3.tgz#cb94faeb61c8696451db36534e1422f94f0aee88"
   integrity sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==
 
+bulma-carousel@^4.0.24:
+  version "4.0.24"
+  resolved "https://registry.yarnpkg.com/bulma-carousel/-/bulma-carousel-4.0.24.tgz#fa0e56650fccc77d44b05628a941287ba7aadc5b"
+  integrity sha512-DLYKmf/iHH8yAQSo8+O/cQvSVSAo15f+XmbiQvAvu5hUJs5O8I40RbZqrF9OougNs4n4JMokPEIBUiDGAsFuRA==
+
 bulma-toast@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/bulma-toast/-/bulma-toast-2.4.2.tgz#331775bfbdc07ce4a72cd8cd4a5bcb89088dffbf"

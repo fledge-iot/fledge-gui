@@ -212,21 +212,25 @@
                 </div>
                 <div *ngIf="selectedTab === 5" data-content="5">
                   <div class="columns margin-top">
-                    <div class="has-text-centered column" [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-with-data': !isEmptyObject(stringTypeReadingsList)}">
-                      <ng-container *ngFor="let read of imageReadings">
-                        <div id="tab-content">
-                          <img [src]="read.image" alt={{read.datapoint}}>
+                    <div class="has-text-centered column image-reading"
+                      [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-with-data': !isEmptyObject(stringTypeReadingsList)}">
+                        <div class="carousel" id="carousel">
+                          <div class="item" *ngFor="let read of imageReadings">
+                            <div id="tab-content">
+                              <img [src]="read.image" alt={{read.datapoint}}>
+                            </div>
+                            <small class="has-text-centered text-secondary has-text-grey-dark is-block">Width:
+                              {{imageReadingsDimensions.width}}px, Height:
+                              {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
+                            </small>
+                            <small class="has-text-centered text-secondary has-text-grey-dark is-block margin-bottom">{{read?.datapoint}},
+                              Timestamp:
+                              {{read?.timestamp}}
+                            </small>
+                          </div>
                         </div>
-                        <small class="has-text-centered text-secondary has-text-grey-dark is-block">Width: {{imageReadingsDimensions.width}}px, Height:
-                          {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
-                        </small>
-                        <small class="has-text-centered text-secondary has-text-grey-dark is-block margin-bottom">{{read?.datapoint}},
-                          Timestamp:
-                          {{read?.timestamp}}
-                        </small>
-                      </ng-container>
                     </div>
-                    <div *ngIf="!isEmptyObject(stringTypeReadingsList)" data-content="3" class="column is-4 image-with-data">
+                    <div *ngIf="!isEmptyObject(stringTypeReadingsList)" data-content="3" class="column is-4 image-metadata">
                       <table class="table is-responsive is-borderless data-table">
                         <thead>
                           <tr>

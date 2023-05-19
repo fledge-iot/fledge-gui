@@ -9,6 +9,7 @@ import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
+import bulmaCarousel from '../../../../../../node_modules/bulma-carousel/dist/js/bulma-carousel.min.js';
 
 declare var Plotly: any;
 
@@ -88,6 +89,15 @@ export class ReadingsGraphComponent implements OnDestroy {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.loadPage = false;
     this.toggleModal(false);
+  }
+
+  ngAfterContentChecked(){
+    bulmaCarousel.attach('#carousel', {
+      slidesToScroll: 1,
+      slidesToShow: 1,
+      autoplay: false,
+      loop: false
+    });
   }
 
   public showAll() {

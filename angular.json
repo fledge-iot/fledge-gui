@@ -39,6 +39,8 @@
               "./node_modules/animate.css/animate.css",
               "./node_modules/@ng-select/ng-select/themes/default.theme.css",
               "./node_modules/bulma-toast/dist/bulma-toast.min.js",
+              "./node_modules/bulma-carousel/dist/css/bulma-carousel.min.css",
+              "./node_modules/bulma-carousel/dist/js/bulma-carousel.min.js",
               "src/assets/css/bulma.min.css",
               "src/assets/css/bulma-steps.min.css",
               "src/assets/css/font-awesome.min.css",
