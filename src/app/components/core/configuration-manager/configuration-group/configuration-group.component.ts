@@ -61,7 +61,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   ngOnChanges() {
-    console.log('from', this.from);
     this.categeryConfiguration();
     this.getChildConfigData();
   }

@@ -1,4 +1,4 @@
-.field-body .field {
+  .field-body .field {
     margin-bottom: 5px;
   }
   
@@ -151,4 +151,12 @@
 
   .add-filter {
     text-decoration: none;
+  }
+
+  .icon-row {
+    margin-top: 9px !important;
+  }
+
+  .add-filter-div {
+      cursor: not-allowed;
   }

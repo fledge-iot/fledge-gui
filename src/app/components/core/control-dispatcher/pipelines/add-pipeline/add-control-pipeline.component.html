@@ -243,7 +243,7 @@
                                   (formStatusEvent)="validFilterConfigForm = $event">
                                 </app-configuration-group>
                               </div>
-                              <div class="field">
+                              <div class="field icon-row">
                                 <div class="field has-text-left">
                                   <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
                                     data-tooltip="Help" (click)="goToLink({name: selectedFilterPlugin, type: 'Filter'})">
@@ -263,8 +263,10 @@
                       </div>
                     </div>
                   </div>
+                  <div [ngClass]="{'add-filter-div': name.value === '' || !name.value || name.invalid}">
                   <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn add-filter">Add new filter</a>
                   <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn add-filter">Add filter</a>
+                </div>
                 </div>
               </div>
             </div>
