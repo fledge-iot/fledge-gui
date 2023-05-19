@@ -146,7 +146,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
       }))
       .subscribe(
         (user) => {
-          console.log('user', user);
           this.userService.emitUser(user);
           this.router.navigate([''], { replaceUrl: true });
           this.ngProgress.done();

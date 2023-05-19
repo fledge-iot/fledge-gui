@@ -94,8 +94,6 @@ export class CertificateBaseLoginComponent implements OnInit {
           this.router.navigate([''], { replaceUrl: true });
         },
         error => {
-          console.log(error);
-
           /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
