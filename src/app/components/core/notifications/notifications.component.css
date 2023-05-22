@@ -61,3 +61,7 @@ button {
   padding-right: 0.7rem !important;
   padding-left: 1.2rem !important;
 }
+
+.fix-margin {
+  margin-top: 5px;
+}

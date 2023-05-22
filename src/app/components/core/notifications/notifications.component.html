@@ -50,7 +50,7 @@
         </p>
       </div>
       <button *ngIf="rolesService.hasEditPermissions()" [disabled]="!isNotificationServiceEnabled"
-        id="add_notification_instance" class="button is-light" (click)="addNotificationInstance()">
+        id="add_notification_instance" class="button is-light fix-margin" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
