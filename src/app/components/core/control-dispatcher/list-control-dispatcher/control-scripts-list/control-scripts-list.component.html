@@ -9,7 +9,7 @@
         </button>
       </div>
       <a *ngIf="sharedService.checkAuth()" class="fix-margin button is-light" routerLink="add">
-        <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
+        <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
 
@@ -61,10 +61,8 @@
         </tbody>
       </table>
       <ng-template #noscript>
-        <div class="field-body">
-          <div class="field is-narrow" >
-            <small class="text-secondary has-text-grey-light"> No Control Scripts found.</small>
-          </div>
+        <div class="has-text-centered">
+          <small class="text-secondary has-text-grey-light">No Control Scripts found.</small>
         </div>
       </ng-template>
       <app-confirmation-dialog id="confirmation-dialog">

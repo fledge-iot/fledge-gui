@@ -11,8 +11,8 @@
         <div class="columns">
           <div class="column fix-pad">
             <a *ngIf="rolesService.hasEditPermissions()" class="button is-light" (click)="requestNewBundle()">
-              <p *ngIf="viewPort !== 'mobile'">Request New &nbsp;</p>
-              <i class="fa fa-sm fa-file-archive" aria-hidden="true"></i>
+              <p *ngIf="viewPort !== 'mobile'" class="add-btn">Request New &nbsp;</p>
+              <i class="fa fa-xs fa-file-archive" aria-hidden="true"></i>
             </a>
           </div>
           <div class="column help-pad">
