@@ -120,7 +120,7 @@
                                         [ngModel]="selectedSourceName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
-                                    <div *ngIf="selectedSourceName === null && selectedSourceType && (selectedSourceType !== 1 || selectedSourceType !== 3)" class="help is-danger">
+                                    <div *ngIf="selectedSourceName === null && selectedSourceType" class="help is-danger">
                                       *required
                                     </div>
                                     <ng-template #staticSourceName>
@@ -187,7 +187,7 @@
                                         [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
-                                    <div *ngIf="selectedDestinationName === null && selectedDestinationType && selectedDestinationType !== 4" class="help is-danger">
+                                    <div *ngIf="selectedDestinationName === null && selectedDestinationType" class="help is-danger">
                                       *required
                                     </div>
                                     <ng-template #staticDestinationName>
@@ -282,7 +282,7 @@
               </div>
             </div>
           </div>
-          <div *ngIf="rolesService.hasEditPermissions()" class="column is-four-fifths footer-padding">
+          <div *ngIf="rolesService.hasEditPermissions()" class="column footer-padding">
             <div class="columns">
               <div class="column is-2"></div>
               <div class="column" *ngIf="editMode">

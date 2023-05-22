@@ -54,7 +54,8 @@ export class AddControlPipelineComponent implements OnInit {
   // To hold API calls to execute
   apiCallsStack = [];
   changedConfig = {};
-  
+  public addFilterClicked = false;
+
   constructor(
     private cdRef: ChangeDetectorRef,
     private assetService: AssetsService,
@@ -178,6 +179,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   openAddFilterModal(isClicked, nameValue) {
+    this.addFilterClicked = isClicked;
     if ((!nameValue || nameValue === '') && !this.pipelineName){
       return;
     }
@@ -232,6 +234,7 @@ export class AddControlPipelineComponent implements OnInit {
       this.pipelineForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);
     }
     this.isAddFilterWizard = false;
+    this.addFilterClicked = false;
   }
 
   deleteFilter() {
@@ -347,6 +350,10 @@ export class AddControlPipelineComponent implements OnInit {
     this.isFilterOrderChanged = false;
     this.isFilterDeleted = false;
     this.deletedFilterPipeline = [];
+    if (this.addFilterClicked) {
+      this.isAddFilterWizard = this.addFilterClicked;
+      return;
+    }
     this.router.navigate(['control-dispatcher/pipelines']);
   }
 
