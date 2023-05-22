@@ -90,7 +90,7 @@
                             <div class="column">
                               <div class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label">Type</label>
+                                  <label class="label is-small">Type</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -108,9 +108,9 @@
                                   </div>
                                 </div>
                               </div>
-                              <div *ngIf="!(selectedSourceType.name === 'Any' || selectedSourceType.name === 'API')" class="field is-horizontal">
+                              <div *ngIf="selectedSourceType?.name && !(selectedSourceType.name === 'Any' || selectedSourceType.name === 'API')" class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label">Name</label>
+                                  <label class="label is-small">Name</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -157,7 +157,7 @@
                             <div class="column">
                               <div class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label">Type</label>
+                                  <label class="label is-small">Type</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -175,9 +175,9 @@
                                   </div>
                                 </div>
                               </div>
-                              <div *ngIf="selectedDestinationType.name !== 'Broadcast'" class="field is-horizontal">
+                              <div *ngIf="selectedDestinationType?.name && selectedDestinationType.name !== 'Broadcast'" class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label">Name</label>
+                                  <label class="label is-small">Name</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">

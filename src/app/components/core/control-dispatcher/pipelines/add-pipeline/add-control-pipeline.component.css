@@ -158,5 +158,9 @@
   }
 
   .add-filter-div {
-      cursor: not-allowed;
+    cursor: not-allowed;
+  }
+
+  .label.is-small {
+    font-size: 0.75rem !important;
   }
