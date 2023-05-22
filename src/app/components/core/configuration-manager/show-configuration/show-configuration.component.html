@@ -5,7 +5,7 @@
         <div [formGroup]="form" novalidate>
           <div class="config-div" *ngIf="configuration.readonly != 'true'">
             <div class="field" [ngClass]="{'is-horizontal': from !== 'filter-modal'}">
-              <div class="field-label has-text-left">
+              <div class="field-label has-text-left" [ngClass]="{'is-margin': from === 'filter-modal'}">
                 <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label is-small-font"
                   [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
                   {{configuration.label}}

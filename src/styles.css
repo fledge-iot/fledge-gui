@@ -322,8 +322,9 @@ a.dropdown-item:hover {
   filter: blur(1px);
  }
 
- .is-small-font {
+ .is-small-font, .label {
   font-size: 0.9rem !important;
+  font-weight: 500;
  }
 
  /*****************/

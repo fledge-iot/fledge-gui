@@ -5,7 +5,7 @@
         <div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
-              <h6 class="is-6 has-text-weight-semibold is-small-font">
+              <h6 class="is-6 is-small-font">
                 <a (click)="selectTab(g.group)">
                   {{g.group}}
                 </a>
@@ -13,7 +13,7 @@
             </li>
             <!-- Advanced and security group -->
             <li *ngFor="let g of advanceCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
-              <h6 class="is-6 has-text-weight-semibold is-small-font">
+              <h6 class="is-6 is-small-font">
                 <a (click)="selectTab(g.group)">
                   {{g.group}}
                 </a>
@@ -22,7 +22,7 @@
             <ng-container *ngIf="from !== 'notification'">
               <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
-                <h6 class="is-6 has-text-weight-semibold is-small-font">
+                <h6 class="is-6 is-small-font">
                   <a (click)="selectedGroup = 'developer'">Developer</a>
                 </h6>
               </li>
