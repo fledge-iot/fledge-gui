@@ -69,10 +69,9 @@
                   </td>
                   <td><span class="tag is-rounded">{{pipeline.execution}}</span></td> 
                   <td>
-                    <div *ngIf="sharedService.checkAuth()" id="dropdown-{{i}}" class="dropdown is-left">
+                    <div *ngIf="rolesService.hasEditPermissions()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
                       <div class="dropdown-trigger">
-                        <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu"
-                          (click)="toggleDropdown(i)">
+                        <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
                           <span class="icon">
                             <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
                           </span>

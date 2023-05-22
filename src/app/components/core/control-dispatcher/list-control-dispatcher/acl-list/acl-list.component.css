@@ -25,7 +25,14 @@ tr:hover .btn-delete {
 margin: 20px 10px;
 }
 
+.context-menu {
+  border: none;
+}
+
 .fix-margin {
   margin-top: 8px;
 }
 
+.is-hoverable.acl-table tr:hover .context-menu {
+  background-color: #fafafa; 
+}

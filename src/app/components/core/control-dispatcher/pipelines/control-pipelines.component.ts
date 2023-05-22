@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { Router } from '@angular/router';
 
-import { AlertService, SharedService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
+import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -22,7 +22,6 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
-    public sharedService: SharedService,
     private ngProgress: ProgressBarService,
     private router: Router,
     public rolesService: RolesService) {}
@@ -67,18 +66,6 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  public toggleDropdown(contextMenu) {
-    const id = 'dropdown-' + contextMenu;
-    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
-    if (activeDropDowns.length > 0) {
-      if (activeDropDowns[0].id !== id) {
-        activeDropDowns[0].classList.remove('is-active');
-      }
-    }
-    const dropDown = document.querySelector(`#${id}`);
-    dropDown.classList.toggle('is-active');
   }
 
   deletePipeline(id) {
