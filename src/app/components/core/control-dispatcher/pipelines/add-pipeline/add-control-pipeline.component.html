@@ -17,6 +17,10 @@
     <div class="card">
       <div class="card-content step-content">
         <form #pipelineForm="ngForm" *ngIf="!isAddFilterWizard">
+          <!-- <span (click)="goToLink({name: selectedFilterPlugin, type: 'Filter'})"
+          class=" icon is-small is-tooltip-top tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          <i class="far fa-question-circle"></i>
+        </span> -->
           <div class="column">
             <div [hidden]="editMode" class="field is-horizontal">
               <div class="field-label">

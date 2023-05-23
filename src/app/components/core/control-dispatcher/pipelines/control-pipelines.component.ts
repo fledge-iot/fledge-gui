@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { Router } from '@angular/router';
-
+import { DocService } from '../../../../services/doc.service';
 import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
 
 @Component({
@@ -24,7 +24,8 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private router: Router,
-    public rolesService: RolesService) {}
+    public rolesService: RolesService,
+    public docService: DocService,) {}
 
   ngOnInit() {
     this.showLoadingSpinner();
@@ -66,6 +67,10 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
   deletePipeline(id) {

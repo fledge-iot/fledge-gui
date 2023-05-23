@@ -126,22 +126,14 @@
 
   ::ng-deep .ng-select .ng-select-container,
   ::ng-deep .ng-select.ng-select .ng-select-container {
-    min-height: 5px;
+    height: 30px !important;
     font-size: 0.8em;
+    min-height: 28px !important;
   }
   
   ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
     color: #848181 !important;
     font-size: 0.8rem !important;
-  }
-
-  ::ng-deep .ng-select .ng-select-container,
-  ::ng-deep .ng-select.ng-select .ng-select-container {
-    min-height: 5px;
-    font-size: 0.8em;
-  }
-
-  ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
     max-height: 200px !important;
   }
 
@@ -162,5 +154,5 @@
   }
 
   .label.is-small {
-    font-size: 0.75rem !important;
+    font-size: 0.85rem !important;
   }
