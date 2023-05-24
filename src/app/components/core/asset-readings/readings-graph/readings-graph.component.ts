@@ -186,7 +186,6 @@ export class ReadingsGraphComponent implements OnDestroy {
         assets.forEach(asset => {
           this.availableAssets.push(asset.assetCode);
         });
-        
         // remove selected graph asset from the dropdown list
         if (this.selectedAsset) {
           const index: number = this.availableAssets.indexOf(this.selectedAsset);
@@ -194,7 +193,7 @@ export class ReadingsGraphComponent implements OnDestroy {
               this.availableAssets.splice(index, 1);
           } 
         }
-        this.availableAssets = this.availableAssets.sort((a, b) => a.name.localeCompare(b.name));     
+        this.availableAssets = this.availableAssets.sort((a, b) => a.localeCompare(b));     
       }
     });
 
