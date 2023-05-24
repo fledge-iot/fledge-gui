@@ -476,6 +476,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           }
         } else {
           strReadings.push({
+            timestamp: r.timestamp,
             key: k,
             data: JSON.stringify(value)
           });
@@ -537,12 +538,14 @@ export class ReadingsGraphComponent implements OnDestroy {
         } else if (Array.isArray(value)) {
           arrReadings.push({
             key: k,
-            read: value
+            read: value,
+            timestamp: r.timestamp
           });
         } else if (typeof value === 'object') {
           strReadings.push({
             key: k,
-            data: JSON.stringify(value)
+            data: JSON.stringify(value),
+            timestamp: r.timestamp
           });
         }
         else {
