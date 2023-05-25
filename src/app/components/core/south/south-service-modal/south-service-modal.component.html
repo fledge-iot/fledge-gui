@@ -18,8 +18,8 @@
             (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
             (formStatusEvent)="validConfigurationForm = $event">
           </app-configuration-group>
-          <div *ngIf="service" class="columns">
-            <div class="column">
+          <div *ngIf="service" class="columns column-container">
+            <div class="column enable-text">
               <div class="field is-horizontal enable-div">
                 <div class="field-label has-text-left">
                   <label class="label">Enabled</label>
@@ -110,15 +110,17 @@
           </div>
           <hr *ngIf="rolesService.hasEditPermissions()">
           <ng-container *ngIf="service != undefined">
-            <div *ngIf="service.schedule_enabled" class="field is-horizontal">
-              <div class="field-label has-text-left">
-                <label class="label">Service Info</label>
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <ng-container *ngIf="service.protocol && service.address && service.management_port">
-                    <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
-                  </ng-container>
+            <div>
+              <div *ngIf="service.schedule_enabled" class="field is-horizontal service-info">
+                <div class="field-label has-text-left service-info-text">
+                  <label class="label">Service Info</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <ng-container *ngIf="service.protocol && service.address && service.management_port">
+                      <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                    </ng-container>
+                  </div>
                 </div>
               </div>
             </div>
