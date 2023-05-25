@@ -186,7 +186,6 @@ export class ReadingsGraphComponent implements OnDestroy {
         assets.forEach(asset => {
           this.availableAssets.push(asset.assetCode);
         });
-        
         // remove selected graph asset from the dropdown list
         if (this.selectedAsset) {
           const index: number = this.availableAssets.indexOf(this.selectedAsset);
@@ -194,7 +193,7 @@ export class ReadingsGraphComponent implements OnDestroy {
               this.availableAssets.splice(index, 1);
           } 
         }
-        this.availableAssets = this.availableAssets.sort((a, b) => a.name.localeCompare(b.name));     
+        this.availableAssets = this.availableAssets.sort((a, b) => a.localeCompare(b));     
       }
     });
 
@@ -476,6 +475,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           }
         } else {
           strReadings.push({
+            timestamp: r.timestamp,
             key: k,
             data: JSON.stringify(value)
           });
@@ -537,12 +537,14 @@ export class ReadingsGraphComponent implements OnDestroy {
         } else if (Array.isArray(value)) {
           arrReadings.push({
             key: k,
-            read: value
+            read: value,
+            timestamp: r.timestamp
           });
         } else if (typeof value === 'object') {
           strReadings.push({
             key: k,
-            data: JSON.stringify(value)
+            data: JSON.stringify(value),
+            timestamp: r.timestamp
           });
         }
         else {
