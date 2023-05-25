@@ -2,15 +2,11 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <span *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-5">{{notificationServiceName}}
-        Notification Service
-        <button (click)="refreshPageData()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button>
+      <span *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-6">{{notificationServiceName}}
+        <p class="help has-text-grey ctrl-pipeline">Notification Service</p>
       </span>
-      <span *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-5">Notification Service</span>
-      <button [disabled]="pluginInstallationState" class="delete" aria-label="close"
-        (click)="toggleModal(false)"></button>
+      <span *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-6">Notification Service</span>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <form name="notification-form" id="notificationForm" #fg="ngForm">
