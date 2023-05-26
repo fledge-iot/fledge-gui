@@ -74,6 +74,9 @@ a {
   .view-content {
     display: block !important;
   }
+  .margin-bottom {
+    margin-bottom: -0.75rem;
+  }
 }
 
 .cursor-default {
@@ -84,10 +87,6 @@ a {
   cursor: move !important;
 }
 
-.columns {
-  display: block;
-}
-
 .help-icon {
   cursor: pointer !important;
   padding-top: 1rem;
@@ -95,4 +94,25 @@ a {
 
 #taskForm {
   margin: 1.5rem 1rem;
+}
+
+.column-container {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+.enable-text {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: 1344px;
+  margin: auto;
+}
+
+.service-info {
+  max-width: 1344px;
+  margin: auto;
+}
+
+.service-info-text {
+  padding-left: 16px;
 }
