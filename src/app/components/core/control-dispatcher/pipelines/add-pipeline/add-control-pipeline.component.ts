@@ -5,7 +5,7 @@ import { CustomValidator } from '../../../../../directives/custom-validator';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService,
-  FilterService, ConfigurationControlService, ResponseHandler, FileUploaderService, RolesService, ConfigurationService } from '../../../../../services';
+  FilterService, ConfigurationControlService, ResponseHandler, FileUploaderService, RolesService, ConfigurationService, ToastService } from '../../../../../services';
 import { DocService } from '../../../../../services/doc.service';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
@@ -75,7 +75,8 @@ export class AddControlPipelineComponent implements OnInit {
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
-    private router: Router) { }
+    private router: Router,
+    private toast: ToastService) { }
 
   ngOnInit(): void {
     let callsStack = {
@@ -663,6 +664,13 @@ export class AddControlPipelineComponent implements OnInit {
       .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 
+  checkIfSourceDestSame(source, destination) {
+    if (this.selectedSourceType.name === this.selectedDestinationType.name && source.name === destination.name) {
+      return true;
+    }
+    return false;
+  }
+
   onSubmit(form: NgForm) {
     const formData = cloneDeep(form.value);
     let { name } = formData;
@@ -673,6 +681,11 @@ export class AddControlPipelineComponent implements OnInit {
       filters: this.filterPipeline ? this.filterPipeline : [],
       enabled: this.isPipelineEnabled
     }
+    const ifSourceDestSame = this.checkIfSourceDestSame(payload.source, payload.destination);
+    if (ifSourceDestSame) {
+      this.toast.error("Source and Destination can't be same.");
+      return;
+    }      
     if (!this.editMode) {
       payload['name'] = name.trim();
     }
@@ -699,10 +712,6 @@ export class AddControlPipelineComponent implements OnInit {
         this.apiCallsStack = [];
       });
     }
-
-    // if ((payload.source.type !== 1 || payload.source.type !== 3 && payload.source.name === '') || (payload.destination.type !== 4 && payload.destination.name === '')) {
-    //   return;
-    // }
     if (this.editMode) {
       this.updateControlPipeline(payload);
       return;
