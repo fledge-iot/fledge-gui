@@ -10,14 +10,15 @@
           </li>
         </ul>
       </nav>
-      <button *ngIf="editMode" (click)="getControlPipeline()" class="button is-small" id="refresh-check">
-        <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      <button *ngIf="editMode" (click)="getControlPipeline()" class="button is-small" title="Reload" id="refresh-check">
+        <i class="fa fa-xs fa-sync" aria-hidden="true"></i>
       </button>
     </div>
     <div class="card">
       <div class="card-content step-content">
         <form #pipelineForm="ngForm" *ngIf="!isAddFilterWizard">
-          <!-- <span (click)="goToLink({name: selectedFilterPlugin, type: 'Filter'})"
+          <!-- TODO: FOGL-7803
+          <span (click)="goToLink()"
           class=" icon is-small is-tooltip-top tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
           <i class="far fa-question-circle"></i>
         </span> -->
@@ -124,7 +125,7 @@
                                         [ngModel]="selectedSourceName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
-                                    <div *ngIf="selectedSourceName === null && selectedSourceType" class="help is-danger">
+                                    <div *ngIf="!selectedSourceName && selectedSourceType" class="help is-danger">
                                       *required
                                     </div>
                                     <ng-template #staticSourceName>
@@ -191,7 +192,7 @@
                                         [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
-                                    <div *ngIf="selectedDestinationName === null && selectedDestinationType" class="help is-danger">
+                                    <div *ngIf="!selectedDestinationName && selectedDestinationType" class="help is-danger">
                                       *required
                                     </div>
                                     <ng-template #staticDestinationName>
@@ -267,10 +268,10 @@
                       </div>
                     </div>
                   </div>
-                  <div [ngClass]="{'add-filter-div': !name?.value || name.invalid}">
-                  <a [ngClass]="{'disabled-link': !name?.value || name.invalid}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn add-filter">Add new filter</a>
-                  <a [ngClass]="{'disabled-link': !name?.value || name.invalid}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn add-filter">Add filter</a>
-                </div>
+                  <div [ngClass]="{'add-filter-div': name.invalid}">
+                    <a [ngClass]="{'disabled-link': name.invalid}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn add-filter">Add new filter</a>
+                    <a [ngClass]="{'disabled-link': name.invalid}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn add-filter">Add filter</a>
+                  </div>
                 </div>
               </div>
             </div>
