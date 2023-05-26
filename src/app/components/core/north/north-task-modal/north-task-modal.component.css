@@ -74,6 +74,9 @@ a {
   .view-content {
     display: block !important;
   }
+  .margin-bottom {
+    margin-bottom: -0.75rem;
+  }
 }
 
 .cursor-default {
@@ -82,10 +85,6 @@ a {
 
 .cursor-move {
   cursor: move !important;
-}
-
-.columns {
-  display: block;
 }
 
 .help-icon {
