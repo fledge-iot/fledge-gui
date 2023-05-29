@@ -9,7 +9,7 @@
         </button>
       </div>
       <a *ngIf="sharedService.checkAuth()" class="fix-margin button is-light" routerLink="add">
-        <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
+        <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
 
@@ -20,7 +20,7 @@
 
     </header>
     <div class="card-content card-data">
-      <table class="table is-responsive is-hoverable is-striped" *ngIf="controlAcls.length > 0; else noacl">
+      <table class="table is-responsive is-hoverable acl-table is-striped" *ngIf="controlAcls.length > 0; else noacl">
         <thead>
           <tr>
             <th>Name</th>
@@ -70,27 +70,36 @@
             </table>
           </td>
           <td>
-            <button *ngIf="sharedService.checkAuth()" (click)="setACL(acl);openModal('confirmation-dialog')"
-              class="button is-small btn-delete">
-              <span class="icon is-small">
-                <i class="far fa-trash-alt"></i>
-              </span>
-            </button>
+            <div *ngIf="rolesService.hasEditPermissions()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
+              <div class="dropdown-trigger">
+                <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                  <span class="icon">
+                    <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
+                  </span>
+                </a>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                <div class="dropdown-content">
+                  <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item"
+                    (click)="setACL(acl);openModal('confirmation-dialog')">
+                    <span>Delete</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
         </ng-container>
         </tbody>
       </table>
       <ng-template #noacl>
-        <div class="field-body">
-          <div class="field is-narrow">
-            <small class="text-secondary has-text-grey-light"> No Control ACLs found.</small>
-          </div>
+        <div class="has-text-centered">
+          <small class="text-secondary has-text-grey-light">No Control ACLs found.</small>
         </div>
       </ng-template>
       <app-confirmation-dialog id="confirmation-dialog">
         <header class="modal-card-head">
-          <p class="modal-card-title is-size-6">Delete</p>
+          <p class="modal-card-title is-size-6">Delete ACL</p>
           <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
         </header>
         <section class="modal-card-body">

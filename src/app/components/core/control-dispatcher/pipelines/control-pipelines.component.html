@@ -5,13 +5,18 @@
       <div class="card-header-title">
         Control Pipelines
         <button class="button is-small" id="refresh-check" (click)="getControlPipelines()">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          <i class="fa fa-xs fa-sync" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="rolesService?.hasEditPermissions()" class="fix-pad button is-light" (click)="addControlPipeline()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
+      <!-- TODO: FOGL-7803
+      <span class="icon is-small tooltip is-tooltip-bottom is-pulled-right is-hovered btn-margin" data-tooltip="Help"
+        (click)="goToLink('control-dispatcher-service')">
+        <i class="far fa-question-circle"></i>
+      </span> -->
     </header>
     <div class="card-content">
       <div class="content">
@@ -56,12 +61,12 @@
                              
                   <td class="align-content">
                     <span class="is-small">{{pipeline.source.type}}</span>
-                    <span class="help source-name">{{pipeline.source.name ? pipeline.source.name : '*'}}</span>
+                    <span class="help src-dest-name">{{pipeline.source.name ? pipeline.source.name : '*'}}</span>
                   </td>
                   <td></td>
                   <td class="align-content">
                     <span class="is-small">{{pipeline.destination.type}}</span>
-                    <span class="help dest-name">{{pipeline.destination.name ? pipeline.destination.name : '*'}}</span>
+                    <span class="help src-dest-name">{{pipeline.destination.name ? pipeline.destination.name : '*'}}</span>
                   </td>
                   <td></td>
                   <td class="align-content" style="font-size: 0.9rem;">
@@ -69,11 +74,10 @@
                   </td>
                   <td><span class="tag is-rounded">{{pipeline.execution}}</span></td> 
                   <td>
-                    <div *ngIf="sharedService.checkAuth()" id="dropdown-{{i}}" class="dropdown is-left">
+                    <div *ngIf="rolesService.hasEditPermissions()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
                       <div class="dropdown-trigger">
-                        <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu"
-                          (click)="toggleDropdown(i)">
-                          <span class="icon is-small">
+                        <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                          <span class="icon">
                             <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
                           </span>
                         </a>
@@ -82,7 +86,6 @@
                         <div class="dropdown-content">
                           <a class="dropdown-item"
                             (click)="openModal(pipeline.id, pipeline.name, 'deletePipeline', 'Are you sure, you want to delete the pipeline')">
-                            <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
                             Delete
                           </a>
                         </div>

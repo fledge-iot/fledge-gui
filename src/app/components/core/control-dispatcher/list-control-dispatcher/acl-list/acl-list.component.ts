@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { AlertService, SharedService, ProgressBarService } from '../../../../../services';
+import { AlertService, SharedService, ProgressBarService, RolesService } from '../../../../../services';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { orderBy } from 'lodash';
@@ -22,6 +22,7 @@ export class AclListComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     public docService: DocService,
+    public rolesService: RolesService,
     public sharedService: SharedService,
     private ngProgress: ProgressBarService) {
   }
