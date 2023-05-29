@@ -213,6 +213,7 @@
                 <div *ngIf="selectedTab === 5" data-content="5">
                   <div class="columns margin-top">
                     <div class="has-text-centered column" [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-with-data': !isEmptyObject(stringTypeReadingsList)}">
+                      <app-carousel></app-carousel>
                       <ng-container *ngFor="let read of imageReadings">
                         <div id="tab-content">
                           <img [src]="read.image" alt={{read.datapoint}}>
