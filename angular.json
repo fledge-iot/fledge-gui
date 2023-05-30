@@ -39,9 +39,7 @@
               "./node_modules/animate.css/animate.css",
               "./node_modules/@ng-select/ng-select/themes/default.theme.css",
               "./node_modules/bulma-toast/dist/bulma-toast.min.js",
-              "src/assets/css/bulma-steps.min.css",
               "src/assets/css/font-awesome.min.css",
-              "src/assets/css/bulma-tooltip.min.css",
               "src/styles.css"
             ],
             "scripts": [
@@ -121,9 +119,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/assets/css/bulma-steps.min.css",
               "src/assets/css/font-awesome.min.css",
-              "src/assets/css/bulma-tooltip.min.css",
               "src/styles.css"
             ],
             "scripts": []

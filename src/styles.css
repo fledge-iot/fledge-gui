@@ -5,6 +5,8 @@
 @import '~codemirror/addon/lint/lint.css';
 @import '~codemirror/theme/darcula.css';
 @import 'bulma/css/bulma.css';
+@import '@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css';
+@import 'bulma-steps/dist/css/bulma-steps.min.css';
 
 html,
 body,
