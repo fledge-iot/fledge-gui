@@ -20,9 +20,9 @@ export class CarouselComponent implements OnInit {
     this.showSlides(this.slideIndex);
     let time = +localStorage.getItem('PING_INTERVAL');
     setInterval(() => {
-      console.log(this.imageReadings);
+      this.slideIndex = 1;
       this.showSlides(this.slideIndex);
-    }, time);
+    }, time+50);
   }
 
   changeSlide(n) {
