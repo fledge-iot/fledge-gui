@@ -22,10 +22,17 @@ tr:hover .btn-delete {
 }
 
 .btn-margin {
-margin: 20px 10px;
+margin: 17px 7px;
+}
+
+.context-menu {
+  border: none;
 }
 
 .fix-margin {
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
+.is-hoverable.acl-table tr:hover .context-menu {
+  background-color: #fafafa; 
+}

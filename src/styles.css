@@ -74,6 +74,16 @@ table.scroll tbody {
   position: relative !important;
 }
 
+.card-header-title {
+  font-size: 0.9rem;
+  padding: 0.75rem 1.5rem;
+  max-height: 48px !important;
+}
+
+.add-btn {
+  font-size: 0.9rem;
+}
+
 #card-title {
   overflow: hidden;
 }
@@ -320,6 +330,20 @@ a.dropdown-item:hover {
 
  .blur {
   filter: blur(1px);
+ }
+
+ .is-small-font, .label {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+ }
+
+ table thead th {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+ }
+
+ .title-name {
+  font-size: 0.9rem;
  }
 
  /*****************/

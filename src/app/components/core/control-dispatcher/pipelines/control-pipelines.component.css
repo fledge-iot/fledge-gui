@@ -24,9 +24,10 @@ table tr td {
     border: none;
 }
 
-.source-name, .dest-name {
+.src-dest-name {
     color: #707070;
     font-size: .85rem;
+    margin-top: 0rem !important;
 }
 
 .is-hoverable.pipeline-table tr:hover .context-menu {

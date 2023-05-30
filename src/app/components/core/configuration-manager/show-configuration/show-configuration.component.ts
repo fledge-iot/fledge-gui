@@ -14,6 +14,7 @@ export class ShowConfigurationComponent implements OnInit {
   @Input() groupConfiguration: ConfigurationBase<string>[] | null = [];
   @Input() group: string = '';
   @Input() selectedGroup = '';
+  @Input() from = '';
 
   @Output() event = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();

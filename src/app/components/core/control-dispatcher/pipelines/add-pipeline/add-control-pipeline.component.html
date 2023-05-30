@@ -10,14 +10,19 @@
           </li>
         </ul>
       </nav>
-      <button *ngIf="editMode" (click)="getControlPipeline()" class="button is-small" id="refresh-check">
-        <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      <button *ngIf="editMode" (click)="getControlPipeline()" class="button is-small" title="Reload" id="refresh-check">
+        <i class="fa fa-xs fa-sync" aria-hidden="true"></i>
       </button>
     </div>
     <div class="card">
       <div class="card-content step-content">
         <form #pipelineForm="ngForm" *ngIf="!isAddFilterWizard">
-          <div class="column is-four-fifths">
+          <!-- TODO: FOGL-7803
+          <span (click)="goToLink()"
+          class=" icon is-small is-tooltip-top tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          <i class="far fa-question-circle"></i>
+        </span> -->
+          <div class="column">
             <div [hidden]="editMode" class="field is-horizontal">
               <div class="field-label">
                 <label class="label label-name">Name</label>
@@ -90,7 +95,7 @@
                             <div class="column">
                               <div class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label">Type</label>
+                                  <label class="label is-small">Type</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -108,9 +113,9 @@
                                   </div>
                                 </div>
                               </div>
-                              <div *ngIf="!(selectedSourceType.name === 'Any' || selectedSourceType.name === 'API')" class="field is-horizontal">
+                              <div *ngIf="selectedSourceType?.name && !(selectedSourceType.name === 'Any' || selectedSourceType.name === 'API')" class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label">Name</label>
+                                  <label class="label is-small">Name</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -120,7 +125,7 @@
                                         [ngModel]="selectedSourceName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
-                                    <div *ngIf="selectedSourceName === null && selectedSourceType && (selectedSourceType !== 1 || selectedSourceType !== 3)" class="help is-danger">
+                                    <div *ngIf="!selectedSourceName && selectedSourceType" class="help is-danger">
                                       *required
                                     </div>
                                     <ng-template #staticSourceName>
@@ -157,7 +162,7 @@
                             <div class="column">
                               <div class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label">Type</label>
+                                  <label class="label is-small">Type</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -175,9 +180,9 @@
                                   </div>
                                 </div>
                               </div>
-                              <div *ngIf="selectedDestinationType.name !== 'Broadcast'" class="field is-horizontal">
+                              <div *ngIf="selectedDestinationType?.name && selectedDestinationType.name !== 'Broadcast'" class="field is-horizontal">
                                 <div class="field-label is-small">
-                                  <label class="label">Name</label>
+                                  <label class="label is-small">Name</label>
                                 </div>
                                 <div class="field-body">
                                   <div class="field">
@@ -187,7 +192,7 @@
                                         [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
                                       </ng-select>
                                     </div>
-                                    <div *ngIf="selectedDestinationName === null && selectedDestinationType && selectedDestinationType !== 4" class="help is-danger">
+                                    <div *ngIf="!selectedDestinationName && selectedDestinationType" class="help is-danger">
                                       *required
                                     </div>
                                     <ng-template #staticDestinationName>
@@ -243,7 +248,7 @@
                                   (formStatusEvent)="validFilterConfigForm = $event">
                                 </app-configuration-group>
                               </div>
-                              <div class="field">
+                              <div class="field icon-row">
                                 <div class="field has-text-left">
                                   <span class="icon is-small is-tooltip-right tooltip is-pulled-left is-hovered help-icon"
                                     data-tooltip="Help" (click)="goToLink({name: selectedFilterPlugin, type: 'Filter'})">
@@ -263,8 +268,10 @@
                       </div>
                     </div>
                   </div>
-                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn add-filter">Add new filter</a>
-                  <a [ngClass]="{'disabled-link': name.value === '' || !name.value || name.invalid}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn add-filter">Add filter</a>
+                  <div [ngClass]="{'add-filter-div': name.invalid}">
+                    <a [ngClass]="{'disabled-link': name.invalid}" *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true)" class="button is-text text-btn add-filter">Add new filter</a>
+                    <a [ngClass]="{'disabled-link': name.invalid}" *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()" (click)="openAddFilterModal(true, name.value)" class="button is-text text-btn add-filter">Add filter</a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -280,7 +287,7 @@
               </div>
             </div>
           </div>
-          <div *ngIf="rolesService.hasEditPermissions()" class="column is-four-fifths footer-padding">
+          <div *ngIf="rolesService.hasEditPermissions()" class="column footer-padding">
             <div class="columns">
               <div class="column is-2"></div>
               <div class="column" *ngIf="editMode">
