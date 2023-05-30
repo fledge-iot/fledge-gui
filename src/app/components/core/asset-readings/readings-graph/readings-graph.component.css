@@ -165,13 +165,13 @@ table.is-borderless tr {
 .image-reading {
   overflow-y: auto;
   height: calc(100vh - 100px);
-  background-color: #191919;
+  background-color: rgba(20, 20, 20, 0.8);
 }
 
 .image-reading-only {
   overflow-y: auto;
   height: calc(100vh - 100px);
-  background-color: #191919
+  background-color: rgba(20, 20, 20, 0.8);
 }
 
 .table-heading {

@@ -5,11 +5,11 @@
         <img [src]="read.image" alt={{read.datapoint}}>
       </div>
       <small
-        class="has-text-centered text-secondary has-text-grey-lighter is-block">{{getImageReadingsDimensions(read.imageData)}}
+        class="has-text-centered text-secondary has-text-grey-lighter is-block margin-top">{{getImageReadingsDimensions(read.imageData)}}
         Width: {{imageReadingsDimensions.width}}px, Height:
         {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
       </small>
-      <small class="has-text-centered text-secondary has-text-grey-lighter is-block margin-bottom">{{read?.datapoint}},
+      <small class="has-text-centered text-secondary has-text-grey-lighter is-block">{{read?.datapoint}},
         Timestamp:
         {{read?.timestamp}}
       </small>

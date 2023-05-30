@@ -18,27 +18,27 @@
 .next {
   cursor: pointer;
   position: absolute;
-  top: 35%;
-  margin-top: -22px;
-  padding: 16px;
+  top: 36%;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 15px;
   transition: 0.6s ease;
-  user-select: none;
-  width: 60px;
-  height: 60px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background-color: white;
   color: black;
   display: none;
+  padding-top: 6px;
 }
 
 .prev {
   left: 0px;
+  padding-right: 2px;
 }
 
 .next {
   right: 0;
+  padding-left: 2px;
 }
 
 .prev:hover,
@@ -75,4 +75,8 @@
   to {
     opacity: 1
   }
+}
+
+.margin-top {
+  margin-top: 20px;
 }
