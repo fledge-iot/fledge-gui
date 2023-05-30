@@ -461,11 +461,30 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (typeof value === 'string') {
           if (value.includes("__DPIMAGE")) {
             this.getImageReadingsDimensions(value);
-            imageReadings.push({
-              datapoint: k,
+            let img1 = {
+              datapoint: "k1",
               imageData: value,
               timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
-            });
+            };
+              let img2 = {
+                datapoint: "k2",
+              imageData: value,
+              timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
+            };
+            let img3 = {
+              datapoint: "k3",
+              imageData: value,
+              timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
+            };
+              let img4 = {
+              datapoint: "k4",
+              imageData: value,
+              timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
+            };
+            imageReadings.push(img1);
+            imageReadings.push(img2);
+            imageReadings.push(img3);
+            imageReadings.push(img4);
           } else {
             strReadings.push({
               key: k,

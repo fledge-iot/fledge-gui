@@ -47,9 +47,12 @@
   .summary {
     width: 736px;
   }
-  .image-with-data {
+  .image-data {
     height: calc(50vh - 100px) !important;
-    margin-top: 20px !important;
+    margin-top: 20px !important;  
+  }
+  .image-reading {
+    height: calc(50vh - 100px) !important;
   }
 }
 
@@ -150,22 +153,25 @@ table.is-borderless tr {
   margin-bottom: 0px !important;
 }
 
-.margin-bottom {
-  margin-bottom: 20px;
-}
-
 .margin-top {
   margin-top: -5px;
 }
 
-.image-with-data {
-  overflow-y: scroll;
+.image-data {
+  overflow-y: auto;
   height: calc(100vh - 100px);
 }
 
-.image-reading-only {
-  overflow-y: scroll;
+.image-reading {
+  overflow-y: auto;
   height: calc(100vh - 100px);
+  background-color: #191919;
+}
+
+.image-reading-only {
+  overflow-y: auto;
+  height: calc(100vh - 100px);
+  background-color: #191919
 }
 
 .table-heading {
