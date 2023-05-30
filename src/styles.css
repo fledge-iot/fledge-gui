@@ -4,6 +4,7 @@
 @import '~codemirror/addon/fold/foldgutter.css';
 @import '~codemirror/addon/lint/lint.css';
 @import '~codemirror/theme/darcula.css';
+@import 'bulma/css/bulma.css';
 
 html,
 body,
