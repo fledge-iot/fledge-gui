@@ -33,7 +33,7 @@
   color: red;
 }
 
-.tooltip.is-tooltip-multiline::before {
+.tooltip.has-tooltip-multiline::before {
   min-width: 16rem !important;
 }
 

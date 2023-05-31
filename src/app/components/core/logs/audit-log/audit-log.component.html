@@ -84,7 +84,7 @@
               </td>
               <td><small>{{log.severity}}</small></td>
               <td>
-                <small [ngClass]="{'tooltip is-tooltip-left tooltip-help is-hovered': !source}"
+                <small [ngClass]="{'tooltip has-tooltip-left tooltip-help is-hovered': !source}"
                   [attr.data-tooltip]='showtooltip(log.source)'>{{log.source}}</small>
               </td>
               <td><small>{{log.details | json}}</small></td>

@@ -11,7 +11,7 @@
         &nbsp;&nbsp;
         <b>
           <a *ngIf="!pingInfo.version" href="/" style="color: #363636;">Fledge</a>
-          <a *ngIf="pingInfo.version" id="hover-link" class="tooltip is-tooltip-bottom"
+          <a *ngIf="pingInfo.version" id="hover-link" class="tooltip has-tooltip-bottom"
             [attr.data-tooltip]="'v'+pingInfo.version" href="/" style="color: #363636;">Fledge</a>
         </b>
         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -104,7 +104,7 @@
       <ng-template #elseTabTemplate>
         <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <span class="icon has-text-success tooltip is-tooltip-right" data-tooltip="Authentication required.">
+            <span class="icon has-text-success tooltip has-tooltip-right" data-tooltip="Authentication required.">
               <i class="fa fa-sm fa-circle parent-icon"> </i>
             </span>
           </div>
@@ -190,7 +190,7 @@
           <ng-template #elseMobileTemplate>
             <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
               <div class="control">
-                <span class="icon has-text-success tooltip is-tooltip-right" data-tooltip="Authentication required.">
+                <span class="icon has-text-success tooltip has-tooltip-right" data-tooltip="Authentication required.">
                   <i class="fa fa-sm fa-circle parent-icon"> </i>
                 </span>
               </div>
@@ -277,7 +277,7 @@
         <ng-template #elseTemplate>
           <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
             <div class="control">
-              <span class="icon has-text-success tooltip is-tooltip-right" data-tooltip="Authentication required.">
+              <span class="icon has-text-success tooltip has-tooltip-right" data-tooltip="Authentication required.">
                 <i class="fa fa-sm fa-circle parent-icon"> </i>
               </span>
             </div>
@@ -320,7 +320,7 @@
     <div class="navbar-item">
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
-          <a class="tooltip is-tooltip-left" data-tooltip="Shut Down Fledge" (click)="openModal()">
+          <a class="tooltip has-tooltip-left" data-tooltip="Shut Down Fledge" (click)="openModal()">
             <i class="fa fa-power-off" aria-hidden="true"></i>
           </a>
         </span>
@@ -329,7 +329,7 @@
     <div class="navbar-item">
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
-          <a id="restart" class="tooltip is-tooltip-left" data-tooltip="Restart Fledge" (click)="openRestartModal()">
+          <a id="restart" class="tooltip has-tooltip-left" data-tooltip="Restart Fledge" (click)="openRestartModal()">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </a>
         </span>

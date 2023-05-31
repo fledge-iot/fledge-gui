@@ -93,7 +93,7 @@
                 <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
               <div *ngIf="selectedRulePlugin" class="column is-1">
-                <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+                <span class="icon is-small has-tooltip-left tooltip is-pulled-right is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink(selectedRulePlugin, notificationRulePlugins[0].type)">
                   <i class="far fa-question-circle"></i>
                 </span>
@@ -151,7 +151,7 @@
                 <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
               <div *ngIf="selectedDeliveryPlugin" class="column is-1">
-                <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+                <span class="icon is-small has-tooltip-left tooltip is-pulled-right is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink(selectedDeliveryPlugin, notificationDeliveryPlugins[0].type)">
                   <i class="far fa-question-circle"></i>
                 </span>
@@ -184,7 +184,7 @@
         <div class="box step-content" id="c-6">
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-multiline"
                 data-tooltip="Type of notification">Type</label>
             </div>
             <div class="field-body">
@@ -208,7 +208,7 @@
                 </div>
               </div>
               <div
-                class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon notification-type-help"
+                class="icon is-small has-tooltip-right tooltip is-pulled-right is-hovered help-icon notification-type-help"
                 data-tooltip="Help" (click)="goToNotificationTypeLink()">
                 <i class="far fa-question-circle"></i>
               </div>
@@ -216,7 +216,7 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-multiline"
                 data-tooltip="A dead period (in seconds), during which notifications will not be sent regardless of the notification type.">Retrigger
                 Time</label>
             </div>
@@ -234,7 +234,7 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-multiline"
                 data-tooltip="Enabled">Enabled</label>
             </div>
             <div class="field-body">
