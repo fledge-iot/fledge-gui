@@ -7,7 +7,7 @@
           <span class="asset-code">
             {{assetCode}}
           </span>
-          <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
+          <button *ngIf="!isAlive" (click)="refresh()" class="button small-btn" id="refresh-check">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </div>
@@ -21,22 +21,22 @@
         </ng-container>
       </span>
       <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
-        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button is-small playback-button">
+        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="smallbtn button small-btn playback-button">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
         <ng-container *ngIf="isAlive">
-          <button (click)="toggleAutoRefresh(false)" class="button is-small playback-button">
+          <button (click)="toggleAutoRefresh(false)" class="button small-btn playback-button">
             <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
           </button>
         </ng-container>
         <ng-container *ngIf="!isAlive">
           <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
-            class="button is-small playback-button">
+            class="button small-btn playback-button">
             <i class="fa fa-sm fa-play" aria-hidden="true"></i>
           </button>
         </ng-container>
         <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()"
-          class="button is-small playback-button">
+          class="button small-btn playback-button">
           <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
         </button>
       </ng-container>
@@ -203,7 +203,7 @@
                           </ng-container>
                         </tr>
                         <tr *ngIf="buttonText !== ''">
-                          <td><a class="button is-small is-text" (click)="showAll()">{{buttonText}}</a></td>
+                          <td><a class="button small-btn is-text" (click)="showAll()">{{buttonText}}</a></td>
                           <td></td>
                         </tr>
                       </tbody>
