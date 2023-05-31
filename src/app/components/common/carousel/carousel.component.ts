@@ -30,14 +30,8 @@ export class CarouselComponent implements OnInit {
     this.showSlides(this.slideIndex);
   }
 
-  // currentSlide(n) {
-  //   this.slideIndex = n;
-  //   this.showSlides(this.slideIndex);
-  // }
-
   showSlides(n) {
     let slides = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName("slides");
-    let dots = document.getElementsByClassName("dot");
     if (n >= slides.length) {
       document.getElementById('next').style.display = "none";
     }
@@ -54,10 +48,6 @@ export class CarouselComponent implements OnInit {
     for (let i = 0; i < slides.length; i++) {
       slides[i].style.display = "none";
     }
-    // for (i = 0; i < dots.length; i++) {
-    //   dots[i].className = dots[i].className.replace(" active", "");
-    // }
-    // dots[this.slideIndex - 1].className += " active";
     slides[this.slideIndex - 1].style.display = "block";
   }
 
