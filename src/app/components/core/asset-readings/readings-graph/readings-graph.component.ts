@@ -648,7 +648,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (!this.isAlive) {
       this.backwardReadingCounter = 0;
       this.pauseTime = Date.now();
-      if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
+      if (this.isLatestReadings) {
         this.getLatestReading(this.assetCode);
       } else {
         this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
@@ -931,5 +931,29 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.destroy$.next(true);
     // Now let's also unsubscribe from the subject itself:
     this.destroy$.unsubscribe();
+  }
+
+  toggleLatestReadingAutoRefresh(refresh: boolean){
+    this.isAlive = refresh;
+    // clear interval subscription before initializing it again
+    if (this.latestReadingSubscription) {
+      this.latestReadingSubscription.unsubscribe();
+    }
+
+    // Instantly make a call on clicking play button
+    if(this.isAlive){
+      this.getLatestReading(this.assetCode);
+    }
+
+    // start auto refresh
+    this.latestReadingSubscription = interval(this.graphRefreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        if (this.selectedTab === 4) {
+          this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+        } else {
+          this.getLatestReading(this.assetCode);
+        }
+      });
   }
 }
