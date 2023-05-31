@@ -10,8 +10,10 @@ import { DEBOUNCE_TIME } from '../../../utils';
 })
 export class TimeDropdownComponent implements OnInit, OnDestroy {
   graphUnit = ['seconds', 'minutes', 'hours', 'days'];
+  graphUnit2 = ['now', 'last reading', 'custom'];
   optedTime = 600; // Set graph optedTime to default 10 minutes
   selectedUnit: string = 'minutes';
+  selectedUnit2: string = 'now';
 
   @ViewChild('time', { static: true }) timeInput: ElementRef;
   private fromEventSub: Subscription;
@@ -54,6 +56,15 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
       this.dropdownOpenEvent.emit(true);
     }
   }
+  public toggleDropdown2() {
+    const dropDown = document.querySelector('#unit-dropdown2');
+    dropDown.classList.toggle('is-active');
+    if (!dropDown.classList.contains('is-active')) {
+      this.dropdownOpenEvent.emit(false);
+    } else {
+      this.dropdownOpenEvent.emit(true);
+    }
+  }
 
   setGraphUnit(unit: string) {
     this.selectedUnit = unit;
@@ -62,6 +73,14 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
     let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit}
     this.updateGraphEvent.emit(timeObject);
     this.toggleDropdown();
+  }
+  setGraphUnit2(unit: string) {
+    this.selectedUnit2 = unit;
+    // this.optedTime = this.calculateOptedTime();
+    // // emit changed graph time
+    // let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit}
+    // this.updateGraphEvent.emit(timeObject);
+    this.toggleDropdown2();
   }
 
   getMaxTime() {
@@ -109,6 +128,15 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.fromEventSub.unsubscribe();
+  }
+
+  getmaxDate(){
+    let date = new Date();
+    let maxDate = date.toISOString();
+    let maxDate2 = maxDate.slice(0, -8);
+    console.log(maxDate);
+    console.log(maxDate2);
+    return maxDate2;
   }
 
 }

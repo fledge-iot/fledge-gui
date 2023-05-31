@@ -1,9 +1,9 @@
 <div class="field has-addons">
-  <div class="control column is-7 no-padding">
+  <div class="control column is-3 no-padding">
     <input class="input" id="time" type="number" #time min="1" max="getMaxTime()" appIntegerOnly>
   </div>
 
-  <div id="unit-dropdown" class="dropdown control column is-5 no-padding">
+  <div id="unit-dropdown" class="dropdown control column is-3 no-padding">
     <div class="dropdown-trigger">
       <button class="button is-small has-background-white-ter unit-button" aria-haspopup="true"
         aria-controls="dropdown-menu" (click)=toggleDropdown()>
@@ -18,5 +18,26 @@
         <a *ngFor="let unit of graphUnit" class="dropdown-item" (click)="setGraphUnit(unit)">{{unit}}</a>
       </div>
     </div>
+  </div>
+
+  <div id="unit-dropdown2" class="dropdown control column is-2 no-padding">
+    <div class="dropdown-trigger">
+      <button class="button is-small has-background-white-ter unit-button" aria-haspopup="true"
+        aria-controls="dropdown-menu" (click)=toggleDropdown2()>
+        <span>{{selectedUnit2}}</span>
+        <span class="icon is-small">
+          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+        </span>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu2" role="menu">
+      <div class="dropdown-content">
+        <a *ngFor="let unit of graphUnit2" class="dropdown-item" (click)="setGraphUnit2(unit)">{{unit}}</a>
+      </div>
+    </div>
+  </div>
+  <div class="control column is-4 no-padding margin-left">
+    <input type="datetime-local" step="1" class="input height" [disabled]="selectedUnit2 !== 'custom'" [max]="getmaxDate()">
+    <!-- <input type="time" step="1" class="input height" [disabled]="selectedUnit2 !== 'custom'" max="12:55" required> -->
   </div>
 </div>
