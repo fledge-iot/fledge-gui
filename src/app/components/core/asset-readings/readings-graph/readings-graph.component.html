@@ -21,7 +21,7 @@
         </ng-container>
       </span>
       <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
-        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="smallbtn button small-btn playback-button">
+        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button small-btn playback-button">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
         <ng-container *ngIf="isAlive">
