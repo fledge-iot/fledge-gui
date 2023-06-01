@@ -12,7 +12,7 @@
   padding: 15px !important;
 }
 
-::ng-deep .button.small-btn {
+:host ::ng-deep .button.small-btn {
   font-size: 0.90rem !important;
 }
 
