@@ -55,9 +55,6 @@ a {
 }
 
 @media screen and (min-width: 769px) {
-  .view-content {
-    display: block !important;
-  }
   .margin-bottom {
     margin-bottom: -0.75rem;
   }
