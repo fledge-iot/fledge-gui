@@ -1,15 +1,16 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-carousel',
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.css']
 })
-export class CarouselComponent implements OnInit {
+export class CarouselComponent implements OnDestroy {
 
   slideIndex = 1;
   imageReadingsDimensions = { width: 0, height: 0, depth: 0 };
   @Input() imageReadings: any;
+  intervalId: any;
 
   constructor() { }
 
@@ -17,12 +18,16 @@ export class CarouselComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.showSlides(this.slideIndex);
     let time = +localStorage.getItem('PING_INTERVAL');
-    setInterval(() => {
+    // console.log(this.imageReadings);
+    this.intervalId = setInterval(() => {
+      // console.log(this.imageReadings);
+      // let slides = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName("slides");
+      // console.log(slides);
       this.slideIndex = 1;
       this.showSlides(this.slideIndex);
-    }, time+50);
+    }, time+100);
+    this.showSlides(this.slideIndex);
   }
 
   changeSlide(n) {
@@ -58,6 +63,10 @@ export class CarouselComponent implements OnInit {
     this.imageReadingsDimensions.width = dimensions[0];
     this.imageReadingsDimensions.height = dimensions[1];
     this.imageReadingsDimensions.depth = dimensions[2];
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.intervalId);
   }
 
 }
