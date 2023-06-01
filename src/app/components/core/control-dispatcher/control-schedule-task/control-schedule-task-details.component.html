@@ -25,7 +25,7 @@
             <div class="field-body">
               <div class="group">
                 <div class="field">
-                  <div *ngIf="sharedService.checkAuth() && !editMode;else staticScriptDiv" class="control">
+                  <div *ngIf="rolesService?.hasEditPermissions() && !editMode;else staticScriptDiv" class="control">
                     <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
                       <div class="dropdown-trigger">
                         <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
@@ -48,8 +48,8 @@
                   <ng-template #staticScriptDiv>
                     <div class="control">
                       <input name="script" class="input is-small" type="text" [value]="script? script: 'None'"
-                        [ngClass]="{'is-static':!sharedService.checkAuth() || editMode, 'has-text-grey-light is-size-7': !script}"
-                        [readonly]="!sharedService.checkAuth() || editMode">
+                        [ngClass]="{'is-static':!rolesService?.hasEditPermissions() || editMode, 'has-text-grey-light is-size-7': !script}"
+                        [readonly]="!rolesService?.hasEditPermissions() || editMode">
                     </div>
                   </ng-template>
                 </div>

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
+import { AlertService, ProgressBarService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { AclService } from '../../../../services/acl.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { uniqBy } from 'lodash';
@@ -42,7 +42,8 @@ export class AddControlAclComponent implements OnInit {
     private dialogService: DialogService,
     private docService: DocService,
     private servicesApiService: ServicesApiService,
-    public sharedService: SharedService) { }
+    public sharedService: SharedService,
+    public rolesService: RolesService) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {

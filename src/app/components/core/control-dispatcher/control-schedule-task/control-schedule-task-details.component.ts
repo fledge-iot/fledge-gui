@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertService, ConfigurationService, ProgressBarService, SchedulesService, SharedService } from '../../../../services';
+import { AlertService, ConfigurationService, ProgressBarService, SchedulesService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { isEmpty } from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,6 +28,7 @@ export class ControlScheduleTaskDetailsComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private configService: ConfigurationService,
+    public rolesService: RolesService,
     private router: Router) {
     this.controlForm = this.fb.group({
       parameters: this.fb.array([])

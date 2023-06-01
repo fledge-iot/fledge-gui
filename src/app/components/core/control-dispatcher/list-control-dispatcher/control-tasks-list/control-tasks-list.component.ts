@@ -4,7 +4,8 @@ import {
   SharedService,
   ProgressBarService,
   SchedulesService,
-  ConfigurationService
+  ConfigurationService,
+  RolesService
 } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
@@ -32,6 +33,7 @@ export class ControlTasksListComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     public sharedService: SharedService,
+    public rolesService: RolesService,
     private cd: ChangeDetectorRef,
     private ngProgress: ProgressBarService) {
     this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {

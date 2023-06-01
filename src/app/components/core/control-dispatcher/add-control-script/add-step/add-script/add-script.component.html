@@ -4,7 +4,7 @@
   </div>
   <div class="field-body">
     <div class="field is-narrow">
-      <div *ngIf="sharedService.checkAuth();else staticScriptDiv" class="control">
+      <div *ngIf="rolesService?.hasEditPermissions();else staticScriptDiv" class="control">
         <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
@@ -27,8 +27,8 @@
       <ng-template #staticScriptDiv>
         <div class="control">
           <input name="script" class="input is-small" type="text" [ngModel]="config.name?config.name:'None'"
-            [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.name}"
-            [readonly]="!sharedService.checkAuth()">
+            [ngClass]="{'is-static':!rolesService?.hasEditPermissions(), 'has-text-grey-light is-size-7': !config.name}"
+            [readonly]="!rolesService?.hasEditPermissions()">
         </div>
       </ng-template>
     </div>
@@ -41,7 +41,7 @@
     </div>
     <div class="field-body">
       <div class="field is-narrow">
-        <div *ngIf="sharedService.checkAuth();else staticExecutionDiv" class="control">
+        <div *ngIf="rolesService?.hasEditPermissions();else staticExecutionDiv" class="control">
           <div #executionDropDown id="execution-dropdown-{{controlIndex}}" class="dropdown is-left">
             <div class="dropdown-trigger">
               <button (click)="toggleDropDown(executionDropDown.id)" class="button is-small" aria-haspopup="true"
@@ -66,11 +66,11 @@
         <ng-template #staticExecutionDiv>
           <div class="control" *ngIf="config.execution;else noExecution">
             <input name="execution" class="input is-small" type="text" [(ngModel)]="config.execution"
-              [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+              [ngClass]="{'is-static':!rolesService?.hasEditPermissions()}" [readonly]="!rolesService?.hasEditPermissions()">
           </div>
           <ng-template #noExecution>
             <div class="control">
-              <span *ngIf="!sharedService.checkAuth()" class="has-text-grey-light is-size-7">None</span>
+              <span *ngIf="!rolesService?.hasEditPermissions()" class="has-text-grey-light is-size-7">None</span>
             </div>
           </ng-template>
         </ng-template>

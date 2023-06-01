@@ -3,7 +3,7 @@ import { FormGroup, NgForm } from '@angular/forms';
 import { ITreeOptions, ITreeState, TreeComponent } from '@circlon/angular-tree-component';
 import { isEmpty, sortBy } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
-import { AlertService, ConfigurationService, SharedService } from '../../../../../../services';
+import { AlertService, ConfigurationService, SharedService, RolesService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-configure',
@@ -42,6 +42,7 @@ export class AddConfigureComponent implements OnInit {
     private alertService: AlertService,
     private configurationService: ConfigurationService,
     public sharedService: SharedService,
+    public rolesService: RolesService,
     private control: NgForm) { }
 
   ngOnChanges() {

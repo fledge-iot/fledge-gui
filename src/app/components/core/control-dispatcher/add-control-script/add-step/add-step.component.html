@@ -1,8 +1,8 @@
 <div cdkDropList (cdkDropListDropped)="onDrop($event)">
   <div #controlStep class="steps-list" *ngFor="let control of stepControlsList; let i = index;trackBy:trackByFn" cdkDrag
-    [cdkDragDisabled]="stepControlsList?.length < 2  || !sharedService.checkAuth()">
+    [cdkDragDisabled]="stepControlsList?.length < 2  || !rolesService?.hasEditPermissions()">
     <div class="box" cdkDragHandle
-      [ngClass]="{'cursor-move': stepControlsList.length >= 2 && sharedService.checkAuth()}">
+      [ngClass]="{'cursor-move': stepControlsList.length >= 2 && rolesService?.hasEditPermissions()}">
       <div class="field is-horizontal">
         <div class="field-label is-small">
           <label class="label">Step</label>
@@ -12,7 +12,7 @@
             <div class="control">
               <div #ctlDiv [id]="'step-dropdown-' + control?.order" class="dropdown is-left"
                 *ngIf="control.add; else staticStep">
-                <div *ngIf="sharedService.checkAuth()" class="dropdown-trigger">
+                <div *ngIf="rolesService?.hasEditPermissions()" class="dropdown-trigger">
                   <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                     (click)="toggleDropDown(ctlDiv.id)">
                     <span>{{control?.key? (control?.key | titlecase): 'Choose step type'}}</span>
@@ -36,7 +36,7 @@
               </div>
             </ng-template>
           </div>
-          <ng-container *ngIf="sharedService.checkAuth()">
+          <ng-container *ngIf="rolesService?.hasEditPermissions()">
             <div class="field has-text-right" [ngClass]="{'close-btn': i > 0 || update}">
               <button (click)="deleteStepControl(control?.order)" class="button is-small btn-delete">
                 <span class="icon is-small">
@@ -71,15 +71,15 @@
   </div>
   <!-- <span ><small
       class="has-text-grey-dark">None</small></span> -->
-  <div class="field" *ngIf="stepControlsList.length === 0 && !sharedService.checkAuth()">
+  <div class="field" *ngIf="stepControlsList.length === 0 && !rolesService?.hasEditPermissions()">
     <div class="control">
       <input class="input is-small" type="text" value='None'
-        [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !sharedService.checkAuth() }"
-        [readonly]="!sharedService.checkAuth()">
+        [ngClass]="{'is-static':!rolesService?.hasEditPermissions(), 'has-text-grey-light is-size-7': !rolesService?.hasEditPermissions() }"
+        [readonly]="!rolesService?.hasEditPermissions()">
     </div>
   </div>
 </div>
-<div class="columns" *ngIf="sharedService.checkAuth()">
+<div class="columns" *ngIf="rolesService?.hasEditPermissions()">
   <div class="column">
     <div class="control">
       <button (click)="addStepControl()" class="button is-small">

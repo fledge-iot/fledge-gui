@@ -32,7 +32,7 @@
                   <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
                     [(ngModel)]="controlScript.name" title="No single quotes and double quotes!"
                     [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
-                    [ngClass]="{'is-static': editMode, 'is-small':sharedService.checkAuth() && !editMode}"
+                    [ngClass]="{'is-static': editMode, 'is-small':rolesService?.hasEditPermissions() && !editMode}"
                     [readonly]="editMode">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
@@ -58,7 +58,7 @@
               <label class="label">ACL</label>
             </div>
             <div class="field-body">
-              <div class="field" *ngIf="sharedService.checkAuth();else staticACLDiv">
+              <div class="field" *ngIf="rolesService?.hasEditPermissions();else staticACLDiv">
                 <div class="control">
                   <div id="acl-dropdown" class="dropdown is-left">
                     <div class="dropdown-trigger">
@@ -83,15 +83,15 @@
                 <div class="field">
                   <div class="control">
                     <input name="acl" class="input" type="text" [value]="selectedACL ? selectedACL : 'None'"
-                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedACL}"
-                      [readonly]="!sharedService.checkAuth()">
+                      [ngClass]="{'is-static':!rolesService?.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedACL}"
+                      [readonly]="!rolesService?.hasEditPermissions()">
                   </div>
                 </div>
               </ng-template>
             </div>
           </div>
         </div>
-        <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths">
+        <div *ngIf="rolesService?.hasEditPermissions()" class="column is-four-fifths">
           <div class="columns">
             <div class="column is-2"></div>
             <div class="column" *ngIf="editMode">

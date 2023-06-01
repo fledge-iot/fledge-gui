@@ -6,7 +6,7 @@
     <div class="field is-narrow">
       <div class="control">
         <div #configureDropdown id="configure-dropdown-{{controlIndex}}" class="dropdown is-left">
-          <div *ngIf="sharedService.checkAuth();else staticCategoryDiv" class="dropdown-trigger">
+          <div *ngIf="rolesService?.hasEditPermissions();else staticCategoryDiv" class="dropdown-trigger">
             <button (click)="toggleDropDown(configureDropdown.id)" class="button is-small" aria-haspopup="true"
               aria-controls="dropdown-menu">
               <span>{{config?.category? config?.category : 'Select category'}}</span>
@@ -28,8 +28,8 @@
         <div class="control">
           <input name="category" size="50" class="input is-small" type="text"
             [ngModel]="config.category?config.category: 'None'"
-            [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.category}"
-            [readonly]="!sharedService.checkAuth()">
+            [ngClass]="{'is-static':!rolesService?.hasEditPermissions(), 'has-text-grey-light is-size-7': !config.category}"
+            [readonly]="!rolesService?.hasEditPermissions()">
         </div>
       </ng-template>
     </div>
@@ -41,7 +41,7 @@
   </div>
   <div class="field-body" *ngIf="configItems?.length > 0 else noconfig">
     <div class="field is-narrow">
-      <div class="control" *ngIf="sharedService.checkAuth();else staticConfigItemDiv">
+      <div class="control" *ngIf="rolesService?.hasEditPermissions();else staticConfigItemDiv">
         <div #configItem id="config-dropdown" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(configItem.id)" class="button is-small" aria-haspopup="true"
@@ -64,7 +64,7 @@
       <ng-template #staticConfigItemDiv>
         <div class="control">
           <input name="config" size="25" class="input is-small" type="text" [(ngModel)]="selectedConfigItem"
-            [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+            [ngClass]="{'is-static':!rolesService?.hasEditPermissions()}" [readonly]="!rolesService?.hasEditPermissions()">
         </div>
       </ng-template>
     </div>
@@ -72,7 +72,7 @@
       <div class="control">
         <input class="input is-small name-control" name="value" type="text" placeholder="value"
           (ngModelChange)="setValue($event)" [ngModel]="configValue"
-          [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+          [ngClass]="{'is-static':!rolesService?.hasEditPermissions()}" [readonly]="!rolesService?.hasEditPermissions()">
       </div>
     </div>
   </div>

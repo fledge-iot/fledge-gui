@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { AclService } from '../../../../services/acl.service';
-import { AlertService, ProgressBarService, SharedService } from '../../../../services';
+import { AlertService, ProgressBarService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
@@ -40,6 +40,7 @@ export class AddControlScriptComponent implements OnInit {
     private dialogService: DialogService,
     public sharedService: SharedService,
     public docService: DocService,
+    public rolesService: RolesService,
     private router: Router) { }
 
   ngOnInit(): void {

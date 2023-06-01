@@ -38,7 +38,7 @@
         <input type="checkbox" [checked]="script?.schedule?.enabled" (change)="updateScheduleStatus(script?.schedule)">
       </td>
       <td>
-        <div *ngIf="sharedService.checkAuth()" class="dropdown is-hoverable">
+        <div *ngIf="rolesService?.hasEditPermissions()" class="dropdown is-hoverable">
           <div class="dropdown-trigger">
             <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
               <span class="icon is-small">

@@ -4,20 +4,20 @@
   </div>
   <div class="field-body">
     <div class="field is-narrow">
-      <div class="control" *ngIf="sharedService.checkAuth(); else staticDuration">
+      <div class="control" *ngIf="rolesService?.hasEditPermissions(); else staticDuration">
         <input class="input is-small name-control" type="number" name="duration" placeholder="duration"
           [ngModel]="config?.duration" appNumberOnly (ngModelChange)="setDuration($event)"
-          [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+          [ngClass]="{'is-static':!rolesService?.hasEditPermissions()}" [readonly]="!rolesService?.hasEditPermissions()">
       </div>
       <ng-template #staticDuration>
         <div class="control" *ngIf="config.duration; else noDuration">
           <input class="input is-small name-control" type="number" name="duration" [ngModel]="config?.duration"
-            (ngModelChange)="config.duration" appNumberOnly [ngClass]="{'is-static':!sharedService.checkAuth()}"
-            [readonly]="!sharedService.checkAuth()">
+            (ngModelChange)="config.duration" appNumberOnly [ngClass]="{'is-static':!rolesService?.hasEditPermissions()}"
+            [readonly]="!rolesService?.hasEditPermissions()">
         </div>
         <ng-template #noDuration>
           <div class="control">
-            <span *ngIf="!sharedService.checkAuth()" class="has-text-grey-light is-size-7">None</span>
+            <span *ngIf="!rolesService?.hasEditPermissions()" class="has-text-grey-light is-size-7">None</span>
           </div>
         </ng-template>
       </ng-template>

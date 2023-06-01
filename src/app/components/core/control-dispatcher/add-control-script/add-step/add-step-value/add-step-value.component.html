@@ -10,7 +10,7 @@
             <div class="control">
               <input placeholder="key" class="input is-small" type="text" name="key-{{control.index}}"
                 [ngModel]="control.key" (ngModelChange)="setKey(control.index, $event)"
-                [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+                [ngClass]="{'is-static':!rolesService?.hasEditPermissions()}" [readonly]="!rolesService?.hasEditPermissions()">
             </div>
           </div>
           &nbsp;
@@ -18,11 +18,11 @@
             <div class="control">
               <input placeholder="value" class="input is-small" type="text" required name="val-{{control.index}}"
                 [ngModel]="control.value" (ngModelChange)="setValue(control.index, $event)"
-                [ngClass]="{'is-static':!sharedService.checkAuth()}" [readonly]="!sharedService.checkAuth()">
+                [ngClass]="{'is-static':!rolesService?.hasEditPermissions()}" [readonly]="!rolesService?.hasEditPermissions()">
             </div>
           </div>
           &nbsp;
-          <div *ngIf="(i > 0 || update) && sharedService.checkAuth()" class="field">
+          <div *ngIf="(i > 0 || update) && rolesService?.hasEditPermissions()" class="field">
             <button (click)="deleteControl(control.index)" class="delete is-small">
             </button>
           </div>
@@ -31,7 +31,7 @@
     </div>
   </div>
   <ng-template #NoParameter>
-    <div class="field-body" *ngIf="!sharedService.checkAuth()">
+    <div class="field-body" *ngIf="!rolesService?.hasEditPermissions()">
       <div class="field">
         <div class="control">
           <span class="has-text-grey-light is-size-7 no-parameter">None</span>
@@ -39,11 +39,11 @@
       </div>
     </div>
   </ng-template>
-  <div *ngIf="sharedService.checkAuth() && parameters.length === 0" class="field-body btn-field-body">
+  <div *ngIf="rolesService?.hasEditPermissions() && parameters.length === 0" class="field-body btn-field-body">
     <template [ngTemplateOutlet]="stepBtnTemplate"></template>
   </div>
 </div>
-<div *ngIf="sharedService.checkAuth() && parameters.length > 0" class="field is-horizontal">
+<div *ngIf="rolesService?.hasEditPermissions() && parameters.length > 0" class="field is-horizontal">
   <div class="field-label is-small">
     <label class="label"></label>
   </div>
