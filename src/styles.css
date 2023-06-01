@@ -350,4 +350,18 @@ a.dropdown-item:hover {
   font-size: 0.9rem;
  }
 
+ .icon-group {
+  padding-left: 16px;;
+ }
+
+ .service-info {
+  max-width: 1344px;
+  margin: auto;
+  padding-bottom: 10px;
+ }
+
+  .service-info-text {
+    padding-left: 16px;
+  }
+
  /*****************/

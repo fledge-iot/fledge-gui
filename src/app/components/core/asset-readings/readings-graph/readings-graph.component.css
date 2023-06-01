@@ -63,10 +63,13 @@ table.is-borderless tr a {
   padding-left: 0;
 }
 
-table.is-borderless td,
 table.is-borderless tr {
   border: 0 !important;
   vertical-align: middle;
+}
+
+table.is-borderless td {
+  border: 0 !important;
 }
 
 .data-table {
