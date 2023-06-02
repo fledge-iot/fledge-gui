@@ -378,4 +378,8 @@ a.dropdown-item:hover {
       flex-grow: 2 !important;
     }
   }
+
+  span.tooltip {
+    border-bottom: none;
+  }
  /*****************/
