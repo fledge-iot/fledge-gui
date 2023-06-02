@@ -23,9 +23,6 @@
 
 .card { overflow: visible;}
 .card-content { overflow: visible; }
-.card-header-title {
-  padding: unset;
-}
 
 #refresh-check {
   margin-left: 3px;
