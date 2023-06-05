@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
-import { SharedService, RolesService } from '../../../../../../services';
+import { RolesService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-step-value',
@@ -17,7 +17,6 @@ export class AddStepValueComponent implements OnInit {
   @Input() update = false;
 
   constructor(private control: NgForm,
-    public sharedService: SharedService,
     public rolesService: RolesService) { }
 
   ngOnChanges() {

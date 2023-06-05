@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, NgForm } from '@angular/forms';
-import { AlertService, ServicesApiService, SharedService, RolesService } from '../../../../../../services';
+import { AlertService, ServicesApiService, RolesService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-operation',
@@ -19,7 +19,6 @@ export class AddOperationComponent implements OnInit {
   constructor(
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
-    public sharedService: SharedService,
     public rolesService: RolesService,
     private control: NgForm) { }
 

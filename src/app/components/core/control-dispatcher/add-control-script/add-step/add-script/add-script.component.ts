@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ControlContainer, FormGroup, NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
-import { AlertService, SharedService, RolesService } from '../../../../../../services';
+import { AlertService, RolesService } from '../../../../../../services';
 import { ControlDispatcherService } from '../../../../../../services/control-dispatcher.service';
 
 @Component({
@@ -26,7 +26,6 @@ export class AddScriptComponent implements OnInit {
     private route: ActivatedRoute,
     private alertService: AlertService,
     private controlService: ControlDispatcherService,
-    public sharedService: SharedService,
     public rolesService: RolesService,
     private control: NgForm) { }
 

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {
   AlertService,
-  SharedService,
   ProgressBarService,
   SchedulesService,
   ConfigurationService,
@@ -32,7 +31,6 @@ export class ControlTasksListComponent implements OnInit {
     private configurationService: ConfigurationService,
     private alertService: AlertService,
     private dialogService: DialogService,
-    public sharedService: SharedService,
     public rolesService: RolesService,
     private cd: ChangeDetectorRef,
     private ngProgress: ProgressBarService) {

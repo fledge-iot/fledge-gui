@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
-import { SharedService, RolesService } from '../../../../../../services';
+import { RolesService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-step-condition',
@@ -19,7 +19,6 @@ export class AddStepConditionComponent implements OnInit {
   showConditionControl = false;
 
   constructor(private control: NgForm,
-    public sharedService: SharedService,
     public rolesService: RolesService) { }
 
   ngOnChanges() {
