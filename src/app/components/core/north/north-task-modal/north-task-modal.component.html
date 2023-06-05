@@ -83,7 +83,7 @@
             <div class="column has-text-centered">
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
-                  <span class="icon" title="Add Filters">
+                  <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
                     <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
                   </span>
                 </a>

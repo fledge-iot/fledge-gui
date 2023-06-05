@@ -3,7 +3,7 @@
     <header class="card-header">
       <div class="card-header-title">
         <span>Tasks</span>
-        <button *ngIf="!isAlive" (click)="getLatestTasks()" class="button is-small" id="refresh-check">
+        <button *ngIf="!isAlive" (click)="getLatestTasks()" title="Reload" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>

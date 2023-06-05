@@ -6,7 +6,7 @@
         <i class="far fa-question-circle"></i>
       </span>
       <span *ngIf="!isAlive" class="icon is-small is-pulled-right is-hovered assets-control" (click)="getAsset()">
-        <i class="fa fa-sm fa-sync-alt" aria-hidden="true"></i>
+        <i class="fa fa-sm fa-sync-alt" aria-hidden="true" title="Reload"></i>
       </span>
       <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
         <span *ngIf="assets?.length > 0"
