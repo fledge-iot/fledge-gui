@@ -5,11 +5,11 @@ import { CanActivate, Router } from '@angular/router';
 export class AuthCheckGuard implements CanActivate {
   constructor(private router: Router) { }
   canActivate() {
-    if (sessionStorage.getItem('token') || sessionStorage.getItem('LOGIN_SKIPPED')) {
-      // logged in so return true
+    if (sessionStorage.getItem('token') || sessionStorage.getItem('LOGIN_SKIPPED') == 'true') {
+      // return true for (auth=optional) or (auth=mandatory and user role=any)
       return true;
     }
-    // not logged in so redirect to login page
+    // redirect to login for auth=mandatory and without any user token i.e. trying to access from url
     this.router.navigate(['/login']);
     return false;
   }
