@@ -55,16 +55,9 @@ a {
 }
 
 @media screen and (min-width: 769px) {
-  .view-content {
-    display: block !important;
-  }
   .margin-bottom {
     margin-bottom: -0.75rem;
   }
-}
-
-.btnDelete {
-  margin: 2px;
 }
 
 .fa-bars {
@@ -107,13 +100,4 @@ a {
   padding-right: 0;
   max-width: 1344px;
   margin: auto;
-}
-
-.service-info {
-  max-width: 1344px;
-  margin: auto;
-}
-
-.service-info-text {
-  padding-left: 16px;
 }

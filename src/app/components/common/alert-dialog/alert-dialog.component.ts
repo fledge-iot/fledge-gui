@@ -51,9 +51,9 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.childData.actionButtonValue = 'Delete';
         this.childData.headerTextValue = 'Delete Key';
       }
-      if (this.childData.key === 'deleteUser') {
-        this.childData.actionButtonValue = 'Delete';
-        this.childData.headerTextValue = 'Delete User';
+      if (this.childData.key === 'deactivateUser') {
+        this.childData.actionButtonValue = 'Deactivate';
+        this.childData.headerTextValue = 'Deactivate User';
       }
       if (this.childData.key === 'logout') {
         this.childData.actionButtonValue = 'Log Out';
@@ -107,7 +107,7 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.delete.emit(this.childData.id);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'deleteUser') {
+      if (this.childData.key === 'deactivateUser') {
         this.deleteUserService.emit(this.childData.id);
         this.toggleModal(false);
       }

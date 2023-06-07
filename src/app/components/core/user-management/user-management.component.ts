@@ -89,6 +89,20 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         });
   }
 
+  getAccessMethod(accessMethod) {
+    switch (accessMethod) {
+      case 'cert':
+        return 'Certificate';
+        break;
+      case 'pwd':
+        return 'Password';
+        break;
+      default:
+        return 'Any';
+        break;
+    }
+  }
+
   /**
   * Open delete record modal dialog
   * @param id   user id to delete

@@ -11,14 +11,14 @@
       </ul>
     </nav>
     <button *ngIf="editMode" (click)="refresh()" class="button is-small" title="Reload" id="refresh-check">
-      <i class="fa fa-xs fa-sync" aria-hidden="true"></i>
+      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
   <div class="card">
     <div class="card-content step-content">
       <form #scriptForm="ngForm">
         <span (click)="goToLink('automation-scripts')"
-          class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
           <i class="far fa-question-circle"></i>
         </span>
         <div class="column is-four-fifths">
