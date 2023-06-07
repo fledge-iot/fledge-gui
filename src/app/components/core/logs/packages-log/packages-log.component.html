@@ -3,7 +3,7 @@
     <header class="card-header">
       <div class="card-header-title">
         <span>Package Logs</span>
-        <button *ngIf="!isAlive" (click)="getPackagesLog()" class="button is-small" id="refresh-check">
+        <button *ngIf="!isAlive" title="Reload" (click)="getPackagesLog()" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
