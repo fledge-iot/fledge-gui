@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from '@circlon/angular-tree-component';
-import { isEmpty, find, cloneDeep } from 'lodash';
+import { isEmpty, cloneDeep } from 'lodash';
 
 import {
   AlertService, ConfigurationControlService, ConfigurationService,
@@ -12,6 +12,7 @@ import {
   templateUrl: './configuration-manager.component.html',
   styleUrls: ['./configuration-manager.component.css']
 })
+
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
   public rootCategories = [];
@@ -20,7 +21,6 @@ export class ConfigurationManagerComponent implements OnInit {
   public isChild = true;
   validConfigForm = false;
 
-  @Input() categoryConfigurationData;
   nodes: any[] = [];
   options = {};
 
