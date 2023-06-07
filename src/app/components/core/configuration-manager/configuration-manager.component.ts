@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from '@circlon/angular-tree-component';
-import { isEmpty, find, cloneDeep } from 'lodash';
+import { isEmpty, cloneDeep } from 'lodash';
 
 import {
   AlertService, ConfigurationControlService, ConfigurationService,
@@ -12,6 +12,7 @@ import {
   templateUrl: './configuration-manager.component.html',
   styleUrls: ['./configuration-manager.component.css']
 })
+
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
   public rootCategories = [];
@@ -20,7 +21,6 @@ export class ConfigurationManagerComponent implements OnInit {
   public isChild = true;
   validConfigForm = false;
 
-  @Input() categoryConfigurationData;
   nodes: any[] = [];
   options = {};
 
@@ -213,28 +213,10 @@ export class ConfigurationManagerComponent implements OnInit {
         });
   }
 
-  public refreshCategory(categoryKey: string): void {
+  public refreshCategory(categoryKey: string, categoryDesc: string): void {
     this.changedConfig = null;
     this.validConfigForm = false;
-    /** request started */
-    this.ngProgress.start();
-    this.configService.getCategory(categoryKey).
-      subscribe(
-        (data) => {
-          /** request completed */
-          this.ngProgress.done();
-          const category = find(this.categoryDataCopy, ['name', categoryKey]);
-          category.config = data;
-        },
-        error => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.getCategory(categoryKey, categoryDesc);
   }
 
   /**
@@ -246,18 +228,19 @@ export class ConfigurationManagerComponent implements OnInit {
     this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, cat);
   }
 
-  save(catName: string) {
+  save(catName: string, catDesc: string) {
     if (!isEmpty(this.changedConfig)) {
-      this.updateConfiguration(catName, this.changedConfig);
+      this.updateConfiguration(catName, catDesc, this.changedConfig);
     }
   }
 
   /**
   * Update configuration
   * @param categoryName Name of the cateogry
+  * @param categoryDescription Description of the cateogry
   * @param configuration category updated configuration
   */
-  updateConfiguration(categoryName: string, configuration: any) {
+  updateConfiguration(categoryName: string, categoryDescription: string, configuration: any) {
     const files = this.getScriptFilesToUpload(configuration);
     if (files.length > 0) {
       this.uploadScript(categoryName, files);
@@ -274,7 +257,7 @@ export class ConfigurationManagerComponent implements OnInit {
         this.validConfigForm = false;
         this.alertService.success('Configuration updated successfully.', true);
         this.ngProgress.done();
-        this.refreshCategory(categoryName);
+        this.getCategory(categoryName, categoryDescription);
       },
         (error) => {
           this.ngProgress.done();
