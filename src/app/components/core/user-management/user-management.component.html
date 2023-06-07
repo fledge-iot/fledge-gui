@@ -50,7 +50,7 @@
                 <td class="user-col">
                   {{user.roleName}}
                 </td>
-                <td class="user-col">{{user.accessMethod}}</td>
+                <td class="user-col">{{getAccessMethod(user.accessMethod)}}</td>
                 <td class="user-col desc-col">{{user.description}}</td>
                 <td class="tags-groups">
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
@@ -81,9 +81,9 @@
                           Reset Password
                         </a>
                         <a class="dropdown-item"
-                          (click)="openModal(user.userId, user.userName, 'deleteUser', 'Are you sure, you want to delete the user')">
+                          (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are you sure, you want to deactivate the user')">
                           <i class="fa fa-sm fa-trash-alt" aria-hidden="true"></i>
-                          Delete
+                          Deactivate
                         </a>
                         <!-- TODO: FOGL-5381
                       <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'enableUser', 'Are you sure, you want to enable the user')">

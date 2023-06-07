@@ -3,7 +3,7 @@
     <header class="card-header">
       <div class="card-header-title">
         <span>Audit Logs</span>
-        <button *ngIf="!isAlive" (click)="getAuditLogs()" class="button is-small" id="refresh-check">
+        <button *ngIf="!isAlive" (click)="getAuditLogs()" class="button is-small" title="Reload" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
@@ -84,7 +84,7 @@
               </td>
               <td><small>{{log.severity}}</small></td>
               <td>
-                <small [ngClass]="{'tooltip is-tooltip-left tooltip-help is-hovered': !source}"
+                <small [ngClass]="{'tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-hovered': !source}"
                   [attr.data-tooltip]='showtooltip(log.source)'>{{log.source}}</small>
               </td>
               <td><small>{{log.details | json}}</small></td>
