@@ -4,8 +4,8 @@
     <header class="card-header">
       <div class="card-header-title">
         Control Pipelines
-        <button class="button is-small" id="refresh-check" (click)="getControlPipelines()">
-          <i class="fa fa-xs fa-sync" aria-hidden="true"></i>
+        <button class="button is-small" id="refresh-check" title="Reload" (click)="getControlPipelines()">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="rolesService?.hasEditPermissions()" class="fix-pad button is-light" (click)="addControlPipeline()">
@@ -13,7 +13,7 @@
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
       <!-- TODO: FOGL-7803
-      <span class="icon is-small tooltip has-tooltip-bottom is-pulled-right is-hovered btn-margin" data-tooltip="Help"
+      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin" data-tooltip="Help"
         (click)="goToLink('control-dispatcher-service')">
         <i class="far fa-question-circle"></i>
       </span> -->
@@ -35,14 +35,14 @@
               cellpadding="0" cellspacing="0">
               <thead>
                 <tr>
-                  <th class="align-content table-th">Enabled</th>
-                  <th class="align-content table-th">Name</th>
+                  <th class="align-content">Enabled</th>
+                  <th class="align-content">Name</th>
                   
-                  <th class="align-content table-th">Source</th>
+                  <th class="align-content">Source</th>
                   <th></th>
-                  <th class="align-content table-th">Destination</th>
+                  <th class="align-content">Destination</th>
                   <th></th>
-                  <th class="align-content table-th">Filters</th>
+                  <th class="align-content">Filters</th>
                   <th></th>
                   <th></th>
                 </tr>

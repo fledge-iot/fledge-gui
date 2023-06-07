@@ -54,10 +54,6 @@ a {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.btnDelete {
-  margin: 2px;
-}
-
 .fa-bars {
   opacity: 0.5;
 }
@@ -71,9 +67,6 @@ a {
 }
 
 @media screen and (min-width: 769px) {
-  .view-content {
-    display: block !important;
-  }
   .margin-bottom {
     margin-bottom: -0.75rem;
   }
@@ -106,13 +99,4 @@ a {
   padding-right: 0;
   max-width: 1344px;
   margin: auto;
-}
-
-.service-info {
-  max-width: 1344px;
-  margin: auto;
-}
-
-.service-info-text {
-  padding-left: 16px;
 }
