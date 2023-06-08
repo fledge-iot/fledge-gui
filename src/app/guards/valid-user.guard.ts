@@ -9,7 +9,7 @@ export class ValidUserGuard implements CanActivate {
       // return true for (auth=optional) or (auth=mandatory and user role=any)
       return true;
     }
-    // redirect to login for auth=mandatory and without any user token i.e. trying to access from url
+    // redirect to login for auth=mandatory and without any user token i.e. trying to access pages URL
     this.router.navigate(['/login']);
     return false;
   }
