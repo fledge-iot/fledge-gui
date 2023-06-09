@@ -28,6 +28,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() from;
   categoryKey = '';
 
+  allformsStatus = [];
   advanceConfiguration: any
   securityConfiguration: any;
   changedAdvanceConfiguration: any;
@@ -100,6 +101,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
+
+    this.allformsStatus = [];
+    this.groups.forEach((g) => {
+      this.allformsStatus.push({status: null, group: g.group});
+    });
 
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
@@ -241,8 +247,17 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       }, []);
   }
 
-  formStatus(status: boolean) {
-    this.formStatusEvent.emit(status);
+  formStatus(event) {
+    const form = this.allformsStatus.find(form => form.group === event.group);
+    form.status = event.status;
+
+    // check status of form all groups, if all forms are valid then send true
+    const i = this.allformsStatus.findIndex(form => form.status === false);
+    if (i > -1) {
+      this.formStatusEvent.emit(false);
+    } else {
+      this.formStatusEvent.emit(true);
+    }
   }
 }
 
