@@ -6,7 +6,7 @@ export class AuthRequiredGuard implements CanActivate {
   constructor(private router: Router) { }
   canActivate() {
     if (sessionStorage.getItem('token') || sessionStorage.getItem('LOGIN_SKIPPED') == 'true') {
-      // return true for (auth=optional) or (auth=mandatory and user role=any)
+      // return true for (auth=optional) OR (auth=mandatory and token is available)
       return true;
     }
     // redirect to login for auth=mandatory and without any user token i.e. trying to access pages URL
