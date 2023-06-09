@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { UserManagementComponent } from '.';
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AdminGuard, AuthGuard } from '../../../guards';
+import { AdminGuard, AuthenticatedUserGuard } from '../../../guards';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
@@ -15,17 +15,17 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 const routes: Routes = [
   {
     path: '',
-    canActivate: [AuthGuard, AdminGuard],
+    canActivate: [AuthenticatedUserGuard, AdminGuard],
     component: UserManagementComponent
   },
   {
     path: 'profile',
-    canActivate: [AuthGuard],
+    canActivate: [AuthenticatedUserGuard],
     component: UserProfileComponent
   },
   {
     path: 'reset-password',
-    canActivate: [AuthGuard],
+    canActivate: [AuthenticatedUserGuard],
     component: ResetPasswordComponent
   },
 ];
@@ -45,7 +45,7 @@ const routes: Routes = [
     AlertDialogModule,
     DirectivesModule
   ],
-  providers: [AuthGuard, AdminGuard],
+  providers: [AuthenticatedUserGuard, AdminGuard],
   exports: []
 })
 export class UserManagementModule { }
