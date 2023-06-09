@@ -28,7 +28,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() from;
   categoryKey = '';
 
-  allformsStatus = [];
+  groupTabFormsStatus = [];
   advanceConfiguration: any
   securityConfiguration: any;
   changedAdvanceConfiguration: any;
@@ -102,9 +102,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return acc;
       }, []);
 
-    this.allformsStatus = [];
+    this.groupTabFormsStatus = [];
     this.groups.forEach((g) => {
-      this.allformsStatus.push({status: null, group: g.group});
+      this.groupTabFormsStatus.push({status: null, group: g.group});
     });
 
     // set initial group
@@ -248,11 +248,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   formStatus(event) {
-    const form = this.allformsStatus.find(form => form.group === event.group);
+    const form = this.groupTabFormsStatus.find(form => form.group === event.group);
     form.status = event.status;
 
     // check status of form all groups, if all forms are valid then send true
-    const i = this.allformsStatus.findIndex(form => form.status === false);
+    const i = this.groupTabFormsStatus.findIndex(form => form.status === false);
     if (i > -1) {
       this.formStatusEvent.emit(false);
     } else {
