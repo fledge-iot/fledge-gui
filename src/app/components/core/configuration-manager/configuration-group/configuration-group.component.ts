@@ -247,17 +247,18 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       }, []);
   }
 
-  formStatus(event) {
-    const form = this.groupTabFormsStatus.find(form => form.group === event.group);
-    form.status = event.status;
-
-    // check status of form all groups, if all forms are valid then send true
-    const i = this.groupTabFormsStatus.findIndex(form => form.status === false);
-    if (i > -1) {
-      this.formStatusEvent.emit(false);
+  formStatus(formState: any) {
+    // check if there is a group in the groupTabFormsStatus array
+    const group = this.groupTabFormsStatus.find(form => form.group === formState.group);
+    // if group exist set the status of that group otherwise push the group in the array
+    if (group) {
+      group.status = formState.status;
     } else {
-      this.formStatusEvent.emit(true);
+      this.groupTabFormsStatus.push(formState)
     }
+    // check the condition for every element to see if all groups have valid status
+    const formStatus = this.groupTabFormsStatus.every(g => g.status == true);
+    this.formStatusEvent.emit(formStatus);
   }
 }
 
