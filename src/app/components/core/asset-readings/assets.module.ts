@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 
-import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AssetsService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
@@ -17,8 +16,7 @@ import { AssetsComponent } from './assets/assets.component';
 const routes: Routes = [
   {
     path: '',
-    component: AssetsComponent,
-    canActivate: [AuthCheckGuard]
+    component: AssetsComponent
   }
 ];
 
