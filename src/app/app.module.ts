@@ -19,7 +19,7 @@ import { CertificateBaseLoginComponent } from './components/layout/certificate-b
 import { NavbarComponent } from './components/layout/navbar/navbar.component';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
 import { DirectivesModule } from './directives/directives.module';
-import { AuthCheckGuard, DataViewRoleGuard } from './guards';
+import { AuthRequiredGuard, DataViewRoleGuard } from './guards';
 import { PipesModule } from './pipes/pipes.module';
 import {
   AlertService,
@@ -107,7 +107,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     RestartModalComponent
   ],
   providers: [
-    AuthCheckGuard,
+    AuthRequiredGuard,
     DataViewRoleGuard,
     AlertService,
     AuthService,

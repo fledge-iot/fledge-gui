@@ -6,7 +6,6 @@ import { PipesModule } from '../../../pipes/pipes.module';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
 import { SystemLogComponent } from './system-log';
-import { AuthCheckGuard } from '../../../../app/guards';
 import { AuditLogComponent } from './audit-log';
 import { PackagesLogComponent } from './packages-log/packages-log.component';
 import { NotificationLogComponent } from './notification-log/notification-log.component';
@@ -16,28 +15,23 @@ import { SharedModule } from '../../../shared.module';
 const routes: Routes = [
   {
     path: 'syslog',
-    component: SystemLogComponent,
-    canActivate: [AuthCheckGuard]
+    component: SystemLogComponent
   },
   {
     path: 'audit',
-    component: AuditLogComponent,
-    canActivate: [AuthCheckGuard]
+    component: AuditLogComponent
   },
   {
     path: 'packages',
-    component: PackagesLogComponent,
-    canActivate: [AuthCheckGuard]
+    component: PackagesLogComponent
   },
   {
     path: 'notifications',
-    component: NotificationLogComponent,
-    canActivate: [AuthCheckGuard]
+    component: NotificationLogComponent
   },
   {
     path: 'tasks',
-    component: TasksComponent,
-    canActivate: [AuthCheckGuard]
+    component: TasksComponent
   }
 ];
 

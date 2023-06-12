@@ -7,13 +7,11 @@ import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module
 import { CertificateStoreComponent } from './certificate-store';
 import { UploadCertificateComponent } from './upload-certificate/upload-certificate.component';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthCheckGuard } from '../../../guards';
 
 const routes: Routes = [
   {
     path: '',
-    component: CertificateStoreComponent,
-    canActivate: [AuthCheckGuard]
+    component: CertificateStoreComponent
   }
 ];
 
