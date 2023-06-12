@@ -102,11 +102,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return acc;
       }, []);
 
-    this.groupTabFormsStatus = [];
-    this.groups.forEach((g) => {
-      this.groupTabFormsStatus.push({status: null, group: g.group});
-    });
-
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
   }
