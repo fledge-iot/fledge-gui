@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
@@ -14,8 +13,7 @@ import { UpdateScheduleComponent } from './update-schedule/update-schedule.compo
 const routes: Routes = [
   {
     path: '',
-    component: ListSchedulesComponent,
-    canActivate: [AuthCheckGuard]
+    component: ListSchedulesComponent
   }
 ];
 

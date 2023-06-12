@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthCheckGuard } from '../../../guards';
+import { RolesGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { PluginService } from '../../../services';
@@ -18,13 +18,12 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 const routes: Routes = [
   {
     path: '',
-    component: NorthComponent,
-    canActivate: [AuthCheckGuard]
+    component: NorthComponent
   },
   {
     path: 'add',
     component: AddTaskWizardComponent,
-    canActivate: [AuthCheckGuard]
+    canActivate: [RolesGuard]
   }
 ];
 
@@ -46,6 +45,6 @@ const routes: Routes = [
     FilterModule,
     SharedModule
   ],
-  providers: [PluginService],
+  providers: [RolesGuard, PluginService],
 })
 export class NorthModule { }
