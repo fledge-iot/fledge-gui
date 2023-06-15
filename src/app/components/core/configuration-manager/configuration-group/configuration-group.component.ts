@@ -244,18 +244,14 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   formStatus(formState: any) {
     // find the object of changed form from groups array
-    const groupObject = this.groups.find((g: any) => g.group === formState.group);
-
-    // update the status of respected form
-    if (groupObject) {
-      groupObject.status = formState.status;
-    } else if (['Advanced Configuration', 'Security Configuration'].includes(formState.group)) {
-      this.advanceCategoriesGroup.find((g: any) => g.group === formState.group).status = formState.status;
-    }
-
-    // check the condition for every element to see if all groups have valid status
-    const formStatus = this.groups.every(g => (g.status === true || g.status === undefined));
-    this.formStatusEvent.emit(formStatus);
+    let groupObject = this.groups.find((g: any) => g.group === formState.group);
+     if (!groupObject) {
+       groupObject  = this.advanceCategoriesGroup.find((g: any) => g.group === formState.group)
+     } 
+    // Set the status of respected tab
+     if(groupObject){
+       groupObject.status = formState.status;
+     }
   }
 }
 
