@@ -14,7 +14,7 @@
             <!-- Advanced and security group -->
             <li *ngFor="let g of advanceCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">
-                <a (click)="selectTab(g.group)">
+                <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
                   {{g.group}}
                 </a>
               </h6>
