@@ -17,7 +17,7 @@ export class ShowConfigurationComponent implements OnInit {
   @Input() from = '';
 
   @Output() event = new EventEmitter<any>();
-  @Output() formStatusEvent = new EventEmitter<boolean>();
+  @Output() formStatusEvent = new EventEmitter<any>();
   configurations$: Observable<ConfigurationBase<any>[]>;
   form: FormGroup;
 
@@ -66,7 +66,7 @@ export class ShowConfigurationComponent implements OnInit {
                 const file = this.createScriptFile(data[k].toString(), configuration);
                 this.event.emit({ [configuration.key]: file });
               } else {
-                this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
+                this.formStatusEvent.emit({'status': this.form.status === 'VALID' ? true : false, 'group': this.group});
                 if (this.form.valid) {
                   this.event.emit(data);
                 }

@@ -78,3 +78,7 @@
 [data-overflowing="right"]~.advancer_right {
   opacity: 1;
 }
+
+.invalid-tab, .tabs.is-boxed li.is-active a.invalid-tab {
+  border-bottom-color: #f14668 !important;
+}
