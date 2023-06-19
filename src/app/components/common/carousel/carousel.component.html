@@ -1,0 +1,20 @@
+<div class="slideshow-container">
+  <ng-container *ngFor="let read of imageReadings">
+    <div class="slides fade">
+      <div id="tab-content">
+        <img [src]="read.image" alt={{read.datapoint}}>
+      </div>
+      <small
+        class="has-text-centered text-secondary has-text-grey-lighter is-block margin-top">{{getImageReadingsDimensions(read.imageData)}}
+        Width: {{imageReadingsDimensions.width}}px, Height:
+        {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
+      </small>
+      <small class="has-text-centered text-secondary has-text-grey-lighter is-block">{{read?.datapoint}},
+        Timestamp:
+        {{read?.timestamp}}
+      </small>
+    </div>
+  </ng-container>
+  <a class="prev" id="prev" (click)="changeSlide(-1)">&#10094;</a>
+  <a class="next" id="next" (click)="changeSlide(1)">&#10095;</a>
+</div>

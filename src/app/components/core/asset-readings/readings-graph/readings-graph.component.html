@@ -40,6 +40,15 @@
           <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
         </button>
       </ng-container>
+      <ng-container *ngIf="isLatestReadings">
+        <div class="auto-refresh">
+          <label class="checkbox">
+            <input class="checkmark" [disabled]="graphRefreshInterval === -1" type="checkbox" [checked]='isAlive'
+              (click)="toggleLatestReadingAutoRefresh($event.target.checked)">
+            Auto Refresh
+          </label>
+        </div>
+      </ng-container>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
@@ -212,21 +221,10 @@
                 </div>
                 <div *ngIf="selectedTab === 5" data-content="5">
                   <div class="columns margin-top">
-                    <div class="has-text-centered column" [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-with-data': !isEmptyObject(stringTypeReadingsList)}">
-                      <ng-container *ngFor="let read of imageReadings">
-                        <div id="tab-content">
-                          <img [src]="read.image" alt={{read.datapoint}}>
-                        </div>
-                        <small class="has-text-centered text-secondary has-text-grey-dark is-block">Width: {{imageReadingsDimensions.width}}px, Height:
-                          {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
-                        </small>
-                        <small class="has-text-centered text-secondary has-text-grey-dark is-block margin-bottom">{{read?.datapoint}},
-                          Timestamp:
-                          {{read?.timestamp}}
-                        </small>
-                      </ng-container>
+                    <div class="has-text-centered column" [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-reading': !isEmptyObject(stringTypeReadingsList)}">
+                      <app-carousel [imageReadings]="imageReadings"></app-carousel>
                     </div>
-                    <div *ngIf="!isEmptyObject(stringTypeReadingsList)" data-content="3" class="column is-4 image-with-data">
+                    <div *ngIf="!isEmptyObject(stringTypeReadingsList)" data-content="3" class="column is-4 image-data">
                       <table class="table is-responsive is-borderless data-table">
                         <thead>
                           <tr>
