@@ -2,7 +2,6 @@ import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, El
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { Router, ActivationEnd } from '@angular/router';
 import { HttpCancelService } from '../../../../services/httpcancel.service';
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
@@ -73,17 +72,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     private ping: PingService,
     private sharedService: SharedService,
     private dateFormatter: DateFormatterPipe,
-    private router: Router,
     private httpCancelService: HttpCancelService,
     public rangeSliderService: RangeSliderService) {
-
-      router.events.subscribe(event => {
-        // an event triggered at the end of the activation part of the resolve phase of routing.
-        if (event instanceof ActivationEnd) {
-          // cancel pending calls
-          this.httpCancelService.cancelPendingRequests();
-        }
-    });
 
       this.assetChartType = 'line';
       this.assetReadingValues = {};
@@ -145,6 +135,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.assetsSubscription) {
       this.assetsSubscription.unsubscribe();
     }
+    // cancel pending requests after closing the model
+    this.httpCancelService.cancelPendingRequests();
 
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
