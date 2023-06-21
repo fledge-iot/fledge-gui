@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, El
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-
+import { HttpCancelService } from '../../../../services/httpcancel.service';
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
 import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
@@ -72,7 +72,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     private ping: PingService,
     private sharedService: SharedService,
     private dateFormatter: DateFormatterPipe,
+    private httpCancelService: HttpCancelService,
     public rangeSliderService: RangeSliderService) {
+
       this.assetChartType = 'line';
       this.assetReadingValues = {};
       this.ping.pingIntervalChanged
@@ -133,6 +135,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.assetsSubscription) {
       this.assetsSubscription.unsubscribe();
     }
+    // cancel pending requests after closing the model
+    this.httpCancelService.cancelPendingRequests();
 
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
