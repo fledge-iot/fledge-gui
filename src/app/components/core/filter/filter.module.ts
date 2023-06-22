@@ -9,11 +9,13 @@ import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module
 import { AddFilterWizardComponent } from './add-filter-wizard/add-filter-wizard.component';
 import { FilterAlertComponent } from './filter-alert/filter-alert.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { FilterListComponent } from './filter-list/filter-list.component';
 
 @NgModule({
   declarations: [
-   AddFilterWizardComponent,
-   FilterAlertComponent
+    AddFilterWizardComponent,
+    FilterAlertComponent,
+    FilterListComponent
   ],
   imports: [
     FormsModule,
@@ -24,7 +26,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     PipesModule,
     NgSelectModule
   ],
-  exports: [AddFilterWizardComponent, FilterAlertComponent],
+  exports: [AddFilterWizardComponent, FilterAlertComponent, FilterListComponent],
   providers: [ServicesApiService, AssetsService, SchedulesService, FilterService],
 })
 export class FilterModule { }

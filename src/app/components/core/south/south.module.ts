@@ -13,10 +13,8 @@ import { FilterModule } from '../filter/filter.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
-import { FilterListComponent } from './south-service-modal/filter-list/filter-list.component';
 
 const routes: Routes = [
-
   {
     path: '',
     component: SouthComponent
@@ -30,7 +28,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    FilterListComponent,
     SouthComponent,
     AddServiceWizardComponent,
     SouthServiceModalComponent

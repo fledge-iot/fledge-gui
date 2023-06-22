@@ -6,8 +6,14 @@ import { cloneDeep, isEmpty } from 'lodash';
 
 import { Router } from '@angular/router';
 import {
-  AlertService, AssetsService, ConfigurationControlService, ConfigurationService,
-  FileUploaderService, FilterService, GenerateCsvService, ProgressBarService, ResponseHandler, RolesService,
+  AlertService, AssetsService,
+  ConfigurationControlService,
+  ConfigurationService,
+  FileUploaderService,
+  FilterService,
+  GenerateCsvService,
+  ProgressBarService,
+  ResponseHandler, RolesService,
   SchedulesService, ServicesApiService, ToastService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
@@ -18,7 +24,7 @@ import { ConfigurationGroupComponent } from '../../configuration-manager/configu
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Service } from '../south-service';
-import { FilterListComponent } from './filter-list/filter-list.component';
+import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
 
 @Component({
   selector: 'app-south-service-modal',

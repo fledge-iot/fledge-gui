@@ -8,14 +8,13 @@ import {
   ResponseHandler,
   RolesService,
   ToastService,
-
-} from '../../../../../services';
-import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
-import { Service } from '../../south-service';
+} from '../../../../services';
+import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
+import { Service } from '../../south/south-service';
 import { catchError, map } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { DocService } from '../../../../../services/doc.service';
+import { DocService } from '../../../../services/doc.service';
 
 @Component({
   selector: 'app-filter-list',
@@ -62,7 +61,6 @@ export class FilterListComponent {
     }
   }
 
-
   activeAccordion(id) {
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
@@ -75,7 +73,6 @@ export class FilterListComponent {
         const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
         nextActiveContentBody.hidden = false;
         next.setAttribute('class', 'accordion card is-active');
-        // this.getFilterConfiguration(filterName);
       } else {
         last.classList.remove('is-active');
         lastActiveContentBody.hidden = true;
@@ -85,7 +82,6 @@ export class FilterListComponent {
       const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
       body.hidden = false;
       element.setAttribute('class', 'accordion card is-active');
-      // this.getFilterConfiguration(filterName);
     }
   }
 
@@ -94,7 +90,6 @@ export class FilterListComponent {
       return;
     }
     moveItemInArray(this.filterPipeline, event.previousIndex, event.currentIndex);
-    console.log('filterPipeline', this.filterPipeline);
     this.formStatus.emit(true);
   }
 
@@ -249,9 +244,6 @@ export class FilterListComponent {
         });
       });
       this.filterAPICallsStack = [];
-
-
-
     }
   }
 
@@ -277,7 +269,7 @@ export class FilterListComponent {
     return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
   }
 
-  goToLink(pluginInfo) {
+  goToLink(pluginInfo: string) {
     this.docService.goToPluginLink(pluginInfo);
   }
 }
