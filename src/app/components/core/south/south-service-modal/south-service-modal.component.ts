@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild
+  Component, EventEmitter, HostListener, Input, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -18,6 +18,9 @@ import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.com
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { Pipeline } from './filter-list/pipeline';
+import { Service } from '../south-service';
+import { FilterListComponent } from './filter-list/filter-list.component';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -28,7 +31,7 @@ export class SouthServiceModalComponent implements OnInit {
 
   public category: any;
   svcCheckbox: FormControl = new FormControl();
-  public filterPipeline = [];
+  public filterPipeline: Pipeline[] = [];
   public deletedFilterPipeline = [];
   public filterConfiguration: any;
   filterConfigurationCopy: any;
@@ -46,10 +49,10 @@ export class SouthServiceModalComponent implements OnInit {
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
 
-  @Input() service: { service: any };
+  @Input() service: Service;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigurationGroupComponent;
-  @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
+  @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
   // to hold child form state
@@ -100,20 +103,14 @@ export class SouthServiceModalComponent implements OnInit {
       const pluginConfigCopy = cloneDeep(this.pluginConfiguration);
       this.pluginConfigComponent?.updateCategroyConfig(pluginConfigCopy.config);
     }
-    if (this.filterConfigurationCopy) {
-      const filterConfig = cloneDeep(this.filterConfigurationCopy.config);
-      this.filterConfigComponent?.updateCategroyConfig(filterConfig);
-    }
-    this.svcCheckbox.setValue(this.service['schedule_enabled']);
+    // if (this.filterConfigurationCopy) {
+    //   const filterConfig = cloneDeep(this.filterConfigurationCopy.config);
+    //   this.filterConfigComponent?.updateCategroyConfig(filterConfig);
+    // }
+    this.svcCheckbox.setValue(this.service.schedule_enabled);
   }
 
-  onDrop(event: CdkDragDrop<string[]>) {
-    if (event.previousIndex === event.currentIndex) {
-      return;
-    }
-    moveItemInArray(this.filterPipeline, event.previousIndex, event.currentIndex);
-    this.isFilterOrderChanged = true;
-  }
+
 
   public toggleModal(isOpen: Boolean) {
     this.applicationTagClicked = false;
@@ -140,7 +137,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.validConfigurationForm = true;
       this.validFilterConfigForm = true;
       this.notify.emit(false);
-      this.svcCheckbox.setValue(this.service['schedule_enabled']);
+      this.svcCheckbox.setValue(this.service.schedule_enabled);
       if (!this.rolesService.hasEditPermissions()) {
         this.svcCheckbox.disable()
       }
@@ -161,12 +158,12 @@ export class SouthServiceModalComponent implements OnInit {
   public getCategory(): void {
     /** request started */
     this.ngProgress.start();
-    this.configService.getCategory(this.service['name']).
+    this.configService.getCategory(this.service.name).
       subscribe(
         (data) => {
           if (!isEmpty(data)) {
-            this.category = { name: this.service['name'], config: data };
-            this.pluginConfiguration = cloneDeep({ name: this.service['name'], config: data });
+            this.category = { name: this.service.name, config: data };
+            this.pluginConfiguration = cloneDeep({ name: this.service.name, config: data });
             this.refreshPageData();
           }
           /** request completed */
@@ -222,8 +219,8 @@ export class SouthServiceModalComponent implements OnInit {
     if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
       return false;
     }
-    const serviceName = this.service['name'];
-    const serviceCurrentStatus = this.service['schedule_enabled'];
+    const serviceName = this.service.name;
+    const serviceCurrentStatus = this.service.schedule_enabled;
     const serviceChangedStatus = this.svcCheckbox.value;
     if (serviceCurrentStatus === serviceChangedStatus) {
       return;
@@ -259,9 +256,9 @@ export class SouthServiceModalComponent implements OnInit {
     this.filterAlert.toggleModal(true);
   }
 
-  getAssetReadings(service: any) {
+  getAssetReadings(service: Service) {
     this.assetReadings = [];
-    const fileName = service['name'] + '-readings';
+    const fileName = service.name + '-readings';
     const assets = service.assets;
     const assetRecord: any = [];
     if (assets.length === 0) {
@@ -356,9 +353,10 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   getFilterPipeline() {
-    this.filterService.getFilterPipeline(this.service['name'])
+    this.filterService.getFilterPipeline(this.service.name)
       .subscribe((data: any) => {
-        this.filterPipeline = data.result.pipeline;
+
+        this.filterPipeline = data.result.pipeline as Pipeline[];
       },
         error => {
           if (error.status === 404) {
@@ -369,49 +367,8 @@ export class SouthServiceModalComponent implements OnInit {
         });
   }
 
-  activeAccordion(id, filterName: string) {
-    const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
-    if (last !== undefined) {
-      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
-      const activeId = last.getAttribute('id');
-      lastActiveContentBody.hidden = true;
-      last.classList.remove('is-active');
-      if (id !== +activeId) {
-        const next = <HTMLElement>document.getElementById(id);
-        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
-        nextActiveContentBody.hidden = false;
-        next.setAttribute('class', 'accordion card is-active');
-        this.getFilterConfiguration(filterName);
-      } else {
-        last.classList.remove('is-active');
-        lastActiveContentBody.hidden = true;
-      }
-    } else {
-      const element = <HTMLElement>document.getElementById(id);
-      const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
-      body.hidden = false;
-      element.setAttribute('class', 'accordion card is-active');
-      this.getFilterConfiguration(filterName);
-    }
-  }
 
-  getFilterConfiguration(filterName: string) {
-    const catName = this.service['name'] + '_' + filterName;
-    this.filterService.getFilterConfiguration(catName)
-      .subscribe((data: any) => {
-        this.selectedFilterPlugin = data.plugin.value;
-        this.filterConfiguration = { key: catName, config: data };
-        this.filterConfigurationCopy = cloneDeep({ key: catName, config: data });
-        this.filterConfigComponent?.updateCategroyConfig(data);
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
+
 
   deleteFilterReference(filter) {
     this.deletedFilterPipeline.push(filter);
@@ -423,7 +380,7 @@ export class SouthServiceModalComponent implements OnInit {
   deleteFilter() {
     this.isFilterDeleted = false;
     this.ngProgress.start();
-    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service['name'])
+    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service.name)
       .subscribe(() => {
         this.deletedFilterPipeline.forEach((filter, index) => {
           this.filterService.deleteFilter(filter).subscribe((data: any) => {
@@ -456,7 +413,7 @@ export class SouthServiceModalComponent implements OnInit {
   public updateFilterPipeline(filterPipeline) {
     this.isFilterOrderChanged = false;
     this.ngProgress.start();
-    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service['name'])
+    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service.name)
       .subscribe(() => {
         this.ngProgress.done();
         this.alertService.success('Filter pipeline updated successfully.', true);
@@ -475,7 +432,7 @@ export class SouthServiceModalComponent implements OnInit {
     this.docService.goToPluginLink(pluginInfo);
   }
 
-  navToSyslogs(service) {
+  navToSyslogs(service: Service) {
     this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
 
@@ -512,14 +469,6 @@ export class SouthServiceModalComponent implements OnInit {
     } else {
       this.advancedConfiguration.push(advanceConfig)
     }
-  }
-
-  /**
-  * Get edited filter configuration from show configuration page
-  * @param changedConfiguration changed configuration of a selected filter
-  */
-  getChangedFilterConfig(changedConfiguration: any) {
-    this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
   }
 
   /**
@@ -568,9 +517,10 @@ export class SouthServiceModalComponent implements OnInit {
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
     }
-    if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
-      this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
-    }
+    // if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
+    //   this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
+    // }
+    this.filtersListComponent.update();
 
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
