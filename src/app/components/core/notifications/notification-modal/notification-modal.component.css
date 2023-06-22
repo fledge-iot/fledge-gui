@@ -24,9 +24,6 @@ a { color: black; }
   .modal-card {
     width: 80%;
   }
-  .view-content {
-    display: block !important;
-  }
 }
 
 hr {

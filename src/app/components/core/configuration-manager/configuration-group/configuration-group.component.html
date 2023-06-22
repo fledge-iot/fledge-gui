@@ -6,7 +6,7 @@
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">
-                <a (click)="selectTab(g.group)">
+                <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
                   {{g.group}}
                 </a>
               </h6>
@@ -14,7 +14,7 @@
             <!-- Advanced and security group -->
             <li *ngFor="let g of advanceCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">
-                <a (click)="selectTab(g.group)">
+                <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
                   {{g.group}}
                 </a>
               </h6>
@@ -32,10 +32,10 @@
       </div>
     </nav>
     <button (click)="left()" id="leftScroll" class="advancer advancer_left" type="button">
-      <i class="fas fa-angle-left fa-xl"></i>
+      <i class="fas fa-angle-left fa-xs"></i>
     </button>
     <button (click)="right()" id="rightScroll" class="advancer advancer_right" type="button">
-      <i class="fas fa-angle-right fa-xl"></i>
+      <i class="fas fa-angle-right fa-xs"></i>
     </button>
   </div>
   <div [ngClass]="{'highlight': from !== 'config-manager'}">

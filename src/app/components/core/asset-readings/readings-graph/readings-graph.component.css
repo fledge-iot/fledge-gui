@@ -12,11 +12,7 @@
   padding: 15px !important;
 }
 
-::ng-deep .button.is-small {
-  font-size: 0.90rem !important;
-}
-
-::ng-deep .input.is-small {
+:host ::ng-deep .button.small-btn {
   font-size: 0.90rem !important;
 }
 
@@ -67,10 +63,13 @@ table.is-borderless tr a {
   padding-left: 0;
 }
 
-table.is-borderless td,
 table.is-borderless tr {
   border: 0 !important;
   vertical-align: middle;
+}
+
+table.is-borderless td {
+  border: 0 !important;
 }
 
 .data-table {

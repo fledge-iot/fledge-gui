@@ -3,7 +3,7 @@
     <header class="card-header">
       <div id="south-service" class="card-header-title">
         South Services
-        <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" class="button is-small" id="refresh-check">
+        <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" title="Reload" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
@@ -80,7 +80,7 @@
                             <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
                               id="deprecate_event_div"
                               (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
-                              <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Deprecate asset">
+                              <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Deprecate asset">
                                 <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
                               </span>
                             </a>
@@ -98,7 +98,7 @@
                             <td>
                               <a *ngIf="developerFeaturesService.getDeveloperFeatureControl()" id="deprecate_event_div"
                                 (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
-                                <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Deprecate asset">
+                                <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Deprecate asset">
                                   <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
                                 </span>
                               </a>
@@ -117,7 +117,7 @@
                   <td>
                     <span *ngIf="svc?.assets?.length > 1" (click)="showHideAsset(svc)"
                       [ngClass]="{'open': svc.expanded}"
-                      class="icon is-small tooltip is-tooltip-right tooltip-help is-pulled-right is-hovered"
+                      class="icon is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-pulled-right is-hovered"
                       [attr.data-tooltip]="svc.expanded ? 'Hide other assets' : 'Show all assets'">
                       <i class="fas fa-xs fa-angle-down"></i>
                     </span>

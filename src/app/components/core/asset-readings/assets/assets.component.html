@@ -1,16 +1,16 @@
 <div class="container is-fluid">
   <div class="card">
     <div>
-      <span class="icon is-small tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered" data-tooltip="Help"
+      <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-pulled-right is-hovered" data-tooltip="Help"
         (click)="goToLink()">
         <i class="far fa-question-circle"></i>
       </span>
-      <span *ngIf="!isAlive" class="icon is-small is-pulled-right is-hovered assets-control" (click)="getAsset()">
+      <span *ngIf="!isAlive" class="icon is-small is-pulled-right is-hovered assets-control has-tooltip-left has-tooltip-arrow tooltip" data-tooltip="Reload" (click)="getAsset()">
         <i class="fa fa-sm fa-sync-alt" aria-hidden="true"></i>
       </span>
       <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
         <span *ngIf="assets?.length > 0"
-          class="icon is-small tooltip is-tooltip-left tooltip-help is-pulled-right is-hovered assets-control"
+          class="icon is-small tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-pulled-right is-hovered assets-control"
           data-tooltip="Purge assets data" (click)="openModal('purge-all-assets-dialog')">
           <i class="fa fa-eraser"></i>
         </span>
@@ -46,21 +46,21 @@
                   <td><span class="is-pulled-right">{{asset.count | number}}</span></td>
                   <td>
                     <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
-                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Readings graph">
+                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Readings graph">
                         <i class="fa fa-sm fa-chart-line" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
                   <td>
                     <a (click)="showLatestReading(asset.assetCode)" class="is-pulled-right">
-                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Latest reading">
+                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Latest reading">
                         <i class="fa fa-sm fa-bolt" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
                   <td>
                     <a (click)="getAssetReadings(asset.assetCode, asset.count)" class="is-pulled-right">
-                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Export readings">
+                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Export readings">
                         <i class="fa fa-sm fa-download" aria-hidden="true"></i>
                       </span>
                     </a>
@@ -68,7 +68,7 @@
                   <td
                     *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
                     <a (click)="setAsset(asset);openModal('purge-asset-dialog')" class="is-pulled-right">
-                      <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Purge data">
+                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Purge data">
                         <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
                       </span>
                     </a>

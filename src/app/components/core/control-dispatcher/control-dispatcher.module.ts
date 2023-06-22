@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthTypeGuard, AuthCheckGuard } from '../../../guards';
+import { RolesGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { AddControlAclComponent } from './add-control-acl/add-control-acl.component';
@@ -40,7 +40,7 @@ const routes: Routes = [
   {
     path: 'script/add',
     component: AddControlScriptComponent,
-    canActivate: [AuthTypeGuard]
+    canActivate: [RolesGuard]
   },
   {
     path: 'script/:name/details',
@@ -53,7 +53,7 @@ const routes: Routes = [
   {
     path: 'acl/add',
     component: AddControlAclComponent,
-    canActivate: [AuthTypeGuard]
+    canActivate: [RolesGuard]
   },
   {
     path: 'acl/:name/details',
@@ -62,7 +62,7 @@ const routes: Routes = [
   {
     path: 'task/add',
     component: ControlScheduleTaskDetailsComponent,
-    canActivate: [AuthTypeGuard]
+    canActivate: [RolesGuard]
   },
   {
     path: 'task/:name',
@@ -75,7 +75,7 @@ const routes: Routes = [
   {
     path: 'pipelines/add',
     component: AddControlPipelineComponent,
-    canActivate: [AuthCheckGuard]
+    canActivate: [RolesGuard]
   },
   {
     path: 'pipelines/:id',
@@ -118,7 +118,7 @@ const routes: Routes = [
     FilterModule,
     RouterModule.forChild(routes)
   ],
-  providers: [AuthTypeGuard, ControlPipelinesService, NotificationsService,
+  providers: [RolesGuard, ControlPipelinesService, NotificationsService,
     FilterService, AssetsService]
 })
 export class ControlDispatcherModule { }
