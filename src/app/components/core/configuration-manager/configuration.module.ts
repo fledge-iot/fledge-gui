@@ -6,15 +6,13 @@ import { TreeModule } from '@circlon/angular-tree-component';
 
 import { ConfigurationManagerComponent } from '.';
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthCheckGuard } from '../../../guards';
 import { ConfigurationService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: ConfigurationManagerComponent,
-    canActivate: [AuthCheckGuard]
+    component: ConfigurationManagerComponent
   }
 ];
 

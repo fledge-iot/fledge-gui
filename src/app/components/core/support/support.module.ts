@@ -7,15 +7,13 @@ import { StatisticsService } from '../../../services';
 import { ChartModule } from '../../common/chart';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthCheckGuard } from '../../../guards';
 import { SupportComponent } from './support.component';
 
 
 const routes: Routes = [
   {
     path: '',
-    component: SupportComponent,
-    canActivate: [AuthCheckGuard]
+    component: SupportComponent
   }
 ];
 

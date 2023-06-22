@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthCheckGuard } from '../../../guards';
+import { RolesGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AssetsService, SchedulesService, ServicesApiService, FilterService, PluginService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
@@ -19,13 +19,12 @@ const routes: Routes = [
 
   {
     path: '',
-    component: SouthComponent,
-    canActivate: [AuthCheckGuard]
+    component: SouthComponent
   },
   {
     path: 'add',
     component: AddServiceWizardComponent,
-    canActivate: [AuthCheckGuard]
+    canActivate: [RolesGuard]
   },
 ];
 
@@ -48,6 +47,6 @@ const routes: Routes = [
     FilterModule,
     PipesModule
   ],
-  providers: [ServicesApiService, PluginService, AssetsService, SchedulesService, FilterService],
+  providers: [RolesGuard, ServicesApiService, PluginService, AssetsService, SchedulesService, FilterService],
 })
 export class SouthModule { }

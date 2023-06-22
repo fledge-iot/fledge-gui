@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 
-import { AuthCheckGuard, RolesGuard } from '../../../guards';
+import { RolesGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { BackupRestoreComponent } from './backup-restore.component';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
@@ -15,7 +15,7 @@ const routes: Routes = [
   {
     path: '',
     component: BackupRestoreComponent,
-    canActivate: [AuthCheckGuard, RolesGuard]
+    canActivate: [RolesGuard]
   }
 ];
 
