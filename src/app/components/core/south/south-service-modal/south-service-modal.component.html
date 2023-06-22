@@ -46,8 +46,8 @@
               </ng-template>
             </div>
           </div>
-          <app-filter-list #filtersListComponent [service]="service"
-            [filterPipeline]="filterPipeline"></app-filter-list>
+          <app-filter-list #filtersListComponent [service]="service" [filterPipeline]="filterPipeline"
+            (formStatus)="filterFormStatus($event)"></app-filter-list>
           <hr>
           <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">
             <div class="column">
@@ -56,8 +56,7 @@
                   <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
                 </p>
                 <p class="control">
-                  <button [disabled]="!validConfigurationForm || !validFilterConfigForm" class="button is-small is-link"
-                    (click)="save()">Save</button>
+                  <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()">Save</button>
                 </p>
               </div>
             </div>
@@ -111,7 +110,7 @@
       </ng-container>
     </section>
   </div>
-  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
+  <app-filter-alert *ngIf="unsavedChangesInFilterForm" (discardChanges)="discardUnsavedChanges()"
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
 

@@ -1,6 +1,5 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-  Component, EventEmitter, HostListener, Input, OnInit, Output, QueryList, ViewChild, ViewChildren
+  Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -18,7 +17,6 @@ import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.com
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Pipeline } from './filter-list/pipeline';
 import { Service } from '../south-service';
 import { FilterListComponent } from './filter-list/filter-list.component';
 
@@ -31,14 +29,9 @@ export class SouthServiceModalComponent implements OnInit {
 
   public category: any;
   svcCheckbox: FormControl = new FormControl();
-  public filterPipeline: Pipeline[] = [];
-  public deletedFilterPipeline = [];
-  public filterConfiguration: any;
-  filterConfigurationCopy: any;
-
-  public isFilterOrderChanged = false;
-  public isFilterDeleted = false;
+  public filterPipeline: string[] = [];
   public applicationTagClicked = false;
+  public unsavedChangesInFilterForm = false;
 
   assetReadings = [];
   public filterItemIndex;
@@ -60,7 +53,6 @@ export class SouthServiceModalComponent implements OnInit {
   validFilterConfigForm = true;
   pluginConfiguration;
   changedConfig: any;
-  changedFilterConfig: any;
   advancedConfiguration = [];
 
   // hold all api calls in stack
@@ -103,10 +95,6 @@ export class SouthServiceModalComponent implements OnInit {
       const pluginConfigCopy = cloneDeep(this.pluginConfiguration);
       this.pluginConfigComponent?.updateCategroyConfig(pluginConfigCopy.config);
     }
-    // if (this.filterConfigurationCopy) {
-    //   const filterConfig = cloneDeep(this.filterConfigurationCopy.config);
-    //   this.filterConfigComponent?.updateCategroyConfig(filterConfig);
-    // }
     this.svcCheckbox.setValue(this.service.schedule_enabled);
   }
 
@@ -114,7 +102,7 @@ export class SouthServiceModalComponent implements OnInit {
 
   public toggleModal(isOpen: Boolean) {
     this.applicationTagClicked = false;
-    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+    if (this.unsavedChangesInFilterForm) {
       this.showConfirmationDialog();
       return;
     }
@@ -145,9 +133,7 @@ export class SouthServiceModalComponent implements OnInit {
       return;
     }
     this.pluginConfiguration = {};
-    this.filterConfiguration = {};
     this.changedConfig = {};
-    this.changedFilterConfig = {};
     this.advancedConfiguration = [];
     this.apiCallsStack = [];
     this.category = null;
@@ -205,16 +191,6 @@ export class SouthServiceModalComponent implements OnInit {
       .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 
-  saveServiceChanges() {
-    if (this.isFilterDeleted) {
-      this.deleteFilter();
-    }
-    if (this.isFilterOrderChanged) {
-      this.updateFilterPipeline(this.filterPipeline);
-    }
-    this.changeServiceStatus();
-  }
-
   changeServiceStatus() {
     if (!this.svcCheckbox.dirty && !this.svcCheckbox.touched) {
       return false;
@@ -241,6 +217,10 @@ export class SouthServiceModalComponent implements OnInit {
 
   closeModal(id: string) {
     this.dialogService.close(id);
+  }
+
+  filterFormStatus(status: boolean) {
+    this.unsavedChangesInFilterForm = status;
   }
 
   /**
@@ -307,9 +287,8 @@ export class SouthServiceModalComponent implements OnInit {
 
   deleteService(svc: any) {
     // check if user deleting service without saving previous changes in filters
-    if (this.isFilterOrderChanged || this.isFilterDeleted) {
-      this.isFilterOrderChanged = false;
-      this.isFilterDeleted = false;
+    if (this.unsavedChangesInFilterForm) {
+      this.filtersListComponent.discard();
     }
     this.ngProgress.start();
     this.servicesApiService.deleteService(svc.name)
@@ -335,15 +314,12 @@ export class SouthServiceModalComponent implements OnInit {
 
   openAddFilterModal(isClicked: boolean) {
     this.applicationTagClicked = isClicked;
-    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+    if (this.unsavedChangesInFilterForm) {
       this.showConfirmationDialog();
       return;
     }
     this.isAddFilterWizard = isClicked;
     this.category = '';
-    this.isFilterOrderChanged = false;
-    this.isFilterDeleted = false;
-    this.deletedFilterPipeline = [];
   }
 
   onNotify() {
@@ -356,74 +332,13 @@ export class SouthServiceModalComponent implements OnInit {
     this.filterService.getFilterPipeline(this.service.name)
       .subscribe((data: any) => {
 
-        this.filterPipeline = data.result.pipeline as Pipeline[];
+        this.filterPipeline = data.result.pipeline as string[];
       },
         error => {
           if (error.status === 404) {
             this.filterPipeline = [];
           } else {
             console.log('Error ', error);
-          }
-        });
-  }
-
-
-
-
-  deleteFilterReference(filter) {
-    this.deletedFilterPipeline.push(filter);
-    this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
-    this.isFilterDeleted = true;
-    this.isFilterOrderChanged = false;
-  }
-
-  deleteFilter() {
-    this.isFilterDeleted = false;
-    this.ngProgress.start();
-    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service.name)
-      .subscribe(() => {
-        this.deletedFilterPipeline.forEach((filter, index) => {
-          this.filterService.deleteFilter(filter).subscribe((data: any) => {
-            this.ngProgress.done();
-            if (this.deletedFilterPipeline.length === index + 1) {
-              this.deletedFilterPipeline = []; // clear deleted filter reference
-            }
-            this.alertService.success(data.result, true);
-          },
-            (error) => {
-              this.ngProgress.done();
-              if (error.status === 0) {
-                console.log('service down ', error);
-              } else {
-                this.alertService.error(error.statusText);
-              }
-            });
-        });
-      },
-        (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  public updateFilterPipeline(filterPipeline) {
-    this.isFilterOrderChanged = false;
-    this.ngProgress.start();
-    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service.name)
-      .subscribe(() => {
-        this.ngProgress.done();
-        this.alertService.success('Filter pipeline updated successfully.', true);
-      },
-        (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
           }
         });
   }
@@ -436,10 +351,8 @@ export class SouthServiceModalComponent implements OnInit {
     this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
 
-  discardChanges() {
-    this.isFilterOrderChanged = false;
-    this.isFilterDeleted = false;
-    this.deletedFilterPipeline = [];
+  discardUnsavedChanges() {
+    this.filtersListComponent.discard();
     if (this.applicationTagClicked) {
       this.isAddFilterWizard = this.applicationTagClicked;
       return;
@@ -505,27 +418,26 @@ export class SouthServiceModalComponent implements OnInit {
    */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-    if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)
-      && isEmpty(this.changedFilterConfig)) {
+    if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) //&& isEmpty(this.changedFilterConfig))
+    {
       this.toggleModal(false);
     }
   }
 
   save() {
-    let isFilterPipeLineChanged = this.isFilterDeleted || this.isFilterOrderChanged;
-    this.saveServiceChanges();
+    this.changeServiceStatus();
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
     }
-    // if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
-    //   this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
-    // }
-    this.filtersListComponent.update();
 
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config, 'plugin-config');
       });
+    }
+
+    if (this.unsavedChangesInFilterForm) {
+      this.filtersListComponent.update();
     }
 
     if (this.apiCallsStack.length > 0) {
@@ -547,12 +459,12 @@ export class SouthServiceModalComponent implements OnInit {
         this.toggleModal(false);
         this.apiCallsStack = [];
       });
-    } else {
-      const noChange = isEmpty(this.changedConfig) && isEmpty(this.changedFilterConfig) && isEmpty(this.advancedConfiguration) && !isFilterPipeLineChanged;
-      if (noChange) {
-        this.toastService.info('Nothing to save', 3000);
-      }
-      this.toggleModal(false);
     }
+  }
+
+  checkFormState() {
+    const serviceStateChanged = this.svcCheckbox?.value !== this.service?.schedule_enabled
+    const noChange = isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration) && !this.unsavedChangesInFilterForm && !serviceStateChanged;
+    return noChange;
   }
 }
