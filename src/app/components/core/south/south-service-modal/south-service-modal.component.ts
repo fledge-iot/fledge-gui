@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -80,7 +81,8 @@ export class SouthServiceModalComponent implements OnInit {
     private configurationControlService: ConfigurationControlService,
     public rolesService: RolesService,
     private response: ResponseHandler,
-    private toastService: ToastService) { }
+    private toastService: ToastService,
+    public cDRef: ChangeDetectorRef) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
@@ -90,6 +92,10 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   ngOnInit() { }
+
+  ngAfterContentInit() {
+    this.cDRef.detectChanges();
+  }
 
   getCategoryData() {
     this.getCategory();
@@ -444,6 +450,7 @@ export class SouthServiceModalComponent implements OnInit {
 
     if (this.unsavedChangesInFilterForm) {
       this.filtersListComponent.update();
+      this.unsavedChangesInFilterForm = false;
     }
 
     if (this.apiCallsStack.length > 0) {

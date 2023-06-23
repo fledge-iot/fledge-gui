@@ -51,6 +51,8 @@ export class FilterListComponent {
     private toastService: ToastService) { }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log('changes', changes);
+
     if (!changes?.filterPipeline?.firstChange) {
       if (changes?.filterPipeline?.currentValue) {
         this.filterPipelineCopy = cloneDeep(changes?.filterPipeline.currentValue) // make a copy of the filter pipeline to verify the order of items in pipeline
@@ -86,6 +88,8 @@ export class FilterListComponent {
   }
 
   onDrop(event: CdkDragDrop<string[]>) {
+    console.log('drop', event);
+
     if (event.previousIndex === event.currentIndex) {
       return;
     }
@@ -100,7 +104,7 @@ export class FilterListComponent {
         this.selectedFilterPlugin = data.plugin.value;
         this.filterConfiguration.set(catName, { key: catName, config: data });
         this.filterConfigurationCopy.set(catName, cloneDeep({ key: catName, config: data }));
-        this.filterConfigComponent?.updateCategroyConfig(data);
+        console.log('this.filterConfiguration', this.filterConfiguration);
       },
         error => {
           if (error.status === 0) {

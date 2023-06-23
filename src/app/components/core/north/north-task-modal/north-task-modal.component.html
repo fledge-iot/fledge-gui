@@ -2,7 +2,8 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <span *ngIf="task" class="modal-card-title title-name">{{task.name}} <span *ngIf="isAddFilterWizard">- Add Filter</span>
+      <span *ngIf="task" class="modal-card-title title-name">{{task.name}} <span *ngIf="isAddFilterWizard">- Add
+          Filter</span>
         <ng-container *ngIf="task?.processName === 'north_C'; else nTask">
           <p class="help has-text-grey ctrl-pipeline">North Service</p>
         </ng-container>
@@ -23,7 +24,7 @@
 
           <div class="columns column-container">
             <div class="column enable-text">
-              <form name=" task-form" id="taskForm" #fg="ngForm" novalidate>
+              <form name="task-form" id="taskForm" #fg="ngForm" novalidate>
                 <div class="columns">
                   <div class="column">
                     <div class="field is-horizontal">
@@ -93,7 +94,9 @@
               </ng-template>
             </div>
           </div>
-          <div *ngIf="filterPipeline != undefined" class="columns">
+          <app-filter-list #filtersListComponent [service]="task" [filterPipeline]="filterPipeline"
+            (formStatus)="filterFormStatus($event)"></app-filter-list>
+          <!-- <div *ngIf="filterPipeline != undefined" class="columns">
             <div class="column">
               <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="i" cdkDrag
@@ -142,7 +145,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
           <hr *ngIf="rolesService.hasEditPermissions()">
           <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">
             <div class="column">
@@ -151,8 +154,7 @@
                   <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
                 </p>
                 <p class="control">
-                  <button [disabled]="!validConfigurationForm || !validFilterConfigForm || fg.invalid"
-                    class="button is-small is-link" (click)="save()">Save</button>
+                  <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()">Save</button>
                 </p>
               </div>
             </div>
@@ -176,13 +178,15 @@
           <div class="field">
             <div class="field is-grouped is-pulled-left icon-group">
               <div class="control">
-                <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
+                <span
+                  class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink({name: category?.config?.plugin?.value, type: 'North'})">
                   <i class="far fa-question-circle"></i>
                 </span>
               </div>
               <div class="control">
-                <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
+                <span
+                  class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
                   data-tooltip="Show logs" (click)="navToSyslogs(task)">
                   <i class="far fa-file-alt"></i>
                 </span>
@@ -208,7 +212,7 @@
       </ng-container>
     </section>
   </div>
-  <app-filter-alert *ngIf="isFilterOrderChanged || isFilterDeleted" (discardChanges)="discardChanges()"
+  <app-filter-alert *ngIf="unsavedChangesInFilterForm" (discardChanges)="discardUnsavedChanges()"
     [filerDialogData]='confirmationDialogData'></app-filter-alert>
 </div>
 <app-confirmation-dialog id="delete-task-dialog" *ngIf="rolesService.hasEditPermissions()">
