@@ -60,6 +60,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public graphDisplayDuration = "10";
   public graphDisplayUnit = "minutes";
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
+  public endTime = "now";
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -119,6 +120,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.pauseTime = Date.now();
     this.backwardReadingCounter = 0;
     sessionStorage.removeItem(this.assetCode);
+    this.endTime = "now";
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
@@ -168,8 +170,20 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.graphDisplayDuration = timeObject.displayDuration;
     this.graphDisplayUnit = timeObject.selectedUnit;
     this.optedTime = timeObject.optedTime;
+    this.endTime = timeObject.endTime;
     this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+    if(this.endTime === "last reading"){
+      if(this.graphRefreshInterval !== -1){
+        this.toggleAutoRefresh(false);
+      }
+      this.plotReadingsGraphFromLatestReading(this.assetCode);
+    }
+    else{
+      if(this.graphRefreshInterval !== -1){
+        this.toggleAutoRefresh(true);
+      }
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+    }
   }
 
   public getAssetCode(assetCode: string) {
@@ -904,8 +918,14 @@ export class ReadingsGraphComponent implements OnDestroy {
   showReadingsGraph(){
     let currentTime = Date.now();
     let timeDifference = Math.floor((currentTime - this.pauseTime)/1000);
-    let previous = timeDifference + this.backwardReadingCounter*this.optedTime;
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+    let previous = this.backwardReadingCounter*this.optedTime;
+    if(this.endTime === "last reading"){
+      this.plotReadingsGraphFromLatestReading(this.assetCode, previous);
+    }
+    else{
+      previous += timeDifference;
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+    }
   }
 
   calculateOptedTime(value, unit) {
@@ -928,6 +948,22 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.imageReadingsDimensions.width = dimensions[0];
     this.imageReadingsDimensions.height = dimensions[1];
     this.imageReadingsDimensions.depth = dimensions[2];
+  }
+
+  plotReadingsGraphFromLatestReading(assetCode, previous = 0){
+    this.assetService.getLatestReadings(assetCode).subscribe((data: any) => {
+      let latestReadingTimestamp = this.dateFormatter.transform(data[0].timestamp, 'YYYY-MM-DD HH:mm:ss.SSS');
+      let latestReadingDate = new Date(latestReadingTimestamp);
+      let timeDifference = Math.floor((Date.now() - latestReadingDate.getTime())/1000);
+      previous += timeDifference;
+      // show only single asset graph if endTime is last reading
+      this.additionalAssets = [];
+      this.additionalAssets.push(assetCode);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+    },
+      error => {
+        console.log('error in response', error);
+      });
   }
 
   public ngOnDestroy(): void {

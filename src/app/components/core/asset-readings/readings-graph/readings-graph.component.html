@@ -7,7 +7,7 @@
           <span class="asset-code">
             {{assetCode}}
           </span>
-          <button *ngIf="!isAlive" (click)="refresh()" title="Reload" class="button small-btn" id="refresh-check">
+          <button *ngIf="!isAlive && (endTime === 'now')" (click)="refresh()" title="Reload" class="button small-btn" id="refresh-check">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </div>
@@ -30,7 +30,7 @@
           </button>
         </ng-container>
         <ng-container *ngIf="!isAlive">
-          <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
+          <button [disabled]="graphRefreshInterval === -1 || endTime === 'last reading'" (click)="toggleAutoRefresh(true)"
             class="button small-btn playback-button">
             <i class="fa fa-sm fa-play" aria-hidden="true"></i>
           </button>
@@ -56,11 +56,11 @@
       </ng-container>
       <ng-template #tabs>
         <div class="columns" id="time-dropdown-container">
-          <div class="column is-6 time-dropdown" *ngIf="!isLatestReadings">
+          <div class="column is-4 time-dropdown" *ngIf="!isLatestReadings">
             <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
-          <div class="column is-6" *ngIf="!isLatestReadings && availableAssets.length > 0">
+          <div class="column is-8" *ngIf="!isLatestReadings && availableAssets.length > 0 && (endTime === 'now')">
             <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets"
               [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()"
               [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event)"

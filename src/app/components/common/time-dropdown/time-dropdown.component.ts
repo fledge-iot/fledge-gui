@@ -10,10 +10,10 @@ import { DEBOUNCE_TIME } from '../../../utils';
 })
 export class TimeDropdownComponent implements OnInit, OnDestroy {
   graphUnit = ['seconds', 'minutes', 'hours', 'days'];
-  graphUnit2 = ['now', 'last reading', 'custom'];
+  graphEndTime = ['now', 'last reading'];
   optedTime = 600; // Set graph optedTime to default 10 minutes
   selectedUnit: string = 'minutes';
-  selectedUnit2: string = 'now';
+  selectedEndTime: string = 'now';
 
   @ViewChild('time', { static: true }) timeInput: ElementRef;
   private fromEventSub: Subscription;
@@ -40,24 +40,21 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         if (this.timeInput.nativeElement.value !== '') {
           this.optedTime = this.calculateOptedTime();
-          let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit}
+          let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit, endTime: this.selectedEndTime}
           this.updateGraphEvent.emit(timeObject);
         }
       })
 
   }
 
-  public toggleDropdown() {
-    const dropDown = document.querySelector('#unit-dropdown');
-    dropDown.classList.toggle('is-active');
-    if (!dropDown.classList.contains('is-active')) {
-      this.dropdownOpenEvent.emit(false);
-    } else {
-      this.dropdownOpenEvent.emit(true);
+  public toggleDropdown(id: string) {
+    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+    if (activeDropDowns.length > 0) {
+      if (activeDropDowns[0].id !== id) {
+        activeDropDowns[0].classList.remove('is-active');
+      }
     }
-  }
-  public toggleDropdown2() {
-    const dropDown = document.querySelector('#unit-dropdown2');
+    const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
     if (!dropDown.classList.contains('is-active')) {
       this.dropdownOpenEvent.emit(false);
@@ -70,17 +67,18 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
     this.selectedUnit = unit;
     this.optedTime = this.calculateOptedTime();
     // emit changed graph time
-    let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit}
+    let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit, endTime: this.selectedEndTime}
     this.updateGraphEvent.emit(timeObject);
-    this.toggleDropdown();
+    this.toggleDropdown('unit-dropdown');
   }
-  setGraphUnit2(unit: string) {
-    this.selectedUnit2 = unit;
-    // this.optedTime = this.calculateOptedTime();
+
+  setGraphEndTime(endTime: string) {
+    this.selectedEndTime = endTime;
+    this.optedTime = this.calculateOptedTime();
     // // emit changed graph time
-    // let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit}
-    // this.updateGraphEvent.emit(timeObject);
-    this.toggleDropdown2();
+    let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit, endTime: this.selectedEndTime}
+    this.updateGraphEvent.emit(timeObject);
+    this.toggleDropdown('end-time-dropdown');
   }
 
   getMaxTime() {
@@ -128,15 +126,6 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.fromEventSub.unsubscribe();
-  }
-
-  getmaxDate(){
-    let date = new Date();
-    let maxDate = date.toISOString();
-    let maxDate2 = maxDate.slice(0, -8);
-    console.log(maxDate);
-    console.log(maxDate2);
-    return maxDate2;
   }
 
 }

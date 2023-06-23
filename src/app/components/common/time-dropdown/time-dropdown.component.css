@@ -10,10 +10,6 @@
     min-width: 90px;
 }
 
-.margin-left{
-    margin-left: 10px;
-}
-
-.height {
-    height: 36px;
+.end-time-button {
+    min-width: 120px;
 }
