@@ -110,8 +110,6 @@ export class SouthServiceModalComponent implements OnInit {
     this.svcCheckbox.setValue(this.service.schedule_enabled);
   }
 
-
-
   public toggleModal(isOpen: Boolean) {
     this.applicationTagClicked = false;
     if (this.unsavedChangesInFilterForm) {
@@ -343,7 +341,6 @@ export class SouthServiceModalComponent implements OnInit {
   getFilterPipeline() {
     this.filterService.getFilterPipeline(this.service.name)
       .subscribe((data: any) => {
-
         this.filterPipeline = data.result.pipeline as string[];
       },
         error => {
@@ -451,6 +448,9 @@ export class SouthServiceModalComponent implements OnInit {
     if (this.unsavedChangesInFilterForm) {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
+      if (this.apiCallsStack.length == 0) {
+        this.toggleModal(false);
+      }
     }
 
     if (this.apiCallsStack.length > 0) {

@@ -32,7 +32,6 @@ export class FilterListComponent {
   filterPipelineCopy: string[];
   validFilterConfigForm = false;
 
-  public selectedFilterPlugin = '';
   filterConfiguration = new Map();
   filterConfigurationCopy = new Map();
 
@@ -51,8 +50,6 @@ export class FilterListComponent {
     private toastService: ToastService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('changes', changes);
-
     if (!changes?.filterPipeline?.firstChange) {
       if (changes?.filterPipeline?.currentValue) {
         this.filterPipelineCopy = cloneDeep(changes?.filterPipeline.currentValue) // make a copy of the filter pipeline to verify the order of items in pipeline
@@ -99,10 +96,8 @@ export class FilterListComponent {
     const catName = this.service.name + '_' + filterName;
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
-        this.selectedFilterPlugin = data.plugin.value;
-        this.filterConfiguration.set(catName, { key: catName, config: data });
-        this.filterConfigurationCopy.set(catName, cloneDeep({ key: catName, config: data }));
-        console.log('this.filterConfiguration', this.filterConfiguration);
+        this.filterConfiguration.set(catName, { key: catName, config: data, plugin: data.plugin.value });
+        this.filterConfigurationCopy.set(catName, cloneDeep({ key: catName, config: data, plugin: data.plugin.value }));
       },
         error => {
           if (error.status === 0) {
@@ -244,8 +239,9 @@ export class FilterListComponent {
             this.response.handleResponseMessage(r.type);
           }
         });
+        this.filterAPICallsStack = [];
+        this.changedFilterConfig = new Map();
       });
-      this.filterAPICallsStack = [];
     }
   }
 

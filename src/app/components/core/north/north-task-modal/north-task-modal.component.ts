@@ -341,9 +341,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
 
-
-
-  goToLink(pluginInfo) {
+  goToLink(pluginInfo: string) {
     this.docService.goToPluginLink(pluginInfo);
   }
 
@@ -427,6 +425,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     if (this.unsavedChangesInFilterForm) {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
+      if (this.apiCallsStack.length == 0) {
+        this.toggleModal(false);
+      }
     }
 
     if (this.apiCallsStack.length > 0) {
