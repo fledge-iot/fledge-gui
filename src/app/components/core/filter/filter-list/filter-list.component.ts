@@ -220,6 +220,11 @@ export class FilterListComponent {
       if (files.length > 0) {
         this.fileUploaderService.uploadConfigurationScript(key, files);
       }
+
+      if (isEmpty(value)) {
+        return;
+      }
+
       this.filterAPICallsStack.push(this.configService.
         updateBulkConfiguration(key, value)
         .pipe(map(() => ({ type, success: true })))
