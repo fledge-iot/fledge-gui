@@ -88,8 +88,6 @@ export class FilterListComponent {
   }
 
   onDrop(event: CdkDragDrop<string[]>) {
-    console.log('drop', event);
-
     if (event.previousIndex === event.currentIndex) {
       return;
     }
