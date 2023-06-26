@@ -90,7 +90,7 @@ export class SouthServiceModalComponent implements OnInit {
 
   ngOnInit() { }
 
-  ngAfterContentInit() {
+  ngAfterViewChecked() {
     this.cDRef.detectChanges();
   }
 

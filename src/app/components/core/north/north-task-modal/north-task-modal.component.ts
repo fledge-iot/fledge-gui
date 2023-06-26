@@ -98,7 +98,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
   }
 
-  ngAfterContentInit() {
+  ngAfterViewChecked() {
     this.cDRef.detectChanges();
   }
 
@@ -107,10 +107,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       const pluginConfigCopy = cloneDeep(this.pluginConfiguration);
       this.pluginConfigComponent?.updateCategroyConfig(pluginConfigCopy.config);
     }
-    // if (this.filterConfigurationCopy) {
-    //   const filterConfig = cloneDeep(this.filterConfigurationCopy.config);
-    //   this.filterConfigComponent?.updateCategroyConfig(filterConfig);
-    // }
 
     if (this.form !== undefined) {
       this.enabled = this.task.enabled;
