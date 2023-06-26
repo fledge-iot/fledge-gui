@@ -245,7 +245,12 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedTab === 4) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
-          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+          if(this.endTime === "last reading"){
+            this.plotReadingsGraphFromLatestReading(this.assetCode);
+          }
+          else{
+            this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+          }
           this.refreshAssets.next();
         }
       });
@@ -861,12 +866,17 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else if (!this.isAlive && this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
     } else if (!this.isAlive) {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+      if(this.endTime === "last reading"){
+        this.plotReadingsGraphFromLatestReading(this.assetCode);
+      }
+      else{
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+      }
     }
   }
 
   showSummaryTab() {
-    return this.numberTypeReadingsList.length > 0 && !this.isLatestReadings;
+    return this.numberTypeReadingsList.length > 0 && !this.isLatestReadings && (this.endTime === "now");
   }
 
   isEmptyObject(obj) {
