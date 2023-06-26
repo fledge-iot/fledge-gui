@@ -1,19 +1,27 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgForm, Validators } from '@angular/forms';
-import { CustomValidator } from '../../../../../directives/custom-validator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { cloneDeep, isEmpty } from 'lodash';
-import { AlertService, AssetsService, SchedulesService, NotificationsService, ProgressBarService, SharedService, ControlPipelinesService,
-  FilterService, ConfigurationControlService, ResponseHandler, FileUploaderService, RolesService, ConfigurationService, ToastService } from '../../../../../services';
-import { DocService } from '../../../../../services/doc.service';
+import { cloneDeep } from 'lodash';
+import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { CustomValidator } from '../../../../../directives/custom-validator';
+import {
+  AlertService, AssetsService,
+  ControlPipelinesService,
+  FileUploaderService,
+  NotificationsService, ProgressBarService,
+  ResponseHandler,
+  RolesService,
+  SchedulesService,
+  SharedService,
+  ToastService
+} from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
+import { DocService } from '../../../../../services/doc.service';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
-import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
 import { FilterAlertComponent } from '../../../filter/filter-alert/filter-alert.component';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { FilterListComponent } from '../../../filter/filter-list/filter-list.component';
 
 @Component({
   selector: 'app-add-control-pipeline',
@@ -23,13 +31,13 @@ import { catchError, map } from 'rxjs/operators';
 export class AddControlPipelineComponent implements OnInit {
   @ViewChild('pipelineForm') pipelineForm: NgForm;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
-  @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
+  @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
 
   pipelines = [{ name: 'None' }];
   selectedExecution = '';
-  selectedSourceType = {cpsid: null, name: ''};
+  selectedSourceType = { cpsid: null, name: '' };
   selectedSourceName = null;
-  selectedDestinationType = {cpdid: null, name: ''};
+  selectedDestinationType = { cpdid: null, name: '' };
   selectedDestinationName = null;
   public isPipelineEnabled = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
@@ -38,23 +46,14 @@ export class AddControlPipelineComponent implements OnInit {
   sourceNameList = [];
   destinationNameList = [];
   editMode = false;
-  pipelineID : number;
+  pipelineID: number;
   pipelineName;
 
-  public filterPipeline = [];
-  public isFilterOrderChanged = false;
-  public filterConfiguration: any;
-  filterConfigurationCopy: any;
-  public selectedFilterPlugin;
-  changedFilterConfig: any;
-  public deletedFilterPipeline = [];
-  public isFilterDeleted = false;
+  public filterPipeline: string[] = [];
   confirmationDialogData = {};
   public isAddFilterWizard;
-  // To hold API calls to execute
-  apiCallsStack = [];
-  changedConfig = {};
   public addFilterClicked = false;
+  unsavedChangesInFilterForm = false;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -70,11 +69,8 @@ export class AddControlPipelineComponent implements OnInit {
     private schedulesService: SchedulesService,
     private controlService: ControlDispatcherService,
     public notificationService: NotificationsService,
-    private configService: ConfigurationService,
-    private filterService: FilterService,
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
-    private configurationControlService: ConfigurationControlService,
     private router: Router,
     private toast: ToastService) { }
 
@@ -83,19 +79,19 @@ export class AddControlPipelineComponent implements OnInit {
       sources: this.controlPipelinesService.getSourceDestinationTypeList('source'),
       destinations: this.controlPipelinesService.getSourceDestinationTypeList('destination')
     }
-  this.route.params.subscribe(params => {
-    this.pipelineID = params['id'];
-    if (this.pipelineID) {
-      this.editMode = true;
-      callsStack['pipelines'] = this.controlPipelinesService.getPipelineByID(this.pipelineID);
-    } else {
-      this.selectedExecution = 'Shared';
-      this.selectedSourceType = {cpsid: 1, name: "Any"};
-      this.selectedDestinationType = {cpdid: 4, name: "Broadcast"};
-    }
-  });
+    this.route.params.subscribe(params => {
+      this.pipelineID = params['id'];
+      if (this.pipelineID) {
+        this.editMode = true;
+        callsStack['pipelines'] = this.controlPipelinesService.getPipelineByID(this.pipelineID);
+      } else {
+        this.selectedExecution = 'Shared';
+        this.selectedSourceType = { cpsid: 1, name: "Any" };
+        this.selectedDestinationType = { cpdid: 4, name: "Broadcast" };
+      }
+    });
 
-  forkJoin(callsStack)
+    forkJoin(callsStack)
       .pipe(
         map((response: any) => {
           const sources = <Array<any>>response.sources;
@@ -103,9 +99,10 @@ export class AddControlPipelineComponent implements OnInit {
           const pipelines = <Array<any>>response.pipelines;
           const result: any[] = [];
           result.push({
-            ...{ 'sources': sources}, 
-            ...{ 'destinations': destinations}, 
-            ...{ 'pipelines': pipelines}});
+            ...{ 'sources': sources },
+            ...{ 'destinations': destinations },
+            ...{ 'pipelines': pipelines }
+          });
 
           this.sourceTypeList = sources;
           this.destinationTypeList = destinations;
@@ -131,6 +128,14 @@ export class AddControlPipelineComponent implements OnInit {
       });
   }
 
+  navigateOnCPList() {
+    if (this.unsavedChangesInFilterForm) {
+      this.showConfirmationDialog();
+      return;
+    }
+    this.router.navigate(['/control-dispatcher/pipelines']);
+  }
+
   getPipelineData(pipelineData) {
     this.pipelineName = pipelineData.name;
     this.selectedExecution = pipelineData.execution;
@@ -145,7 +150,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.destinationTypeList.forEach(type => {
       if (pipelineData.destination.type === type.name) {
         this.selectedDestinationType = type;
-      }      
+      }
     });
     // get Destination Name list
     this.selectValue(this.selectedDestinationType, 'destinationType');
@@ -156,7 +161,7 @@ export class AddControlPipelineComponent implements OnInit {
       const filterName = filter.replace(fNamePrefix, '');
       this.filterPipeline.push(filterName);
     });
-    this.isPipelineEnabled = pipelineData.enabled;   
+    this.isPipelineEnabled = pipelineData.enabled;
     if (this.isAddFilterWizard) {
       this.pipelineForm.form.markAsUntouched();
       this.pipelineForm.form.markAsPristine();
@@ -170,34 +175,25 @@ export class AddControlPipelineComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  onDrop(event: CdkDragDrop<string[]>) {
-    if (event.previousIndex === event.currentIndex) {
-      return;
-    }
-    moveItemInArray(this.filterPipeline, event.previousIndex, event.currentIndex);
-    this.isFilterOrderChanged = true;
-    this.pipelineForm.form.markAsDirty();
-  }
+
 
   openAddFilterModal(isClicked, nameValue) {
     this.addFilterClicked = isClicked;
-    if ((!nameValue || nameValue === '') && !this.pipelineName){
+    if ((!nameValue || nameValue === '') && !this.pipelineName) {
       return;
     }
-    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+    if (this.unsavedChangesInFilterForm) {
       this.showConfirmationDialog();
       return;
     }
     this.isAddFilterWizard = isClicked;
-    this.isFilterOrderChanged = false;
-    this.isFilterDeleted = false;
-    this.deletedFilterPipeline = [];
+    console.log('form  fff', this.pipelineForm);
   }
 
   /**
   * Open confirmation modal
   */
-   showConfirmationDialog() {
+  showConfirmationDialog() {
     this.confirmationDialogData = {
       id: '',
       name: '',
@@ -207,118 +203,33 @@ export class AddControlPipelineComponent implements OnInit {
     this.filterAlert.toggleModal(true);
   }
 
-  onNotify(data) {
-    const filterData = data ? data.filters : [];
-    let filtersList = [];
-    // Append recently added filter to existing filter pipeline
-    // format of previously added filter is ctrl_{control pipeline name}_{filter name}. To send filter in updated payload,
-    // we have to change format of filter "ctrl_{control pipeline name}_{filter name}" to "{filter name}"
-    if (data && this.filterPipeline.length > 0) {
-      this.filterPipeline.forEach((filter) => {
-        let fNamePrefix: string = `ctrl_${this.pipelineName}_`;
-        const filterName = filter.replace(fNamePrefix, '');
-        filtersList.push(filterName);
-      });
-    }
-    if (data?.files.length > 0) {
-      const filterName = data?.filters[0];
-      this.uploadScript(filterName, data?.files);
-    }
-    this.filterPipeline = filtersList.concat(filterData);
-    if (this.pipelineID) {
-      if (data?.filters.length > 0) {
-           this.updateControlPipeline({filters: this.filterPipeline}, true)
-        }
-       this.getControlPipeline();
-    }
-    if (this.pipelineForm) {
-      this.pipelineForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);
+  addNewFitlerInPipeline(data: any) {
+    if (data) {
+      const filterData = data ? data.filters : [];
+      let filtersList = [];
+      // Append recently added filter to existing filter pipeline
+      // format of previously added filter is ctrl_{control pipeline name}_{filter name}. To send filter in updated payload,
+      // we have to change format of filter "ctrl_{control pipeline name}_{filter name}" to "{filter name}"
+      if (data && this.filterPipeline.length > 0) {
+        this.filterPipeline.forEach((filter) => {
+          let fNamePrefix: string = `ctrl_${this.pipelineName}_`;
+          const filterName = filter.replace(fNamePrefix, '');
+          filtersList.push(filterName);
+        });
+      }
+      if (data?.files.length > 0) {
+        const filterName = data?.filters[0];
+        this.uploadScript(filterName, data?.files);
+      }
+      this.filterPipeline = filtersList.concat(filterData);
+      this.unsavedChangesInFilterForm = true;
     }
     this.isAddFilterWizard = false;
     this.addFilterClicked = false;
   }
 
-  deleteFilter() {
-    this.isFilterDeleted = false;
-    this.ngProgress.start();
-    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.pipelineName)
-      .subscribe(() => {
-        this.deletedFilterPipeline.forEach((filter, index) => {
-          this.filterService.deleteFilter(filter).subscribe((data: any) => {
-            this.ngProgress.done();
-            if (this.deletedFilterPipeline.length === index + 1) {
-              this.deletedFilterPipeline = []; // clear deleted filter reference
-            }
-            this.alertService.success(data.result, true);
-          },
-            (error) => {
-              this.ngProgress.done();
-              if (error.status === 0) {
-                console.log('service down ', error);
-              } else {
-                this.alertService.error(error.statusText);
-              }
-            });
-        });
-      },
-        (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  getFilterConfiguration(filterName: string) {
-    this.filterService.getFilterConfiguration(filterName)
-      .subscribe((data: any) => {
-        this.selectedFilterPlugin = data.plugin.value;
-        this.filterConfiguration = { key: filterName, config: data };
-        this.filterConfigurationCopy = cloneDeep({ key: filterName, config: data });
-        this.filterConfigComponent?.updateCategroyConfig(data);
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  deleteFilterReference(filter) {
-    this.deletedFilterPipeline.push(filter);
-    this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
-    this.isFilterDeleted = true;
-    this.isFilterOrderChanged = false;
-  }
-
-  activeAccordion(id, filterName: string) {
-    const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
-    if (last !== undefined) {
-      const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
-      const activeId = last.getAttribute('id');
-      lastActiveContentBody.hidden = true;
-      last.classList.remove('is-active');
-      if (id !== +activeId) {
-        const next = <HTMLElement>document.getElementById(id);
-        const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
-        nextActiveContentBody.hidden = false;
-        next.setAttribute('class', 'accordion card is-active');
-        this.getFilterConfiguration(filterName);
-      } else {
-        last.classList.remove('is-active');
-        lastActiveContentBody.hidden = true;
-      }
-    } else {
-      const element = <HTMLElement>document.getElementById(id);
-      const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
-      body.hidden = false;
-      element.setAttribute('class', 'accordion card is-active');
-      this.getFilterConfiguration(filterName);
-    }
+  updateFilterPipelineReference(filters: []) {
+    this.filterPipeline = filters;
   }
 
   getControlPipeline() {
@@ -340,17 +251,15 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   onCancel() {
-    if (this.isFilterOrderChanged || this.isFilterDeleted) {
+    if (this.unsavedChangesInFilterForm) {
       this.showConfirmationDialog();
       return;
     }
     this.router.navigate(['control-dispatcher/pipelines']);
   }
 
-  discardChanges() {
-    this.isFilterOrderChanged = false;
-    this.isFilterDeleted = false;
-    this.deletedFilterPipeline = [];
+  discardUnsavedChanges() {
+    this.unsavedChangesInFilterForm = false;
     if (this.addFilterClicked) {
       this.isAddFilterWizard = this.addFilterClicked;
       return;
@@ -358,15 +267,8 @@ export class AddControlPipelineComponent implements OnInit {
     this.router.navigate(['control-dispatcher/pipelines']);
   }
 
-  /**
-  * Get edited filter configuration
-  * @param changedConfiguration changed configuration of a selected filter
-  */
-   getChangedFilterConfig(changedConfiguration: any) {
-    this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy);
-  }
 
-  deletePipeline(id) {
+  deletePipeline(id: number) {
     /** request started */
     this.ngProgress.start();
     this.controlPipelinesService.deletePipeline(id)
@@ -420,7 +322,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.getSourceNameList();
         // mark form invalid, if Source/Destination Name is not selected yet
         if (!['API', 'Any'].includes(this.selectedSourceType.name)) {
-          this.pipelineForm.form.setErrors({'invalid': true});
+          this.pipelineForm.form.setErrors({ 'invalid': true });
         }
         break;
       case 'sourceName':
@@ -437,7 +339,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.getDestinationNameList();
         // mark form invalid, if Source/Destination Name is not selected yet
         if (this.selectedDestinationType.name !== 'Broadcast') {
-          this.pipelineForm.form.setErrors({'invalid': true});
+          this.pipelineForm.form.setErrors({ 'invalid': true });
         }
         break;
       case 'destinationName':
@@ -516,7 +418,7 @@ export class AddControlPipelineComponent implements OnInit {
               if (!['STARTUP'].includes(sch.type)) {
                 names.push(sch);
               }
-            }           
+            }
           });
           let southboundSvc = [];
           let northboundSvc = [];
@@ -611,20 +513,20 @@ export class AddControlPipelineComponent implements OnInit {
 
   getSourceDestTypes(type) {
     this.controlPipelinesService.getSourceDestinationTypeList(type)
-    .subscribe((data: any) => {
-      this.ngProgress.done();
-      if (type === 'source') {
-        this.sourceTypeList = data;
-      } else {
-        this.destinationTypeList = data;
-      }
-    }, error => {
-      if (error.status === 0) {
-        console.log('service down ', error);
-      } else {
-        this.alertService.error(error.statusText);
-      }
-    });
+      .subscribe((data: any) => {
+        this.ngProgress.done();
+        if (type === 'source') {
+          this.sourceTypeList = data;
+        } else {
+          this.destinationTypeList = data;
+        }
+      }, error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   /**
@@ -634,34 +536,6 @@ export class AddControlPipelineComponent implements OnInit {
   */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-  }
-
-  /**
-  * Get scripts to upload from a configuration item
-  * @param configuration  edited configuration from show configuration page
-  * @returns script files to upload
-  */
-   getScriptFilesToUpload(configuration: any) {
-    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
-  }
-
-  /**
-   * update plugin configuration
-   */
-   updateConfiguration(categoryName: string, configuration: any, type: string) {
-    const files = this.getScriptFilesToUpload(configuration);
-    if (files.length > 0) {
-      this.uploadScript(categoryName, files);
-    }
-
-    if (isEmpty(configuration)) {
-      return;
-    }
-
-    this.apiCallsStack.push(this.configService.
-      updateBulkConfiguration(categoryName, configuration)
-      .pipe(map(() => ({ type, success: true })))
-      .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 
   checkIfSourceDestSame(source, destination) {
@@ -676,8 +550,8 @@ export class AddControlPipelineComponent implements OnInit {
     let { name } = formData;
     const payload = {
       execution: this.selectedExecution,
-      source: {"type": this.selectedSourceType.cpsid, "name": this.selectedSourceName},
-      destination: {"type": this.selectedDestinationType.cpdid, "name": this.selectedDestinationName},
+      source: { "type": this.selectedSourceType.cpsid, "name": this.selectedSourceName },
+      destination: { "type": this.selectedDestinationType.cpdid, "name": this.selectedDestinationName },
       filters: this.filterPipeline ? this.filterPipeline : [],
       enabled: this.isPipelineEnabled
     }
@@ -685,37 +559,20 @@ export class AddControlPipelineComponent implements OnInit {
     if (ifSourceDestSame) {
       this.toast.error("Source and Destination can't be same.");
       return;
-    }      
+    }
     if (!this.editMode) {
       payload['name'] = name.trim();
     }
-    if (!isEmpty(this.changedFilterConfig) && this.filterConfigurationCopy?.key) {
-      this.updateConfiguration(this.filterConfigurationCopy.key, this.changedFilterConfig, 'filter-config');
+
+    if (this.unsavedChangesInFilterForm) {
+      this.filtersListComponent.update();
+      this.unsavedChangesInFilterForm = false;
     }
 
-    if (this.apiCallsStack.length > 0) {
-      this.ngProgress.start();
-      forkJoin(this.apiCallsStack).subscribe((result) => {
-        result.forEach((r: any) => {
-          this.ngProgress.done();
-          if (r.failed) {
-            if (r.error.status === 0) {
-              console.log('service down ', r.error);
-            } else {
-              this.alertService.error(r.error.statusText);
-            }
-          } else {
-            this.response.handleResponseMessage(r.type);
-          }
-        });
-        form.reset();
-        this.apiCallsStack = [];
-      });
-    }
     if (this.editMode) {
       this.updateControlPipeline(payload);
       return;
-    }   
+    }
     this.ngProgress.start();
     this.controlPipelinesService.createPipeline(payload)
       .subscribe(() => {
@@ -745,7 +602,12 @@ export class AddControlPipelineComponent implements OnInit {
     this.pipelineForm.form.markAsDirty();
   }
 
-  updateControlPipeline(payload, isFilterUpdated = false) {
+  filterFormStatus(status: boolean) {
+    this.unsavedChangesInFilterForm = status;
+  }
+
+  updateControlPipeline(payload: any, isFilterUpdated = false) {
+    payload.filters = this.filterPipeline;
     /** request started */
     this.ngProgress.start();
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
@@ -758,7 +620,7 @@ export class AddControlPipelineComponent implements OnInit {
         } else {
           this.getControlPipeline();
         }
-        this.alertService.success(data.message, true)
+        this.toast.success(data.message)
         /** request completed */
         this.ngProgress.done();
       }, error => {
@@ -771,5 +633,4 @@ export class AddControlPipelineComponent implements OnInit {
         }
       });
   }
-
 }

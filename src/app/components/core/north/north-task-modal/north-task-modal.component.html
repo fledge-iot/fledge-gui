@@ -94,7 +94,7 @@
               </ng-template>
             </div>
           </div>
-          <app-filter-list #filtersListComponent [service]="task" [filterPipeline]="filterPipeline"
+          <app-filter-list #filtersListComponent [service]="task?.name" [filterPipeline]="filterPipeline"
             (formStatus)="filterFormStatus($event)"></app-filter-list>
           <hr *ngIf="rolesService.hasEditPermissions()">
           <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">

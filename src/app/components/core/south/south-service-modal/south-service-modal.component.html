@@ -46,7 +46,7 @@
               </ng-template>
             </div>
           </div>
-          <app-filter-list #filtersListComponent [service]="service" [filterPipeline]="filterPipeline"
+          <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
             (formStatus)="filterFormStatus($event)"></app-filter-list>
           <hr>
           <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">

@@ -10,7 +10,6 @@ import {
   ToastService,
 } from '../../../../services';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
-import { Service } from '../../south/south-service';
 import { catchError, map } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -26,8 +25,10 @@ export class FilterListComponent {
   @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
 
   @Input() filterPipeline: string[] = [];
-  @Input() service: Service;
+  @Input() service: string = '';
+  @Input() type: string = '';
   @Output() formStatus = new EventEmitter<boolean>();
+  @Output() controlPipelineFilters = new EventEmitter<string[]>();
 
   filterPipelineCopy: string[];
   validFilterConfigForm = false;
@@ -92,8 +93,21 @@ export class FilterListComponent {
     this.formStatus.emit(true);
   }
 
+  hasFilter(filter: string) {
+    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : filter;
+    return this.filterConfiguration.has(filterName);
+  }
+
+  getFilter(filter: string) {
+    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : filter;
+    return this.filterConfiguration.get(filterName);
+  }
+
   getFilterConfiguration(filterName: string) {
-    const catName = this.service.name + '_' + filterName;
+    let catName = filterName;
+    if (this.type !== 'control-pipeline') {
+      catName = this.service + '_' + filterName;
+    }
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
         this.filterConfiguration.set(catName, { key: catName, config: data, plugin: data.plugin.value });
@@ -112,13 +126,14 @@ export class FilterListComponent {
   * Get edited filter configuration from show configuration page
   * @param changedConfiguration changed configuration of a selected filter
   */
-  getChangedFilterConfig(changedConfiguration: any, categoryName: string) {
-    const changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy.get(categoryName));
+  getChangedFilterConfig(changedConfiguration: any, filter: string) {
+    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : filter;
+    const changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy.get(filterName));
     if (changedConfig) {
-      this.changedFilterConfig.set(categoryName, changedConfig);
-      const values = this.changedFilterConfig.get(categoryName);
+      this.changedFilterConfig.set(filterName, changedConfig);
+      const values = this.changedFilterConfig.get(filterName);
       if (isEmpty(values)) {
-        this.changedFilterConfig.delete(categoryName);
+        this.changedFilterConfig.delete(filterName);
       }
       if (this.changedFilterConfig.size == 0) {
         this.formStatus.emit(false);
@@ -139,18 +154,23 @@ export class FilterListComponent {
       this.updateConfiguration(this.changedFilterConfig, 'filter-config');
     }
 
-    if (this.checkPipelineItemsOrder()) {
-      this.updateFilterPipeline(this.filterPipeline);
-    }
-
-    if (this.deletedFilterPipeline.length > 0) {
-      this.deleteFilter();
+    if (this.type !== 'control-pipeline') {
+      if (this.checkPipelineItemsOrder()) {
+        this.updateFilterPipeline(this.filterPipeline);
+      }
+      if (this.deletedFilterPipeline.length > 0) {
+        this.deleteFilter();
+      }
+    } else {
+      if (this.deletedFilterPipeline.length > 0) {
+        this.controlPipelineFilters.emit(this.filterPipeline);
+      }
     }
     this.formStatus.emit(false);
   }
 
   public updateFilterPipeline(filterPipeline) {
-    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service.name)
+    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.service)
       .subscribe((data: any) => {
         this.toastService.success(data.result);
       },
@@ -187,7 +207,7 @@ export class FilterListComponent {
   }
 
   deleteFilter() {
-    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service.name)
+    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service)
       .subscribe(() => {
         this.deletedFilterPipeline.forEach((filter, index) => {
           this.filterService.deleteFilter(filter).subscribe((data: any) => {

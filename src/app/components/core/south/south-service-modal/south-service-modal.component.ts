@@ -41,10 +41,7 @@ export class SouthServiceModalComponent implements OnInit {
   public unsavedChangesInFilterForm = false;
 
   assetReadings = [];
-  public filterItemIndex;
   public isAddFilterWizard;
-  // Object to hold data of south service to delete
-  public selectedFilterPlugin;
 
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
