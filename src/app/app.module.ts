@@ -140,11 +140,6 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
       provide: HTTP_INTERCEPTORS,
       useClass: HttpsRequestInterceptor,
       multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: CancelPendingRequestsInterceptor,
-      multi: true
     }
   ],
   bootstrap: [AppComponent]

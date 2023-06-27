@@ -59,7 +59,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public backwardReadingCounter: number = 0;
   public graphDisplayDuration = "10";
   public graphDisplayUnit = "minutes";
-  public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
+  public imageReadingsDimensions = { width: 0, height: 0, depth: 0 };
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -72,19 +72,18 @@ export class ReadingsGraphComponent implements OnDestroy {
     private ping: PingService,
     private sharedService: SharedService,
     private dateFormatter: DateFormatterPipe,
-    private httpCancelService: HttpCancelService,
     public rangeSliderService: RangeSliderService) {
 
-      this.assetChartType = 'line';
-      this.assetReadingValues = {};
-      this.ping.pingIntervalChanged
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((timeInterval: number) => {
-          if (timeInterval === -1) {
-            this.isAlive = false;
-          }
-          this.graphRefreshInterval = timeInterval;
-        });
+    this.assetChartType = 'line';
+    this.assetReadingValues = {};
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.graphRefreshInterval = timeInterval;
+      });
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -135,8 +134,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.assetsSubscription) {
       this.assetsSubscription.unsubscribe();
     }
-    // cancel pending requests after closing the model
-    this.httpCancelService.cancelPendingRequests();
 
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
@@ -179,7 +176,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.loadPage = true;
     this.notify.emit(false);
     this.selectedAsset = assetCode;
-    
+
     if (this.latestReadingSubscription) {
       this.latestReadingSubscription.unsubscribe();
     }
@@ -194,10 +191,10 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedAsset) {
           const index: number = this.availableAssets.indexOf(this.selectedAsset);
           if (index !== -1) {
-              this.availableAssets.splice(index, 1);
-          } 
+            this.availableAssets.splice(index, 1);
+          }
         }
-        this.availableAssets = this.availableAssets.sort((a, b) => a.localeCompare(b));     
+        this.availableAssets = this.availableAssets.sort((a, b) => a.localeCompare(b));
       }
     });
 
@@ -497,12 +494,12 @@ export class ReadingsGraphComponent implements OnDestroy {
     const strReadings = [];
     const arrReadings = [];
     const imageReadings = [];
-    
+
     // In case of multiple assets readings, merge all readings
     if ((this.additionalAssets.length > 1 && readings.length !== 0) || !(Array.isArray(readings))) {
       if (Object.keys(readings).length === this.additionalAssets.length) {
-        let allAssetsReading = [];     
-        this.additionalAssets.forEach((asset)=> {
+        let allAssetsReading = [];
+        this.additionalAssets.forEach((asset) => {
           allAssetsReading.push(...readings[asset]);
         });
         readings = this.getMergedReadings(allAssetsReading);
@@ -564,10 +561,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.setTabData(optedTime);
   }
 
-  getMergedReadings(allAssetsReading){  
-    let mergedReadings =[];
+  getMergedReadings(allAssetsReading) {
+    let mergedReadings = [];
     allAssetsReading.map(function (item) {
-      let existingReading = mergedReadings.find(x=> x.timestamp === item.timestamp);
+      let existingReading = mergedReadings.find(x => x.timestamp === item.timestamp);
       if (existingReading) {
         existingReading.reading = Object.assign({}, existingReading.reading, item.reading);
       } else {
@@ -767,7 +764,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
       }
     };
-    if(optedTime > 86400){
+    if (optedTime > 86400) {
       this.assetChartOptions.scales.xAxes[0].time.unit = 'hour';
       this.assetChartOptions.scales.xAxes[0].time.displayFormats.unit = 'hour';
       this.assetChartOptions.scales.xAxes[0].time.displayFormats.hour = 'ddd HH:mm';
@@ -873,7 +870,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     // Instantly make a call on clicking play button
-    if(this.isAlive){
+    if (this.isAlive) {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
 
@@ -891,20 +888,20 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  showBackwardReadingsGraph(){
+  showBackwardReadingsGraph() {
     this.backwardReadingCounter++;
     this.showReadingsGraph();
   }
-  
-  showForwardReadingsGraph(){
+
+  showForwardReadingsGraph() {
     this.backwardReadingCounter--;
     this.showReadingsGraph();
   }
 
-  showReadingsGraph(){
+  showReadingsGraph() {
     let currentTime = Date.now();
-    let timeDifference = Math.floor((currentTime - this.pauseTime)/1000);
-    let previous = timeDifference + this.backwardReadingCounter*this.optedTime;
+    let timeDifference = Math.floor((currentTime - this.pauseTime) / 1000);
+    let previous = timeDifference + this.backwardReadingCounter * this.optedTime;
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
   }
 
@@ -921,7 +918,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     return value * 60 * 60 * 24;
   }
 
-  getImageReadingsDimensions(value){
+  getImageReadingsDimensions(value) {
     let val = value.replace('__DPIMAGE:', '');
     let index = val.indexOf('_');
     let dimensions = val.slice(0, index).split(',');
