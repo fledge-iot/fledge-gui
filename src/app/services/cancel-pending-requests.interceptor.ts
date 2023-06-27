@@ -13,18 +13,20 @@ import { takeUntil } from 'rxjs/operators';
 @Injectable()
 export class CancelPendingRequestsInterceptor implements HttpInterceptor {
 
-    constructor(router: Router,
-        private httpCancelService: HttpCancelService) {
-            router.events.subscribe(event => {
-                // An event triggered at the end of the activation part of the Resolve phase of routing.
-                if (event instanceof ActivationEnd) {
-                  // Cancel pending calls
-                  this.httpCancelService.cancelPendingRequests();
-                }
-            });
-    }
+  constructor(router: Router,
+    private httpCancelService: HttpCancelService) {
+    router.events.subscribe(event => {
+      console.log('event', event);
 
-    intercept<T>(req: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
-      return next.handle(req).pipe(takeUntil(this.httpCancelService.onCancelPendingRequests()))
-    }
+      // An event triggered at the end of the activation part of the Resolve phase of routing.
+      if (event instanceof ActivationEnd) {
+        // Cancel pending calls
+        this.httpCancelService.cancelPendingRequests();
+      }
+    });
+  }
+
+  intercept<T>(req: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
+    return next.handle(req).pipe(takeUntil(this.httpCancelService.onCancelPendingRequests()))
+  }
 }
