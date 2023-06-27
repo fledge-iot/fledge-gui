@@ -11,12 +11,12 @@
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </div>
-        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
-          <span class="help">
-            *Showing {{graphDisplayDuration}} {{graphDisplayUnit}} data before now
+        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5) && readingStartTimestamp">
+          <span class="help" *ngIf="isAlive">
+            *Showing data from {{readingStartTimestamp}} to current time
           </span>
-          <span class="help" *ngIf="backwardReadingCounter!=0">
-            - {{graphDisplayDuration*backwardReadingCounter}} {{graphDisplayUnit}}
+          <span class="help" *ngIf="!isAlive">
+            *Showing data from {{readingStartTimestamp}} to {{readingEndTimestamp}}
           </span>
         </ng-container>
       </span>
