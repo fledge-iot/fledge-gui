@@ -507,15 +507,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
-    if(this.timestamps.length != 0){
-      this.readingStartTimestamp = this.timestamps[0];
-      this.readingStartTimestamp = this.dateFormatter.transform(this.readingStartTimestamp, 'YYYY-MM-DD HH:mm:ss');
-      this.readingEndTimestamp = this.timestamps[this.timestamps.length-1];
-      this.readingEndTimestamp = this.dateFormatter.transform(this.readingEndTimestamp, 'YYYY-MM-DD HH:mm:ss');
-    }
-    else{
-      this.readingStartTimestamp = "";
-      this.readingEndTimestamp = "";
+    this.readingStartTimestamp = "";
+    this.readingEndTimestamp = "";
+    let ts_length = this.timestamps.length;
+    if(ts_length != 0){
+      this.readingStartTimestamp = this.dateFormatter.transform(this.timestamps[0], 'YYYY-MM-DD HH:mm:ss');
+      this.readingEndTimestamp = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
     }
 
     for (const r of readings) {
