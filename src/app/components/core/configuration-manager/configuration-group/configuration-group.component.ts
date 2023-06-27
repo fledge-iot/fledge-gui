@@ -76,7 +76,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     const configItems = Object.keys(this.category.config).map(k => {
       this.category.config[k].key = k;
       return this.category.config[k];
-    });
+    }).filter(obj => !obj.readonly); // remove readonly items from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
 
@@ -239,21 +239,25 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
+
+    // set advance as a first tab if no default config
+    if (this.groups.length == 0) {
+      this.selectedGroup = groups[0]?.group
+    }
   }
 
   formStatus(formState: any) {
     // find the object of changed form from groups array
     let groupObject = this.groups.find((g: any) => g.group === formState.group);
     if (!groupObject) {
-      groupObject  = this.advanceCategoriesGroup.find((g: any) => g.group === formState.group)
-    } 
+      groupObject = this.advanceCategoriesGroup.find((g: any) => g.group === formState.group)
+    }
     // Set the status of respected tab
     if (groupObject) {
       groupObject.status = formState.status;
     }
 
     const groupTabFormsStatus = this.groups.concat(this.advanceCategoriesGroup);
-    
     // check the condition for every element to see if all groups have valid status
     const formStatus = groupTabFormsStatus.every(g => (g.status === true || g.status === undefined));
     this.formStatusEvent.emit(formStatus);
