@@ -11,7 +11,7 @@ import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 
 @Component({
@@ -398,7 +398,7 @@ export class AddFilterWizardComponent implements OnInit {
         (data: any) => {
           this.alertService.success(data.filter + ' filter added successfully.', true);
           if (this.from === 'control-pipeline') {
-            this.notify.emit({ 'filters': [payload.name], files });
+            this.notify.emit({ 'filter': payload.name, files });
           } else {
             this.addFilterPipeline({ 'pipeline': [payload.name], files });
           }

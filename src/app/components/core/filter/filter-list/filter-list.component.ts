@@ -94,19 +94,21 @@ export class FilterListComponent {
   }
 
   hasFilter(filter: string) {
-    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : filter;
+    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : `ctrl_${this.service}_${filter}`;
     return this.filterConfiguration.has(filterName);
   }
 
   getFilter(filter: string) {
-    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : filter;
+    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : `ctrl_${this.service}_${filter}`;
     return this.filterConfiguration.get(filterName);
   }
 
   getFilterConfiguration(filterName: string) {
-    let catName = filterName;
+    let catName = '';
     if (this.type !== 'control-pipeline') {
       catName = this.service + '_' + filterName;
+    } else {
+      catName = `ctrl_${this.service}_${filterName}`;
     }
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
@@ -127,7 +129,7 @@ export class FilterListComponent {
   * @param changedConfiguration changed configuration of a selected filter
   */
   getChangedFilterConfig(changedConfiguration: any, filter: string) {
-    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : filter;
+    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : `ctrl_${this.service}_${filter}`;
     const changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy.get(filterName));
     if (changedConfig) {
       this.changedFilterConfig.set(filterName, changedConfig);
@@ -220,7 +222,7 @@ export class FilterListComponent {
               if (error.status === 0) {
                 console.log('service down ', error);
               } else {
-                // this.alertService.error(error.statusText);
+                this.toastService.error(error.statusText);
               }
             });
         });
@@ -229,7 +231,7 @@ export class FilterListComponent {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            //this.alertService.error(error.statusText);
+            this.toastService.error(error.statusText);
           }
         });
   }
@@ -277,10 +279,6 @@ export class FilterListComponent {
    */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-    // if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)
-    //   && isEmpty(this.changedFilterConfig)) {
-    //   this.toggleModal(false);
-    // }
   }
 
   /**
