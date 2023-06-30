@@ -38,12 +38,13 @@
       <i class="fas fa-angle-right fa-xs"></i>
     </button>
   </div>
-  <ng-container *ngIf="groups.length == 0 && advanceCategoriesGroup.length == 0; else group">
+  <ng-container *ngIf="groups.length == 0 && dynamicCategoriesGroup.length == 0; else group">
     <div class="has-text-centered">
-      <small class="no-rec">No configuarion to update.</small>
+      <small class="no-rec">No configuraion to update.</small>
     </div>
   </ng-container>
   <ng-template #group>
+    <!-- if user coming from config-manager component don't show the group border -->
     <div [ngClass]="{'highlight': from !== 'config-manager'}">
       <ng-container *ngFor="let g of groups">
         <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
