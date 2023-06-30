@@ -207,10 +207,6 @@ export class AddControlPipelineComponent implements OnInit {
     if ((!nameValue || nameValue === '') && !this.pipelineName) {
       return;
     }
-    // if (this.unsavedChangesInFilterForm) {
-    //   this.showConfirmationDialog();
-    //   return;
-    // }
     this.isAddFilterWizard = isClicked;
   }
 
