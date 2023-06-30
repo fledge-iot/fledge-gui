@@ -60,6 +60,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
   public readingStartTimestamp = "";
   public readingEndTimestamp = "";
+  public graphStartTimestamp: Date;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -508,7 +509,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.readingEndTimestamp = "";
     let ts_length = this.timestamps.length;
     if(ts_length != 0){
-      this.readingStartTimestamp = this.dateFormatter.transform(this.timestamps[0], 'YYYY-MM-DD HH:mm:ss');
+      this.graphStartTimestamp = new Date(Date.now() - optedTime * 1000);
+      this.readingStartTimestamp = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
       this.readingEndTimestamp = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
     }
 
@@ -716,7 +718,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   private setAssetReadingValues(ds: any, optedTime: number) {
-    let readingGraphStartTimestamp = new Date(Date.now() - optedTime * 1000);
     this.assetReadingValues = {
       datasets: ds
     };
@@ -739,7 +740,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           },
           ticks: {
             autoSkip: true,
-            min: readingGraphStartTimestamp
+            min: this.graphStartTimestamp
           },
           bounds: 'ticks'
         }]
