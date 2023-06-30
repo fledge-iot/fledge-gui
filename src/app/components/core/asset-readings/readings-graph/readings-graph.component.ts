@@ -716,6 +716,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   private setAssetReadingValues(ds: any, optedTime: number) {
+    let readingGraphStartTimestamp = new Date(Date.now() - optedTime * 1000);
     this.assetReadingValues = {
       datasets: ds
     };
@@ -737,7 +738,8 @@ export class ReadingsGraphComponent implements OnDestroy {
             }
           },
           ticks: {
-            autoSkip: true
+            autoSkip: true,
+            min: readingGraphStartTimestamp
           },
           bounds: 'ticks'
         }]
