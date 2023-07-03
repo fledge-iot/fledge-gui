@@ -53,8 +53,6 @@ export class AddControlPipelineComponent implements OnInit {
   @ViewChild('pipelineForm') pipelineForm: NgForm;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
-
-  pipelines = [{ name: 'None' }];
   selectedExecution = '';
   selectedSourceType = { cpsid: null, name: '' };
   selectedSourceName = null;
