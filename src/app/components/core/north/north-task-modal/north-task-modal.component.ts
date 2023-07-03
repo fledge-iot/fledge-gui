@@ -464,12 +464,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   checkFormState() {
     let taskStateChanged = false;
     if (this.form) {
-      const repeatInterval = Utils.secondsToDhms(this.task?.repeat);
+      const repeatInterval = this.task?.repeat ? Utils.secondsToDhms(this.task.repeat) : null;
       const taskSubset = {
-        enabled: this.task?.enabled,
-        exclusive: this.task?.exclusive,
-        repeatTime: repeatInterval?.time,
-        repeatDays: repeatInterval?.days
+        ...(this.task && { enabled: this.task?.enabled }),
+        ...(this.task?.exclusive && { exclusive: this.task?.exclusive }),
+        ...(repeatInterval && { repeatTime: repeatInterval?.time }),
+        ...(repeatInterval && { repeatDays: repeatInterval?.days })
       }
       taskStateChanged = !isEqual(this.form.value, taskSubset);
     }
