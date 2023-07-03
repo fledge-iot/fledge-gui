@@ -12,7 +12,7 @@ import {
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -126,6 +126,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
     if (pluginInfo) {
+      pluginInfo.config = this.configurationControlService.getValidConfig(pluginInfo.config);
       this.configurationData = pluginInfo;
       this.pluginConfiguration = cloneDeep(pluginInfo);
       this.selectedPluginDescription = pluginInfo.description;
@@ -218,11 +219,12 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
    * @param payload  to pass in request
    */
   public addService() {
+    let config = this.serviceForm?.value['config'];
     const payload = {
       name: this.serviceForm.value['name'].trim(),
       type: this.serviceType.toLowerCase(),
       plugin: this.serviceForm.value['plugin'][0],
-      ...this.serviceForm.value['config'] && { config: this.serviceForm.value['config'] },
+      ...config && { config },
       enabled: this.isScheduleEnabled
     };
 

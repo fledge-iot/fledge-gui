@@ -11,7 +11,7 @@ import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 
 @Component({
@@ -338,6 +338,8 @@ export class AddFilterWizardComponent implements OnInit {
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
     if (pluginInfo) {
+      // get configuration after filtering the readonly properties
+      pluginInfo.config = this.configurationControlService.getValidConfig(pluginInfo.config);
       this.validChildConfigurationForm = true;
       this.configurationData = null;
       this.pluginConfiguration = null;

@@ -538,4 +538,14 @@ export class ConfigurationControlService {
     return finalConfiguration;
   }
 
+  getValidConfig(config: any) {
+    // remove readonly property form the local configuration copy
+    Object.keys(config).forEach(key => {
+      if (config[key]?.readonly) {
+        delete config[key];
+      }
+    })
+    return config;
+  }
+
 }
