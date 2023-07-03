@@ -642,13 +642,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
         this.pipelineName = payload.name;
-
-        // If info other than filter pipeline updated, then redirect to Control Pipeline list page otherwise stay on Add/Detail page
-        //if (!isFilterUpdated) {
         this.router.navigate(['control-dispatcher/pipelines']);
-        // } else {
-        //   this.getControlPipeline();
-        // }
         this.toast.success(data.message)
         /** request completed */
         this.ngProgress.done();
