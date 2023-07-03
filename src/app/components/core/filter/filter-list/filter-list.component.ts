@@ -90,7 +90,7 @@ export class FilterListComponent {
       return;
     }
     moveItemInArray(this.filterPipeline, event.previousIndex, event.currentIndex);
-    this.formStatus.emit(true);
+    this.formStatus.emit(this.checkPipelineItemsOrder());
   }
 
   hasFilter(filter: string) {
@@ -147,6 +147,7 @@ export class FilterListComponent {
 
   discard() {
     this.deletedFilterPipeline = [];
+    this.changedFilterConfig = new Map();
     this.filterPipeline = cloneDeep(this.filterPipelineCopy);
     this.formStatus.emit(false);
   }
