@@ -288,7 +288,7 @@
                 </p>
                 <p class="control">
                   <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link"
-                    [disabled]="pipelineForm?.invalid">Save</button>
+                    [disabled]="pipelineForm?.invalid || (!checkControlPipelineChange() && !unsavedChangesInFilterForm) ">Save</button>
                 </p>
               </div>
             </div>

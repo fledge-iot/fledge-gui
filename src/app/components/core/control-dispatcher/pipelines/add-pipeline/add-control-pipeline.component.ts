@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEmpty, isEqual } from 'lodash';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CustomValidator } from '../../../../../directives/custom-validator';
@@ -23,6 +23,27 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { FilterAlertComponent } from '../../../filter/filter-alert/filter-alert.component';
 import { FilterListComponent } from '../../../filter/filter-list/filter-list.component';
 
+export interface ControlPipeline {
+  id?: number
+  name?: string
+  source: Source
+  destination: Destination
+  enabled: boolean
+  execution: string
+  filters: string[]
+}
+
+export interface Source {
+  type: string
+  name: string
+}
+
+export interface Destination {
+  type: string
+  name: string
+}
+
+
 @Component({
   selector: 'app-add-control-pipeline',
   templateUrl: './add-control-pipeline.component.html',
@@ -32,8 +53,6 @@ export class AddControlPipelineComponent implements OnInit {
   @ViewChild('pipelineForm') pipelineForm: NgForm;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
-
-  pipelines = [{ name: 'None' }];
   selectedExecution = '';
   selectedSourceType = { cpsid: null, name: '' };
   selectedSourceName = null;
@@ -54,6 +73,8 @@ export class AddControlPipelineComponent implements OnInit {
   public isAddFilterWizard;
   public addFilterClicked = false;
   unsavedChangesInFilterForm = false;
+
+  controlPipeline: ControlPipeline;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -96,7 +117,7 @@ export class AddControlPipelineComponent implements OnInit {
         map((response: any) => {
           const sources = <Array<any>>response.sources;
           const destinations = <Array<any>>response.destinations;
-          const pipelines = <Array<any>>response.pipelines;
+          const pipelines = response.pipelines as ControlPipeline;
           const result: any[] = [];
           result.push({
             ...{ 'sources': sources },
@@ -136,7 +157,8 @@ export class AddControlPipelineComponent implements OnInit {
     this.router.navigate(['/control-dispatcher/pipelines']);
   }
 
-  getPipelineData(pipelineData) {
+  getPipelineData(pipelineData: ControlPipeline) {
+    this.controlPipeline = pipelineData;
     this.pipelineName = pipelineData.name;
     this.selectedExecution = pipelineData.execution;
     this.sourceTypeList.forEach(type => {
@@ -156,16 +178,19 @@ export class AddControlPipelineComponent implements OnInit {
     this.selectValue(this.selectedDestinationType, 'destinationType');
     this.selectedDestinationName = pipelineData.destination.name;
     this.filterPipeline = [];
-    pipelineData.filters.forEach((filter) => {
-      let fNamePrefix: string = `ctrl_${this.pipelineName}_`;
-      const filterName = filter.replace(fNamePrefix, '');
-      this.filterPipeline.push(filterName);
-    });
+    this.filterPipeline = this.changeFilterNameInPipeline(pipelineData.filters);
     this.isPipelineEnabled = pipelineData.enabled;
     if (this.isAddFilterWizard) {
       this.pipelineForm.form.markAsUntouched();
       this.pipelineForm.form.markAsPristine();
     }
+  }
+
+  changeFilterNameInPipeline(filters: string[]): string[] {
+    return filters?.map(f => {
+      f = f.replace(`ctrl_${this.pipelineName}_`, ''); // replace ctrl_<cp-name>_ from the filter
+      return f;
+    });
   }
 
   ngAfterContentChecked(): void {
@@ -175,19 +200,12 @@ export class AddControlPipelineComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-
-
   openAddFilterModal(isClicked, nameValue) {
     this.addFilterClicked = isClicked;
     if ((!nameValue || nameValue === '') && !this.pipelineName) {
       return;
     }
-    if (this.unsavedChangesInFilterForm) {
-      this.showConfirmationDialog();
-      return;
-    }
     this.isAddFilterWizard = isClicked;
-    console.log('form  fff', this.pipelineForm);
   }
 
   /**
@@ -204,26 +222,15 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   addNewFitlerInPipeline(data: any) {
-    if (data) {
-      const filterData = data ? data.filters : [];
-      let filtersList = [];
-      // Append recently added filter to existing filter pipeline
-      // format of previously added filter is ctrl_{control pipeline name}_{filter name}. To send filter in updated payload,
-      // we have to change format of filter "ctrl_{control pipeline name}_{filter name}" to "{filter name}"
-      if (data && this.filterPipeline.length > 0) {
-        this.filterPipeline.forEach((filter) => {
-          let fNamePrefix: string = `ctrl_${this.pipelineName}_`;
-          const filterName = filter.replace(fNamePrefix, '');
-          filtersList.push(filterName);
-        });
-      }
+    if (!isEmpty(data)) {
+      this.filterPipeline.push(data?.filter);
       if (data?.files.length > 0) {
-        const filterName = data?.filters[0];
+        const filterName = data?.filter;
         this.uploadScript(filterName, data?.files);
       }
-      this.filterPipeline = filtersList.concat(filterData);
       this.unsavedChangesInFilterForm = true;
     }
+
     this.isAddFilterWizard = false;
     this.addFilterClicked = false;
   }
@@ -266,7 +273,6 @@ export class AddControlPipelineComponent implements OnInit {
     }
     this.router.navigate(['control-dispatcher/pipelines']);
   }
-
 
   deletePipeline(id: number) {
     /** request started */
@@ -545,16 +551,33 @@ export class AddControlPipelineComponent implements OnInit {
     return false;
   }
 
+  checkControlPipelineChange() {
+    const changedCPValues: ControlPipeline = {
+      execution: this.selectedExecution,
+      source: { "type": this.selectedSourceType.name, "name": this.selectedSourceName },
+      destination: { "type": this.selectedDestinationType.name, "name": this.selectedDestinationName },
+      filters: this.filterPipeline ? this.filterPipeline : [],
+      enabled: this.isPipelineEnabled
+    }
+    if (this.controlPipeline) {
+      delete this.controlPipeline.id;
+      delete this.controlPipeline.name;
+      this.controlPipeline.filters = this.changeFilterNameInPipeline(this.controlPipeline.filters);
+    }
+    return !isEqual(this.controlPipeline, changedCPValues);
+  }
+
   onSubmit(form: NgForm) {
     const formData = cloneDeep(form.value);
     let { name } = formData;
-    const payload = {
+    const payload: ControlPipeline = {
       execution: this.selectedExecution,
       source: { "type": this.selectedSourceType.cpsid, "name": this.selectedSourceName },
       destination: { "type": this.selectedDestinationType.cpdid, "name": this.selectedDestinationName },
       filters: this.filterPipeline ? this.filterPipeline : [],
       enabled: this.isPipelineEnabled
     }
+
     const ifSourceDestSame = this.checkIfSourceDestSame(payload.source, payload.destination);
     if (ifSourceDestSame) {
       this.toast.error("Source and Destination can't be same.");
@@ -570,9 +593,13 @@ export class AddControlPipelineComponent implements OnInit {
     }
 
     if (this.editMode) {
-      this.updateControlPipeline(payload);
+      if (this.checkControlPipelineChange()) {
+        this.updateControlPipeline(payload);
+      }
+      this.router.navigate(['control-dispatcher/pipelines']);
       return;
     }
+
     this.ngProgress.start();
     this.controlPipelinesService.createPipeline(payload)
       .subscribe(() => {
@@ -606,20 +633,14 @@ export class AddControlPipelineComponent implements OnInit {
     this.unsavedChangesInFilterForm = status;
   }
 
-  updateControlPipeline(payload: any, isFilterUpdated = false) {
+  updateControlPipeline(payload: any) {
     payload.filters = this.filterPipeline;
     /** request started */
     this.ngProgress.start();
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
         this.pipelineName = payload.name;
-
-        // If info other than filter pipeline updated, then redirect to Control Pipeline list page otherwise stay on Add/Detail page
-        if (!isFilterUpdated) {
-          this.router.navigate(['control-dispatcher/pipelines']);
-        } else {
-          this.getControlPipeline();
-        }
+        this.router.navigate(['control-dispatcher/pipelines']);
         this.toast.success(data.message)
         /** request completed */
         this.ngProgress.done();
