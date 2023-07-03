@@ -400,7 +400,7 @@ export class AddFilterWizardComponent implements OnInit {
         (data: any) => {
           this.alertService.success(data.filter + ' filter added successfully.', true);
           if (this.from === 'control-pipeline') {
-            this.notify.emit({ 'filters': [payload.name], files });
+            this.notify.emit({ 'filter': payload.name, files });
           } else {
             this.addFilterPipeline({ 'pipeline': [payload.name], files });
           }
