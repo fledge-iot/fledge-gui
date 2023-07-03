@@ -12,7 +12,7 @@
               </h6>
             </li>
             <!-- Advanced and security group -->
-            <li *ngFor="let g of advanceCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
+            <li *ngFor="let g of dynamicCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
                   {{g.group}}
@@ -52,7 +52,7 @@
           (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"></app-show-configuration>
       </ng-container>
       <!-- Advanced and security group configuration -->
-      <ng-container *ngFor="let g of advanceCategoriesGroup">
+      <ng-container *ngFor="let g of dynamicCategoriesGroup">
         <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
           <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
             [selectedGroup]="selectedGroup" [fullConfiguration]="g.config" [from]="from"

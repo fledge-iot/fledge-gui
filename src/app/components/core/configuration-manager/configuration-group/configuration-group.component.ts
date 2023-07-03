@@ -233,8 +233,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       dynamicGroups.push(config);
     }
 
-    dynamicGroups = dynamicGroups
-      .sort((a, b) => a.group.localeCompare(b.group))
+    dynamicGroups = dynamicGroups.sort((a, b) => a.group.localeCompare(b.group))
       .reduce((acc, e) => {
         e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
