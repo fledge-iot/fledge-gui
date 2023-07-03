@@ -598,6 +598,7 @@ export class AddControlPipelineComponent implements OnInit {
       if (this.checkControlPipelineChange()) {
         this.updateControlPipeline(payload);
       }
+      this.router.navigate(['control-dispatcher/pipelines']);
       return;
     }
 
@@ -634,7 +635,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.unsavedChangesInFilterForm = status;
   }
 
-  updateControlPipeline(payload: any, isFilterUpdated = false) {
+  updateControlPipeline(payload: any) {
     payload.filters = this.filterPipeline;
     /** request started */
     this.ngProgress.start();
@@ -643,11 +644,11 @@ export class AddControlPipelineComponent implements OnInit {
         this.pipelineName = payload.name;
 
         // If info other than filter pipeline updated, then redirect to Control Pipeline list page otherwise stay on Add/Detail page
-        if (!isFilterUpdated) {
-          this.router.navigate(['control-dispatcher/pipelines']);
-        } else {
-          this.getControlPipeline();
-        }
+        //if (!isFilterUpdated) {
+        this.router.navigate(['control-dispatcher/pipelines']);
+        // } else {
+        //   this.getControlPipeline();
+        // }
         this.toast.success(data.message)
         /** request completed */
         this.ngProgress.done();
