@@ -58,8 +58,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public pauseTime: number = Date.now();
   public backwardReadingCounter: number = 0;
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
-  public readingStartTimestamp = "";
-  public readingEndTimestamp = "";
+  public readingTimestamps = {start : "", end: ""};
   public graphStartTimestamp: Date;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -119,8 +118,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.pauseTime = Date.now();
     this.backwardReadingCounter = 0;
     sessionStorage.removeItem(this.assetCode);
-    this.readingStartTimestamp = "";
-    this.readingEndTimestamp = "";
+    this.readingTimestamps.start = "";
+    this.readingTimestamps.end = "";
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
@@ -505,13 +504,13 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
-    this.readingStartTimestamp = "";
-    this.readingEndTimestamp = "";
+    this.readingTimestamps.start = "";
+    this.readingTimestamps.end = "";
     let ts_length = this.timestamps.length;
     if(ts_length != 0){
       this.graphStartTimestamp = new Date(Date.now() - optedTime * 1000);
-      this.readingStartTimestamp = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
-      this.readingEndTimestamp = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
+      this.readingTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+      this.readingTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
     }
 
     for (const r of readings) {

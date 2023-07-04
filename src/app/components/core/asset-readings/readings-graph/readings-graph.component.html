@@ -11,12 +11,12 @@
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </div>
-        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5) && readingStartTimestamp">
+        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5) && readingTimestamps.start">
           <span class="help" *ngIf="isAlive">
-            *Showing data from {{readingStartTimestamp}} to current time
+            *Showing data from {{readingTimestamps.start}} to current time
           </span>
           <span class="help" *ngIf="!isAlive">
-            *Showing data from {{readingStartTimestamp}} to {{readingEndTimestamp}}
+            *Showing data from {{readingTimestamps.start}} to {{readingTimestamps.end}}
           </span>
         </ng-container>
       </span>
