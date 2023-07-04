@@ -513,7 +513,7 @@ export class ConfigurationControlService {
           const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
           return oldJsonValue != changedJsonValue;
         }
-        return e1.value !== changedConfiguration[e1.key];
+        return (e1.value ? e1.value : e1.default) !== changedConfiguration[e1.key];
       }
     });
 
