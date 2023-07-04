@@ -509,8 +509,6 @@ export class ConfigurationControlService {
       if (changedConfiguration.hasOwnProperty(e1.key)) {
         if (e1.type == 'JSON') {
           // compare JSON value for changed config
-          console.log('e1', e1);
-
           const oldJsonValue = JSON.stringify(JSON.parse(e1.value ? e1.value : e1.default), null, ' ');
           const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
           return oldJsonValue != changedJsonValue;
