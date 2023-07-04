@@ -40,19 +40,10 @@
     width: 736px;
     height: 397px;
   }
-  .summary {
-    width: 736px;
-  }
   .image-with-data {
     height: calc(50vh - 100px) !important;
     margin-top: 20px !important;
   }
-}
-
-.summary,
-.summary .table {
-  background-color: #f8f9f9;
-  border-radius: 5px;
 }
 
 .is-info {
