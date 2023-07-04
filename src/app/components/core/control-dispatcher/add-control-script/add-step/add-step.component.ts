@@ -143,7 +143,7 @@ export class AddStepComponent implements OnInit {
   }
 
   stepControlGroup(index): FormGroup {
-    return this.stepsFormGroup().controls[`step-${index}`] as FormGroup;
+    return this.stepsFormGroup()?.controls[`step-${index}`] as FormGroup;
   }
 
   stepValuesGroup(step) {
@@ -164,11 +164,11 @@ export class AddStepComponent implements OnInit {
 
 
   selectStep(step, index) {
-    this.stepsFormGroup().removeControl(`step-${index}`);
-    this.stepsFormGroup().addControl(`step-${index}`, new FormGroup({}));
+    this.stepsFormGroup()?.removeControl(`step-${index}`);
+    this.stepsFormGroup()?.addControl(`step-${index}`, new FormGroup({}));
     switch (step.key) {
       case 'write':
-        this.stepControlGroup(index).setControl(step.key, new FormGroup({
+        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
           service: new FormControl(step?.values?.service, Validators.required),
           values: this.stepValuesGroup(step),
@@ -180,7 +180,7 @@ export class AddStepComponent implements OnInit {
         }));
         break;
       case 'operation':
-        this.stepControlGroup(index).setControl(step.key, new FormGroup({
+        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
           name: new FormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
           service: new FormControl(step?.values?.service),
@@ -193,7 +193,7 @@ export class AddStepComponent implements OnInit {
         }));
         break;
       case 'delay':
-        this.stepControlGroup(index).setControl(step.key, new FormGroup({
+        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
           duration: new FormControl(step?.values?.duration),
           condition: new FormGroup({
@@ -204,7 +204,7 @@ export class AddStepComponent implements OnInit {
         }));
         break;
       case 'configure':
-        this.stepControlGroup(index).setControl(step.key, new FormGroup({
+        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order ? step?.values?.order : index),
           category: new FormControl(step?.values?.category),
           item: new FormControl(step?.values?.item),
@@ -217,7 +217,7 @@ export class AddStepComponent implements OnInit {
         }));
         break;
       case 'script':
-        this.stepControlGroup(index).setControl(step.key, new FormGroup({
+        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
           order: new FormControl(step?.values?.order),
           name: new FormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
           execution: new FormControl(step?.values?.execution),

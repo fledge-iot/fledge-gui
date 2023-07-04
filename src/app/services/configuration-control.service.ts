@@ -506,7 +506,15 @@ export class ConfigurationControlService {
 
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfiguration.hasOwnProperty(e1.key) && e1.value !== changedConfiguration[e1.key]
+      if (changedConfiguration.hasOwnProperty(e1.key)) {
+        if (e1.type == 'JSON') {
+          // compare JSON value for changed config
+          const oldJsonValue = JSON.stringify(JSON.parse(e1.value), null, ' ');
+          const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
+          return oldJsonValue != changedJsonValue;
+        }
+        return e1.value !== changedConfiguration[e1.key];
+      }
     });
 
     // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
@@ -536,6 +544,16 @@ export class ConfigurationControlService {
     // convert finalConfig array in object of objects
     const finalConfiguration = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     return finalConfiguration;
+  }
+
+  getValidConfig(config: any) {
+    // remove readonly property form the local configuration copy
+    Object.keys(config).forEach(key => {
+      if (config[key]?.readonly) {
+        delete config[key];
+      }
+    })
+    return config;
   }
 
 }
