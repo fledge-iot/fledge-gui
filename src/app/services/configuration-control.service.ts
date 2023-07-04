@@ -509,11 +509,11 @@ export class ConfigurationControlService {
       if (changedConfiguration.hasOwnProperty(e1.key)) {
         if (e1.type == 'JSON') {
           // compare JSON value for changed config
-          const oldJsonValue = JSON.stringify(JSON.parse(e1.value), null, ' ');
+          const oldJsonValue = JSON.stringify(JSON.parse(e1.value ? e1.value : e1.default), null, ' ');
           const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
           return oldJsonValue != changedJsonValue;
         }
-        return e1.value !== changedConfiguration[e1.key];
+        return (e1.value ? e1.value : e1.default) !== changedConfiguration[e1.key];
       }
     });
 
