@@ -153,7 +153,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.graphDisplayDuration = timeObject.displayDuration;
     this.graphDisplayUnit = timeObject.selectedUnit;
     this.optedTime = timeObject.optedTime;
-    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    if (this.selectedTab == 4) {
+      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      return;
+    }
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
@@ -823,11 +826,11 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.selectedTab = id;
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
-    if (!this.isAlive && this.selectedTab === 4) {
+    if (this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    } else if (!this.isAlive && this.isLatestReadings) {
+    } else if (this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
-    } else if (!this.isAlive) {
+    } else {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
   }
