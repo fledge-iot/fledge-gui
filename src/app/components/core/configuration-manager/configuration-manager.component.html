@@ -41,9 +41,9 @@
             <div class="media">
               <div class="media-content">
                 <p class="subtitle is-6">{{ category.description }}
-                  <button class="button is-small" id="refresh-check" (click)="refreshCategory(category.name)">
+                  <button class="button is-small" id="refresh-check" (click)="refreshCategory(category.name, category.description)">
                     <span class="icon is-small">
-                      <i class="fa fa-sm fa-sync"></i>
+                      <i class="fa fa-sm fa-sync" title="Reload"></i>
                     </span>
                   </button>
                 </p>
@@ -60,8 +60,8 @@
               <div class="column is-4">
               </div>
               <div class="column">
-                <button [disabled]="!validConfigForm" class="button is-small is-link"
-                  (click)="save(category.name)">Save</button>
+                <button [disabled]="!validConfigForm" class="button is-small is-link save-btn"
+                  (click)="save(category.name, category.description)">Save</button>
               </div>
             </div>
           </div>

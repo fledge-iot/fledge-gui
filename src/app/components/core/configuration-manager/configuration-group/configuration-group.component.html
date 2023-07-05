@@ -5,16 +5,16 @@
         <div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
-              <h6 class="is-6 has-text-weight-semibold">
-                <a (click)="selectTab(g.group)">
+              <h6 class="is-6 is-small-font">
+                <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
                   {{g.group}}
                 </a>
               </h6>
             </li>
             <!-- Advanced and security group -->
-            <li *ngFor="let g of advanceCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
-              <h6 class="is-6 has-text-weight-semibold">
-                <a (click)="selectTab(g.group)">
+            <li *ngFor="let g of dynamicCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
+              <h6 class="is-6 is-small-font">
+                <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
                   {{g.group}}
                 </a>
               </h6>
@@ -22,7 +22,7 @@
             <ng-container *ngIf="from !== 'notification'">
               <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
-                <h6 class="is-6 has-text-weight-semibold">
+                <h6 class="is-6 is-small-font">
                   <a (click)="selectedGroup = 'developer'">Developer</a>
                 </h6>
               </li>
@@ -32,39 +32,47 @@
       </div>
     </nav>
     <button (click)="left()" id="leftScroll" class="advancer advancer_left" type="button">
-      <i class="fas fa-angle-left fa-xl"></i>
+      <i class="fas fa-angle-left fa-xs"></i>
     </button>
     <button (click)="right()" id="rightScroll" class="advancer advancer_right" type="button">
-      <i class="fas fa-angle-right fa-xl"></i>
+      <i class="fas fa-angle-right fa-xs"></i>
     </button>
   </div>
-  <div [ngClass]="{'highlight': from !== 'config-manager'}">
-    <ng-container *ngFor="let g of groups">
-      <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
-        [selectedGroup]="selectedGroup" [fullConfiguration]="category.config" (event)="getChangedConfiguration($event)"
-        (formStatusEvent)="formStatus($event)"></app-show-configuration>
-    </ng-container>
-    <!-- Advanced and security group configuration -->
-    <ng-container *ngFor="let g of advanceCategoriesGroup">
-      <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
+  <ng-container *ngIf="groups.length == 0 && dynamicCategoriesGroup.length == 0; else group">
+    <div class="has-text-centered">
+      <small class="no-rec">No configuration to update.</small>
+    </div>
+  </ng-container>
+  <ng-template #group>
+    <!-- if user coming from config-manager component don't show the group border -->
+    <div [ngClass]="{'highlight': from !== 'config-manager'}">
+      <ng-container *ngFor="let g of groups">
         <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
-          [selectedGroup]="selectedGroup" [fullConfiguration]="g.config"
-          (event)="getChangedAdvanceConfiguration($event)"
-          (formStatusEvent)="formStatus($event)"></app-show-configuration>
+          [from]="from" [selectedGroup]="selectedGroup" [fullConfiguration]="category.config"
+          (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"></app-show-configuration>
       </ng-container>
-      <ng-template #SecurityGroup>
-        <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
+      <!-- Advanced and security group configuration -->
+      <ng-container *ngFor="let g of dynamicCategoriesGroup">
+        <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
           <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
-            [selectedGroup]="selectedGroup" [fullConfiguration]="g.config"
-            (event)="getChangedSecurityConfiguration($event)"
+            [selectedGroup]="selectedGroup" [fullConfiguration]="g.config" [from]="from"
+            (event)="getChangedAdvanceConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-show-configuration>
         </ng-container>
-      </ng-template>
-    </ng-container>
-    <ng-container *ngIf="from !== 'notification'">
-      <app-plugin-persist-data *ngIf="selectedGroup == 'developer' && pages.includes(from)"
-        [serviceStaus]="serviceStatus" [serviceName]="category?.name" [pluginName]="plugin">
-      </app-plugin-persist-data>
-    </ng-container>
-  </div>
+        <ng-template #SecurityGroup>
+          <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
+            <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config"
+              [group]="g.group" [selectedGroup]="selectedGroup" [fullConfiguration]="g.config" [from]="from"
+              (event)="getChangedSecurityConfiguration($event)"
+              (formStatusEvent)="formStatus($event)"></app-show-configuration>
+          </ng-container>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="from !== 'notification'">
+        <app-plugin-persist-data *ngIf="selectedGroup == 'developer' && pages.includes(from)"
+          [serviceStaus]="serviceStatus" [serviceName]="category?.name" [pluginName]="plugin">
+        </app-plugin-persist-data>
+      </ng-container>
+    </div>
+  </ng-template>
 </div>

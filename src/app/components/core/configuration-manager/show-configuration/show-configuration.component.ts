@@ -1,6 +1,5 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, of } from 'rxjs';
 import { filter, map, pairwise, startWith } from 'rxjs/operators';
 import { RolesService, ConfigurationControlService, ConfigurationBase } from '../../../../services';
@@ -15,20 +14,17 @@ export class ShowConfigurationComponent implements OnInit {
   @Input() groupConfiguration: ConfigurationBase<string>[] | null = [];
   @Input() group: string = '';
   @Input() selectedGroup = '';
+  @Input() from = '';
 
   @Output() event = new EventEmitter<any>();
-  @Output() formStatusEvent = new EventEmitter<boolean>();
+  @Output() formStatusEvent = new EventEmitter<any>();
   configurations$: Observable<ConfigurationBase<any>[]>;
   form: FormGroup;
-
-  @ViewChildren('scriptCode') codeMirrorCmpt: QueryList<CodemirrorComponent>;
-  @ViewChildren('jsonEditor') jsonElements: QueryList<CodemirrorComponent>;
-  @ViewChildren('codeEditor') codeElements: QueryList<CodemirrorComponent>;
 
   constructor(private fb: FormBuilder,
     public rolesService: RolesService,
     public changeDetectorRef: ChangeDetectorRef,
-    private configControlService: ConfigurationControlService) {
+    public configControlService: ConfigurationControlService) {
     this.form = this.fb.group({
     });
   }
@@ -61,45 +57,34 @@ export class ShowConfigurationComponent implements OnInit {
     ).subscribe(
       data => {
         Object.keys(data).forEach(k => {
-          if (data[k] !== this.fullConfiguration[k].value) {
+          if (data[k] !== this.fullConfiguration[k]?.value) {
             const configuration = this.groupConfiguration.find(c => c.key === k);
-            if (configuration && configuration.type !== 'script') {
+            if (configuration) {
               configuration.value = data[k].toString();
               this.configControlService.checkConfigItemValidityOnChange(this.form, configuration, this.fullConfiguration);
-              this.formStatusEvent.emit(this.form.status === 'VALID' ? true : false);
-              if (this.form.valid) {
-                this.event.emit(data);
+              if (configuration.type == 'script') {
+                const file = this.createScriptFile(data[k].toString(), configuration);
+                this.event.emit({ [configuration.key]: file });
+              } else {
+                this.formStatusEvent.emit({'status': this.form.status === 'VALID' ? true : false, 'group': this.group});
+                if (this.form.valid) {
+                  this.event.emit(data);
+                }
               }
-            } else {
-              configuration.value = data[k].toString();
-              const file = this.createScriptFile(data[k].toString(), configuration);
-              this.event.emit({ [configuration.key]: file });
             }
           }
         })
       });
   }
 
-  ngAfterViewChecked() {
-    // refresh code mirror content after page load
-    if (this.jsonElements) {
-      this.jsonElements.forEach((jsonComp: CodemirrorComponent) => {
-        jsonComp.codeMirror?.refresh();
-      });
+  setCodeMirrorOption(configuration: ConfigurationBase<string>) {
+    // condition to make codemirror editor readonly
+    if ((configuration.controlType.toLowerCase() == 'script' && (!configuration.file && !configuration.fileName)) || this.form.controls[configuration.key]?.status === 'DISABLED') {
+      configuration.editorOptions['readOnly'] = true;
+    } else {
+      configuration.editorOptions['readOnly'] = false;
     }
-
-    if (this.codeElements) {
-      this.codeElements.forEach((codeElmt: CodemirrorComponent) => {
-        codeElmt.codeMirror?.refresh();
-      });
-    }
-
-    // refresh codemirror editor to reflect changed values
-    if (this.codeMirrorCmpt) {
-      this.codeMirrorCmpt.forEach((comp: CodemirrorComponent) => {
-        comp.codeMirror?.refresh();
-      })
-    }
+    return configuration.editorOptions;
   }
 
   createScriptFile(value: string, config: any) {
@@ -123,6 +108,7 @@ export class ShowConfigurationComponent implements OnInit {
       fileReader.onload = () => {
         config.value = fileReader.result.toString();
         this.form.controls[config.key].patchValue(config.value);
+        this.form.controls[config.key]?.enable({ emitEvent: false });
       };
       fileReader.readAsText(file);
       const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
@@ -132,6 +118,7 @@ export class ShowConfigurationComponent implements OnInit {
         config.fileName = file.name;
         config.file = file;
         this.event.emit({ [config.key]: config.file });
+        this.form.controls[config.key]?.enable({ emitEvent: false });
       }
     }
   }

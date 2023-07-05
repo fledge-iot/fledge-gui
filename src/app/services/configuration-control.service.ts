@@ -323,7 +323,8 @@ export class ConfigurationControlService {
       autoCloseBrackets: true,
       matchBrackets: true,
       lint: true,
-      inputStyle: 'textarea'
+      inputStyle: 'textarea',
+      autoRefresh: true
     };
     if (type === 'JSON') {
       editorOptions.mode = 'application/json';
@@ -349,6 +350,11 @@ export class ConfigurationControlService {
     groupConfigurations.forEach(configuration => {
       group[configuration.key] =
         new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
+      // create an file uploader form control for script type
+      if (configuration.controlType.toLocaleLowerCase() == 'script') {
+        group[configuration.key + '-file-control'] =
+          new FormControl({ value: '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
+      }
     });
     return new FormGroup(group);
   }
@@ -398,8 +404,8 @@ export class ConfigurationControlService {
       Object.keys(fullConfiguration).forEach(key => {
         const cnf = fullConfiguration[key];
         if (cnf.validity) {
-          const isValidExpression = this.validateExpression(key, cnf.validityExpression);
-          isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
+          let isValidExpression = this.validateExpression(key, cnf.validityExpression);
+          this.setFormControlState(cnf, form, isValidExpression, config);
         }
       });
     }
@@ -416,9 +422,28 @@ export class ConfigurationControlService {
         const cnf = fullConfiguration[key];
         if (cnf.hasOwnProperty('validityExpression')) {
           const isValidExpression = this.validateExpression(key, cnf.validityExpression);
-          isValidExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
+          this.setFormControlState(cnf, form, isValidExpression);
         }
       });
+    }
+  }
+
+  setFormControlState(cnf: any, form: FormGroup, validExpression: boolean, configControl = null) {
+    if (cnf.key == 'script') {
+      if (validExpression) {
+        const control = configControl?.key == 'script' ? configControl : cnf;
+        form.controls[control.key]?.enable({ emitEvent: false });
+        if (!control.file && !control.fileName && !control.value) {
+          form.controls[control.key]?.disable({ emitEvent: false });
+        }
+        form.controls[control.key + '-file-control']?.enable({ emitEvent: false });
+      } else {
+        form.controls[cnf.key]?.disable({ emitEvent: false });
+        form.controls[cnf.key + '-file-control']?.disable({ emitEvent: false });
+      }
+    }
+    else {
+      validExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
     }
   }
 
@@ -481,7 +506,15 @@ export class ConfigurationControlService {
 
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfiguration.hasOwnProperty(e1.key) && e1.value !== changedConfiguration[e1.key]
+      if (changedConfiguration.hasOwnProperty(e1.key)) {
+        if (e1.type == 'JSON') {
+          // compare JSON value for changed config
+          const oldJsonValue = JSON.stringify(JSON.parse(e1.value ? e1.value : e1.default), null, ' ');
+          const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
+          return oldJsonValue != changedJsonValue;
+        }
+        return (e1.value ? e1.value : e1.default) !== changedConfiguration[e1.key];
+      }
     });
 
     // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
@@ -511,6 +544,16 @@ export class ConfigurationControlService {
     // convert finalConfig array in object of objects
     const finalConfiguration = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
     return finalConfiguration;
+  }
+
+  getValidConfig(config: any) {
+    // remove readonly property form the local configuration copy
+    Object.keys(config).forEach(key => {
+      if (config[key]?.readonly) {
+        delete config[key];
+      }
+    })
+    return config;
   }
 
 }

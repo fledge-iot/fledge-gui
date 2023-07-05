@@ -1,81 +1,115 @@
-<table class="table is-responsive is-hoverable is-striped" *ngIf="controlAcls.length > 0; else noacl">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Usage</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <ng-container *ngFor="let acl of controlAcls; first as isFirst">
-      <tr *ngIf="isFirst && acl?.users">
-        <td></td>
-        <td [ngClass]="{'acl-usage': isFirst && acl?.users}">
-      <tr>
-  <tbody>
-    <thead>
-      <tr class="child-table">
-        <th class="is-size-7">Services</th>
-        <th></th>
-        <th></th>
-        <th class="is-size-7">Scripts</th>
-      </tr>
-    </thead>
-  </tbody>
-  </tr>
-  </td>
-  <td></td>
-  </tr>
-  <tr>
-    <td>
-      <a [routerLink]="['acl', acl?.name]">
-        {{acl?.name}}
+<div class="container is-fluid">
+  <app-add-dispatcher-service></app-add-dispatcher-service>
+  <div class="card">
+    <header class="card-header">
+      <div id="control-acl" class="card-header-title">
+        Control ACLs
+        <button class="button is-small" id="refresh-check" title="Reload" (click)="getACLs()">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </div>
+      <a *ngIf="sharedService.checkAuth()" class="fix-margin button is-light" routerLink="add">
+        <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
+        <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
-    </td>
-    <td>
-      <table class="table is-narrow" *ngIf="acl?.users">
-        <tbody>
-          <tr *ngFor="let item of acl?.users">
-            <td class="is-size-7">
-              {{item.service}}
-            </td>
-            <td class="is-size-7">
-              <a [routerLink]="['/control-dispatcher/script', item?.script]"
-                routerLinkActive="router-link-active">{{item.script}}</a>
-            </td>
+
+      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin" data-tooltip="Help"
+        (click)="goToLink('control-dispatcher-service')">
+        <i class="far fa-question-circle"></i>
+      </span>
+
+    </header>
+    <div class="card-content card-data">
+      <table class="table is-responsive is-hoverable acl-table is-striped" *ngIf="controlAcls.length > 0; else noacl">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Usage</th>
+            <th></th>
           </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let acl of controlAcls; first as isFirst">
+            <tr *ngIf="isFirst && acl?.users">
+              <td></td>
+              <td [ngClass]="{'acl-usage': isFirst && acl?.users}">
+            <tr>
+        <tbody>
+          <thead>
+            <tr class="child-table">
+              <th class="is-size-7">Services</th>
+              <th></th>
+              <th></th>
+              <th class="is-size-7">Scripts</th>
+            </tr>
+          </thead>
+        </tbody>
+        </tr>
+        </td>
+        <td></td>
+        </tr>
+        <tr>
+          <td>
+            <a [routerLink]="['/control-dispatcher/acl', acl?.name, 'details']">
+              {{acl?.name}}
+            </a>
+          </td>
+          <td>
+            <table class="table is-narrow" *ngIf="acl?.users">
+              <tbody>
+                <tr *ngFor="let item of acl?.users">
+                  <td class="is-size-7">
+                    {{item.service}}
+                  </td>
+                  <td class="is-size-7">
+                    <a [routerLink]="['/control-dispatcher/script', item?.script]"
+                      routerLinkActive="router-link-active">{{item.script}}</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+          <td>
+            <div *ngIf="rolesService.hasEditPermissions()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
+              <div class="dropdown-trigger">
+                <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                  <span class="icon">
+                    <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
+                  </span>
+                </a>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                <div class="dropdown-content">
+                  <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item"
+                    (click)="setACL(acl);openModal('confirmation-dialog')">
+                    <span>Delete</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </ng-container>
         </tbody>
       </table>
-    </td>
-    <td>
-      <button *ngIf="sharedService.checkAuth()" (click)="setACL(acl);openModal('confirmation-dialog')"
-        class="button is-small btn-delete">
-        <span class="icon is-small">
-          <i class="far fa-trash-alt"></i>
-        </span>
-      </button>
-    </td>
-  </tr>
-  </ng-container>
-  </tbody>
-</table>
-<ng-template #noacl>
-  <div class="field-body">
-    <div class="field is-narrow">
-      <small class="text-secondary has-text-grey-light"> No control ACLs found.</small>
+      <ng-template #noacl>
+        <div class="has-text-centered">
+          <small class="text-secondary has-text-grey-light">No Control ACLs found.</small>
+        </div>
+      </ng-template>
+      <app-confirmation-dialog id="confirmation-dialog">
+        <header class="modal-card-head">
+          <p class="modal-card-title is-size-6">Delete ACL</p>
+          <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+        </header>
+        <section class="modal-card-body">
+          Are you sure, you want to delete the ACL <b>{{acl}}</b>?
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+          <button class="button is-small is-danger" (click)="deleteAcl(acl)">Delete</button>
+        </footer>
+      </app-confirmation-dialog>
     </div>
   </div>
-</ng-template>
-<app-confirmation-dialog id="confirmation-dialog">
-  <header class="modal-card-head">
-    <p class="modal-card-title is-size-6">Delete</p>
-    <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
-  </header>
-  <section class="modal-card-body">
-    Are you sure, you want to delete the ACL <b>{{acl}}</b>?
-  </section>
-  <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteAcl(acl)">Delete</button>
-  </footer>
-</app-confirmation-dialog>
+</div>

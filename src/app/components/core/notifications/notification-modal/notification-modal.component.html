@@ -2,7 +2,9 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="notification != undefined" class="modal-card-title is-size-5">{{notification.name}}</p>
+      <span *ngIf="notification" class="modal-card-title title-name">{{notification.name}}
+        <p class="help has-text-grey ctrl-pipeline">Notification Instance</p>
+      </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -50,7 +52,7 @@
         <hr class="hr-text" data-content="">
         <ng-container *ngIf="notification != undefined">
           <p class="buttons is-pulled-left">
-            <span class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon"
+            <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
               data-tooltip="Help" (click)="goToLink()">
               <i class="far fa-question-circle"></i>
             </span>

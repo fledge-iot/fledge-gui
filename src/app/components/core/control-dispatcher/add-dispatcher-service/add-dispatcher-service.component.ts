@@ -1,20 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProgressBarService, SchedulesService, ServicesApiService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
-  selector: 'app-list-control-dispatcher',
-  templateUrl: './list-control-dispatcher.component.html',
-  styleUrls: ['./list-control-dispatcher.component.css']
+  selector: 'app-add-dispatcher-service',
+  templateUrl: './add-dispatcher-service.component.html',
+  styleUrls: ['./add-dispatcher-service.component.css']
 })
-export class ListControlDispatcherComponent implements OnInit {
-  seletedTab = 'scripts';
+export class AddDispatcherServiceComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
-  viewPort: any = '';
   dispatcherServiceInstalled;
   dispatcherServiceAdded;
   dispatcherServiceEnabled;
@@ -23,22 +20,11 @@ export class ListControlDispatcherComponent implements OnInit {
     public sharedService: SharedService,
     public schedulesService: SchedulesService,
     public servicesApiService: ServicesApiService,
-    private router: Router,
     public ngProgress: ProgressBarService,
-    public docService: DocService,
-    private route: ActivatedRoute) {
-    this.route.queryParams.subscribe(params => {
-      if (params['tab']) {
-        this.seletedTab = params['tab'];
-      }
-    });
-  }
+    public docService: DocService
+  ) { }
 
   ngOnInit(): void {
-    this.viewPortSubscription = this.sharedService.viewport
-      .subscribe(viewport => {
-        this.viewPort = viewport;
-      });
     this.getInstalledServicesList();
   }
 
@@ -91,24 +77,6 @@ export class ListControlDispatcherComponent implements OnInit {
         });
   }
 
-  showDiv(id: string) {
-    this.seletedTab = 'scripts';
-    if (id === 'acls') {
-      this.seletedTab = id;
-    } else if (id === 'tasks') {
-      this.seletedTab = id;
-    }
-    // update query param on tab selection in url
-    const queryParams: Params = { tab: this.seletedTab };
-    this.router.navigate(
-      [],
-      {
-        relativeTo: this.route,
-        queryParams: queryParams,
-        queryParamsHandling: 'merge'
-      });
-  }
-
   /**
    * refresh even trigger
    * @param tab selected control name
@@ -117,19 +85,7 @@ export class ListControlDispatcherComponent implements OnInit {
     this.controlService.triggerRefreshEvent.next(tab);
   }
 
-  navigate() {
-    if (this.seletedTab === 'scripts') {
-      this.router.navigate(['script/add'], { relativeTo: this.route });
-    } else if (this.seletedTab == 'acls') {
-      this.router.navigate(['acl/add'], { relativeTo: this.route });
-    } else {
-      this.router.navigate(['task/add'], { relativeTo: this.route });
-    }
-  }
 
-  goToLink(urlSlug: string) {
-    this.docService.goToSetPointControlDocLink(urlSlug);
-  }
 
   public ngOnDestroy(): void {
     if (this.viewPortSubscription) {

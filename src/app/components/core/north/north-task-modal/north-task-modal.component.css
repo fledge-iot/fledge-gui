@@ -54,10 +54,6 @@ a {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.btnDelete {
-  margin: 2px;
-}
-
 .fa-bars {
   opacity: 0.5;
 }
@@ -71,8 +67,8 @@ a {
 }
 
 @media screen and (min-width: 769px) {
-  .view-content {
-    display: block !important;
+  .margin-bottom {
+    margin-bottom: -0.75rem;
   }
 }
 
@@ -84,10 +80,6 @@ a {
   cursor: move !important;
 }
 
-.columns {
-  display: block;
-}
-
 .help-icon {
   cursor: pointer !important;
   padding-top: 1rem;
@@ -95,4 +87,16 @@ a {
 
 #taskForm {
   margin: 1.5rem 1rem;
+}
+
+.column-container {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+.enable-text {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: 1344px;
+  margin: auto;
 }

@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'scripts'}">Scripts</a></li>
+        <li><a [routerLink]="['/control-dispatcher/script']">Scripts</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">
             {{scriptName ? scriptName : 'Add' }}
@@ -10,7 +10,7 @@
         </li>
       </ul>
     </nav>
-    <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check">
+    <button *ngIf="editMode" (click)="refresh()" class="button is-small" title="Reload" id="refresh-check">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
@@ -18,7 +18,7 @@
     <div class="card-content step-content">
       <form #scriptForm="ngForm">
         <span (click)="goToLink('automation-scripts')"
-          class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
           <i class="far fa-question-circle"></i>
         </span>
         <div class="column is-four-fifths">
@@ -30,7 +30,8 @@
               <div class="field">
                 <div class="control">
                   <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
-                    [(ngModel)]="controlScript.name" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
+                    [(ngModel)]="controlScript.name" title="No single quotes and double quotes!"
+                    [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
                     [ngClass]="{'is-static': editMode, 'is-small':sharedService.checkAuth() && !editMode}"
                     [readonly]="editMode">
                 </div>
@@ -104,7 +105,7 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'scripts'}"
+                  <button type="button" [routerLink]="['/control-dispatcher/script']"
                     class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
@@ -128,7 +129,7 @@
     Are you sure, you want to delete the control script <b>{{scriptName}}</b>?
   </section>
   <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteScript(scriptName)">Delete</button>
+    <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteScript(scriptName)">Delete</button>
   </footer>
 </app-confirmation-dialog>

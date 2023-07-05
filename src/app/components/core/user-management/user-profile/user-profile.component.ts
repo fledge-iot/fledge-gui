@@ -55,7 +55,7 @@ export class UserProfileComponent implements OnInit {
                   real_name: userData['realName'],
                   roleId: userData['roleId'],
                   roleName: userData['roleName'],
-                  access_method: userData['accessMethod'],
+                  access_method: this.getAccessMethod(userData['accessMethod']),
                   description: userData['description']
                 };
               },
@@ -77,6 +77,20 @@ export class UserProfileComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  getAccessMethod(accessMethod) {
+    switch (accessMethod) {
+      case 'cert':
+        return 'Certificate';
+        break;
+      case 'pwd':
+        return 'Password';
+        break;
+      default:
+        return 'Any';
+        break;
+    }
   }
 
   public resetUserForm(form: NgForm) {

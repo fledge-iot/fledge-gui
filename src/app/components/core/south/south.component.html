@@ -3,13 +3,13 @@
     <header class="card-header">
       <div id="south-service" class="card-header-title">
         South Services
-        <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" class="button is-small" id="refresh-check">
+        <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" title="Reload" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service" class="fix-pad button is-light"
         (click)="addSouthService()">
-        <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
+        <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
     </header>
@@ -58,9 +58,9 @@
                         <span class="tag">disabled</span> <!-- This also take care of shutdown status-->
                       </ng-container>
                       <ng-container *ngIf="svc.schedule_enabled">
-                        <span *ngIf="svc.status == 'running'" class="tag is-success">enabled</span>
-                        <span *ngIf="svc.status == 'failed'" class="tag is-danger">{{svc.status}}</span>
-                        <span *ngIf="svc.status == 'unresponsive'" class="tag is-warning">{{svc.status}}</span>
+                        <span *ngIf="svc.status == 'running'" class="tag is-light is-success">enabled</span>
+                        <span *ngIf="svc.status == 'failed'" class="tag is-light is-danger">{{svc.status}}</span>
+                        <span *ngIf="svc.status == 'unresponsive'" class="tag is-light is-warning">{{svc.status}}</span>
                       </ng-container>
                     </div>
                   </td>
@@ -80,7 +80,7 @@
                             <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
                               id="deprecate_event_div"
                               (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
-                              <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Deprecate asset">
+                              <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Deprecate asset">
                                 <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
                               </span>
                             </a>
@@ -96,9 +96,9 @@
                         <ng-template #expandedTable>
                           <ng-container *ngIf="svc.expanded">
                             <td>
-                              <a *ngIf="developerFeaturesService.getDeveloperFeatureControl()" id="deprecate_event_div"
+                              <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()" id="deprecate_event_div"
                                 (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
-                                <span class="icon is-small tooltip is-tooltip-right" data-tooltip="Deprecate asset">
+                                <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Deprecate asset">
                                   <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
                                 </span>
                               </a>
@@ -117,7 +117,7 @@
                   <td>
                     <span *ngIf="svc?.assets?.length > 1" (click)="showHideAsset(svc)"
                       [ngClass]="{'open': svc.expanded}"
-                      class="icon is-small tooltip is-tooltip-right tooltip-help is-pulled-right is-hovered"
+                      class="icon is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-pulled-right is-hovered"
                       [attr.data-tooltip]="svc.expanded ? 'Hide other assets' : 'Show all assets'">
                       <i class="fas fa-xs fa-angle-down"></i>
                     </span>

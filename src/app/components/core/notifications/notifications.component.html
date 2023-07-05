@@ -6,7 +6,7 @@
           Notification service is not added
           and enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
             (click)="openNotificationServiceModal()"><strong>add & enable now</strong></a>
-          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
+          <button (click)="checkNotificationServiceStatus(true)" class="button is-small"title="Recheck"  id="refresh-check">
             <span class="icon">
               <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
             </span>
@@ -24,7 +24,7 @@
           Notification service is not enabled.&nbsp;<a *ngIf="rolesService.hasEditPermissions()"
             (click)="enableNotificationService()"><strong>enable
               now</strong></a>
-          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" id="refresh-check">
+          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" title="Recheck" id="refresh-check">
             <span class="icon">
               <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
             </span>
@@ -42,7 +42,7 @@
       <div id="notification-service" class="card-header-title">
         <p>
           Notifications
-          <a class="button is-small" (click)="getNotificationInstance()" id="refresh-check">
+          <a class="button is-small" (click)="getNotificationInstance()" title="Reload" id="refresh-check">
             <span class="icon is-small">
               <i class="fa fa-sm fa-sync"></i>
             </span>
@@ -50,14 +50,14 @@
         </p>
       </div>
       <button *ngIf="rolesService.hasEditPermissions()" [disabled]="!isNotificationServiceEnabled"
-        id="add_notification_instance" class="button is-light" (click)="addNotificationInstance()">
-        <p *ngIf="viewPort !== 'mobile'">Create Notification Instance &nbsp;</p>
+        id="add_notification_instance" class="button is-light fix-margin" (click)="addNotificationInstance()">
+        <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
       <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
         (click)="openNotificationServiceModal()" id="refresh-check">
         <span class="icon">
-          <i class="fa fa-cog" aria-hidden="true"></i>
+          <i class="fa fa-sm fa-cog" aria-hidden="true"></i>
         </span>
       </a>
       <span *ngIf="isNotificationServiceEnabled"
@@ -107,8 +107,8 @@
                   </td>
                   <td class="align-content">
                     <div class="tags has-addons">
-                      <span *ngIf="instance.enable === 'false'" class="tag">disabled</span>
-                      <span *ngIf="instance.enable === 'true'" class="tag is-success"
+                      <span *ngIf="instance.enable === 'false'" class="tag is-light">disabled</span>
+                      <span *ngIf="instance.enable === 'true'" class="tag is-light is-success"
                         [ngClass]="{'disable-tag': this.isNotificationServiceAvailable && !this.isNotificationServiceEnabled}">enabled</span>
                     </div>
                   </td>

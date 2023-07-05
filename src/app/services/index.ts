@@ -28,3 +28,4 @@ export * from './toast.service';
 export * from './response-handler.service';
 export * from './configuration-control.service';
 export * from './file-uploader.service';
+export * from './control-pipelines.service';

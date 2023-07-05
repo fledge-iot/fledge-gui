@@ -32,7 +32,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   securityConfiguration: any;
   changedAdvanceConfiguration: any;
   changedSecurityConfiguration: any;
-  advanceCategoriesGroup = [];
+  dynamicCategoriesGroup = [];
 
   constructor(
     public developerFeaturesService: DeveloperFeaturesService,
@@ -76,7 +76,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     const configItems = Object.keys(this.category.config).map(k => {
       this.category.config[k].key = k;
       return this.category.config[k];
-    });
+    }).filter(obj => !obj.readonly); // remove readonly items from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
 
@@ -116,7 +116,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   public getChildConfigData() {
-    this.advanceCategoriesGroup = [];
+    this.dynamicCategoriesGroup = [];
     // No advance configuration on add form
     if (this.pages.includes(this.from) && this.category) {
       this.categoryKey = this.category.name;
@@ -128,7 +128,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.configService.getCategoryConfigChildren(categoryName).
       subscribe(
         (data: any) => {
-          this.advanceCategoriesGroup = [];
+          this.dynamicCategoriesGroup = [];
           const categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
           categoryChildren.forEach(cat => {
             // Set group of advance/security configuration
@@ -163,7 +163,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
           }
-          this.upsertAdvanceConfiguration(this.advanceCategoriesGroup, { category: category.key, group: category.group, config: data });
+          this.upsertAdvanceConfiguration(this.dynamicCategoriesGroup, { category: category.key, group: category.group, config: data });
           // check overflow after loading advanced & security group
           setTimeout(() => {
             this.tabs.setOverFlow();
@@ -221,28 +221,44 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   /**
    * To update the values in the already existed group those are holding advance &
    * security configuration, after fetching configuration from API
-   * @param groups configuration groups
+   * @param dynamicGroups configuration groups
    * @param config advance cofiguration
    */
-  upsertAdvanceConfiguration(groups, config) {
-    const i = groups.findIndex(_config => _config.category === config.category);
+  upsertAdvanceConfiguration(dynamicGroups, config) {
+    const i = dynamicGroups.findIndex(_config => _config.category === config.category);
     if (i > -1) {
-      groups[i] = config;
+      dynamicGroups[i] = config;
     }
     else {
-      groups.push(config);
+      dynamicGroups.push(config);
     }
 
-    groups = groups
-      .sort((a, b) => a.group.localeCompare(b.group))
+    dynamicGroups = dynamicGroups.sort((a, b) => a.group.localeCompare(b.group))
       .reduce((acc, e) => {
         e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
+
+    // set advance as a first tab if no default config
+    if (this.groups.length == 0) {
+      this.selectedGroup = dynamicGroups[0]?.group
+    }
   }
 
-  formStatus(status: boolean) {
-    this.formStatusEvent.emit(status);
+  formStatus(formState: any) {
+    // find the object of changed form from groups array
+    let groupObject = this.groups.find((g: any) => g.group === formState.group);
+    if (!groupObject) {
+      groupObject = this.dynamicCategoriesGroup.find((g: any) => g.group === formState.group)
+    }
+    // Set the status of respected tab
+    if (groupObject) {
+      groupObject.status = formState.status;
+    }
+
+    const groupTabFormsStatus = this.groups.concat(this.dynamicCategoriesGroup);
+    // check the condition for every element to see if all groups have valid status
+    const formStatus = groupTabFormsStatus.every(g => (g.status === true || g.status === undefined));
+    this.formStatusEvent.emit(formStatus);
   }
 }
-

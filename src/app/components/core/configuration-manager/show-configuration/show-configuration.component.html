@@ -4,14 +4,14 @@
       <ng-container *ngFor="let configuration of configurations$ | async">
         <div [formGroup]="form" novalidate>
           <div class="config-div" *ngIf="configuration.readonly != 'true'">
-            <div class="field is-horizontal">
-              <div class="field-label has-text-left">
-                <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label"
+            <div class="field" [ngClass]="{'is-horizontal': from !== 'filter-modal'}">
+              <div class="field-label has-text-left" [ngClass]="{'is-margin': from === 'filter-modal'}">
+                <label class="label tooltip has-tooltip-multiline config-label is-small-font" [ngClass]="from === 'filter-modal' ? 'has-tooltip-top has-tooltip-arrow' : 'has-tooltip-right has-tooltip-arrow'"
                   [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
                   {{configuration.label}}
                 </label>
               </div>
-              <div class="field-body">               
+              <div class="field-body">
                 <div [ngSwitch]="configuration.controlType" class="field" #cdmrField
                   [style.max-width.px]="['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
                   [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
@@ -41,14 +41,15 @@
 
                   <ngx-codemirror *ngSwitchCase="'JSON'" [formControlName]="configuration.key" #jsonEditor
                     [ngClass]="{'readonly-editor': form.controls[configuration.key]?.status === 'DISABLED' }"
-                    [options]="configuration.editorOptions" [autoFocus]="true"
+                    [options]="setCodeMirrorOption(configuration)" [autoFocus]="true"
                     [jsonValue]="form.controls[configuration.key]">
                   </ngx-codemirror>
 
                   <ng-container *ngSwitchCase="'SCRIPT'">
                     <ngx-codemirror #scriptCode
                       [ngClass]="{'readonly-editor': !configuration.fileName ||  form.controls[configuration.key]?.status === 'DISABLED' , 'dark-bg-color': !configuration.fileName && selectedTheme === 'darcula'}"
-                      [formControlName]="configuration.key" [options]="configuration.editorOptions" [autoFocus]="true">
+                      [formControlName]="configuration.key" [options]="setCodeMirrorOption(configuration)"
+                      [autoFocus]="true">
                     </ngx-codemirror>
                     <p class="help" *ngIf="configuration?.fileName">
                       {{configuration?.fileName | truncate:"/" }}
@@ -57,8 +58,9 @@
                       Invalid file. Please upload file with .py extension.
                     </span>
                     <div class="config-div is-fullwidth">
-                      <input #fileInput class="input is-small is-fullwidth" multiple type="file"
-                        (change)="fileChange($event, configuration)" />
+                      <input class="input is-small is-fullwidth" multiple type="file"
+                        (change)="fileChange($event, configuration)"
+                        [formControlName]="configuration.key + '-file-control'" />
                     </div>
                   </ng-container>
 
@@ -123,7 +125,7 @@
         <div class="config-div" *ngIf="configuration.readonly != 'true'">
           <div class="field is-horizontal">
             <div class="field-label has-text-left">
-              <label class="label tooltip is-tooltip-right is-tooltip-multiline config-label"
+              <label class="label tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline config-label"
                 [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
                 {{configuration.label}}
               </label>

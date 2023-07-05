@@ -7,7 +7,7 @@
           <span class="asset-code">
             {{assetCode}}
           </span>
-          <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
+          <button *ngIf="!isAlive" (click)="refresh()" title="Reload" class="button small-btn" id="refresh-check">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </div>
@@ -21,22 +21,22 @@
         </ng-container>
       </span>
       <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
-        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button is-small playback-button">
+        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button small-btn playback-button">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
         <ng-container *ngIf="isAlive">
-          <button (click)="toggleAutoRefresh(false)" class="button is-small playback-button">
+          <button (click)="toggleAutoRefresh(false)" class="button small-btn playback-button">
             <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
           </button>
         </ng-container>
         <ng-container *ngIf="!isAlive">
           <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
-            class="button is-small playback-button">
+            class="button small-btn playback-button">
             <i class="fa fa-sm fa-play" aria-hidden="true"></i>
           </button>
         </ng-container>
         <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()"
-          class="button is-small playback-button">
+          class="button small-btn playback-button">
           <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
         </button>
       </ng-container>
@@ -45,7 +45,7 @@
       </div>
     </header>
     <section class="modal-card-body"
-      [ngClass]="{overflow: timeDropDownOpened} || numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList)">
+      [ngClass]="{overflow: timeDropDownOpened || numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList), overflowHide: imageReadings?.length>0 && isLatestReadings}">
       <ng-container *ngIf="loadPage; else tabs">
         <div class="app-loading">
           &nbsp;
@@ -148,7 +148,7 @@
                     </thead>
                     <tbody>
                       <tr *ngFor="let txtData of stringTypeReadingsList | keyvalue: keyDescOrder">
-                        <td>
+                        <td class="pt-4">
                           <small>{{txtData.key}}</small>
                         </td>
                         <td>
@@ -206,7 +206,7 @@
                           </ng-container>
                         </tr>
                         <tr *ngIf="buttonText !== ''">
-                          <td><a class="button is-small is-text" (click)="showAll()">{{buttonText}}</a></td>
+                          <td><a class="button small-btn is-text" (click)="showAll()">{{buttonText}}</a></td>
                           <td></td>
                         </tr>
                       </tbody>
@@ -214,16 +214,50 @@
                   </div>
                 </div>
                 <div *ngIf="selectedTab === 5" data-content="5">
-                  <div class="has-text-centered">
-                    <ng-container *ngFor="let read of imageReadings">
-                      <div id="tab-content">
-                        <img [src]="read.image" alt={{read.datapoint}}>
-                      </div>
-                      <small class="has-text-centered text-secondary has-text-grey">{{read?.datapoint}},
-                        Timestamp:
-                        {{read?.timestamp}}
-                      </small>
-                    </ng-container>
+                  <div class="columns margin-top">
+                    <div class="has-text-centered column" [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-with-data': !isEmptyObject(stringTypeReadingsList)}">
+                      <ng-container *ngFor="let read of imageReadings">
+                        <div id="tab-content">
+                          <img [src]="read.image" alt={{read.datapoint}}>
+                        </div>
+                        <small class="has-text-centered text-secondary has-text-grey-dark is-block">Width: {{imageReadingsDimensions.width}}px, Height:
+                          {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
+                        </small>
+                        <small class="has-text-centered text-secondary has-text-grey-dark is-block margin-bottom">{{read?.datapoint}},
+                          Timestamp:
+                          {{read?.timestamp}}
+                        </small>
+                      </ng-container>
+                    </div>
+                    <div *ngIf="!isEmptyObject(stringTypeReadingsList)" data-content="3" class="column is-4 image-with-data">
+                      <table class="table is-responsive is-borderless data-table">
+                        <thead>
+                          <tr>
+                            <th style="width: 40%" class="table-heading">Timestamp</th>
+                            <th class="table-heading">Reading</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let txtData of stringTypeReadingsList | keyvalue: keyDescOrder">
+                            <td class="table-data">
+                              <small>{{txtData.key}}</small>
+                            </td>
+                            <td>
+                              <table class="table is-responsive is-borderless">
+                                <tbody>
+                                  <ng-container *ngFor="let item of txtData.value">
+                                    <tr>
+                                      <td class="metadata">{{item.key}}</td>
+                                      <td class="metadata">{{item.data}}</td>
+                                    </tr>
+                                  </ng-container>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </ng-template>

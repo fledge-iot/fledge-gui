@@ -4,6 +4,10 @@
 @import '~codemirror/addon/fold/foldgutter.css';
 @import '~codemirror/addon/lint/lint.css';
 @import '~codemirror/theme/darcula.css';
+@import 'bulma/css/bulma.css';
+@import '@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css';
+@import 'bulma-steps/dist/css/bulma-steps.min.css';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
 
 html,
 body,
@@ -72,6 +76,16 @@ table.scroll tbody {
 
 .dropdown-list[_ngcontent-c8] {
   position: relative !important;
+}
+
+.card-header-title {
+  font-size: 0.9rem;
+  padding: 0.75rem 1.5rem;
+  max-height: 48px !important;
+}
+
+.add-btn {
+  font-size: 0.9rem;
 }
 
 #card-title {
@@ -322,4 +336,50 @@ a.dropdown-item:hover {
   filter: blur(1px);
  }
 
+ .is-small-font, .label {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+ }
+
+ table thead th {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+ }
+
+ .title-name {
+  font-size: 0.9rem;
+ }
+
+ .icon-group {
+  padding-left: 16px;;
+ }
+
+ .service-info {
+  max-width: 1344px;
+  margin: auto;
+  padding-bottom: 10px;
+ }
+
+  .service-info-text {
+    padding-left: 16px;
+  }
+
+  .config-div {
+    margin-top: 1vw;
+    margin-bottom: 1vw;
+  }
+
+  @media screen and (min-width: 769px) {
+    .view-content {
+      display: block !important;
+    }
+  
+    .last-step-field {
+      flex-grow: 2 !important;
+    }
+  }
+
+  span.tooltip {
+    border-bottom: none;
+  }
  /*****************/

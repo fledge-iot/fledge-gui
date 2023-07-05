@@ -3,7 +3,7 @@
     <header class="card-header">
       <p class="card-header-title">
         Support Bundles &nbsp;
-        <button (click)="getBundles()" class="button is-small" id="refresh-check">
+        <button (click)="getBundles()" class="button is-small" title="Reload" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </p>
@@ -11,12 +11,12 @@
         <div class="columns">
           <div class="column fix-pad">
             <a *ngIf="rolesService.hasEditPermissions()" class="button is-light" (click)="requestNewBundle()">
-              <p *ngIf="viewPort !== 'mobile'">Request New &nbsp;</p>
-              <i class="fa fa-sm fa-file-archive" aria-hidden="true"></i>
+              <p *ngIf="viewPort !== 'mobile'" class="add-btn">Request New &nbsp;</p>
+              <i class="fa fa-xs fa-file-archive" aria-hidden="true"></i>
             </a>
           </div>
           <div class="column help-pad">
-            <span class="icon is-small tooltip is-tooltip-left is-hovered" data-tooltip="Help" (click)="goToLink()">
+            <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow is-hovered" data-tooltip="Help" (click)="goToLink()">
               <i class="far fa-question-circle"></i>
             </span>
           </div>
