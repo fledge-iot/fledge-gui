@@ -93,6 +93,7 @@ table.is-borderless td {
   margin-left: 10px;
   padding-right: 3px;
   top: 0;
+  max-width: 180px !important;
 }
 
 ::ng-deep .ng-select > div > div > div:nth-child(2) > span.ng-value-icon.left {
@@ -113,7 +114,6 @@ table.is-borderless td {
 
 .time-dropdown{
   min-width: 200px;
-  padding-left: 0px !important;
 }
 
 .help{
@@ -146,9 +146,8 @@ table.is-borderless td {
   padding-bottom: 0px !important;
 }
 
-.time-dropdown-row{
-  display: flex;
-  justify-content: space-between;
+#time-dropdown-container {
+  margin-bottom: 0px !important;
 }
 
 .margin-bottom {
