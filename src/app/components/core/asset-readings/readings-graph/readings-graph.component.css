@@ -146,10 +146,6 @@ table.is-borderless td {
   padding-bottom: 0px !important;
 }
 
-#time-dropdown-container {
-  margin-bottom: 0px !important;
-}
-
 .time-dropdown-row{
   display: flex;
   justify-content: space-between;
@@ -179,4 +175,10 @@ table.is-borderless td {
 
 .table-data {
   vertical-align: top !important;
+}
+
+.metadata {
+  padding-left: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0.2em !important;
 }
