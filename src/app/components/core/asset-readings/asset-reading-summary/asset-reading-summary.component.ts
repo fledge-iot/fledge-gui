@@ -6,11 +6,11 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./asset-reading-summary.component.css']
 })
 export class AssetReadingSummaryComponent {
-  @Input() buttonText
-  @Input() showSummarySpinner
-  @Input() autoRefresh
-  @Input() assetReadingSummary
-  @Input() summaryLimit
+  @Input() buttonText;
+  @Input() showSummarySpinner;
+  @Input() autoRefresh;
+  @Input() assetReadingSummary;
+  @Input() summaryLimit;
   constructor() { }
 
   public isNumber(val: string) {
