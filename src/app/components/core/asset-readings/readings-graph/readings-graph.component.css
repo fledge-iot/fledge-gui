@@ -90,9 +90,10 @@ table.is-borderless td {
 
 .range-wrap {
   position: relative;
-  margin: -30px 2px 0 0;
+  margin-left: 10px;
   padding-right: 3px;
   top: 0;
+  max-width: 180px !important;
 }
 
 ::ng-deep .ng-select > div > div > div:nth-child(2) > span.ng-value-icon.left {
