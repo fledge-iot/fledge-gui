@@ -60,12 +60,18 @@
             <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
-          <div class="column is-9" *ngIf="!isLatestReadings && availableAssets.length > 0">
-            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets"
-              [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()"
-              [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event)"
-              [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
+          <div class="column"
+            [ngClass]="{'is-7': rangeSliderService.getAlphControlStatus() && selectedTab === 1, 'is-9': !rangeSliderService.getAlphControlStatus() || selectedTab !== 1}"
+            *ngIf="!isLatestReadings && availableAssets.length > 0">
+            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true"
+              [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()" [clearable]="additionalAssets.length > 1"
+              (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
             </ng-select>
+          </div>
+          <div class="column is-2" *ngIf="rangeSliderService.getAlphControlStatus() && selectedTab === 1">
+            <div class="range-wrap">
+              <app-range-slider></app-range-slider>
+            </div>
           </div>
         </div>
         <div class="columns">
@@ -123,9 +129,6 @@
                   </div>
                 </div>
                 <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
-                  <div *ngIf="rangeSliderService.getAlphControlStatus()" class="range-wrap is-pulled-right">
-                    <app-range-slider></app-range-slider>
-                  </div>
                   <div>
                     <app-chart class="chart-container animated fadeIn" [from]="'asset'" [type]="assetChartType"
                       [data]="assetReadingValues" [options]="assetChartOptions" #assetChart>
