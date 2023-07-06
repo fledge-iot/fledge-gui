@@ -2,7 +2,6 @@ import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, El
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { HttpCancelService } from '../../../../services/httpcancel.service';
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
 import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
@@ -91,22 +90,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.toggleModal(false);
   }
 
-  public showAll() {
-    this.autoRefresh = false;
-    if (this.buttonText === 'Show Less') {
-      this.summaryLimit = 5;
-      this.buttonText = 'Show All';
-    } else {
-      this.summaryLimit = this.assetReadingSummary.length;
-      this.buttonText = 'Show Less';
-    }
-  }
-
-  public roundTo(num, to) {
-    const _to = Math.pow(10, to);
-    return Math.round(num * _to) / _to;
-  }
-
   public toggleModal(shouldOpen: Boolean) {
     // reset all variable and array to default state
     this.assetReadingSummary = [];
@@ -127,6 +110,11 @@ export class ReadingsGraphComponent implements OnDestroy {
       chart_modal.classList.add('is-active');
       return;
     }
+
+    if (this.destroy$) {
+      this.destroy$.next();
+    }
+
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
@@ -163,7 +151,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
     this.optedTime = timeObject.optedTime;
-    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+    if (this.selectedTab == 4) {
+      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      return;
+    }
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
@@ -835,20 +826,16 @@ export class ReadingsGraphComponent implements OnDestroy {
     }, 100);
   }
 
-  public isNumber(val) {
-    return typeof val === 'number';
-  }
-
   selectTab(id: number, showSpinner = true) {
     this.showSpinner = showSpinner;
     this.selectedTab = id;
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
-    if (!this.isAlive && this.selectedTab === 4) {
+    if (this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    } else if (!this.isAlive && this.isLatestReadings) {
+    } else if (this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
-    } else if (!this.isAlive) {
+    } else {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
   }

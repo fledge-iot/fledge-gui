@@ -168,68 +168,31 @@
                   </table>
                 </div>
                 <div *ngIf="selectedTab === 4 && assetReadingSummary?.length > 0 && showSummaryTab() " data-content="4">
-                  <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
-                    <table class="table is-responsive is-borderless data-table">
-                      <tbody>
-                        <tr [ngClass]="{'animated fadeInDown': autoRefresh === false}"
-                          *ngFor="let asset of assetReadingSummary  | slice:0:summaryLimit">
-                          <td>
-                            <span>
-                              <b><small>{{asset.name}}</small></b>
-                            </span>
-                          </td>
-                          <ng-container *ngFor="let reading of asset.value">
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Avg </span>
-                                <span class="tag is-info">{{isNumber(reading.average)
-                                  ?
-                                  roundTo(reading.average,
-                                  5) : reading.average.toString().substring(0,6)}}
-                                </span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Min </span>
-                                <span class="tag is-info">{{isNumber(reading.min) ?
-                                  roundTo(reading.min, 5) : reading.min.toString().substring(0,6)}}</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Max </span>
-                                <span class="tag is-info">{{isNumber(reading.max) ?
-                                  roundTo(reading.max, 5): reading.max.toString().substring(0,6)}}</span>
-                              </div>
-                            </td>
-                          </ng-container>
-                        </tr>
-                        <tr *ngIf="buttonText !== ''">
-                          <td><a class="button small-btn is-text" (click)="showAll()">{{buttonText}}</a></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  <app-asset-reading-summary [buttonText]="buttonText" [showSummarySpinner]="showSummarySpinner"
+                    [autoRefresh]="autoRefresh" [assetReadingSummary]="assetReadingSummary"
+                    [summaryLimit]="summaryLimit"></app-asset-reading-summary>
                 </div>
                 <div *ngIf="selectedTab === 5" data-content="5">
                   <div class="columns margin-top">
-                    <div class="has-text-centered column" [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-with-data': !isEmptyObject(stringTypeReadingsList)}">
+                    <div class="has-text-centered column"
+                      [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-with-data': !isEmptyObject(stringTypeReadingsList)}">
                       <ng-container *ngFor="let read of imageReadings">
                         <div id="tab-content">
                           <img [src]="read.image" alt={{read.datapoint}}>
                         </div>
-                        <small class="has-text-centered text-secondary has-text-grey-dark is-block">Width: {{imageReadingsDimensions.width}}px, Height:
+                        <small class="has-text-centered text-secondary has-text-grey-dark is-block">Width:
+                          {{imageReadingsDimensions.width}}px, Height:
                           {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
                         </small>
-                        <small class="has-text-centered text-secondary has-text-grey-dark is-block margin-bottom">{{read?.datapoint}},
+                        <small
+                          class="has-text-centered text-secondary has-text-grey-dark is-block margin-bottom">{{read?.datapoint}},
                           Timestamp:
                           {{read?.timestamp}}
                         </small>
                       </ng-container>
                     </div>
-                    <div *ngIf="!isEmptyObject(stringTypeReadingsList)" data-content="3" class="column is-4 image-with-data">
+                    <div *ngIf="!isEmptyObject(stringTypeReadingsList)" data-content="3"
+                      class="column is-4 image-with-data">
                       <table class="table is-responsive is-borderless data-table">
                         <thead>
                           <tr>

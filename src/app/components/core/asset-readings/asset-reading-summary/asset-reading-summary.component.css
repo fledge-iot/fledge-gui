@@ -1,0 +1,33 @@
+.summary,
+.summary .table {
+  background-color: #f8f9f9;
+  border-radius: 5px;
+}
+
+@media screen and (max-width: 769px) {
+  .summary {
+    width: 736px;
+  }
+}
+
+.is-info {
+  background-color: #85c1e9 !important;
+}
+
+table.is-borderless tr a {
+  padding-left: 0;
+}
+
+table.is-borderless tr {
+  border: 0 !important;
+  vertical-align: middle;
+}
+
+table.is-borderless td {
+  border: 0 !important;
+}
+
+.data-table {
+  width: 100%;
+}
+
