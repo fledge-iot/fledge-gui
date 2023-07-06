@@ -56,9 +56,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   public isLatestReadings = false;
   public pauseTime: number = Date.now();
   public backwardReadingCounter: number = 0;
-  public graphDisplayDuration = "10";
-  public graphDisplayUnit = "minutes";
-  public imageReadingsDimensions = { width: 0, height: 0, depth: 0 };
+  public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
+  public readingTimestamps = {start : "", end: ""};
+  public graphStartTimestamp: Date;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -101,6 +101,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.pauseTime = Date.now();
     this.backwardReadingCounter = 0;
     sessionStorage.removeItem(this.assetCode);
+    this.readingTimestamps.start = "";
+    this.readingTimestamps.end = "";
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
@@ -138,8 +140,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
     if (rGraphDefaultDuration !== null && rGraphDefaultUnit !== null) {
-      this.graphDisplayDuration = rGraphDefaultDuration;
-      this.graphDisplayUnit = rGraphDefaultUnit;
       this.optedTime = this.calculateOptedTime(parseInt(rGraphDefaultDuration), rGraphDefaultUnit);
     }
     else {
@@ -150,8 +150,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   getTimeBasedAssetReadingsAndSummary(timeObject) {
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
-    this.graphDisplayDuration = timeObject.displayDuration;
-    this.graphDisplayUnit = timeObject.selectedUnit;
     this.optedTime = timeObject.optedTime;
     if (this.selectedTab == 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
@@ -198,8 +196,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
     if (rGraphDefaultDuration !== null && rGraphDefaultUnit !== null) {
-      this.graphDisplayDuration = rGraphDefaultDuration;
-      this.graphDisplayUnit = rGraphDefaultUnit;
       this.optedTime = this.calculateOptedTime(parseInt(rGraphDefaultDuration), rGraphDefaultUnit);
     }
     else {
@@ -499,6 +495,14 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
+    this.readingTimestamps.start = "";
+    this.readingTimestamps.end = "";
+    let ts_length = this.timestamps.length;
+    if(ts_length != 0){
+      this.graphStartTimestamp = new Date(Date.now() - optedTime * 1000);
+      this.readingTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+      this.readingTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
+    }
 
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
@@ -725,7 +729,8 @@ export class ReadingsGraphComponent implements OnDestroy {
             }
           },
           ticks: {
-            autoSkip: true
+            autoSkip: true,
+            min: this.graphStartTimestamp
           },
           bounds: 'ticks'
         }]
