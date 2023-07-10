@@ -766,7 +766,10 @@ export class ReadingsGraphComponent implements OnDestroy {
               enabled: true,
             },
             mode: 'x',
-          },
+            onZoomComplete: () => {
+              this.toggleAutoRefresh(false);
+            }
+          }
         }
       }
     };
