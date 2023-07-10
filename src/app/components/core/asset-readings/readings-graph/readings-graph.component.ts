@@ -499,7 +499,14 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.readingTimestamps.end = "";
     let ts_length = this.timestamps.length;
     if(ts_length != 0){
-      this.graphStartTimestamp = new Date(Date.now() - optedTime * 1000);
+      let currentTime = Date.now();
+      if (this.isAlive) {
+        this.graphStartTimestamp = new Date(currentTime - optedTime * 1000);
+      }
+      else {
+        let timeDifference = Math.floor(currentTime - this.pauseTime);
+        this.graphStartTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+      }
       this.readingTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
       this.readingTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
     }
@@ -716,6 +723,8 @@ export class ReadingsGraphComponent implements OnDestroy {
       elements: {
         point: { radius: this.isLatestReadings ? 2 : 0 }
       },
+      animation: false,
+      maintainAspectRatio: false,
       scales: {
         x: {
           distribution: 'linear',
@@ -774,9 +783,9 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     };
     if (optedTime > 86400) {
-      this.assetChartOptions.scales.xAxes[0].time.unit = 'hour';
-      this.assetChartOptions.scales.xAxes[0].time.displayFormats.unit = 'hour';
-      this.assetChartOptions.scales.xAxes[0].time.displayFormats.hour = 'ddd HH:mm';
+      this.assetChartOptions.scales.x.time.unit = 'hour';
+      this.assetChartOptions.scales.x.time.displayFormats.unit = 'hour';
+      this.assetChartOptions.scales.x.time.displayFormats.hour = 'ddd HH:mm';
     }
   }
 
