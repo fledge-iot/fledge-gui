@@ -44,7 +44,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public additionalAssets = [];
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('assetChart') assetChart: Chart;
+  @ViewChild('assetChart') assetChart: any;
   @ViewChild('3DGraph') Graph: ElementRef;
 
   public numberTypeReadingsList = [];
@@ -717,7 +717,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         point: { radius: this.isLatestReadings ? 2 : 0 }
       },
       scales: {
-        xAxes: [{
+        x: {
           distribution: 'linear',
           type: 'time',
           time: {
@@ -730,33 +730,43 @@ export class ReadingsGraphComponent implements OnDestroy {
           },
           ticks: {
             autoSkip: true,
-            min: this.graphStartTimestamp
           },
+          min: this.graphStartTimestamp,
           bounds: 'ticks'
-        }]
+        }
       },
-      legend: {
-        onClick: (e, legendItem) => {
-          console.log('clicked ', legendItem, e);
-          const index = legendItem.datasetIndex;
-          const chart = this.assetChart.chart;
-          const meta = chart.getDatasetMeta(index);
-          /**
-          * meta data have hidden property as null by default in chart.js
-          */
-          meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
-          let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
-          if (savedLegendState !== null) {
-            if (legendItem.hidden === false) {
-              savedLegendState.push({ key: legendItem.text, selected: true });
+      plugins: {
+        legend: {
+          onClick: (e, legendItem) => {
+            console.log('clicked ', legendItem, e);
+            const index = legendItem.datasetIndex;
+            const chart = this.assetChart.chart;
+            const meta = chart.getDatasetMeta(index);
+            /**
+            * meta data have hidden property as null by default in chart.js
+            */
+            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+            let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
+            if (savedLegendState !== null) {
+              if (legendItem.hidden === false) {
+                savedLegendState.push({ key: legendItem.text, selected: true });
+              } else {
+                savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
+              }
             } else {
-              savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
+              savedLegendState = [{ key: legendItem.text, selected: true }];
             }
-          } else {
-            savedLegendState = [{ key: legendItem.text, selected: true }];
+            sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
+            chart.update();
           }
-          sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
-          chart.update();
+        },
+        zoom: {
+          zoom: {
+            drag: {
+              enabled: true,
+            },
+            mode: 'x',
+          },
         }
       }
     };
