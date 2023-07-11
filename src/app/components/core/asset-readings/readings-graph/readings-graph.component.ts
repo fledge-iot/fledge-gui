@@ -778,6 +778,11 @@ export class ReadingsGraphComponent implements OnDestroy {
             onZoomComplete: () => {
               this.toggleAutoRefresh(false);
             }
+          },
+          limits: {
+            x: {
+              minRange: 1000
+            }
           }
         }
       }
