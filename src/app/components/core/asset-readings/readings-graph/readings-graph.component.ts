@@ -59,6 +59,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
   public readingTimestamps = {start : "", end: ""};
   public graphStartTimestamp: Date;
+  public minZoomValue: number;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -509,6 +510,13 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
       this.readingTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
       this.readingTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
+      this.minZoomValue = 1;
+      if(ts_length > 1){
+        // set minZoomValue according to reading frequency i.e. difference between two timestamps
+        let firstDate = new Date(this.timestamps[ts_length-1])
+        let secondDate = new Date(this.timestamps[ts_length-2])
+        this.minZoomValue = firstDate.valueOf() - secondDate.valueOf();
+      }
     }
 
     for (const r of readings) {
@@ -730,7 +738,6 @@ export class ReadingsGraphComponent implements OnDestroy {
           distribution: 'linear',
           type: 'time',
           time: {
-            unit: 'second',
             tooltipFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
             displayFormats: {
               unit: 'second',
@@ -781,7 +788,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           },
           limits: {
             x: {
-              minRange: 1000
+              minRange: this.minZoomValue
             }
           }
         }
