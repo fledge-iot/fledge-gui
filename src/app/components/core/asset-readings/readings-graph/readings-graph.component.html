@@ -73,6 +73,11 @@
               <app-range-slider></app-range-slider>
             </div>
           </div>
+          <div class="column">
+            <button *ngIf="zoomObject.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset Zoom" class="button small-btn playback-button">
+              <i class="fa fa-sm fa-undo" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
         <div class="columns">
           <div class="column" *ngIf="!isLatestReadings">

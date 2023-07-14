@@ -59,7 +59,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
   public readingTimestamps = {start : "", end: ""};
   public graphStartTimestamp: Date;
-  public minZoomValue: number;
+  public zoomObject = {minZoomValue: 1, isZoomed: false};
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -86,9 +86,17 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.loadPage = false;
-    this.toggleModal(false);
+  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+    if(event.key === 'Escape'){
+      this.loadPage = false;
+      this.toggleModal(false);
+    }
+    // reset graph zoom scale on pressing space key
+    else if(event.key === ' '){
+      if(this.zoomObject.isZoomed){
+        this.resetZoom();
+      }
+    }
   }
 
   public toggleModal(shouldOpen: Boolean) {
@@ -104,6 +112,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     sessionStorage.removeItem(this.assetCode);
     this.readingTimestamps.start = "";
     this.readingTimestamps.end = "";
+    this.zoomObject.isZoomed = false;
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
@@ -412,6 +421,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public plotReadingsGraph(assetCode, limit = null, time = null, previous = 0) {
+    this.zoomObject.isZoomed = false;
     if (assetCode === '') {
       return false;
     }
@@ -510,12 +520,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
       this.readingTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
       this.readingTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
-      this.minZoomValue = 1;
+      this.zoomObject.minZoomValue = 1;
       if(ts_length > 1){
         // set minZoomValue according to reading frequency i.e. difference between two timestamps
         let firstDate = new Date(this.timestamps[ts_length-1])
         let secondDate = new Date(this.timestamps[ts_length-2])
-        this.minZoomValue = firstDate.valueOf() - secondDate.valueOf();
+        this.zoomObject.minZoomValue = firstDate.valueOf() - secondDate.valueOf();
       }
     }
 
@@ -783,12 +793,16 @@ export class ReadingsGraphComponent implements OnDestroy {
             },
             mode: 'x',
             onZoomComplete: () => {
+              if(this.destroy$){
+                this.destroy$.next();
+              }
+              this.zoomObject.isZoomed = true;
               this.toggleAutoRefresh(false);
             }
           },
           limits: {
             x: {
-              minRange: this.minZoomValue
+              minRange: this.zoomObject.minZoomValue
             }
           }
         }
@@ -951,6 +965,15 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.imageReadingsDimensions.width = dimensions[0];
     this.imageReadingsDimensions.height = dimensions[1];
     this.imageReadingsDimensions.depth = dimensions[2];
+  }
+
+  resetZoom() {
+    if(this.graphRefreshInterval === -1){
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+    }
+    else{
+      this.toggleAutoRefresh(true);
+    }
   }
 
   public ngOnDestroy(): void {
