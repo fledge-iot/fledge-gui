@@ -223,7 +223,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   addNewFitlerInPipeline(data: any) {
-    this.newFilterObj = { filter: data?.filter, state: 'new'};
+    this.newFilterObj = { filter: data?.filter, state: 'new' };
     if (!isEmpty(data)) {
       this.filterPipeline.push(data?.filter);
       if (data?.files.length > 0) {

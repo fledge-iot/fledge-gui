@@ -27,7 +27,7 @@ export class FilterListComponent {
   @Input() filterPipeline: string[] = [];
   @Input() service: string = '';
   @Input() type: string = '';
-  @Input() newfilter : {filter:string, state:string} = null;
+  @Input() newfilter: { filter: string, state: string } = null;
   @Output() formStatus = new EventEmitter<boolean>();
   @Output() controlPipelineFilters = new EventEmitter<string[]>();
 
@@ -52,15 +52,15 @@ export class FilterListComponent {
     private toastService: ToastService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-      if (changes?.filterPipeline?.currentValue.length > 0) {
-        this.filterPipelineCopy = cloneDeep(changes?.filterPipeline.currentValue) // make a copy of the filter pipeline to verify the order of items in pipeline
-        this.filterPipeline.forEach(filter => {
-          this.getFilterConfiguration(filter);
-        })
-      }
-      if(changes?.newfilter?.currentValue) {
-        this.getFilterConfiguration(this.newfilter.filter);
-      }
+    if (changes?.filterPipeline?.currentValue.length > 0) {
+      this.filterPipelineCopy = cloneDeep(changes?.filterPipeline.currentValue) // make a copy of the filter pipeline to verify the order of items in pipeline
+      this.filterPipeline.forEach(filter => {
+        this.getFilterConfiguration(filter);
+      })
+    }
+    if (changes?.newfilter?.currentValue) {
+      this.getFilterConfiguration(this.newfilter.filter);
+    }
   }
 
   activeAccordion(id) {
@@ -103,13 +103,13 @@ export class FilterListComponent {
     return this.filterConfiguration.get(this.getFilterName(filter));
   }
 
-  getFilterName(filter:string) {
-    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : ((this.newfilter?.filter === filter) ? filter:`ctrl_${this.service}_${filter}`);
+  getFilterName(filter: string) {
+    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : ((this.newfilter?.filter === filter) ? filter : `ctrl_${this.service}_${filter}`);
     return filterName;
   }
 
   getFilterConfiguration(filterName: string) {
-    let catName = this.getFilterName(filterName); 
+    let catName = this.getFilterName(filterName);
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
         this.filterConfiguration.set(catName, { key: catName, config: data, plugin: data.plugin.value });
