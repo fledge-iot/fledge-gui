@@ -732,8 +732,10 @@ export class ReadingsGraphComponent implements OnDestroy {
           time: {
             tooltipFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
             displayFormats: {
-              unit: 'second',
-              second: 'HH:mm:ss'
+              millisecond: 'HH:mm:ss.SSS',
+              second: 'HH:mm:ss',
+              minute: 'HH:mm:ss',
+              hour: 'HH:mm:ss'
             }
           },
           ticks: {
@@ -791,8 +793,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     };
     if (optedTime > 86400) {
-      this.assetChartOptions.scales.x.time.unit = 'hour';
-      this.assetChartOptions.scales.x.time.displayFormats.unit = 'hour';
+      this.assetChartOptions.scales.x.time.displayFormats.minute = 'ddd HH:mm';
       this.assetChartOptions.scales.x.time.displayFormats.hour = 'ddd HH:mm';
     }
   }
