@@ -91,6 +91,6 @@ input[type="range"]:focus::-moz-range-track {
 }
 
 #alpha {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   display: block;
 }
