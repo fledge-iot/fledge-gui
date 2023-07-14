@@ -57,7 +57,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public pauseTime: number = Date.now();
   public backwardReadingCounter: number = 0;
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
-  public readingTimestamps = {start : "", end: ""};
+  public infoTextTimestamps = {start : "", end: ""};
   public graphStartTimestamp: Date;
   public zoomObject = {minZoomValue: 1, isZoomed: false};
 
@@ -110,8 +110,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.pauseTime = Date.now();
     this.backwardReadingCounter = 0;
     sessionStorage.removeItem(this.assetCode);
-    this.readingTimestamps.start = "";
-    this.readingTimestamps.end = "";
+    this.infoTextTimestamps.start = "";
+    this.infoTextTimestamps.end = "";
     this.zoomObject.isZoomed = false;
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
@@ -506,28 +506,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
-    this.readingTimestamps.start = "";
-    this.readingTimestamps.end = "";
-    let ts_length = this.timestamps.length;
-    if(ts_length != 0){
-      let currentTime = Date.now();
-      if (this.isAlive) {
-        this.graphStartTimestamp = new Date(currentTime - optedTime * 1000);
-      }
-      else {
-        let timeDifference = Math.floor(currentTime - this.pauseTime);
-        this.graphStartTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
-      }
-      this.readingTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
-      this.readingTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
-      this.zoomObject.minZoomValue = 1;
-      if(ts_length > 1){
-        // set minZoomValue according to reading frequency i.e. difference between two timestamps
-        let firstDate = new Date(this.timestamps[ts_length-1])
-        let secondDate = new Date(this.timestamps[ts_length-2])
-        this.zoomObject.minZoomValue = firstDate.valueOf() - secondDate.valueOf();
-      }
-    }
+    
+    this.setGraphStartTimestamp(optedTime);
+    this.setInfoTextTimestamps();
+    this.setGraphMinimumZoomValue();
 
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
@@ -968,11 +950,44 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   resetZoom() {
-    if(this.graphRefreshInterval === -1){
+    if (this.graphRefreshInterval === -1) {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+      return;
     }
-    else{
-      this.toggleAutoRefresh(true);
+    this.toggleAutoRefresh(true);
+  }
+
+  setGraphStartTimestamp(optedTime: number) {
+    let ts_length = this.timestamps.length;
+    if (ts_length != 0) {
+      let currentTime = Date.now();
+      if (!this.isAlive) {
+        let timeDifference = Math.floor(currentTime - this.pauseTime);
+        this.graphStartTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+        return;
+      }
+      this.graphStartTimestamp = new Date(currentTime - optedTime * 1000);
+    }
+  }
+
+  setInfoTextTimestamps() {
+    this.infoTextTimestamps.start = "";
+    this.infoTextTimestamps.end = "";
+    let ts_length = this.timestamps.length;
+    if (ts_length != 0) {
+      this.infoTextTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+      this.infoTextTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length - 1], 'YYYY-MM-DD HH:mm:ss');
+    }
+  }
+
+  setGraphMinimumZoomValue() {
+    this.zoomObject.minZoomValue = 1;
+    let ts_length = this.timestamps.length;
+    if (ts_length > 1) {
+      // set minZoomValue according to reading frequency i.e. difference between two timestamps
+      let firstDate = new Date(this.timestamps[ts_length - 1])
+      let secondDate = new Date(this.timestamps[ts_length - 2])
+      this.zoomObject.minZoomValue = firstDate.valueOf() - secondDate.valueOf();
     }
   }
 
