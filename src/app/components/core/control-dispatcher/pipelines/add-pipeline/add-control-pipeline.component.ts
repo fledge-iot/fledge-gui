@@ -75,6 +75,7 @@ export class AddControlPipelineComponent implements OnInit {
   unsavedChangesInFilterForm = false;
 
   controlPipeline: ControlPipeline;
+  newFilterObj: { filter: string; state: string; };
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -222,6 +223,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   addNewFitlerInPipeline(data: any) {
+    this.newFilterObj = { filter: data?.filter, state: 'new'};
     if (!isEmpty(data)) {
       this.filterPipeline.push(data?.filter);
       if (data?.files.length > 0) {
@@ -596,7 +598,7 @@ export class AddControlPipelineComponent implements OnInit {
       if (this.checkControlPipelineChange()) {
         this.updateControlPipeline(payload);
       }
-      this.router.navigate(['control-dispatcher/pipelines']);
+      this.navigateOnControlPipelineListPage();
       return;
     }
 
@@ -607,9 +609,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.alertService.success(`Control Pipeline ${payload['name']} created successfully.`);
         this.pipelineForm.form.markAsUntouched();
         this.pipelineForm.form.markAsPristine();
-        setTimeout(() => {
-          this.router.navigate(['control-dispatcher/pipelines']);
-        }, 1000);
+        this.navigateOnControlPipelineListPage();
       }, error => {
         this.ngProgress.done();
         if (error.status === 0) {
@@ -618,6 +618,13 @@ export class AddControlPipelineComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  navigateOnControlPipelineListPage() {
+    // small delay to effect backend changes before moving to list page 
+    setTimeout(() => {
+      this.router.navigate(['control-dispatcher/pipelines']);
+    }, 1000);
   }
 
   goToLink(pluginInfo) {
@@ -640,10 +647,10 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
         this.pipelineName = payload.name;
-        this.router.navigate(['control-dispatcher/pipelines']);
-        this.toast.success(data.message)
+        this.toast.success(data.message);
         /** request completed */
         this.ngProgress.done();
+        this.navigateOnControlPipelineListPage();
       }, error => {
         /** request completed */
         this.ngProgress.done();
