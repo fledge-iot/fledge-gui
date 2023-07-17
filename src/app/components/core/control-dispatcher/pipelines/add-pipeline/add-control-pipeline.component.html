@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a (click)="navigateOnCPList()">Control Pipelines</a></li>
+        <li><a (click)="navigateToCPList()">Control Pipelines</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">
             {{ editMode ? pipelineName : 'Add' }}
@@ -168,7 +168,7 @@
                   <app-filter-list *ngIf="filterPipeline.length > 0" #filtersListComponent [service]="pipelineName"
                     [type]="'control-pipeline'" [filterPipeline]="filterPipeline"
                     (controlPipelineFilters)="updateFilterPipelineReference($event)"
-                    (formStatus)="filterFormStatus($event)" [newfilter]="newFilterObj"></app-filter-list>
+                    (formStatus)="filterFormStatus($event)" [newfilter]="newFilter"></app-filter-list>
                 </div>
                 <div [ngClass]="{'add-filter-div': name.invalid}">
                   <a [ngClass]="{'disabled-link': name.invalid}"

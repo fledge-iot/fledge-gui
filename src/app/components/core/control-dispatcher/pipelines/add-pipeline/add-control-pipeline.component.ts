@@ -75,7 +75,7 @@ export class AddControlPipelineComponent implements OnInit {
   unsavedChangesInFilterForm = false;
 
   controlPipeline: ControlPipeline;
-  newFilterObj: { filter: string; state: string; };
+  newFilter: { filter: string; state: string; };
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -150,7 +150,7 @@ export class AddControlPipelineComponent implements OnInit {
       });
   }
 
-  navigateOnCPList() {
+  navigateToCPList() {
     if (this.unsavedChangesInFilterForm) {
       this.showConfirmationDialog();
       return;
@@ -223,7 +223,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   addNewFitlerInPipeline(data: any) {
-    this.newFilterObj = { filter: data?.filter, state: 'new' };
+    this.newFilter = { filter: data?.filter, state: 'new' };
     if (!isEmpty(data)) {
       this.filterPipeline.push(data?.filter);
       if (data?.files.length > 0) {

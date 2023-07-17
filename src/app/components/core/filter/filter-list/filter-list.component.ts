@@ -104,7 +104,10 @@ export class FilterListComponent {
   }
 
   getFilterName(filter: string) {
-    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : ((this.newfilter?.filter === filter) ? filter : `ctrl_${this.service}_${filter}`);
+    let filterName = `${this.service}_${filter}`
+    if (this.type == 'control-pipeline') {
+      filterName = this.newfilter?.filter === filter ? filter : `ctrl_${this.service}_${filter}`
+    }
     return filterName;
   }
 
