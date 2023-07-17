@@ -27,7 +27,7 @@ export class FilterListComponent {
   @Input() filterPipeline: string[] = [];
   @Input() service: string = '';
   @Input() type: string = '';
-  @Input() newfilter: { filter: string, state: string } = null;
+  @Input() newAddedFilters: { filter: string, state: string }[] = [];
   @Output() formStatus = new EventEmitter<boolean>();
   @Output() controlPipelineFilters = new EventEmitter<string[]>();
 
@@ -58,19 +58,21 @@ export class FilterListComponent {
         this.getFilterConfiguration(filter);
       })
     }
-    if (changes?.newfilter?.currentValue) {
-      this.getFilterConfiguration(this.newfilter.filter);
+    if (changes?.newAddedFilters?.currentValue) {
+      this.newAddedFilters.forEach(f => {
+        this.getFilterConfiguration(f.filter);
+      })
     }
   }
 
-  activeAccordion(id) {
+  activeAccordion(id: string) {
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
       const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
       const activeId = last.getAttribute('id');
       lastActiveContentBody.hidden = true;
       last.classList.remove('is-active');
-      if (id !== +activeId) {
+      if (id !== activeId) {
         const next = <HTMLElement>document.getElementById(id);
         const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
         nextActiveContentBody.hidden = false;
@@ -106,7 +108,7 @@ export class FilterListComponent {
   getFilterName(filter: string) {
     let filterName = `${this.service}_${filter}`
     if (this.type == 'control-pipeline') {
-      filterName = this.newfilter?.filter === filter ? filter : `ctrl_${this.service}_${filter}`
+      filterName = this.newAddedFilters.some(f => f.filter === filter) ? filter : `ctrl_${this.service}_${filter}`
     }
     return filterName;
   }

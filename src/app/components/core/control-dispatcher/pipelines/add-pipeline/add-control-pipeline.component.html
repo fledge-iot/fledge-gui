@@ -168,18 +168,17 @@
                   <app-filter-list *ngIf="filterPipeline.length > 0" #filtersListComponent [service]="pipelineName"
                     [type]="'control-pipeline'" [filterPipeline]="filterPipeline"
                     (controlPipelineFilters)="updateFilterPipelineReference($event)"
-                    (formStatus)="filterFormStatus($event)" [newfilter]="newFilter"></app-filter-list>
+                    (formStatus)="filterFormStatus($event)" [newAddedFilters]="newAddedFilters"></app-filter-list>
                 </div>
                 <div [ngClass]="{'add-filter-div': name.invalid}">
                   <a [ngClass]="{'disabled-link': name.invalid}"
                     *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()"
-                    (click)="openAddFilterModal(true)" type="button"
-                    class="button is-small is-ghost add-filter px-0">Add new
+                    (click)="openAddFilterModal(true)" type="button" class="button is-small is-ghost px-0">Add new
                     filter</a>
                   <a [ngClass]="{'disabled-link': name.invalid}"
                     *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()"
                     (click)="openAddFilterModal(true, name.value)" type="button"
-                    class="button is-small is-ghost add-filter px-0">Add
+                    class="button is-small is-ghost px-0">Add
                     filter</a>
                 </div>
               </div>

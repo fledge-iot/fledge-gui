@@ -75,7 +75,8 @@ export class AddControlPipelineComponent implements OnInit {
   unsavedChangesInFilterForm = false;
 
   controlPipeline: ControlPipeline;
-  newFilter: { filter: string; state: string; };
+  // newly added filter List
+  newAddedFilters: { filter: string, state: string }[] = [];
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -222,19 +223,21 @@ export class AddControlPipelineComponent implements OnInit {
     this.filterAlert.toggleModal(true);
   }
 
+
   addNewFitlerInPipeline(data: any) {
-    this.newFilter = { filter: data?.filter, state: 'new' };
+    this.isAddFilterWizard = false;
+    this.addFilterClicked = false;
     if (!isEmpty(data)) {
-      this.filterPipeline.push(data?.filter);
+      const newFilter = { filter: data.filter, state: 'new' };
+      this.newAddedFilters = [...this.newAddedFilters, newFilter];
+      this.filterPipeline.push(data.filter);
       if (data?.files.length > 0) {
         const filterName = data?.filter;
         this.uploadScript(filterName, data?.files);
       }
       this.unsavedChangesInFilterForm = true;
+      this.cdRef.detectChanges();
     }
-
-    this.isAddFilterWizard = false;
-    this.addFilterClicked = false;
   }
 
   updateFilterPipelineReference(filters: []) {
