@@ -125,15 +125,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   protected getChartOptions() {
     this.chartOptions = {
-      legend: {
-        display: false
+      animation: false,
+      plugins: {
+        legend: {
+          display: false
+        }
       },
       scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
-        }]
+        y: {
+          beginAtZero: true
+        }
       }
     };
   }

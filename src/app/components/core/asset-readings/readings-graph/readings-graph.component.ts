@@ -2,7 +2,6 @@ import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, El
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { HttpCancelService } from '../../../../services/httpcancel.service';
 import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
 import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
@@ -45,7 +44,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public additionalAssets = [];
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('assetChart') assetChart: Chart;
+  @ViewChild('assetChart') assetChart: any;
   @ViewChild('3DGraph') Graph: ElementRef;
 
   public numberTypeReadingsList = [];
@@ -57,9 +56,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   public isLatestReadings = false;
   public pauseTime: number = Date.now();
   public backwardReadingCounter: number = 0;
-  public graphDisplayDuration = "10";
-  public graphDisplayUnit = "minutes";
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
+  public infoTextTimestamps = {start : "", end: ""};
+  public graphStartTimestamp: Date;
+  public zoomConfig = {minZoomValue: 1, isZoomed: false};
   public endTime = "now";
 
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -73,40 +73,31 @@ export class ReadingsGraphComponent implements OnDestroy {
     private ping: PingService,
     private sharedService: SharedService,
     private dateFormatter: DateFormatterPipe,
-    private httpCancelService: HttpCancelService,
     public rangeSliderService: RangeSliderService) {
 
-      this.assetChartType = 'line';
-      this.assetReadingValues = {};
-      this.ping.pingIntervalChanged
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((timeInterval: number) => {
-          if (timeInterval === -1) {
-            this.isAlive = false;
-          }
-          this.graphRefreshInterval = timeInterval;
-        });
+    this.assetChartType = 'line';
+    this.assetReadingValues = {};
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+        this.graphRefreshInterval = timeInterval;
+      });
   }
 
-  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.loadPage = false;
-    this.toggleModal(false);
-  }
-
-  public showAll() {
-    this.autoRefresh = false;
-    if (this.buttonText === 'Show Less') {
-      this.summaryLimit = 5;
-      this.buttonText = 'Show All';
-    } else {
-      this.summaryLimit = this.assetReadingSummary.length;
-      this.buttonText = 'Show Less';
+  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+    if(event.key === 'Escape'){
+      this.loadPage = false;
+      this.toggleModal(false);
     }
-  }
-
-  public roundTo(num, to) {
-    const _to = Math.pow(10, to);
-    return Math.round(num * _to) / _to;
+    // reset graph zoom scale on pressing space key
+    else if(event.key === ' '){
+      if(this.zoomConfig.isZoomed){
+        this.resetZoom();
+      }
+    }
   }
 
   public toggleModal(shouldOpen: Boolean) {
@@ -120,6 +111,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.pauseTime = Date.now();
     this.backwardReadingCounter = 0;
     sessionStorage.removeItem(this.assetCode);
+    this.infoTextTimestamps.start = "";
+    this.infoTextTimestamps.end = "";
+    this.zoomConfig.isZoomed = false;
     this.endTime = "now";
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
@@ -128,6 +122,11 @@ export class ReadingsGraphComponent implements OnDestroy {
       chart_modal.classList.add('is-active');
       return;
     }
+
+    if (this.destroy$) {
+      this.destroy$.next();
+    }
+
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
@@ -137,8 +136,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.assetsSubscription) {
       this.assetsSubscription.unsubscribe();
     }
-    // cancel pending requests after closing the model
-    this.httpCancelService.cancelPendingRequests();
 
     if (this.graphRefreshInterval === -1) {
       this.notify.emit(false);
@@ -155,8 +152,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
     if (rGraphDefaultDuration !== null && rGraphDefaultUnit !== null) {
-      this.graphDisplayDuration = rGraphDefaultDuration;
-      this.graphDisplayUnit = rGraphDefaultUnit;
       this.optedTime = this.calculateOptedTime(parseInt(rGraphDefaultDuration), rGraphDefaultUnit);
     }
     else {
@@ -167,11 +162,12 @@ export class ReadingsGraphComponent implements OnDestroy {
   getTimeBasedAssetReadingsAndSummary(timeObject) {
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
-    this.graphDisplayDuration = timeObject.displayDuration;
-    this.graphDisplayUnit = timeObject.selectedUnit;
     this.optedTime = timeObject.optedTime;
+    if (this.selectedTab == 4) {
+      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      return;
+    }
     this.endTime = timeObject.endTime;
-    this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     if(this.endTime === "last reading"){
       if(this.graphRefreshInterval !== -1){
         this.toggleAutoRefresh(false);
@@ -193,7 +189,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.loadPage = true;
     this.notify.emit(false);
     this.selectedAsset = assetCode;
-    
+
     if (this.latestReadingSubscription) {
       this.latestReadingSubscription.unsubscribe();
     }
@@ -208,10 +204,10 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedAsset) {
           const index: number = this.availableAssets.indexOf(this.selectedAsset);
           if (index !== -1) {
-              this.availableAssets.splice(index, 1);
-          } 
+            this.availableAssets.splice(index, 1);
+          }
         }
-        this.availableAssets = this.availableAssets.sort((a, b) => a.localeCompare(b));     
+        this.availableAssets = this.availableAssets.sort((a, b) => a.localeCompare(b));
       }
     });
 
@@ -224,8 +220,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
     if (rGraphDefaultDuration !== null && rGraphDefaultUnit !== null) {
-      this.graphDisplayDuration = rGraphDefaultDuration;
-      this.graphDisplayUnit = rGraphDefaultUnit;
       this.optedTime = this.calculateOptedTime(parseInt(rGraphDefaultDuration), rGraphDefaultUnit);
     }
     else {
@@ -446,6 +440,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public plotReadingsGraph(assetCode, limit = null, time = null, previous = 0) {
+    this.zoomConfig.isZoomed = false;
     if (assetCode === '') {
       return false;
     }
@@ -516,12 +511,12 @@ export class ReadingsGraphComponent implements OnDestroy {
     const strReadings = [];
     const arrReadings = [];
     const imageReadings = [];
-    
+
     // In case of multiple assets readings, merge all readings
     if ((this.additionalAssets.length > 1 && readings.length !== 0) || !(Array.isArray(readings))) {
       if (Object.keys(readings).length === this.additionalAssets.length) {
-        let allAssetsReading = [];     
-        this.additionalAssets.forEach((asset)=> {
+        let allAssetsReading = [];
+        this.additionalAssets.forEach((asset) => {
           allAssetsReading.push(...readings[asset]);
         });
         readings = this.getMergedReadings(allAssetsReading);
@@ -530,6 +525,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
+    
+    this.setGraphStartTimestamp(optedTime);
+    this.setInfoTextTimestamps();
+    this.setGraphMinimumZoomValue();
 
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
@@ -583,10 +582,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.setTabData(optedTime);
   }
 
-  getMergedReadings(allAssetsReading){  
-    let mergedReadings =[];
+  getMergedReadings(allAssetsReading) {
+    let mergedReadings = [];
     allAssetsReading.map(function (item) {
-      let existingReading = mergedReadings.find(x=> x.timestamp === item.timestamp);
+      let existingReading = mergedReadings.find(x => x.timestamp === item.timestamp);
       if (existingReading) {
         existingReading.reading = Object.assign({}, existingReading.reading, item.reading);
       } else {
@@ -743,53 +742,77 @@ export class ReadingsGraphComponent implements OnDestroy {
       elements: {
         point: { radius: this.isLatestReadings ? 2 : 0 }
       },
+      animation: false,
+      maintainAspectRatio: false,
       scales: {
-        xAxes: [{
+        x: {
           distribution: 'linear',
           type: 'time',
           time: {
-            unit: 'second',
             tooltipFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
             displayFormats: {
-              unit: 'second',
-              second: 'HH:mm:ss'
+              millisecond: 'HH:mm:ss.SSS',
+              second: 'HH:mm:ss',
+              minute: 'HH:mm:ss',
+              hour: 'HH:mm:ss'
             }
           },
           ticks: {
-            autoSkip: true
+            autoSkip: true,
           },
+          min: this.graphStartTimestamp,
           bounds: 'ticks'
-        }]
+        }
       },
-      legend: {
-        onClick: (e, legendItem) => {
-          console.log('clicked ', legendItem, e);
-          const index = legendItem.datasetIndex;
-          const chart = this.assetChart.chart;
-          const meta = chart.getDatasetMeta(index);
-          /**
-          * meta data have hidden property as null by default in chart.js
-          */
-          meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
-          let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
-          if (savedLegendState !== null) {
-            if (legendItem.hidden === false) {
-              savedLegendState.push({ key: legendItem.text, selected: true });
+      plugins: {
+        legend: {
+          onClick: (_e, legendItem) => {
+            const index = legendItem.datasetIndex;
+            const chart = this.assetChart.chart;
+            const meta = chart.getDatasetMeta(index);
+            /**
+            * meta data have hidden property as null by default in chart.js
+            */
+            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+            let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
+            if (savedLegendState !== null) {
+              if (legendItem.hidden === false) {
+                savedLegendState.push({ key: legendItem.text, selected: true });
+              } else {
+                savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
+              }
             } else {
-              savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
+              savedLegendState = [{ key: legendItem.text, selected: true }];
             }
-          } else {
-            savedLegendState = [{ key: legendItem.text, selected: true }];
+            sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
+            chart.update();
           }
-          sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
-          chart.update();
+        },
+        zoom: {
+          zoom: {
+            drag: {
+              enabled: true,
+            },
+            mode: 'x',
+            onZoomComplete: () => {
+              if(this.destroy$){
+                this.destroy$.next();
+              }
+              this.zoomConfig.isZoomed = true;
+              this.toggleAutoRefresh(false);
+            }
+          },
+          limits: {
+            x: {
+              minRange: this.zoomConfig.minZoomValue
+            }
+          }
         }
       }
     };
-    if(optedTime > 86400){
-      this.assetChartOptions.scales.xAxes[0].time.unit = 'hour';
-      this.assetChartOptions.scales.xAxes[0].time.displayFormats.unit = 'hour';
-      this.assetChartOptions.scales.xAxes[0].time.displayFormats.hour = 'ddd HH:mm';
+    if (optedTime > 86400) {
+      this.assetChartOptions.scales.x.time.displayFormats.minute = 'ddd HH:mm';
+      this.assetChartOptions.scales.x.time.displayFormats.hour = 'ddd HH:mm';
     }
   }
 
@@ -852,18 +875,14 @@ export class ReadingsGraphComponent implements OnDestroy {
     }, 100);
   }
 
-  public isNumber(val) {
-    return typeof val === 'number';
-  }
-
   selectTab(id: number, showSpinner = true) {
     this.showSpinner = showSpinner;
     this.selectedTab = id;
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
-    if (!this.isAlive && this.selectedTab === 4) {
+    if (this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
-    } else if (!this.isAlive && this.isLatestReadings) {
+    } else if (this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
     } else if (!this.isAlive) {
       if(this.endTime === "last reading"){
@@ -897,7 +916,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
 
     // Instantly make a call on clicking play button
-    if(this.isAlive){
+    if (this.isAlive) {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
 
@@ -915,17 +934,17 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  showBackwardReadingsGraph(){
+  showBackwardReadingsGraph() {
     this.backwardReadingCounter++;
     this.showReadingsGraph();
   }
-  
-  showForwardReadingsGraph(){
+
+  showForwardReadingsGraph() {
     this.backwardReadingCounter--;
     this.showReadingsGraph();
   }
 
-  showReadingsGraph(){
+  showReadingsGraph() {
     let currentTime = Date.now();
     let timeDifference = Math.floor((currentTime - this.pauseTime)/1000);
     let previous = this.backwardReadingCounter*this.optedTime;
@@ -951,13 +970,55 @@ export class ReadingsGraphComponent implements OnDestroy {
     return value * 60 * 60 * 24;
   }
 
-  getImageReadingsDimensions(value){
+  getImageReadingsDimensions(value) {
     let val = value.replace('__DPIMAGE:', '');
     let index = val.indexOf('_');
     let dimensions = val.slice(0, index).split(',');
     this.imageReadingsDimensions.width = dimensions[0];
     this.imageReadingsDimensions.height = dimensions[1];
     this.imageReadingsDimensions.depth = dimensions[2];
+  }
+
+  resetZoom() {
+    if (this.graphRefreshInterval === -1) {
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+      return;
+    }
+    this.toggleAutoRefresh(true);
+  }
+
+  setGraphStartTimestamp(optedTime: number) {
+    let ts_length = this.timestamps.length;
+    if (ts_length != 0) {
+      let currentTime = Date.now();
+      if (!this.isAlive) {
+        let timeDifference = Math.floor(currentTime - this.pauseTime);
+        this.graphStartTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+        return;
+      }
+      this.graphStartTimestamp = new Date(currentTime - optedTime * 1000);
+    }
+  }
+
+  setInfoTextTimestamps() {
+    this.infoTextTimestamps.start = "";
+    this.infoTextTimestamps.end = "";
+    let ts_length = this.timestamps.length;
+    if (ts_length != 0) {
+      this.infoTextTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+      this.infoTextTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length - 1], 'YYYY-MM-DD HH:mm:ss');
+    }
+  }
+
+  setGraphMinimumZoomValue() {
+    this.zoomConfig.minZoomValue = 1;
+    let ts_length = this.timestamps.length;
+    if (ts_length > 1) {
+      // set minZoomValue according to reading frequency i.e. difference between two timestamps
+      let firstDate = new Date(this.timestamps[ts_length - 1])
+      let secondDate = new Date(this.timestamps[ts_length - 2])
+      this.zoomConfig.minZoomValue = firstDate.valueOf() - secondDate.valueOf();
+    }
   }
 
   plotReadingsGraphFromLatestReading(assetCode, previous = 0){

@@ -8,7 +8,7 @@ import {
   AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
   ServicesApiService, FileUploaderService, ConfigurationControlService
 } from '../../../../services';
-import Utils, {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import Utils, { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
@@ -228,12 +228,12 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
     const repeatTime = this.taskForm.value['repeatTime'] !== ('' || undefined) ? Utils.convertTimeToSec(
       this.taskForm.value['repeatTime'], this.taskForm.value['repeatDays']) : 0;
-
+    const config = this.taskForm.value['config'];
     const payload = {
       name: this.taskForm.value['name'].trim(),
       type: this.taskType.toLowerCase(),
       plugin: this.taskForm.value['plugin'][0],
-      ...this.taskForm.value['config'] && { config: this.taskForm.value['config'] },
+      ...config && { config },
       schedule_type: '3',
       schedule_repeat: repeatTime,
       schedule_enabled: this.isScheduleEnabled
@@ -341,6 +341,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
     if (pluginInfo) {
+      pluginInfo.config = this.configurationControlService.getValidConfig(pluginInfo.config);
       this.configurationData = pluginInfo;
       this.pluginConfiguration = cloneDeep(pluginInfo);
       this.selectedPluginDescription = pluginInfo.description;

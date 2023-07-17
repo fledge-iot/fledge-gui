@@ -1,4 +1,3 @@
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +14,6 @@ import { SouthServiceModalComponent } from './south-service-modal/south-service-
 import { SouthComponent } from './south.component';
 
 const routes: Routes = [
-
   {
     path: '',
     component: SouthComponent
@@ -37,7 +35,6 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    DragDropModule,
     RouterModule.forChild(routes),
     AlertDialogModule,
     SharedModule,

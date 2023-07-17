@@ -40,8 +40,6 @@ import {
   UserService
 } from './services';
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
-import { CancelPendingRequestsInterceptor } from './services/cancel-pending-requests.interceptor';
-import { HttpCancelService } from './services/httpcancel.service';
 import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
 import { ProgressBarComponent } from './components/common/progress-bar/progress-bar.component';
@@ -134,17 +132,11 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     NorthService,
     SchedulesService,
     ProgressBarService,
-    HttpCancelService,
     UserService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpsRequestInterceptor,
       multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: CancelPendingRequestsInterceptor,
-      multi: true
     }
   ],
   bootstrap: [AppComponent]

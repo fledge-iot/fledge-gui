@@ -1,35 +1,35 @@
   .field-body .field {
     margin-bottom: 5px;
   }
-  
+
   .cursor-default {
     cursor: default !important;
   }
-  
+
   .cursor-move {
     cursor: move !important;
   }
-  
+
   .cdk-drag {
     margin-bottom: 5px;
   }
-  
+
   div.close-btn {
     padding: 0 0 0 8px !important;
   }
-  
+
   #refresh-check {
     margin-left: 3px;
   }
-  
+
   .field-label {
     text-align: left;
   }
-  
+
   .is-static {
     padding-top: 0px !important;
   }
-  
+
   .name-field {
     height: inherit;
   }
@@ -37,57 +37,51 @@
   .filter-name .fa-bars {
     opacity: 0.5;
   }
-  
+
   .cdk-drag-preview {
     box-sizing: border-box;
     border-radius: 4px;
     box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
       0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
   }
-  
+
   .cdk-drag-placeholder {
     opacity: 0;
   }
-  
+
   .cdk-drag-animating {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
-  
+
   .accordion.card:last-child {
     border: none;
   }
-  
+
   .filter-list.cdk-drop-list-dragging .accordion.card:not(.cdk-drag-placeholder) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
-  
+
   .btn-delete {
     border: transparent !important;
   }
-  
+
   .control-pad {
     padding-left: 18px;
   }
-  
+
   .breadcrumb {
     margin-bottom: 0px !important;
   }
-  
+
   .is-hovered {
     cursor: pointer !important;
-  }
-
-  .is-text {
-    color: #3273dc;
-    padding-left: 0;
-    padding-right: 0;
   }
 
   .disabled {
     opacity: .7;
     pointer-events: none;
   }
-  
+
   .filter-name, .label-name {
     font-size: 0.9rem;
   }
@@ -130,7 +124,7 @@
     font-size: 0.8em;
     min-height: 28px !important;
   }
-  
+
   ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
     color: #848181 !important;
     font-size: 0.8rem !important;
@@ -139,10 +133,6 @@
 
   .step-content {
     overflow: inherit !important;
-  }
-
-  .add-filter {
-    text-decoration: none;
   }
 
   .icon-row {
