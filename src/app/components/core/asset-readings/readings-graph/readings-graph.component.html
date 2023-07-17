@@ -74,8 +74,8 @@
             </div>
           </div>
           <div class="column">
-            <button *ngIf="zoomObject.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset Zoom" class="button small-btn playback-button">
-              <i class="fa fa-sm fa-undo" aria-hidden="true"></i>
+            <button *ngIf="zoomConfig.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset Zoom" class="button small-btn zoom-button">
+              <i class="fa fa-sm fa-search-minus" aria-hidden="true"></i>
             </button>
           </div>
         </div>
