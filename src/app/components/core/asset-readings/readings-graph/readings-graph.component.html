@@ -11,12 +11,12 @@
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </div>
-        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5) && readingTimestamps.start">
+        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5) && infoTextTimestamps.start">
           <span class="help" *ngIf="isAlive">
-            *Showing data from {{readingTimestamps.start}} to current time
+            *Showing data from {{infoTextTimestamps.start}} to current time
           </span>
           <span class="help" *ngIf="!isAlive">
-            *Showing data from {{readingTimestamps.start}} to {{readingTimestamps.end}}
+            *Showing data from {{infoTextTimestamps.start}} to {{infoTextTimestamps.end}}
           </span>
         </ng-container>
       </span>
@@ -72,6 +72,11 @@
             <div class="range-wrap">
               <app-range-slider></app-range-slider>
             </div>
+          </div>
+          <div class="column">
+            <button *ngIf="zoomConfig.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset Zoom" class="button small-btn zoom-button">
+              <i class="fa fa-sm fa-search-minus" aria-hidden="true"></i>
+            </button>
           </div>
         </div>
         <div class="columns">
