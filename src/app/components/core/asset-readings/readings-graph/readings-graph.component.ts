@@ -44,7 +44,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public additionalAssets = [];
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('assetChart') assetChart: Chart;
+  @ViewChild('assetChart') assetChart: any;
   @ViewChild('3DGraph') Graph: ElementRef;
 
   public numberTypeReadingsList = [];
@@ -57,8 +57,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   public pauseTime: number = Date.now();
   public backwardReadingCounter: number = 0;
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
-  public readingTimestamps = {start : "", end: ""};
+  public infoTextTimestamps = {start : "", end: ""};
   public graphStartTimestamp: Date;
+  public zoomConfig = {minZoomValue: 1, isZoomed: false};
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -85,9 +86,17 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.loadPage = false;
-    this.toggleModal(false);
+  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+    if(event.key === 'Escape'){
+      this.loadPage = false;
+      this.toggleModal(false);
+    }
+    // reset graph zoom scale on pressing space key
+    else if(event.key === ' '){
+      if(this.zoomConfig.isZoomed){
+        this.resetZoom();
+      }
+    }
   }
 
   public toggleModal(shouldOpen: Boolean) {
@@ -101,8 +110,9 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.pauseTime = Date.now();
     this.backwardReadingCounter = 0;
     sessionStorage.removeItem(this.assetCode);
-    this.readingTimestamps.start = "";
-    this.readingTimestamps.end = "";
+    this.infoTextTimestamps.start = "";
+    this.infoTextTimestamps.end = "";
+    this.zoomConfig.isZoomed = false;
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
@@ -411,6 +421,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public plotReadingsGraph(assetCode, limit = null, time = null, previous = 0) {
+    this.zoomConfig.isZoomed = false;
     if (assetCode === '') {
       return false;
     }
@@ -495,14 +506,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       }
     }
     this.timestamps = readings.reverse().map((r: any) => r.timestamp);
-    this.readingTimestamps.start = "";
-    this.readingTimestamps.end = "";
-    let ts_length = this.timestamps.length;
-    if(ts_length != 0){
-      this.graphStartTimestamp = new Date(Date.now() - optedTime * 1000);
-      this.readingTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
-      this.readingTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length-1], 'YYYY-MM-DD HH:mm:ss');
-    }
+    
+    this.setGraphStartTimestamp(optedTime);
+    this.setInfoTextTimestamps();
+    this.setGraphMinimumZoomValue();
 
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
@@ -716,54 +723,77 @@ export class ReadingsGraphComponent implements OnDestroy {
       elements: {
         point: { radius: this.isLatestReadings ? 2 : 0 }
       },
+      animation: false,
+      maintainAspectRatio: false,
       scales: {
-        xAxes: [{
+        x: {
           distribution: 'linear',
           type: 'time',
           time: {
-            unit: 'second',
             tooltipFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
             displayFormats: {
-              unit: 'second',
-              second: 'HH:mm:ss'
+              millisecond: 'HH:mm:ss.SSS',
+              second: 'HH:mm:ss',
+              minute: 'HH:mm:ss',
+              hour: 'HH:mm:ss'
             }
           },
           ticks: {
             autoSkip: true,
-            min: this.graphStartTimestamp
           },
+          min: this.graphStartTimestamp,
           bounds: 'ticks'
-        }]
+        }
       },
-      legend: {
-        onClick: (e, legendItem) => {
-          console.log('clicked ', legendItem, e);
-          const index = legendItem.datasetIndex;
-          const chart = this.assetChart.chart;
-          const meta = chart.getDatasetMeta(index);
-          /**
-          * meta data have hidden property as null by default in chart.js
-          */
-          meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
-          let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
-          if (savedLegendState !== null) {
-            if (legendItem.hidden === false) {
-              savedLegendState.push({ key: legendItem.text, selected: true });
+      plugins: {
+        legend: {
+          onClick: (_e, legendItem) => {
+            const index = legendItem.datasetIndex;
+            const chart = this.assetChart.chart;
+            const meta = chart.getDatasetMeta(index);
+            /**
+            * meta data have hidden property as null by default in chart.js
+            */
+            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+            let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
+            if (savedLegendState !== null) {
+              if (legendItem.hidden === false) {
+                savedLegendState.push({ key: legendItem.text, selected: true });
+              } else {
+                savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
+              }
             } else {
-              savedLegendState = savedLegendState.filter(dt => dt.key !== legendItem.text);
+              savedLegendState = [{ key: legendItem.text, selected: true }];
             }
-          } else {
-            savedLegendState = [{ key: legendItem.text, selected: true }];
+            sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
+            chart.update();
           }
-          sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
-          chart.update();
+        },
+        zoom: {
+          zoom: {
+            drag: {
+              enabled: true,
+            },
+            mode: 'x',
+            onZoomComplete: () => {
+              if(this.destroy$){
+                this.destroy$.next();
+              }
+              this.zoomConfig.isZoomed = true;
+              this.toggleAutoRefresh(false);
+            }
+          },
+          limits: {
+            x: {
+              minRange: this.zoomConfig.minZoomValue
+            }
+          }
         }
       }
     };
     if (optedTime > 86400) {
-      this.assetChartOptions.scales.xAxes[0].time.unit = 'hour';
-      this.assetChartOptions.scales.xAxes[0].time.displayFormats.unit = 'hour';
-      this.assetChartOptions.scales.xAxes[0].time.displayFormats.hour = 'ddd HH:mm';
+      this.assetChartOptions.scales.x.time.displayFormats.minute = 'ddd HH:mm';
+      this.assetChartOptions.scales.x.time.displayFormats.hour = 'ddd HH:mm';
     }
   }
 
@@ -917,6 +947,48 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.imageReadingsDimensions.width = dimensions[0];
     this.imageReadingsDimensions.height = dimensions[1];
     this.imageReadingsDimensions.depth = dimensions[2];
+  }
+
+  resetZoom() {
+    if (this.graphRefreshInterval === -1) {
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+      return;
+    }
+    this.toggleAutoRefresh(true);
+  }
+
+  setGraphStartTimestamp(optedTime: number) {
+    let ts_length = this.timestamps.length;
+    if (ts_length != 0) {
+      let currentTime = Date.now();
+      if (!this.isAlive) {
+        let timeDifference = Math.floor(currentTime - this.pauseTime);
+        this.graphStartTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+        return;
+      }
+      this.graphStartTimestamp = new Date(currentTime - optedTime * 1000);
+    }
+  }
+
+  setInfoTextTimestamps() {
+    this.infoTextTimestamps.start = "";
+    this.infoTextTimestamps.end = "";
+    let ts_length = this.timestamps.length;
+    if (ts_length != 0) {
+      this.infoTextTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+      this.infoTextTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length - 1], 'YYYY-MM-DD HH:mm:ss');
+    }
+  }
+
+  setGraphMinimumZoomValue() {
+    this.zoomConfig.minZoomValue = 1;
+    let ts_length = this.timestamps.length;
+    if (ts_length > 1) {
+      // set minZoomValue according to reading frequency i.e. difference between two timestamps
+      let firstDate = new Date(this.timestamps[ts_length - 1])
+      let secondDate = new Date(this.timestamps[ts_length - 2])
+      this.zoomConfig.minZoomValue = firstDate.valueOf() - secondDate.valueOf();
+    }
   }
 
   public ngOnDestroy(): void {
