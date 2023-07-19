@@ -5,9 +5,10 @@ import { sortBy, isEmpty, cloneDeep } from 'lodash';
 import {
   AlertService, ConfigurationService, FilterService, ServicesApiService,
   ProgressBarService, FileUploaderService,
-  ConfigurationControlService
+  ConfigurationControlService,
+  ToastService
 } from '../../../../services';
-import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import { concatMap, delay, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
@@ -56,6 +57,7 @@ export class AddFilterWizardComponent implements OnInit {
     private configurationService: ConfigurationService,
     private fileUploaderService: FileUploaderService,
     private alertService: AlertService,
+    private toast: ToastService,
     private service: ServicesApiService,
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
@@ -398,8 +400,11 @@ export class AddFilterWizardComponent implements OnInit {
     this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
-          this.alertService.success(data.filter + ' filter added successfully.', true);
+          this.toast.success(data.filter + ' filter added successfully.');
           if (this.from === 'control-pipeline') {
+            if (files) {
+              this.uploadScript(payload.name, files);
+            }
             this.notify.emit({ 'filter': payload.name, files });
           } else {
             this.addFilterPipeline({ 'pipeline': [payload.name], files });

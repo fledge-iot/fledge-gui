@@ -2,13 +2,12 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { delay, map } from 'rxjs/operators';
 import { CustomValidator } from '../../../../../directives/custom-validator';
 import {
   AlertService, AssetsService,
   ControlPipelinesService,
-  FileUploaderService,
   NotificationsService, ProgressBarService,
   ResponseHandler,
   RolesService,
@@ -42,7 +41,6 @@ export interface Destination {
   type: string
   name: string
 }
-
 
 @Component({
   selector: 'app-add-control-pipeline',
@@ -93,7 +91,6 @@ export class AddControlPipelineComponent implements OnInit {
     private controlService: ControlDispatcherService,
     public notificationService: NotificationsService,
     private docService: DocService,
-    private fileUploaderService: FileUploaderService,
     private router: Router,
     private toast: ToastService) { }
 
@@ -223,20 +220,18 @@ export class AddControlPipelineComponent implements OnInit {
     this.filterAlert.toggleModal(true);
   }
 
-
   addNewFitlerInPipeline(data: any) {
     this.isAddFilterWizard = false;
     this.addFilterClicked = false;
     if (!isEmpty(data)) {
-      const newFilter = { filter: data.filter, state: 'new' };
-      this.newAddedFilters = [...this.newAddedFilters, newFilter];
-      this.filterPipeline.push(data.filter);
-      if (data?.files.length > 0) {
-        const filterName = data?.filter;
-        this.uploadScript(filterName, data?.files);
-      }
-      this.unsavedChangesInFilterForm = true;
-      this.cdRef.detectChanges();
+      // Add small delay to reflect configuration changes
+      of(data).pipe(delay(1000)).subscribe(() => {
+        const newFilter = { filter: data.filter, state: 'new' };
+        this.newAddedFilters = [...this.newAddedFilters, newFilter];
+        this.filterPipeline.push(data.filter);
+        this.unsavedChangesInFilterForm = true;
+        this.cdRef.detectChanges();
+      });
     }
   }
 
@@ -538,15 +533,6 @@ export class AddControlPipelineComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
-  }
-
-  /**
-  * To upload script files of a configuration property
-  * @param categoryName name of the configuration category
-  * @param files : Scripts array to uplaod
-  */
-  public uploadScript(categoryName: string, files: any[]) {
-    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
 
   checkIfSourceDestSame(source, destination) {
