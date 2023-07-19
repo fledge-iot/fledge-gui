@@ -14,3 +14,25 @@
  ul:has(section.disabled) {
   cursor: not-allowed;
  }
+
+ .dropdown-btn {
+  color: #4a4a4a;
+  padding: 0.5em 0.75em;
+  text-decoration: none;
+  font-size: 1em;
+  display: block;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
+}

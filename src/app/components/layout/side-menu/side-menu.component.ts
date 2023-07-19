@@ -20,6 +20,8 @@ export class SideMenuComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
   microfrontends: Microfrontend[] = [];
 
+  isLogsListOpen = false;
+  isControlListOpen = false;
   isAdmin = false;
   isServiceRunning = true;
   private destroySubject: Subject<void> = new Subject();
@@ -53,6 +55,17 @@ export class SideMenuComponent implements OnInit {
       });
   }
 
+  public toggleDropdown(id) {
+    const dropdownMenuItems = <HTMLDivElement>document.getElementById(id);
+    if (dropdownMenuItems.classList.contains('hide')) {
+      dropdownMenuItems.classList.add('show');
+      dropdownMenuItems.classList.remove('hide');
+      return true;
+    }
+    dropdownMenuItems.classList.remove('show');
+    dropdownMenuItems.classList.add('hide');
+    return false;
+  }
 
   goToLink() {
     this.docService.goToLink();

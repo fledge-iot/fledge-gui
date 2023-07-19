@@ -26,24 +26,28 @@
           Notifications
         </a>
       </li>
-
       <li>
-        <a>Control</a>
-        <ul>
-          <li>
-            <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
-              Scripts
-            </a>
-          </li>
-          <li>
-            <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
-              ACLs
-            </a>
-          </li>
-          <li>
-            <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
-          </li>
-        </ul>
+        <button class="dropdown-btn" id="control" (click)="isControlListOpen = !isControlListOpen; toggleDropdown('control-dropdown-container')">
+          <span>Control</span> 
+          <span class="icon is-small"><i [ngClass]="isControlListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true" class="has-text-right"></i></span>
+        </button>
+        <div id="control-dropdown-container" class="hide">
+          <ul>
+            <li>
+              <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
+                Scripts
+              </a>
+            </li>
+            <li>
+              <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
+                ACLs
+              </a>
+            </li>
+            <li>
+              <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
+            </li>
+          </ul>
+        </div>
       </li>
 
       <li>
@@ -74,24 +78,29 @@
         </a>
       </li>
       <li>
-        <a>Logs</a>
-        <ul>
-          <li>
-            <a id=" audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
-          </li>
-          <li>
-            <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
-          </li>
-          <li>
-            <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
-          </li>
-          <li>
-            <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
-          </li>
-          <li>
-            <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
-          </li>
-        </ul>
+        <button class="dropdown-btn" id="logs" (click)="isLogsListOpen = !isLogsListOpen; toggleDropdown('logs-dropdown-container');">
+          <span>Logs</span>
+          <span class="icon is-small"><i [ngClass]="isLogsListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true"></i></span>
+        </button>
+        <div id="logs-dropdown-container" class="hide">
+          <ul>
+            <li>
+              <a id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
+            </li>
+            <li>
+              <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
+            </li>
+            <li>
+              <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
+            </li>
+            <li>
+              <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
+            </li>
+            <li>
+              <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
+            </li>
+          </ul>
+        </div>
       </li>
       <li>
         <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
