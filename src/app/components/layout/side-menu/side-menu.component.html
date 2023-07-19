@@ -27,13 +27,15 @@
         </a>
       </li>
       <li>
-        <button class="dropdown-btn" id="control" (click)="isControlListOpen = !isControlListOpen; toggleDropdown('control-dropdown-container')">
-          <span>Control</span> 
-          <span class="icon is-small">
-            <i [ngClass]="isControlListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true"></i>
+        <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
+          (click)="isControlListOpen = !isControlListOpen">
+          <span class="icon is-small caretCircle">
+            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-caret-up' : 'fas fa-xs fa-caret-down'"
+              aria-hidden="true"></i>
           </span>
-        </button>
-        <div id="control-dropdown-container" class="hide">
+          <span class="p-2">Control</span>
+        </a>
+        <div id="control-dropdown-container" [hidden]="!isControlListOpen">
           <ul>
             <li>
               <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
@@ -80,13 +82,14 @@
         </a>
       </li>
       <li>
-        <button class="dropdown-btn" id="logs" (click)="isLogsListOpen = !isLogsListOpen; toggleDropdown('logs-dropdown-container');">
-          <span>Logs</span>
-          <span class="icon is-small">
-            <i [ngClass]="isLogsListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true"></i>
+        <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
+          (click)="isLogsListOpen = !isLogsListOpen">
+          <span class="icon is-small caretCircle">
+            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-caret-up' : 'fas fa-xs fa-caret-down'" aria-hidden="true"></i>
           </span>
-        </button>
-        <div id="logs-dropdown-container" class="hide">
+          <span class="p-2">Logs</span>
+        </a>
+        <div id="logs-dropdown-container" [hidden]="!isLogsListOpen">
           <ul>
             <li>
               <a id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
