@@ -37,14 +37,8 @@ export class SideMenuComponent implements OnInit {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         // handle NavigationEnd event here
-        this.isLogsListOpen = false;
-        this.isControlListOpen = false;
-        if (event.url.includes('logs')) {
-          this.isLogsListOpen = true;
-        }
-        if (event.url.includes('control-dispatcher')) {
-          this.isControlListOpen = true;
-        }
+        this.isLogsListOpen = event.url.includes('logs');
+        this.isControlListOpen = event.url.includes('control-dispatcher');
       }
     });
   }
@@ -68,18 +62,6 @@ export class SideMenuComponent implements OnInit {
         this.isServiceRunning = connectionInfo?.isServiceUp;
       });
   }
-
-
-  // public toggleDropdown(id) {
-  //   const dropdownMenuItems = <HTMLDivElement>document.getElementById(id);
-  //   if (dropdownMenuItems.classList.contains('hide')) {
-  //     dropdownMenuItems.classList.add('show');
-  //     dropdownMenuItems.classList.remove('hide');
-  //     return;
-  //   }
-  //   dropdownMenuItems.classList.remove('show');
-  //   dropdownMenuItems.classList.add('hide');
-  // }
 
   goToLink() {
     this.docService.goToLink();

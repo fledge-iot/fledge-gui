@@ -29,11 +29,11 @@
       <li>
         <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
           (click)="isControlListOpen = !isControlListOpen">
-          <span class="icon is-small caretCircle">
-            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-caret-up' : 'fas fa-xs fa-caret-down'"
+          <span>Control</span>
+          <span class="icon is-small menu-toogle-icon is-pulled-right">
+            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'"
               aria-hidden="true"></i>
           </span>
-          <span class="p-2">Control</span>
         </a>
         <div id="control-dropdown-container" [hidden]="!isControlListOpen">
           <ul>
@@ -84,10 +84,10 @@
       <li>
         <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
           (click)="isLogsListOpen = !isLogsListOpen">
-          <span class="icon is-small caretCircle">
-            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-caret-up' : 'fas fa-xs fa-caret-down'" aria-hidden="true"></i>
+          <span>Logs</span>
+          <span class="icon is-small menu-toogle-icon is-pulled-right">
+            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'" aria-hidden="true"></i>
           </span>
-          <span class="p-2">Logs</span>
         </a>
         <div id="logs-dropdown-container" [hidden]="!isLogsListOpen">
           <ul>
