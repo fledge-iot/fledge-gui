@@ -579,7 +579,7 @@ export class AddControlPipelineComponent implements OnInit {
     }
 
     if (this.unsavedChangesInFilterForm) {
-      this.filtersListComponent.update();
+      this.filtersListComponent?.update();
       this.unsavedChangesInFilterForm = false;
     }
 
