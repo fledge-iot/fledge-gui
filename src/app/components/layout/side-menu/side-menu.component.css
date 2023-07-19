@@ -36,3 +36,7 @@
 .hide {
   display: none;
 }
+
+.toggle-menu-items {
+  vertical-align: top;
+}
