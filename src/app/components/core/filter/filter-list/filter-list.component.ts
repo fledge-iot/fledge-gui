@@ -211,6 +211,7 @@ export class FilterListComponent {
   deleteFilterReference(filter: string) {
     this.deletedFilterPipeline.push(filter);
     this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
+    this.controlPipelineFilters.emit(this.filterPipeline);
     this.formStatus.emit(true);
   }
 
