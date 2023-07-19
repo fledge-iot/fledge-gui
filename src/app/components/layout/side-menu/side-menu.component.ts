@@ -60,11 +60,10 @@ export class SideMenuComponent implements OnInit {
     if (dropdownMenuItems.classList.contains('hide')) {
       dropdownMenuItems.classList.add('show');
       dropdownMenuItems.classList.remove('hide');
-      return true;
+      return;
     }
     dropdownMenuItems.classList.remove('show');
     dropdownMenuItems.classList.add('hide');
-    return false;
   }
 
   goToLink() {

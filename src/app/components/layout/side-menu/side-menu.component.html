@@ -29,7 +29,9 @@
       <li>
         <button class="dropdown-btn" id="control" (click)="isControlListOpen = !isControlListOpen; toggleDropdown('control-dropdown-container')">
           <span>Control</span> 
-          <span class="icon is-small"><i [ngClass]="isControlListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true" class="has-text-right"></i></span>
+          <span class="icon is-small">
+            <i [ngClass]="isControlListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true"></i>
+          </span>
         </button>
         <div id="control-dropdown-container" class="hide">
           <ul>
@@ -80,7 +82,9 @@
       <li>
         <button class="dropdown-btn" id="logs" (click)="isLogsListOpen = !isLogsListOpen; toggleDropdown('logs-dropdown-container');">
           <span>Logs</span>
-          <span class="icon is-small"><i [ngClass]="isLogsListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true"></i></span>
+          <span class="icon is-small">
+            <i [ngClass]="isLogsListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true"></i>
+          </span>
         </button>
         <div id="logs-dropdown-container" class="hide">
           <ul>
