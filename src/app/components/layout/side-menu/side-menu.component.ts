@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { LookupService } from '../../../microfrontend/lookup.service';
 import { Microfrontend } from '../../../microfrontend/microfrontend';
 import { DocService } from '../../../services/doc.service';
@@ -20,6 +20,8 @@ export class SideMenuComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
   microfrontends: Microfrontend[] = [];
 
+  isLogsListOpen = false;
+  isControlListOpen = false;
   isAdmin = false;
   isServiceRunning = true;
   private destroySubject: Subject<void> = new Subject();
@@ -31,7 +33,15 @@ export class SideMenuComponent implements OnInit {
     private lookupService: LookupService,
     public developerFeaturesService: DeveloperFeaturesService,
     public rolesService: RolesService
-  ) { }
+  ) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        // handle NavigationEnd event here
+        this.isLogsListOpen = event.url.includes('logs');
+        this.isControlListOpen = event.url.includes('control-dispatcher');
+      }
+    });
+  }
 
   async ngOnInit() {
     this.microfrontends = await this.lookupService.lookup();
@@ -52,7 +62,6 @@ export class SideMenuComponent implements OnInit {
         this.isServiceRunning = connectionInfo?.isServiceUp;
       });
   }
-
 
   goToLink() {
     this.docService.goToLink();

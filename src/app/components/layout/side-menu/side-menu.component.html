@@ -26,24 +26,32 @@
           Notifications
         </a>
       </li>
-
       <li>
-        <a>Control</a>
-        <ul>
-          <li>
-            <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
-              Scripts
-            </a>
-          </li>
-          <li>
-            <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
-              ACLs
-            </a>
-          </li>
-          <li>
-            <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
-          </li>
-        </ul>
+        <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
+          (click)="isControlListOpen = !isControlListOpen">
+          <span>Control</span>
+          <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isControlListOpen ? 'Collapse' : 'Expand'">
+            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'"
+              aria-hidden="true"></i>
+          </span>
+        </a>
+        <div [hidden]="!isControlListOpen">
+          <ul>
+            <li>
+              <a id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
+                Scripts
+              </a>
+            </li>
+            <li>
+              <a id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
+                ACLs
+              </a>
+            </li>
+            <li>
+              <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
+            </li>
+          </ul>
+        </div>
       </li>
 
       <li>
@@ -74,24 +82,32 @@
         </a>
       </li>
       <li>
-        <a>Logs</a>
-        <ul>
-          <li>
-            <a id=" audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
-          </li>
-          <li>
-            <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
-          </li>
-          <li>
-            <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
-          </li>
-          <li>
-            <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
-          </li>
-          <li>
-            <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
-          </li>
-        </ul>
+        <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
+          (click)="isLogsListOpen = !isLogsListOpen">
+          <span>Logs</span>
+          <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
+            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'" aria-hidden="true"></i>
+          </span>
+        </a>
+        <div [hidden]="!isLogsListOpen">
+          <ul>
+            <li>
+              <a id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
+            </li>
+            <li>
+              <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
+            </li>
+            <li>
+              <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
+            </li>
+            <li>
+              <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
+            </li>
+            <li>
+              <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
+            </li>
+          </ul>
+        </div>
       </li>
       <li>
         <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>

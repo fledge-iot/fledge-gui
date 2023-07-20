@@ -6,6 +6,14 @@
   box-shadow: 0 0 0.1em rgba(85, 85, 85, 0.5);
 }
 
+.menu-toogle-icon {
+    display:inline-flex;
+    height:1.2em;
+    width:1.2em;
+    background-color:whitesmoke;
+    border-radius:50%;
+}
+
 .disabled {
   opacity: .7;
   pointer-events: none;
