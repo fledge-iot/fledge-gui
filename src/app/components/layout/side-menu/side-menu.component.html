@@ -27,13 +27,15 @@
         </a>
       </li>
       <li>
-        <button class="dropdown-btn" id="control" (click)="isControlListOpen = !isControlListOpen; toggleDropdown('control-dropdown-container')">
-          <span>Control</span> 
-          <span class="icon is-small toggle-menu-items is-pulled-right">
-            <i [ngClass]="isControlListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true" title="Toggle Menu Item"></i>
+        <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
+          (click)="isControlListOpen = !isControlListOpen">
+          <span>Control</span>
+          <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isControlListOpen ? 'Collapse' : 'Expand'">
+            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'"
+              aria-hidden="true"></i>
           </span>
-        </button>
-        <div id="control-dropdown-container" class="hide">
+        </a>
+        <div id="control-dropdown-container" [hidden]="!isControlListOpen">
           <ul>
             <li>
               <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
@@ -80,13 +82,14 @@
         </a>
       </li>
       <li>
-        <button class="dropdown-btn" id="logs" (click)="isLogsListOpen = !isLogsListOpen; toggleDropdown('logs-dropdown-container');">
+        <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
+          (click)="isLogsListOpen = !isLogsListOpen">
           <span>Logs</span>
-          <span class="icon is-small is-pulled-right">
-            <i [ngClass]="isLogsListOpen ? 'fa fa-xs fa-angle-up' : 'fa fa-xs fa-angle-down'" aria-hidden="true"></i>
+          <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
+            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'" aria-hidden="true"></i>
           </span>
-        </button>
-        <div id="logs-dropdown-container" class="hide">
+        </a>
+        <div id="logs-dropdown-container" [hidden]="!isLogsListOpen">
           <ul>
             <li>
               <a id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { LookupService } from '../../../microfrontend/lookup.service';
 import { Microfrontend } from '../../../microfrontend/microfrontend';
 import { DocService } from '../../../services/doc.service';
@@ -27,13 +27,21 @@ export class SideMenuComponent implements OnInit {
   private destroySubject: Subject<void> = new Subject();
 
   constructor(
-    private router: Router,
+    public router: Router,
     private docService: DocService,
     private sharedService: SharedService,
     private lookupService: LookupService,
     public developerFeaturesService: DeveloperFeaturesService,
     public rolesService: RolesService
-  ) { }
+  ) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        // handle NavigationEnd event here
+        this.isLogsListOpen = event.url.includes('logs');
+        this.isControlListOpen = event.url.includes('control-dispatcher');
+      }
+    });
+  }
 
   async ngOnInit() {
     this.microfrontends = await this.lookupService.lookup();
@@ -53,17 +61,6 @@ export class SideMenuComponent implements OnInit {
       .subscribe(connectionInfo => {
         this.isServiceRunning = connectionInfo?.isServiceUp;
       });
-  }
-
-  public toggleDropdown(id) {
-    const dropdownMenuItems = <HTMLDivElement>document.getElementById(id);
-    if (dropdownMenuItems.classList.contains('hide')) {
-      dropdownMenuItems.classList.add('show');
-      dropdownMenuItems.classList.remove('hide');
-      return;
-    }
-    dropdownMenuItems.classList.remove('show');
-    dropdownMenuItems.classList.add('hide');
   }
 
   goToLink() {
