@@ -35,7 +35,7 @@
               aria-hidden="true"></i>
           </span>
         </a>
-        <div id="control-dropdown-container" [hidden]="!isControlListOpen">
+        <div [hidden]="!isControlListOpen">
           <ul>
             <li>
               <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
@@ -43,7 +43,7 @@
               </a>
             </li>
             <li>
-              <a id="control-dispatcher" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
+              <a id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
                 ACLs
               </a>
             </li>
@@ -89,7 +89,7 @@
             <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'" aria-hidden="true"></i>
           </span>
         </a>
-        <div id="logs-dropdown-container" [hidden]="!isLogsListOpen">
+        <div [hidden]="!isLogsListOpen">
           <ul>
             <li>
               <a id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
