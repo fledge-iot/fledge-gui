@@ -27,6 +27,7 @@ export class FilterListComponent {
   @Input() filterPipeline: string[] = [];
   @Input() service: string = '';
   @Input() type: string = '';
+  @Input() newAddedFilters: { filter: string, state: string }[] = [];
   @Output() formStatus = new EventEmitter<boolean>();
   @Output() controlPipelineFilters = new EventEmitter<string[]>();
 
@@ -51,24 +52,27 @@ export class FilterListComponent {
     private toastService: ToastService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!changes?.filterPipeline?.firstChange) {
-      if (changes?.filterPipeline?.currentValue) {
-        this.filterPipelineCopy = cloneDeep(changes?.filterPipeline.currentValue) // make a copy of the filter pipeline to verify the order of items in pipeline
-        this.filterPipeline.forEach(filter => {
-          this.getFilterConfiguration(filter);
-        })
-      }
+    if (changes?.filterPipeline?.currentValue.length > 0) {
+      this.filterPipelineCopy = cloneDeep(changes?.filterPipeline.currentValue) // make a copy of the filter pipeline to verify the order of items in pipeline
+      this.filterPipeline.forEach(filter => {
+        this.getFilterConfiguration(filter);
+      })
+    }
+    if (changes?.newAddedFilters?.currentValue) {
+      this.newAddedFilters.forEach(f => {
+        this.getFilterConfiguration(f.filter);
+      })
     }
   }
 
-  activeAccordion(id) {
+  activeAccordion(id: string) {
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
       const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
       const activeId = last.getAttribute('id');
       lastActiveContentBody.hidden = true;
       last.classList.remove('is-active');
-      if (id !== +activeId) {
+      if (id !== activeId) {
         const next = <HTMLElement>document.getElementById(id);
         const nextActiveContentBody = <HTMLElement>next.getElementsByClassName('card-content')[0];
         nextActiveContentBody.hidden = false;
@@ -94,22 +98,23 @@ export class FilterListComponent {
   }
 
   hasFilter(filter: string) {
-    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : `ctrl_${this.service}_${filter}`;
-    return this.filterConfiguration.has(filterName);
+    return this.filterConfiguration.has(this.getFilterName(filter));
   }
 
   getFilter(filter: string) {
-    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : `ctrl_${this.service}_${filter}`;
-    return this.filterConfiguration.get(filterName);
+    return this.filterConfiguration.get(this.getFilterName(filter));
+  }
+
+  getFilterName(filter: string) {
+    let filterName = `${this.service}_${filter}`
+    if (this.type == 'control-pipeline') {
+      filterName = this.newAddedFilters.some(f => f.filter === filter) ? filter : `ctrl_${this.service}_${filter}`
+    }
+    return filterName;
   }
 
   getFilterConfiguration(filterName: string) {
-    let catName = '';
-    if (this.type !== 'control-pipeline') {
-      catName = this.service + '_' + filterName;
-    } else {
-      catName = `ctrl_${this.service}_${filterName}`;
-    }
+    let catName = this.getFilterName(filterName);
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
         this.filterConfiguration.set(catName, { key: catName, config: data, plugin: data.plugin.value });
@@ -129,7 +134,7 @@ export class FilterListComponent {
   * @param changedConfiguration changed configuration of a selected filter
   */
   getChangedFilterConfig(changedConfiguration: any, filter: string) {
-    const filterName = this.type !== 'control-pipeline' ? this.service + '_' + filter : `ctrl_${this.service}_${filter}`;
+    const filterName = this.getFilterName(filter);
     const changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterConfigurationCopy.get(filterName));
     if (changedConfig) {
       this.changedFilterConfig.set(filterName, changedConfig);
@@ -206,6 +211,7 @@ export class FilterListComponent {
   deleteFilterReference(filter: string) {
     this.deletedFilterPipeline.push(filter);
     this.filterPipeline = this.filterPipeline.filter(f => f !== filter);
+    this.controlPipelineFilters.emit(this.filterPipeline);
     this.formStatus.emit(true);
   }
 
