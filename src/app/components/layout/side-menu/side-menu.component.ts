@@ -27,7 +27,7 @@ export class SideMenuComponent implements OnInit {
   private destroySubject: Subject<void> = new Subject();
 
   constructor(
-    public router: Router,
+    private router: Router,
     private docService: DocService,
     private sharedService: SharedService,
     private lookupService: LookupService,
