@@ -166,7 +166,7 @@
               <div class="field">
                 <div>
                   <app-filter-list *ngIf="filterPipeline.length > 0" #filtersListComponent [service]="pipelineName"
-                    [type]="'control-pipeline'" [filterPipeline]="filterPipeline"
+                    [from]="'control-pipeline'" [filterPipeline]="filterPipeline"
                     (controlPipelineFilters)="updateFilterPipelineReference($event)"
                     (formStatus)="filterFormStatus($event)" [newAddedFilters]="newAddedFilters"></app-filter-list>
                 </div>

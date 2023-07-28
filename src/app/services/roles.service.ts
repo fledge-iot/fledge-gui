@@ -24,6 +24,15 @@ export class RolesService {
     return [appRoles.admin, appRoles.control, appRoles.anonymous].includes(roleId);
   }
 
+  editPermissionBaseOnPageAccess(fromPage: string) {
+    if (fromPage == 'control-pipeline' && this.hasControlAccess()) {
+      return true;
+    } else if (fromPage !== 'control-pipeline' && this.hasEditPermissions()) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * To check if user have data_view role
    * @returns true|false based on user role
