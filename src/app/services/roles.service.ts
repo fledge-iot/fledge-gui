@@ -19,6 +19,11 @@ export class RolesService {
     return [appRoles.admin, appRoles.user, appRoles.control, appRoles.anonymous].includes(roleId);
   }
 
+  public hasControlAccess(): boolean {
+    const roleId = Number(sessionStorage.getItem('roleId'));
+    return [appRoles.admin, appRoles.control, appRoles.anonymous].includes(roleId);
+  }
+
   /**
    * To check if user have data_view role
    * @returns true|false based on user role

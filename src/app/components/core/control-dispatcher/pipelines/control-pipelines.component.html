@@ -8,7 +8,7 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService?.hasEditPermissions()" class="fix-pad button is-light" (click)="addControlPipeline()">
+      <a *ngIf="rolesService?.hasControlAccess()" class="fix-pad button is-light" (click)="addControlPipeline()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
@@ -37,7 +37,7 @@
                 <tr>
                   <th class="align-content">Enabled</th>
                   <th class="align-content">Name</th>
-                  
+
                   <th class="align-content">Source</th>
                   <th></th>
                   <th class="align-content">Destination</th>
@@ -51,14 +51,19 @@
                 <tr *ngFor="let pipeline of pipelines; let i = index;"
                   [ngClass]="{'fade': (pipeline.enabled == 'false')}">
                   <td class="align-content">
-                    <input class="checkbox" type="checkbox" [checked]="pipeline.enabled"
-                    (click)="onCheckboxClicked($event, pipeline.id)">
+                    <ng-container *ngIf="rolesService.hasControlAccess(); else staticText">
+                      <input class="checkbox" type="checkbox" [checked]="pipeline.enabled"
+                        (click)="onCheckboxClicked($event, pipeline.id)">
+                    </ng-container>
+                    <ng-template #staticText>
+                      <input disabled class="checkbox" type="checkbox" [checked]="pipeline.enabled">
+                    </ng-template>
                   </td>
                   <td class="align-content">
                     <a class="button is-text pipeline-name"
                       [routerLink]="['/control-dispatcher/pipelines', pipeline?.id]">{{pipeline.name}}</a>
                   </td>
-                             
+
                   <td class="align-content">
                     <span class="is-small">{{pipeline.source.type}}</span>
                     <span class="help src-dest-name">{{pipeline.source.name ? pipeline.source.name : '*'}}</span>
@@ -66,15 +71,17 @@
                   <td></td>
                   <td class="align-content">
                     <span class="is-small">{{pipeline.destination.type}}</span>
-                    <span class="help src-dest-name">{{pipeline.destination.name ? pipeline.destination.name : '*'}}</span>
+                    <span class="help src-dest-name">{{pipeline.destination.name ? pipeline.destination.name :
+                      '*'}}</span>
                   </td>
                   <td></td>
                   <td class="align-content" style="font-size: 0.9rem;">
-                  {{getFiltersName(pipeline.filters, pipeline.name).join(', ')}}
+                    {{getFiltersName(pipeline.filters, pipeline.name).join(', ')}}
                   </td>
-                  <td><span class="tag is-rounded">{{pipeline.execution}}</span></td> 
+                  <td><span class="tag is-rounded">{{pipeline.execution}}</span></td>
                   <td>
-                    <div *ngIf="rolesService.hasEditPermissions()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
+                    <div *ngIf="rolesService.hasControlAccess()" id="dropdown-{{i}}"
+                      class="dropdown is-left is-hoverable">
                       <div class="dropdown-trigger">
                         <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
                           <span class="icon">
