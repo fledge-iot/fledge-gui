@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, NgForm } from '@angular/forms';
-import { RolesService, SharedService } from '../../../../../../services';
+import { RolesService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-delay',
@@ -17,7 +17,6 @@ export class AddDelayComponent implements OnInit {
 
   constructor(
     public control: NgForm,
-    public sharedService: SharedService,
     public rolesService: RolesService) { }
 
   ngOnChanges() {
