@@ -2,11 +2,11 @@
   <div class="column">
     <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
       <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="'list-item-' + i"
-        cdkDrag [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.editPermissionBaseOnPageAccess(from)">
+        cdkDrag [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditPermissionsOnPage(from)">
         <header class="card-header" cdkDragHandle
-          [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.editPermissionBaseOnPageAccess(type) }">
+          [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissionsOnPage(type) }">
           <p class="card-header-title">
-            <ng-container *ngIf="filterPipeline.length > 1 && rolesService.editPermissionBaseOnPageAccess(from)">
+            <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissionsOnPage(from)">
               <i class="fa fa-xs fa-bars"></i>&nbsp;
             </ng-container>
             {{filter}}
@@ -33,7 +33,7 @@
                   <i class="far fa-question-circle"></i>
                 </span>
               </div>
-              <div class="field is-pulled-right" *ngIf="rolesService.editPermissionBaseOnPageAccess(from)">
+              <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissionsOnPage(from)">
                 <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-hovered" data-tooltip="Remove"
                   (click)="deleteFilterReference(filter)">
                   <i class="fa fa-trash-alt" aria-hidden="true"></i>

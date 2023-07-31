@@ -1,5 +1,5 @@
 <div class="view-content columns">
-  <ng-container *ngIf="rolesService?.editPermissionBaseOnPageAccess(from); else staticView">
+  <ng-container *ngIf="rolesService?.hasEditPermissionsOnPage(from); else staticView">
     <div class="column">
       <ng-container *ngFor="let configuration of configurations$ | async">
         <div [formGroup]="form" novalidate>

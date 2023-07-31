@@ -24,7 +24,7 @@ export class RolesService {
     return [appRoles.admin, appRoles.control, appRoles.anonymous].includes(roleId);
   }
 
-  editPermissionBaseOnPageAccess(page: string) {
+  hasEditPermissionsOnPage(page: string) {
     if (page == 'control-pipeline') {
       return this.hasControlAccess();
     } else {
