@@ -2,11 +2,11 @@
   <div class="column">
     <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
       <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="'list-item-' + i"
-        cdkDrag [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditPermissions()">
+        cdkDrag [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditPermissionsOnPage(from)">
         <header class="card-header" cdkDragHandle
-          [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissions() }">
+          [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissionsOnPage(type) }">
           <p class="card-header-title">
-            <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissions()">
+            <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissionsOnPage(from)">
               <i class="fa fa-xs fa-bars"></i>&nbsp;
             </ng-container>
             {{filter}}
@@ -20,7 +20,7 @@
         <div class="card-content" hidden>
           <ng-container *ngIf="hasFilter(filter)">
             <div class="field">
-              <app-configuration-group #filterConfigComponent [category]="getFilter(filter)" [from]="'filter-modal'"
+              <app-configuration-group #filterConfigComponent [category]="getFilter(filter)" [from]="from"
                 (changedConfigEvent)="getChangedFilterConfig($event, filter)"
                 (formStatusEvent)="validFilterConfigForm = $event">
               </app-configuration-group>
@@ -33,7 +33,7 @@
                   <i class="far fa-question-circle"></i>
                 </span>
               </div>
-              <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
+              <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissionsOnPage(from)">
                 <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-hovered" data-tooltip="Remove"
                   (click)="deleteFilterReference(filter)">
                   <i class="fa fa-trash-alt" aria-hidden="true"></i>

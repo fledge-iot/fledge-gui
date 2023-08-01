@@ -26,7 +26,7 @@ export class FilterListComponent {
 
   @Input() filterPipeline: string[] = [];
   @Input() service: string = '';
-  @Input() type: string = '';
+  @Input() from: string = '';
   @Input() newAddedFilters: { filter: string, state: string }[] = [];
   @Output() formStatus = new EventEmitter<boolean>();
   @Output() controlPipelineFilters = new EventEmitter<string[]>();
@@ -107,7 +107,7 @@ export class FilterListComponent {
 
   getFilterName(filter: string) {
     let filterName = `${this.service}_${filter}`
-    if (this.type == 'control-pipeline') {
+    if (this.from == 'control-pipeline') {
       filterName = this.newAddedFilters.some(f => f.filter === filter) ? filter : `ctrl_${this.service}_${filter}`
     }
     return filterName;
@@ -162,7 +162,7 @@ export class FilterListComponent {
       this.updateConfiguration(this.changedFilterConfig, 'filter-config');
     }
 
-    if (this.type !== 'control-pipeline') {
+    if (this.from !== 'control-pipeline') {
       if (this.checkPipelineItemsOrder()) {
         this.updateFilterPipeline(this.filterPipeline);
       }

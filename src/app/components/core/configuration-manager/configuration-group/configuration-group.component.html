@@ -21,7 +21,7 @@
             </li>
             <ng-container *ngIf="from !== 'notification'">
               <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
-                *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissions()">
+                *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
                 <h6 class="is-6 is-small-font">
                   <a (click)="selectedGroup = 'developer'">Developer</a>
                 </h6>

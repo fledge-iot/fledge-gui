@@ -13,8 +13,8 @@
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
 
-      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin" data-tooltip="Help"
-        (click)="goToLink('control-dispatcher-service')">
+      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin"
+        data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
         <i class="far fa-question-circle"></i>
       </span>
 
@@ -70,7 +70,7 @@
             </table>
           </td>
           <td>
-            <div *ngIf="rolesService.hasEditPermissions()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
+            <div *ngIf="sharedService.checkAuth()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
               <div class="dropdown-trigger">
                 <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
                   <span class="icon">
@@ -80,7 +80,7 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                 <div class="dropdown-content">
-                  <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item"
+                  <a *ngIf="sharedService.checkAuth()" class="dropdown-item"
                     (click)="setACL(acl);openModal('confirmation-dialog')">
                     <span>Delete</span>
                   </a>

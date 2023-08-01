@@ -4,7 +4,7 @@
   </div>
   <div class="field-body">
     <div class="field is-narrow">
-      <div *ngIf="sharedService.checkAuth();else staticServiceDiv" class="control">
+      <div *ngIf="rolesService.hasControlAccess();else staticServiceDiv" class="control">
         <div #serviceDropDown id="service-dropdown-{{controlIndex}}" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(serviceDropDown.id)" class="button is-small" aria-haspopup="true"
@@ -27,8 +27,8 @@
       <ng-template #staticServiceDiv>
         <div class="control">
           <input name="service" class="input is-small" type="text" [ngModel]="config.service?config.service: 'None'"
-            [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7': !config.service}"
-            [readonly]="!sharedService.checkAuth()">
+            [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7': !config.service}"
+            [readonly]="!rolesService.hasControlAccess()">
         </div>
       </ng-template>
     </div>
