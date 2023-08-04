@@ -438,7 +438,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-  public plotReadingsGraph(assetCode, limit = null, time = null, previous = 0) {
+  public plotReadingsGraph(assetCode, limit = null, time = null, previous:any = 0, mostrecent = false) {
     this.zoomConfig.isZoomed = false;
     if (assetCode === '') {
       return false;
@@ -453,7 +453,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     let optedAssets = this.additionalAssets;
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
     this.limit = limit;
-    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous)
+    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous, mostrecent)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
@@ -739,7 +739,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetChartType = 'line';
     this.assetChartOptions = {
       elements: {
-        point: { radius: this.isLatestReadings ? 2 : 0 }
+        point: { radius: this.isLatestReadings ? 6 : 6 }
       },
       animation: false,
       maintainAspectRatio: false,
@@ -759,7 +759,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           ticks: {
             autoSkip: true,
           },
-          min: this.graphStartTimestamp,
+          // min: this.graphStartTimestamp,
           bounds: 'ticks'
         }
       },
@@ -935,20 +935,20 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   showBackwardReadingsGraph() {
     this.backwardReadingCounter++;
-    this.showReadingsGraph();
+    this.showReadingsGraph("backward");
   }
 
   showForwardReadingsGraph() {
     this.backwardReadingCounter--;
-    this.showReadingsGraph();
+    this.showReadingsGraph("forward");
   }
 
-  showReadingsGraph() {
+  showReadingsGraph(from) {
     let currentTime = Date.now();
     let timeDifference = Math.floor((currentTime - this.pauseTime)/1000);
     let previous = this.backwardReadingCounter*this.optedTime;
     if(this.endTime === "last reading"){
-      this.plotReadingsGraphFromLatestReading(this.assetCode, previous);
+      this.plotReadingsGraphFromLatestReading(this.assetCode, previous, from);
     }
     else{
       previous += timeDifference;
@@ -1023,20 +1023,36 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  plotReadingsGraphFromLatestReading(assetCode, previous = 0){
-    this.assetService.getLatestReadings(assetCode).subscribe((data: any) => {
-      let latestReadingTimestamp = this.dateFormatter.transform(data[0].timestamp, 'YYYY-MM-DD HH:mm:ss.SSS');
-      let latestReadingDate = new Date(latestReadingTimestamp);
-      let timeDifference = Math.floor((Date.now() - latestReadingDate.getTime())/1000);
-      previous += timeDifference;
-      // show only single asset graph if endTime is last reading
-      this.additionalAssets = [];
-      this.additionalAssets.push(assetCode);
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
-    },
-      error => {
-        console.log('error in response', error);
-      });
+  plotReadingsGraphFromLatestReading(assetCode, previous = 0, from?){
+    // this.assetService.getLatestReadings(assetCode).subscribe((data: any) => {
+    //   let latestReadingTimestamp = this.dateFormatter.transform(data[0].timestamp, 'YYYY-MM-DD HH:mm:ss.SSS');
+    //   let latestReadingDate = new Date(latestReadingTimestamp);
+    //   let timeDifference = Math.floor((Date.now() - latestReadingDate.getTime())/1000);
+    //   previous += timeDifference;
+    //   // show only single asset graph if endTime is last reading
+    //   this.additionalAssets = [];
+    //   this.additionalAssets.push(assetCode);
+    // },
+    // error => {
+    //   console.log('error in response', error);
+    // });
+    console.log(assetCode, previous);
+    let mostrecent= true;
+    let prev = "0";
+    if(this.infoTextTimestamps.end !== ""){
+      let exp = new Date(this.infoTextTimestamps.end)
+      console.log(this.infoTextTimestamps.end);
+      let exp2;
+      if(from=="backward"){
+        exp2 = new Date(exp.valueOf() - this.optedTime*1000 - 330*60000);
+      }
+      else{
+        exp2 = new Date(exp.valueOf() + this.optedTime*1000 - 330*60000);
+      }
+      console.log(exp2);
+      prev = this.dateFormatter.transform(exp2.toUTCString(), 'YYYY-MM-DD HH:mm:ss.SSS')
+    }
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, prev, mostrecent);
   }
 
   public ngOnDestroy(): void {
