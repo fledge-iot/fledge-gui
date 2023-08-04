@@ -2,7 +2,6 @@ import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, El
 import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
-import { Chart } from 'chart.js';
 import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
 import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { KeyValue } from '@angular/common';
@@ -58,7 +57,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public backwardReadingCounter: number = 0;
   public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
   public infoTextTimestamps = {start : "", end: ""};
-  public graphStartTimestamp: Date;
+  public graphStartTimestamp: string;
   public zoomConfig = {minZoomValue: 1, isZoomed: false};
   public endTime = "now";
 
@@ -991,12 +990,15 @@ export class ReadingsGraphComponent implements OnDestroy {
     let ts_length = this.timestamps.length;
     if (ts_length != 0) {
       let currentTime = Date.now();
+      let graphStartingTimestamp: Date;
       if (!this.isAlive) {
         let timeDifference = Math.floor(currentTime - this.pauseTime);
-        this.graphStartTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+        graphStartingTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+        this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
         return;
       }
-      this.graphStartTimestamp = new Date(currentTime - optedTime * 1000);
+      graphStartingTimestamp = new Date(currentTime - optedTime * 1000);
+      this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
     }
   }
 
@@ -1005,7 +1007,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.infoTextTimestamps.end = "";
     let ts_length = this.timestamps.length;
     if (ts_length != 0) {
-      this.infoTextTimestamps.start = this.dateFormatter.transform(this.graphStartTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+      this.infoTextTimestamps.start = this.graphStartTimestamp;
       this.infoTextTimestamps.end = this.dateFormatter.transform(this.timestamps[ts_length - 1], 'YYYY-MM-DD HH:mm:ss');
     }
   }

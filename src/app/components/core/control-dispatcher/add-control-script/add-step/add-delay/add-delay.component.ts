@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, NgForm } from '@angular/forms';
-import { SharedService } from '../../../../../../services';
+import { RolesService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-delay',
@@ -15,7 +15,9 @@ export class AddDelayComponent implements OnInit {
   @Input() step; // type of step
   @Input() update = false;
 
-  constructor(public control: NgForm, public sharedService: SharedService) { }
+  constructor(
+    public control: NgForm,
+    public rolesService: RolesService) { }
 
   ngOnChanges() {
     this.config = this.control.value['steps'][`step-${this.controlIndex}`]['delay'];

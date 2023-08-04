@@ -1,12 +1,13 @@
 <div class="view-content columns">
-  <ng-container *ngIf="rolesService?.hasEditPermissions(); else staticView">
+  <ng-container *ngIf="rolesService?.hasEditPermissionsOnPage(from); else staticView">
     <div class="column">
       <ng-container *ngFor="let configuration of configurations$ | async">
         <div [formGroup]="form" novalidate>
           <div class="config-div" *ngIf="configuration.readonly != 'true'">
-            <div class="field" [ngClass]="{'is-horizontal': from !== 'filter-modal'}">
-              <div class="field-label has-text-left" [ngClass]="{'is-margin': from === 'filter-modal'}">
-                <label class="label tooltip has-tooltip-multiline config-label is-small-font" [ngClass]="from === 'filter-modal' ? 'has-tooltip-top has-tooltip-arrow' : 'has-tooltip-right has-tooltip-arrow'"
+            <div class="field" [ngClass]="{'is-horizontal': from !== 'control-pipeline'}">
+              <div class="field-label has-text-left" [ngClass]="{'is-margin': from === 'control-pipeline'}">
+                <label class="label tooltip has-tooltip-multiline config-label is-small-font"
+                  [ngClass]="from === 'control-pipeline' ? 'has-tooltip-top has-tooltip-arrow' : 'has-tooltip-right has-tooltip-arrow'"
                   [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
                   {{configuration.label}}
                 </label>

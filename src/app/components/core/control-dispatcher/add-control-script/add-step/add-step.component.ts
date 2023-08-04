@@ -4,7 +4,7 @@ import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
 import { CustomValidator } from '../../../../../directives/custom-validator';
-import { AlertService, ProgressBarService, SharedService } from '../../../../../services';
+import { AlertService, ProgressBarService, RolesService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 
 @Component({
@@ -29,7 +29,7 @@ export class AddStepComponent implements OnInit {
     private alertService: AlertService,
     private controlService: ControlDispatcherService,
     private ngProgress: ProgressBarService,
-    public sharedService: SharedService) {
+    public rolesService: RolesService) {
     this.route.params.subscribe(params => {
       if (params['name']) {
         this.update = true;

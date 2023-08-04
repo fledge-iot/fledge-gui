@@ -18,7 +18,8 @@
     <div class="card-content step-content">
       <form #scriptForm="ngForm">
         <span (click)="goToLink('automation-scripts')"
-          class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+          data-tooltip="Help">
           <i class="far fa-question-circle"></i>
         </span>
         <div class="column is-four-fifths">
@@ -32,7 +33,7 @@
                   <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
                     [(ngModel)]="controlScript.name" title="No single quotes and double quotes!"
                     [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
-                    [ngClass]="{'is-static': editMode, 'is-small':sharedService.checkAuth() && !editMode}"
+                    [ngClass]="{'is-static': editMode, 'is-small':rolesService.hasControlAccess() && !editMode}"
                     [readonly]="editMode">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
@@ -58,7 +59,7 @@
               <label class="label">ACL</label>
             </div>
             <div class="field-body">
-              <div class="field" *ngIf="sharedService.checkAuth();else staticACLDiv">
+              <div class="field" *ngIf="rolesService.hasControlAccess();else staticACLDiv">
                 <div class="control">
                   <div id="acl-dropdown" class="dropdown is-left">
                     <div class="dropdown-trigger">
@@ -83,15 +84,15 @@
                 <div class="field">
                   <div class="control">
                     <input name="acl" class="input" type="text" [value]="selectedACL ? selectedACL : 'None'"
-                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedACL}"
-                      [readonly]="!sharedService.checkAuth()">
+                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedACL}"
+                      [readonly]="!rolesService.hasControlAccess()">
                   </div>
                 </div>
               </ng-template>
             </div>
           </div>
         </div>
-        <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths">
+        <div *ngIf="rolesService.hasControlAccess()" class="column is-four-fifths">
           <div class="columns">
             <div class="column is-2"></div>
             <div class="column" *ngIf="editMode">

@@ -2,13 +2,12 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { delay, map } from 'rxjs/operators';
 import { CustomValidator } from '../../../../../directives/custom-validator';
 import {
   AlertService, AssetsService,
   ControlPipelinesService,
-  FileUploaderService,
   NotificationsService, ProgressBarService,
   ResponseHandler,
   RolesService,
@@ -43,7 +42,6 @@ export interface Destination {
   name: string
 }
 
-
 @Component({
   selector: 'app-add-control-pipeline',
   templateUrl: './add-control-pipeline.component.html',
@@ -75,6 +73,8 @@ export class AddControlPipelineComponent implements OnInit {
   unsavedChangesInFilterForm = false;
 
   controlPipeline: ControlPipeline;
+  // newly added filter List
+  newAddedFilters: { filter: string, state: string }[] = [];
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -91,7 +91,6 @@ export class AddControlPipelineComponent implements OnInit {
     private controlService: ControlDispatcherService,
     public notificationService: NotificationsService,
     private docService: DocService,
-    private fileUploaderService: FileUploaderService,
     private router: Router,
     private toast: ToastService) { }
 
@@ -149,7 +148,7 @@ export class AddControlPipelineComponent implements OnInit {
       });
   }
 
-  navigateOnCPList() {
+  navigateToCPList() {
     if (this.unsavedChangesInFilterForm) {
       this.showConfirmationDialog();
       return;
@@ -222,17 +221,18 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   addNewFitlerInPipeline(data: any) {
-    if (!isEmpty(data)) {
-      this.filterPipeline.push(data?.filter);
-      if (data?.files.length > 0) {
-        const filterName = data?.filter;
-        this.uploadScript(filterName, data?.files);
-      }
-      this.unsavedChangesInFilterForm = true;
-    }
-
     this.isAddFilterWizard = false;
     this.addFilterClicked = false;
+    if (!isEmpty(data)) {
+      // Add small delay to reflect configuration changes
+      of(data).pipe(delay(1000)).subscribe(() => {
+        const newFilter = { filter: data.filter, state: 'new' };
+        this.newAddedFilters = [...this.newAddedFilters, newFilter];
+        this.filterPipeline.push(data.filter);
+        this.unsavedChangesInFilterForm = true;
+        this.cdRef.detectChanges();
+      });
+    }
   }
 
   updateFilterPipelineReference(filters: []) {
@@ -535,15 +535,6 @@ export class AddControlPipelineComponent implements OnInit {
       });
   }
 
-  /**
-  * To upload script files of a configuration property
-  * @param categoryName name of the configuration category
-  * @param files : Scripts array to uplaod
-  */
-  public uploadScript(categoryName: string, files: any[]) {
-    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-  }
-
   checkIfSourceDestSame(source, destination) {
     if (this.selectedSourceType.name === this.selectedDestinationType.name && source.name === destination.name) {
       return true;
@@ -588,7 +579,7 @@ export class AddControlPipelineComponent implements OnInit {
     }
 
     if (this.unsavedChangesInFilterForm) {
-      this.filtersListComponent.update();
+      this.filtersListComponent?.update();
       this.unsavedChangesInFilterForm = false;
     }
 
@@ -596,7 +587,7 @@ export class AddControlPipelineComponent implements OnInit {
       if (this.checkControlPipelineChange()) {
         this.updateControlPipeline(payload);
       }
-      this.router.navigate(['control-dispatcher/pipelines']);
+      this.navigateOnControlPipelineListPage();
       return;
     }
 
@@ -607,9 +598,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.alertService.success(`Control Pipeline ${payload['name']} created successfully.`);
         this.pipelineForm.form.markAsUntouched();
         this.pipelineForm.form.markAsPristine();
-        setTimeout(() => {
-          this.router.navigate(['control-dispatcher/pipelines']);
-        }, 1000);
+        this.navigateOnControlPipelineListPage();
       }, error => {
         this.ngProgress.done();
         if (error.status === 0) {
@@ -618,6 +607,13 @@ export class AddControlPipelineComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  navigateOnControlPipelineListPage() {
+    // small delay to effect backend changes before moving to list page 
+    setTimeout(() => {
+      this.router.navigate(['control-dispatcher/pipelines']);
+    }, 1000);
   }
 
   goToLink(pluginInfo) {
@@ -640,10 +636,10 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
         this.pipelineName = payload.name;
-        this.router.navigate(['control-dispatcher/pipelines']);
-        this.toast.success(data.message)
+        this.toast.success(data.message);
         /** request completed */
         this.ngProgress.done();
+        this.navigateOnControlPipelineListPage();
       }, error => {
         /** request completed */
         this.ngProgress.done();

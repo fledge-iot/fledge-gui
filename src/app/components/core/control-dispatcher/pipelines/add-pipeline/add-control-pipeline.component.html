@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a (click)="navigateOnCPList()">Control Pipelines</a></li>
+        <li><a (click)="navigateToCPList()">Control Pipelines</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">
             {{ editMode ? pipelineName : 'Add' }}
@@ -34,8 +34,8 @@
                   <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
                     [(ngModel)]="pipelineName" title="No single quotes and double quotes!"
                     [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
-                    [ngClass]="{'is-small':rolesService.hasEditPermissions(), 'is-static static-field':!rolesService.hasEditPermissions()}"
-                    [readonly]="!rolesService.hasEditPermissions()">
+                    [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field':!rolesService.hasControlAccess()}"
+                    [readonly]="!rolesService.hasControlAccess()">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
                   <div *ngIf="name.errors?.['required']">
@@ -50,7 +50,7 @@
               <label class="label label-name">Execution</label>
             </div>
             <div class="field-body">
-              <div class="field" *ngIf="rolesService.hasEditPermissions();else staticExecutionDiv">
+              <div class="field" *ngIf="rolesService.hasControlAccess();else staticExecutionDiv">
                 <div class="control">
                   <div id="execution-dropdown" class="dropdown is-left">
                     <div class="dropdown-trigger">
@@ -78,8 +78,8 @@
                   <div class="control">
                     <input name="execution" class="input" type="text"
                       [value]="selectedExecution ? selectedExecution : 'Select Execution'"
-                      [ngClass]="{'is-static static-field':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedExecution}"
-                      [readonly]="!rolesService.hasEditPermissions()">
+                      [ngClass]="{'is-static static-field':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedExecution}"
+                      [readonly]="!rolesService.hasControlAccess()">
                   </div>
                 </div>
               </ng-template>
@@ -104,7 +104,7 @@
                               </div>
                               <div class="field-body">
                                 <div class="field">
-                                  <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceType">
+                                  <div class="control" *ngIf="rolesService.hasControlAccess(); else staticSourceType">
                                     <ng-select [clearable]="false" placeholder="Select Source Type"
                                       [items]="sourceTypeList" [multiple]="false" bindLabel="name"
                                       (change)="selectValue($event, 'sourceType')" [ngModel]="selectedSourceType.name"
@@ -114,8 +114,8 @@
                                   <ng-template #staticSourceType>
                                     <input name="sourceType" class="input" type="text"
                                       [value]="selectedSourceType.name ? selectedSourceType.name : 'Select Source Type'"
-                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedSourceType.name}"
-                                      [readonly]="!rolesService.hasEditPermissions()">
+                                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedSourceType.name}"
+                                      [readonly]="!rolesService.hasControlAccess()">
                                   </ng-template>
                                 </div>
                               </div>
@@ -128,7 +128,7 @@
                               </div>
                               <div class="field-body">
                                 <div class="field">
-                                  <div class="control" *ngIf="rolesService.hasEditPermissions(); else staticSourceName">
+                                  <div class="control" *ngIf="rolesService.hasControlAccess(); else staticSourceName">
                                     <ng-select [clearable]="false" placeholder="Select Source" [items]="sourceNameList"
                                       [multiple]="false" bindLabel="name" groupBy="groupbyType"
                                       (change)="selectValue($event.name, 'sourceName')" [ngModel]="selectedSourceName"
@@ -141,8 +141,8 @@
                                   <ng-template #staticSourceName>
                                     <input name="sourceName" class="input" type="text"
                                       [value]="selectedSourceName ? selectedSourceName : 'Select Source Name'"
-                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedSourceName}"
-                                      [readonly]="!rolesService.hasEditPermissions()">
+                                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedSourceName}"
+                                      [readonly]="!rolesService.hasControlAccess()">
                                   </ng-template>
                                 </div>
                               </div>
@@ -158,7 +158,32 @@
               </div>
             </div>
           </div>
-
+          <div class="field is-horizontal">
+            <div class="field-label has-text-left">
+              <label class="label label-name">Filters</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div>
+                  <app-filter-list *ngIf="filterPipeline.length > 0" #filtersListComponent [service]="pipelineName"
+                    [from]="'control-pipeline'" [filterPipeline]="filterPipeline"
+                    (controlPipelineFilters)="updateFilterPipelineReference($event)"
+                    (formStatus)="filterFormStatus($event)" [newAddedFilters]="newAddedFilters"></app-filter-list>
+                </div>
+                <div [ngClass]="{'add-filter-div': name.invalid}">
+                  <a [ngClass]="{'disabled-link': name.invalid}"
+                    *ngIf="filterPipeline.length > 0 && rolesService.hasControlAccess()"
+                    (click)="openAddFilterModal(true)" type="button" class="button is-small is-ghost px-0">Add new
+                    filter</a>
+                  <a [ngClass]="{'disabled-link': name.invalid}"
+                    *ngIf="filterPipeline.length === 0 && rolesService.hasControlAccess()"
+                    (click)="openAddFilterModal(true, name.value)" type="button"
+                    class="button is-small is-ghost px-0">Add
+                    filter</a>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="field is-horizontal">
             <div class="field-label">
               <label class="label label-name">Destination</label>
@@ -178,7 +203,7 @@
                               <div class="field-body">
                                 <div class="field">
                                   <div class="control"
-                                    *ngIf="rolesService.hasEditPermissions(); else staticDestinationType">
+                                    *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
                                     <ng-select [clearable]="false" placeholder="Select Destination Type"
                                       [items]="destinationTypeList" [multiple]="false" bindLabel="name"
                                       (change)="selectValue($event, 'destinationType')"
@@ -188,8 +213,8 @@
                                   <ng-template #staticDestinationType>
                                     <input name="destinationType" class="input" type="text"
                                       [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
-                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
-                                      [readonly]="!rolesService.hasEditPermissions()">
+                                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
+                                      [readonly]="!rolesService.hasControlAccess()">
                                   </ng-template>
                                 </div>
                               </div>
@@ -202,7 +227,7 @@
                               <div class="field-body">
                                 <div class="field">
                                   <div class="control"
-                                    *ngIf="rolesService.hasEditPermissions(); else staticDestinationName">
+                                    *ngIf="rolesService.hasControlAccess(); else staticDestinationName">
                                     <ng-select [clearable]="false" placeholder="Select Destination"
                                       [items]="destinationNameList" [multiple]="false" bindLabel="name"
                                       groupBy="groupbyType" (change)="selectValue($event.name, 'destinationName')"
@@ -216,8 +241,8 @@
                                   <ng-template #staticDestinationName>
                                     <input name="destinationName" class="input" type="text"
                                       [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
-                                      [ngClass]="{'is-static':!rolesService.hasEditPermissions(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
-                                      [readonly]="!rolesService.hasEditPermissions()">
+                                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
+                                      [readonly]="!rolesService.hasControlAccess()">
                                   </ng-template>
                                 </div>
                               </div>
@@ -233,44 +258,19 @@
               </div>
             </div>
           </div>
-
-          <div class="field is-horizontal">
-            <div class="field-label has-text-left">
-              <label class="label label-name">Filters</label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <div class="view-content columns filter-row">
-                  <app-filter-list #filtersListComponent [service]="pipelineName" [type]="'control-pipeline'"
-                    [filterPipeline]="filterPipeline" (controlPipelineFilters)="updateFilterPipelineReference($event)"
-                    (formStatus)="filterFormStatus($event)"></app-filter-list>
-                </div>
-                <div [ngClass]="{'add-filter-div': name.invalid}">
-                  <a type="button" [ngClass]="{'disabled-link': name.invalid}"
-                    *ngIf="filterPipeline.length > 0 && rolesService.hasEditPermissions()"
-                    (click)="openAddFilterModal(true)" class="button is-small is-ghost add-filter px-0">Add new
-                    filter</a>
-                  <a [ngClass]="{'disabled-link': name.invalid}"
-                    *ngIf="filterPipeline.length === 0 && rolesService.hasEditPermissions()"
-                    (click)="openAddFilterModal(true, name.value)" class="button is-small is-ghost add-filter px-0">Add
-                    filter</a>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="field is-horizontal">
             <div class="field-label has-text-left">
               <label class="label label-name">Enabled</label>
             </div>
             <div class="field-body">
               <div class="field">
-                <input class="checkbox" [disabled]="!rolesService.hasEditPermissions()" type="checkbox"
+                <input class="checkbox" [disabled]="!rolesService.hasControlAccess()" type="checkbox"
                   [checked]="isPipelineEnabled" (click)="onCheckboxClicked($event)">
               </div>
             </div>
           </div>
         </div>
-        <div *ngIf="rolesService.hasEditPermissions()" class="column footer-padding">
+        <div *ngIf="rolesService.hasControlAccess()" class="column footer-padding">
           <div class="columns">
             <div class="column is-2"></div>
             <div class="column" *ngIf="editMode">
@@ -305,14 +305,14 @@
 <app-confirmation-dialog id="confirmation-dialog">
   <header class="modal-card-head">
     <p class="modal-card-title is-size-6">Delete</p>
-    <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
   </header>
   <section class="modal-card-body">
     Are you sure, you want to delete the control pipeline <b>{{pipelineName}}</b>?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" type="button" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deletePipeline(pipelineID)">Delete</button>
+    <button class="button is-small is-danger" type="button" (click)="deletePipeline(pipelineID)">Delete</button>
   </footer>
 </app-confirmation-dialog>
 <app-filter-alert *ngIf="unsavedChangesInFilterForm" (discardChanges)="discardUnsavedChanges()"
