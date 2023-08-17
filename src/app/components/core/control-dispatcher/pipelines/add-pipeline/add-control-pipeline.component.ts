@@ -107,7 +107,7 @@ export class AddControlPipelineComponent implements OnInit {
       } else {
         this.selectedExecution = 'Shared';
         this.selectedSourceType = { cpsid: 1, name: "Any" };
-        this.selectedDestinationType = { cpdid: 4, name: "Broadcast" };
+        this.selectedDestinationType = { cpdid: 5, name: "Broadcast" };
       }
     });
 
@@ -344,7 +344,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.selectedDestinationType = value === 'Select Destination Type' ? '' : value;
         this.getDestinationNameList();
         // mark form invalid, if Source/Destination Name is not selected yet
-        if (this.selectedDestinationType.name !== 'Broadcast') {
+         if (!['Any', 'Broadcast'].includes(this.selectedDestinationType.name)) {
           this.pipelineForm.form.setErrors({ 'invalid': true });
         }
         break;
@@ -383,6 +383,7 @@ export class AddControlPipelineComponent implements OnInit {
 
   getDestinationNameList() {
     switch (this.selectedDestinationType.name) {
+      case 'Any':
       case 'Broadcast':
         this.selectedDestinationName = null;
         break;
@@ -536,7 +537,10 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   checkIfSourceDestSame(source, destination) {
-    if (this.selectedSourceType.name === this.selectedDestinationType.name && source.name === destination.name) {
+    if (this.selectedSourceType.name === 'Any' && this.selectedDestinationType.name === 'Any') {
+      return false;
+    }
+    else if (this.selectedSourceType.name === this.selectedDestinationType.name && source.name === destination.name) {
       return true;
     }
     return false;
@@ -610,7 +614,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   navigateOnControlPipelineListPage() {
-    // small delay to effect backend changes before moving to list page 
+    // small delay to effect backend changes before moving to list page
     setTimeout(() => {
       this.router.navigate(['control-dispatcher/pipelines']);
     }, 1000);

@@ -219,7 +219,7 @@
                                 </div>
                               </div>
                             </div>
-                            <div *ngIf="selectedDestinationType?.name && selectedDestinationType.name !== 'Broadcast'"
+                            <div *ngIf="selectedDestinationType?.name && !(selectedDestinationType.name === 'Any' || selectedDestinationType.name === 'Broadcast')"
                               class="field is-horizontal">
                               <div class="field-label is-small">
                                 <label class="label is-small">Name</label>
