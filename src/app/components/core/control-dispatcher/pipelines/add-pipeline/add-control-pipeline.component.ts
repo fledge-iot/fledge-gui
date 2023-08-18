@@ -546,8 +546,9 @@ export class AddControlPipelineComponent implements OnInit {
     return false;
   }
 
-  checkControlPipelineChange() {
+  checkControlPipelineChange(name) {
     const changedCPValues: ControlPipeline = {
+      name: name,
       execution: this.selectedExecution,
       source: { "type": this.selectedSourceType.name, "name": this.selectedSourceName },
       destination: { "type": this.selectedDestinationType.name, "name": this.selectedDestinationName },
@@ -556,7 +557,6 @@ export class AddControlPipelineComponent implements OnInit {
     }
     if (this.controlPipeline) {
       delete this.controlPipeline.id;
-      delete this.controlPipeline.name;
       this.controlPipeline.filters = this.changeFilterNameInPipeline(this.controlPipeline.filters);
     }
     return !isEqual(this.controlPipeline, changedCPValues);
@@ -566,6 +566,7 @@ export class AddControlPipelineComponent implements OnInit {
     const formData = cloneDeep(form.value);
     let { name } = formData;
     const payload: ControlPipeline = {
+      name: name.trim(),
       execution: this.selectedExecution,
       source: { "type": this.selectedSourceType.cpsid, "name": this.selectedSourceName },
       destination: { "type": this.selectedDestinationType.cpdid, "name": this.selectedDestinationName },
@@ -578,9 +579,6 @@ export class AddControlPipelineComponent implements OnInit {
       this.toast.error("Source and Destination can't be same.");
       return;
     }
-    if (!this.editMode) {
-      payload['name'] = name.trim();
-    }
 
     if (this.unsavedChangesInFilterForm) {
       this.filtersListComponent?.update();
@@ -588,7 +586,7 @@ export class AddControlPipelineComponent implements OnInit {
     }
 
     if (this.editMode) {
-      if (this.checkControlPipelineChange()) {
+      if (this.checkControlPipelineChange(payload.name)) {
         this.updateControlPipeline(payload);
       }
       this.navigateOnControlPipelineListPage();
