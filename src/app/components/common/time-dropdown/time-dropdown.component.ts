@@ -10,10 +10,8 @@ import { DEBOUNCE_TIME } from '../../../utils';
 })
 export class TimeDropdownComponent implements OnInit, OnDestroy {
   graphUnit = ['seconds', 'minutes', 'hours', 'days'];
-  graphEndTime = ['now', 'last reading'];
   optedTime = 600; // Set graph optedTime to default 10 minutes
   selectedUnit: string = 'minutes';
-  selectedEndTime: string = 'now';
 
   @ViewChild('time', { static: true }) timeInput: ElementRef;
   private fromEventSub: Subscription;
@@ -40,21 +38,15 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         if (this.timeInput.nativeElement.value !== '') {
           this.optedTime = this.calculateOptedTime();
-          let timeObject = {optedTime : this.optedTime, endTime: this.selectedEndTime}
+          let timeObject = {optedTime : this.optedTime}
           this.updateGraphEvent.emit(timeObject);
         }
       })
 
   }
 
-  public toggleDropdown(id: string) {
-    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
-    if (activeDropDowns.length > 0) {
-      if (activeDropDowns[0].id !== id) {
-        activeDropDowns[0].classList.remove('is-active');
-      }
-    }
-    const dropDown = document.querySelector(`#${id}`);
+  public toggleDropdown() {
+    const dropDown = document.querySelector('#unit-dropdown');
     dropDown.classList.toggle('is-active');
     if (!dropDown.classList.contains('is-active')) {
       this.dropdownOpenEvent.emit(false);
@@ -67,18 +59,9 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
     this.selectedUnit = unit;
     this.optedTime = this.calculateOptedTime();
     // emit changed graph time
-    let timeObject = {optedTime : this.optedTime, endTime: this.selectedEndTime}
+    let timeObject = {optedTime : this.optedTime}
     this.updateGraphEvent.emit(timeObject);
-    this.toggleDropdown('unit-dropdown');
-  }
-
-  setGraphEndTime(endTime: string) {
-    this.selectedEndTime = endTime;
-    this.optedTime = this.calculateOptedTime();
-    // // emit changed graph time
-    let timeObject = {optedTime : this.optedTime, endTime: this.selectedEndTime}
-    this.updateGraphEvent.emit(timeObject);
-    this.toggleDropdown('end-time-dropdown');
+    this.toggleDropdown();
   }
 
   getMaxTime() {
