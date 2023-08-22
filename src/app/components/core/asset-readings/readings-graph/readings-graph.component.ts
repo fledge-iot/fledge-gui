@@ -724,7 +724,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetChartType = 'line';
     this.assetChartOptions = {
       elements: {
-        point: { radius: this.isLatestReadings ? 6 : 6 }
+        point: { radius: this.isLatestReadings ? 2 : 0 }
       },
       animation: false,
       maintainAspectRatio: false,
@@ -868,7 +868,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
     } else if (this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
-    } else if (!this.isAlive) {
+    } else {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
     }
   }
