@@ -43,7 +43,7 @@ export class AssetsService {
       catchError(error => throwError(error)));
   }
 
-  public getMultipleAssetReadings(assetCode, limit: number = 0, offset: number = 0, time: number = 0, additionalAssets, previous: number = 0, mostrecent = false) {
+  public getMultipleAssetReadings(assetCode, limit: number = 0, offset: number = 0, time: number = 0, additionalAssets, previous: number|string = 0, mostrecent:boolean = false) {
     let params = new HttpParams();
     if (+time !== 0) {
       params = params.append('seconds', time.toString());
@@ -57,11 +57,11 @@ export class AssetsService {
     if (+additionalAssets.length !== 0) {
       params = params.set('additional', additionalAssets.toString());
     }
+    if(mostrecent == true){
+      params = params.append('mostrecent', mostrecent.toString());
+    }
     if(previous != 0){
       params = params.append('previous', previous.toString());
-    }
-    if(mostrecent ==true){
-      params = params.append('mostrecent', mostrecent.toString());
     }
 
     return this.http.get(this.GET_ASSET + '/' + assetCode, { params: params }).pipe(

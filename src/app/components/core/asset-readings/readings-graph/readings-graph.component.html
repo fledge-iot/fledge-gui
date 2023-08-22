@@ -21,6 +21,9 @@
         </ng-container>
       </span>
       <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
+        <button [disabled]="isGraphShownFromMostRecentReading" (click)="showGraphFromMostRecentReading()" class="button small-btn playback-button" title="Show Graph From Most Recent Reading">
+          <i class="fa fa-sm fa-clock-rotate-left" aria-hidden="true"></i>
+        </button>
         <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button small-btn playback-button">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
