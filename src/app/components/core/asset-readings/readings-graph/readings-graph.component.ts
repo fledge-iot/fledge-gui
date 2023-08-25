@@ -235,12 +235,16 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   addOrRemoveAsset() {
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
+    this.isGraphShownFromMostRecentReading = false;
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
   }
 
   clearAdditionalAssets() {
     this.additionalAssets.push(this.selectedAsset);
     this.additionalAssets = [...this.additionalAssets];
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
   }
 
   getAssetLatestReadings(assetCode, isModalOpened = false) {
