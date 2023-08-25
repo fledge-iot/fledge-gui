@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddEditFlowAPIComponent } from './add-edit-flow-api.component';
+import { APIFlowComponent } from './api-flow.component';
 
-describe('AddEditFlowAPIComponent', () => {
-  let component: AddEditFlowAPIComponent;
-  let fixture: ComponentFixture<AddEditFlowAPIComponent>;
+describe('APIFlowComponent', () => {
+  let component: APIFlowComponent;
+  let fixture: ComponentFixture<APIFlowComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AddEditFlowAPIComponent ]
+      declarations: [ APIFlowComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddEditFlowAPIComponent);
+    fixture = TestBed.createComponent(APIFlowComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

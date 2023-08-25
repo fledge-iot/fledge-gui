@@ -7,42 +7,42 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class ControlFlowAPIService {
+export class ControlAPIFlowService {
   private CONTROL_URL = environment.BASE_URL + 'control';
 
   constructor(private http: HttpClient) { }
-  getAllFlowAPI() {
+  getAllAPIFlow() {
     return this.http.get(`${this.CONTROL_URL}/manage`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
-  getFlowAPI(name) {
+  getAPIFlow(name) {
     return this.http.get(`${this.CONTROL_URL}/manage/${name}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
-  createFlowAPI(payload: any) {
+  createAPIFlow(payload: any) {
     return this.http.post(`${this.CONTROL_URL}/manage`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
-  updateFlowAPI(name, payload: any) {
+  updateAPIFlow(name, payload: any) {
     return this.http.put(`${this.CONTROL_URL}/manage/${name}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
-  updateRequestFlowAPI(name, payload: any) {
-    return this.http.put(`${this.CONTROL_URL}/request/${name}`, payload).pipe(
+  deleteAPIFlow(name) {
+    return this.http.delete(`${this.CONTROL_URL}/manage/${name}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
-  deleteFlowAPI(name) {
-    return this.http.delete(`${this.CONTROL_URL}/manage/${name}`).pipe(
+  requestAPIFlow(name, payload: any) {
+    return this.http.put(`${this.CONTROL_URL}/request/${name}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

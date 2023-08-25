@@ -29,4 +29,4 @@ export * from './response-handler.service';
 export * from './configuration-control.service';
 export * from './file-uploader.service';
 export * from './control-pipelines.service';
-export * from './control-flow-api.service';
+export * from './control-api-flow.service';

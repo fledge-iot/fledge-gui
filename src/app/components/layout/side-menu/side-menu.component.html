@@ -38,18 +38,23 @@
         <div [hidden]="!isControlListOpen">
           <ul>
             <li>
-              <a id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
-                Scripts
-              </a>
-            </li>
-            <li>
               <a id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
                 ACLs
               </a>
             </li>
             <li>
+              <a id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/api'>
+                API Flow
+              </a>
+            </li>
+            <li>
               <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
             </li>
+            <li>
+              <a id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
+                Scripts
+              </a>
+            </li>   
           </ul>
         </div>
       </li>
