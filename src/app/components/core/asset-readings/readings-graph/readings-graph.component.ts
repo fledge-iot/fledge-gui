@@ -7,6 +7,7 @@ import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
+import * as moment from 'moment';
 
 declare var Plotly: any;
 
@@ -924,7 +925,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     if(ts_length !== 0){
       let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
       let prev = new Date(latestReadingTimestamp.valueOf() - this.optedTime*1000);
-      let previous = this.dateFormatter.transform(prev.toUTCString(), 'YYYY-MM-DD HH:mm:ss.SSS');
+      let previous = moment(prev.toLocaleString(), 'DD/MM/YYYY, HH:mm:ss').format('YYYY-MM-DD HH:mm:ss.SSS');
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous, true);
     }
   }
@@ -939,7 +940,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     if(ts_length !== 0){
       let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
       let prev = new Date(latestReadingTimestamp.valueOf() + this.optedTime*1000);
-      let previous = this.dateFormatter.transform(prev.toUTCString(), 'YYYY-MM-DD HH:mm:ss.SSS');
+      let previous = moment(prev.toLocaleString(), 'DD/MM/YYYY, HH:mm:ss').format('YYYY-MM-DD HH:mm:ss.SSS');
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous, true);
     }
   }
