@@ -30,6 +30,8 @@ import { ControlPipelinesService, NotificationsService, AssetsService, FilterSer
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { FilterModule } from '../filter/filter.module';
 import { AddDispatcherServiceComponent } from './add-dispatcher-service/add-dispatcher-service.component';
+import { FlowAPIComponent } from './flow-api/flow-api.component';
+import { AddEditFlowAPIComponent } from './flow-api/add-edit-flow-api/add-edit-flow-api.component';
 
 const routes: Routes = [
 
@@ -80,6 +82,19 @@ const routes: Routes = [
   {
     path: 'pipelines/:id',
     component: AddControlPipelineComponent
+  },
+  {
+    path: 'api',
+    component: FlowAPIComponent
+  },
+  {
+    path: 'api/add',
+    component: AddEditFlowAPIComponent,
+    canActivate: [RolesGuard]
+  },
+  {
+    path: 'api/:name/details',
+    component: AddEditFlowAPIComponent
   }
 ];
 
@@ -102,7 +117,9 @@ const routes: Routes = [
     ControlScheduleTaskDetailsComponent,
     ControlPipelinesComponent,
     AddControlPipelineComponent,
-    AddPipelineFilterComponent
+    AddPipelineFilterComponent,
+    FlowAPIComponent,
+    AddEditFlowAPIComponent
   ],
   imports: [
     FormsModule,
