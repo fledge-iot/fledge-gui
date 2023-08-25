@@ -749,7 +749,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           ticks: {
             autoSkip: true,
           },
-          // min: this.graphStartTimestamp,
+          min: this.graphStartTimestamp,
           bounds: 'ticks'
         }
       },
@@ -989,16 +989,24 @@ export class ReadingsGraphComponent implements OnDestroy {
   setGraphStartTimestamp(optedTime: number) {
     let ts_length = this.timestamps.length;
     if (ts_length != 0) {
-      let currentTime = Date.now();
       let graphStartingTimestamp: Date;
-      if (!this.isAlive) {
-        let timeDifference = Math.floor(currentTime - this.pauseTime);
-        graphStartingTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+      if(!this.isGraphShownFromMostRecentReading){
+        let currentTime = Date.now();
+        if (!this.isAlive) {
+          let timeDifference = Math.floor(currentTime - this.pauseTime);
+          graphStartingTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+          this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+          return;
+        }
+        graphStartingTimestamp = new Date(currentTime - optedTime * 1000);
         this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
-        return;
       }
-      graphStartingTimestamp = new Date(currentTime - optedTime * 1000);
-      this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+      else{
+        let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
+        let graphStartingTimestamp = new Date(latestReadingTimestamp.valueOf() - this.optedTime*1000);
+        let formattedTimestamp = moment(graphStartingTimestamp.toLocaleString(), 'DD/MM/YYYY, HH:mm:ss').format('YYYY-MM-DD HH:mm:ss.SSS');
+        this.graphStartTimestamp = this.dateFormatter.transform(formattedTimestamp, 'YYYY-MM-DD HH:mm:ss');
+      }
     }
   }
 
