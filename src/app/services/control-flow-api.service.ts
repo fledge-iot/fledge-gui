@@ -42,7 +42,7 @@ export class ControlFlowAPIService {
   }
 
   deleteFlowAPI(name) {
-    return this.http.delete(`${this.CONTROL_URL}/pipeline/${name}`).pipe(
+    return this.http.delete(`${this.CONTROL_URL}/manage/${name}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
