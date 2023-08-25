@@ -178,3 +178,7 @@ table.is-borderless td {
   position: static;
   float: right;
 }
+
+.btn-enabled {
+  color: #3850b7;
+}

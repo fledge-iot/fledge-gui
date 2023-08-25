@@ -21,25 +21,30 @@
         </ng-container>
       </span>
       <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
-        <button [disabled]="isGraphShownFromMostRecentReading" (click)="showGraphFromMostRecentReading()" class="button small-btn playback-button" title="Show Graph From Most Recent Reading">
+        <button [disabled]="isGraphShownFromMostRecentReading" (click)="showGraphFromMostRecentReading()" class="button small-btn playback-button" title="Show Graph From Most Recent Reading"
+        [ngClass]="{'btn-enabled': !isGraphShownFromMostRecentReading}">
           <i class="fa fa-sm fa-clock-rotate-left" aria-hidden="true"></i>
         </button>
-        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button small-btn playback-button">
+        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button small-btn playback-button"
+        [ngClass]="{'btn-enabled': !isAlive}" title="Move Backward">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
         <ng-container *ngIf="isAlive">
-          <button (click)="toggleAutoRefresh(false)" class="button small-btn playback-button">
+          <button (click)="toggleAutoRefresh(false)" class="button small-btn playback-button btn-enabled"
+          title="Pause Graph">
             <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
           </button>
         </ng-container>
         <ng-container *ngIf="!isAlive">
           <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
-            class="button small-btn playback-button">
+            class="button small-btn playback-button" [ngClass]="{'btn-enabled': !(graphRefreshInterval === -1)}"
+            title="Play Graph">
             <i class="fa fa-sm fa-play" aria-hidden="true"></i>
           </button>
         </ng-container>
         <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()"
-          class="button small-btn playback-button">
+          class="button small-btn playback-button" [ngClass]="{'btn-enabled': !(isAlive || backwardReadingCounter === 0)}"
+          title="Move Forward">
           <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
         </button>
       </ng-container>
