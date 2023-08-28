@@ -386,10 +386,12 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0, previous: number = 0) {
+    this.isReadingsFetched = false;
     this.assetService.getAllAssetSummary(assetCode, limit, time, previous)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
+          this.isReadingsFetched = true;
           this.showSpinner = false;
           this.assetReadingSummary = data
             .map(o => {
