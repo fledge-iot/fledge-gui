@@ -1,1 +1,105 @@
-<pre>{{apiFlows}}</pre>
+
+<div class="container is-fluid">
+    <app-add-dispatcher-service></app-add-dispatcher-service>
+    <div class="card">
+        <header class="card-header">
+            <div id="control-api-flow" class="card-header-title">
+                Control API Flow/Entrypoints
+                <button class="button is-small" id="refresh-check" title="Reload" (click)="getAPIFlows()">
+                    <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+                </button>
+            </div>
+            <a *ngIf="rolesService.hasControlAccess()" class="fix-margin button is-light" routerLink="add">
+                <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
+                <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+            </a>
+            <!-- <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin"
+                data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
+                <i class="far fa-question-circle"></i>
+            </span> -->
+        </header>
+        <div class="card-content card-data">
+            <table class="table is-responsive is-hoverable ep-tbl" *ngIf="apiFlows.length > 0; else nothing">
+                <thead>
+                <tr>
+                    <th class="align-content"> Name </th>
+                    <th class="align-content" title="Write | Operation"> Type </th>
+                    <th></th>
+                    <th class="align-content"> Destination </th>
+                    <th class="align-content" title="Access to execute the entrypoint"> Anonymous</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let ep of apiFlows">
+                        <td class="align-content"> 
+                            <a class="button is-text ep-name" [routerLink]="['/control-dispatcher/api', ep?.name]" title={{ep.description}}>{{ep.name}}</a>
+                        </td>
+                        <td class="align-content">
+                            <span class="is-small"><!--{{ep.type | titlecase}}-->Operation</span>
+                            <span class="help sub">
+                                <!--{{ep.type == 'operation' ? ep.operation_name : ''}} -->
+                                Off
+                            </span>
+                        </td>
+                        <td></td>
+                        <td class="align-content">
+                            <span class="is-small"><!--{{ep.destination}} --> Any</span>
+                            <span class="help sub">
+                                <!-- {{ ['any', 'broadcast'].includes(ep.destination?.toLowerCase()) ? '*' : ep.destination_name }} -->
+                                *
+                            </span>
+                        </td>
+
+                        <td class="align-content">
+                            <ng-container *ngIf="rolesService.hasControlAccess(); else staticText">
+                              <input class="checkbox" type="checkbox" [checked]="ep?.anonymous"
+                                (click)="onCheckboxClicked($event, ep.name)">
+                            </ng-container>
+                            <ng-template #staticText>
+                              <input disabled class="checkbox" type="checkbox" [checked]="ep?.anonymous">
+                            </ng-template>
+                          </td>
+
+                          <td>
+                            <!-- TODO: Show to Editor or above role based users only, if auth required -->
+                            <div class="dropdown is-left is-hoverable">
+                              <div class="dropdown-trigger">
+                                <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                                  <span class="icon">
+                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
+                                  </span>
+                                </a>
+                              </div>
+                              <!-- if view role OR  request is not allowed, then don't show empty drop menu-->
+                              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                <div class="dropdown-content">
+                                <!-- TODO: 
+                                    Add check of logged-in user vs allowed users (Editor or above role) if not anonymous 
+                                    Show modal to override variable (constant??_ values 
+                                    show variable name as label and value as input box
+                                -->
+                                
+                                <a class="dropdown-item"
+                                (click)="openModal(ep.name, 'executeRequest', null)">
+                                    Request/Execute
+                                </a>
+                                <a *ngIf="rolesService.hasControlAccess()" class="dropdown-item"
+                                    (click)="openModal(ep.name, 'delete', 'Are you sure, you want to delete this Control API Entrypoint')">
+                                    Delete
+                                </a>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                    </tr>
+                </tbody>
+            </table>
+            <ng-template #nothing>
+                <div class="has-text-centered">
+                    <small class="text-secondary has-text-grey-light">No Control API Flow/Entrypoints found.</small>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

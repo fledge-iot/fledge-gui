@@ -1,0 +1,39 @@
+table tr td {
+    vertical-align: middle;
+}
+
+.is-text {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.ep-name{
+    color: #3273dc;
+    text-decoration: none;
+}
+
+.context-menu {
+    border: none;
+}
+
+.sub {
+    color: #707070;
+    font-size: .85rem;
+    margin-top: 0rem !important;
+}
+
+.ep-tbl {
+    display: block;
+}
+
+.is-hoverable.ep-tbl tr:hover .context-menu {
+    background-color: #fafafa; 
+}
+
+span.is-small {
+    font-size: 0.9rem;
+}
+
+.fa-plus {
+    font-size: .65em;
+}

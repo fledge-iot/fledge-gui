@@ -93,7 +93,7 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'api/:name/details',
+    path: 'api/:name',
     component: AddEditAPIFlowComponent
   }
 ];
