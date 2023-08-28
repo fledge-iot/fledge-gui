@@ -11,7 +11,7 @@
     </ul>
     </nav>
     <button type="button" *ngIf="editMode" (click)="getAPIFlow()" class="button is-small" title="Reload" id="refresh-check">
-    <i class="fa fa-xs fa-sync" aria-hidden="true"></i>
+        <i class="fa fa-xs fa-sync" aria-hidden="true"></i>
     </button>
     
     <!-- show Request/Execute button in top right; Check user's permissions if not anonymous -->
@@ -24,7 +24,7 @@
         <!-- TODO: FOGL-?
         <span (click)="goToLink()"
         class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
-        <i class="far fa-question-circle"></i>
+            <i class="far fa-question-circle"></i>
         </span> -->
         <div class="column">
         <div [hidden]="editMode" class="field is-horizontal">
@@ -57,13 +57,13 @@
                 <div class="control">
                 <div id="type-dropdown" class="dropdown is-left">
                     <div class="dropdown-trigger">
-                    <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                        (click)="toggleDropdown('type-dropdown')" placeholder="Select">
-                        <span>{{selectedType}}</span>
-                        <span class="icon is-small">
-                        <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                    </button>
+                        <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                            (click)="toggleDropdown('type-dropdown')" placeholder="Select">
+                            <span>{{selectedType}}</span>
+                            <span class="icon is-small">
+                            <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                     <div class="dropdown-content">
@@ -95,7 +95,7 @@
             <div class="field-body">
                 <div class="field">
                         <!-- Operation name -->
-                        <input name="type" class="input is-small" type="text" [value]="af.operation_name">
+                        <!-- <input name="type" class="input is-small" type="text" [value]="af.operation_name"> -->
                 </div>
             </div>
         </div>
@@ -109,31 +109,31 @@
                 <div class="field is-horizontal">
                 <div class="field-body">
                     <div class="field">
-                    <!-- <div class="control box">
+                    <div class="control box">
                         <div class="columns">
                         <div class="column">
                             <div class="field is-horizontal">
-                            <div class="field-label is-small">
-                                <label class="label is-small">Type</label>
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                <div class="control"
-                                    *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
-                                    <ng-select [clearable]="false" placeholder="Select Destination Type"
-                                    [items]="destinationTypeList" [multiple]="false" bindLabel="name"
-                                    (change)="selectValue($event, 'destinationType')"
-                                    [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
-                                    </ng-select>
+                                <div class="field-label is-small">
+                                    <label class="label is-small">Type</label>
                                 </div>
-                                <ng-template #staticDestinationType>
-                                    <input name="destinationType" class="input" type="text"
-                                    [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
-                                    [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
-                                    [readonly]="!rolesService.hasControlAccess()">
-                                </ng-template>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control"
+                                            *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
+                                            <ng-select [clearable]="false" placeholder="Select Destination Type"
+                                                [items]="destinationTypeList" [multiple]="false" bindLabel="name"
+                                                (change)="getDestinationNameList($event)"
+                                                [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
+                                            </ng-select>
+                                        </div>
+                                        <ng-template #staticDestinationType>
+                                            <input name="destinationType" class="input" type="text"
+                                            [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
+                                            [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
+                                            [readonly]="!rolesService.hasControlAccess()">
+                                        </ng-template>
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                             <div *ngIf="selectedDestinationType?.name && !(selectedDestinationType.name === 'Any' || selectedDestinationType.name === 'Broadcast')"
                             class="field is-horizontal">
@@ -146,7 +146,7 @@
                                     *ngIf="rolesService.hasControlAccess(); else staticDestinationName">
                                     <ng-select [clearable]="false" placeholder="Select Destination"
                                     [items]="destinationNameList" [multiple]="false" bindLabel="name"
-                                    groupBy="groupbyType" (change)="selectValue($event.name, 'destinationName')"
+                                    groupBy="groupbyType" (change)="selectDestinationName($event.name)"
                                     [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
                                     </ng-select>
                                 </div>
@@ -167,7 +167,7 @@
                         <div class="column is-1">
                         </div>
                         </div>
-                    </div> -->
+                    </div>
                     </div>
                 </div>
                 </div>
@@ -228,10 +228,10 @@
             <label class="label label-name" title="Access to execute the entrypoint">Anonymous</label>
             </div>
             <div class="field-body">
-            <div class="field">
+            <!-- <div class="field">
                 <input class="checkbox" [disabled]="!rolesService.hasControlAccess()" type="checkbox"
                 [checked]="af.anonymous" (click)="onCheckboxClicked($event)">
-            </div>
+            </div> -->
             </div>
         </div>
         

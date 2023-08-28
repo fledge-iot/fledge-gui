@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -45,6 +45,18 @@ export class ControlAPIFlowService {
     return this.http.put(`${this.CONTROL_URL}/request/${name}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
+  }
+
+  /**
+  *   Get Destination type list
+  *   GET  | /fledge/control/lookup?type={destination}
+  */
+   getDestinationTypeList() {
+    let params = new HttpParams();
+    params = params.set('type', 'destination');
+    return this.http.get(this.CONTROL_URL + '/' + 'lookup', { params: params }).pipe(
+        map(response => response),
+        catchError(error => throwError(error)));
   }
 
 }

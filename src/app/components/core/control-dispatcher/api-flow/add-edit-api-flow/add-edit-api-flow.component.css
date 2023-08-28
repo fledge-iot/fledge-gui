@@ -37,3 +37,8 @@ span.is-small {
 .fa-plus {
     font-size: .65em;
 }
+
+.field-body .field {
+    margin-bottom: 5px;
+}
+
