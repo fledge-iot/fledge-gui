@@ -20,11 +20,11 @@
           </span>
         </ng-container>
       </span>
-      <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
+      <ng-container *ngIf="!isLatestReadings && !(selectedTab == 5)">
         <ng-container *ngIf="!isReadingsFetched">
           <button class="button small-btn is-loading spin-button"></button>
         </ng-container>
-        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button small-btn playback-button">
+        <button [disabled]="isAlive" (click)="showBackwardReadingsGraphOrSummary()" class="button small-btn playback-button">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
         <ng-container *ngIf="isAlive">
@@ -38,7 +38,7 @@
             <i class="fa fa-sm fa-play" aria-hidden="true"></i>
           </button>
         </ng-container>
-        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()"
+        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraphOrSummary()"
           class="button small-btn playback-button">
           <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
         </button>
