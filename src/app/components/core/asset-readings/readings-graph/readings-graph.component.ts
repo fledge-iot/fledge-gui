@@ -59,6 +59,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public infoTextTimestamps = {start : "", end: ""};
   public graphStartTimestamp: string;
   public zoomConfig = {minZoomValue: 1, isZoomed: false};
+  public isReadingsFetched = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -434,10 +435,12 @@ export class ReadingsGraphComponent implements OnDestroy {
     let optedAssets = this.additionalAssets;
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
     this.limit = limit;
+    this.isReadingsFetched = false;
     this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
+          this.isReadingsFetched = true;
           this.loadPage = false;
           this.getReadings(data, time);
         },

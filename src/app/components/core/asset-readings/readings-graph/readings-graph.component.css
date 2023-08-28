@@ -178,3 +178,8 @@ table.is-borderless td {
   position: static;
   float: right;
 }
+
+.spin-button{
+  background-color: whitesmoke;
+  border: none;
+}
