@@ -67,10 +67,10 @@
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                     <div class="dropdown-content">
-                        <a (click)="selectValue('Operation', 'type');toggleDropdown('type-dropdown')"
-                        class="dropdown-item">Operation</a>
-                        <a (click)="selectValue('Write', 'type');toggleDropdown('type-dropdown')"
-                        class="dropdown-item">Write</a>
+                        <a (click)="changeType('operation');toggleDropdown('type-dropdown')"
+                        class="dropdown-item">operation</a>
+                        <a (click)="changeType('write');toggleDropdown('type-dropdown')"
+                        class="dropdown-item">write</a>
                     </div>
                     </div>
                 </div>

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ControlFlowAPIService } from './control-flow-api.service';
+import { ControlAPIFlowService } from './control-api-flow.service';
 
-describe('ControlFlowAPI', () => {
-  let service: ControlFlowAPIService;
+describe('ControlAPIFlow', () => {
+  let service: ControlAPIFlowService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ControlFlowAPIService);
+    service = TestBed.inject(ControlAPIFlowService);
   });
 
   it('should be created', () => {

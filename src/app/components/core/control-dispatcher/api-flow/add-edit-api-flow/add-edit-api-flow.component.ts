@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { APIFlow } from '../../../../../../../src/app/models/api-flow';
+import { APIFlow, APIFlowType, DestinationType } from '../../../../../../../src/app/models/api-flow';
 
 import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,13 +27,11 @@ import {
 
 export class AddEditAPIFlowComponent implements OnInit {
 
-    @ViewChild('pipelineForm') pipelineForm: NgForm;
-
     QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
-    selectedType = ''; // required?
+    selectedType: APIFlowType;
 
-    selectedDestinationType = { cpdid: null, name: '' };
+    selectedDestinationType = { cpdid: 0, name: "Broadcast" };  // Typecast with DestinationType enum
     selectedDestinationName = null; // required?
  
     destinationTypeList = []; // required?
@@ -106,9 +104,14 @@ export class AddEditAPIFlowComponent implements OnInit {
         /** request started */
         this.ngProgress.start();
         this.controlAPIFlowService.getAPIFlow(this._name)
-          .subscribe((data: any) => {
+          .subscribe((data: APIFlow) => {
             this.ngProgress.done();
             this.af = data;
+            this.selectedType = this.af.type;
+            this.selectedDestinationType.name = this.af.destination;
+            if (this.selectedDestinationType.name !== 'Broadcast') {
+                this.selectedDestinationName = this.af[this.selectedDestinationType.name];
+            }         
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -205,6 +208,21 @@ export class AddEditAPIFlowComponent implements OnInit {
         });
     }
 
+    public toggleDropdown(id) {
+        const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+        if (activeDropDowns.length > 0) {
+          if (activeDropDowns[0].id !== id) {
+            activeDropDowns[0].classList.remove('is-active');
+          }
+        }
+        const dropDown = document.querySelector(`#${id}`);
+        dropDown.classList.toggle('is-active');
+    }
+
+    changeType(value) {
+        this.selectedType = value === 'Select Type' ? '' : value;
+    }
+
     getSourceDestTypes() {
         this.controlAPIFlowService.getDestinationTypes()
           .subscribe((data: any) => {
@@ -235,7 +253,6 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     getFormControls(type): AbstractControl[] {
-        console.log('this.apiFlowForm', this.apiFlowForm);
         return (<FormArray>this.apiFlowForm.get(type)).controls;
     }
   
