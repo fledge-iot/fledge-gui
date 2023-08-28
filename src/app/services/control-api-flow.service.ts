@@ -51,7 +51,7 @@ export class ControlAPIFlowService {
   *   Get Destination type list
   *   GET  | /fledge/control/lookup?type={destination}
   */
-   getDestinationTypeList() {
+   getDestinationTypes() {
     let params = new HttpParams();
     params = params.set('type', 'destination');
     return this.http.get(this.CONTROL_URL + '/' + 'lookup', { params: params }).pipe(

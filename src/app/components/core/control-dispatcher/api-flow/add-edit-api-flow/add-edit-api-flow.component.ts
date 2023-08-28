@@ -206,7 +206,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     getSourceDestTypes() {
-        this.controlAPIFlowService.getDestinationTypeList()
+        this.controlAPIFlowService.getDestinationTypes()
           .subscribe((data: any) => {
             this.ngProgress.done();
             // this.destinationTypeList = data;
@@ -243,29 +243,30 @@ export class AddEditAPIFlowComponent implements OnInit {
         this.selectedDestinationName = value === 'Select Destination Name' ? null : value;
     }
 
-    getDestinationNameList(selectedType) {
+    getDestinationNames(selectedType) {
         this.destinationNameList = [];
         this.selectedDestinationName = null;
         this.selectedDestinationType = selectedType === 'Select Destination Type' ? '' : selectedType;
         switch (selectedType.name) {
+          case 'Any':
           case 'Broadcast':
             this.selectedDestinationName = null;
             break;
           case 'Service':
-            this.getServiceNameList();
+            this.getServiceNames();
             break;
           case 'Asset':
-            this.getAssetNameList();
+            this.getAssetNames();
             break;
           case 'Script':
-            this.getScriptNameList();
+            this.getScriptNames();
             break;
           default:
             break;
         }
     }
 
-    getServiceNameList() {
+    getServiceNames() {
         let names = [];
         /** request started */
         this.ngProgress.start();
@@ -315,7 +316,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             });
     }
 
-    getAssetNameList() {
+    getAssetNames() {
         let nameList = [];
         /** request started */
         this.ngProgress.start();
@@ -341,7 +342,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             });
     }
 
-    getScriptNameList() {
+    getScriptNames() {
         /** request started */
         this.ngProgress.start();
         this.controlService.fetchControlServiceScripts()

@@ -122,7 +122,7 @@
                                             *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
                                             <ng-select [clearable]="false" placeholder="Select Destination Type"
                                                 [items]="destinationTypeList" [multiple]="false" bindLabel="name"
-                                                (change)="getDestinationNameList($event)"
+                                                (change)="getDestinationNames($event)"
                                                 [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
                                             </ng-select>
                                         </div>
