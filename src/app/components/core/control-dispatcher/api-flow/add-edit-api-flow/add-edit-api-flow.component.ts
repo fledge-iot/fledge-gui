@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { APIFlow } from '../../../../../../../src/app/models/api-flow';
 
-import { NgForm, Validators } from '@angular/forms';
+import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import {
@@ -42,6 +42,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     editMode = false;
     _name: string;
     af: APIFlow;
+    apiFlowForm: FormGroup;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -52,15 +53,22 @@ export class AddEditAPIFlowComponent implements OnInit {
         private schedulesService: SchedulesService,
         private alertService: AlertService,
         private ngProgress: ProgressBarService,
+        private fb: FormBuilder,
         public rolesService: RolesService,
         private dialogService: DialogService,
         public sharedService: SharedService,
         private docService: DocService,
         private router: Router,
-        private toast: ToastService) {}
+        private toast: ToastService) {
+            this.apiFlowForm = this.fb.group({
+                variables: this.fb.array([]),
+                constants: this.fb.array([])
+            });
+        }
 
     ngOnInit() {
         this.getSourceDestTypes();
+        this.addParameter({ key: '', value: '' });
         this.route.params.subscribe(params => {
             this._name = params['name'];
             if (this._name) {
@@ -68,6 +76,30 @@ export class AddEditAPIFlowComponent implements OnInit {
               this.getAPIFlow();
             }
         });
+    }
+
+    addParameter(param = null) {
+        // add parameter to the list
+        const variableControl = <FormArray>this.apiFlowForm.controls['variables'];
+        const constControl = <FormArray>this.apiFlowForm.controls['constants'];
+        variableControl.push(this.initParameter(param, 'variable'));
+        constControl.push(this.initParameter(param, 'const'));
+    }
+
+    initParameter(param = null, controlType) {
+        // initialize
+        if (controlType === 'variable') {
+            return this.fb.group({
+                vName: [param?.key, Validators.required],
+                vValue: [param?.value]
+              });
+        } else {
+            return this.fb.group({
+                cName: [param?.key, Validators.required],
+                cValue: [param?.value]
+              });
+        }
+        
     }
 
     getAPIFlow() {
@@ -200,7 +232,12 @@ export class AddEditAPIFlowComponent implements OnInit {
         // Set Anonymous T/F
         // this.af.anonymous = event.target.checked;
         console.log(event.target.checked)
-    } 
+    }
+
+    getFormControls(type): AbstractControl[] {
+        console.log('this.apiFlowForm', this.apiFlowForm);
+        return (<FormArray>this.apiFlowForm.get(type)).controls;
+    }
   
     selectDestinationName(value) {
         this.selectedDestinationName = value === 'Select Destination Name' ? null : value;

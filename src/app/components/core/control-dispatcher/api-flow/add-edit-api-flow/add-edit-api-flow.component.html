@@ -20,7 +20,7 @@
 
 <div class="card">
     <div class="card-content">
-    <form #apiFlowForm="ngForm">
+    <form [formGroup]="apiFlowForm">
         <!-- TODO: FOGL-?
         <span (click)="goToLink()"
         class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
@@ -35,7 +35,7 @@
             <div class="field">
                 <div class="control">
                 <input #name=ngModel name="_name" class="input" type="text" placeholder="Name" required
-                    [(ngModel)]="_name" title="No single quotes and double quotes!"
+                    [(ngModel)]="_name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
                     [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
                     [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field':!rolesService.hasControlAccess()}"
                     [readonly]="!rolesService.hasControlAccess()">
@@ -175,31 +175,31 @@
             </div>
         </div>
 
-        <!-- <ng-container formArrayName="variables">
+        <ng-container formArrayName="variables">
             <div class="field is-horizontal" *ngFor="let v of getFormControls('variables'); let i = index">
                 <div *ngIf="i == 0" class="field-label">
-                <label class="label">Variables</label>
+                    <label class="label">Variables</label>
                 </div>
-                <div *ngIf="i > 0" class="field-label">
-                <label class="label"></label>
-                </div>
+                <!-- <div *ngIf="i > 0" class="field-label">
+                    <label class="label"></label>
+                </div> -->
                 <div class="field-body" [formGroupName]="i">
-                <div class="field" style="max-width: 20%;">
-                    <div class="control">
-                    <input formControlName="vName" placeholder="Variable name" class="input is-small is-static"
-                        name="type" type="text" readonly>
+                    <div class="field" style="max-width: 20%;">
+                        <div class="control">
+                            <input formControlName="vName" placeholder="Variable name" class="input is-small"
+                            name="type" type="text">
+                        </div>
                     </div>
-                </div>
                 <div class="field" style="max-width: 50%;">
                     <div class="control">
-                    <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
+                        <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
                     </div>
                 </div>
                 </div>
             </div>
-            </ng-container> -->
+        </ng-container>
 
-            <!-- <ng-container formArrayName="constants">
+        <ng-container formArrayName="constants">
             <div class="field is-horizontal" *ngFor="let c of getFormControls('constants'); let i = index">
                 <div *ngIf="i == 0" class="field-label">
                 <label class="label">Constants</label>
@@ -210,8 +210,8 @@
                 <div class="field-body" [formGroupName]="i">
                 <div class="field" style="max-width: 20%;">
                     <div class="control">
-                    <input formControlName="cName" placeholder="Constant name" class="input is-small is-static"
-                        name="type" type="text" readonly>
+                    <input formControlName="cName" placeholder="Constant name" class="input is-small"
+                        name="type" type="text">
                     </div>
                 </div>
                 <div class="field" style="max-width: 50%;">
@@ -221,7 +221,7 @@
                 </div>
                 </div>
             </div>
-            </ng-container> -->
+        </ng-container>
 
         <div class="field is-horizontal">
             <div class="field-label">
