@@ -169,81 +169,110 @@
             </div>
             </div>
         </div>
-
-
-
         <div class="field is-horizontal">
             <div class="field-label">
                 <label class="label label-name has-text-left">Parameters</label>
             </div>
             <div class="field-body">
-            <div class="field">
-                <div class="field is-horizontal">
-                    <div class="field-body">
-                        <div class="field">
-                        <div class="control box">
-                            <div class="columns">
-                            <div class="column">
-                                <div class="field is-horizontal">
-                                    <div class="field-label is-small">
-                                        <label class="label is-small has-text-left">Variables</label>
-                                    </div>
-                                    <div class="field-body">
-                                        <ng-container formArrayName="variables">
-                                            <div class="field is-horizontal" *ngFor="let v of getFormControls('variables'); let i = index">
-                                                <div class="field-body" [formGroupName]="i">
-                                                    <div class="field" style="max-width: 50%;">
-                                                        <div class="control">
-                                                            <input formControlName="vName" placeholder="Variable name" class="input is-small"
-                                                            name="type" type="text">
-                                                        </div>
-                                                    </div>
-                                                    <div class="field" style="max-width: 50%;">
-                                                        <div class="control">
-                                                            <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
-                                                        </div>
-                                                    </div>
+            <div class="field">  
+                <div class="field-body">
+                    <div class="field">
+                    <div class="control box">
+                        <div class="columns">
+                        <div class="column">
+                            <div class="field">
+                                <ng-container formArrayName="variables">
+                                    <div class="field is-horizontal" *ngFor="let v of getFormControls('variables'); let i = index">
+                                        <div *ngIf="i === 0" class="field-label is-small">
+                                            <label class="label is-small has-text-left">Variables</label>
+                                        </div>
+                                        <div *ngIf="i > 0" class="field-label">
+                                            <label class="label"></label>
+                                        </div>
+                                        <div class="field-body" [formGroupName]="i">
+                                            <div class="field" style="max-width: 50%;">
+                                                <div class="control">
+                                                    <input formControlName="vName" placeholder="Variable name" class="input is-small"
+                                                    name="type" type="text">
                                                 </div>
                                             </div>
-                                        </ng-container>
-                                    </div>
-                                </div>
-                                <div class="field is-horizontal">
-                                    <div class="field-label is-small">
-                                        <label class="label is-small has-text-left">Constants</label>
-                                    </div>
-                                    <div class="field-body">
-                                        <ng-container formArrayName="constants">
-                                            <div class="field is-horizontal" *ngFor="let c of getFormControls('constants'); let i = index">
-                                                <div class="field-body" [formGroupName]="i">
-                                                    <div class="field" style="max-width: 50%;">
-                                                        <div class="control">
-                                                            <input formControlName="cName" placeholder="Variable name" class="input is-small"
-                                                            name="type" type="text">
-                                                        </div>
-                                                    </div>
-                                                    <div class="field" style="max-width: 50%;">
-                                                        <div class="control">
-                                                            <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text">
-                                                        </div>
-                                                    </div>
+                                            <div class="field" style="max-width: 50%;">
+                                                <div class="control">
+                                                    <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
                                                 </div>
                                             </div>
-                                        </ng-container>
+                                            <div class="field">
+                                                <button class="delete is-small" (click)="removeParameter(i, 'variables')"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                            <div class="field">
+                                <div class="columns" *ngIf="editMode">
+                                    <div class="column is-one-fifth"></div>
+                                    <div class="btn-column p-2">
+                                        <button class="button is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
+                                            <span class="icon is-small">
+                                                <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                                            </span>
+                                            <span>{{getFormControls('variables').length === 0 ? 'Add variable':'Add new variable'}}</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="column is-1">
+                            <div class="field">
+                                <ng-container formArrayName="constants">
+                                    <div class="field is-horizontal" *ngFor="let c of getFormControls('constants'); let i = index">
+                                        <div *ngIf="i === 0" class="field-label is-small">
+                                            <label class="label is-small has-text-left">Constants</label>
+                                        </div>
+                                        <div *ngIf="i > 0" class="field-label">
+                                            <label class="label"></label>
+                                        </div>
+                                        <div class="field-body" [formGroupName]="i">
+                                            <div class="field" style="max-width: 50%;">
+                                                <div class="control">
+                                                    <input formControlName="cName" placeholder="Variable name" class="input is-small"
+                                                    name="type" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="field" style="max-width: 50%;">
+                                                <div class="control">
+                                                    <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="field">
+                                                <button class="delete is-small" (click)="removeParameter(i, 'constants')"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
                             </div>
+                            <div class="field">
+                                <div class="columns" *ngIf="editMode">
+                                    <div class="column is-one-fifth"></div>
+                                    <div class="btn-column p-2">
+                                        <button class="button is-small is-link is-light has-background-white"
+                                        (click)="addValueControl('constants')">
+                                            <span class="icon is-small">
+                                                <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                                            </span>
+                                            <span>{{getFormControls('constants').length === 0 ? 'Add constant':'Add new constant'}}</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                        <div class="column is-1">
                         </div>
                         </div>
                     </div>
+                    </div>
                 </div>
             </div>
-            </div>
         </div>
-
+    </div>
         <div class="field is-horizontal">
             <div class="field-label">
             <label class="label label-name has-text-left" title="Access to execute the entrypoint">Anonymous</label>
@@ -267,8 +296,6 @@
             </div>
         </div>
         </div>
-
-
         <div *ngIf="rolesService.hasControlAccess()" class="column footer-padding">
         <div class="columns">
             <div class="column is-2"></div>
@@ -314,5 +341,3 @@
     <button class="button is-small is-danger" type="button" (click)="deleteAPIFlow()">Delete</button>
 </footer>
 </app-confirmation-dialog>
-
-<!-- field-label should use has-text-left?-->

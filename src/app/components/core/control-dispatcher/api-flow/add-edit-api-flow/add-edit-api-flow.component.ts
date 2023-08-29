@@ -67,7 +67,7 @@ export class AddEditAPIFlowComponent implements OnInit {
 
     ngOnInit() {
         this.getSourceDestTypes();
-        this.addParameter({ key: '', value: '' });
+        this.addParameter({ index: 0, key: '', value: '' });
         this.route.params.subscribe(params => {
             this._name = params['name'];
             if (this._name) {
@@ -77,17 +77,21 @@ export class AddEditAPIFlowComponent implements OnInit {
         });
     }
 
-    addParameter(param = null) {
-        // add parameter to the list
-        const variableControl = <FormArray>this.apiFlowForm.controls['variables'];
-        const constControl = <FormArray>this.apiFlowForm.controls['constants'];
-        variableControl.push(this.initParameter(param, 'variable'));
-        constControl.push(this.initParameter(param, 'const'));
+    addParameter(param = null, controlType = null) {
+        if (controlType == null) {
+            const variableControl = <FormArray>this.apiFlowForm.controls['variables'];
+            const constControl = <FormArray>this.apiFlowForm.controls['constants'];
+            variableControl.push(this.initParameter(param, 'variables'));
+            constControl.push(this.initParameter(param, 'constants'));
+        } else {
+            const control = <FormArray>this.apiFlowForm.controls[controlType];
+            control.push(this.initParameter(param, controlType));
+        }
     }
 
     initParameter(param = null, controlType) {
         // initialize
-        if (controlType === 'variable') {
+        if (controlType === 'variables') {
             return this.fb.group({
                 vName: [param?.key, Validators.required],
                 vValue: [param?.value]
@@ -378,7 +382,20 @@ export class AddEditAPIFlowComponent implements OnInit {
             }
           });
     }
-    
+
+    removeParameter(index: number, param) {
+        // remove parameter from the list
+        const control = <FormArray>this.apiFlowForm.controls[param];
+        control.removeAt(index);
+        this.apiFlowForm.markAsDirty();
+    }
+
+
+    addValueControl(controlType) {
+        const control = <FormArray>this.apiFlowForm.controls[controlType];
+        this.addParameter({index: control.value.length, key: '', value: ''}, controlType);
+    }
+
     openModal(id: string) {
         console.log("openModal", id)
         // this.dialogService.open(id);
