@@ -65,7 +65,7 @@
           </div>
           <div class="column"
             [ngClass]="{'is-7': rangeSliderService.getAlphControlStatus() && selectedTab === 1, 'is-9': !rangeSliderService.getAlphControlStatus() || selectedTab !== 1}"
-            *ngIf="!isLatestReadings && availableAssets.length > 0">
+            *ngIf="!isLatestReadings && !(selectedTab == 4) && availableAssets.length > 0">
             <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true"
               [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()" [clearable]="additionalAssets.length > 1"
               (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
@@ -120,7 +120,7 @@
         </div>
         <div class="columns">
           <div class="column">
-            <div id="tab-content">
+            <div id="tab-content" class="tab-content">
               <ng-container *ngIf="showSpinner; else DataDiv">
                 <div class="app-loading">
                   &nbsp;
@@ -131,7 +131,7 @@
               </ng-container>
               <ng-template #DataDiv>
                 <div *ngIf="numberTypeReadingsList?.length == 0 && arrayTypeReadingsList?.length == 0
-                  && isEmptyObject(stringTypeReadingsList) && imageReadings?.length == 0">
+                  && isEmptyObject(stringTypeReadingsList) && imageReadings?.length == 0" class="tab-content no-reading">
                   <div class="has-text-centered no-data"><small class="text-secondary has-text-grey-light">
                       No readings available.</small>
                   </div>
