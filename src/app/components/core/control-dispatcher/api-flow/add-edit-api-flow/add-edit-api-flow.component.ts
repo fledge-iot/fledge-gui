@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { APIFlow, APIFlowType } from '../../../../../../../src/app/models/api-flow';
+import { APIFlow, APIFlowType, User } from '../../../../../../../src/app/models';
 
 import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,6 +9,7 @@ import {
     ControlAPIFlowService,
     ProgressBarService,
     SchedulesService,
+    UserService,
     RolesService,
     SharedService,
     AssetsService,
@@ -33,15 +34,17 @@ export class AddEditAPIFlowComponent implements OnInit {
     types = [];
 
     selectedDestinationType = { cpdid: 0, name: "Broadcast" };  // Typecast with DestinationType enum
-    selectedDestinationName = null; // required?
+    selectedDestinationName = null;
  
-    destinationTypeList = []; // required?
-    destinationNameList = []; // required?
+    destinationTypes = [];
+    destinationNameList = [];
 
     editMode = false;
     _name: string;
     af: APIFlow;
     apiFlowForm: FormGroup;
+    allUsers: User[];
+    selectedUsers: [];
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -56,6 +59,7 @@ export class AddEditAPIFlowComponent implements OnInit {
         public rolesService: RolesService,
         private dialogService: DialogService,
         public sharedService: SharedService,
+        private userService: UserService,
         private docService: DocService,
         private router: Router,
         private toast: ToastService) {
@@ -66,7 +70,19 @@ export class AddEditAPIFlowComponent implements OnInit {
         }
 
     ngOnInit() {
+        this.af = {
+            name: '',
+            type: APIFlowType.Operation,  
+            description: '',
+            operation_name: '',
+            destination: '',
+            constants: {},
+            variables: {},
+            anonymous: false,
+            allow: []
+          };
         this.getSourceDestTypes();
+        this.getUsers();
         this.addParameter({ index: 0, key: '', value: '' });
         this.route.params.subscribe(params => {
             this._name = params['name'];
@@ -75,6 +91,13 @@ export class AddEditAPIFlowComponent implements OnInit {
               this.getAPIFlow();
             }
         });
+        this.types = Object.keys(APIFlowType).map(key => APIFlowType[key]).filter(value => typeof value === 'string') as string[];
+        this.selectedType = this.getSelectedType();
+    }
+
+    getSelectedType() {
+        let keys = Object.keys(APIFlowType).filter(x => APIFlowType[x] == this.af.type);
+        return keys.length > 0 ? keys[0] : null;
     }
 
     addParameter(param = null, controlType = null) {
@@ -112,12 +135,10 @@ export class AddEditAPIFlowComponent implements OnInit {
           .subscribe((data: APIFlow) => {
             this.ngProgress.done();
             this.af = data;
-            this.types = Object.keys(APIFlowType).map(key => APIFlowType[key]).filter(value => typeof value === 'string') as string[];
-            this.selectedType = this.af.type;
             this.selectedDestinationType.name = this.af.destination;
             if (this.selectedDestinationType.name !== 'Broadcast') {
                 this.selectedDestinationName = this.af[this.selectedDestinationType.name];
-            }         
+            }     
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -233,8 +254,8 @@ export class AddEditAPIFlowComponent implements OnInit {
         this.controlAPIFlowService.getDestinationTypes()
           .subscribe((data: any) => {
             this.ngProgress.done();
-            // this.destinationTypeList = data;
-            this.destinationTypeList = data.filter(d => d.name !== 'Any');
+            // this.destinationTypes = data;
+            this.destinationTypes = data.filter(d => d.name !== 'Any');
           }, error => {
             if (error.status === 0) {
               console.log('service down ', error);
@@ -253,15 +274,13 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     onCheckboxClicked(event) {
-        // Set Anonymous T/F
-        // this.af.anonymous = event.target.checked;
-        console.log(event.target.checked)
+        this.af.anonymous = event.target.checked;
     }
 
     getFormControls(type): AbstractControl[] {
         return (<FormArray>this.apiFlowForm.get(type)).controls;
     }
-  
+
     selectDestinationName(value) {
         this.selectedDestinationName = value === 'Select Destination Name' ? null : value;
     }
@@ -390,10 +409,33 @@ export class AddEditAPIFlowComponent implements OnInit {
         this.apiFlowForm.markAsDirty();
     }
 
-
     addValueControl(controlType) {
         const control = <FormArray>this.apiFlowForm.controls[controlType];
         this.addParameter({index: control.value.length, key: '', value: ''}, controlType);
+    }
+
+    getUsers() {
+        this.ngProgress.start();
+        this.userService.getAllUsers()
+          .subscribe(
+            (userData) => {
+              /** request completed */
+              this.ngProgress.done();
+              this.allUsers = userData['users'];
+            },
+            error => {
+              /** request completed */
+              this.ngProgress.done();
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.alertService.error(error.statusText);
+              }
+            });
+    }
+
+    selectAllowedUsers(user) {
+        console.log('user', user);
     }
 
     openModal(id: string) {

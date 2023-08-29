@@ -90,7 +90,7 @@
             </div>           
             <div class="field-body">
                 <div class="field">
-                    <input name="type" class="input is-small" type="text" [value]="af.operation_name">
+                    <input name="type" class="input is-small" type="text" [value]="af?.operation_name">
                 </div>
             </div>
         </div>
@@ -113,10 +113,9 @@
                                     </div>
                                     <div class="field-body">
                                         <div class="field">
-                                            <div class="control"
-                                                *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
+                                            <div class="control" *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
                                                 <ng-select [clearable]="false" placeholder="Select Destination Type"
-                                                    [items]="destinationTypeList" [multiple]="false" bindLabel="name"
+                                                    [items]="destinationTypes" [multiple]="false" bindLabel="name"
                                                     (change)="getDestinationNames($event)"
                                                     [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
                                                 </ng-select>
@@ -278,23 +277,33 @@
             <label class="label label-name has-text-left" title="Access to execute the entrypoint">Anonymous</label>
             </div>
             <div class="field-body">
-            <!-- <div class="field">
-                <input class="checkbox" [disabled]="!rolesService.hasControlAccess()" type="checkbox"
-                [checked]="af.anonymous" (click)="onCheckboxClicked($event)">
-            </div> -->
+                <div class="field">
+                    <input class="checkbox" [disabled]="!rolesService.hasControlAccess()" type="checkbox"
+                    [checked]="af?.anonymous" (click)="onCheckboxClicked($event)">
+                </div>
             </div>
         </div>
-        
-
-        <div class="field is-horizontal">
-        <div class="field-label">
-            <label class="label label-name has-text-left" title="Username' list">Allowed Users</label>
-        </div>
-        <div class="field-body">
-            <div class="field">
-            <!--- Show multi-select dropdown to allow choose Username/s-->
+        <div *ngIf="!af?.anonymous" class="field is-horizontal">
+            <div class="field-label">
+                <label class="label label-name has-text-left" title="Username' list">Allowed Users</label>
             </div>
-        </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control" *ngIf="rolesService.hasControlAccess(); else staticUsers">
+                        <ng-select [clearable]="false" placeholder="Select Users"
+                            [items]="allUsers" [multiple]="true" bindLabel="userName"
+                            (change)="selectAllowedUsers($event)"
+                            [ngModel]="selectedUsers" [ngModelOptions]="{standalone: true}">
+                        </ng-select>
+                    </div>
+                    <ng-template #staticUsers>
+                        <input name="users" class="input" type="text"
+                        [value]="selectedUsers ? selectedUsers : 'Select Users'"
+                        [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedUsers}"
+                        [readonly]="!rolesService.hasControlAccess()">
+                    </ng-template>
+                </div>
+            </div>
         </div>
         <div *ngIf="rolesService.hasControlAccess()" class="column footer-padding">
         <div class="columns">
