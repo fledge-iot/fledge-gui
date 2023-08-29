@@ -60,7 +60,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public infoTextTimestamps = {start : "", end: ""};
   public graphStartTimestamp: string;
   public zoomConfig = {minZoomValue: 1, isZoomed: false};
-  public isGraphShownFromMostRecentReading: boolean = false;
+  public fromMostRecent: boolean = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -114,7 +114,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.infoTextTimestamps.start = "";
     this.infoTextTimestamps.end = "";
     this.zoomConfig.isZoomed = false;
-    this.isGraphShownFromMostRecentReading = false;
+    this.fromMostRecent = false;
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
@@ -162,13 +162,12 @@ export class ReadingsGraphComponent implements OnDestroy {
   getTimeBasedAssetReadingsAndSummary(timeObject) {
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
-    this.isGraphShownFromMostRecentReading = false;
     this.optedTime = timeObject.optedTime;
     if (this.selectedTab == 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
       return;
     }
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   public getAssetCode(assetCode: string) {
@@ -219,7 +218,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (this.optedTime !== 0) {
       this.limit = 0;
       this.autoRefresh = false;
-      this.plotReadingsGraph(assetCode, this.limit, this.optedTime, 0, false);
+      this.plotReadingsGraph(assetCode, this.limit, this.optedTime, 0);
     }
     this.subscription = interval(this.graphRefreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
@@ -228,7 +227,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedTab === 4) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
-          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
           this.refreshAssets.next();
         }
       });
@@ -237,14 +236,13 @@ export class ReadingsGraphComponent implements OnDestroy {
   addOrRemoveAsset() {
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
-    this.isGraphShownFromMostRecentReading = false;
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   clearAdditionalAssets() {
     this.additionalAssets.push(this.selectedAsset);
     this.additionalAssets = [...this.additionalAssets];
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   getAssetLatestReadings(assetCode, isModalOpened = false) {
@@ -427,7 +425,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-  public plotReadingsGraph(assetCode, limit = null, time = null, previous:number|string = 0, mostrecent = false) {
+  public plotReadingsGraph(assetCode, limit = null, time = null, previous:number|string = 0) {
     this.zoomConfig.isZoomed = false;
     if (assetCode === '') {
       return false;
@@ -442,7 +440,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     let optedAssets = this.additionalAssets;
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
     this.limit = limit;
-    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous, mostrecent)
+    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous, this.fromMostRecent)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
@@ -658,11 +656,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (!this.isAlive) {
       this.backwardReadingCounter = 0;
       this.pauseTime = Date.now();
-      this.isGraphShownFromMostRecentReading = false;
       if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
         this.getLatestReading(this.assetCode);
       } else {
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
       }
       if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
@@ -874,7 +871,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     } else if (this.isLatestReadings) {
       this.getAssetLatestReadings(this.assetCode, true);
     } else {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
   }
 
@@ -901,8 +898,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
     // Instantly make a call on clicking play button
     if (this.isAlive) {
-      this.isGraphShownFromMostRecentReading = false;
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
     }
 
     // start auto refresh
@@ -913,7 +909,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (this.selectedTab === 4) {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
-          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+          this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
           this.refreshAssets.next();
         }
       });
@@ -921,7 +917,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   showBackwardReadingsGraph() {
     this.backwardReadingCounter++;
-    if(!this.isGraphShownFromMostRecentReading){
+    if(!this.fromMostRecent){
       this.showReadingsGraph();
       return;
     }
@@ -930,13 +926,13 @@ export class ReadingsGraphComponent implements OnDestroy {
       let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
       let prev = new Date(latestReadingTimestamp.valueOf() - this.optedTime*1000);
       let previous = moment(prev.toLocaleString(), 'DD/MM/YYYY, HH:mm:ss').format('YYYY-MM-DD HH:mm:ss.SSS');
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous, true);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
     }
   }
 
   showForwardReadingsGraph() {
     this.backwardReadingCounter--;
-    if(!this.isGraphShownFromMostRecentReading){
+    if(!this.fromMostRecent){
       this.showReadingsGraph();
       return;
     }
@@ -945,7 +941,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
       let prev = new Date(latestReadingTimestamp.valueOf() + this.optedTime*1000);
       let previous = moment(prev.toLocaleString(), 'DD/MM/YYYY, HH:mm:ss').format('YYYY-MM-DD HH:mm:ss.SSS');
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous, true);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
     }
   }
 
@@ -953,7 +949,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     let currentTime = Date.now();
     let timeDifference = Math.floor((currentTime - this.pauseTime) / 1000);
     let previous = timeDifference + this.backwardReadingCounter * this.optedTime;
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous, false);
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
   }
 
   calculateOptedTime(value, unit) {
@@ -980,7 +976,7 @@ export class ReadingsGraphComponent implements OnDestroy {
 
   resetZoom() {
     if (this.graphRefreshInterval === -1) {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, false);
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
       return;
     }
     this.toggleAutoRefresh(true);
@@ -990,7 +986,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     let ts_length = this.timestamps.length;
     if (ts_length != 0) {
       let graphStartingTimestamp: Date;
-      if(!this.isGraphShownFromMostRecentReading){
+      if(!this.fromMostRecent){
         let currentTime = Date.now();
         if (!this.isAlive) {
           let timeDifference = Math.floor(currentTime - this.pauseTime);
@@ -1032,9 +1028,35 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   showGraphFromMostRecentReading(){
-    this.isGraphShownFromMostRecentReading = true;
-    this.toggleAutoRefresh(false);
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, true);
+    this.fromMostRecent = true;
+    this.toggleBetweenMostRecentAndCurrent();
+  }
+
+  showGraphFromCurrentTime(){
+    this.fromMostRecent = false;
+    this.toggleBetweenMostRecentAndCurrent();
+  }
+
+  toggleBetweenMostRecentAndCurrent(){
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
+
+    // clear interval subscription before initializing it again
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
+    // Instantly make a call on click
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+
+    // start auto refresh
+    this.subscription = interval(this.graphRefreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.autoRefresh = true;
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+        this.refreshAssets.next();
+      });
   }
 
   public ngOnDestroy(): void {
