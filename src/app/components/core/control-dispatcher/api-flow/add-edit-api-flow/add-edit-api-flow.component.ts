@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { APIFlow, APIFlowType, DestinationType } from '../../../../../../../src/app/models/api-flow';
+import { APIFlow, APIFlowType } from '../../../../../../../src/app/models/api-flow';
 
 import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,7 +29,8 @@ export class AddEditAPIFlowComponent implements OnInit {
 
     QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
-    selectedType: APIFlowType;
+    selectedType;
+    types = [];
 
     selectedDestinationType = { cpdid: 0, name: "Broadcast" };  // Typecast with DestinationType enum
     selectedDestinationName = null; // required?
@@ -107,6 +108,7 @@ export class AddEditAPIFlowComponent implements OnInit {
           .subscribe((data: APIFlow) => {
             this.ngProgress.done();
             this.af = data;
+            this.types = Object.keys(APIFlowType).map(key => APIFlowType[key]).filter(value => typeof value === 'string') as string[];
             this.selectedType = this.af.type;
             this.selectedDestinationType.name = this.af.destination;
             if (this.selectedDestinationType.name !== 'Broadcast') {
@@ -375,8 +377,8 @@ export class AddEditAPIFlowComponent implements OnInit {
               this.alertService.error(error.statusText);
             }
           });
-      }
-
+    }
+    
     openModal(id: string) {
         console.log("openModal", id)
         // this.dialogService.open(id);

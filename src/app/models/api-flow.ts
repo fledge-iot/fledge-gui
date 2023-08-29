@@ -5,7 +5,7 @@ export class APIFlow {
   description: string;
   type: APIFlowType;
   operation_name?: string;
-  destination: string;   // typecast DestinationType
+  destination: string;
   destination_name?: string;
   constants: {};
   variables: {};
@@ -14,13 +14,6 @@ export class APIFlow {
 }
 
 export enum APIFlowType {
-  write = 0,
-  operation = 1
-}
-
-export enum DestinationType {
-  broadcast = 0,
-  service = 1,
-  asset = 2,
-  script = 3
+  Write = 0,
+  Operation = 1
 }

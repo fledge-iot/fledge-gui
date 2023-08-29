@@ -26,10 +26,10 @@
         class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
             <i class="far fa-question-circle"></i>
         </span> -->
-        <div class="column">
+        <div class="column is-four-fifths">
         <div [hidden]="editMode" class="field is-horizontal">
             <div class="field-label">
-            <label class="label label-name">Name</label>
+            <label class="label label-name has-text-left">Name</label>
             </div>
             <div class="field-body">
             <div class="field">
@@ -50,7 +50,7 @@
         </div>
         <div class="field is-horizontal">
             <div class="field-label">
-            <label class="label label-name">Type</label>
+            <label class="label label-name has-text-left">Type</label>
             </div>
             <div class="field-body">
             <div class="field" *ngIf="rolesService.hasControlAccess(); else staticTypeDiv">
@@ -67,10 +67,8 @@
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                     <div class="dropdown-content">
-                        <a (click)="changeType('operation');toggleDropdown('type-dropdown')"
-                        class="dropdown-item">operation</a>
-                        <a (click)="changeType('write');toggleDropdown('type-dropdown')"
-                        class="dropdown-item">write</a>
+                        <a *ngFor="let type of types" (click)="changeType(type);toggleDropdown('type-dropdown')"
+                        class="dropdown-item">{{type}}</a>
                     </div>
                     </div>
                 </div>
@@ -86,146 +84,169 @@
             </div>
         </div>
 
-        <!-- TODO: Show only if selected type is operation-->
-        <div class="field is-horizontal">
+        <div *ngIf="selectedType === 'Operation'" class="field is-horizontal">
             <div class="field-label">
-                <label class="label label-name">Operation</label>
-            </div>
-            
+                <label class="label label-name has-text-left">Operation</label>
+            </div>           
             <div class="field-body">
                 <div class="field">
-                        <!-- Operation name -->
-                        <!-- <input name="type" class="input is-small" type="text" [value]="af.operation_name"> -->
+                    <input name="type" class="input is-small" type="text" [value]="af.operation_name">
                 </div>
             </div>
         </div>
 
         <div class="field is-horizontal">
             <div class="field-label">
-            <label class="label label-name">Destination</label>
+                <label class="label label-name has-text-left">Destination</label>
             </div>
             <div class="field-body">
             <div class="field">
                 <div class="field is-horizontal">
-                <div class="field-body">
-                    <div class="field">
-                    <div class="control box">
-                        <div class="columns">
-                        <div class="column">
-                            <div class="field is-horizontal">
+                    <div class="field-body">
+                        <div class="field">
+                        <div class="control box">
+                            <div class="columns">
+                            <div class="column">
+                                <div class="field is-horizontal">
+                                    <div class="field-label is-small">
+                                        <label class="label is-small has-text-left">Type</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <div class="field">
+                                            <div class="control"
+                                                *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
+                                                <ng-select [clearable]="false" placeholder="Select Destination Type"
+                                                    [items]="destinationTypeList" [multiple]="false" bindLabel="name"
+                                                    (change)="getDestinationNames($event)"
+                                                    [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
+                                                </ng-select>
+                                            </div>
+                                            <ng-template #staticDestinationType>
+                                                <input name="destinationType" class="input" type="text"
+                                                [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
+                                                [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
+                                                [readonly]="!rolesService.hasControlAccess()">
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="selectedDestinationType?.name && !(selectedDestinationType.name === 'Any' || selectedDestinationType.name === 'Broadcast')"
+                                class="field is-horizontal">
                                 <div class="field-label is-small">
-                                    <label class="label is-small">Type</label>
+                                    <label class="label is-small has-text-left">Name</label>
                                 </div>
                                 <div class="field-body">
                                     <div class="field">
-                                        <div class="control"
-                                            *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
-                                            <ng-select [clearable]="false" placeholder="Select Destination Type"
-                                                [items]="destinationTypeList" [multiple]="false" bindLabel="name"
-                                                (change)="getDestinationNames($event)"
-                                                [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
-                                            </ng-select>
-                                        </div>
-                                        <ng-template #staticDestinationType>
-                                            <input name="destinationType" class="input" type="text"
-                                            [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
-                                            [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
-                                            [readonly]="!rolesService.hasControlAccess()">
-                                        </ng-template>
+                                    <div class="control"
+                                        *ngIf="rolesService.hasControlAccess(); else staticDestinationName">
+                                        <ng-select [clearable]="false" placeholder="Select Destination"
+                                        [items]="destinationNameList" [multiple]="false" bindLabel="name"
+                                        groupBy="groupbyType" (change)="selectDestinationName($event.name)"
+                                        [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
+                                        </ng-select>
+                                    </div>
+                                    <div *ngIf="!selectedDestinationName && selectedDestinationType"
+                                        class="help is-danger">
+                                        *required
+                                    </div>
+                                    <ng-template #staticDestinationName>
+                                        <input name="destinationName" class="input" type="text"
+                                        [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
+                                        [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
+                                        [readonly]="!rolesService.hasControlAccess()">
+                                    </ng-template>
                                     </div>
                                 </div>
-                            </div>
-                            <div *ngIf="selectedDestinationType?.name && !(selectedDestinationType.name === 'Any' || selectedDestinationType.name === 'Broadcast')"
-                            class="field is-horizontal">
-                            <div class="field-label is-small">
-                                <label class="label is-small">Name</label>
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                <div class="control"
-                                    *ngIf="rolesService.hasControlAccess(); else staticDestinationName">
-                                    <ng-select [clearable]="false" placeholder="Select Destination"
-                                    [items]="destinationNameList" [multiple]="false" bindLabel="name"
-                                    groupBy="groupbyType" (change)="selectDestinationName($event.name)"
-                                    [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
-                                    </ng-select>
-                                </div>
-                                <div *ngIf="!selectedDestinationName && selectedDestinationType"
-                                    class="help is-danger">
-                                    *required
-                                </div>
-                                <ng-template #staticDestinationName>
-                                    <input name="destinationName" class="input" type="text"
-                                    [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
-                                    [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
-                                    [readonly]="!rolesService.hasControlAccess()">
-                                </ng-template>
                                 </div>
                             </div>
+                            <div class="column is-1">
                             </div>
-                        </div>
-                        <div class="column is-1">
+                            </div>
                         </div>
                         </div>
                     </div>
-                    </div>
-                </div>
                 </div>
             </div>
             </div>
         </div>
 
-        <ng-container formArrayName="variables">
-            <div class="field is-horizontal" *ngFor="let v of getFormControls('variables'); let i = index">
-                <div *ngIf="i == 0" class="field-label">
-                    <label class="label">Variables</label>
-                </div>
-                <!-- <div *ngIf="i > 0" class="field-label">
-                    <label class="label"></label>
-                </div> -->
-                <div class="field-body" [formGroupName]="i">
-                    <div class="field" style="max-width: 20%;">
-                        <div class="control">
-                            <input formControlName="vName" placeholder="Variable name" class="input is-small"
-                            name="type" type="text">
-                        </div>
-                    </div>
-                <div class="field" style="max-width: 50%;">
-                    <div class="control">
-                        <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
-                    </div>
-                </div>
-                </div>
-            </div>
-        </ng-container>
 
-        <ng-container formArrayName="constants">
-            <div class="field is-horizontal" *ngFor="let c of getFormControls('constants'); let i = index">
-                <div *ngIf="i == 0" class="field-label">
-                <label class="label">Constants</label>
-                </div>
-                <div *ngIf="i > 0" class="field-label">
-                <label class="label"></label>
-                </div>
-                <div class="field-body" [formGroupName]="i">
-                <div class="field" style="max-width: 20%;">
-                    <div class="control">
-                    <input formControlName="cName" placeholder="Constant name" class="input is-small"
-                        name="type" type="text">
-                    </div>
-                </div>
-                <div class="field" style="max-width: 50%;">
-                    <div class="control">
-                    <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text">
-                    </div>
-                </div>
-                </div>
-            </div>
-        </ng-container>
 
         <div class="field is-horizontal">
             <div class="field-label">
-            <label class="label label-name" title="Access to execute the entrypoint">Anonymous</label>
+                <label class="label label-name has-text-left">Parameters</label>
+            </div>
+            <div class="field-body">
+            <div class="field">
+                <div class="field is-horizontal">
+                    <div class="field-body">
+                        <div class="field">
+                        <div class="control box">
+                            <div class="columns">
+                            <div class="column">
+                                <div class="field is-horizontal">
+                                    <div class="field-label is-small">
+                                        <label class="label is-small has-text-left">Variables</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <ng-container formArrayName="variables">
+                                            <div class="field is-horizontal" *ngFor="let v of getFormControls('variables'); let i = index">
+                                                <div class="field-body" [formGroupName]="i">
+                                                    <div class="field" style="max-width: 50%;">
+                                                        <div class="control">
+                                                            <input formControlName="vName" placeholder="Variable name" class="input is-small"
+                                                            name="type" type="text">
+                                                        </div>
+                                                    </div>
+                                                    <div class="field" style="max-width: 50%;">
+                                                        <div class="control">
+                                                            <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="field is-horizontal">
+                                    <div class="field-label is-small">
+                                        <label class="label is-small has-text-left">Constants</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <ng-container formArrayName="constants">
+                                            <div class="field is-horizontal" *ngFor="let c of getFormControls('constants'); let i = index">
+                                                <div class="field-body" [formGroupName]="i">
+                                                    <div class="field" style="max-width: 50%;">
+                                                        <div class="control">
+                                                            <input formControlName="cName" placeholder="Variable name" class="input is-small"
+                                                            name="type" type="text">
+                                                        </div>
+                                                    </div>
+                                                    <div class="field" style="max-width: 50%;">
+                                                        <div class="control">
+                                                            <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-1">
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="field is-horizontal">
+            <div class="field-label">
+            <label class="label label-name has-text-left" title="Access to execute the entrypoint">Anonymous</label>
             </div>
             <div class="field-body">
             <!-- <div class="field">
@@ -238,7 +259,7 @@
 
         <div class="field is-horizontal">
         <div class="field-label">
-            <label class="label label-name" title="Username' list">Allowed Users</label>
+            <label class="label label-name has-text-left" title="Username' list">Allowed Users</label>
         </div>
         <div class="field-body">
             <div class="field">
