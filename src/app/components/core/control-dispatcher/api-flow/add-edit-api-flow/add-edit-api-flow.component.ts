@@ -83,12 +83,14 @@ export class AddEditAPIFlowComponent implements OnInit {
           };
         this.getSourceDestTypes();
         this.getUsers();
-        this.addParameter({ index: 0, key: '', value: '' });
+        
         this.route.params.subscribe(params => {
             this._name = params['name'];
             if (this._name) {
               this.editMode = true;
               this.getAPIFlow();
+            } else {
+                this.addParameter({ index: 0, key: '', value: '' });
             }
         });
         this.types = Object.keys(APIFlowType).map(key => APIFlowType[key]).filter(value => typeof value === 'string') as string[];
@@ -124,8 +126,7 @@ export class AddEditAPIFlowComponent implements OnInit {
                 cName: [param?.key, Validators.required],
                 cValue: [param?.value]
               });
-        }
-        
+        }     
     }
 
     getAPIFlow() {
@@ -138,7 +139,9 @@ export class AddEditAPIFlowComponent implements OnInit {
             this.selectedDestinationType.name = this.af.destination;
             if (this.selectedDestinationType.name !== 'Broadcast') {
                 this.selectedDestinationName = this.af[this.selectedDestinationType.name];
-            }     
+            }
+            this.getParameters(data.variables, 'variables');
+            this.getParameters(data.constants, 'constants');
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -150,9 +153,22 @@ export class AddEditAPIFlowComponent implements OnInit {
           });
     }
 
+    getParameters(param, controlType) {
+        let parameters = [];
+        for (const [key, value] of Object.entries(param)) {
+            parameters.push({ key, value });
+        }
+        // remove duplicate objects from array
+        parameters = [...new Set(parameters.map(o => JSON.stringify(o)))].map(s => JSON.parse(s));
+        // generate parameters form controls
+        parameters.forEach((e, i) => {
+            this.addParameter({ index: i, key: e.key, value: e.value }, controlType);
+        });
+        return parameters;
+    }
+
     addAPIFlow() {
         let payload = null;
-        // Payload will be this.af?
         this.controlAPIFlowService.createAPIFlow(payload) 
         .subscribe(
           (data: any) => {

@@ -181,34 +181,39 @@
                         <div class="column">
                             <div class="field">
                                 <ng-container formArrayName="variables">
-                                    <div class="field is-horizontal" *ngFor="let v of getFormControls('variables'); let i = index">
-                                        <div *ngIf="i === 0" class="field-label is-small">
-                                            <label class="label is-small has-text-left">Variables</label>
-                                        </div>
-                                        <div *ngIf="i > 0" class="field-label">
-                                            <label class="label"></label>
-                                        </div>
-                                        <div class="field-body" [formGroupName]="i">
-                                            <div class="field" style="max-width: 50%;">
-                                                <div class="control">
-                                                    <input formControlName="vName" placeholder="Variable name" class="input is-small"
-                                                    name="type" type="text">
-                                                </div>
-                                            </div>
-                                            <div class="field" style="max-width: 50%;">
-                                                <div class="control">
-                                                    <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
-                                                </div>
-                                            </div>
-                                            <div class="field">
-                                                <button class="delete is-small" (click)="removeParameter(i, 'variables')"></button>
-                                            </div>
-                                        </div>
+                                    <div *ngIf="getFormControls('variables').length === 0" class="field-label is-small">
+                                        <label class="label is-small has-text-left">Variables</label>
                                     </div>
+                                    <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
+                                        <div class="field is-horizontal">
+                                            <div *ngIf="i === 0" class="field-label is-small">
+                                                <label class="label is-small has-text-left">Variables</label>
+                                            </div>
+                                            <div *ngIf="i > 0" class="field-label">
+                                                <label class="label"></label>
+                                            </div>
+                                            <div class="field-body" [formGroupName]="i">
+                                                <div class="field" style="max-width: 50%;">
+                                                    <div class="control">
+                                                        <input formControlName="vName" placeholder="Variable name" class="input is-small"
+                                                        name="type" type="text">
+                                                    </div>
+                                                </div>
+                                                <div class="field" style="max-width: 50%;">
+                                                    <div class="control">
+                                                        <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <button class="delete is-small" (click)="removeParameter(i, 'variables')"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
                                 </ng-container>
                             </div>
                             <div class="field">
-                                <div class="columns" *ngIf="editMode">
+                                <div class="columns">
                                     <div class="column is-one-fifth"></div>
                                     <div class="btn-column p-2">
                                         <button class="button is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
@@ -221,35 +226,40 @@
                                 </div>
                             </div>
                             <div class="field">
-                                <ng-container formArrayName="constants">
-                                    <div class="field is-horizontal" *ngFor="let c of getFormControls('constants'); let i = index">
-                                        <div *ngIf="i === 0" class="field-label is-small">
-                                            <label class="label is-small has-text-left">Constants</label>
-                                        </div>
-                                        <div *ngIf="i > 0" class="field-label">
-                                            <label class="label"></label>
-                                        </div>
-                                        <div class="field-body" [formGroupName]="i">
-                                            <div class="field" style="max-width: 50%;">
-                                                <div class="control">
-                                                    <input formControlName="cName" placeholder="Variable name" class="input is-small"
-                                                    name="type" type="text">
-                                                </div>
-                                            </div>
-                                            <div class="field" style="max-width: 50%;">
-                                                <div class="control">
-                                                    <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text">
-                                                </div>
-                                            </div>
-                                            <div class="field">
-                                                <button class="delete is-small" (click)="removeParameter(i, 'constants')"></button>
-                                            </div>
-                                        </div>
+                                <ng-container formArrayName="constants">                                  
+                                    <div *ngIf="getFormControls('constants').length === 0" class="field-label is-small">
+                                        <label class="label is-small has-text-left">Constants</label>
                                     </div>
+                                    <ng-container *ngFor="let c of getFormControls('constants'); let i = index">
+                                        <div class="field is-horizontal">
+                                            <div *ngIf="i === 0" class="field-label is-small">
+                                                <label class="label is-small has-text-left">Constants</label>
+                                            </div>
+                                            <div *ngIf="i > 0" class="field-label">
+                                                <label class="label"></label>
+                                            </div>
+                                            <div class="field-body" [formGroupName]="i">
+                                                <div class="field" style="max-width: 50%;">
+                                                    <div class="control">
+                                                        <input formControlName="cName" placeholder="Constant name" class="input is-small"
+                                                        name="type" type="text">
+                                                    </div>
+                                                </div>
+                                                <div class="field" style="max-width: 50%;">
+                                                    <div class="control">
+                                                        <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text">
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <button class="delete is-small" (click)="removeParameter(i, 'constants')"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>                                   
                                 </ng-container>
                             </div>
                             <div class="field">
-                                <div class="columns" *ngIf="editMode">
+                                <div class="columns">
                                     <div class="column is-one-fifth"></div>
                                     <div class="btn-column p-2">
                                         <button class="button is-small is-link is-light has-background-white"
@@ -270,39 +280,65 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
-    </div>
+
         <div class="field is-horizontal">
             <div class="field-label">
-            <label class="label label-name has-text-left" title="Access to execute the entrypoint">Anonymous</label>
+                <label class="label label-name has-text-left">Access</label>
             </div>
             <div class="field-body">
-                <div class="field">
-                    <input class="checkbox" [disabled]="!rolesService.hasControlAccess()" type="checkbox"
-                    [checked]="af?.anonymous" (click)="onCheckboxClicked($event)">
-                </div>
-            </div>
-        </div>
-        <div *ngIf="!af?.anonymous" class="field is-horizontal">
-            <div class="field-label">
-                <label class="label label-name has-text-left" title="Username' list">Allowed Users</label>
-            </div>
-            <div class="field-body">
-                <div class="field">
-                    <div class="control" *ngIf="rolesService.hasControlAccess(); else staticUsers">
-                        <ng-select [clearable]="false" placeholder="Select Users"
-                            [items]="allUsers" [multiple]="true" bindLabel="userName"
-                            (change)="selectAllowedUsers($event)"
-                            [ngModel]="selectedUsers" [ngModelOptions]="{standalone: true}">
-                        </ng-select>
+            <div class="field">
+                <div class="field is-horizontal">
+                    <div class="field-body">
+                        <div class="field">
+                        <div class="control box">
+                            <div class="columns">
+                            <div class="column">
+                                <div class="field is-horizontal">
+                                    <div class="field-label is-small">
+                                        <label class="label is-small has-text-left" title="Access to execute the entrypoint">Anonymous</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <div class="field">
+                                            <!-- TODO: FOGL-8037 -->
+                                            <input class="checkbox" [disabled]="!rolesService.hasControlAccess()" type="checkbox"
+                                                [checked]="(af?.anonymous === 't' || af?.anonymous === true) ? true : false" (click)="onCheckboxClicked($event)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- TODO: FOGL-8037 -->
+                                <div *ngIf="af?.anonymous === 'f' || !af?.anonymous" class="field is-horizontal">
+                                <div class="field-label is-small">
+                                    <label class="label is-small has-text-left">Allowed Users</label>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control" *ngIf="rolesService.hasControlAccess(); else staticUsers">
+                                            <ng-select [clearable]="false" placeholder="Select Users"
+                                                [items]="allUsers" [multiple]="true" bindLabel="userName"
+                                                (change)="selectAllowedUsers($event)"
+                                                [ngModel]="af.allow" [ngModelOptions]="{standalone: true}">
+                                            </ng-select>
+                                        </div>
+                                        <ng-template #staticUsers>
+                                            <input name="users" class="input" type="text"
+                                            [value]="af.allow ? af.allow : 'Select Users'"
+                                            [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedUsers}"
+                                            [readonly]="!rolesService.hasControlAccess()">
+                                        </ng-template>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="column is-1">
+                            </div>
+                            </div>
+                        </div>
+                        </div>
                     </div>
-                    <ng-template #staticUsers>
-                        <input name="users" class="input" type="text"
-                        [value]="selectedUsers ? selectedUsers : 'Select Users'"
-                        [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedUsers}"
-                        [readonly]="!rolesService.hasControlAccess()">
-                    </ng-template>
                 </div>
+            </div>
             </div>
         </div>
         <div *ngIf="rolesService.hasControlAccess()" class="column footer-padding">
