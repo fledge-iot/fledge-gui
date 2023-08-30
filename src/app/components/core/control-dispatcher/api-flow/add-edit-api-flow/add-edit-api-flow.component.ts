@@ -3,6 +3,7 @@ import { APIFlow, APIFlowType, User } from '../../../../../../../src/app/models'
 
 import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { isEmpty } from 'lodash';
 
 import {
     AlertService,
@@ -72,10 +73,10 @@ export class AddEditAPIFlowComponent implements OnInit {
     ngOnInit() {
         this.af = {
             name: '',
-            type: APIFlowType.Operation,  
+            type: APIFlowType.operation,  
             description: '',
             operation_name: '',
-            destination: '',
+            destination: 'broadcast',
             constants: {},
             variables: {},
             anonymous: false,
@@ -136,9 +137,9 @@ export class AddEditAPIFlowComponent implements OnInit {
           .subscribe((data: APIFlow) => {
             this.ngProgress.done();
             this.af = data;
-            this.selectedDestinationType.name = this.af.destination;
-            if (this.selectedDestinationType.name !== 'Broadcast') {
-                this.selectedDestinationName = this.af[this.selectedDestinationType.name];
+            // this.selectedDestinationType.name = this.af.destination;
+            if (this.af.destination !== 'broadcast') {
+                this.selectedDestinationName = this.af[this.af.destination];
             }
             this.getParameters(data.variables, 'variables');
             this.getParameters(data.constants, 'constants');
@@ -168,24 +169,27 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     addAPIFlow() {
-        let payload = null;
-        this.controlAPIFlowService.createAPIFlow(payload) 
-        .subscribe(
-          (data: any) => {
-            /** request completed */
-            this.ngProgress.done();  
-            this.alertService.success(data.message, true);
-            // reload?
-          },
-          error => {
-            /** request completed but error */
-            this.ngProgress.done();
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
+        let payload = this.af;
+        payload.destination = this.af.destination.toLowerCase();
+        payload.type = this.selectedType;
+        console.log('apiform', this.af);
+        // this.controlAPIFlowService.createAPIFlow(payload) 
+        // .subscribe(
+        //   (data: any) => {
+        //     /** request completed */
+        //     this.ngProgress.done();  
+        //     this.alertService.success(data.message, true);
+        //     // reload?
+        //   },
+        //   error => {
+        //     /** request completed but error */
+        //     this.ngProgress.done();
+        //     if (error.status === 0) {
+        //       console.log('service down ', error);
+        //     } else {
+        //       this.alertService.error(error.statusText);
+        //     }
+        //   });
     }
 
     updateAPIFlow() {
@@ -304,7 +308,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     getDestinationNames(selectedType) {
         this.destinationNameList = [];
         this.selectedDestinationName = null;
-        this.selectedDestinationType = selectedType === 'Select Destination Type' ? '' : selectedType;
+        this.af.destination = selectedType.name === 'Select Destination Type' ? '' : selectedType.name;
         switch (selectedType.name) {
           case 'Any':
           case 'Broadcast':
@@ -334,7 +338,7 @@ export class AddEditAPIFlowComponent implements OnInit {
               /** request completed */
               this.ngProgress.done();
               data.schedules.forEach(sch => {
-                if (this.selectedDestinationType.name === 'Service') {
+                if (this.af.destination === 'Service') {
                   if (['STARTUP'].includes(sch.type) && ['south_c', 'north_C'].includes(sch.processName)) {
                     if (sch.processName === 'south_c') {
                       sch.groupbyType = 'Southbound';

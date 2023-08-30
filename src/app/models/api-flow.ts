@@ -14,6 +14,6 @@ export class APIFlow {
 }
 
 export enum APIFlowType {
-  Write = 0,
-  Operation = 1
+  write = 0,
+  operation = 1
 }

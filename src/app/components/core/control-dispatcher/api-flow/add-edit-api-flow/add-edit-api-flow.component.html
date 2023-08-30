@@ -34,8 +34,8 @@
             <div class="field-body">
             <div class="field">
                 <div class="control">
-                <input #name=ngModel name="_name" class="input" type="text" placeholder="Name" required
-                    [(ngModel)]="_name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
+                <input #name=ngModel name="af.name" class="input" type="text" placeholder="Name" required
+                    [(ngModel)]="af.name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
                     [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
                     [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field':!rolesService.hasControlAccess()}"
                     [readonly]="!rolesService.hasControlAccess()">
@@ -59,7 +59,7 @@
                     <div class="dropdown-trigger">
                         <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                             (click)="toggleDropdown('type-dropdown')" placeholder="Select">
-                            <span>{{selectedType}}</span>
+                            <span>{{selectedType | titlecase}}</span>
                             <span class="icon is-small">
                             <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                             </span>
@@ -84,13 +84,14 @@
             </div>
         </div>
 
-        <div *ngIf="selectedType === 'Operation'" class="field is-horizontal">
+        <div *ngIf="selectedType === 'operation'" class="field is-horizontal">
             <div class="field-label">
                 <label class="label label-name has-text-left">Operation</label>
             </div>           
             <div class="field-body">
                 <div class="field">
-                    <input name="type" class="input is-small" type="text" [value]="af?.operation_name">
+                    <input name="type" [(ngModel)]="af.operation_name" #operation=ngModel name="af.operation_name" [ngModelOptions]="{standalone: true}"
+                     class="input is-small" placeholder="Operation Name" type="text">
                 </div>
             </div>
         </div>
@@ -117,19 +118,19 @@
                                                 <ng-select [clearable]="false" placeholder="Select Destination Type"
                                                     [items]="destinationTypes" [multiple]="false" bindLabel="name"
                                                     (change)="getDestinationNames($event)"
-                                                    [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
+                                                    [ngModel]="af.destination | titlecase" [ngModelOptions]="{standalone: true}">
                                                 </ng-select>
                                             </div>
                                             <ng-template #staticDestinationType>
                                                 <input name="destinationType" class="input" type="text"
-                                                [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
-                                                [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
+                                                [value]="af.destination ? af.destination : 'Select Destination Name'"
+                                                [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!af?.destination}"
                                                 [readonly]="!rolesService.hasControlAccess()">
                                             </ng-template>
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngIf="selectedDestinationType?.name && !(selectedDestinationType.name === 'Any' || selectedDestinationType.name === 'Broadcast')"
+                                <div *ngIf="af.destination && !((af.destination | titlecase) === 'Any' || (af.destination | titlecase) === 'Broadcast')"
                                 class="field is-horizontal">
                                 <div class="field-label is-small">
                                     <label class="label is-small has-text-left">Name</label>
@@ -144,7 +145,7 @@
                                         [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
                                         </ng-select>
                                     </div>
-                                    <div *ngIf="!selectedDestinationName && selectedDestinationType"
+                                    <div *ngIf="!selectedDestinationName && af.destination"
                                         class="help is-danger">
                                         *required
                                     </div>
@@ -358,7 +359,7 @@
                 <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
                 </p>
                 <p class="control">
-                <button (click)="onSubmit(apiFlowForm)" type="submit" class="button is-small"
+                <button (click)="addAPIFlow()" type="submit" class="button is-small"
                     [disabled]="apiFlowForm?.invalid">Save</button>
                 </p>
             </div>
