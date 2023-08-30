@@ -22,35 +22,35 @@
       </span>
       <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5)">
         <ng-container *ngIf="!fromMostRecent">
-          <button (click)="showGraphFromMostRecentReading()" class="button small-btn playback-button btn-enabled" title="Show Graph From Most Recent Reading">
+          <button (click)="showGraphFromMostRecentReading()" class="button small-btn playback-button btn-enabled" title="Show graph from most recent reading">
             <i class="fa fa-sm fa-bolt" aria-hidden="true"></i>
           </button>
         </ng-container>
         <ng-container *ngIf="fromMostRecent">
-          <button (click)="showGraphFromCurrentTime()" class="button small-btn playback-button btn-enabled" title="Show Graph From Current Time">
+          <button (click)="showGraphFromCurrentTime()" class="button small-btn playback-button btn-enabled" title="Show graph from current time">
             <i class="fa fa-sm fa-clock" aria-hidden="true"></i>
           </button>
         </ng-container>
-        <button [disabled]="isAlive" (click)="showBackwardReadingsGraph()" class="button small-btn playback-button"
-        [ngClass]="{'btn-enabled': !isAlive}" title="Move Backward">
+        <button [disabled]="isAlive" (click)="moveInReadingsGraph('back')" class="button small-btn playback-button"
+        [ngClass]="{'btn-enabled': !isAlive}" title="Move backward">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
         <ng-container *ngIf="isAlive">
           <button (click)="toggleAutoRefresh(false)" class="button small-btn playback-button btn-enabled"
-          title="Pause Graph">
+          title="Pause graph">
             <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
           </button>
         </ng-container>
         <ng-container *ngIf="!isAlive">
           <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
             class="button small-btn playback-button" [ngClass]="{'btn-enabled': !(graphRefreshInterval === -1)}"
-            title="Play Graph">
+            title="Play graph">
             <i class="fa fa-sm fa-play" aria-hidden="true"></i>
           </button>
         </ng-container>
-        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraph()"
+        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="moveInReadingsGraph('forward')"
           class="button small-btn playback-button" [ngClass]="{'btn-enabled': !(isAlive || backwardReadingCounter === 0)}"
-          title="Move Forward">
+          title="Move forward">
           <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
         </button>
       </ng-container>
@@ -88,7 +88,7 @@
             </div>
           </div>
           <div class="column">
-            <button *ngIf="zoomConfig.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset Zoom" class="button small-btn zoom-button">
+            <button *ngIf="zoomConfig.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset zoom" class="button small-btn zoom-button">
               <i class="fa fa-sm fa-search-minus" aria-hidden="true"></i>
             </button>
           </div>

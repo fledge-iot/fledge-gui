@@ -915,31 +915,28 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  showBackwardReadingsGraph() {
-    this.backwardReadingCounter++;
-    if(!this.fromMostRecent){
-      this.showReadingsGraph();
-      return;
+  moveInReadingsGraph(move: string) {
+    if (move === "back") {
+      this.backwardReadingCounter++;
     }
-    let ts_length = this.timestamps.length;
-    if(ts_length !== 0){
-      let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
-      let prev = new Date(latestReadingTimestamp.valueOf() - this.optedTime*1000);
-      let previous = moment(prev.toLocaleString(), 'DD/MM/YYYY, HH:mm:ss').format('YYYY-MM-DD HH:mm:ss.SSS');
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+    else {
+      this.backwardReadingCounter--;
     }
-  }
 
-  showForwardReadingsGraph() {
-    this.backwardReadingCounter--;
-    if(!this.fromMostRecent){
+    if (!this.fromMostRecent) {
       this.showReadingsGraph();
       return;
     }
     let ts_length = this.timestamps.length;
-    if(ts_length !== 0){
-      let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
-      let prev = new Date(latestReadingTimestamp.valueOf() + this.optedTime*1000);
+    if (ts_length !== 0) {
+      let latestReadingTimestamp = new Date(this.timestamps[ts_length - 1]);
+      let prev;
+      if (move === "back") {
+        prev = new Date(latestReadingTimestamp.valueOf() - this.optedTime * 1000);
+      }
+      else {
+        prev = new Date(latestReadingTimestamp.valueOf() + this.optedTime * 1000);
+      }
       let previous = moment(prev.toLocaleString(), 'DD/MM/YYYY, HH:mm:ss').format('YYYY-MM-DD HH:mm:ss.SSS');
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
     }
