@@ -5,6 +5,9 @@ import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray 
 import { ActivatedRoute, Router } from '@angular/router';
 import { isEmpty } from 'lodash';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
 import {
     AlertService,
     ControlAPIFlowService,
@@ -41,12 +44,16 @@ export class AddEditAPIFlowComponent implements OnInit {
     destinationNameList = [];
 
     editMode = false;
+    allowExecute = false;
+    
     _name: string;
     af: APIFlow;
     apiFlowForm: FormGroup;
     allUsers: User[];
     selectedUsers: [];
+    userName: string;
 
+    destroy$: Subject<boolean> = new Subject<boolean>();
     constructor(
         private cdRef: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -68,6 +75,11 @@ export class AddEditAPIFlowComponent implements OnInit {
                 variables: this.fb.array([]),
                 constants: this.fb.array([])
             });
+            this.sharedService.isUserLoggedIn
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(value => {
+                this.userName = value.userName;
+            });
         }
 
     ngOnInit() {
@@ -88,7 +100,6 @@ export class AddEditAPIFlowComponent implements OnInit {
         this.route.params.subscribe(params => {
             this._name = params['name'];
             if (this._name) {
-              this.editMode = true;
               this.getAPIFlow();
             } else {
                 this.addParameter({ index: 0, key: '', value: '' });
@@ -135,14 +146,20 @@ export class AddEditAPIFlowComponent implements OnInit {
         this.ngProgress.start();
         this.controlAPIFlowService.getAPIFlow(this._name)
           .subscribe((data: APIFlow) => {
+            this.editMode = true;
             this.ngProgress.done();
             this.af = data;
             // this.selectedDestinationType.name = this.af.destination;
             if (this.af.destination !== 'broadcast') {
                 this.selectedDestinationName = this.af[this.af.destination];
             }
-            this.getParameters(data.variables, 'variables');
-            this.getParameters(data.constants, 'constants');
+            let v = <FormArray>this.apiFlowForm.controls['variables'];
+            v.clear();
+            let c = <FormArray>this.apiFlowForm.controls['constants'];
+            c.clear()
+            this.fillParameters(data.variables, 'variables');
+            this.fillParameters(data.constants, 'constants');
+            this.allowExecute = data.anonymous === true || (data.anonymous === false && data.allow.includes(this.userName));
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -154,18 +171,13 @@ export class AddEditAPIFlowComponent implements OnInit {
           });
     }
 
-    getParameters(param, controlType) {
-        let parameters = [];
+    fillParameters(param, controlType) {
+        let i = 0
         for (const [key, value] of Object.entries(param)) {
-            parameters.push({ key, value });
+            // parameters.push({ key, value });
+            this.addParameter({ index: i, key: key, value: value }, controlType);
+            i++;
         }
-        // remove duplicate objects from array
-        parameters = [...new Set(parameters.map(o => JSON.stringify(o)))].map(s => JSON.parse(s));
-        // generate parameters form controls
-        parameters.forEach((e, i) => {
-            this.addParameter({ index: i, key: e.key, value: e.value }, controlType);
-        });
-        return parameters;
     }
 
     addAPIFlow() {

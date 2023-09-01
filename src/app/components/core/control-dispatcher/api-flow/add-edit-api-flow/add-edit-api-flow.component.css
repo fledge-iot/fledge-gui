@@ -12,10 +12,6 @@ table tr td {
     text-decoration: none;
 }
 
-.context-menu {
-    border: none;
-}
-
 .sub {
     color: #707070;
     font-size: .85rem;
@@ -42,3 +38,10 @@ span.is-small {
     margin-bottom: 5px;
 }
 
+.label.is-small {
+    font-size: 0.85rem !important;
+}
+
+.valign-middle {
+    vertical-align: middle;
+}
