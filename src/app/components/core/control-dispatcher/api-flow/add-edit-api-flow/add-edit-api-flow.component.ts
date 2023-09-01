@@ -96,17 +96,16 @@ export class AddEditAPIFlowComponent implements OnInit {
           };
         this.getSourceDestTypes();
         this.getUsers();
-        
+        this.types = Object.keys(APIFlowType).map(key => APIFlowType[key]).filter(value => typeof value === 'string') as string[];
         this.route.params.subscribe(params => {
             this._name = params['name'];
             if (this._name) {
               this.getAPIFlow();
             } else {
                 this.addParameter({ index: 0, key: '', value: '' });
+                this.selectedType = this.getSelectedType();
             }
-        });
-        this.types = Object.keys(APIFlowType).map(key => APIFlowType[key]).filter(value => typeof value === 'string') as string[];
-        this.selectedType = this.getSelectedType();
+        });     
     }
 
     getSelectedType() {
@@ -153,10 +152,11 @@ export class AddEditAPIFlowComponent implements OnInit {
             if (this.af.destination !== 'broadcast') {
                 this.selectedDestinationName = this.af[this.af.destination];
             }
+            this.selectedType =  this.getSelectedType();
             let v = <FormArray>this.apiFlowForm.controls['variables'];
             v.clear();
             let c = <FormArray>this.apiFlowForm.controls['constants'];
-            c.clear()
+            c.clear();
             this.fillParameters(data.variables, 'variables');
             this.fillParameters(data.constants, 'constants');
             this.allowExecute = data.anonymous === true || (data.anonymous === false && data.allow.includes(this.userName));
@@ -180,28 +180,41 @@ export class AddEditAPIFlowComponent implements OnInit {
         }
     }
 
-    addAPIFlow() {
+    addAPIFlow(data) {
         let payload = this.af;
-        payload.destination = this.af.destination.toLowerCase();
+        let variables = {};
+        let constants = {};
+        const destination = this.af.destination.toLowerCase();
+
+        data.variables.forEach(v => { variables[v.vName] = v.vValue });
+        data.constants.forEach(c => { constants[c.cName] = c.cValue });
+
+        payload.variables = variables;
+        payload.constants = constants;
+        payload.destination = destination;
         payload.type = this.selectedType;
-        console.log('apiform', this.af);
-        // this.controlAPIFlowService.createAPIFlow(payload) 
-        // .subscribe(
-        //   (data: any) => {
-        //     /** request completed */
-        //     this.ngProgress.done();  
-        //     this.alertService.success(data.message, true);
-        //     // reload?
-        //   },
-        //   error => {
-        //     /** request completed but error */
-        //     this.ngProgress.done();
-        //     if (error.status === 0) {
-        //       console.log('service down ', error);
-        //     } else {
-        //       this.alertService.error(error.statusText);
-        //     }
-        //   });
+        payload[destination] = this.selectedDestinationName;
+
+        // TODO: add description field in the form
+        this.af.description = 'dummy';
+
+        this.controlAPIFlowService.createAPIFlow(payload) 
+        .subscribe(
+          (data: any) => {
+            /** request completed */
+            this.ngProgress.done();  
+            this.alertService.success(data.message, true);
+            this.router.navigate(['control-dispatcher', 'api']);
+          },
+          error => {
+            /** request completed but error */
+            this.ngProgress.done();
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
     }
 
     updateAPIFlow() {
@@ -453,7 +466,9 @@ export class AddEditAPIFlowComponent implements OnInit {
             (userData) => {
               /** request completed */
               this.ngProgress.done();
-              this.allUsers = userData['users'];
+              this.allUsers = userData['users'].map(user => {
+                return user.userName;
+              });
             },
             error => {
               /** request completed */
@@ -467,7 +482,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     selectAllowedUsers(user) {
-        console.log('user', user);
+        this.af.allow = user;
     }
 
     openModal(id: string) {
