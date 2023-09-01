@@ -9,7 +9,7 @@ export class APIFlow {
   destination_name?: string;
   constants: {};
   variables: {};
-  anonymous: boolean;
+  anonymous: any;  // TODO: FOGL-8070
   allow: string[] // List of allowed users' username
 }
 

@@ -73,7 +73,7 @@
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
                             <a *ngFor="let type of types" (click)="changeType(type);toggleDropdown('type-dropdown')"
-                            class="dropdown-item">{{type}}</a>
+                            class="dropdown-item">{{type | titlecase}}</a>
                         </div>
                         </div>
                     </div>
@@ -360,6 +360,26 @@
                 </div>
                 </div>
             </div>
+
+            <div [hidden]="editMode" class="field is-horizontal">
+                <div class="field-label">
+                <label class="label label-name has-text-left">Description</label>
+                </div>
+                <div class="field-body">
+                <div class="field">
+                    <div class="control">
+                        <textarea rows="2" type="text" class="textarea is-small" placeholder="description" name='description'
+                        [(ngModel)]="af.description" trim="blur" #description="ngModel" [ngModelOptions]="{standalone: true}"></textarea>
+                    </div>
+                    <div *ngIf="description.invalid && (description.dirty || description.touched)" class="help is-danger">
+                        <div *ngIf="description.errors?.['required']">
+                            *required
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
             <div *ngIf="rolesService.hasControlAccess()" class="column footer-padding">
             <div class="columns">
                 <div class="column is-2"></div>

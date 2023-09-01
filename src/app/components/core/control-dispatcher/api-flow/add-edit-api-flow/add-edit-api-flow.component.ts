@@ -103,14 +103,15 @@ export class AddEditAPIFlowComponent implements OnInit {
               this.getAPIFlow();
             } else {
                 this.addParameter({ index: 0, key: '', value: '' });
-                this.selectedType = this.getSelectedType();
+                this.getSelectedType();
             }
         });     
     }
 
     getSelectedType() {
-        let keys = Object.keys(APIFlowType).filter(x => APIFlowType[x] == this.af.type);
-        return keys.length > 0 ? keys[0] : null;
+        let keys = Object.values(APIFlowType).filter(x => APIFlowType[x] == this.af.type);
+        const type = keys[0];
+        this.selectedType = APIFlowType[type];
     }
 
     addParameter(param = null, controlType = null) {
@@ -148,11 +149,14 @@ export class AddEditAPIFlowComponent implements OnInit {
             this.editMode = true;
             this.ngProgress.done();
             this.af = data;
-            // this.selectedDestinationType.name = this.af.destination;
             if (this.af.destination !== 'broadcast') {
                 this.selectedDestinationName = this.af[this.af.destination];
             }
-            this.selectedType =  this.getSelectedType();
+            this.getSelectedType();
+            
+            // TODO: FOGL-8070
+            this.af.anonymous = data.anonymous === 't' || data.anonymous === true ? true : false;
+            
             let v = <FormArray>this.apiFlowForm.controls['variables'];
             v.clear();
             let c = <FormArray>this.apiFlowForm.controls['constants'];
@@ -184,20 +188,23 @@ export class AddEditAPIFlowComponent implements OnInit {
         let payload = this.af;
         let variables = {};
         let constants = {};
+        console.log('this.af.destination', this.af.destination);
         const destination = this.af.destination.toLowerCase();
 
         data.variables.forEach(v => { variables[v.vName] = v.vValue });
         data.constants.forEach(c => { constants[c.cName] = c.cValue });
 
         payload.variables = variables;
-        payload.constants = constants;
-        payload.destination = destination;
+        payload.constants = constants;     
         payload.type = this.selectedType;
-        payload[destination] = this.selectedDestinationName;
-
-        // TODO: add description field in the form
-        this.af.description = 'dummy';
-
+        payload.destination = destination;     
+        if (destination !== 'broadcast') {
+            payload[destination] = this.selectedDestinationName;
+        }
+        if (this.editMode) {
+            this.updateAPIFlow();
+            return;
+        }
         this.controlAPIFlowService.createAPIFlow(payload) 
         .subscribe(
           (data: any) => {
@@ -218,15 +225,13 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     updateAPIFlow() {
-        let payload = null;
-        // Payload will be this.af?
-        // renaming allowed?
-        this.controlAPIFlowService.updateAPIFlow(this._name, payload) 
+        this.controlAPIFlowService.updateAPIFlow(this._name, this.af) 
         .subscribe(
           (data: any) => {
             /** request completed */
             this.ngProgress.done();  
             this.alertService.success(data.message, true);
+            this.router.navigate(['control-dispatcher', 'api']);
           },
           error => {
             /** request completed but error */
