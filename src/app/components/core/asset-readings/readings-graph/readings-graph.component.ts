@@ -61,6 +61,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public graphStartTimestamp: string;
   public zoomConfig = {minZoomValue: 1, isZoomed: false};
   public fromMostRecent: boolean = false;
+  public isReadingsFetched = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -390,11 +391,13 @@ export class ReadingsGraphComponent implements OnDestroy {
     return canvas.toDataURL("image/png");
   }
 
-  public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0) {
-    this.assetService.getAllAssetSummary(assetCode, limit, time)
+  public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0, previous: number = 0) {
+    this.isReadingsFetched = false;
+    this.assetService.getAllAssetSummary(assetCode, limit, time, previous)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
+          this.isReadingsFetched = true;
           this.showSpinner = false;
           this.assetReadingSummary = data
             .map(o => {
@@ -440,10 +443,12 @@ export class ReadingsGraphComponent implements OnDestroy {
     let optedAssets = this.additionalAssets;
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
     this.limit = limit;
+    this.isReadingsFetched = false;
     this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous, this.fromMostRecent)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
+          this.isReadingsFetched = true;
           this.loadPage = false;
           this.getReadings(data, time);
         },
@@ -656,13 +661,15 @@ export class ReadingsGraphComponent implements OnDestroy {
     if (!this.isAlive) {
       this.backwardReadingCounter = 0;
       this.pauseTime = Date.now();
-      if (this.graphRefreshInterval === -1 && this.isLatestReadings) {
+      if (this.isLatestReadings) {
         this.getLatestReading(this.assetCode);
-      } else {
-        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+        return;
       }
       if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      }
+      else {
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
       }
     }
   }
@@ -898,7 +905,12 @@ export class ReadingsGraphComponent implements OnDestroy {
 
     // Instantly make a call on clicking play button
     if (this.isAlive) {
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+      if(this.selectedTab === 4){
+        this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
+      }
+      else{
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+      }
     }
 
     // start auto refresh
@@ -946,7 +958,12 @@ export class ReadingsGraphComponent implements OnDestroy {
     let currentTime = Date.now();
     let timeDifference = Math.floor((currentTime - this.pauseTime) / 1000);
     let previous = timeDifference + this.backwardReadingCounter * this.optedTime;
-    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+    if(this.selectedTab === 4){
+      this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime, previous);
+    }
+    else{
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+    }
   }
 
   calculateOptedTime(value, unit) {
