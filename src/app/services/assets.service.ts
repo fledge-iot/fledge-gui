@@ -107,13 +107,16 @@ export class AssetsService {
   *  @param assetCode
   *  Return a set of readings summary for the given asset code
   */
-  public getAllAssetSummary(assetCode: string, limit: Number = 0, time: Number = 0) {
+  public getAllAssetSummary(assetCode: string, limit: Number = 0, time: Number = 0, previous: number = 0) {
     let params = new HttpParams();
     if (+time !== 0) {
       params = params.append('seconds', time.toString());
     }
     if (+limit !== 0) {
       params = params.set('limit', limit.toString());
+    }
+    if(+previous !== 0){
+      params = params.append('previous', previous.toString());
     }
     return this.http.get(this.GET_ASSET + '/' + encodeURIComponent(assetCode) + '/summary', { params: params }).pipe(
       map(response => response),
