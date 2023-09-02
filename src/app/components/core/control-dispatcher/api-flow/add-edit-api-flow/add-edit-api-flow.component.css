@@ -45,3 +45,59 @@ span.is-small {
 .valign-middle {
     vertical-align: middle;
 }
+
+::ng-deep .ng-select .ng-select-container,
+::ng-deep .ng-select.ng-select .ng-select-container {
+  height: 30px !important;
+  font-size: 0.8em;
+  min-height: 28px !important;
+}
+
+::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+  color: #848181 !important;
+  font-size: 0.8rem !important;
+  max-height: 200px !important;
+}
+
+.anonymous-warning {
+    font-size: 0.8em;
+}
+
+.access-label {
+    white-space: nowrap;
+}
+
+
+
+/* .btn {
+    background-color: #2196F3;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+  }
+  
+  .dropdown {
+    position: absolute;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  } */
+  
+  .btn:hover, .dropdown:hover .btn {
+    background-color: rgb(178, 34, 34);;
+  }

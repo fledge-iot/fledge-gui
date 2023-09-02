@@ -157,7 +157,7 @@
                                         <div class="control"
                                             *ngIf="rolesService.hasControlAccess(); else staticDestinationName">
                                             <ng-select [clearable]="false" placeholder="Select Destination"
-                                            [items]="destinationNameList" [multiple]="false" bindLabel="name"
+                                            [items]="destinationNames" [multiple]="false" bindLabel="name"
                                             groupBy="groupbyType" (change)="selectDestinationName($event.name)"
                                             [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
                                             </ng-select>
@@ -303,7 +303,7 @@
     
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left" title="Access to execute the entry point">Execution Access</label>
+                    <label class="label label-name has-text-left access-label" title="Access to execute the entry point">Execution Access</label>
                 </div>
                 <div class="field-body">
                 <div class="field">
@@ -313,6 +313,11 @@
                             <div class="control box">
                                 <div class="columns">
                                 <div class="column">
+                                    <article *ngIf="af.anonymous === true && rolesService.hasControlAccess()" class="message my-1 is-warning">
+                                        <div class="message-body pl-3 py-2"> 
+                                            <small class="anonymous-warning">This will allow any user to execute the entrypoint. Its recommended to allow specific authenticated users only.</small> 
+                                        </div>
+                                    </article>
                                     <div class="field is-horizontal">
                                         <div class="field-label">
                                             <label class="label is-small has-text-left" title="Access to execute the entry point">Anonymous</label>
@@ -327,8 +332,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- TODO: FOGL-8037 -->
-                                    <div *ngIf="af?.anonymous === 'f' || af?.anonymous === false" class="field is-horizontal">
+                                    <div class="field is-horizontal">
                                     <div class="field-label">
                                         <label class="label is-small has-text-left">Allow Users</label>
                                     </div>
@@ -385,10 +389,36 @@
                 <div class="column is-2"></div>
                 <div class="column" *ngIf="editMode">
                 <div class="field is-grouped control-pad">
-                    <p class="control">
-                    <button (click)="openModal('confirmation-dialog')" type="button"
-                        class="button is-small is-danger is-outlined">Delete</button>
-                    </p>
+                                  
+                        <div id="ed-dropdown" class="dropdown is-left">
+                            <div class="dropdown-trigger">
+                              <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropdown('ed-dropdown')">
+                                <span>Execute/Delete</span>
+                                <span class="icon is-small">
+                                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                              </button>
+                            </div>
+                            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                <div class="dropdown-content">
+                                    <a class="dropdown-item" (click)="openModal('confirmation-execute-dialog')">Execute</a>
+                                </div>
+                                <div class="dropdown-content">
+                                    <a class="dropdown-item" (click)="openModal('confirmation-delete-dialog')">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                       
+                        <!-- TODO: WIP -->
+                        <!-- <a class="button is-small pl-6 is-warning" (click)="openModal('confirmation-execute-dialog')" type="button">Execute</a>
+                        <div class="dropdown">
+                            <button class="button is-small">
+                                <i class="fa fa-caret-down"></i>
+                            </button>
+                        <div class="dropdown-content">
+                            <a class="dropdown-item is-danger" (click)="openModal('confirmation-delete-dialog')">Delete</a>
+                        </div>
+                        </div> -->
                 </div>
                 </div>
                 <div class="column">
@@ -412,16 +442,66 @@
     
     </div>
     
-    <app-confirmation-dialog id="confirmation-dialog">
+    <app-confirmation-dialog id="confirmation-execute-dialog">
     <header class="modal-card-head">
-        <p class="modal-card-title is-size-6">Delete</p>
-        <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+        <p class="modal-card-title is-size-6">Request {{af.name}}</p>
+        <!-- <p class="subtitle is-size-6">{{af.description}}</p> -->
+        <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
     </header>
     <section class="modal-card-body">
-        Are you sure, you want to delete this Control API Entry Point <b>{{name}}</b>?
+        <p>Values for {{af.name}} request execution:</p>
+        <br>
+        <form [formGroup]="apiFlowFormCopy">
+            <div class="field is-horizontal">
+                <!-- <div class="field-label">
+                    <label class="label label-name has-text-left">Variables</label>
+                </div> -->
+                <div class="field-body">
+                    <div class="field">
+                        <ng-container formArrayName="variables">
+                            <!-- <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
+                                <small class="text-secondary has-text-grey-light">
+                                    There are no variable parameters associated with this entry point.
+                                </small>
+                            </div> -->
+                            <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
+                                <div class="field is-horizontal">
+                                    <!-- <div *ngIf="i === 0" class="field-label is-small">
+                                        <label class="label is-small has-text-left">Variables</label>
+                                    </div> -->
+                                    <div *ngIf="i > 0" class="field-label">
+                                        <label class="label"></label>
+                                    </div>
+                                    <div class="field-body" [formGroupName]="i">
+                                        <div class="field" style="max-width: 20%;">
+                                            <div class="control">
+                                                <!-- <div class="field-label is-small">
+                                                    <label class="label is-small has-text-left">{{vName}}</label>
+                                                </div> -->
+                                                <input name="type" class="input is-static static-field" type="text" formControlName="vName" readonly>
+                                                <!-- <input formControlName="vName" placeholder="Variable name" class="input is-small"
+                                                name="type" type="text" readonly> -->
+                                            </div>
+                                        </div>
+                                        <div class="field" style="max-width: 50%;">
+                                            <div class="control">
+                                                <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
+                                            </div>
+                                        </div>
+                                        <!-- <div class="field">
+                                            <button class="delete is-small valign-middle" (click)="removeParameter(i, 'variables')"></button>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </form>
     </section>
     <footer class="modal-card-foot">
-        <button class="button is-small" type="button" (click)="closeModal('confirmation-dialog')">Cancel</button>
-        <button class="button is-small is-danger" type="button" (click)="deleteAPIFlow()">Delete</button>
+        <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
+        <button class="button is-small is-warning" type="button" (click)="requestAPIFlow(apiFlowFormCopy.value)">Execute</button>
     </footer>
     </app-confirmation-dialog>

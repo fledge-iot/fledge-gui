@@ -3,7 +3,6 @@ import { APIFlow, APIFlowType, User } from '../../../../../../../src/app/models'
 
 import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { isEmpty } from 'lodash';
 
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -41,7 +40,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     selectedDestinationName = null;
  
     destinationTypes = [];
-    destinationNameList = [];
+    destinationNames = [];
 
     editMode = false;
     allowExecute = false;
@@ -49,9 +48,11 @@ export class AddEditAPIFlowComponent implements OnInit {
     _name: string;
     af: APIFlow;
     apiFlowForm: FormGroup;
+    apiFlowFormCopy: FormGroup;
+
     allUsers: User[];
     selectedUsers: [];
-    userName: string;
+    loggedInUsername: string;
 
     destroy$: Subject<boolean> = new Subject<boolean>();
     constructor(
@@ -75,17 +76,21 @@ export class AddEditAPIFlowComponent implements OnInit {
                 variables: this.fb.array([]),
                 constants: this.fb.array([])
             });
+            this.apiFlowFormCopy = this.fb.group({
+                variables: this.fb.array([]),
+                constants: this.fb.array([])
+            });
             this.sharedService.isUserLoggedIn
             .pipe(takeUntil(this.destroy$))
             .subscribe(value => {
-                this.userName = value.userName;
+                this.loggedInUsername = value.loggedInUsername;
             });
         }
 
     ngOnInit() {
         this.af = {
             name: '',
-            type: APIFlowType.operation,  
+            type: APIFlowType.write,
             description: '',
             operation_name: '',
             destination: 'broadcast',
@@ -94,7 +99,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             anonymous: false,
             allow: []
           };
-        this.getSourceDestTypes();
+        this.getDestTypes();
         this.getUsers();
         this.types = Object.keys(APIFlowType).map(key => APIFlowType[key]).filter(value => typeof value === 'string') as string[];
         this.route.params.subscribe(params => {
@@ -103,7 +108,7 @@ export class AddEditAPIFlowComponent implements OnInit {
               this.getAPIFlow();
             } else {
                 this.addParameter({ index: 0, key: '', value: '' });
-                this.getSelectedType();
+                this.selectedType = 'write';
             }
         });     
     }
@@ -124,6 +129,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             const control = <FormArray>this.apiFlowForm.controls[controlType];
             control.push(this.initParameter(param, controlType));
         }
+        this.apiFlowFormCopy = this.apiFlowForm;
     }
 
     initParameter(param = null, controlType) {
@@ -163,7 +169,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             c.clear();
             this.fillParameters(data.variables, 'variables');
             this.fillParameters(data.constants, 'constants');
-            this.allowExecute = data.anonymous === true || (data.anonymous === false && data.allow.includes(this.userName));
+            this.allowExecute = data.anonymous === true || (data.anonymous === false && data.allow.includes(this.loggedInUsername));
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -188,7 +194,6 @@ export class AddEditAPIFlowComponent implements OnInit {
         let payload = this.af;
         let variables = {};
         let constants = {};
-        console.log('this.af.destination', this.af.destination);
         const destination = this.af.destination.toLowerCase();
 
         data.variables.forEach(v => { variables[v.vName] = v.vValue });
@@ -244,44 +249,57 @@ export class AddEditAPIFlowComponent implements OnInit {
           });
     }
 
+    public toggleDropDown(id: string) {
+        const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
+        if (activeDropDowns.length > 0) {
+          if (activeDropDowns[0].id !== id) {
+            activeDropDowns[0].classList.remove('is-active');
+          }
+        }
+        const dropDown = document.querySelector(`#${id}`);
+        dropDown.classList.toggle('is-active');
+      }
+
     deleteAPIFlow() {
-        this.controlAPIFlowService.deleteAPIFlow(this._name) 
-        .subscribe(
-          (data: any) => {
+        console.log('deleteAPIFlow');
+        // this.controlAPIFlowService.deleteAPIFlow(this._name) 
+        // .subscribe(
+        //   (data: any) => {
+        //     /** request completed */
+        //     this.ngProgress.done();
+        //     this.alertService.success(data.message, true);
+        //     this.router.navigate(['control-dispatcher/api']);
+        //   },
+        //   error => {
+        //     /** request completed but error */
+        //     this.ngProgress.done();
+        //     if (error.status === 0) {
+        //       console.log('service down ', error);
+        //     } else {
+        //       this.alertService.error(error.statusText);
+        //     }
+        //   });
+    }
+  
+    requestAPIFlow(value) {
+        let variables = {};
+        value.variables.forEach(v => { variables[v.vName] = v.vValue });
+        this.controlAPIFlowService.requestAPIFlow(this.af.name, variables) 
+        .subscribe((data: any) => {
             /** request completed */
             this.ngProgress.done();
             this.alertService.success(data.message, true);
-            this.router.navigate(['control-dispatcher/api']);
-          },
-          error => {
+            this.closeModal('confirmation-execute-dialog');
+            this.getAPIFlow();
+            },
+            error => {
             /** request completed but error */
             this.ngProgress.done();
             if (error.status === 0) {
-              console.log('service down ', error);
+                console.log('service down ', error);
             } else {
-              this.alertService.error(error.statusText);
+                this.alertService.error(error.statusText);
             }
-          });
-    }
-  
-    // request/execute entrypoint
-    requestAPIFlow(name, payload) {
-      // payload having variables (& constants?) object with overridden values
-      this.controlAPIFlowService.requestAPIFlow(name, payload) 
-      .subscribe(
-        (data: any) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success(data.message, true);
-        },
-        error => {
-          /** request completed but error */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
         });
     }
 
@@ -300,7 +318,7 @@ export class AddEditAPIFlowComponent implements OnInit {
         this.selectedType = value === 'Select Type' ? '' : value;
     }
 
-    getSourceDestTypes() {
+    getDestTypes() {
         this.controlAPIFlowService.getDestinationTypes()
           .subscribe((data: any) => {
             this.ngProgress.done();
@@ -336,7 +354,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     getDestinationNames(selectedType) {
-        this.destinationNameList = [];
+        this.destinationNames = [];
         this.selectedDestinationName = null;
         this.af.destination = selectedType.name === 'Select Destination Type' ? '' : selectedType.name;
         switch (selectedType.name) {
@@ -395,7 +413,7 @@ export class AddEditAPIFlowComponent implements OnInit {
               })
               const SortedSouthboundSvc = southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
               const SortedNorthboundSvc = northboundSvc.sort((a, b) => a.name.localeCompare(b.name));
-              this.destinationNameList = SortedSouthboundSvc.concat(SortedNorthboundSvc);            
+              this.destinationNames = SortedSouthboundSvc.concat(SortedNorthboundSvc);            
             },
             error => {
               /** request completed */
@@ -421,7 +439,7 @@ export class AddEditAPIFlowComponent implements OnInit {
                 asset['name'] = asset.assetCode;
                 nameList.push(asset);
               });
-              this.destinationNameList = nameList.sort((a, b) => a.name.localeCompare(b.name));
+              this.destinationNames = nameList.sort((a, b) => a.name.localeCompare(b.name));
             },
             error => {
               /** request completed but error */
@@ -440,7 +458,7 @@ export class AddEditAPIFlowComponent implements OnInit {
         this.controlService.fetchControlServiceScripts()
           .subscribe((data: any) => {
             this.ngProgress.done();
-            this.destinationNameList = data.scripts.sort((a, b) => a.name.localeCompare(b.name));
+            this.destinationNames = data.scripts.sort((a, b) => a.name.localeCompare(b.name));
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -491,13 +509,10 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     openModal(id: string) {
-        console.log("openModal", id)
-        // this.dialogService.open(id);
+        this.dialogService.open(id);
     }
     
     closeModal(id: string) {
-        console.log("closeModal", id)
-        // this.dialogService.close(id);
+        this.dialogService.close(id);
     }
-
 }
