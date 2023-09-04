@@ -194,8 +194,8 @@ export class APIFlowComponent implements OnInit {
             });
     }
 
-    selectAllowedUsers(user) {
-        this.allowedUser = user;
+    selectAllowedUsers(usernames) {
+        this.allowedUser = usernames;
     }
 
     updateAPIFlow() {

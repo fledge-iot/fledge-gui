@@ -132,6 +132,13 @@ export class AddEditAPIFlowComponent implements OnInit {
         this.apiFlowFormCopy = this.apiFlowForm;
     }
 
+    removeParameter(index: number, param) {
+      // remove parameter from the list
+      const control = <FormArray>this.apiFlowForm.controls[param];
+      control.removeAt(index);
+      this.apiFlowForm.markAsDirty();
+    }
+
     initParameter(param = null, controlType) {
         // initialize
         if (controlType === 'variables') {
@@ -311,17 +318,6 @@ export class AddEditAPIFlowComponent implements OnInit {
         });
     }
 
-    public toggleDropdown(id) {
-        const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
-        if (activeDropDowns.length > 0) {
-          if (activeDropDowns[0].id !== id) {
-            activeDropDowns[0].classList.remove('is-active');
-          }
-        }
-        const dropDown = document.querySelector(`#${id}`);
-        dropDown.classList.toggle('is-active');
-    }
-
     changeType(value) {
         this.selectedType = value === 'Select Type' ? '' : value;
     }
@@ -476,13 +472,6 @@ export class AddEditAPIFlowComponent implements OnInit {
               this.alertService.error(error.statusText);
             }
           });
-    }
-
-    removeParameter(index: number, param) {
-        // remove parameter from the list
-        const control = <FormArray>this.apiFlowForm.controls[param];
-        control.removeAt(index);
-        this.apiFlowForm.markAsDirty();
     }
 
     addValueControl(controlType) {
