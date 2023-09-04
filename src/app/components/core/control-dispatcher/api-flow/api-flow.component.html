@@ -52,45 +52,45 @@
 
                         <td class="align-content">
                             <ng-container *ngIf="rolesService.hasControlAccess(); else staticText">
-                              <input class="checkbox" type="checkbox" [checked]="ep?.anonymous"
+                              <input class="checkbox" type="checkbox" [checked]="ep?.permitted"
                                 (click)="onCheckboxClicked($event, ep.name)">
                             </ng-container>
                             <ng-template #staticText>
-                              <input disabled class="checkbox" type="checkbox" [checked]="ep?.anonymous">
+                              <input disabled class="checkbox" type="checkbox" [checked]="ep?.permitted">
                             </ng-template>
-                          </td>
+                        </td>
 
-                          <td>
-                            <!-- TODO: Show to Editor or above role based users only, if auth required -->
-                            <div class="dropdown is-left is-hoverable">
-                              <div class="dropdown-trigger">
-                                <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
-                                  <span class="icon">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
-                                  </span>
-                                </a>
-                              </div>
-                              <!-- if view role OR  request is not allowed, then don't show empty drop menu-->
-                              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                <div class="dropdown-content">
-                                <!-- TODO: 
-                                    Add check of logged-in user vs allowed users (Editor or above role) if not anonymous 
-                                    Show modal to override variable (constant??_ values 
-                                    show variable name as label and value as input box
-                                -->
-                                
-                                <a class="dropdown-item"
-                                (click)="openModal(ep.name, 'executeRequest', null)">
-                                    Execute
-                                </a>
-                                <a *ngIf="rolesService.hasControlAccess()" class="dropdown-item"
-                                    (click)="openModal(ep.name, 'delete', 'Are you sure, you want to delete this Control API Entrypoint')">
-                                    Delete
-                                </a>
-                                </div>
-                              </div>
+                        <td>
+                        <!-- TODO: Show to Editor or above role based users only, if auth required -->
+                        <div *ngIf="rolesService.hasControlAccess()" class="dropdown is-left is-hoverable">
+                            <div class="dropdown-trigger">
+                            <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                                <span class="icon">
+                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
+                                </span>
+                            </a>
                             </div>
-                          </td>
+                            <!-- if view role OR  request is not allowed, then don't show empty drop menu-->
+                            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                            <div class="dropdown-content">
+                                <!-- TODO: FOGL-8037
+                                Add check of logged-in user vs allowed users (Editor or above role) if not anonymous 
+                                Show modal to override variable values
+
+                                There is no enough info on list page. So, only checked for permitted
+                                -->
+                            
+                            <a class="dropdown-item" *ngIf="ep.permitted" (click)="getAPIFlow(ep.name);openModal('confirmation-execute-dialog', ep.name)">
+                                Execute
+                            </a>
+                            <a class="dropdown-item"
+                                (click)="openModal('confirmation-delete-dialog', ep.name)">
+                                Delete
+                            </a>
+                            </div>
+                            </div>
+                        </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -102,3 +102,66 @@
         </div>
     </div>
 </div>
+
+<app-confirmation-dialog id="confirmation-execute-dialog">
+    <header class="modal-card-head">
+        <p class="modal-card-title is-size-6">Request {{epName}}</p>
+        <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+        <p>Values for {{epName}} request execution:</p>
+        <br>
+        <form [formGroup]="apiFlowForm">
+            <div class="field is-horizontal">
+                <div class="field-body">
+                    <div class="field">
+                        <ng-container formArrayName="variables">
+                            <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
+                                <small class="text-secondary has-text-grey-light">
+                                    There are no variable parameters associated with this entry point.
+                                </small>
+                            </div>
+                            <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
+                                <div class="field is-horizontal">
+                                    <div *ngIf="i > 0" class="field-label">
+                                        <label class="label"></label>
+                                    </div>
+                                    <div class="field-body" [formGroupName]="i">
+                                        <div class="field" style="max-width: 20%;">
+                                            <div class="control">
+                                                <input name="type" class="input is-static static-field" type="text" formControlName="vName" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="field" style="max-width: 50%;">
+                                            <div class="control">
+                                                <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+    <footer class="modal-card-foot">
+        <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
+        <button class="button is-small is-warning" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
+    </footer>
+</app-confirmation-dialog>
+    
+<app-confirmation-dialog id="confirmation-delete-dialog">                           
+    <header class="modal-card-head">
+        <p class="modal-card-title is-size-6">Delete</p>
+        <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-delete-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+        Are you sure, you want to delete the Control Entry Point <b>{{epName}}</b>?
+    </section>
+    <footer class="modal-card-foot">
+        <button type="button" class="button is-small" (click)="closeModal('confirmation-delete-dialog')">Cancel</button>
+        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow('confirmation-delete-dialog')">Delete</button>
+    </footer>
+</app-confirmation-dialog>

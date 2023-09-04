@@ -184,7 +184,6 @@ export class AddEditAPIFlowComponent implements OnInit {
     fillParameters(param, controlType) {
         let i = 0
         for (const [key, value] of Object.entries(param)) {
-            // parameters.push({ key, value });
             this.addParameter({ index: i, key: key, value: value }, controlType);
             i++;
         }
@@ -199,8 +198,18 @@ export class AddEditAPIFlowComponent implements OnInit {
         data.variables.forEach(v => { variables[v.vName] = v.vValue });
         data.constants.forEach(c => { constants[c.cName] = c.cValue });
 
-        payload.variables = variables;
-        payload.constants = constants;     
+        if (Object.keys(variables).length !== 0) {
+            payload.variables = variables;
+        } else {
+            delete payload.variables;
+        }
+
+        if (Object.keys(constants).length !== 0) {
+            payload.constants = constants;
+        } else {
+            delete payload.constants;
+        }
+
         payload.type = this.selectedType;
         payload.destination = destination;     
         if (destination !== 'broadcast') {
