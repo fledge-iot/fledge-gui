@@ -181,7 +181,7 @@
             <p *ngIf="allowAnonymous">Are you sure, you want to allow anonymous access to execute this entrypoint?</p>
         </ng-container>
         <ng-container *ngIf="!allowAnonymous">
-            <p class="pb-4">Please choose the authenticated user's username who can execute this entry point,</p>
+            <p class="pb-4">Please choose the authenticated user's username who can execute {{epName}} entry point,</p>
             <div class="field is-horizontal">
                 <div class="field-label">
                     <label class="label is-small has-text-left">Users</label>
