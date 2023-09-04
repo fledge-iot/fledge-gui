@@ -127,12 +127,12 @@
                                         <label class="label"></label>
                                     </div>
                                     <div class="field-body" [formGroupName]="i">
-                                        <div class="field" style="max-width: 20%;">
+                                        <div class="field col-3">
                                             <div class="control">
-                                                <input name="type" class="input is-static static-field" type="text" formControlName="vName" readonly>
+                                                <input name="type" class="input is-static static-field pb-4" type="text" formControlName="vName" readonly>
                                             </div>
                                         </div>
-                                        <div class="field" style="max-width: 50%;">
+                                        <div class="field col-3">
                                             <div class="control">
                                                 <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
                                             </div>
@@ -148,7 +148,7 @@
     </section>
     <footer class="modal-card-foot">
         <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-        <button class="button is-small is-warning" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
+        <button class="button is-small" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
     </footer>
 </app-confirmation-dialog>
     
@@ -165,3 +165,49 @@
         <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow('confirmation-delete-dialog')">Delete</button>
     </footer>
 </app-confirmation-dialog>
+
+<app-confirmation-dialog id="confirmation-anonymous-dialog">                           
+    <header class="modal-card-head">
+        <p class="modal-card-title is-size-6">{{allowAnonymous ? 'Allow Anonymous Access' : 'Allow Specific Authenticated Users'}}</p>
+        <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-anonymous-dialog')"></button>
+    </header>
+    <section class="modal-card-body anonymous-modal">
+        <ng-container *ngIf="allowAnonymous">
+            <article *ngIf="allowAnonymous" class="message my-2">
+                <div class="message-body pl-3 py-2"> 
+                    <small class="anonymous-warning">This will allow any user to execute the entrypoint. Its recommended to allow authenticated users only.</small> 
+                </div>
+            </article>
+            <p *ngIf="allowAnonymous">Are you sure, you want to allow anonymous access to execute this entrypoint?</p>
+        </ng-container>
+        <ng-container *ngIf="!allowAnonymous">
+            <p class="pb-4">Please choose the authenticated user's username who can execute this entry point,</p>
+            <div class="field is-horizontal">
+                <div class="field-label">
+                    <label class="label is-small has-text-left">Users</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control" *ngIf="rolesService.hasControlAccess(); else staticUsers">
+                            <ng-select [clearable]="false" placeholder="Select Users"
+                                [items]="allUsers" [multiple]="true" bindLabel="userName"
+                                (change)="selectAllowedUsers($event)"
+                                [ngModel]="allowedUser" [ngModelOptions]="{standalone: true}">
+                            </ng-select>
+                        </div>
+                        <ng-template #staticUsers>
+                            <input name="users" class="input" type="text"
+                            [value]="allowedUser ? allowedUser : 'Select Users'"
+                            [ngClass]="{'is-static':!rolesService.hasControlAccess()}"
+                            [readonly]="!rolesService.hasControlAccess()">
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </section>
+    <footer class="modal-card-foot">
+        <button type="button" class="button is-small" (click)="closeModal('confirmation-anonymous-dialog')">No</button>
+        <button type="button" class="button is-small" [ngClass]="allowAnonymous ? 'is-warning': 'is-info'" (click)="updateAPIFlow()">Yes</button>
+    </footer>
+</app-confirmation-dialog>  

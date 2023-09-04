@@ -1,3 +1,7 @@
 .context-menu {
     border: none;
 }
+
+.anonymous-modal {
+    overflow: visible;
+}

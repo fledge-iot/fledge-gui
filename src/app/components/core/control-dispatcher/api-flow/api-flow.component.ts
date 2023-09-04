@@ -5,11 +5,12 @@ import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
+import { UserService } from '../../../../services';
 
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
-import { APIFlow } from '../../../../../../src/app/models';
+import { APIFlow, User } from '../../../../../../src/app/models';
 
 @Component({
     selector: 'app-api-flow',
@@ -20,6 +21,9 @@ import { APIFlow } from '../../../../../../src/app/models';
 export class APIFlowComponent implements OnInit {
     apiFlows = []; // TODO: typecast APIFlow
     epName: string = '';
+    allUsers: User[];
+    allowedUser: string[];
+    allowAnonymous: boolean;
 
     loggedInUsername: string;
     apiFlowForm: FormGroup;
@@ -32,6 +36,7 @@ export class APIFlowComponent implements OnInit {
         private controlAPIFlowService: ControlAPIFlowService,
         private dialogService: DialogService,
         public docService: DocService,
+        private userService: UserService,
         private ngProgress: ProgressBarService,
         private fb: FormBuilder,
         public sharedService: SharedService,
@@ -160,34 +165,77 @@ export class APIFlowComponent implements OnInit {
         });
     }
 
-    // Set Anonymous T/F
     onCheckboxClicked(event, name) {
-    console.log(event.target.checked, name)
-    // call update
-    } 
+        this.allowAnonymous = event.target.checked;
+        this.epName = name;
+        this.getUsers();
+        this.openModal('confirmation-anonymous-dialog', name);
+    }
 
-    // openModal(name, key, message) {
-    //   console.log(name, key, message);
-    //   // TODO show modal 
-    //   if(key == 'delete'){
-    //     this.deleteAPIFlow(name);
-    //   }
-    //   else if (key == 'executeRequest') {
-    //     // TODO show modal and allow overriding var (&const??) values 
-    //     let payload = {};
-    //     this.requestAPIFlow(name, payload);
-    //   }
-    //   else {
-    //     console.log("Invalid key : ", key);
-    //   }
-    // }
+    getUsers() {
+        this.ngProgress.start();
+        this.userService.getAllUsers()
+          .subscribe(
+            (userData) => {
+              /** request completed */
+              this.ngProgress.done();
+              this.allUsers = userData['users'].map(user => {
+                return user.userName;
+              });
+            },
+            error => {
+              /** request completed */
+              this.ngProgress.done();
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.alertService.error(error.statusText);
+              }
+            });
+    }
 
-    openModal(id: string, name = null) {
+    selectAllowedUsers(user) {
+        this.allowedUser = user;
+    }
+
+    updateAPIFlow() {
+        let payload = {};
+        payload['anonymous'] = this.allowAnonymous;
+        if (!this.allowAnonymous) {
+            payload['allow'] = this.allowedUser;
+        }
+        this.controlAPIFlowService.updateAPIFlow(this.epName, payload) 
+        .subscribe(
+          (data: any) => {
+            /** request completed */
+            this.ngProgress.done();  
+            this.alertService.success(data.message, true);
+            this.closeModal('confirmation-anonymous-dialog');
+            this.getAPIFlows();
+          },
+          error => {
+            /** request completed but error */
+            this.ngProgress.done();
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
+    }
+
+    openModal(id: string, name) {
         this.epName = name;
         this.dialogService.open(id);
     }
 
     closeModal(id: string) {
+        if (id === 'confirmation-anonymous-dialog') {
+            this.getAPIFlows();
+            // TODO: change checkbox status on cancel
+            // this.allowAnonymous = !this.allowAnonymous;
+            // this.allowedUser = [];
+        }
         this.dialogService.close(id);
     }
 
