@@ -388,37 +388,16 @@
             <div class="columns">
                 <div class="column is-2"></div>
                 <div class="column" *ngIf="editMode">
-                <div class="field is-grouped control-pad">
-                                  
-                        <div id="ed-dropdown" class="dropdown is-left">
-                            <div class="dropdown-trigger">
-                              <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropdown('ed-dropdown')">
-                                <span>Execute/Delete</span>
-                                <span class="icon is-small">
-                                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                                </span>
-                              </button>
-                            </div>
-                            <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                <div class="dropdown-content">
-                                    <a class="dropdown-item" (click)="openModal('confirmation-execute-dialog')">Execute</a>
-                                </div>
-                                <div class="dropdown-content">
-                                    <a class="dropdown-item" (click)="openModal('confirmation-delete-dialog')">Delete</a>
-                                </div>
-                            </div>
-                        </div>
-                       
-                        <!-- TODO: WIP -->
-                        <!-- <a class="button is-small pl-6 is-warning" (click)="openModal('confirmation-execute-dialog')" type="button">Execute</a>
-                        <div class="dropdown">
-                            <button class="button is-small">
-                                <i class="fa fa-caret-down"></i>
-                            </button>
-                        <div class="dropdown-content">
-                            <a class="dropdown-item is-danger" (click)="openModal('confirmation-delete-dialog')">Delete</a>
-                        </div>
-                        </div> -->
+                <div class="field is-grouped control-pad">                
+                    <a class="button is-small pl-4 is-warning" (click)="openModal('confirmation-execute-dialog')" type="button">Execute</a>
+                    <div class="dropdown">
+                        <button class="button is-small">
+                            <i class="fa fa-caret-down"></i>
+                        </button>
+                    <div class="dropdown-content m-5">
+                        <a class="dropdown-item button is-small is-danger" (click)="openModal('confirmation-delete-dialog')">Delete</a>
+                    </div>
+                    </div>
                 </div>
                 </div>
                 <div class="column">
@@ -442,66 +421,66 @@
     
     </div>
     
-    <app-confirmation-dialog id="confirmation-execute-dialog">
-    <header class="modal-card-head">
-        <p class="modal-card-title is-size-6">Request {{af.name}}</p>
-        <!-- <p class="subtitle is-size-6">{{af.description}}</p> -->
-        <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
-    </header>
-    <section class="modal-card-body">
-        <p>Values for {{af.name}} request execution:</p>
-        <br>
-        <form [formGroup]="apiFlowFormCopy">
-            <div class="field is-horizontal">
-                <!-- <div class="field-label">
-                    <label class="label label-name has-text-left">Variables</label>
-                </div> -->
-                <div class="field-body">
-                    <div class="field">
-                        <ng-container formArrayName="variables">
-                            <!-- <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
-                                <small class="text-secondary has-text-grey-light">
-                                    There are no variable parameters associated with this entry point.
-                                </small>
-                            </div> -->
-                            <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
-                                <div class="field is-horizontal">
-                                    <!-- <div *ngIf="i === 0" class="field-label is-small">
-                                        <label class="label is-small has-text-left">Variables</label>
-                                    </div> -->
-                                    <div *ngIf="i > 0" class="field-label">
-                                        <label class="label"></label>
+<app-confirmation-dialog id="confirmation-execute-dialog">
+<header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Request {{af.name}}</p>
+    <!-- <p class="subtitle is-size-6">{{af.description}}</p> -->
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
+</header>
+<section class="modal-card-body">
+    <p>Values for {{af.name}} request execution:</p>
+    <br>
+    <form [formGroup]="apiFlowFormCopy">
+        <div class="field is-horizontal">
+            <div class="field-body">
+                <div class="field">
+                    <ng-container formArrayName="variables">
+                        <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
+                            <small class="text-secondary has-text-grey-light">
+                                There are no variable parameters associated with this entry point.
+                            </small>
+                        </div>
+                        <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
+                            <div class="field is-horizontal">
+                                <div *ngIf="i > 0" class="field-label">
+                                    <label class="label"></label>
+                                </div>
+                                <div class="field-body" [formGroupName]="i">
+                                    <div class="field" style="max-width: 20%;">
+                                        <div class="control">
+                                            <input name="type" class="input is-static static-field" type="text" formControlName="vName" readonly>
+                                        </div>
                                     </div>
-                                    <div class="field-body" [formGroupName]="i">
-                                        <div class="field" style="max-width: 20%;">
-                                            <div class="control">
-                                                <!-- <div class="field-label is-small">
-                                                    <label class="label is-small has-text-left">{{vName}}</label>
-                                                </div> -->
-                                                <input name="type" class="input is-static static-field" type="text" formControlName="vName" readonly>
-                                                <!-- <input formControlName="vName" placeholder="Variable name" class="input is-small"
-                                                name="type" type="text" readonly> -->
-                                            </div>
+                                    <div class="field" style="max-width: 50%;">
+                                        <div class="control">
+                                            <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
                                         </div>
-                                        <div class="field" style="max-width: 50%;">
-                                            <div class="control">
-                                                <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
-                                            </div>
-                                        </div>
-                                        <!-- <div class="field">
-                                            <button class="delete is-small valign-middle" (click)="removeParameter(i, 'variables')"></button>
-                                        </div> -->
                                     </div>
                                 </div>
-                            </ng-container>
+                            </div>
                         </ng-container>
-                    </div>
+                    </ng-container>
                 </div>
             </div>
-        </form>
+        </div>
+    </form>
+</section>
+<footer class="modal-card-foot">
+    <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
+    <button class="button is-small is-warning" type="button" (click)="requestAPIFlow(apiFlowFormCopy.value)">Execute</button>
+</footer>
+</app-confirmation-dialog>
+
+<app-confirmation-dialog id="confirmation-delete-dialog">
+    <header class="modal-card-head">
+        <p class="modal-card-title is-size-6">Delete</p>
+        <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-delete-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+        Are you sure, you want to delete the Entry Point <b>{{this.af.name}}</b>?
     </section>
     <footer class="modal-card-foot">
-        <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-        <button class="button is-small is-warning" type="button" (click)="requestAPIFlow(apiFlowFormCopy.value)">Execute</button>
+        <button type="button" class="button is-small" (click)="closeModal('confirmation-delete-dialog')">Cancel</button>
+        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow()">Delete</button>
     </footer>
-    </app-confirmation-dialog>
+</app-confirmation-dialog>

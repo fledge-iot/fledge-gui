@@ -67,37 +67,17 @@ span.is-small {
     white-space: nowrap;
 }
 
-
-
-/* .btn {
-    background-color: #2196F3;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    outline: none;
-  }
-  
-  .dropdown {
-    position: absolute;
-    display: inline-block;
-  }
-  
-  .dropdown-content {
+.dropdown-content {
     display: none;
     position: absolute;
     z-index: 1;
-  }
-  
-  .dropdown-content a {
+}
+
+.dropdown-content a {
     text-decoration: none;
     display: block;
-  }
-  
-  .dropdown:hover .dropdown-content {
+}
+
+.dropdown:hover .dropdown-content {
     display: block;
-  } */
-  
-  .btn:hover, .dropdown:hover .btn {
-    background-color: rgb(178, 34, 34);;
-  }
+}

@@ -261,24 +261,23 @@ export class AddEditAPIFlowComponent implements OnInit {
       }
 
     deleteAPIFlow() {
-        console.log('deleteAPIFlow');
-        // this.controlAPIFlowService.deleteAPIFlow(this._name) 
-        // .subscribe(
-        //   (data: any) => {
-        //     /** request completed */
-        //     this.ngProgress.done();
-        //     this.alertService.success(data.message, true);
-        //     this.router.navigate(['control-dispatcher/api']);
-        //   },
-        //   error => {
-        //     /** request completed but error */
-        //     this.ngProgress.done();
-        //     if (error.status === 0) {
-        //       console.log('service down ', error);
-        //     } else {
-        //       this.alertService.error(error.statusText);
-        //     }
-        //   });
+        this.controlAPIFlowService.deleteAPIFlow(this._name) 
+        .subscribe(
+          (data: any) => {
+            /** request completed */
+            this.ngProgress.done();
+            this.alertService.success(data.message, true);
+            this.router.navigate(['control-dispatcher/api']);
+          },
+          error => {
+            /** request completed but error */
+            this.ngProgress.done();
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText);
+            }
+          });
     }
   
     requestAPIFlow(value) {
