@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
-import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
-import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
-import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
+import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { UserService } from '../../../../services';
 
 import { takeUntil } from 'rxjs/operators';
@@ -19,9 +17,10 @@ import { APIFlow, User } from '../../../../../../src/app/models';
 })
 
 export class APIFlowComponent implements OnInit {
-    apiFlows = []; // TODO: typecast APIFlow
+    apiFlows = []; // TODO: FOGL-8070 typecast APIFlow
     epName: string = '';
-    
+    description: string = '';
+
     allUsers: User[];
     allowedUser: string[];
     allowAnonymous: boolean;
@@ -33,7 +32,6 @@ export class APIFlowComponent implements OnInit {
 
     constructor(
         private alertService: AlertService,
-        private controlService: ControlDispatcherService,
         private controlAPIFlowService: ControlAPIFlowService,
         private dialogService: DialogService,
         public docService: DocService,
@@ -225,8 +223,9 @@ export class APIFlowComponent implements OnInit {
       });
     }
 
-    openModal(id: string, name) {
+    openModal(id: string, name, description = null) {
       this.epName = name;
+      this.description = description;
       this.dialogService.open(id);
     }
 

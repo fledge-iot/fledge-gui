@@ -5,3 +5,11 @@
 .anonymous-modal {
     overflow: visible;
 }
+
+.anonymous-modal-text {
+    font-size: 0.9rem;
+}
+
+.valign-middle {
+    vertical-align: middle;
+}

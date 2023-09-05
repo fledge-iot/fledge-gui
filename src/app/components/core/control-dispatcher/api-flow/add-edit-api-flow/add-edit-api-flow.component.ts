@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { APIFlow, APIFlowType, User } from '../../../../../../../src/app/models';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { APIFlow, User } from '../../../../../../../src/app/models';
 
-import { NgForm, Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
+import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject } from 'rxjs';
@@ -16,10 +16,8 @@ import {
     RolesService,
     SharedService,
     AssetsService,
-    ControlPipelinesService,
-    ToastService
+    ControlPipelinesService
   } from '../../../../../services';
-  import { DocService } from '../../../../../services/doc.service';
   import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
   import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
   import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
@@ -53,9 +51,10 @@ export class AddEditAPIFlowComponent implements OnInit {
     allUsers: User[];
     loggedInUsername: string;
 
+    APIFlowType = ['write', 'operation'];
+
     destroy$: Subject<boolean> = new Subject<boolean>();
     constructor(
-        private cdRef: ChangeDetectorRef,
         private route: ActivatedRoute,
         private assetService: AssetsService,
         private controlAPIFlowService: ControlAPIFlowService,
@@ -69,9 +68,7 @@ export class AddEditAPIFlowComponent implements OnInit {
         private dialogService: DialogService,
         public sharedService: SharedService,
         private userService: UserService,
-        private docService: DocService,
-        private router: Router,
-        private toast: ToastService) {
+        private router: Router) {
             this.apiFlowForm = this.fb.group({
                 variables: this.fb.array([]),
                 constants: this.fb.array([])
@@ -86,7 +83,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     ngOnInit() {
         this.af = {
             name: '',
-            type: APIFlowType.write,
+            type: 'write',
             description: '',
             operation_name: '',
             destination: 'broadcast',
@@ -97,7 +94,6 @@ export class AddEditAPIFlowComponent implements OnInit {
           };
         this.getDestTypes();
         this.getUsers();
-        this.types = Object.keys(APIFlowType).map(key => APIFlowType[key]).filter(value => typeof value === 'string') as string[];
         this.route.params.subscribe(params => {
             this.apiFlowName = params['name'];
             if (this.apiFlowName) {
@@ -107,12 +103,6 @@ export class AddEditAPIFlowComponent implements OnInit {
                 this.selectedType = 'write';
             }
         });     
-    }
-
-    getSelectedType() {
-        let keys = Object.values(APIFlowType).filter(x => APIFlowType[x] == this.af.type);
-        const type = keys[0];
-        this.selectedType = APIFlowType[type];
     }
 
     addParameter(param = null, controlType = null) {
@@ -181,7 +171,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             if (this.af.destination !== 'broadcast') {
                 this.selectedDestinationName = this.af[this.af.destination];
             }
-            this.getSelectedType();
+            this.selectedType = data.type;
             
             // TODO: FOGL-8070
             this.af.anonymous = data.anonymous === 't' || data.anonymous === true ? true : false;
@@ -347,7 +337,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     getFormControls(type): AbstractControl[] {
-        return (<FormArray>this.apiFlowForm.get(type)).controls;
+      return (<FormArray>this.apiFlowForm.get(type)).controls;
     }
 
     selectDestinationName(value) {

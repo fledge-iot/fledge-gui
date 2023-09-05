@@ -3,7 +3,7 @@
 export class APIFlow {
   name: string;
   description: string;
-  type: APIFlowType;
+  type: string;
   operation_name?: string;
   destination: string;
   destination_name?: string;
@@ -11,9 +11,4 @@ export class APIFlow {
   variables: {};
   anonymous: any;  // TODO: FOGL-8070
   allow: string[] // List of allowed users' username
-}
-
-export enum APIFlowType {
-  write = 0,
-  operation = 1
 }

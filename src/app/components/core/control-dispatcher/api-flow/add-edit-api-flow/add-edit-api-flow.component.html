@@ -66,7 +66,7 @@
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
-                            <a *ngFor="let type of types" (click)="changeType(type);toggleDropdown('type-dropdown')"
+                            <a *ngFor="let type of APIFlowType" (click)="changeType(type);toggleDropdown('type-dropdown')"
                             class="dropdown-item">{{type | titlecase}}</a>
                         </div>
                         </div>
@@ -309,7 +309,7 @@
                                 <div class="column">
                                     <article *ngIf="af.anonymous === true && rolesService.hasControlAccess()" class="message my-1 is-warning">
                                         <div class="message-body pl-3 py-2"> 
-                                            <small class="anonymous-warning">This will allow any user to execute the entrypoint. Its recommended to allow specific authenticated users only.</small> 
+                                            <small class="anonymous-warning">This action will allow any user to execute the entry point. It's recommended to allow specific authenticated users only.</small> 
                                         </div>
                                     </article>
                                     <div class="field is-horizontal">
@@ -424,13 +424,13 @@
     
 <app-confirmation-dialog id="confirmation-execute-dialog">
 <header class="modal-card-head">
-    <p class="modal-card-title is-size-6">Request {{af.name}}</p>
-    <!-- <p class="subtitle is-size-6">{{af.description}}</p> -->
+    <span class="modal-card-title title-name" [title]="af.description">
+        Request {{af.name}} Execution
+        <p class="help has-text-grey description-text">{{af.description}}</p>
+    </span>
     <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
 </header>
 <section class="modal-card-body">
-    <p>Values for {{af.name}} request execution:</p>
-    <br>
     <form [formGroup]="apiFlowForm">
         <div class="field is-horizontal">
             <div class="field-body">
@@ -446,13 +446,13 @@
                                 <div *ngIf="i > 0" class="field-label">
                                     <label class="label"></label>
                                 </div>
-                                <div class="field-body" [formGroupName]="i">
-                                    <div class="field" style="max-width: 20%;">
+                                <div class="field-body columns" [formGroupName]="i">
+                                    <div class="column is-3">
                                         <div class="control">
-                                            <input name="type" class="input is-static static-field pb-4" type="text" formControlName="vName" readonly>
+                                            <label class="label label-name has-text-left">{{v.value.vName}}</label>
                                         </div>
                                     </div>
-                                    <div class="field" style="max-width: 50%;">
+                                    <div class="column is-4">
                                         <div class="control">
                                             <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
                                         </div>

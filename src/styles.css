@@ -382,4 +382,11 @@ a.dropdown-item:hover {
   span.tooltip {
     border-bottom: none;
   }
+
+  .description-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 32rem
+  }
  /*****************/
