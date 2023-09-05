@@ -13,3 +13,7 @@
 .valign-middle {
     vertical-align: middle;
 }
+
+.api-card-content {
+    overflow: visible;
+}
