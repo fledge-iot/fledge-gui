@@ -66,3 +66,7 @@ span.is-small {
 .access-label {
     white-space: nowrap;
 }
+
+.dd-menu {
+    min-width: 5rem;
+}

@@ -385,14 +385,26 @@
                     <div class="field-body">
                     <div class="field">
                         <div class="columns">
-                            <div class="column">
+                            <div class="column is-2">
                                 <div *ngIf="editMode && allowExecute" class="field has-addons is-fullwidth">
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth" (click)="openModal('confirmation-execute-dialog')">Execute</a>
                                     </p>
-                                    <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth" (click)="openModal('confirmation-delete-dialog')">Delete</a>
-                                    </p>
+                                    <div id="ed-dropdown" class="dropdown is-right">                                      
+                                        <div class="dropdown-trigger">
+                                            <button class="button is-small small-btn" aria-haspopup="true"
+                                            aria-controls="dropdown-menu" (click)="toggleDropdown('ed-dropdown')">
+                                            <span class="icon is-small">
+                                                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                            </button>
+                                        </div>
+                                        <div class="dropdown-menu dd-menu" id="dropdown-menu" role="menu">
+                                            <div class="dropdown-content">
+                                            <a class="dropdown-item" (click)="openModal('confirmation-delete-dialog')">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <p *ngIf="editMode && !allowExecute" class="control">
                                     <button class="button is-small is-danger is-outlined" type="button" (click)="openModal('confirmation-delete-dialog')">Delete</button>
@@ -414,8 +426,7 @@
                     </div>
                 </div>
             </div>
-            </div>
-    
+            </div>   
         </form>
         </div>
     </div>
