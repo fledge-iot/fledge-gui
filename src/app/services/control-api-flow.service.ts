@@ -46,17 +46,4 @@ export class ControlAPIFlowService {
       map(response => response),
       catchError(error => throwError(error)));
   }
-
-  /**
-  *   Get Destination type list
-  *   GET  | /fledge/control/lookup?type={destination}
-  */
-   getDestinationTypes() {
-    let params = new HttpParams();
-    params = params.set('type', 'destination');
-    return this.http.get(this.CONTROL_URL + '/' + 'lookup', { params: params }).pipe(
-        map(response => response),
-        catchError(error => throwError(error)));
-  }
-
 }

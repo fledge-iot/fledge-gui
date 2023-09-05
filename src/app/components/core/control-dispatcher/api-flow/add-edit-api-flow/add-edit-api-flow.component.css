@@ -66,18 +66,3 @@ span.is-small {
 .access-label {
     white-space: nowrap;
 }
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    z-index: 1;
-}
-
-.dropdown-content a {
-    text-decoration: none;
-    display: block;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}

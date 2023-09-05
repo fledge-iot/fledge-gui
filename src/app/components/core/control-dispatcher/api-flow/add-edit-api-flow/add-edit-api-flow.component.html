@@ -6,7 +6,7 @@
             <a (click)="navigateToList()">Control API Entry Points</a>
             </li>
             <li class="is-active">
-            <a href="#" aria-current="page">{{ editMode ? _name : 'Add' }}</a>
+            <a href="#" aria-current="page">{{ editMode ? apiFlowName : 'Add' }}</a>
             </li>
         </ul>
         </nav>
@@ -342,7 +342,7 @@
                                             <ng-template #staticUsers>
                                                 <input name="users" class="input" type="text"
                                                 [value]="af.allow ? af.allow : 'Select Users'"
-                                                [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedUsers}"
+                                                [ngClass]="{'is-static':!rolesService.hasControlAccess()}"
                                                 [readonly]="!rolesService.hasControlAccess()">
                                             </ng-template>
                                         </div>
@@ -379,36 +379,40 @@
             </div>
 
             <div *ngIf="rolesService.hasControlAccess()" class="column footer-padding">
-            <div class="columns">
-                <div class="column is-2"></div>
-                <div class="column">
-                    <div class="field is-grouped control-pad" *ngIf="editMode && allowExecute">                
-                        <a class="button is-small pl-4" (click)="openModal('confirmation-execute-dialog')" type="button">Execute</a>
-                        <div class="dropdown">
-                            <button class="button is-small">
-                                <i class="fa fa-caret-down"></i>
-                            </button>
-                            <div class="dropdown-content m-5">
-                                <a class="dropdown-item button is-small" (click)="openModal('confirmation-delete-dialog')">Delete</a>
+                <div class="field is-horizontal">
+                    <div class="field-label mr-4">
+                    </div>
+                    <div class="field-body">
+                    <div class="field">
+                        <div class="columns">
+                            <div class="column">
+                                <div *ngIf="editMode && allowExecute" class="field has-addons is-fullwidth">
+                                    <p class="control is-expanded">
+                                        <a class="button is-small is-fullwidth" (click)="openModal('confirmation-execute-dialog')">Execute</a>
+                                    </p>
+                                    <p class="control is-expanded">
+                                        <a class="button is-small is-fullwidth" (click)="openModal('confirmation-delete-dialog')">Delete</a>
+                                    </p>
+                                </div>
+                                <p *ngIf="editMode && !allowExecute" class="control">
+                                    <button class="button is-small is-danger is-outlined" type="button" (click)="openModal('confirmation-delete-dialog')">Delete</button>
+                                </p>
+                            </div>
+                            <div class="column">
+                                <div class="field is-grouped is-pulled-right">
+                                    <p class="control">
+                                        <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
+                                    </p>
+                                    <p class="control">
+                                    <button (click)="saveAPIFlow(apiFlowForm.value)" type="submit" class="button is-small is-link"
+                                        [disabled]="apiFlowForm?.invalid">Save</button>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <p *ngIf="editMode && !allowExecute" class="control">
-                        <button class="button is-small is-danger is-outlined" type="button" (click)="openModal('confirmation-delete-dialog')">Delete</button>
-                    </p>
+                    </div>
                 </div>
-                <div class="column">
-                <div class="field is-grouped is-pulled-right">
-                    <p class="control">
-                        <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
-                    </p>
-                    <p class="control">
-                    <button (click)="addAPIFlow(apiFlowForm.value)" type="submit" class="button is-small is-link"
-                        [disabled]="apiFlowForm?.invalid">Save</button>
-                    </p>
-                </div>
-                </div>
-            </div>
             </div>
             </div>
     
@@ -427,7 +431,7 @@
 <section class="modal-card-body">
     <p>Values for {{af.name}} request execution:</p>
     <br>
-    <form [formGroup]="apiFlowFormCopy">
+    <form [formGroup]="apiFlowForm">
         <div class="field is-horizontal">
             <div class="field-body">
                 <div class="field">
@@ -464,7 +468,7 @@
 </section>
 <footer class="modal-card-foot">
     <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-    <button class="button is-small" type="button" (click)="requestAPIFlow(apiFlowFormCopy.value)">Execute</button>
+    <button class="button is-small is-info" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
 </footer>
 </app-confirmation-dialog>
 

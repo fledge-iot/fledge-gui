@@ -109,8 +109,6 @@
         <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
     </header>
     <section class="modal-card-body">
-        <p>Values for {{epName}} request execution:</p>
-        <br>
         <form [formGroup]="apiFlowForm">
             <div class="field is-horizontal">
                 <div class="field-body">
@@ -123,9 +121,6 @@
                             </div>
                             <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                                 <div class="field is-horizontal">
-                                    <div *ngIf="i > 0" class="field-label">
-                                        <label class="label"></label>
-                                    </div>
                                     <div class="field-body" [formGroupName]="i">
                                         <div class="field col-3">
                                             <div class="control">
@@ -175,10 +170,10 @@
         <ng-container *ngIf="allowAnonymous">
             <article *ngIf="allowAnonymous" class="message my-2 is-warning">
                 <div class="message-body pl-3 py-2"> 
-                    <small class="anonymous-warning">This will allow any user to execute the entrypoint. Its recommended to allow authenticated users only.</small> 
+                    <small class="anonymous-warning">This action will allow any user to execute the entry point. It's recommended to allow authenticated users only.</small> 
                 </div>
             </article>
-            <p *ngIf="allowAnonymous">Are you sure, you want to allow anonymous access to execute this entrypoint?</p>
+            <p *ngIf="allowAnonymous">Are you sure, You want to allow anonymous access to execute this entry point?</p>
         </ng-container>
         <ng-container *ngIf="!allowAnonymous">
             <p class="pb-4">Please choose the authenticated user's username who can execute {{epName}} entry point,</p>
