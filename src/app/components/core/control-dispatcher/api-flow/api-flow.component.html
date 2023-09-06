@@ -29,7 +29,8 @@
                     <tr *ngFor="let ep of apiFlows">
                         <td class="align-content">
                             <!-- TODO: 8070, this requires check the same way, we have in details page for this.allowExecute; Here we need to check for each record while rendering --> 
-                            <a *ngIf="ep.permitted" class="button is-ghost ep-name mx-0 px-0" (click)="getAPIFlow(ep.name);openModal('confirmation-execute-dialog', ep.name, ep.description)">
+                            <a *ngIf="ep.permitted" class="button is-ghost ep-name mx-0 px-0" 
+                                (click)="getAndExecuteAPIFlow(ep.name);">
                                 {{ep.name}}
                             </a>
                             <span *ngIf="!ep.permitted">{{ep.name}} </span>
@@ -37,8 +38,11 @@
                         <td class="description text-wrap">
                             <ng-container *ngIf="rolesService.hasControlAccess(); else noEditDescription">
                                 <div *ngIf="!descriptionEditMode" (click)='descriptionEditMode=true' class="cell">{{ep.description}}</div>
-                                <textarea *ngIf="descriptionEditMode" class="form-control" (focusout)="updateDescripition(ep, $event)" (keydown.enter)='$event.target.blur()' [(ngModel)]='ep.description'
-                                appAutofocus (keydown.enter)='$event.target.blur()' (focusout)="descriptionEditMode=false">{{ep.description}}</textarea>
+                                
+                                <!-- only edit the textarea for which row this has been clicked-->
+                                <textarea *ngIf="descriptionEditMode" class="textarea" rows="2" cols="50" placeholder="Entry Point Description" 
+                                    (focusout)="updateDescription(ep, $event)" (keydown.enter)='$event.target.blur()'
+                                    [ngModel]='ep.description' (ngModelChange)="descriptionChange($event)" appAutofocus>{{ep.description}}</textarea>
                             </ng-container>
                             <ng-template #noEditDescription>
                               {{ep.description}}
@@ -60,7 +64,7 @@
                                             Details
                                         </a>
                                         <a *ngIf="rolesService.hasControlAccess()" class="dropdown-item"
-                                            (click)="openModal('confirmation-delete-dialog', ep.name)">
+                                            (click)="openModal('confirmation-delete-dialog', ep)">
                                             Delete
                                         </a>
                                     </div>
@@ -81,7 +85,7 @@
 
 <app-confirmation-dialog id="confirmation-execute-dialog">
     <header class="modal-card-head p-3">
-        <span class="modal-card-title title-name" [title]="description">
+        <span class="modal-card-title title-name">
             Request {{epName}} Execution
             <p class="help has-text-grey description-text pt-1">{{description}}</p>
         </span>
@@ -93,7 +97,6 @@
                 <div class="field-body">
                     <div class="field">
                         <ng-container formArrayName="variables">
-                            <!-- TODO:  Don't show this prompt if no variables associated with the entry point.-->
                             <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
                                 <small class="text-secondary has-text-grey-light">
                                     There are no variable parameters associated with this entry point.
@@ -123,7 +126,7 @@
     </section>
     <footer class="modal-card-foot p-3">
         <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-        <button class="button is-small is-info" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
+        <button class="button is-small is-info" type="button" (click)="requestAPIFlow(epName, apiFlowForm.value)">Execute</button>
     </footer>
 </app-confirmation-dialog>
     
