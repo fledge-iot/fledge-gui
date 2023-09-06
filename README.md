@@ -23,7 +23,7 @@ cd fledge-gui
 
 Run `yarn install && yarn start` & Navigate to http://localhost:4200/
 
-To allow access on other browser devices, over the same network, you can set host to `0.0.0.0`/IP address of the development machine. You can also set a different web port, default port is 4200.
+To allow access on other browser devices, over the same network, You can set host to `0.0.0.0`/IP address of the development machine. You can also set a different web port, default port is 4200.
 
 `yarn install && yarn start --host 0.0.0.0 --port <PORT>`
 
@@ -35,7 +35,7 @@ To allow access on other browser devices, over the same network, you can set hos
 
 Run `./build --clean-start` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-To deploy on another machine, you shall need to copy build artifacts stored in the `dist/` directory (and, you may want to use provided `nginx.conf`; to avoid changes in default nginx config).
+To deploy on another machine, You shall need to copy build artifacts stored in the `dist/` directory (and, you may want to use provided `nginx.conf`; to avoid changes in default nginx config).
 
 > Make sure you have nginx(-light) installed on the deployment machine.
 

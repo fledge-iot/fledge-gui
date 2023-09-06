@@ -18,14 +18,16 @@ import { APIFlow, User } from '../../../../../../src/app/models';
 
 export class APIFlowComponent implements OnInit {
     apiFlows = []; // TODO: FOGL-8070 typecast APIFlow
+      
+    // To show Entry point name and description on modal, we need these variables
     epName: string = '';
     description: string = '';
 
-    allUsers: User[];
-    allowedUser: string[];
-    allowAnonymous: boolean;
-
+    
     loggedInUsername: string;
+    allUsers: User[];
+  
+    // Check if it can be removed
     apiFlowForm: FormGroup;
 
     destroy$: Subject<boolean> = new Subject<boolean>();
@@ -48,7 +50,7 @@ export class APIFlowComponent implements OnInit {
             .subscribe(value => {
                 this.loggedInUsername = value.loggedInUsername;
             });
-        }
+      }
 
     ngOnInit() {
       this.getAPIFlows();
@@ -60,7 +62,6 @@ export class APIFlowComponent implements OnInit {
     }
 
     initParameter(param) {
-        // initialize
         return this.fb.group({
             vName: [param?.key, Validators.required],
             vValue: [param?.value]
@@ -164,13 +165,6 @@ export class APIFlowComponent implements OnInit {
       });
     }
 
-    onCheckboxClicked(event, name) {
-      this.allowAnonymous = event.target.checked;
-      this.epName = name;
-      this.getUsers();
-      this.openModal('confirmation-anonymous-dialog', name);
-    }
-
     getUsers() {
       this.ngProgress.start();
       this.userService.getAllUsers()
@@ -193,35 +187,28 @@ export class APIFlowComponent implements OnInit {
         });
     }
 
-    selectAllowedUsers(usernames) {
-      this.allowedUser = usernames;
-    }
-
-    updateAPIFlow() {
-      let payload = {};
-      payload['anonymous'] = this.allowAnonymous;
-      if (!this.allowAnonymous) {
-          payload['allow'] = this.allowedUser;
-      }
-      this.controlAPIFlowService.updateAPIFlow(this.epName, payload) 
-      .subscribe(
-        (data: any) => {
-          /** request completed */
-          this.ngProgress.done();  
-          this.alertService.success(data.message, true);
-          this.closeModal('confirmation-anonymous-dialog');
-          this.getAPIFlows();
-        },
-        error => {
-          /** request completed but error */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-      });
-    }
+    // updateAPIFlow() {    
+    //   let payload = {};
+    //   // TODO: Description?
+    //   this.controlAPIFlowService.updateAPIFlow(this.epName, payload) 
+    //   .subscribe(
+    //     (data: any) => {
+    //       /** request completed */
+    //       this.ngProgress.done();  
+    //       this.alertService.success(data.message, true);
+    //       // patch locally
+    //       // this.getAPIFlows();
+    //     },
+    //     error => {
+    //       /** request completed but error */
+    //       this.ngProgress.done();
+    //       if (error.status === 0) {
+    //         console.log('service down ', error);
+    //       } else {
+    //         this.alertService.error(error.statusText);
+    //       }
+    //   });
+    // }
 
     openModal(id: string, name, description = null) {
       this.epName = name;
@@ -230,12 +217,6 @@ export class APIFlowComponent implements OnInit {
     }
 
     closeModal(id: string) {
-      if (id === 'confirmation-anonymous-dialog') {
-        this.getAPIFlows();
-        // TODO: change checkbox status on cancel
-        // this.allowAnonymous = !this.allowAnonymous;
-        // this.allowedUser = [];
-      }
       this.dialogService.close(id);
     }
 
