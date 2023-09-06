@@ -387,7 +387,7 @@
                     <div class="field">
                         <div class="columns">
                             <div class="column is-2">
-                                <div *ngIf="editMode && allowExecute" class="field has-addons is-fullwidth">
+                                <div *ngIf="editMode && allowExecute && getFormControls('variables').length > 0" class="field has-addons is-fullwidth">
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth" (click)="openModal('confirmation-execute-dialog')">Execute</a>
                                     </p>
@@ -435,26 +435,19 @@
     </div>
     
 <app-confirmation-dialog id="confirmation-execute-dialog">
-<header class="modal-card-head">
+<header class="modal-card-head p-3">
     <span class="modal-card-title title-name" [title]="af.description">
         Request {{af.name}} Execution
-        <p class="help has-text-grey description-text">{{af.description}}</p>
+        <p class="help has-text-grey description-text pt-1">{{af.description}}</p>
     </span>
     <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
 </header>
 <section class="modal-card-body">
     <form [formGroup]="apiFlowForm">
-        <div class="field is-horizontal">
+        <div class="field is-horizontal pt-4">
             <div class="field-body">
                 <div class="field">
-                    <ng-container formArrayName="variables">
-                        <!-- TODO: Don't show this prompt if no variables associated with the entry point.-->
-                        <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
-                            <small class="text-secondary has-text-grey-light">
-                                There are no variable parameters associated with this entry point.
-                            </small>
-                        </div>
-                        
+                    <ng-container formArrayName="variables">                    
                         <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                             <div class="field is-horizontal">
                                 <div *ngIf="i > 0" class="field-label">
@@ -480,7 +473,7 @@
         </div>
     </form>
 </section>
-<footer class="modal-card-foot">
+<footer class="modal-card-foot p-3">
     <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
     <button class="button is-small is-info" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
 </footer>

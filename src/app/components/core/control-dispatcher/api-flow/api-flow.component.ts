@@ -17,7 +17,7 @@ import { APIFlow, User } from '../../../../../../src/app/models';
 })
 
 export class APIFlowComponent implements OnInit {
-    apiFlows = []; // TODO: FOGL-8070 typecast APIFlow
+    apiFlows = [];
       
     // To show Entry point name and description on modal, we need these variables
     epName: string = '';

@@ -17,3 +17,7 @@
 .api-card-content {
     overflow: visible;
 }
+
+.ep-name {
+    height:1.5rem
+}

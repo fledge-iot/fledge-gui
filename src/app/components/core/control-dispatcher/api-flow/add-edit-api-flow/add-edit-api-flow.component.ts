@@ -125,7 +125,6 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     initParameter(param = null, controlType) {
-        // initialize
         if (controlType === 'variables') {
             return this.fb.group({
                 vName: [param?.key, Validators.required],

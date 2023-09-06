@@ -28,8 +28,8 @@
                 <tbody>
                     <tr *ngFor="let ep of apiFlows">
                         <td class="align-content">
-                            <!-- TODO: this requires check the same way, we have in details page for this.allowExecute; Here we need to check for each record while rendering --> 
-                            <a *ngIf="ep.permitted" style="height:1.5rem" class="button is-ghost ep-name mx-0 px-0" (click)="getAPIFlow(ep.name);openModal('confirmation-execute-dialog', ep.name, ep.description)">
+                            <!-- TODO: 8070, this requires check the same way, we have in details page for this.allowExecute; Here we need to check for each record while rendering --> 
+                            <a *ngIf="ep.permitted" class="button is-ghost ep-name mx-0 px-0" (click)="getAPIFlow(ep.name);openModal('confirmation-execute-dialog', ep.name, ep.description)">
                                 {{ep.name}}
                             </a>
                             <span *ngIf="!ep.permitted">{{ep.name}} </span>
@@ -75,16 +75,16 @@
 </div>
 
 <app-confirmation-dialog id="confirmation-execute-dialog">
-    <header class="modal-card-head">
+    <header class="modal-card-head p-3">
         <span class="modal-card-title title-name" [title]="description">
             Request {{epName}} Execution
-            <p class="help has-text-grey description-text">{{description}}</p>
+            <p class="help has-text-grey description-text pt-1">{{description}}</p>
         </span>
         <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
     </header>
     <section class="modal-card-body">
         <form [formGroup]="apiFlowForm">
-            <div class="field is-horizontal">
+            <div class="field is-horizontal pt-4">
                 <div class="field-body">
                     <div class="field">
                         <ng-container formArrayName="variables">
@@ -94,7 +94,6 @@
                                     There are no variable parameters associated with this entry point.
                                 </small>
                             </div>
-                            
                             <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                                 <div class="field is-horizontal">
                                     <div class="field-body columns" [formGroupName]="i">
@@ -117,7 +116,7 @@
             </div>
         </form>
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot p-3">
         <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
         <button class="button is-small is-info" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
     </footer>
