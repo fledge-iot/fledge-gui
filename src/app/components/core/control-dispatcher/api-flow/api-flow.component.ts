@@ -112,6 +112,7 @@ export class APIFlowComponent implements OnInit {
             v.clear();
             this.fillParameters(af.variables);
             
+            // TODO: FOGL-8079 (blank values for variables are not allowed)
             // REMOVE:
             af.variables = {}
             // ^ for forced testing only

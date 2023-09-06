@@ -284,18 +284,20 @@ export class AddEditAPIFlowComponent implements OnInit {
 
     checkAndRequestAPIFlow() {
       // TODO: FOGL-8079 (blank values for variables are not allowed)
-      return;
-      // if (this.getFormControls('variables').length > 0) {
-      //   return;
+     
+      // commented if block for forced testing only
+      // if(this.getFormControls('variables').length > 0) {
+      //   this.openModal('confirmation-execute-dialog')
+      // } else {
+        this.requestAPIFlow({});
       // }
-      // this.requestAPIFlow();
+
     }
   
-    requestAPIFlow(value = null) {
+    requestAPIFlow(payload) {
       let variables = {};
-      if (value.variables) {       
-        value.variables.forEach(v => { variables[v.vName] = v.vValue });
-      }        
+      payload?.variables?.forEach(v => { variables[v.vName] = v.vValue });
+    
       this.controlAPIFlowService.requestAPIFlow(this.af.name, variables) 
       .subscribe((data: any) => {
           /** request completed */
