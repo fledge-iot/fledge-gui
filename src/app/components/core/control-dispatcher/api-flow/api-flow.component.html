@@ -37,12 +37,12 @@
                         </td>
                         <td class="description text-wrap">
                             <ng-container *ngIf="rolesService.hasControlAccess(); else noEditDescription">
-                                <div *ngIf="!descriptionEditMode" (click)='descriptionEditMode=true' class="cell">{{ep.description}}</div>
-                                
-                                <!-- only edit the textarea for which row this has been clicked-->
-                                <textarea *ngIf="descriptionEditMode" class="textarea" rows="2" cols="50" placeholder="Entry Point Description" 
-                                    (focusout)="updateDescription(ep, $event)" (keydown.enter)='$event.target.blur()'
-                                    [ngModel]='ep.description' (ngModelChange)="descriptionChange($event)" appAutofocus>{{ep.description}}</textarea>
+                                <!-- <div> {{ editMode | json}}</div>> -->
+                                <div *ngIf="editMode.name != ep.name" (click)='setEdit(ep.name, true)' class="cell">{{ep.description}}</div>
+                                <textarea *ngIf="editMode.name == ep.name && editMode.edit == true" class="textarea" rows="2" cols="50" placeholder="Entry Point Description" 
+                                    (focusout)="setEdit(ep.name, false)" (keydown.enter)='$event.target.blur()'
+                                    [ngModel]='ep.description' (ngModelChange)="descriptionChange(ep.name, $event)" appAutofocus>{{ep.description}}
+                                </textarea>
                             </ng-container>
                             <ng-template #noEditDescription>
                               {{ep.description}}

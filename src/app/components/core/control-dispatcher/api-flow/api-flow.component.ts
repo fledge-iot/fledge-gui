@@ -30,7 +30,7 @@ export class APIFlowComponent implements OnInit {
     // Check if it can be removed
     apiFlowForm: FormGroup;
 
-    descriptionEditMode: boolean = false;
+    editMode: {};
 
     destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -56,6 +56,7 @@ export class APIFlowComponent implements OnInit {
 
     ngOnInit() {
       this.getAPIFlows();
+      this.resetEditMode();
     }
 
     addParameter(param) {
@@ -205,23 +206,46 @@ export class APIFlowComponent implements OnInit {
         });
     }
 
-    descriptionChange(event: any) {
-      console.log("New value = " + event)
+    setEdit(name, state){
+      // console.log("Inside setEdit", name, state)
+      this.editMode["name"] = name;
+      this.editMode["edit"] = state;
+      if (state == false){
+        this.updateDescription()
+      }
     }
 
-    updateDescription(apiFlow, event: any) {
-      console.log("Inside updateDescription", event)
-      this.descriptionEditMode = false;
-      // TODO: update only if description is changed
+    resetEditMode() {
+      this.editMode = {name: null, edit: false, newVal: null}
+    }
+
+    // @ts-ignore
+    descriptionChange(name, event: any) {
+      // console.log("New value for ", name , " is ", event)
+      this.editMode["value"] = event
+    }
+
+    updateDescription() {
+      // console.log("Inside updateDescription", this.editMode )
+      if(this.editMode["value"] == null) {
+        this.resetEditMode();
+        return;
+      }
+      const name = this.editMode["name"]
+      let desc = this.editMode["value"]
+      this.resetEditMode();
+      
       let payload = {
-        description: apiFlow.description
+        description: desc
       };
-      this.controlAPIFlowService.updateAPIFlow(apiFlow.name, payload) 
+      this.controlAPIFlowService.updateAPIFlow(name, payload) 
       .subscribe(
         (data: any) => {
           /** request completed */
           this.ngProgress.done();  
           this.alertService.success(data.message, true);
+          // TODO: patch locally
+          this.getAPIFlows();
         },
         error => {
           /** request completed but error */
