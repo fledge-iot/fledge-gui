@@ -208,15 +208,17 @@
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
                                                             <input formControlName="vName" placeholder="Variable name" class="input is-small"
-                                                            name="type" type="text">
+                                                            name="type" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field':!rolesService.hasControlAccess()}"
+                                                            [readonly]="!rolesService.hasControlAccess()">
                                                         </div>
                                                     </div>
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
-                                                            <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
+                                                            <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field':!rolesService.hasControlAccess()}"
+                                                            [readonly]="!rolesService.hasControlAccess()">
                                                         </div>
                                                     </div>
-                                                    <div class="field">
+                                                    <div *ngIf="rolesService.hasControlAccess()" class="field">
                                                         <button class="delete is-small valign-middle" (click)="removeParameter(i, 'variables')"></button>
                                                     </div>
                                                 </div>
@@ -224,7 +226,7 @@
                                         </ng-container>
                                     </ng-container>
                                 </div>
-                                <div class="field">
+                                <div *ngIf="rolesService.hasControlAccess()" class="field">
                                     <div class="columns">
                                         <div class="column is-one-fifth"></div>
                                         <div class="btn-column p-2">
@@ -253,16 +255,18 @@
                                                 <div class="field-body" [formGroupName]="i">
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
-                                                            <input formControlName="cName" placeholder="Constant name" class="input is-small"
+                                                            <input formControlName="cName" placeholder="Constant name" class="input is-small" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field':!rolesService.hasControlAccess()}"
+                                                            [readonly]="!rolesService.hasControlAccess()"
                                                             name="type" type="text">
                                                         </div>
                                                     </div>
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
-                                                            <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text">
+                                                            <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field':!rolesService.hasControlAccess()}"
+                                                            [readonly]="!rolesService.hasControlAccess()">
                                                         </div>
                                                     </div>
-                                                    <div class="field">
+                                                    <div class="field" *ngIf="rolesService.hasControlAccess()">
                                                         <button class="delete is-small valign-middle" (click)="removeParameter(i, 'constants')"></button>
                                                     </div>
                                                 </div>
@@ -270,7 +274,7 @@
                                         </ng-container>                                   
                                     </ng-container>
                                 </div>
-                                <div class="field">
+                                <div *ngIf="rolesService.hasControlAccess()" class="field">
                                     <div class="columns">
                                         <div class="column is-one-fifth"></div>
                                         <div class="btn-column p-2">
@@ -366,20 +370,26 @@
                 </div>
                 <div class="field-body">
                 <div class="field">
-                    <div class="control">
-                        <textarea rows="2" type="text" class="textarea is-small" placeholder="description" name='description'
-                        [(ngModel)]="af.description" trim="blur" #description="ngModel" [ngModelOptions]="{standalone: true}"></textarea>
-                    </div>
-                    <div *ngIf="description.invalid && (description.dirty || description.touched)" class="help is-danger">
-                        <div *ngIf="description.errors?.['required']">
-                            *required
+                    <ng-container *ngIf="rolesService.hasControlAccess(); else staticDescription">
+                        <div class="control">
+                            <textarea rows="2" type="text" class="textarea is-small" placeholder="description" name='description'
+                            [(ngModel)]="af.description" trim="blur" #description="ngModel" [ngModelOptions]="{standalone: true}"></textarea>
                         </div>
-                    </div>
+                        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="help is-danger">
+                            <div *ngIf="description.errors?.['required']">
+                                *required
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-template #staticDescription>
+                        <input name="description" class="input is-static" type="text"
+                        [value]="af.description" readonly>
+                    </ng-template>
                 </div>
                 </div>
             </div>
 
-            <div *ngIf="rolesService.hasControlAccess()" class="column footer-padding">
+            <div class="column footer-padding">
                 <div class="field is-horizontal">
                     <div class="field-label mr-4">
                     </div>
@@ -387,11 +397,11 @@
                     <div class="field">
                         <div class="columns">
                             <div class="column is-2">
-                                <div *ngIf="editMode && allowExecute && getFormControls('variables').length > 0" class="field has-addons is-fullwidth">
+                                <div *ngIf="editMode && allowExecute" class="field has-addons is-fullwidth">
                                     <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth" (click)="openModal('confirmation-execute-dialog')">Execute</a>
+                                        <a class="button is-small is-fullwidth" (click)="checkAndRequestAPIFlow();openModal('confirmation-execute-dialog')">Execute</a>
                                     </p>
-                                    <div id="ed-dropdown" class="dropdown is-right">                                      
+                                    <div *ngIf="rolesService.hasControlAccess()" id="ed-dropdown" class="dropdown is-right">                                      
                                         <div class="dropdown-trigger">
                                             <button class="button is-small small-btn" aria-haspopup="true"
                                             aria-controls="dropdown-menu" (click)="toggleDropdown('ed-dropdown')">
@@ -411,7 +421,7 @@
                                     <button class="button is-small is-danger is-outlined" type="button" (click)="openModal('confirmation-delete-dialog')">Delete</button>
                                 </p>
                             </div>
-                            <div class="column">
+                            <div *ngIf="rolesService.hasControlAccess()" class="column">
                                 <div class="field is-grouped is-pulled-right">
                                     <p class="control">
                                         <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>

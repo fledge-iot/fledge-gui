@@ -76,7 +76,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             this.sharedService.isUserLoggedIn
             .pipe(takeUntil(this.destroy$))
             .subscribe(value => {
-                this.loggedInUsername = value.loggedInUsername;
+              this.loggedInUsername = value.userName;
             });
         }
 
@@ -281,27 +281,38 @@ export class AddEditAPIFlowComponent implements OnInit {
             }
           });
     }
+
+    checkAndRequestAPIFlow() {
+      // TODO: FOGL-8079 (blank values for variables are not allowed)
+      return;
+      // if (this.getFormControls('variables').length > 0) {
+      //   return;
+      // }
+      // this.requestAPIFlow();
+    }
   
-    requestAPIFlow(value) {
-        let variables = {};
+    requestAPIFlow(value = null) {
+      let variables = {};
+      if (value.variables) {       
         value.variables.forEach(v => { variables[v.vName] = v.vValue });
-        this.controlAPIFlowService.requestAPIFlow(this.af.name, variables) 
-        .subscribe((data: any) => {
-            /** request completed */
-            this.ngProgress.done();
-            this.alertService.success(data.message, true);
-            this.closeModal('confirmation-execute-dialog');
-            this.getAPIFlow();
-            },
-            error => {
-            /** request completed but error */
-            this.ngProgress.done();
-            if (error.status === 0) {
-                console.log('service down ', error);
-            } else {
-                this.alertService.error(error.statusText);
-            }
-        });
+      }        
+      this.controlAPIFlowService.requestAPIFlow(this.af.name, variables) 
+      .subscribe((data: any) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data.message, true);
+          this.closeModal('confirmation-execute-dialog');
+          this.getAPIFlow();
+          },
+          error => {
+          /** request completed but error */
+          this.ngProgress.done();
+          if (error.status === 0) {
+              console.log('service down ', error);
+          } else {
+              this.alertService.error(error.statusText);
+          }
+      });
     }
 
     changeType(value) {

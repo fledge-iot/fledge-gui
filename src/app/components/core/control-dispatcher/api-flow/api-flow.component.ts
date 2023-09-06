@@ -50,7 +50,7 @@ export class APIFlowComponent implements OnInit {
             this.sharedService.isUserLoggedIn
             .pipe(takeUntil(this.destroy$))
             .subscribe(value => {
-                this.loggedInUsername = value.loggedInUsername;
+                this.loggedInUsername = value.userName;
             });
       }
 
