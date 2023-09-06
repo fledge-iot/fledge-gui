@@ -30,6 +30,8 @@ export class APIFlowComponent implements OnInit {
     // Check if it can be removed
     apiFlowForm: FormGroup;
 
+    descriptionEditMode: boolean = false;
+
     destroy$: Subject<boolean> = new Subject<boolean>();
 
     constructor(
@@ -187,28 +189,27 @@ export class APIFlowComponent implements OnInit {
         });
     }
 
-    // updateAPIFlow() {    
-    //   let payload = {};
-    //   // TODO: Description?
-    //   this.controlAPIFlowService.updateAPIFlow(this.epName, payload) 
-    //   .subscribe(
-    //     (data: any) => {
-    //       /** request completed */
-    //       this.ngProgress.done();  
-    //       this.alertService.success(data.message, true);
-    //       // patch locally
-    //       // this.getAPIFlows();
-    //     },
-    //     error => {
-    //       /** request completed but error */
-    //       this.ngProgress.done();
-    //       if (error.status === 0) {
-    //         console.log('service down ', error);
-    //       } else {
-    //         this.alertService.error(error.statusText);
-    //       }
-    //   });
-    // }
+    updateDescripition(apiFlow) {
+      let payload = {
+        description: apiFlow.description
+      };
+      this.controlAPIFlowService.updateAPIFlow(apiFlow.name, payload) 
+      .subscribe(
+        (data: any) => {
+          /** request completed */
+          this.ngProgress.done();  
+          this.alertService.success(data.message, true);
+        },
+        error => {
+          /** request completed but error */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+      });
+    }
 
     openModal(id: string, name, description = null) {
       this.epName = name;

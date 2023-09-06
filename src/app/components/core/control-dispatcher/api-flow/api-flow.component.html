@@ -34,11 +34,16 @@
                             </a>
                             <span *ngIf="!ep.permitted">{{ep.name}} </span>
                         </td>
-
-                        <td class="align-content">
-                            <!-- TODO: handle length, allow editable on click -->
-                            <p>{{ep.description}}</p>
-                        </td>
+                        <td class="description text-wrap">
+                            <ng-container *ngIf="rolesService.hasControlAccess(); else noEditDescription">
+                                <div *ngIf="!descriptionEditMode" (click)='descriptionEditMode=true' class="cell">{{ep.description}}</div>
+                                <textarea *ngIf="descriptionEditMode" class="form-control" (focusout)="updateDescripition(ep, $event)" (keydown.enter)='$event.target.blur()' [(ngModel)]='ep.description'
+                                appAutofocus (keydown.enter)='$event.target.blur()' (focusout)="descriptionEditMode=false">{{ep.description}}</textarea>
+                            </ng-container>
+                            <ng-template #noEditDescription>
+                              {{ep.description}}
+                            </ng-template>
+                          </td>
                         
                         <td>
                             <div class="dropdown is-left is-hoverable">
