@@ -141,7 +141,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     fillParameters(param, controlType) {
       let c = <FormArray>this.apiFlowForm.controls[controlType];
       c.clear();
-      let i = 0
+      let i = 0;
       for (const [key, value] of Object.entries(param)) {
           this.addParameter({ index: i, key: key, value: value }, controlType);
           i++;
@@ -285,10 +285,11 @@ export class AddEditAPIFlowComponent implements OnInit {
     checkAndRequestAPIFlow() {
       // TODO: FOGL-8079 (blank values for variables are not allowed)
       // commented if block for forced testing only
-      // if(this.getFormControls('variables').length > 0) {
-      //   this.openModal('confirmation-execute-dialog')
-      // } else {
+      if(this.getFormControls('variables').length > 0) {
+        this.openModal('confirmation-execute-dialog')
+      } else {
       this.requestAPIFlow({});
+      }
     }
   
     requestAPIFlow(payload) {
@@ -494,8 +495,8 @@ export class AddEditAPIFlowComponent implements OnInit {
             });
     }
 
-    selectAllowedUsers(user) {
-        this.af.allow = user;
+    selectAllowedUsers(usernames) {
+        this.af.allow = usernames;
     }
 
     openModal(id: string) {

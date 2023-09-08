@@ -114,7 +114,7 @@ export class APIFlowComponent implements OnInit {
             this.fillParameters(af.variables);
             // TODO: FOGL-8079 (blank values for variables are not allowed)
             // REMOVE:
-            af.variables = {}
+            // af.variables = {}
             // ^ for forced testing only
 
             if(Object.entries(af.variables).length > 0) {
@@ -202,7 +202,6 @@ export class APIFlowComponent implements OnInit {
     }
 
     setEdit(name, state){
-      // console.log("Inside setEdit", name, state)
       this.editMode["name"] = name;
       this.editMode["edit"] = state;
       if (state == false){
@@ -213,7 +212,6 @@ export class APIFlowComponent implements OnInit {
     resetEditMode() {
       this.editMode = {name: null, edit: false, newVal: null}
     }
-
 
     descriptionChange(event: any) {
       this.editMode["value"] = event
