@@ -4,6 +4,7 @@ import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { UserService } from '../../../../services';
+import { ControlUtilsService } from '../control-utils.service';
 
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -43,6 +44,7 @@ export class APIFlowComponent implements OnInit {
         private ngProgress: ProgressBarService,
         private fb: FormBuilder,
         public sharedService: SharedService,
+        private controlUtilsService: ControlUtilsService,
         public rolesService: RolesService) {
             this.apiFlowForm = this.fb.group({
                 variables: this.fb.array([])
@@ -158,25 +160,7 @@ export class APIFlowComponent implements OnInit {
     }
 
     requestAPIFlow(name, payload) {
-      let variables = {};
-      payload?.variables?.forEach(v => { variables[v.vName] = v.vValue });
-
-      this.controlAPIFlowService.requestAPIFlow(name, variables)
-      .subscribe((data: any) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success(data.message, true);
-          this.closeModal('confirmation-execute-dialog');
-          },
-          error => {
-          /** request completed but error */
-          this.ngProgress.done();
-          if (error.status === 0) {
-              console.log('service down ', error);
-          } else {
-              this.alertService.error(error.statusText);
-          }
-      });
+      this.controlUtilsService.requestAPIFlow(name, payload);
     }
 
     getUsers() {

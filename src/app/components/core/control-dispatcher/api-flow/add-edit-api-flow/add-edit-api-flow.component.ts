@@ -1,8 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { APIFlow, User } from '../../../../../../../src/app/models';
 
 import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+
+import { ControlUtilsService } from '../../control-utils.service';
 
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -31,7 +33,7 @@ import {
 export class AddEditAPIFlowComponent implements OnInit {
 
     QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
-
+    
     selectedType;
     types = [];
 
@@ -68,6 +70,7 @@ export class AddEditAPIFlowComponent implements OnInit {
         private dialogService: DialogService,
         public sharedService: SharedService,
         private userService: UserService,
+        private controlUtilsService: ControlUtilsService,
         private router: Router) {
             this.apiFlowForm = this.fb.group({
                 variables: this.fb.array([]),
@@ -293,25 +296,8 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
   
     requestAPIFlow(payload) {
-      let variables = {};
-      payload?.variables?.forEach(v => { variables[v.vName] = v.vValue });       
-      this.controlAPIFlowService.requestAPIFlow(this.af.name, variables) 
-      .subscribe((data: any) => {
-          /** request completed */
-          this.ngProgress.done();
-          this.alertService.success(data.message, true);
-          this.closeModal('confirmation-execute-dialog');
-          this.getAPIFlow();
-          },
-          error => {
-          /** request completed but error */
-          this.ngProgress.done();
-          if (error.status === 0) {
-              console.log('service down ', error);
-          } else {
-              this.alertService.error(error.statusText);
-          }
-      });
+      this.controlUtilsService.requestAPIFlow(this.af.name, payload);
+      this.getAPIFlow();
     }
 
     changeType(value) {
