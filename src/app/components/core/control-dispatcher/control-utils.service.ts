@@ -14,7 +14,7 @@ export class ControlUtilsService {
         private dialogService: DialogService){
     }
 
-    // public static getDestinationNames(selectedType) {
+    // public getDestinationNames(selectedType) {
     //     this.destinationNames = [];
     //     this.selectedDestinationName = null;
     //     this.af.destination = selectedType.name === 'Select Destination Type' ? '' : selectedType.name;
@@ -61,26 +61,4 @@ export class ControlUtilsService {
     closeModal(id: string) {
         this.dialogService.close(id);
     }
-
-    // requestAPIFlow(payload) {
-    //     let variables = {};
-    //     payload?.variables?.forEach(v => { variables[v.vName] = v.vValue });       
-    //     this.controlAPIFlowService.requestAPIFlow(this.af.name, variables) 
-    //     .subscribe((data: any) => {
-    //         /** request completed */
-    //         this.ngProgress.done();
-    //         this.alertService.success(data.message, true);
-    //         this.closeModal('confirmation-execute-dialog');
-    //         this.getAPIFlow();
-    //         },
-    //         error => {
-    //         /** request completed but error */
-    //         this.ngProgress.done();
-    //         if (error.status === 0) {
-    //             console.log('service down ', error);
-    //         } else {
-    //             this.alertService.error(error.statusText);
-    //         }
-    //     });
-    // }
 }
