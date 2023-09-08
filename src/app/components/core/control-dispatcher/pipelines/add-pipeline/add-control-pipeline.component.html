@@ -12,7 +12,7 @@
     </nav>
     <button type="button" *ngIf="editMode" (click)="getControlPipeline()" class="button is-small" title="Reload"
       id="refresh-check">
-      <i class="fa fa-xs fa-sync" aria-hidden="true"></i>
+      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
   <div class="card">
@@ -308,7 +308,7 @@
     <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, you want to delete the control pipeline <b>{{pipelineName}}</b>?
+    Are you sure, You want to delete the control pipeline <b>{{pipelineName}}</b>?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" type="button" (click)="closeModal('confirmation-dialog')">Cancel</button>

@@ -1,0 +1,39 @@
+.context-menu {
+    border: none;
+}
+
+.anonymous-modal {
+    overflow: visible;
+}
+
+.anonymous-modal-text {
+    font-size: 0.9rem;
+}
+
+.valign-middle {
+    vertical-align: middle;
+}
+
+.api-card-content {
+    overflow: visible;
+}
+
+.ep-name {
+    height:1.5rem
+}
+
+.cell {
+    border: 1px solid transparent;
+    padding: 1px 1px;
+    width: 100%;
+    height: 100%;
+}
+
+.cell:hover {
+    cursor: pointer;
+    border: 1px dashed #c8c8c8;
+}
+
+.description {
+    max-width: 25rem;
+}

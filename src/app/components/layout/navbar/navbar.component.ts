@@ -123,6 +123,12 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (sessionStorage.getItem('userName') != null) {
       this.userName = sessionStorage.getItem('userName');
+
+      this.sharedService.isUserLoggedIn.next({
+        'loggedIn': true,
+        'userName': sessionStorage.getItem('userName'),
+        'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
+      });
     }
     this.changeDetectorRef.detectChanges();
   }
