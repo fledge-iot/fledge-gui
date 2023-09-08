@@ -36,7 +36,7 @@
                     <input #name=ngModel name="af.name" class="input" type="text" placeholder="Name" required
                         [(ngModel)]="af.name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
                         [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
-                        [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-5':!rolesService.hasControlAccess()}"
+                        [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
                         [readonly]="!rolesService.hasControlAccess()">
                     </div>
                     <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
@@ -92,13 +92,13 @@
                 <ng-template #staticTypeDiv>
                     <div class="field">
                         <div class="control">
-                            <input name="type" class="input is-static static-field pb-5" type="text" [value]="selectedType" readonly>
+                            <input name="type" class="input is-static static-field pb-4" type="text" [value]="selectedType | titlecase" readonly>
                         </div>
                     </div>
                     <ngContainer *ngIf="selectedType === 'operation'">
                         <div class="control">
                             <div class="field">
-                                <input name="operation_name" [value]="af.operation_name" class="input is-static static-field pb-5" type="text" readonly>
+                                <input name="operation_name" [value]="af.operation_name" class="input is-static static-field pb-4" type="text" readonly>
                             </div>
                         </div>
                     </ngContainer>
@@ -134,7 +134,7 @@
                                                 <ng-template #staticDestinationType>
                                                     <input name="destinationType" class="input" type="text"
                                                     [value]="af.destination ? af.destination : 'Select Destination Name'"
-                                                    [ngClass]="{'is-static pb-5':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!af?.destination}"
+                                                    [ngClass]="{'is-static pb-4':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!af?.destination}"
                                                     [readonly]="!rolesService.hasControlAccess()">
                                                 </ng-template>
                                             </div>
@@ -162,7 +162,7 @@
                                         <ng-template #staticDestinationName>
                                             <input name="destinationName" class="input" type="text"
                                             [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
-                                            [ngClass]="{'is-static pb-5':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationName}" readonly>
+                                            [ngClass]="{'is-static pb-4':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationName}" readonly>
                                         </ng-template>
                                         </div>
                                     </div>
@@ -206,13 +206,13 @@
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
                                                             <input formControlName="vName" placeholder="Variable name" class="input is-small"
-                                                            name="type" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-5':!rolesService.hasControlAccess()}"
+                                                            name="type" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
                                                             [readonly]="!rolesService.hasControlAccess()">
                                                         </div>
                                                     </div>
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
-                                                            <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-5':!rolesService.hasControlAccess()}"
+                                                            <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
                                                             [readonly]="!rolesService.hasControlAccess()">
                                                         </div>
                                                     </div>
@@ -253,14 +253,14 @@
                                                 <div class="field-body" [formGroupName]="i">
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
-                                                            <input formControlName="cName" placeholder="Constant name" class="input is-small" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-5':!rolesService.hasControlAccess()}"
+                                                            <input formControlName="cName" placeholder="Constant name" class="input is-small" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
                                                             [readonly]="!rolesService.hasControlAccess()"
                                                             name="type" type="text">
                                                         </div>
                                                     </div>
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
-                                                            <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-5':!rolesService.hasControlAccess()}"
+                                                            <input formControlName="cValue" placeholder="Constant value" class="input is-small" name="value" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
                                                             [readonly]="!rolesService.hasControlAccess()">
                                                         </div>
                                                     </div>
@@ -344,7 +344,7 @@
                                             <ng-template #staticUsers>
                                                 <input name="users" class="input" type="text"
                                                 [value]="af.allow ? af.allow : 'Select Users'"
-                                                [ngClass]="{'is-static pb-5':!rolesService.hasControlAccess()}"
+                                                [ngClass]="{'is-static pb-4':!rolesService.hasControlAccess()}"
                                                 [readonly]="!rolesService.hasControlAccess()">
                                             </ng-template>
                                             <p class="help">*Allow list will only be applicable when the anonymous access is disabled.</p>
@@ -380,7 +380,7 @@
                         </div>
                     </ng-container>
                     <ng-template #staticDescription>
-                        <input name="description" class="input is-static pb-5" type="text"
+                        <input name="description" class="input is-static pb-4" type="text"
                         [value]="af.description" readonly>
                     </ng-template>
                 </div>
