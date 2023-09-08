@@ -141,7 +141,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div *ngIf="af.destination && !((af.destination | titlecase) === 'Any' || (af.destination | titlecase) === 'Broadcast')"
+                                    <div *ngIf="af.destination && !((af.destination | titlecase) === 'Broadcast')"
                                     class="field is-horizontal">
                                     <div class="field-label is-small">
                                         <label class="label is-small has-text-left">Name</label>
@@ -399,7 +399,7 @@
                             <div class="column is-2">
                                 <div *ngIf="editMode && allowExecute" class="field has-addons is-fullwidth">
                                     <p class="control is-expanded">
-                                        <a class="button is-small is-fullwidth" (click)="checkAndRequestAPIFlow();openModal('confirmation-execute-dialog')">Execute</a>
+                                        <a class="button is-small is-fullwidth" (click)="checkAndRequestAPIFlow()">Execute</a>
                                     </p>
                                     <div *ngIf="rolesService.hasControlAccess()" id="ed-dropdown" class="dropdown is-right">                                      
                                         <div class="dropdown-trigger">

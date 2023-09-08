@@ -18,19 +18,19 @@ import { APIFlow, User } from '../../../../../../src/app/models';
 
 export class APIFlowComponent implements OnInit {
     apiFlows = [];
-      
+
     // To show Entry point name and description on modal, we need these variables
     epName: string = '';
     description: string = '';
 
-    
+
     loggedInUsername: string;
     allUsers: User[];
   
     // Check if it can be removed
     apiFlowForm: FormGroup;
 
-    descriptionEditMode: boolean = false;
+    editMode: {};
 
     destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -56,6 +56,7 @@ export class APIFlowComponent implements OnInit {
 
     ngOnInit() {
       this.getAPIFlows();
+      this.resetEditMode();
     }
 
     addParameter(param) {
@@ -102,15 +103,25 @@ export class APIFlowComponent implements OnInit {
         });
     }
 
-    getAPIFlow(name) {
+    getAndExecuteAPIFlow(name) {
         /** request started */
         this.ngProgress.start();
         this.controlAPIFlowService.getAPIFlow(name)
-          .subscribe((data: APIFlow) => {
+          .subscribe((af: APIFlow) => {
             this.ngProgress.done();
             let v = <FormArray>this.apiFlowForm.controls['variables'];
             v.clear();
-            this.fillParameters(data.variables);
+            this.fillParameters(af.variables);
+            // TODO: FOGL-8079 (blank values for variables are not allowed)
+            // REMOVE:
+            af.variables = {}
+            // ^ for forced testing only
+
+            if(Object.entries(af.variables).length > 0) {
+              this.openModal('confirmation-execute-dialog', af)
+            } else {
+              this.requestAPIFlow(af.name, {});
+            }
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -146,10 +157,11 @@ export class APIFlowComponent implements OnInit {
         });
     }
 
-    requestAPIFlow(payload) {
+    requestAPIFlow(name, payload) {
       let variables = {};
-      payload.variables.forEach(v => { variables[v.vName] = v.vValue });
-      this.controlAPIFlowService.requestAPIFlow(this.epName, variables) 
+      payload?.variables?.forEach(v => { variables[v.vName] = v.vValue });
+
+      this.controlAPIFlowService.requestAPIFlow(name, variables)
       .subscribe((data: any) => {
           /** request completed */
           this.ngProgress.done();
@@ -189,16 +201,43 @@ export class APIFlowComponent implements OnInit {
         });
     }
 
-    updateDescripition(apiFlow) {
+    setEdit(name, state){
+      // console.log("Inside setEdit", name, state)
+      this.editMode["name"] = name;
+      this.editMode["edit"] = state;
+      if (state == false){
+        this.updateDescription();
+      }
+    }
+
+    resetEditMode() {
+      this.editMode = {name: null, edit: false, newVal: null}
+    }
+
+
+    descriptionChange(event: any) {
+      this.editMode["value"] = event
+    }
+
+    updateDescription() {
+      if(this.editMode["value"] == null) {
+        this.resetEditMode();
+        return;
+      }
+      const name = this.editMode["name"]
+      let desc = this.editMode["value"]
+      this.resetEditMode();
       let payload = {
-        description: apiFlow.description
+        description: desc
       };
-      this.controlAPIFlowService.updateAPIFlow(apiFlow.name, payload) 
+      this.controlAPIFlowService.updateAPIFlow(name, payload) 
       .subscribe(
         (data: any) => {
           /** request completed */
           this.ngProgress.done();  
           this.alertService.success(data.message, true);
+          // TODO: patch locally
+          this.getAPIFlows();
         },
         error => {
           /** request completed but error */
@@ -211,9 +250,9 @@ export class APIFlowComponent implements OnInit {
       });
     }
 
-    openModal(id: string, name, description = null) {
-      this.epName = name;
-      this.description = description;
+    openModal(id: string, af) {
+      this.epName = af.name;
+      this.description = af.description;
       this.dialogService.open(id);
     }
 
