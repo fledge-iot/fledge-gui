@@ -20,7 +20,7 @@ export class Filters {
   addFilter(filterName: string) {
     this.waitForFilterPluginsToLoad().then(() => {
       // select first plugin in select box
-      cy.get('select').select(0).click()
+      cy.get('select').select(0)
       // supply filter name
       cy.get('#name').type(filterName)
       // click next button twice
@@ -50,7 +50,7 @@ export class Filters {
    *  Get filter name
    */
   getAddedFilterName() {
-    cy.wait(this.DETERMINISTIC_WAIT).get('.accordion.card.cdk-drag')
-    return cy.get('.accordion.card.cdk-drag').invoke('text')
+    cy.wait(this.DETERMINISTIC_WAIT)
+    return cy.get('#list-item-0 .card-header-title').invoke('text')
   }
 }

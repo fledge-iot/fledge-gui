@@ -7,26 +7,36 @@ describe('Fledge South Page tests', () => {
 
   it('Should display south service page', () => {
     southPage.navToSouthPage()
-    expect(southPage.getSouthPageTitle()).to.equal('South Services')
+    southPage.getSouthPageTitle().then(title =>{
+      expect(title.trim()).to.equal('South Services')
+    })
   })
 
   it('Should display added south service', () => {
+    southPage.navToSouthPage()
     southPage.clickAddServiceButton()
     southPage.addSouthService('guiE2eService #1') // pass south service name
-    expect(southPage.getServiceName()).to.equal('guiE2eService #1')
+    southPage.getServiceName().then(serviceName =>{
+      expect(serviceName.trim()).to.equal('guiE2eService #1')
+    })
   })
 
   it('Should display added filter in south service', () => {
+    southPage.navToSouthPage()
     southPage.openSouthServiceModal()
     filters.openFilterWizard()
     filters.addFilter('guiE2eFilter #1')
-    expect(filters.getAddedFilterName()).to.equal(' guiE2eFilter #1')
+    filters.getAddedFilterName().then(filterName =>{
+      expect(filterName.trim()).to.equal('guiE2eFilter #1')
+    })
     southPage.closeSouthServiceModal()
   })
 
   it('Should display asset count on south service', () => {
-    southPage.getAssetCount().then((value) => {
-      assert.isAtLeast(+value, 1)
+    southPage.navToSouthPage()
+    southPage.getAssetCount().then((assetCount) => {
+      assetCount = assetCount.split(",").join("")
+      assert.isAtLeast(+assetCount, 1)
     })
   })
 })

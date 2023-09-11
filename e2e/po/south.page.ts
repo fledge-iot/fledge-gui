@@ -36,7 +36,7 @@ export class SouthPage {
     this.waitForServicePluginsToLoad()
       .then(() => {
         // select first plugin
-        cy.get('select').select(0).click()
+        cy.get('select').select(0)
         // supply service name
         cy.get('#name').type(serviceName)
         // click next button thrice
@@ -49,9 +49,7 @@ export class SouthPage {
         console.log('Retrying load service.')
         this.addSouthService(serviceName)
       } else {
-        console.log(
-          'Rejecting the promise after ' + this.RETRY_ATTEMPTS + ' attempts.'
-        )
+        console.log('Rejecting the promise after ' + this.RETRY_ATTEMPTS + ' attempts.')
         return Promise.reject(error)
       }
     })
@@ -69,7 +67,7 @@ export class SouthPage {
    *  Get added south service name
    */
   getServiceName() {
-    cy.wait(this.DETERMINISTIC_WAIT).get('#south-service-list tr:nth-child(1) .button')
+    cy.wait(this.DETERMINISTIC_WAIT)
     return cy.get('#south-service-list tr:nth-child(1) .button').invoke('text')
   }
 
@@ -77,7 +75,7 @@ export class SouthPage {
    *  open south service modal
    */
   openSouthServiceModal() {
-    cy.wait(this.DETERMINISTIC_WAIT).get('.content table tr:nth-child(1) .button')
+    cy.wait(this.DETERMINISTIC_WAIT)
     return cy.get('.content table tr:nth-child(1) .button').click()
   }
 
@@ -101,14 +99,14 @@ export class SouthPage {
       }
     })
     this.fetchAssetRetryAttempts--
-    return cy.get('#south-service-list tr:nth-child(1) td:nth-child(3) table tr:nth-child(1) td:nth-child(2) small').invoke('text')
+    return cy.get('.readings-count small').invoke('text')
   }
 
   /**
    * Wait for asset readings count to get visible
    */
   waitForAssetReadingsToLoad() {
-    return cy.wait(this.DETERMINISTIC_WAIT).get('#south-service-list tr:nth-child(1) td:nth-child(3) table tr:nth-child(1) td:nth-child(2) small').should('be.visible')
+    return cy.wait(this.DETERMINISTIC_WAIT).get('.readings-count small').should('be.visible')
   }
 
   /**
