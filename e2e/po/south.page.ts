@@ -60,7 +60,6 @@ export class SouthPage {
 
   /**
    * Wait for visibility of south service plugin in multi drop-down
-   * @param timeOut wait time
    */
   waitForServicePluginsToLoad() {
     return cy.wait(this.DETERMINISTIC_WAIT).get('option').should('be.visible')
@@ -107,7 +106,6 @@ export class SouthPage {
 
   /**
    * Wait for asset readings count to get visible
-   * @param timeOut   wait time
    */
   waitForAssetReadingsToLoad() {
     return cy.wait(this.DETERMINISTIC_WAIT).get('#south-service-list tr:nth-child(1) td:nth-child(3) table tr:nth-child(1) td:nth-child(2) small').should('be.visible')
