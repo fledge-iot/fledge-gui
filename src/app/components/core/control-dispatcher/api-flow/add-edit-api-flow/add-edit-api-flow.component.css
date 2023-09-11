@@ -70,3 +70,7 @@ span.is-small {
 .dd-menu {
     min-width: 5rem;
 }
+
+#confirmation-execute-dialog .modal-card-body {
+    min-height: 22vh;
+}

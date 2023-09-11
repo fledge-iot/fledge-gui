@@ -389,8 +389,4 @@ a.dropdown-item:hover {
     white-space: nowrap;
     max-width: 32rem
   }
-
-  #confirmation-execute-dialog .modal-card-body {
-    min-height: 22vh;
-  }
  /*****************/
