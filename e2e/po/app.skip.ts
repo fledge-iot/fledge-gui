@@ -1,11 +1,9 @@
-import { browser, by, element } from 'protractor';
 import { environment } from '../environment';
 
 export class SkipLogin {
-  EC = browser.ExpectedConditions;
 
   navigateToHome() {
-    return browser.get('/');
+    return cy.visit('/')
   }
 
   setUpInstance() {
@@ -13,331 +11,276 @@ export class SkipLogin {
       environment.SERVICE_PORT === '8081') {
       return;
     }
-    browser.waitForAngularEnabled(false);
-    element(by.css('#protocol-dropdown')).click();
-    element(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
-    element(by.id('host')).clear();
-    element(by.id('host')).sendKeys(environment.HOST);
-    element(by.id('service_port')).clear();
-    element(by.id('service_port')).sendKeys(environment.SERVICE_PORT);
-    element(by.id('set-url-restart-btn')).click();
-    browser.waitForAngularEnabled(true);
+    this.navToSettings()
+    cy.get('#protocol-dropdown').click()
+    cy.get('#protocol-dropdown #dropdown-menu > div > a:nth-child(1)').click()
+    cy.get('#host').clear()
+    cy.get('#host').type(environment.HOST)
+    cy.get('#service_port').clear()
+    cy.get('#service_port').type(environment.SERVICE_PORT)
+    cy.get('#set-url-restart-btn').click()
   }
 
   getNavTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#app .navbar-brand .navbar-item > b > a')).getText();
+    return cy.get('#app .navbar-brand .navbar-item > b > a').invoke('text')
   }
 
   loginPageInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-login form input')).count();
+    // return cy.get('app-login form input').count()
   }
 
   getLoginButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-login form button.is-info')).getText();
+    return cy.get('app-login form button.is-info').invoke('text')
   }
 
   getAppStatus() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#app > app-root > div > app-navbar > nav > div.navbar-menu .icon.has-text-success')).isDisplayed();
+    cy.get('#app > app-root > div > app-navbar > nav > div.navbar-menu .icon.has-text-success').should('be.visible')
   }
 
   getReceived() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(2)')).getText();
+    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(2)').invoke('text')
   }
 
   getSent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(3)')).getText();
+    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(3)').invoke('text')
   }
 
   getUptime() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(4)')).getText();
+    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(4)').invoke('text')
   }
 
   isDashboardTimeDropdownPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#time-dropdown')).isDisplayed();
+    return cy.get('#time-dropdown').should('be.visible')
   }
 
   isDashboardGraphDropdownPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#graph-key-dropdown')).isDisplayed();
+    return cy.get('#graph-key-dropdown').should('be.visible')
   }
 
   navToAssetReadings() {
-    return browser.get('/#/asset');
+    return cy.visit('/#/asset')
   }
 
   getAssetTableHeader() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-assets table th:nth-child(1)')).getText();
+    return cy.get('app-assets table th:nth-child(1)').invoke('text')
   }
 
   getReadingsTableHeader() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-assets table th:nth-child(2)')).getText();
+    return cy.get('app-assets table th:nth-child(2)').invoke('text')
   }
 
   clickChartIcon() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-assets .table.is-striped > tbody:nth-child(2) > tr:nth-child(1) .fa-chart-line')).click();
+    return cy.get('app-assets .table.is-striped > tbody:nth-child(2) > tr:nth-child(1) .fa-chart-line').click()
   }
 
   isChartDisplayed() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('.chartjs-render-monitor')).isDisplayed();
+    return cy.get('.chartjs-render-monitor').should('be.visible')
   }
 
   closeChartModal() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#chart_modal .modal-card > header > div > button')).click();
+    return cy.get('#chart_modal .modal-card > header > div > button').click()
   }
 
   clickAssetChart() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-assets table tbody:nth-child(2) tr:nth-child(1) td:nth-child(4) a')).click();
+    return cy.get('app-assets table tbody:nth-child(2) tr:nth-child(1) td:nth-child(4) a').click()
   }
 
   getAssetChartInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('#chart_modal .modal-card app-number-input-debounce input')).count();
+    // return cy.get('#chart_modal .modal-card app-number-input-debounce input').count()
   }
 
   navToAuditLogs() {
-    return browser.get('/#/logs/audit');
+    return cy.visit('/#/logs/audit')
   }
 
   getAuditLogsTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('.card-header-title')).getText();
+    return cy.get('.card-header-title').invoke('text')
   }
 
   isAuditLogsSourceDropdownPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('.card #dropdown')).isDisplayed();
+    return cy.get('.card #dropdown').should('be.visible')
   }
 
   isAuditLogsSeverityDropdownPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('.card #severity-dropdown')).isDisplayed();
+    return cy.get('.card #severity-dropdown').should('be.visible')
   }
 
   navToSystemLogs() {
-    return browser.get('/#/logs/syslog');
+    return cy.visit('/#/logs/syslog')
   }
 
   getSystemLogTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('.card-header-title')).getText();
+    return cy.get('.card-header-title').invoke('text')
   }
 
   isSystemLogDropDownPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#dropdown')).isDisplayed();
+    return cy.get('#dropdown').should('be.visible')
   }
 
   isSystemLogLevelDropdownPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#level-dropdown')).isDisplayed();
+    return cy.get('#level-dropdown').should('be.visible')
   }
 
   getSystemLogInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-system-log input')).count();
+    // return cy.get('app-system-log input').count()
   }
 
   navigateToConfig() {
-    return browser.get('/#/configuration');
+    return cy.visit('/#/configuration')
   }
 
   clickAddButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-configuration-manager > div > div:nth-child(2) > header > div:nth-child(2) > a')).click();
+    return cy.get('app-configuration-manager > div > div:nth-child(2) > header > div:nth-child(2) > a').click()
   }
 
   navToScheduledTasks() {
-    return browser.get('/#/schedules');
+    return cy.visit('/#/schedules')
   }
 
   getSchedulesTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-list-schedules .card-header p.card-header-title')).getText();
+    return cy.get('app-list-schedules .card-header p.card-header-title').invoke('text')
   }
 
   getSchedulesRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#scheduled-process .fa.fa-sync')).isDisplayed();
+    return cy.get('#scheduled-process .fa.fa-sync').should('be.visible')
   }
 
   getCreateScheduleButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-list-schedules .card-header .button.is-light')).getText();
+    return cy.get('app-list-schedules .card-header .button.is-light').invoke('text')
   }
 
   closeAlert() {
-    browser.ignoreSynchronization = true;
-    element(by.css('#alert > button.delete')).click();
+    cy.get('#alert > button.delete').click()
   }
 
   getTasksTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-list-schedules app-list-tasks header > div')).getText();
+    return cy.get('app-list-schedules app-list-tasks header > div').invoke('text')
   }
 
   getTasksRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-list-schedules > div:nth-child(2) .fa.fa-sync')).isDisplayed();
+    return cy.get('app-list-schedules > div:nth-child(2) .fa.fa-sync').should('be.visible')
   }
 
   getTasksSelectTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.id('task-state')).count();
+    // return cy.get('#task-state').count()
   }
 
   navToCertificateStore() {
-    return browser.get('/#/certificate');
+    return cy.visit('/#/certificate')
   }
 
   getCertificateStoreTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store > div > div > header > p')).getText();
+    return cy.get('app-cert-store > div > div > header > p').invoke('text')
   }
 
   getCertificateStoreRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store button i')).isDisplayed();
+    return cy.get('app-cert-store button i').should('be.visible')
   }
 
   getCertificateStoreKeyColNames() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store div div div div:nth-child(1) table')).getText();
+    return cy.get('app-cert-store div div div div:nth-child(1) table').invoke('text')
   }
 
   getCertificateStoreCertColNames() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store div div div div:nth-child(2) table')).getText();
+    return cy.get('app-cert-store div div div div:nth-child(2) table').invoke('text')
   }
 
   getCertificateStoreImport() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-cert-store header a')).getText();
+    return cy.get('app-cert-store header a').invoke('text')
   }
 
   navToBackupRestore() {
-    return browser.get('/#/backup-restore');
+    return cy.visit('/#/backup-restore');
   }
 
   clickRequestBackup() {
-    browser.ignoreSynchronization = true;
-    element(by.css('#dropdown-menu3 .dropdown-content #create-backup')).click();
+    cy.get('#dropdown-menu3 .dropdown-content #create-backup').click()
     // wait
-    browser.driver.sleep(15000);
-    browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore table thead tr'))), 1000);
+    cy.wait(15000)
+    cy.wait(1000).get('app-backup-restore table thead tr').should('be.visible')
   }
 
   getBackupRestoreTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-backup-restore header p')).getText();
+    return cy.get('app-backup-restore header p').invoke('text')
   }
 
   getBackupRestoreColNames() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-backup-restore table thead tr')).getText();
+    return cy.get('app-backup-restore table thead tr').invoke('text')
   }
 
   getRequestBackup() {
-    browser.ignoreSynchronization = true;
-    browser.actions().mouseMove(element(by.css('app-backup-restore .dropdown.is-hoverable.is-right'))).perform();
-    browser.wait(this.EC.visibilityOf(element(by.id('dropdown-menu3'))), 2000);
-    return element(by.css('#dropdown-menu3 .dropdown-content #create-backup span')).getText();
+    // browser.actions().mouseMove(element(by.css('app-backup-restore .dropdown.is-hoverable.is-right'))).perform();
+    cy.wait(2000).get('#dropdown-menu3').should('be.visible')
+    return cy.get('#dropdown-menu3 .dropdown-content #create-backup span').invoke('text')
   }
 
   getCreatedBackupRow() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-backup-restore table tbody tr')).getText();
+    return cy.get('app-backup-restore table tbody tr').invoke('text')
   }
 
   deleteBackup() {
-    browser.ignoreSynchronization = true;
-    element(by.css('app-backup-restore .button.is-text')).click();
-    browser.wait(this.EC.visibilityOf(element(by.css('#modal-box button.button.is-small.is-danger'))), 2000);
-    element(by.css('#modal-box button.button.is-small.is-danger')).click();
-    browser.wait(this.EC.visibilityOf(element(by.css('app-backup-restore .no-rec'))), 3000);
+    cy.get('app-backup-restore .button.is-text').click()
+    cy.wait(2000).get('#modal-box button.button.is-small.is-danger').should('be.visible')
+    cy.get('#modal-box button.button.is-small.is-danger').click()
+    cy.wait(3000).get('app-backup-restore .no-rec').should('be.visible')
   }
 
   noBackupRecord() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-backup-restore .no-rec')).getText();
+    return cy.get('app-backup-restore .no-rec').invoke('text')
   }
 
   navToSupportBundles() {
-    return browser.get('/#/support');
+    return cy.visit('/#/support');
   }
 
   getSupportBundlesTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-support header p')).getText();
+    return cy.get('app-support header p').invoke('text')
   }
 
   getSupportBundlesRefreshButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-support button i')).isDisplayed();
+    return cy.get('app-support button i').should('be.visible')
   }
 
   getRequestNewBundle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-support header a')).getText();
+    return cy.get('app-support header a').invoke('text')
   }
 
   requestNewBundle() {
-    browser.ignoreSynchronization = true;
-    element(by.css('app-support header a')).click();
+    cy.get('app-support header a').click()
     // wait
-    browser.wait(this.EC.visibilityOf(element(by.id('alert'))), 2000);
-    return element(by.id('alert')).getText();
+    cy.wait(2000).get('#alert').should('be.visible')
+    return cy.get('#alert').invoke('text')
   }
 
   navToSettings() {
-    return browser.get('/#/setting');
+    return cy.visit('/#/setting');
   }
 
   getSettingsTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-settings #connection .card-header .card-header-title')).getText();
+    return cy.get('app-settings #connection .card-header .card-header-title').invoke('text')
   }
 
   getSettingsSelectTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('#protocol-dropdown')).count();
+    // return cy.get('#protocol-dropdown').count()
   }
 
   getSettingsHostInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings div input#host')).count();
+    // return cy.get('app-settings div input#host').count()
   }
 
   getSettingsPortInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings div input#service_port')).count();
+    // return cy.get('app-settings div input#service_port').count()
   }
 
   getSettingsSetUrlAndRestartButton() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-settings #set-url-restart-btn'));
+    return cy.get('app-settings #set-url-restart-btn')
   }
 
   isRefreshDashboardDropdownPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#refresh-time-dropdown')).isDisplayed();
+    return cy.get('#refresh-time-dropdown').should('be.visible')
   }
 
   isPingIntervalDropdownPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#ping-interval-dropdown')).isDisplayed();
+    return cy.get('#ping-interval-dropdown').should('be.visible')
   }
 }
