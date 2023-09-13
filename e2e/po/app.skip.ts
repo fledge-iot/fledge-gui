@@ -26,7 +26,7 @@ export class SkipLogin {
   }
 
   loginPageInputTag() {
-    // return cy.get('app-login form input').count()
+    cy.get('app-login form input').should('be.visible')
   }
 
   getLoginButton() {
@@ -74,11 +74,11 @@ export class SkipLogin {
   }
 
   isChartDisplayed() {
-    cy.get('.chartjs-render-monitor').should('be.visible')
+    cy.get('.chart-container').should('be.visible')
   }
 
   closeChartModal() {
-    return cy.get('#chart_modal .modal-card > header > div > button').click()
+    cy.get('#chart_modal .modal-card > header > div > button').click()
   }
 
   clickAssetChart() {

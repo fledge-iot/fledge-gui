@@ -5,12 +5,12 @@ export class NonAdminLogin {
     cy.get('app-login form input[name="password"]').type('fledge')
     cy.wait(1000)
     cy.get('app-login form button.is-info').click()
-    cy.wait(1000)    
+    cy.wait(1000)
   }
 
   isUserManagementPresent() {
     cy.wait(2000).get('aside .menu-list').should('be.visible')
-    return cy.get('#user-management').should('be.visible')
+    cy.get('#user-management').should('not.exist')
   }
 
   getLoggedInUsername() {
@@ -18,9 +18,10 @@ export class NonAdminLogin {
   }
 
   navToProfile() {
-    cy.get('#dropdown-box > div.dropdown-trigger > a').click()
-    cy.get('#dropdown-menu > div > a:nth-child(1)').click()
-    cy.wait(2000);
+    cy.get('#dropdown-box').invoke('mouseenter')
+    cy.get('#dropdown-menu').invoke('show')
+    cy.get('#dropdown-menu > div > a.user-content:nth-child(1)').click({ force: true })
+    cy.wait(2000)
   }
 
   profileTitle() {
@@ -28,27 +29,27 @@ export class NonAdminLogin {
   }
 
   labelUsername() {
-    return cy.get('#edit_profile > div:nth-child(1) > div > label').invoke('text')
-  }
-
-  labelRole() {
     return cy.get('#edit_profile > div:nth-child(2) > div > label').invoke('text')
   }
 
+  labelRole() {
+    return cy.get('#edit_profile > div:nth-child(3) > div > label').invoke('text')
+  }
+
   isChangePassword() {
-    return cy.get('#edit_profile > div:nth-child(3) > div > a').invoke('text')
+    return cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(1)').invoke('text')
   }
 
   isLogoutActiveSessionButton() {
-    return cy.get('#edit_profile .button.is-warning').invoke('text')
+    return cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(2)').invoke('text')
   }
 
   changePassword() {
-    cy.get('#edit_profile > div:nth-child(3) > div > a').click()
+    cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(1)').click()
   }
 
   getInputTagCount() {
-    // return cy.get('#ngForm input').count()
+    return cy.get('#ngForm input').should('be.visible')
   }
 
   isSaveButton() {

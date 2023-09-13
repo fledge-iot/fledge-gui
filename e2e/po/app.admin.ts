@@ -9,19 +9,23 @@ export class AdminLogin {
 
   isUserManagementPresent() {
     cy.wait(2000)
-    return cy.get('#user-management').should('be.visible')
+    cy.get('#user-management').should('be.visible')
   }
 
   navToUserManagement() {
     return cy.visit('/#/user-management')
   }
 
-  getAllTabs() {
-    return cy.get('app-user-management header .tabs ul').invoke('text')
+  getUserManagementTabName() {
+    return cy.get('app-user-management header .tabs ul li:nth-child(1)').invoke('text')
+  }
+
+  getRoleTabName() {
+    return cy.get('app-user-management header .tabs ul li:nth-child(2)').invoke('text')
   }
 
   isAddUserPresent() {
-    return cy.get('app-user-management header .tabs div').invoke('text')
+    return cy.get('app-user-management .add-btn').invoke('text')
   }
 
   getUserManagementColNames() {
@@ -29,7 +33,7 @@ export class AdminLogin {
   }
 
   gotoRoles() {
-    cy.get('app-user-management header .tabs li:nth-child(2) a').invoke('text')
+    cy.get('app-user-management header .tabs ul li:nth-child(2)').click()
   }
 
   getRolesColNames() {
@@ -37,8 +41,9 @@ export class AdminLogin {
   }
 
   navToProfile() {
-    cy.get('#dropdown-box > div.dropdown-trigger > a').click()
-    cy.get('#dropdown-menu > div > a:nth-child(1)').click()
+    cy.get('#dropdown-box').invoke('mouseenter')
+    cy.get('#dropdown-menu').invoke('show')
+    cy.get('#dropdown-menu > div > a.user-content:nth-child(1)').click({ force: true })
     cy.wait(2000)
   }
 
@@ -47,27 +52,27 @@ export class AdminLogin {
   }
 
   labelUsername() {
-    return cy.get('#edit_profile > div:nth-child(1) > div > label').invoke('text')
-  }
-
-  labelRole() {
     return cy.get('#edit_profile > div:nth-child(2) > div > label').invoke('text')
   }
 
+  labelRole() {
+    return cy.get('#edit_profile > div:nth-child(3) > div > label').invoke('text')
+  }
+
   isChangePassword() {
-    return cy.get('#edit_profile > div:nth-child(3) > div > a').invoke('text')
+    return cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(1)').invoke('text')
   }
 
   isLogoutActiveSessionButton() {
-    return cy.get('#edit_profile .button.is-warning').invoke('text')
+    return cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(2)').invoke('text')
   }
 
   changePassword() {
-    cy.get('#edit_profile > div:nth-child(3) > div > a').click()
+    cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(1)').click()
   }
 
   getInputTagCount() {
-    // return cy.get('#ngForm input').count()
+    return cy.get('#ngForm input').should('be.visible')
   }
 
   isSaveButton() {
@@ -79,15 +84,15 @@ export class AdminLogin {
   }
 
   logout() {
-    cy.get('#dropdown-box > div.dropdown-trigger > a').click()
-    // wait
-    cy.wait(2000).get('#dropdown-menu > div > a:nth-child(2)').should('be.visible')
-    cy.get('#dropdown-menu > div > a:nth-child(2)').click()
+    cy.wait(2000)
+    cy.get('#dropdown-box').invoke('mouseenter')
+    cy.get('#dropdown-menu').invoke('show')
+    cy.get('#dropdown-menu > div > a.user-content:nth-child(2)').click({ force: true })
     cy.wait(1000)
   }
 
   loginPageInputTag() {
-    // return cy.get('app-login form input').count()
+    cy.get('app-login form input').should('be.visible')
   }
 
   getLoginButton() {
