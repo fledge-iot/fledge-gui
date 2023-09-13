@@ -76,11 +76,11 @@ Test report will be available in HTML format in `fledge-gui/e2e-test-report/`; O
 
 ### Dev Mode
 
-Set default API base URL in `environments/environment.ts`, you can always change it and restart the app from settings.
+Set default API base URL in `environments/environment.ts`, You can always change it and restart the app from settings.
 
 ### Production Mode
 
-Set API base URL in `environments/environment.prod.ts`, you can always change it and restart the app from settings.
+Set API base URL in `environments/environment.prod.ts`, You can always change it and restart the app from settings.
 
 ## Used Libraries
 
