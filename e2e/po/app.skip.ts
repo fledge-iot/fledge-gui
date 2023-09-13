@@ -50,11 +50,11 @@ export class SkipLogin {
   }
 
   isDashboardTimeDropdownPresent() {
-    return cy.get('#time-dropdown').should('be.visible')
+    cy.get('#time-dropdown').should('be.visible')
   }
 
   isDashboardGraphDropdownPresent() {
-    return cy.get('#graph-key-dropdown').should('be.visible')
+    cy.get('#graph-key-dropdown').should('be.visible')
   }
 
   navToAssetReadings() {
@@ -74,7 +74,7 @@ export class SkipLogin {
   }
 
   isChartDisplayed() {
-    return cy.get('.chartjs-render-monitor').should('be.visible')
+    cy.get('.chartjs-render-monitor').should('be.visible')
   }
 
   closeChartModal() {
@@ -98,11 +98,11 @@ export class SkipLogin {
   }
 
   isAuditLogsSourceDropdownPresent() {
-    return cy.get('.card #dropdown').should('be.visible')
+    cy.get('.card #dropdown').should('be.visible')
   }
 
   isAuditLogsSeverityDropdownPresent() {
-    return cy.get('.card #severity-dropdown').should('be.visible')
+    cy.get('.card #severity-dropdown').should('be.visible')
   }
 
   navToSystemLogs() {
@@ -114,15 +114,15 @@ export class SkipLogin {
   }
 
   isSystemLogDropDownPresent() {
-    return cy.get('#dropdown').should('be.visible')
+    cy.get('#dropdown').should('be.visible')
   }
 
   isSystemLogLevelDropdownPresent() {
-    return cy.get('#level-dropdown').should('be.visible')
+    cy.get('#level-dropdown').should('be.visible')
   }
 
   getSystemLogInputTag() {
-    // return cy.get('app-system-log input').count()
+    cy.get('app-system-log input').should('be.visible')
   }
 
   navigateToConfig() {
@@ -142,7 +142,7 @@ export class SkipLogin {
   }
 
   getSchedulesRefreshButton() {
-    return cy.get('#scheduled-process .fa.fa-sync').should('be.visible')
+    cy.get('#scheduled-process .fa.fa-sync').should('be.visible')
   }
 
   getCreateScheduleButton() {
@@ -158,7 +158,7 @@ export class SkipLogin {
   }
 
   getTasksRefreshButton() {
-    return cy.get('app-list-schedules > div:nth-child(2) .fa.fa-sync').should('be.visible')
+    cy.get('app-list-schedules > div:nth-child(2) .fa.fa-sync').should('be.visible')
   }
 
   getTasksSelectTag() {
@@ -174,15 +174,23 @@ export class SkipLogin {
   }
 
   getCertificateStoreRefreshButton() {
-    return cy.get('app-cert-store button i').should('be.visible')
+    cy.get('app-cert-store button i').should('be.visible')
   }
 
-  getCertificateStoreKeyColNames() {
-    return cy.get('app-cert-store div div div div:nth-child(1) table').invoke('text')
+  getCertificateStoreKeyColKeyName() {
+    return cy.get('app-cert-store div div div div:nth-child(1) table > thead > tr > th:nth-child(1)').invoke('text')
   }
 
-  getCertificateStoreCertColNames() {
-    return cy.get('app-cert-store div div div div:nth-child(2) table').invoke('text')
+  getCertificateStoreKeyColExtensionName() {
+    return cy.get('app-cert-store div div div div:nth-child(1) table > thead > tr > th:nth-child(2)').invoke('text')
+  }
+
+  getCertificateStoreCertColKeyName() {
+    return cy.get('app-cert-store div div div div:nth-child(2) table > thead > tr > th:nth-child(1)').invoke('text')
+  }
+
+  getCertificateStoreCertColExtensionName() {
+    return cy.get('app-cert-store div div div div:nth-child(2) table > thead > tr > th:nth-child(2)').invoke('text')
   }
 
   getCertificateStoreImport() {
@@ -197,29 +205,34 @@ export class SkipLogin {
     cy.get('#dropdown-menu3 .dropdown-content #create-backup').click()
     // wait
     cy.wait(15000)
+    cy.get('#dropdown-menu3').invoke('hide')
     cy.wait(1000).get('app-backup-restore table thead tr').should('be.visible')
   }
 
   getBackupRestoreTitle() {
-    return cy.get('app-backup-restore header p').invoke('text')
+    return cy.get('.card-header-title').invoke('text')
   }
 
-  getBackupRestoreColNames() {
-    return cy.get('app-backup-restore table thead tr').invoke('text')
+  getBackupRestoreColDateName() {
+    return cy.get('app-backup-restore table thead tr th:nth-child(1) div').invoke('text')
+  }
+
+  getBackupRestoreColStatusName() {
+    return cy.get('app-backup-restore table thead tr th:nth-child(2)').invoke('text')
   }
 
   getRequestBackup() {
-    // browser.actions().mouseMove(element(by.css('app-backup-restore .dropdown.is-hoverable.is-right'))).perform();
-    cy.wait(2000).get('#dropdown-menu3').should('be.visible')
+    cy.get('app-backup-restore .dropdown.is-hoverable.is-right').invoke('mouseenter')
+    cy.get('#dropdown-menu3').invoke('show')
     return cy.get('#dropdown-menu3 .dropdown-content #create-backup span').invoke('text')
   }
 
   getCreatedBackupRow() {
-    return cy.get('app-backup-restore table tbody tr').invoke('text')
+    return cy.get('app-backup-restore table tbody tr td:nth-child(2) small').invoke('text')
   }
 
   deleteBackup() {
-    cy.get('app-backup-restore .button.is-text').click()
+    cy.get('app-backup-restore table tbody tr td:nth-child(3)').click()
     cy.wait(2000).get('#modal-box button.button.is-small.is-danger').should('be.visible')
     cy.get('#modal-box button.button.is-small.is-danger').click()
     cy.wait(3000).get('app-backup-restore .no-rec').should('be.visible')
@@ -234,11 +247,11 @@ export class SkipLogin {
   }
 
   getSupportBundlesTitle() {
-    return cy.get('app-support header p').invoke('text')
+    return cy.get('.card-header-title').invoke('text')
   }
 
   getSupportBundlesRefreshButton() {
-    return cy.get('app-support button i').should('be.visible')
+    cy.get('app-support button i').should('be.visible')
   }
 
   getRequestNewBundle() {
@@ -261,26 +274,26 @@ export class SkipLogin {
   }
 
   getSettingsSelectTag() {
-    // return cy.get('#protocol-dropdown').count()
+    cy.get('#protocol-dropdown').should('be.visible')
   }
 
   getSettingsHostInputTag() {
-    // return cy.get('app-settings div input#host').count()
+    cy.get('app-settings div input#host').should('be.visible')
   }
 
   getSettingsPortInputTag() {
-    // return cy.get('app-settings div input#service_port').count()
+    cy.get('app-settings div input#service_port').should('be.visible')
   }
 
   getSettingsSetUrlAndRestartButton() {
-    return cy.get('app-settings #set-url-restart-btn')
+    return cy.get('app-settings #set-url-restart-btn').invoke('text')
   }
 
   isRefreshDashboardDropdownPresent() {
-    return cy.get('#refresh-time-dropdown').should('be.visible')
+    cy.get('#refresh-time-dropdown').should('be.visible')
   }
 
   isPingIntervalDropdownPresent() {
-    return cy.get('#ping-interval-dropdown').should('be.visible')
+    cy.get('#ping-interval-dropdown').should('be.visible')
   }
 }
