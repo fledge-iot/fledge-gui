@@ -86,7 +86,7 @@ export class SkipLogin {
   }
 
   getAssetChartInputTag() {
-    // return cy.get('#chart_modal .modal-card app-number-input-debounce input').count()
+    cy.get('#chart_modal .modal-card app-number-input-debounce input').should('be.visible')
   }
 
   navToAuditLogs() {
@@ -162,7 +162,7 @@ export class SkipLogin {
   }
 
   getTasksSelectTag() {
-    // return cy.get('#task-state').count()
+    cy.get('#task-state').should('be.visible')
   }
 
   navToCertificateStore() {

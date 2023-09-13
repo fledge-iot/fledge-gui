@@ -151,8 +151,8 @@ describe('Fledge gui', () => {
 
     it('Should Display Settings', () => {
       skipLogin.navToSettings();
-      skipLogin.getSettingsTitle().then(result =>{
-        expect(result.trim()).to.equal('Connection Setup')
+      skipLogin.getSettingsTitle().then(title =>{
+        expect(title.trim()).to.equal('Connection Setup')
       })
       skipLogin.getSettingsSelectTag()
       skipLogin.getSettingsHostInputTag()
@@ -176,11 +176,11 @@ describe('Fledge gui', () => {
       adminLogin.login();
       adminLogin.isUserManagementPresent()
       adminLogin.navToUserManagement();
-      adminLogin.getUserManagementTabName().then(columnName => {
-        expect(columnName.trim()).to.equal('User Management')
+      adminLogin.getUserManagementTabName().then(tabName => {
+        expect(tabName.trim()).to.equal('User Management')
       })
-      adminLogin.getRoleTabName().then(columnName => {
-        expect(columnName.trim()).to.equal('Roles')
+      adminLogin.getRoleTabName().then(tabName => {
+        expect(tabName.trim()).to.equal('Roles')
       })
       adminLogin.isAddUserPresent().then(buttonText => {
         expect(buttonText.trim()).to.equal('Add User')
@@ -191,8 +191,8 @@ describe('Fledge gui', () => {
         'Role'
       ];
       for (const ColumnName in ColumnsName) {
-        adminLogin.getUserManagementColNames().then(result => {
-          expect(result.trim()).contains(ColumnsName[ColumnName]);
+        adminLogin.getUserManagementColNames().then(columnName => {
+          expect(columnName.trim()).contains(ColumnsName[ColumnName]);
         })
       }
       adminLogin.gotoRoles();
@@ -201,8 +201,8 @@ describe('Fledge gui', () => {
         'Role'
       ];
       for (const ColumnName in RolesColumnsName) {
-        adminLogin.getRolesColNames().then(result => {
-          expect(result.trim()).contains(RolesColumnsName[ColumnName])
+        adminLogin.getRolesColNames().then(columnName => {
+          expect(columnName.trim()).contains(RolesColumnsName[ColumnName])
         })
       }
     });
@@ -226,7 +226,7 @@ describe('Fledge gui', () => {
         expect(result.trim()).to.equal('Log Out Active Sessions')
       })
       adminLogin.changePassword();
-      adminLogin.getInputTagCount()
+      adminLogin.isInputTag()
       adminLogin.isSaveButton()
       adminLogin.closeModal();
     });
@@ -235,8 +235,8 @@ describe('Fledge gui', () => {
       adminLogin.login();
       adminLogin.logout();
       adminLogin.loginPageInputTag()
-      adminLogin.getLoginButton().then(result => {
-        expect(result.trim()).to.equal('Log In')
+      adminLogin.getLoginButton().then(buttonText => {
+        expect(buttonText.trim()).to.equal('Log In')
       })
       nonAdminLogin.login();
       nonAdminLogin.getLoggedInUsername().then(user => {
@@ -268,7 +268,7 @@ describe('Fledge gui', () => {
         expect(result.trim()).to.equal('Log Out Active Sessions')
       })
       nonAdminLogin.changePassword();
-      nonAdminLogin.getInputTagCount()
+      nonAdminLogin.isInputTag()
       nonAdminLogin.isSaveButton()
       nonAdminLogin.closeModal();
     });

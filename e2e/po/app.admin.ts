@@ -71,7 +71,7 @@ export class AdminLogin {
     cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(1)').click()
   }
 
-  getInputTagCount() {
+  isInputTag() {
     return cy.get('#ngForm input').should('be.visible')
   }
 
