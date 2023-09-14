@@ -151,7 +151,7 @@
           "builder": "@cypress/schematic:cypress",
           "options": {
             "watch": true,
-            "headless": false
+            "headless": true
           }
         },
         "e2e": {
@@ -159,7 +159,7 @@
           "options": {
             "devServerTarget": "fledge:serve",
             "watch": true,
-            "headless": false
+            "headless": true
           },
           "configurations": {
             "production": {
@@ -179,7 +179,7 @@
           "options": {
             "devServerTarget": "fledge-e2e:serve",
             "watch": true,
-            "headless": false
+            "headless": true
           },
           "configurations": {
             "production": {
@@ -213,7 +213,7 @@
           "builder": "@cypress/schematic:cypress",
           "options": {
             "watch": true,
-            "headless": false
+            "headless": true
           }
         }
       }
