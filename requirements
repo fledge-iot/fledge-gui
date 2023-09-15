@@ -52,8 +52,8 @@ esac
 
 
 # Don't run yarn build as root; if you had done, reclaim ownership for .npm and .config files
-sudo chown -R $USER:$GROUP $(sudo find / -type d -name .npm 2>/dev/null)
-sudo chown -R $USER:$GROUP $(sudo find / -type d -name .config 2>/dev/null)
+#sudo chown -R $USER:$GROUP $(sudo find / -type d -name .npm 2>/dev/null)
+#sudo chown -R $USER:$GROUP $(sudo find / -type d -name .config 2>/dev/null)
 
 
 echo "Node.js version: `node -v`"
