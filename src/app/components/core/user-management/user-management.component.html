@@ -32,8 +32,8 @@
                 <th>Name</th>
                 <th>Username</th>
                 <th>Role</th>
-                <th>Authentication Method</th>
                 <th>Description</th>
+                <th>Authentication Method</th>             
                 <th></th>
                 <th></th>
               </tr>
@@ -50,8 +50,8 @@
                 <td class="user-col">
                   {{user.roleName}}
                 </td>
-                <td class="user-col">{{getAccessMethod(user.accessMethod)}}</td>
                 <td class="user-col desc-col">{{user.description}}</td>
+                <td class="user-col">{{getAccessMethod(user.accessMethod)}}</td>               
                 <td class="tags-groups">
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
                   <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>

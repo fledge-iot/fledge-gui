@@ -23,3 +23,7 @@
 .checkmark {
   vertical-align: middle !important;
 }
+
+.card-header-title {
+  max-height: 45px !important;
+}

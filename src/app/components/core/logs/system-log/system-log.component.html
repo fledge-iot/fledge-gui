@@ -3,9 +3,9 @@
     <header class="card-header">
       <div class="card-header-title">
         <span>System Logs</span>
-        <button *ngIf="!isAlive || page > 1" (click)="onFirst()" title="Reload" class="button is-small" id="refresh-check">
+        <a *ngIf="!isAlive || page > 1" (click)="onFirst()" title="Reload" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button>
+        </a>
       </div>
       <div *ngIf="refreshInterval !== -1 && page === 1" class="fix-pad auto-refresh">
         <label class="checkbox">
