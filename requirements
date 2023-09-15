@@ -17,10 +17,10 @@ echo
 
 install_nodejs () {
   isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
-  requiredNodeVer="v14.15.5"
+  requiredNodeVer="v16.14.0"
   # Check if Node.js is installed or if installed version is < 14.x
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
-      curl -L https://${PKG_TYPE}.nodesource.com/setup_14.x | sudo -E bash -
+      curl -L https://${PKG_TYPE}.nodesource.com/setup_16.x | sudo -E bash -
       sudo $1 install -y nodejs
   fi
 }
