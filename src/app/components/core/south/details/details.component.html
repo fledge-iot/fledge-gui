@@ -1,0 +1,174 @@
+<div class="container is-fluid">
+    <div class="navbar-item">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+            <ul>
+                <li><a [routerLink]="['/south']">South Services</a></li>
+                <li class="is-active">
+                    <a href="#" aria-current="page">
+                        {{ serviceName }}
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <button (click)="getService()" class="button is-small" id="refresh-check" title="Reload">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="card">
+        <header class="card-header">
+            <ng-container *ngIf="service">
+                <p class="card-header-title">{{service?.name}}</p>
+            </ng-container>
+        </header>
+        <section class="card-content">
+            <app-configuration-group #pluginConfigComponent *ngIf="category" [category]="category"
+                [plugin]="service?.plugin?.name" [serviceStatus]="service['schedule_enabled']" [from]="'south'"
+                (changedConfigEvent)="getChangedConfig($event)"
+                (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
+                (formStatusEvent)="validConfigurationForm = $event">
+            </app-configuration-group>
+            <hr *ngIf="rolesService.hasEditPermissions()">
+            <div *ngIf="service" class="columns">
+                <div class="column ml-1">
+                    <div class="field is-horizontal">
+                        <div class="field-label has-text-left">
+                            <label class="label">Enabled</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <input [formControl]="svcCheckbox" class="checkbox is-static" type="checkbox">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="columns">
+                <div class="column">
+                    <span class="label is-size-6 add-application has-text-centered"
+                        *ngIf="rolesService.hasEditPermissions()">
+                        <span class="label is-size-6">Applications</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
+                (formStatus)="filterFormStatus($event)"></app-filter-list> -->
+            <app-filter-pipeline-nodes *ngIf="filterPipeline.length > 0" [pipeline]="filterPipeline"
+                (openFilterModal)="openAddFilter($event)"></app-filter-pipeline-nodes>
+
+            <!-- <div class="columns">
+                <div class="column">
+                    <span class="label is-size-6 add-application"
+                        *ngIf="rolesService.hasEditPermissions(); else staticLabel">
+                        <button class="button  is-small is-ghost" (click)="openAddFilterModal(true)"><b>Add Filter</b>
+                            <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
+                                <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </span>
+                    <ng-template #staticLabel>
+                        <span class="label is-size-6">Applications</span>
+                    </ng-template>
+                </div>
+            </div> -->
+
+            <hr>
+            <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">
+                <div class="column">
+                    <div class="field is-grouped is-pulled-right">
+                        <p class="control">
+                            <button class="button is-small" [routerLink]="['/south']">Cancel</button>
+                        </p>
+                        <p class="control">
+                            <button [disabled]="checkFormState()" class="button is-small is-link"
+                                (click)="save()">Save</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <hr *ngIf="rolesService.hasEditPermissions()">
+            <ng-container *ngIf="service">
+                <div class="columns">
+                    <div class="column">
+                        <div *ngIf="service.schedule_enabled" class="field is-horizontal service-info">
+                            <div class="field-label has-text-left service-info-text">
+                                <label class="label">Service Info</label>
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <ng-container
+                                        *ngIf="service.protocol && service.address && service.management_port">
+                                        <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column field is-grouped is-pulled-left icon-group">
+                            <p class="control">
+                                <span
+                                    class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+                                    data-tooltip="Help"
+                                    (click)="goToLink({name: category?.config?.plugin?.value, type: 'South'})">
+                                    <i class="far fa-question-circle"></i>
+                                </span>
+                            </p>
+                            <p class="control">
+                                <span
+                                    class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
+                                    data-tooltip="Show logs" (click)="navToSyslogs(service)">
+                                    <i class="far fa-file-alt"></i>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <p class=" buttons is-pulled-right">
+                            <button (click)="getAssetReadings(service)" class="button is-small">
+                                <span>Export Readings</span>
+                            </button>
+                            <button *ngIf="rolesService.hasEditPermissions()"
+                                (click)="openModal('delete-service-dialog')" class="button is-small">Delete
+                                Service</button>
+                        </p>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- </div> -->
+            <ng-container *ngIf="isAddFilterWizard">
+                <!-- <div class="box animated slideInRight"> -->
+                <div id="service-filter-modal" class="modal is-active">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <span *ngIf="serviceName" class="modal-card-title is-size-6">{{serviceName}} - Add Filter
+                                <p class="help has-text-grey ctrl-pipeline">South Service</p>
+                            </span>
+                            <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <app-add-filter-wizard (notify)="onNotify()"
+                                [serviceName]="serviceName"></app-add-filter-wizard>
+                        </section>
+                    </div>
+                </div>
+                <!-- </div> -->
+            </ng-container>
+        </section>
+        <app-filter-alert *ngIf="unsavedChangesInFilterForm" (discardChanges)="discardUnsavedChanges()"
+            [filerDialogData]='confirmationDialogData'></app-filter-alert>
+    </div>
+</div>
+<app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
+    <header class="modal-card-head">
+        <span class="modal-card-title is-size-6">Delete Service</span>
+        <button class="delete" aria-label="close" (click)="closeModal('delete-service-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+        Deleting this service can not be undone. Continue?
+    </section>
+    <footer class="modal-card-foot">
+        <button class="button is-small" (click)="closeModal('delete-service-dialog')">Cancel</button>
+        <button class="button is-small is-danger" (click)="deleteService(service)">Delete</button>
+    </footer>
+</app-confirmation-dialog>

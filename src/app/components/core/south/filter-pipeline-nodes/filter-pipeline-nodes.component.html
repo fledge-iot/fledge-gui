@@ -1,0 +1,71 @@
+<ol class="wtree" cdkDropList [cdkDropListData]="filterNodes" (cdkDropListDropped)="drop($event)">
+    <ng-container *ngFor="let node of filterNodes">
+        <li *ngIf="node">
+            <span cdkDrag>
+                <div>
+                    <p><a>{{node.id}}</a></p>
+                    <button class="button btn-branch" (click)="addNode(node.id)">
+                        <p class="icon">
+                            <i class="fa fa-circle-plus"></i>
+                        </p>
+                    </button>
+                </div>
+            </span>
+            <ol *ngIf="node.children.length > 0">
+                <ng-container *ngFor="let n of node.children">
+                    <li *ngIf="n.id !== ''">
+                        <span cdkDrag>
+                            <div>
+                                <p><a>{{n.id}}</a></p>
+                            </div>
+                        </span>
+                    </li>
+                    <li *ngIf="n.id=='' && n.parent == node.id">
+                        <div class="area">
+                            <div id="dropZone">
+                                <div class="columns">
+                                    <div class="column" cdkDropList [cdkDropListData]="node.children"
+                                        (cdkDropListDropped)="drop($event)">
+                                        <button class="button is-ghost is-small m-0 p-0"
+                                            (click)="openAddFilterModal(node)">Add Filter</button>
+                                        <p class="help"> OR drag and drop filter</p>
+                                    </div>
+                                    <div class="column is-1 has-text-right">
+                                        <p class="icon remove-node" (click)="removeNode(node.id)">
+                                            <i class="fas fa-circle-minus"></i>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ng-container>
+            </ol>
+        </li>
+    </ng-container>
+    <li>
+        <div>
+            <button class="button root-node" (click)="rootFilter = true">
+                <p class="icon">
+                    <i class="fa fa-circle-plus"></i>
+                </p>
+            </button>
+        </div>
+        <div class="area" *ngIf="rootFilter">
+            <div id="dropZone">
+                <div class="columns">
+                    <div class="column" cdkDropList [cdkDropListData]="filterNodes" (cdkDropListDropped)="drop($event)">
+                        <button class="button is-ghost is-small m-0 p-0" (click)="openAddFilterModal(node)">
+                            Add Filter</button>
+                        <p class="help"> OR drag and drop filter</p>
+                    </div>
+                    <div class="column is-1 has-text-right">
+                        <p class="icon remove-node" (click)="rootFilter = false">
+                            <i class="fas fa-circle-minus"></i>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

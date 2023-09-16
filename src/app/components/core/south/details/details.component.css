@@ -1,0 +1,37 @@
+.add-application {
+  opacity: 0.7;
+}
+
+.help-icon {
+  cursor: pointer !important;
+  padding-top: 1rem;
+}
+
+/* .enable-div { */
+  /* margin-left: 1px; */
+  /* padding-left: 16px; */
+/* } */
+
+/* .enable-text {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: 1344px;
+  margin: auto;
+} */
+
+.breadcrumb {
+  margin-bottom: 0px !important;
+}
+
+@media screen and (min-width: 769px) {
+  .modal-card {
+    width: 80%;
+  }
+  .field-body {
+    flex-grow: 2 !important;
+  }
+}
+
+#add-filter {
+   color: black !important; 
+}

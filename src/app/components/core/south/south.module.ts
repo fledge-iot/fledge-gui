@@ -12,6 +12,9 @@ import { FilterModule } from '../filter/filter.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
+import { DetailsComponent } from './details/details.component';
+import { FilterPipelineNodesComponent } from './filter-pipeline-nodes/filter-pipeline-nodes.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 const routes: Routes = [
   {
@@ -23,13 +26,20 @@ const routes: Routes = [
     component: AddServiceWizardComponent,
     canActivate: [RolesGuard]
   },
+  {
+    path: 'details/:service',
+    component: DetailsComponent,
+    canActivate: [RolesGuard]
+  },
 ];
 
 @NgModule({
   declarations: [
     SouthComponent,
     AddServiceWizardComponent,
-    SouthServiceModalComponent
+    SouthServiceModalComponent,
+    DetailsComponent,
+    FilterPipelineNodesComponent
   ],
   imports: [
     FormsModule,
@@ -40,7 +50,8 @@ const routes: Routes = [
     SharedModule,
     DirectivesModule,
     FilterModule,
-    PipesModule
+    PipesModule,
+    DragDropModule,
   ],
   providers: [RolesGuard, ServicesApiService, PluginService, AssetsService, SchedulesService, FilterService],
 })

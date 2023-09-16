@@ -1,0 +1,130 @@
+ol {
+  margin-left: 30px;
+}
+.wtree li {
+  list-style-type: none;
+  margin: 10px 0 10px 10px;
+  position: relative;
+}
+.wtree li:before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -30px;
+  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  width: 30px;
+  height: 15px;
+}
+.wtree li:after {
+  position: absolute;
+  content: "";
+  top: 5px;
+  left: -30px;
+  border-left: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+  width: 0px;
+  height: 100%;
+}
+.wtree li:last-child:after {
+  display: none;
+}
+.wtree li span {
+  border: 1px solid #ddd;
+  padding: 8px 0px 8px 8px;
+  color: #666;
+  text-decoration: none;
+  width: 100%;
+   display: flex;
+  justify-content: space-between;
+}
+
+.wtree li span:hover, .wtree li span:focus {
+  color: lightgray;
+  border: .5px solid lightgray;
+}
+.wtree li span:hover + ol li span, .wtree li span:focus + ol li span {
+  color: lightgray;
+  border: .5px solid lightgray;
+}
+.wtree li span:hover + ol li:after, .wtree li span:focus + ol li:after, .wtree li span:hover + ol li:before, .wtree li span:focus + ol li:before {
+  border-color: lightgray;
+}
+
+.btn-branch {
+position: absolute;
+margin-top: 8px;
+height: 0px !important;
+cursor: pointer;
+padding: 0px 0px 10px 0px; 
+border-radius: 0px !important;
+border: none !important;
+background: none !important;
+color:  gray;
+z-index: 5;
+outline: none !important;
+}
+
+.root-node {
+position: absolute;
+height: 0px !important;
+margin: 4px 0px 0px -10px;
+cursor: pointer;
+padding: 0px 0px 10px 0px; 
+border-radius: 0px !important;
+border: none !important;
+background: none !important;
+color:  gray;
+z-index: 5;
+outline: none !important;
+}
+
+
+
+
+
+/* .parent {
+   background-color: #DDF3FE;
+}
+
+.child {
+   background-color: #DDEBC8;
+} */
+/* li span {
+  background-color: #DDF3FE;
+} */
+/* li li span {
+  background-color: #DDEBC8;
+} */
+/* li li li span {
+  background-color: #FEFCD5;
+} */
+/* .display {
+  margin-right: 12px;
+  font-weight: bold;
+} */
+/* input, label {
+  margin: 12px 0px 20px 0px;
+} */
+/* label {
+  padding-left: 6px;
+  padding-right: 12px;
+} */
+
+.remove-node {
+  cursor: pointer;
+}
+.area {
+  width: 100%; 
+  /* padding:5px; */
+  /* border: 1px solid #333; */
+  /* background: rgba(0,0,0,0.7); */
+}
+#dropZone {
+  border: 2px dashed #bbb;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  padding: 5px;
+  text-align: left;
+  color: #bbb;
+}

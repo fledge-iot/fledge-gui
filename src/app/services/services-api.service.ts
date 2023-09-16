@@ -4,6 +4,8 @@ import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+import { Service } from '../components/core/south/south-service';
+
 
 @Injectable()
 export class ServicesApiService {
@@ -32,6 +34,19 @@ export class ServicesApiService {
     params = params.append('type', type);
     return this.http.get(this.GET_SERVICES_URL, { params: params }).pipe(
       map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  /**
+   *  Get service by Name
+   *  GET  | /fledge/service
+   */
+  getServiceByName(name: string) {
+    return this.http.get(`${this.GET_SERVICES_URL}`).pipe(
+      map((response: Response) => {
+        const service: Service = response['services'].find((s: Service) => s.name = name);
+        return service;
+      }),
       catchError(error => throwError(error)));
   }
 
