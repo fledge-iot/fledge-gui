@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+sudo apt  install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+
+yarn && yarn upgrade; 
+
+# ELECTRON_RUN_AS_NODE=1; yarn e2e;
+Xvfb :1 -screen 0 1280x800x24 & export DISPLAY=:1; yarn e2e

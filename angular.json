@@ -158,7 +158,6 @@
           "builder": "@cypress/schematic:cypress",
           "options": {
             "devServerTarget": "fledge:serve",
-            "watch": true,
             "headless": true
           },
           "configurations": {
@@ -178,7 +177,6 @@
           "builder": "@cypress/schematic:cypress",
           "options": {
             "devServerTarget": "fledge-e2e:serve",
-            "watch": true,
             "headless": true
           },
           "configurations": {
