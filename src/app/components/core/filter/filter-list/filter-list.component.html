@@ -5,12 +5,13 @@
         cdkDrag [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditPermissionsOnPage(from)">
         <header class="card-header" cdkDragHandle
           [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissionsOnPage(type) }">
-          <p class="card-header-title">
+          <span class="card-header-title filter-title">
             <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissionsOnPage(from)">
               <i class="fa fa-xs fa-bars"></i>&nbsp;
             </ng-container>
             {{filter}}
-          </p>
+            <p class="help has-text-grey my-0" [ngClass]="{'ml-4': filterPipeline.length > 1 && rolesService.hasEditPermissionsOnPage(from)}">{{getFilter(filter)?.plugin}}</p>
+          </span>
           <a (click)="activeAccordion('list-item-'+ i)" class="card-header-icon">
             <span class="icon">
               <i class="fa fa-xs fa-angle-down" aria-hidden="true"></i>
