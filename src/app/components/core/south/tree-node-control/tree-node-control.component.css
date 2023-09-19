@@ -1,4 +1,4 @@
-ol {
+ul {
   margin-left: 30px;
 }
 .wtree li {
@@ -43,25 +43,24 @@ ol {
   color: lightgray;
   border: .5px solid lightgray;
 }
-.wtree li span:hover + ol li span, .wtree li span:focus + ol li span {
+.wtree li span:hover + ul li span, .wtree li span:focus + ul li span {
   color: lightgray;
   border: .5px solid lightgray;
 }
-.wtree li span:hover + ol li:after, .wtree li span:focus + ol li:after, .wtree li span:hover + ol li:before, .wtree li span:focus + ol li:before {
+.wtree li span:hover + ul li:after, .wtree li span:focus + ul li:after, .wtree li span:hover + ul li:before, .wtree li span:focus + ul li:before {
   border-color: lightgray;
 }
 
 .btn-branch {
 position: absolute;
 margin-top: 8px;
+margin-left: -10px;
 height: 0px !important;
 cursor: pointer;
-padding: 0px 0px 10px 0px; 
 border-radius: 0px !important;
 border: none !important;
 background: none !important;
 color:  gray;
-z-index: 5;
 outline: none !important;
 }
 
@@ -121,6 +120,7 @@ outline: none !important;
   /* background: rgba(0,0,0,0.7); */
 }
 #dropZone {
+  margin: 5px 6px 0px 10px;
   border: 2px dashed #bbb;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -128,3 +128,47 @@ outline: none !important;
   text-align: left;
   color: #bbb;
 }
+
+
+.cdk-drag-placeholder {
+    display: none;
+}
+
+.cdk-drag-preview {
+    box-sizing: border-box;
+    box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.2),
+        0 8px 10px 1px rgba(0, 0, 0, 0.14),
+        0 3px 14px 2px rgba(0, 0, 0, 0.12);
+
+    background: #fff;
+    opacity: 0.3;
+}
+
+.drop-inside {
+    border: 1px solid black;
+}
+
+.drop-before {
+    border-top: 1px solid black;
+}
+
+.drop-after {
+    border-bottom: 1px solid black;
+}
+
+.node-title {
+  padding:15px;
+  margin: 5px;
+  background: #eee;
+  cursor: grab;
+}
+
+.node-children {
+    position: relative;
+    transition: height 0.2s;
+    margin-left: 40px;
+}
+.item-notes { 
+  margin-left:20px;
+  color:#aaa;
+ }

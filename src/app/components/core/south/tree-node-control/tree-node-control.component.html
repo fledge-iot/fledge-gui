@@ -1,0 +1,52 @@
+<ng-template #tmplNode let-node="node">
+    <div class="node-item" [attr.data-id]="node.id" [attr.id]="'node-'+node.id">
+        <div *ngIf="node.id != ''" class="node-title" (click)="node.isExpanded=!node.isExpanded">
+            {{node.children.length ? (node.isExpanded?'-&nbsp;':'+') : '&nbsp;&nbsp;&nbsp;'}} &nbsp;&nbsp;&nbsp;
+            {{node.id}} <span class="item-notes" *ngIf="node.children.length>0"> ({{ ' Nodes: ' +
+                node.children.length}})</span>
+            <div>
+                <button class="button btn-branch is-small" (click)="openAddNodePreview(node);$event.stopPropagation()">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div *ngIf="node.isExpanded && node.children.length" class="node-children" cdkDropList
+            [cdkDropListData]="node.children" [id]="node.id" [cdkDropListConnectedTo]="dropTargetIds"
+            (cdkDropListDropped)="drop($event)" [cdkDropListSortingDisabled]="true">
+
+            <div *ngFor="let child of node.children" cdkDrag [cdkDragData]="child.id"
+                (cdkDragMoved)="dragMoved($event)">
+                <ng-container *ngTemplateOutlet="tmplNode,context:{node:child}"></ng-container>
+            </div>
+        </div>
+        <div id="dropZone" *ngIf="checkNewNode(node)">
+            <div class="columns">
+                <div class="column">
+                    <button class="button is-ghost is-small m-0 p-0" (click)="openAddFilterModal(node)">
+                        Add Filter
+                    </button>
+                </div>
+                <div class="column is-1 has-text-right">
+                    <p class="icon remove-node" (click)="removePreviewNode(node)">
+                        <i class="fas fa-circle-minus"></i>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<div cdkDropList [cdkDropListData]="nodes" [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
+    (cdkDropListDropped)="drop($event)" [cdkDropListSortingDisabled]="true">
+    <div *ngFor="let node of nodes" cdkDrag [cdkDragData]="node.id" (cdkDragMoved)="dragMoved($event)">
+        <ng-container *ngTemplateOutlet="tmplNode,context:{node:node}"></ng-container>
+    </div>
+</div>
+
+<div class="columns">
+    <div class="column">
+        <button class="button is-text is-small" (click)="openAddFilterModal()">Add Filter</button>
+    </div>
+</div>

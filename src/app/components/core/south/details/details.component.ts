@@ -66,6 +66,9 @@ export class DetailsComponent implements OnInit {
   apiCallsStack = [];
   serviceName: string
 
+  pipeline = [];
+
+
   constructor(
     private router: Router,
     private configService: ConfigurationService,
@@ -89,8 +92,31 @@ export class DetailsComponent implements OnInit {
     if (this.serviceName) {
       this.getService();
     }
+
+
+    // const pipeline = ['F1', ['F2'], 'F3']
+    // const pipeline = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
+    // const pipeline = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
+    // const arr = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
+    const pipeline = ['F1', ['Fx', ['Fx1', 'Fx2'], 'Fy'], 'F2', ['F6', ['F8', ['F9', ['F10']]]], 'F7'];
+    this.pipeline = this.createTree(pipeline);
+    console.log('tree', this.pipeline);
   }
 
+  createTree(arr) {
+    const tree = [];
+    let i = 0;
+    while (i < arr.length) {
+      const node = { id: arr[i], children: [] };
+      i++;
+      if (Array.isArray(arr[i])) {
+        node.children = this.createTree(arr[i]);
+        i++;
+      }
+      tree.push(node);
+    }
+    return tree;
+  }
 
   public getService() {
     this.ngProgress.start();
@@ -350,6 +376,14 @@ export class DetailsComponent implements OnInit {
   }
 
   onNotify() {
+    this.pipeline.push({
+      id: 'A',
+      children: []
+    })
+    console.log('notify', this.pipeline);
+    this.pipeline = this.pipeline.slice(0);
+
+
     this.getCategory();
     this.isAddFilterWizard = false;
     this.getFilterPipeline();

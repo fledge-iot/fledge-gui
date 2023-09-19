@@ -54,25 +54,7 @@
 
             <!-- <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
                 (formStatus)="filterFormStatus($event)"></app-filter-list> -->
-            <app-filter-pipeline-nodes *ngIf="filterPipeline.length > 0" [pipeline]="filterPipeline"
-                (openFilterModal)="openAddFilter($event)"></app-filter-pipeline-nodes>
-
-            <!-- <div class="columns">
-                <div class="column">
-                    <span class="label is-size-6 add-application"
-                        *ngIf="rolesService.hasEditPermissions(); else staticLabel">
-                        <button class="button  is-small is-ghost" (click)="openAddFilterModal(true)"><b>Add Filter</b>
-                            <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
-                                <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
-                            </span>
-                        </button>
-                    </span>
-                    <ng-template #staticLabel>
-                        <span class="label is-size-6">Applications</span>
-                    </ng-template>
-                </div>
-            </div> -->
-
+            <tree-node-control (openFilterModal)="openAddFilter($event)" [nodes]="pipeline"></tree-node-control>
             <hr>
             <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">
                 <div class="column">

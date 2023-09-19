@@ -13,8 +13,8 @@ import { AddServiceWizardComponent } from './add-service-wizard/add-service-wiza
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
 import { DetailsComponent } from './details/details.component';
-import { FilterPipelineNodesComponent } from './filter-pipeline-nodes/filter-pipeline-nodes.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { TreeNodeControlComponent } from './tree-node-control/tree-node-control.component';
 
 const routes: Routes = [
   {
@@ -39,7 +39,7 @@ const routes: Routes = [
     AddServiceWizardComponent,
     SouthServiceModalComponent,
     DetailsComponent,
-    FilterPipelineNodesComponent
+    TreeNodeControlComponent
   ],
   imports: [
     FormsModule,
