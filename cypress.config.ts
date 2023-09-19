@@ -2,6 +2,9 @@ import { defineConfig } from 'cypress'
 
 export default defineConfig({
   reporter: 'cypress-mochawesome-reporter',
+  reporterOptions: {
+    reportDir: 'e2e-test-report'
+  },
   e2e: {
     'baseUrl': 'http://localhost:4200',
     supportFile: false,

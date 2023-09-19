@@ -136,24 +136,6 @@
             ]
           }
         },
-        "cypress-run": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "fledge:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "fledge:serve:production"
-            }
-          }
-        },
-        "cypress-open": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "watch": true,
-            "headless": true
-          }
-        },
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
