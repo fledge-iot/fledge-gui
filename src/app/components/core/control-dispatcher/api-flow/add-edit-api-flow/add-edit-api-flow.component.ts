@@ -232,7 +232,7 @@ export class AddEditAPIFlowComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();  
           this.alertService.success(data.message, true);
-          this.router.navigate(['control-dispatcher', 'entry-point']);
+          this.navigateToList();
         },
         error => {
           /** request completed but error */
@@ -252,7 +252,7 @@ export class AddEditAPIFlowComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();  
           this.alertService.success(data.message, true);
-          this.router.navigate(['control-dispatcher', 'entry-point']);
+          this.navigateToList();
         },
         error => {
           /** request completed but error */
@@ -272,7 +272,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             /** request completed */
             this.ngProgress.done();
             this.alertService.success(data.message, true);
-            this.router.navigate(['control-dispatcher/entry-points']);
+            this.navigateToList();
           },
           error => {
             /** request completed but error */
