@@ -3,7 +3,7 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <span *ngIf="notification" class="modal-card-title title-name">{{notification.name}}
-        <span><i class="fa fa-xs fa-info-circle plugin-info" aria-hidden="true" [title]="'Rule: ' + notification.rule + '&#013;Action: ' + notification.channel"></i></span>
+        <span><i class="fa fa-xs fa-info-circle plugin-info" aria-hidden="true" [title]="'Plugins-&#013;Rule: ' + notification.rule + '&#013;Action: ' + notification.channel"></i></span>
         <p class="help has-text-grey ctrl-pipeline">Notification Instance</p>
       </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>

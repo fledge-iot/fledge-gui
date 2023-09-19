@@ -31,7 +31,7 @@
           (click)="isControlListOpen = !isControlListOpen">
           <span>Control</span>
           <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isControlListOpen ? 'Collapse' : 'Expand'">
-            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-right'"
+            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
               aria-hidden="true"></i>
           </span>
         </a>
@@ -91,7 +91,7 @@
           (click)="isLogsListOpen = !isLogsListOpen">
           <span>Logs</span>
           <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
-            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-right'" aria-hidden="true"></i>
+            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'" aria-hidden="true"></i>
           </span>
         </a>
         <div [hidden]="!isLogsListOpen">
