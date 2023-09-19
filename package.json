@@ -64,6 +64,7 @@
     "@types/jasminewd2": "^2.0.10",
     "@types/node": "^14.14.33",
     "cypress": "~13.1.0",
+    "cypress-mochawesome-reporter": "^3.6.0",
     "git-describe": "^4.1.0",
     "jasmine-core": "~4.0.0",
     "jasmine-spec-reporter": "^7.0.0",

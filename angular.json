@@ -136,29 +136,10 @@
             ]
           }
         },
-        "cypress-run": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "fledge:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "fledge:serve:production"
-            }
-          }
-        },
-        "cypress-open": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "watch": true,
-            "headless": true
-          }
-        },
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
             "devServerTarget": "fledge:serve",
-            "watch": true,
             "headless": true
           },
           "configurations": {
@@ -174,19 +155,6 @@
       "sourceRoot": "",
       "projectType": "application",
       "architect": {
-        "e2e": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "fledge-e2e:serve",
-            "watch": true,
-            "headless": true
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "fledge-e2e:serve:production"
-            }
-          }
-        },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
@@ -196,24 +164,6 @@
             "exclude": [
               "**/node_modules/**"
             ]
-          }
-        },
-        "cypress-run": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "fledge-e2e:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "fledge-e2e:serve:production"
-            }
-          }
-        },
-        "cypress-open": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "watch": true,
-            "headless": true
           }
         }
       }
