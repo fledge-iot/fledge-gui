@@ -1,9 +1,9 @@
 import { defineConfig } from 'cypress'
 
 export default defineConfig({
-  reporter: 'cypress-mochawesome-reporter',
+  reporter: 'cypress-multi-reporters',
   reporterOptions: {
-    reportDir: 'e2e-test-report'
+    configFile: 'reporter-config.json',
   },
   e2e: {
     'baseUrl': 'http://localhost:4200',
