@@ -15,6 +15,7 @@ import { SouthComponent } from './south.component';
 import { DetailsComponent } from './details/details.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TreeNodeControlComponent } from './tree-node-control/tree-node-control.component';
+import { ShowConfigurationModalComponent } from './show-configuration-modal/show-configuration-modal.component';
 
 const routes: Routes = [
   {
@@ -39,7 +40,8 @@ const routes: Routes = [
     AddServiceWizardComponent,
     SouthServiceModalComponent,
     DetailsComponent,
-    TreeNodeControlComponent
+    TreeNodeControlComponent,
+    ShowConfigurationModalComponent
   ],
   imports: [
     FormsModule,

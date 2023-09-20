@@ -10,7 +10,8 @@ import { DropNodeInfo, TreeNode } from './tree-node';
 
 export class TreeNodeControlComponent implements OnInit {
 
-  @Output() openFilterModal = new EventEmitter();
+  @Output() openAddFilterModal = new EventEmitter();
+  @Output() filterConfigurationModal = new EventEmitter();
   @Input() nodes: TreeNode[];
   nodeLookup = {};
   dropActionTodo: DropNodeInfo = null;
@@ -129,24 +130,34 @@ export class TreeNodeControlComponent implements OnInit {
     return null;
   }
 
-  checkNewNode(node) {
+  checkNewNode(node: TreeNode) {
     return node.children.some(f => f.id == '');
   }
 
-  removePreviewNode(node) {
+  removeEmptyBranch(node: TreeNode) {
     node.children = node.children.filter(f => (f.id != ''));
     return node;
   }
 
-
-  openAddFilterModal() {
-    this.openFilterModal.emit();
+  addFilterModal() {
+    this.openAddFilterModal.emit();
   }
 
-  openAddNodePreview(node) {
+  addEmptyBranch(node: TreeNode) {
     if (this.checkNewNode(node)) {
       return;
     }
     node.children.push({ id: '', children: [] });
+  }
+
+  showBranch(node: TreeNode) {
+    // remove empty node row from the child array
+    const nodes = node.children.filter(n => n.id != '').map(c => c.id)
+    // return branch nodes array, removing double quote from the items in the array
+    return nodes.length > 0 ? '' + JSON.stringify(nodes).replace(/"/g, '') : '';
+  }
+
+  openConfigurationModal($event) {
+    this.filterConfigurationModal.emit($event)
   }
 }

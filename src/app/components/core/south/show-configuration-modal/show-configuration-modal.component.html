@@ -1,0 +1,29 @@
+<div id="configuration-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <span class="modal-card-title title-name">
+                <p class="help has-text-grey">Filter</p>
+            </span>
+            <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+        </header>
+        <section class="modal-card-body">
+            <app-configuration-group *ngIf="filterConfiguration" #filterConfigComponent [category]="filterConfiguration"
+                (changedConfigEvent)="emitChangedConfig($event)">
+            </app-configuration-group>
+            <hr>
+            <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+                <div class="column">
+                    <div class="field is-grouped is-pulled-right">
+                        <p class="control">
+                            <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+                        </p>
+                        <p class="control">
+                            <button class="button is-small is-link" (click)="save()">Save</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

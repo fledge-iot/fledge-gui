@@ -27,9 +27,8 @@
                 (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
                 (formStatusEvent)="validConfigurationForm = $event">
             </app-configuration-group>
-            <hr *ngIf="rolesService.hasEditPermissions()">
             <div *ngIf="service" class="columns">
-                <div class="column ml-1">
+                <div class="column ml-4 mt-3">
                     <div class="field is-horizontal">
                         <div class="field-label has-text-left">
                             <label class="label">Enabled</label>
@@ -46,15 +45,20 @@
             <div class="columns">
                 <div class="column">
                     <span class="label is-size-6 add-application has-text-centered"
-                        *ngIf="rolesService.hasEditPermissions()">
-                        <span class="label is-size-6">Applications</span>
+                        *ngIf="rolesService.hasEditPermissions() && pipeline.length == 0; else staticLabel">
+                        <a (click)="openAddFilterModal(true)">Applications
+                            <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
+                                <i class="far fa-plus-square fa-sm" aria-hidden="true"></i>
+                            </span>
+                        </a>
                     </span>
+                    <ng-template #staticLabel>
+                        <span class="label is-size-6 add-application has-text-centered">Applications</span>
+                    </ng-template>
                 </div>
             </div>
-
-            <!-- <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
-                (formStatus)="filterFormStatus($event)"></app-filter-list> -->
-            <tree-node-control (openFilterModal)="openAddFilter($event)" [nodes]="pipeline"></tree-node-control>
+            <tree-node-control (filterConfigurationModal)="openConfigurationModal($event)"
+                (openAddFilterModal)="openAddFilter($event)" [nodes]="pipeline"></tree-node-control>
             <hr>
             <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">
                 <div class="column">
@@ -116,9 +120,7 @@
                     </div>
                 </div>
             </ng-container>
-            <!-- </div> -->
             <ng-container *ngIf="isAddFilterWizard">
-                <!-- <div class="box animated slideInRight"> -->
                 <div id="service-filter-modal" class="modal is-active">
                     <div class="modal-background"></div>
                     <div class="modal-card">
@@ -134,11 +136,13 @@
                         </section>
                     </div>
                 </div>
-                <!-- </div> -->
             </ng-container>
         </section>
         <app-filter-alert *ngIf="unsavedChangesInFilterForm" (discardChanges)="discardUnsavedChanges()"
             [filerDialogData]='confirmationDialogData'></app-filter-alert>
+
+        <app-show-configuration-modal
+            (changedConfigEvent)="getChangedFilterConfig($event)"></app-show-configuration-modal>
     </div>
 </div>
 <app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
