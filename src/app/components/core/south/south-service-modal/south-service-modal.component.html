@@ -4,6 +4,7 @@
     <header class="modal-card-head">
       <span *ngIf="service" class="modal-card-title title-name">{{service.name}} <span *ngIf="isAddFilterWizard">- Add
           Filter</span>
+          <span *ngIf="!isAddFilterWizard"><i class="fa fa-xs fa-info-circle plugin-info" aria-hidden="true" [title]="service?.plugin?.name"></i></span>
         <p class="help has-text-grey ctrl-pipeline">South Service</p>
       </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>

@@ -393,4 +393,9 @@ a.dropdown-item:hover {
   #confirmation-execute-dialog .modal-card-body {
     min-height: 22vh;
   }
+
+  .plugin-info {
+    color: gray;
+  }
+
  /*****************/
