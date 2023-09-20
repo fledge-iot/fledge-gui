@@ -54,3 +54,14 @@ a {
   padding-top: 1rem;
 }
 
+.filter-title {
+  display: block !important;
+}
+
+.card-header {
+  min-height: 3.5rem;
+}
+
+.plugin-name {
+  font-weight: initial;
+}
