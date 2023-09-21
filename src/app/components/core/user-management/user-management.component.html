@@ -51,7 +51,7 @@
                   {{user.roleName}}
                 </td>
                 <td class="user-col">{{getAccessMethod(user.accessMethod)}}</td>
-                <td class="user-col desc-col">{{user.description}}</td>               
+                <td class="user-col desc-col desc-text">{{user.description}}</td>               
                 <td class="tags-groups">
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
                   <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
