@@ -1,5 +1,5 @@
 
-## Prerequisite to setup Fledge UI Client on CentOS/RHEL 7
+## Prerequisite to setup Fledge UI Client on CentOS Stream/RHEL 
 
 ### Node 
 
@@ -7,7 +7,7 @@ Install nodejs (LTS version)
 
 ```
     $ yum install -y gcc-c++ make
-    $ curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
+    $ curl -sL https://rpm.nodesource.com/setup_16.x | sudo -E bash -
     $ sudo yum install nodejs
 ```    
 

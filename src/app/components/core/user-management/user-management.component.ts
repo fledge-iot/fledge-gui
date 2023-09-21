@@ -67,7 +67,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.userService.getRole()
       .subscribe(
         (roleRecord) => {
-          this.roles = roleRecord['roles'];
+          this.roles = roleRecord['roles'].sort((a, b) => a.name.localeCompare(b.name));
           roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id === user.roleId) {
