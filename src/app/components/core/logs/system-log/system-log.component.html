@@ -16,10 +16,16 @@
       </div>
     </header>
     <div class="card-content">
-      <div class="content">
+      <div class="content mb-3">
         <div class="columns is-mobile">
           <div class="column">
-            <label class="label is-small">Service</label>
+            <label class="label is-small"  style="float:left">Service</label>
+            <a class="button is-small is-ghost pr-0" style="float:right; margin-top:-2px; font-size: 0.7rem;" title="Service/Instance configuration details">Configuration details</a>
+            <!-- click navToInstance(svcOrTask) | not for All or Storage; same for navToInstance(eventProcessor/instance)-->
+            <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" style="font-size: 14px;"
+                  data-tooltip="Service details">
+                  <i class="bi bi-gear-wide-connected"></i>
+            </span>
             <div id="dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -30,6 +36,7 @@
                   </span>
                 </button>
               </div>
+
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
                   <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterData('source', 'all')">
@@ -83,6 +90,7 @@
           </div>
         </div>
       </div>
+      <!-- <a class="button is-small is-ghost pl-0">Service/Instance details</a> -->
       <ng-container *ngFor="let log of logs">
         <p class="s-log" [innerHTML]="log"> </p>
       </ng-container>
