@@ -43,3 +43,7 @@
 .is-hoverable.user-table tr:hover .context-menu {
     background-color: #fafafa; 
 }
+
+.roles-tab-text{
+    font-size: 0.95rem;
+}

@@ -38,6 +38,7 @@
     "@kurkle/color": "^0.1.9",
     "@ng-select/ng-select": "^8.1.1",
     "animate.css": "^4.1.1",
+    "bootstrap-icons": "^1.11.1",
     "bulma": "^0.9.4",
     "bulma-steps": "^2.2.1",
     "bulma-toast": "^2.4.2",
