@@ -124,7 +124,7 @@ export class AddEditAPIFlowComponent implements OnInit {
       // remove parameter from the list
       const control = <FormArray>this.apiFlowForm.controls[param];
       control.removeAt(index);
-      this.apiFlowForm.markAsDirty();
+      this.apiFlowForm.markAsDirty();    
     }
 
     initParameter(param = null, controlType) {

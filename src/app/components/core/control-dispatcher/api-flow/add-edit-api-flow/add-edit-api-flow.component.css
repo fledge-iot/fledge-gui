@@ -74,3 +74,7 @@ span.is-small {
 #confirmation-execute-dialog .modal-card-body {
     min-height: 22vh;
 }
+
+[hidden] {
+    display: none !important;
+}

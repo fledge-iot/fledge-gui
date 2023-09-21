@@ -31,20 +31,20 @@
                 <label class="label label-name has-text-left">Name</label>
                 </div>
                 <div class="field-body">
-                <div class="field">
-                    <div class="control">
-                    <input #name=ngModel name="af.name" class="input" type="text" placeholder="Name" required
-                        [(ngModel)]="af.name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
-                        [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
-                        [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
-                        [readonly]="!rolesService.hasControlAccess()">
+                    <div class="field">
+                        <div class="control">
+                        <input #name=ngModel name="af.name" class="input" type="text" placeholder="Name" required
+                            [(ngModel)]="af.name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
+                            [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
+                            [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
+                            [readonly]="!rolesService.hasControlAccess()">
+                        </div>
+                        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
+                            <div *ngIf="name.errors?.['required']">
+                                *required
+                            </div>
+                        </div>
                     </div>
-                    <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
-                    <div *ngIf="name.errors?.['required']">
-                        *required
-                    </div>
-                    </div>
-                </div>
                 </div>
             </div>
             <div class="field is-horizontal">
@@ -192,7 +192,19 @@
                                 <div class="field">
                                     <ng-container formArrayName="variables">
                                         <div *ngIf="getFormControls('variables').length === 0" class="field-label is-small">
-                                            <label class="label is-small has-text-left">Variables</label>
+                                            <div class="field is-horizontal">
+                                                <div class="field-label is-small">
+                                                    <label class="label is-small has-text-left">Variables</label>
+                                                </div>
+                                                <div class="field-body">
+                                                    <button class="button px-0 pt-0 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
+                                                        <span class="icon is-small pt-1 mr-0">
+                                                            <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                                                        </span>
+                                                        <span>Add variable</span>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                                             <div class="field is-horizontal">
@@ -224,7 +236,7 @@
                                         </ng-container>
                                     </ng-container>
                                 </div>
-                                <div *ngIf="rolesService.hasControlAccess()" class="field">
+                                <div *ngIf="rolesService.hasControlAccess() && getFormControls('variables').length > 0" class="field">
                                     <div class="columns">
                                         <div class="column is-one-fifth"></div>
                                         <div class="btn-column pt-2 pb-0 pl-2">
@@ -232,7 +244,7 @@
                                                 <span class="icon is-small pt-1 mr-0">
                                                     <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                                                 </span>
-                                                <span>{{getFormControls('variables').length === 0 ? 'Add variable':'Add new variable'}}</span>
+                                                <span>Add new variable</span>
                                             </button>
                                         </div>
                                     </div>
@@ -240,7 +252,19 @@
                                 <div class="field pt-2">
                                     <ng-container formArrayName="constants">                                  
                                         <div *ngIf="getFormControls('constants').length === 0" class="field-label is-small">
-                                            <label class="label is-small has-text-left">Constants</label>
+                                            <div class="field is-horizontal">
+                                                <div class="field-label is-small">
+                                                    <label class="label is-small has-text-left">Constants</label>
+                                                </div>
+                                                <div class="field-body">
+                                                    <button class="button px-0 pt-0 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
+                                                        <span class="icon is-small pt-1 mr-0">
+                                                            <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                                                        </span>
+                                                        <span>Add constant</span>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <ng-container *ngFor="let c of getFormControls('constants'); let i = index">
                                             <div class="field is-horizontal">
@@ -272,7 +296,7 @@
                                         </ng-container>                                   
                                     </ng-container>
                                 </div>
-                                <div *ngIf="rolesService.hasControlAccess()" class="field">
+                                <div *ngIf="rolesService.hasControlAccess() && getFormControls('constants').length > 0" class="field">
                                     <div class="columns">
                                         <div class="column is-one-fifth"></div>
                                         <div class="btn-column pt-2 pb-0 pl-2">
@@ -281,7 +305,7 @@
                                                 <span class="icon is-small pt-1 mr-0">
                                                     <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                                                 </span>
-                                                <span>{{getFormControls('constants').length === 0 ? 'Add constant':'Add new constant'}}</span>
+                                                <span>Add new constant</span>
                                             </button>
                                         </div>
                                     </div>
@@ -362,15 +386,15 @@
                 </div>
             </div>
 
-            <div [hidden]="editMode" class="field is-horizontal">
+            <div class="field is-horizontal">
                 <div class="field-label">
-                <label class="label label-name has-text-left">Description</label>
+                    <label class="label label-name has-text-left">Description</label>
                 </div>
                 <div class="field-body">
                 <div class="field">
                     <ng-container *ngIf="rolesService.hasControlAccess(); else staticDescription">
                         <div class="control">
-                            <textarea rows="2" type="text" class="textarea is-small" placeholder="description" name='description'
+                            <textarea rows="2" type="text" class="textarea is-small" placeholder="description" name="af.description" required
                             [(ngModel)]="af.description" trim="blur" #description="ngModel" [ngModelOptions]="{standalone: true}"></textarea>
                         </div>
                         <div *ngIf="description.invalid && (description.dirty || description.touched)" class="help is-danger">
@@ -426,7 +450,7 @@
                                     </p>
                                     <p class="control">
                                     <button (click)="saveAPIFlow(apiFlowForm.value)" type="submit" class="button is-small is-link"
-                                        [disabled]="apiFlowForm?.invalid">Save</button>
+                                        [disabled]="apiFlowForm?.invalid || getFormControls('variables').length === 0 || getFormControls('constants').length === 0">Save</button>
                                     </p>
                                 </div>
                             </div>
@@ -435,7 +459,7 @@
                     </div>
                 </div>
             </div>
-            </div>   
+            </div>
         </form>
         </div>
     </div>
