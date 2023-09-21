@@ -97,25 +97,25 @@ export class DetailsComponent implements OnInit {
       this.getService();
     }
 
-    const pipeline = ['Log', ['Change'], 'Asset', 'Expression']
+    // const pipeline = ['Log', ['Change'], 'Asset', [], 'Expression']
     // const pipeline = ['F1', ['F2'], 'F3']
     // const pipeline = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
     // const pipeline = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
     // const arr = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
-    // const pipeline = ['F1', ['Fx', ['Fx1', 'Fx2'], 'Fy'], 'F2', ['F6', ['F8', ['F9', ['F10']]]], 'F7'];
+    const pipeline = ['F1', ['Fx', ['Fx1', 'Fx2'], 'Fy'], 'F2', ['F6', ['F8', ['F9', ['F10']]]], 'F7'];
     // const pipeline = ['A1', 'S1', ['A3', 'E1', 'E'], 'es', 'ee', 'WE'];
     this.pipeline = this.createTree(pipeline);
     console.log('tree', this.pipeline);
   }
 
-  createTree(arr) {
+  createTree(arr, parent = null) {
     const tree = [];
     let i = 0;
     while (i < arr.length) {
-      const node = { id: arr[i], children: [] };
+      const node = { id: arr[i], parent, children: [] };
       i++;
       if (Array.isArray(arr[i])) {
-        node.children = this.createTree(arr[i]);
+        node.children = this.createTree(arr[i], node.id);
         i++;
       }
       tree.push(node);

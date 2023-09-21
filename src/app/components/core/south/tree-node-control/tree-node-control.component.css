@@ -2,16 +2,12 @@
 height: 0;
 width: 0;
 position: absolute;
-margin-left: 5px;
-margin-top: -5px;
 cursor: pointer;
-margin: 0px !important;
-padding: 0px !important;
 border-radius: 0px !important;
 border: none !important;
 background: none !important;
 outline: none !important;
-color:  gray;
+margin: 0px 0px 0px 10px;
 }
 
 .borderless-btn {
@@ -47,14 +43,15 @@ outline: none !important;
 .area {
   width: 100%; 
 }
+
+
 #dropZone {
   margin: 5px 6px 0px 10px;
   border: 1px dashed #bbb;
-  -webkit-border-radius: 3px;
+  -webkit-border-radius: 1px;
   border-radius: 1px;
   padding: 5px;
   text-align: left;
-  color: #bbb;
 }
 
 
@@ -73,7 +70,11 @@ outline: none !important;
 }
 
 .drop-inside {
-    border: 1px solid black;
+  border: 1px solid black;
+  /* border: 1px dashed #bbb; */
+  -webkit-border-radius: 1px;
+  border-radius: 1px;
+  /* color: #bbb; */
 }
 
 .drop-before {

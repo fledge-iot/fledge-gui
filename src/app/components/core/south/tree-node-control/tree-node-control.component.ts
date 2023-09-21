@@ -34,12 +34,17 @@ export class TreeNodeControlComponent implements OnInit {
   }
 
   dragMoved(event) {
+
     let e = this.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);
+
+
     if (!e) {
       this.clearDragInfo();
       return;
     }
     let container = e.classList.contains("node-item") ? e : e.closest(".node-item");
+    // console.log('container', container);
+
     if (!container) {
       this.clearDragInfo();
       return;
@@ -47,6 +52,10 @@ export class TreeNodeControlComponent implements OnInit {
     this.dropActionTodo = {
       targetId: container.getAttribute("data-id")
     };
+    // console.log('container', container);
+    // console.log('targetId', this.dropActionTodo);
+
+
     const targetRect = container.getBoundingClientRect();
     const oneThird = targetRect.height / 3;
 
@@ -67,6 +76,7 @@ export class TreeNodeControlComponent implements OnInit {
     if (dropped) {
       this.dropActionTodo = null;
     }
+    // clear border after drop item
     this.document
       .querySelectorAll(".drop-before")
       .forEach(element => element.classList.remove("drop-before"));
@@ -81,23 +91,38 @@ export class TreeNodeControlComponent implements OnInit {
   showDragInfo() {
     this.clearDragInfo();
     if (this.dropActionTodo) {
-      this.document.getElementById("node-" + this.dropActionTodo.targetId).classList.add("drop-" + this.dropActionTodo.action);
+      console.log(this.dropActionTodo);
+
+      this.document.getElementById("dropZone")?.classList.add("drop-" + this.dropActionTodo.action);
     }
   }
 
   drop(event) {
     if (!this.dropActionTodo) return;
     const draggedItemId = event.item.data;
+    // console.log('draggedItemId', draggedItemId);
+
     const parentItemId = event.previousContainer.id;
+    // console.log('parentItemId', parentItemId);
+
     const targetListId = this.getParentNodeId(this.dropActionTodo.targetId, this.nodes, 'main');
+    // console.log('targetListId', targetListId);
+
 
     console.log(
       '\nmoving\n[' + draggedItemId + '] from list [' + parentItemId + ']',
       '\n[' + this.dropActionTodo.action + ']\n[' + this.dropActionTodo.targetId + '] from list [' + targetListId + ']');
 
     const draggedItem = this.nodeLookup[draggedItemId];
+    // console.log('draggedItem', draggedItem);
+
     const oldItemContainer = parentItemId != 'main' ? this.nodeLookup[parentItemId].children : this.nodes;
+    // console.log('oldItemContainer', oldItemContainer);
+
+
     const newContainer = targetListId != 'main' ? this.nodeLookup[targetListId].children : this.nodes;
+    // console.log('new container', newContainer);
+
     let i = oldItemContainer.findIndex(c => c.id === draggedItemId);
     oldItemContainer.splice(i, 1);
 
@@ -113,8 +138,22 @@ export class TreeNodeControlComponent implements OnInit {
         break;
 
       case 'inside':
-        this.nodeLookup[this.dropActionTodo.targetId].children.push(draggedItem)
-        this.nodeLookup[this.dropActionTodo.targetId].isExpanded = true;
+        // console.log(draggedItemId);
+        // console.log(parentItemId);
+        // console.log(this.dropActionTodo);
+        // console.log(this.nodeLookup);
+        // console.log(this.nodeLookup[this.dropActionTodo.targetId]);
+        if (this.dropActionTodo.targetId == '') {
+          this.nodeLookup[targetListId].children.push(draggedItem);
+          this.nodeLookup[targetListId].isExpanded = true;
+          this.nodeLookup[targetListId].children = this.nodeLookup[targetListId].children.filter(child => (child.id != ''))
+          // console.log('this.nodeLookup[targetListId]', this.nodeLookup[targetListId]);
+
+        }
+        else {
+          this.nodeLookup[this.dropActionTodo.targetId].children.push(draggedItem);
+          this.nodeLookup[this.dropActionTodo.targetId].isExpanded = true;
+        }
         break;
     }
 
@@ -136,6 +175,7 @@ export class TreeNodeControlComponent implements OnInit {
 
   removeEmptyBranch(node: TreeNode) {
     node.children = node.children.filter(f => (f.id != ''));
+    console.log('empty', this.nodes);
     return node;
   }
 
