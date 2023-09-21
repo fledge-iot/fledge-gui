@@ -2,14 +2,6 @@
     border: none;
 }
 
-.anonymous-modal {
-    overflow: visible;
-}
-
-.anonymous-modal-text {
-    font-size: 0.9rem;
-}
-
 .valign-middle {
     vertical-align: middle;
 }
@@ -36,4 +28,8 @@
 
 .description {
     max-width: 25rem;
+}
+
+#confirmation-execute-dialog .modal-card-body {
+    min-height: 22vh;
 }
