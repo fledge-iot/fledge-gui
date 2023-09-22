@@ -33,9 +33,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   selectedService = '';
   eventsTrack = [];
 
-  @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private servicesApiService: ServicesApiService,
@@ -146,9 +144,6 @@ export class SouthComponent implements OnInit, OnDestroy {
  * Open create scheduler modal dialog
  */
   openSouthServiceModal(service: Service) {
-    // this.service = service;
-    // this.southServiceModal.service = service;
-    // this.southServiceModal.toggleModal(true);
     this.router.navigate(['/south', service.name])
   }
 

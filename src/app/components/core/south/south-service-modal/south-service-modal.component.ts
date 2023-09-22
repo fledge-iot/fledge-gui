@@ -46,7 +46,6 @@ export class SouthServiceModalComponent implements OnInit {
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
 
-  @Input() service: Service;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigurationGroupComponent;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
@@ -61,8 +60,9 @@ export class SouthServiceModalComponent implements OnInit {
 
   // hold all api calls in stack
   apiCallsStack = [];
-  serviceName = '';
 
+  service: Service;
+  serviceName = '';
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -93,7 +93,7 @@ export class SouthServiceModalComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      this.toggleModal(false);
+      this.router.navigate(['/south']);
     }
   }
 
@@ -104,7 +104,9 @@ export class SouthServiceModalComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
-          this.service = data.services.find(service => (service.name == this.serviceName));
+          const services = data.services as Service[];
+          this.service = services.find(service => (service.name == this.serviceName));
+          // open modal window
           this.toggleModal(true);
         },
         error => {
@@ -329,7 +331,7 @@ export class SouthServiceModalComponent implements OnInit {
         (data) => {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
-          this.toggleModal(false);
+          this.router.navigate(['/south'])
           this.closeModal('delete-service-dialog');
           setTimeout(() => {
             this.notify.emit();
@@ -389,7 +391,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.isAddFilterWizard = this.applicationTagClicked;
       return;
     }
-    this.toggleModal(false);
+    this.router.navigate(['/south']);
   }
 
   /**
@@ -452,7 +454,7 @@ export class SouthServiceModalComponent implements OnInit {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
     if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) //&& isEmpty(this.changedFilterConfig))
     {
-      this.toggleModal(false);
+      this.router.navigate(['/south'])
     }
   }
 
@@ -472,7 +474,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
-        this.toggleModal(false);
+        this.router.navigate(['/south'])
       }
     }
 
@@ -492,7 +494,6 @@ export class SouthServiceModalComponent implements OnInit {
           }
         });
         this.notify.emit();
-        // this.toggleModal(false);
         this.router.navigate(['/south'])
         this.apiCallsStack = [];
       });

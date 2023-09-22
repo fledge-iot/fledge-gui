@@ -25,8 +25,7 @@ const routes: Routes = [
   },
   {
     path: ':name',
-    component: SouthServiceModalComponent,
-    canActivate: [RolesGuard]
+    component: SouthServiceModalComponent
   },
 ];
 
