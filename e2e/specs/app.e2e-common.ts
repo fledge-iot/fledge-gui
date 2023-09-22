@@ -161,10 +161,6 @@ describe('Fledge gui', () => {
       skipLogin.isPingIntervalDropdownPresent()
     });
   } else {
-    // beforeEach(() => {
-    //   skipLogin.navigateToHome();
-    // })
-
     it('Should Display User Management for Admin', () => {
       skipLogin.loginPageInputTag()
       skipLogin.getLoginButton().then(result => {
