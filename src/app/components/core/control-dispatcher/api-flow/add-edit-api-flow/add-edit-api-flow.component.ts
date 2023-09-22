@@ -124,7 +124,7 @@ export class AddEditAPIFlowComponent implements OnInit {
       // remove parameter from the list
       const control = <FormArray>this.apiFlowForm.controls[param];
       control.removeAt(index);
-      this.apiFlowForm.markAsDirty();
+      this.apiFlowForm.markAsDirty();    
     }
 
     initParameter(param = null, controlType) {
@@ -232,7 +232,7 @@ export class AddEditAPIFlowComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();  
           this.alertService.success(data.message, true);
-          this.router.navigate(['control-dispatcher', 'api']);
+          this.navigateToList();
         },
         error => {
           /** request completed but error */
@@ -252,7 +252,7 @@ export class AddEditAPIFlowComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();  
           this.alertService.success(data.message, true);
-          this.router.navigate(['control-dispatcher', 'api']);
+          this.navigateToList();
         },
         error => {
           /** request completed but error */
@@ -272,7 +272,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             /** request completed */
             this.ngProgress.done();
             this.alertService.success(data.message, true);
-            this.router.navigate(['control-dispatcher/api']);
+            this.navigateToList();
           },
           error => {
             /** request completed but error */
@@ -319,11 +319,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     navigateToList() {
-        this.router.navigate(['control-dispatcher/api']);
-    }
-
-    onCancel() {
-        this.router.navigate(['control-dispatcher/api']);
+        this.router.navigate(['control-dispatcher/entry-points']);
     }
 
     onCheckboxClicked(event) {
