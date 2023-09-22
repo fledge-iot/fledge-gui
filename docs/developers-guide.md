@@ -37,6 +37,10 @@ Test report will be available in HTML & XML format in `fledge-gui/e2e/reports/`;
 2. Clone fledge-gui & run e2e test
    ```
    $ sudo git clone https://github.com/fledge/fledge-gui.git
+   ```
+   > For CI integration to run on Ubuntu machine, please use e2e/run script.
+   
+   ```
    $ sudo yarn
    $ sudo yarn e2e
    ```
