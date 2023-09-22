@@ -93,7 +93,7 @@ export class SouthServiceModalComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      this.router.navigate(['/south']);
+      this.navToSouthPage();
     }
   }
 
@@ -331,7 +331,7 @@ export class SouthServiceModalComponent implements OnInit {
         (data) => {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
-          this.router.navigate(['/south'])
+          this.navToSouthPage();
           this.closeModal('delete-service-dialog');
           setTimeout(() => {
             this.notify.emit();
@@ -391,7 +391,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.isAddFilterWizard = this.applicationTagClicked;
       return;
     }
-    this.router.navigate(['/south']);
+    this.navToSouthPage();
   }
 
   /**
@@ -454,7 +454,7 @@ export class SouthServiceModalComponent implements OnInit {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
     if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) //&& isEmpty(this.changedFilterConfig))
     {
-      this.router.navigate(['/south'])
+      this.navToSouthPage();
     }
   }
 
@@ -474,7 +474,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
-        this.router.navigate(['/south'])
+        this.navToSouthPage();
       }
     }
 
@@ -494,10 +494,14 @@ export class SouthServiceModalComponent implements OnInit {
           }
         });
         this.notify.emit();
-        this.router.navigate(['/south'])
+        this.navToSouthPage();
         this.apiCallsStack = [];
       });
     }
+  }
+
+  navToSouthPage() {
+    this.router.navigate(['/south']);
   }
 
   checkFormState() {
