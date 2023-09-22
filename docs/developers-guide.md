@@ -15,9 +15,9 @@ Run `yarn test` to execute the unit tests via [Karma](https://karma-runner.githu
 
 ## Running end-to-end tests
 
-Run `yarn e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Run `yarn e2e` to execute the end-to-end tests via [Cypress](https://www.cypress.io/).
 
-Test report will be available in HTML format in `fledge-gui/e2e-test-report/`; Open `report.html` in your favorite browser!
+Test report will be available in HTML & XML format in `fledge-gui/e2e/reports/`; Open `index.html` in your favorite browser!
 
 > Before running the tests make sure app is able to communicate with the Fledge REST Server API. Put the REST API info in `e2e/environment.ts`.
 
@@ -38,7 +38,7 @@ Test report will be available in HTML format in `fledge-gui/e2e-test-report/`; O
    ```
    $ sudo git clone https://github.com/fledge/fledge-gui.git
    $ sudo yarn
-   $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
+   $ sudo yarn e2e
    ```
 
 #### Installation step on RHEL/CentOS machine
@@ -61,16 +61,16 @@ Test report will be available in HTML format in `fledge-gui/e2e-test-report/`; O
    ```
    $ sudo git clone https://github.com/fledge/fledge-gui.git
    $ sudo yarn
-   $ sudo yarn e2e --protractor-config=protractor_ci.conf.js
+   $ sudo yarn e2e
    ```
 
 3. To run tests in a suite
 
    ```
-    $ sudo yarn e2e --suite common --protractor-config=protractor_ci.conf.js
+    $ sudo yarn e2e --spec "e2e/specs/app.e2e-common.ts"
    ```
 
-   > `common,south` are the test suite name defined in protractor_ci.conf.js inside suite section.
+   > `app.e2e-common.ts, app.e2e-south.ts` are the spec files name defined in cypress.config.ts inside specPattern section.
 
 ## REST API URL Configuration
 
@@ -103,7 +103,6 @@ Set API base URL in `environments/environment.prod.ts`, You can always change it
 | ng-sidebar                      | 9.4.3   | 9.4.3                 | MIT     |
 | moment                          | 2.29.3  | 2.29.3                | MIT     |
 | ngx-progressbar                 | 8.0.0   | 9.0.0                 | MIT     |
-| protractor-beautiful-reporter   | 1.3.6   | 1.3.6                 | MIT     |
 | node-git-describe               | 4.1.0   | 4.1.0                 | MIT     |
 | plotly.js                       | 2.12.1  | 2.12.1                | MIT     |
 | @ctrl/ngx-codemirror            | 5.1.1   | 5.1.1                 | MIT     |
@@ -115,6 +114,10 @@ Set API base URL in `environments/environment.prod.ts`, You can always change it
 | Animate.css                     | 4.1.1   | 4.1.1                 | MIT     |
 | ngx-build-plus                  | 13.0.1  | 14.0.0                | MIT     |
 | bulma-toast                     | 2.4.2   | 2.4.2                 | MIT     |
+| cypress                         | 13.1.0  | 13.1.0                | MIT     |
+| cypress-junit-reporter          | 1.3.1   | 1.3.1                 | MIT     |
+| cypress-mochawesome-reporter    | 3.6.0   | 3.6.0                 | MIT     |
+| cypress-multi-reporters         | 1.6.3   | 1.6.3                 | MIT     |
 
 ## Update Dependencies
 
