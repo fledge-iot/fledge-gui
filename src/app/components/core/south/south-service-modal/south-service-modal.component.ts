@@ -5,7 +5,7 @@ import {
 import { FormControl } from '@angular/forms';
 import { cloneDeep, isEmpty } from 'lodash';
 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   AlertService, AssetsService,
   ConfigurationControlService,
@@ -22,8 +22,8 @@ import { MAX_INT_SIZE } from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Subject, forkJoin, of } from 'rxjs';
+import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
 
@@ -61,6 +61,9 @@ export class SouthServiceModalComponent implements OnInit {
 
   // hold all api calls in stack
   apiCallsStack = [];
+  serviceName = '';
+
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private router: Router,
@@ -79,7 +82,13 @@ export class SouthServiceModalComponent implements OnInit {
     public rolesService: RolesService,
     private response: ResponseHandler,
     private toastService: ToastService,
-    public cDRef: ChangeDetectorRef) { }
+    private activatedRoute: ActivatedRoute,
+    public cDRef: ChangeDetectorRef) {
+    this.serviceName = this.activatedRoute.snapshot.paramMap.get('name');
+    if (this.serviceName) {
+      this.getSouthboundServices(true);
+    }
+  }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
@@ -89,6 +98,23 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   ngOnInit() { }
+
+  public getSouthboundServices(caching: boolean) {
+    this.servicesApiService.getSouthServices(caching)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          this.service = data.services.find(service => (service.name == this.serviceName));
+          this.toggleModal(true);
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
 
   ngAfterViewChecked() {
     this.cDRef.detectChanges();
@@ -466,7 +492,8 @@ export class SouthServiceModalComponent implements OnInit {
           }
         });
         this.notify.emit();
-        this.toggleModal(false);
+        // this.toggleModal(false);
+        this.router.navigate(['/south'])
         this.apiCallsStack = [];
       });
     }

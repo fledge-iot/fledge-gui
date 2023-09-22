@@ -23,6 +23,11 @@ const routes: Routes = [
     component: AddServiceWizardComponent,
     canActivate: [RolesGuard]
   },
+  {
+    path: ':name',
+    component: SouthServiceModalComponent,
+    canActivate: [RolesGuard]
+  },
 ];
 
 @NgModule({
