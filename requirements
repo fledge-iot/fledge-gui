@@ -18,7 +18,7 @@ echo
 install_nodejs () {
   isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
   requiredNodeVer="v16.14.0"
-  # Check if Node.js is installed or if installed version is < 14.x
+  # Check if Node.js is not installed or the installed version is lesser than the ${requiredNodeVer}
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
       curl -L https://${PKG_TYPE}.nodesource.com/setup_16.x | sudo -E bash -
       sudo $1 install -y nodejs
@@ -27,8 +27,8 @@ install_nodejs () {
 
 install_yarn () {
     isYarnInstalled=`which yarn` && currentYarnVer=`yarn -v` || echo ''
-    requiredYarnVer="1.21.0"
-    # Check if yarn is installed or if installed version is < 1.21.x
+    requiredYarnVer="1.22.19"
+    # Check if yarn is not installed or the installed version is lesser than the ${requiredYarnVer}
     if [[ "$isYarnInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredYarnVer" "$currentYarnVer" | sort -V | head -n1)" != "$requiredYarnVer" ]]; then
         sudo npm install -g yarn
     fi
