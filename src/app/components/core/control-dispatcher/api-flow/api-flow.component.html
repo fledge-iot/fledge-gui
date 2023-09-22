@@ -8,7 +8,7 @@
                     <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </button>
             </div>
-            <a *ngIf="rolesService.hasControlAccess()" class="fix-margin button is-light" routerLink="add">
+            <a *ngIf="rolesService.hasControlAccess()" class="fix-margin button is-light" [routerLink]="['/control-dispatcher/entry-point/add']">
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
@@ -60,7 +60,7 @@
                                     </div>
                                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                         <div class="dropdown-content">
-                                            <a class="dropdown-item" [routerLink]="['/control-dispatcher/api', ep?.name]">
+                                            <a class="dropdown-item" [routerLink]="['/control-dispatcher/entry-point', ep?.name]">
                                                 Details
                                             </a>
                                             <a *ngIf="rolesService.hasControlAccess()" class="dropdown-item"

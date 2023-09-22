@@ -39,7 +39,7 @@ CWARN="${CPFX}0;33m"
 
 echo -e "${CWARN}This script is partially done, please track https://github.com/fledge/fledge-gui/issues/73 ${CRESET}"
 
-compat_msg="This script is compatible with Linux (Ubuntu and Raspbian) Only!"
+compat_msg="This script is compatible with Linux (Debian, Ubuntu and Raspberry Pi OS) Only!"
 
 os=$(uname)
 if [[ $os != "Linux" ]]; then
@@ -49,7 +49,7 @@ fi
 
 if [ -f /etc/os-release ]; then
     n=$(cat /etc/os-release  | grep -w PRETTY_NAME | cut -d= -f2- | tr -d '"')
-    if [[ $n == *"Raspbian"* ]] || [[ $n == *"Ubuntu"* ]]; then
+    if [[ $n == *"Raspbian"* ]] || [[ $n == *"Debian"* ]] || [[ $n == *"Ubuntu"* ]] ; then
       echo -e "${CINFO}${n} ${CRESET}"
     else
       echo -e "${CWARN}${n} ${CRESET}"

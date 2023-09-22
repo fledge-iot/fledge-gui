@@ -33,7 +33,7 @@
                 <th>Username</th>
                 <th>Role</th>
                 <th>Authentication Method</th>
-                <th>Description</th>         
+                <th>Description</th>
                 <th></th>
                 <th></th>
               </tr>
@@ -51,7 +51,7 @@
                   {{user.roleName}}
                 </td>
                 <td class="user-col">{{getAccessMethod(user.accessMethod)}}</td>
-                <td class="user-col desc-col">{{user.description}}</td>               
+                <td class="user-col desc-col desc-text">{{user.description}}</td>
                 <td class="tags-groups">
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
                   <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
@@ -117,7 +117,10 @@
             <tr *ngFor="let role of roles">
               <td>{{role.id}}</td>
               <td>{{setRoleName(role.id)}}</td>
-              <td>{{role.description}}</td>
+              <<<<<<< HEAD <td>{{role.description}}</td>
+                =======
+                <td class="desc-text">{{role.description}}</td>
+                >>>>>>> develop
             </tr>
           </tbody>
         </table>

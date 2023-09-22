@@ -194,7 +194,7 @@ export class APIFlowComponent implements OnInit {
     }
 
     resetEditMode() {
-      this.editMode = {name: null, edit: false, newVal: null}
+      this.editMode = {name: null, edit: false, value: null}
     }
 
     descriptionChange(event: any) {

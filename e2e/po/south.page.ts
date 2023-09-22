@@ -1,33 +1,28 @@
-import { browser, by, element, ExpectedConditions, promise } from 'protractor';
-
 export class SouthPage {
-  DETERMINISTIC_WAIT = 3000; // in milliseconds
-  RETRY_ATTEMPTS = 5;
-  addServiceRetryAttempts = 5;
-  fetchAssetRetryAttempts = 5;
-  EC = browser.ExpectedConditions;
+  DETERMINISTIC_WAIT = 3000 // in milliseconds
+  RETRY_ATTEMPTS = 5
+  addServiceRetryAttempts = 5
+  fetchAssetRetryAttempts = 5
 
   /**
    *  Navigate to the south service page
    */
   navToSouthPage() {
-    return browser.get('/#/south');
+    return cy.visit('/#/south')
   }
 
   /**
    *  get south page title
    */
   getSouthPageTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#south-service')).getText();
+    return cy.get('#south-service').invoke('text')
   }
 
   /**
    *  open south service add wizard
    */
   clickAddServiceButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.id('add_south_service')).click();
+    return cy.get('#add_south_service').click()
   }
 
   /**
@@ -38,95 +33,86 @@ export class SouthPage {
    * @param {string}    south plugin name
    */
   addSouthService(serviceName: string) {
-    browser.ignoreSynchronization = true;
-    this.waitForServicePluginsToLoad(this.DETERMINISTIC_WAIT).then(() => {
-      // select a plugin
-      element(by.name('type')).all(by.tagName('option'))
-        .then(options => {
-          options[0].click();  // select first plugin in select box
-        });
-      // supply service name
-      element(by.id('name')).sendKeys(serviceName);
-      // click next button thrice
-      element(by.id('next')).click();
-      element(by.id('next')).click();
-      element(by.id('next')).click();
+    this.waitForServicePluginsToLoad()
+      .then(() => {
+        // select first plugin
+        cy.get('select').select(0)
+        // supply service name
+        cy.get('#name').type(serviceName)
+        // click next button thrice
+        cy.get('#next').click()
+        cy.get('#next').click()
+        cy.get('#next').click()
+      })
+    cy.on("fail", (error) => {
+      if (this.addServiceRetryAttempts > 0) {
+        console.log('Retrying load service.')
+        this.addSouthService(serviceName)
+      } else {
+        console.log('Rejecting the promise after ' + this.RETRY_ATTEMPTS + ' attempts.')
+        return Promise.reject(error)
+      }
     })
-      .catch((error) => {
-        if (this.addServiceRetryAttempts > 0) {
-          console.log('Retrying load service.');
-          this.addSouthService(serviceName);
-        } else {
-          console.log('Rejecting the promise after ' + this.RETRY_ATTEMPTS + ' attempts.');
-          return Promise.reject(error);
-        }
-      });
-    this.addServiceRetryAttempts--;
+    this.addServiceRetryAttempts--
   }
 
   /**
    * Wait for visibility of south service plugin in multi drop-down
-   * @param timeOut wait time
    */
-  waitForServicePluginsToLoad(timeOut?: number): promise.Promise<{}> {
-    const isDataVisible = ExpectedConditions.visibilityOf(element(by.name('type')).element(by.tagName('option')));
-    return browser.wait(ExpectedConditions.and(isDataVisible), timeOut);
+  waitForServicePluginsToLoad() {
+    return cy.wait(this.DETERMINISTIC_WAIT).get('option').should('be.visible')
   }
 
   /**
    *  Get added south service name
    */
   getServiceName() {
-    browser.ignoreSynchronization = true;
-    browser.wait(this.EC.visibilityOf(element(by.css('#south-service-list tr:nth-child(1) .button'))), this.DETERMINISTIC_WAIT);
-    return element(by.css('#south-service-list tr:nth-child(1) .button')).getText();
+    cy.wait(this.DETERMINISTIC_WAIT)
+    return cy.get('#south-service-list tr:nth-child(1) .button').invoke('text')
   }
 
   /**
    *  open south service modal
    */
   openSouthServiceModal() {
-    browser.ignoreSynchronization = true;
-    browser.wait(this.EC.visibilityOf(element(by.css('.content table tr:nth-child(1) .button'))), this.DETERMINISTIC_WAIT);
-    return element(by.css('.content table tr:nth-child(1) .button')).click();
+    cy.wait(this.DETERMINISTIC_WAIT)
+    return cy.get('.content table tr:nth-child(1) .button').click()
   }
 
   /**
    *  get enabled south service asset readings count
    */
   getAssetCount() {
-    browser.ignoreSynchronization = true;
-    this.waitForAssetReadingsToLoad(this.DETERMINISTIC_WAIT).then((found) => {
-      return Promise.resolve(found);
+    this.waitForAssetReadingsToLoad()
+      .then((found) => {
+        return Promise.resolve(found)
+      })
+    cy.on("fail", (error) => {
+      if (this.fetchAssetRetryAttempts > 0) {
+        console.log('Retrying to load asset readings.')
+        this.getAssetCount()
+      } else {
+        console.log(
+          'Rejecting the promise after ' + this.RETRY_ATTEMPTS + ' attempts.'
+        )
+        return Promise.reject(error)
+      }
     })
-      .catch((error) => {
-        if (this.fetchAssetRetryAttempts > 0) {
-          console.log('Retrying to load asset readings.');
-          this.getAssetCount();
-        } else {
-          console.log('Rejecting the promise after ' + this.RETRY_ATTEMPTS + ' attempts.');
-          return Promise.reject(error);
-        }
-      });
-    this.fetchAssetRetryAttempts--;
-    return element(by.css('#south-service-list tr:nth-child(1) td:nth-child(3) table tr:nth-child(1) td:nth-child(2) small'))
-      .getText();
+    this.fetchAssetRetryAttempts--
+    return cy.get('.readings-count small').invoke('text')
   }
 
   /**
    * Wait for asset readings count to get visible
-   * @param timeOut   wait time
    */
-  waitForAssetReadingsToLoad(timeOut?: number): promise.Promise<{}> {
-    const isDataVisible = ExpectedConditions.visibilityOf(element
-      (by.css('#south-service-list tr:nth-child(1) td:nth-child(3) table tr:nth-child(1) td:nth-child(2) small')));
-    return browser.wait(ExpectedConditions.and(isDataVisible), timeOut);
+  waitForAssetReadingsToLoad() {
+    return cy.wait(this.DETERMINISTIC_WAIT).get('.readings-count small').should('be.visible')
   }
 
   /**
    * close south service modal window
    */
   closeSouthServiceModal() {
-    element(by.css('#south-service-modal .delete')).click();
+    cy.get('#south-service-modal .delete').click()
   }
 }

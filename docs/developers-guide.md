@@ -86,14 +86,15 @@ Set API base URL in `environments/environment.prod.ts`, You can always change it
 
 #### Core
 
-| Library      | Version | Latest Stable (? Y/n) | License    |
-| ------------ | ------- | --------------------- | ---------- |
-| Angular      | 13.2.0  | 14.1.3                | MIT        |
-| Angular CLI  | 13.2.4  | 14.1.3                | MIT        |
-| TypeScript   | 4.5.2   | 4.5.2                 | Apache 2.0 |
-| rxjs         | 6.6.6   | 6.6.6                 | Apache 2.0 |
-| Bulma css    | 0.8.2   | 0.9.4                 | MIT        |
-| Font-Awesome | 5.6.3   | 6.1.2                 | MIT        |
+| Library         | Version | Latest Stable (? Y/n) | License    |
+| --------------- | ------- | --------------------- | ---------- |
+| Angular         | 13.2.0  | 14.1.3                | MIT        |
+| Angular CLI     | 13.2.4  | 14.1.3                | MIT        |
+| TypeScript      | 4.5.2   | 4.5.2                 | Apache 2.0 |
+| rxjs            | 6.6.6   | 6.6.6                 | Apache 2.0 |
+| Bulma css       | 0.8.2   | 0.9.4                 | MIT        |
+| Font-Awesome    | 5.6.3   | 6.1.2                 | MIT        |
+| Bootstrap-Icons | 1.11.1  | 1.11.1                | MIT        |
 
 #### Dev
 

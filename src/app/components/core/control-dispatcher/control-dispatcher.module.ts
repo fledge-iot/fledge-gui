@@ -84,16 +84,16 @@ const routes: Routes = [
     component: AddControlPipelineComponent
   },
   {
-    path: 'api',
+    path: 'entry-points',
     component: APIFlowComponent
   },
   {
-    path: 'api/add',
+    path: 'entry-point/add',
     component: AddEditAPIFlowComponent,
     canActivate: [RolesGuard]
   },
   {
-    path: 'api/:name',
+    path: 'entry-point/:name',
     component: AddEditAPIFlowComponent
   }
 ];
