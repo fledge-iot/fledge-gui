@@ -8,6 +8,7 @@
 @import '@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css';
 @import 'bulma-steps/dist/css/bulma-steps.min.css';
 @import '@fortawesome/fontawesome-free/css/all.min.css';
+@import "~bootstrap-icons/font/bootstrap-icons.css";
 
 html,
 body,
@@ -396,5 +397,14 @@ a.dropdown-item:hover {
 
   .plugin-info {
     color: gray;
+    font-size: 0.75rem;
+  }
+
+  .plus-icon {
+    font-size: 0.70rem;
+  }
+
+  .desc-text{
+    font-size: 0.95rem;
   }
  /*****************/
