@@ -17,6 +17,8 @@ export class TreeNodeControlComponent implements OnInit {
   dropActionTodo: DropNodeInfo = null;
   dropTargetIds = [];
 
+  newBranch = false;
+
   constructor(@Inject(DOCUMENT) private document: Document) { }
 
   ngOnChanges() {
@@ -34,16 +36,13 @@ export class TreeNodeControlComponent implements OnInit {
   }
 
   dragMoved(event) {
-
     let e = this.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);
-
-
     if (!e) {
       this.clearDragInfo();
       return;
     }
-    let container = e.classList.contains("node-item") ? e : e.closest(".node-item");
-    // console.log('container', container);
+    let container = e.classList.contains("drop-zone-item") ? e : e.closest(".node-item");
+    console.log('container', container);
 
     if (!container) {
       this.clearDragInfo();
@@ -53,22 +52,22 @@ export class TreeNodeControlComponent implements OnInit {
       targetId: container.getAttribute("data-id")
     };
     // console.log('container', container);
-    // console.log('targetId', this.dropActionTodo);
+    console.log('targetId', this.dropActionTodo);
 
 
-    const targetRect = container.getBoundingClientRect();
-    const oneThird = targetRect.height / 3;
+    // const targetRect = container.getBoundingClientRect();
+    //  const oneThird = targetRect.height / 3;
 
-    if (event.pointerPosition.y - targetRect.top < oneThird) {
-      // before
-      this.dropActionTodo["action"] = "before";
-    } else if (event.pointerPosition.y - targetRect.top > 2 * oneThird) {
-      // after
-      this.dropActionTodo["action"] = "after";
-    } else {
-      // inside
-      this.dropActionTodo["action"] = "inside";
-    }
+    // if (event.pointerPosition.y - targetRect.top < oneThird) {
+    //   // before
+    //   this.dropActionTodo["action"] = "before";
+    // } else if (event.pointerPosition.y - targetRect.top > 2 * oneThird) {
+    //   // after
+    //   this.dropActionTodo["action"] = "after";
+    // } else {
+    // inside
+    this.dropActionTodo["action"] = "inside";
+    // }
     this.showDragInfo();
   }
 
@@ -77,12 +76,12 @@ export class TreeNodeControlComponent implements OnInit {
       this.dropActionTodo = null;
     }
     // clear border after drop item
-    this.document
-      .querySelectorAll(".drop-before")
-      .forEach(element => element.classList.remove("drop-before"));
-    this.document
-      .querySelectorAll(".drop-after")
-      .forEach(element => element.classList.remove("drop-after"));
+    // this.document
+    //   .querySelectorAll(".drop-before")
+    //   .forEach(element => element.classList.remove("drop-before"));
+    // this.document
+    //   .querySelectorAll(".drop-after")
+    //   .forEach(element => element.classList.remove("drop-after"));
     this.document
       .querySelectorAll(".drop-inside")
       .forEach(element => element.classList.remove("drop-inside"));
@@ -138,16 +137,16 @@ export class TreeNodeControlComponent implements OnInit {
         break;
 
       case 'inside':
-        // console.log(draggedItemId);
+        console.log(draggedItem);
         // console.log(parentItemId);
-        // console.log(this.dropActionTodo);
-        // console.log(this.nodeLookup);
+        console.log(this.dropActionTodo);
+        console.log(this.nodeLookup);
         // console.log(this.nodeLookup[this.dropActionTodo.targetId]);
-        if (this.dropActionTodo.targetId == '') {
+        if (this.dropActionTodo.targetId == null) {
           this.nodeLookup[targetListId].children.push(draggedItem);
           this.nodeLookup[targetListId].isExpanded = true;
-          this.nodeLookup[targetListId].children = this.nodeLookup[targetListId].children.filter(child => (child.id != ''))
-          // console.log('this.nodeLookup[targetListId]', this.nodeLookup[targetListId]);
+          this.nodeLookup[targetListId].children = this.nodeLookup[targetListId].children.filter(child => (child.id != null))
+          console.log('this.nodeLookup[targetListId]', this.nodeLookup[targetListId]);
 
         }
         else {
@@ -170,29 +169,33 @@ export class TreeNodeControlComponent implements OnInit {
   }
 
   checkNewNode(node: TreeNode) {
-    return node.children.some(f => f.id == '');
+    return node.children.some(f => f.id == null);
   }
 
-  removeEmptyBranch(node: TreeNode) {
-    node.children = node.children.filter(f => (f.id != ''));
-    console.log('empty', this.nodes);
-    return node;
+  removeBranch(node: TreeNode, child: TreeNode) {
+    node.children = node.children.filter(n => n.id != child.id);
+  }
+
+  findNode(root: TreeNode, type: string) {
+    return root.type === type ?
+      root :
+      root.children?.reduce((result, n) => result || this.findNode(n, type), undefined)
   }
 
   addFilterModal() {
     this.openAddFilterModal.emit();
   }
 
-  addEmptyBranch(node: TreeNode) {
+  addBranch(node: TreeNode) {
     if (this.checkNewNode(node)) {
       return;
     }
-    node.children.push({ id: '', children: [] });
+    node.children.push({ id: null, children: [], parent: node.id });
   }
 
   showBranch(node: TreeNode) {
     // remove empty node row from the child array
-    const nodes = node.children.filter(n => n.id != '').map(c => c.id)
+    const nodes = node.children.filter(n => n.id != null).map(c => c.id)
     // return branch nodes array, removing double quote from the items in the array
     return nodes.length > 0 ? '' + JSON.stringify(nodes).replace(/"/g, '') : '';
   }

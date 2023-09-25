@@ -1,4 +1,4 @@
-.add-branch {
+.add-filter {
 height: 0;
 width: 0;
 position: absolute;
@@ -22,6 +22,11 @@ background: none !important;
 outline: none !important;
 }
 
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 
 .root-node {
 position: absolute;
@@ -37,9 +42,11 @@ z-index: 5;
 outline: none !important;
 }
 
-.remove-node {
+.remove-branch {
   cursor: pointer;
 }
+
+
 .area {
   width: 100%; 
 }
@@ -52,6 +59,16 @@ outline: none !important;
   border-radius: 1px;
   padding: 5px;
   text-align: left;
+}
+
+.watermark {
+    opacity: 0.25;
+    text-align: center;
+    z-index: 1000;
+}
+
+.nodeIcon{
+  font-size: 18px;  
 }
 
 

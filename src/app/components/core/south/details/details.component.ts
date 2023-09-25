@@ -97,12 +97,12 @@ export class DetailsComponent implements OnInit {
       this.getService();
     }
 
-    // const pipeline = ['Log', ['Change'], 'Asset', [], 'Expression']
+    const pipeline = ['Log', ['Change', 'Python35'], 'Asset', [], 'Expression', ['Log1']]
     // const pipeline = ['F1', ['F2'], 'F3']
     // const pipeline = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
     // const pipeline = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
     // const arr = ['F1', 'F2', ['F3', 'F4', 'F5'], 'F6']
-    const pipeline = ['F1', ['Fx', ['Fx1', 'Fx2'], 'Fy'], 'F2', ['F6', ['F8', ['F9', ['F10']]]], 'F7'];
+    // const pipeline = ['F1', ['Fx', ['Fx1', 'Fx2'], 'Fy'], 'F2', ['F6', ['F8', ['F9', ['F10']]]], 'F7'];
     // const pipeline = ['A1', 'S1', ['A3', 'E1', 'E'], 'es', 'ee', 'WE'];
     this.pipeline = this.createTree(pipeline);
     console.log('tree', this.pipeline);
@@ -112,7 +112,7 @@ export class DetailsComponent implements OnInit {
     const tree = [];
     let i = 0;
     while (i < arr.length) {
-      const node = { id: arr[i], parent, children: [] };
+      const node = { id: arr[i], parent, children: [], isExpanded: true };
       i++;
       if (Array.isArray(arr[i])) {
         node.children = this.createTree(arr[i], node.id);
@@ -381,14 +381,8 @@ export class DetailsComponent implements OnInit {
   }
 
   onNotify() {
-    this.pipeline.push({
-      id: 'A',
-      children: []
-    })
     console.log('notify', this.pipeline);
     this.pipeline = this.pipeline.slice(0);
-
-
     this.getCategory();
     this.isAddFilterWizard = false;
     this.getFilterPipeline();
@@ -403,6 +397,7 @@ export class DetailsComponent implements OnInit {
     this.filterService.getFilterPipeline(this.service.name)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
+        // this.pipeline = this.createTree(this.filterPipeline);
       },
         error => {
           if (error.status === 404) {

@@ -3,9 +3,10 @@
         <div *ngIf="node.id" class="node-title">
             <div class="columns m-0 p-0 is-mobile">
                 <div class="column">
-                    {{node.id}}
-                    <span class="item-notes"
-                        *ngIf="!node.isExpanded && node.children.length > 0">{{showBranch(node)}}</span>
+                    <span>{{node.id}}</span>
+                    <span class="item-notes" *ngIf="!node.isExpanded && node.children.length > 0">
+                        {{showBranch(node)}}
+                    </span>
                 </div>
                 <div class="column is-narrow is-align-items-center is-flex">
                     <button type="button" class="button is-small borderless-btn" title="Show Configuration"
@@ -19,46 +20,60 @@
                     <button *ngIf="node.children.length> 0" type="button" class="button is-small borderless-btn"
                         (click)="node.isExpanded=!node.isExpanded;$event.stopPropagation()">
                         <span *ngIf="!node.isExpanded" class="icon is-small">
-                            <i class="bi bi-caret-right"></i>
+                            <i class="bi bi-chevron-right"></i>
                         </span>
                         <span *ngIf="node.isExpanded" class="icon is-small">
-                            <i class="bi bi-caret-down"></i>
+                            <i class="bi bi-chevron-down"></i>
                         </span>
                     </button>
                 </div>
             </div>
-            <button class="button add-branch is-small p-0" title="Create a Branch"
-                (click)="addEmptyBranch(node); node.isExpanded=!node.isExpanded;$event.stopPropagation()">
+
+            <button *ngIf="node.children.length >= 1 && node.children[0]?.id != null"
+                class="button add-filter is-small p-0" title="Add Filter"
+                (click)="addFilterModal();$event.stopPropagation()">
+                <span class="icon is-small">
+                    <i class="bi bi-node-plus nodeIcon"></i>
+                </span>
+            </button>
+            <button [disabled]="node.children.length == 1 && node.children[0]?.id == null"
+                *ngIf="node.children[0]?.id == null" class="button add-filter is-small p-0" title="Create a Branch"
+                (click)="addBranch(node);$event.stopPropagation()">
                 <span class="icon is-small">
                     <i class="bi bi-plus-circle"></i>
                 </span>
             </button>
-        </div>
-        <div *ngIf="node.id == ''" id="dropZone" [attr.data-id]="node.parent">
-            <div class="columns">
-                <div class="column">
-                    <button class="button is-ghost is-small m-0 p-0" (click)="openAddFilterModal(node)">
-                        Add Filter
-                    </button>
-                </div>
-                <div class="column is-1 has-text-right">
-                    <p class="icon remove-node" (click)="removeEmptyBranch(node)">
-                        <i class="bi bi-dash-circle"></i>
-                    </p>
-                </div>
-            </div>
+
         </div>
         <div *ngIf="node.isExpanded && node.children.length" class="node-children" cdkDropList
             [cdkDropListData]="node.children" [id]="node.id" [cdkDropListConnectedTo]="dropTargetIds"
             (cdkDropListDropped)="drop($event)" [cdkDropListSortingDisabled]="true">
 
-            <div *ngFor="let child of node.children" cdkDrag [cdkDragData]="child.id"
-                (cdkDragMoved)="dragMoved($event)">
+            <div *ngFor="let child of node.children" cdkDrag [cdkDragData]="child.id" (cdkDragMoved)="dragMoved($event)"
+                [cdkDragDisabled]="child.id == null">
                 <ng-container *ngTemplateOutlet="tmplNode,context:{node:child}"></ng-container>
+                <div *ngIf="node.isExpanded && child.id == null" id="dropZone" [attr.data-id]="node.parent"
+                    class="drop-zone-item">
+                    <div class="columns">
+                        <div class="column is-narrow">
+                            <button class="button is-ghost is-small m-0 p-0" (click)="addFilterModal()">
+                                Add Filter
+                            </button>
+                        </div>
+                        <div class="column has-text-centered">
+                            <span class="watermark">Branch</span>
+                        </div>
+                        <div class="column is-narrow has-text-right">
+                            <p class="icon remove-branch" (click)="removeBranch(node, child)">
+                                <i class="bi bi-dash-circle"></i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
-
 </ng-template>
 
 <div cdkDropList [cdkDropListData]="nodes" [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
@@ -69,7 +84,13 @@
 </div>
 
 <div class="columns" *ngIf="nodes.length > 0">
-    <div class="column">
-        <button class="button is-text is-small" (click)="addFilterModal()">Add Filter</button>
+    <div class="column ml-3">
+        <button class="button is-ghost is-small ml-5 mt-5" (click)="addFilterModal()">
+            <span class="icon is-small">
+                <i class="bi bi-node-plus nodeIcon"></i> &nbsp;
+                <span>Add Filter</span>
+            </span>
+
+        </button>
     </div>
 </div>
