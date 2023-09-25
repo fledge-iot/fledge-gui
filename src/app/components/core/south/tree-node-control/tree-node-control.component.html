@@ -1,5 +1,5 @@
 <ng-template #tmplNode let-node="node">
-    <div class="node-item" [attr.data-id]="node.id" [attr.id]="'node-'+node.id">
+    <div class="node-item" [attr.data-id]="node.id? node.id:null" [attr.id]="node.id? 'node-'+node.id: 'preview-node'">
         <div *ngIf="node.id" class="node-title">
             <div class="columns m-0 p-0 is-mobile">
                 <div class="column">
@@ -46,8 +46,9 @@
 
         </div>
         <div *ngIf="node.isExpanded && node.children.length" class="node-children" cdkDropList
-            [cdkDropListData]="node.children" [id]="node.id" [cdkDropListConnectedTo]="dropTargetIds"
-            (cdkDropListDropped)="drop($event)" [cdkDropListSortingDisabled]="true">
+            [cdkDropListData]="node.children" [id]="node.id? node.id:'preview-branch'"
+            [cdkDropListConnectedTo]="dropTargetIds" (cdkDropListDropped)="drop($event)"
+            [cdkDropListSortingDisabled]="true">
 
             <div *ngFor="let child of node.children" cdkDrag [cdkDragData]="child.id" (cdkDragMoved)="dragMoved($event)"
                 [cdkDragDisabled]="child.id == null">

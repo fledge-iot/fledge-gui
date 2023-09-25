@@ -42,18 +42,13 @@ export class TreeNodeControlComponent implements OnInit {
       return;
     }
     let container = e.classList.contains("drop-zone-item") ? e : e.closest(".node-item");
-    console.log('container', container);
-
     if (!container) {
       this.clearDragInfo();
       return;
     }
     this.dropActionTodo = {
-      targetId: container.getAttribute("data-id")
+      targetId: e.getAttribute("data-id")
     };
-    // console.log('container', container);
-    console.log('targetId', this.dropActionTodo);
-
 
     // const targetRect = container.getBoundingClientRect();
     //  const oneThird = targetRect.height / 3;
@@ -90,37 +85,23 @@ export class TreeNodeControlComponent implements OnInit {
   showDragInfo() {
     this.clearDragInfo();
     if (this.dropActionTodo) {
-      console.log(this.dropActionTodo);
-
       this.document.getElementById("dropZone")?.classList.add("drop-" + this.dropActionTodo.action);
     }
   }
 
   drop(event) {
+
     if (!this.dropActionTodo) return;
     const draggedItemId = event.item.data;
-    // console.log('draggedItemId', draggedItemId);
-
     const parentItemId = event.previousContainer.id;
-    // console.log('parentItemId', parentItemId);
-
     const targetListId = this.getParentNodeId(this.dropActionTodo.targetId, this.nodes, 'main');
-    // console.log('targetListId', targetListId);
-
-
     console.log(
       '\nmoving\n[' + draggedItemId + '] from list [' + parentItemId + ']',
       '\n[' + this.dropActionTodo.action + ']\n[' + this.dropActionTodo.targetId + '] from list [' + targetListId + ']');
 
     const draggedItem = this.nodeLookup[draggedItemId];
-    // console.log('draggedItem', draggedItem);
-
-    const oldItemContainer = parentItemId != 'main' ? this.nodeLookup[parentItemId].children : this.nodes;
-    // console.log('oldItemContainer', oldItemContainer);
-
-
-    const newContainer = targetListId != 'main' ? this.nodeLookup[targetListId].children : this.nodes;
-    // console.log('new container', newContainer);
+    const oldItemContainer = parentItemId != 'main' ? this.nodeLookup[parentItemId]?.children : this.nodes;
+    const newContainer = targetListId != 'main' ? this.nodeLookup[targetListId]?.children : this.nodes;
 
     let i = oldItemContainer.findIndex(c => c.id === draggedItemId);
     oldItemContainer.splice(i, 1);
@@ -137,17 +118,14 @@ export class TreeNodeControlComponent implements OnInit {
         break;
 
       case 'inside':
-        console.log(draggedItem);
-        // console.log(parentItemId);
-        console.log(this.dropActionTodo);
-        console.log(this.nodeLookup);
-        // console.log(this.nodeLookup[this.dropActionTodo.targetId]);
-        if (this.dropActionTodo.targetId == null) {
-          this.nodeLookup[targetListId].children.push(draggedItem);
-          this.nodeLookup[targetListId].isExpanded = true;
-          this.nodeLookup[targetListId].children = this.nodeLookup[targetListId].children.filter(child => (child.id != null))
-          console.log('this.nodeLookup[targetListId]', this.nodeLookup[targetListId]);
+        console.log();
 
+        if (this.dropActionTodo.targetId == null) {
+          if (this.nodeLookup[targetListId]) {
+            this.nodeLookup[targetListId]?.children.push(draggedItem);
+            this.nodeLookup[targetListId].isExpanded = true;
+            this.nodeLookup[targetListId].children = this.nodeLookup[targetListId].children.filter(child => (child.id != null));
+          }
         }
         else {
           this.nodeLookup[this.dropActionTodo.targetId].children.push(draggedItem);
