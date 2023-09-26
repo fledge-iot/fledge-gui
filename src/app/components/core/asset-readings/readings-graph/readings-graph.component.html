@@ -31,7 +31,7 @@
         </ng-container>
         <ng-container *ngIf="fromMostRecent && !(selectedTab == 4)">
           <button (click)="showGraphFromCurrentTime()" class="button small-btn playback-button btn-enabled" title="Show graph from current time">
-            <i class="fa fa-sm fa-clock" aria-hidden="true"></i>
+            <i class="bi bi-clock" aria-hidden="true"></i>
           </button>
         </ng-container>
         <button [disabled]="isAlive" (click)="moveInReadingsGraph('back')" class="button small-btn playback-button"
