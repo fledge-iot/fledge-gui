@@ -15,9 +15,7 @@ import {
 
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
-  public rootCategories = [];
   public JSON;
-  public selectedRootCategory = 'General';
   public isChild = true;
   validConfigForm = false;
 
@@ -40,107 +38,8 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.getRootCategories(true);
     this.getTreeStructure();
   }
-
-  // public getRootCategories(onLoadingPage = false) {
-  //   this.rootCategories = [];
-  //   this.configService.getRootCategories().
-  //     subscribe(
-  //       (data) => {
-  //         data['categories'].forEach(element => {
-  //           if (element.hasOwnProperty('displayName')) {
-  //             console.log('element1', element);
-  //             this.rootCategories.push({
-  //               key: element.key,
-  //               displayName: element.displayName,
-  //               description: element.description
-  //             });
-  //           } else {
-  //             this.rootCategories.push({
-  //               key: element.key,
-  //               description: element.description
-  //             });
-  //           }
-  //           this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'SOUTH')
-  //             .filter(el => el.key.toUpperCase() !== 'NORTH')
-  //             .filter(el => el.key.toUpperCase() !== 'NOTIFICATIONS');
-  //         });
-  //         if (onLoadingPage === true) {
-  //           this.getChildren(this.selectedRootCategory);
-  //         }
-  //       },
-  //       error => {
-  //         if (error.status === 0) {
-  //           console.log('service down ', error);
-  //         } else {
-  //           this.alertService.error(error.statusText);
-  //         }
-  //       });
-  // }
-
-  // getSelectedCategoryConfig(rootCategory: any) {
-  //   this.selectedRootCategory = this.hasProperty(rootCategory, 'displayName') === true ?
-  //     rootCategory.displayName : rootCategory.key;
-  //   this.getChildren(rootCategory.key);
-  // }
-
-  // public getChildren(categoryName) {
-  //   /** request started */
-  //   this.ngProgress.start();
-  //   this.tree.treeModel.nodes = [];
-
-  //   this.nodes = [];
-  //   this.configService.getChildren(categoryName).
-  //     subscribe(
-  //       (data) => {
-  //         /** request completed */
-  //         this.ngProgress.done();
-  //         const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
-
-  //         // Check if there is any category
-  //         if (rootCategories.length > 0 && data['categories'].length === 0) {
-  //           this.isChild = false;
-  //           this.getCategory(rootCategories[0].key, rootCategories[0].description);
-  //           this.categoryData = [];
-  //           return;
-  //         }
-  //         this.isChild = true;
-  //         data['categories'].forEach(element => {
-  //           if (element.hasOwnProperty('displayName')) {
-  //             console.log('element22', element);
-  //             this.nodes.push({
-  //               id: element.key,
-  //               name: element.displayName,
-  //               description: element.description,
-  //               hasChildren: true, children: []
-  //             });
-  //           } else {
-  //             this.nodes.push({
-  //               id: element.key,
-  //               name: element.description,
-  //               description: element.description,
-  //               hasChildren: true, children: []
-  //             });
-  //           }
-  //         });
-
-  //         this.tree.treeModel.update();
-  //         if (this.tree.treeModel.getFirstRoot()) {
-  //           this.tree.treeModel.getFirstRoot().setIsActive(true);
-  //         }
-  //       },
-  //       error => {
-  //         /** request completed */
-  //         this.ngProgress.done();
-  //         if (error.status === 0) {
-  //           console.log('service down ', error);
-  //         } else {
-  //           this.alertService.error(error.statusText);
-  //         }
-  //       });
-  // }
 
   public getTreeStructure() {
     /** request started */
@@ -169,10 +68,22 @@ export class ConfigurationManagerComponent implements OnInit {
               hasChildren: (element.children.length) > 0 ? true : false , children: this.addNameKey(element.children)
             });
           });
-          this.getCategory(data['categories'][0]['children'][0].key, data['categories'][0]['children'][0].description);
+
+          // If category 'General' exists, show it on index 0
+          this.nodes.forEach((_n, i) => {
+            if (this.nodes[i]['id'] === 'General') {
+              const node = this.nodes.splice(i, 1);
+              this.nodes.unshift(node[0]);
+            }
+          });
+
+          const firstChild = this.nodes[0]['children'][0];
+          
+          this.getCategory(firstChild.key, firstChild.description);
+          
           this.tree.treeModel.update();
           if (this.tree.treeModel.getFirstRoot()) {          
-            const firstRootChild = this.tree.treeModel.getNodeById(data['categories'][0]['children'][0].id);
+            const firstRootChild = this.tree.treeModel.getNodeById(firstChild.id);
             firstRootChild.setActiveAndVisible();
           }
         },
@@ -188,67 +99,20 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   addNameKey(childrenData) {
-    Object.keys(childrenData).forEach((k) => {
-      childrenData[k]['name'] = childrenData[k]['displayName'];
-      childrenData[k]['id'] = childrenData[k]['key'];
-      delete childrenData[k]['displayName'];
-      if (childrenData[k]['children']) {
-        this.addNameKey(childrenData[k]['children']);
+    Object.keys(childrenData).forEach((i) => {
+      childrenData[i]['name'] = childrenData[i]['displayName'];
+      childrenData[i]['id'] = childrenData[i]['key'];
+      delete childrenData[i]['displayName'];
+      if (childrenData[i]['children']) {
+        this.addNameKey(childrenData[i]['children']);
       }  
     });
     return childrenData;
   }
 
-  // public onNodeToggleExpanded(event) {
-  //   event.node.data.children = [];
-  //   if (event.node.isExpanded) {
-  //     this.configService.getChildren(event.node.data.id).
-  //       subscribe(
-  //         (data) => {
-  //           data['categories'].forEach(element => {
-  //             console.log('el', element);
-  //             if (element.hasOwnProperty('displayName')) {
-  //               event.node.data.children.push({
-  //                 id: element.key,
-  //                 name: element.displayName,
-  //                 description: element.description,
-  //                 hasChildren: element.children.length,
-  //                 children: element.children
-  //               });
-  //             } else {
-  //               event.node.data.children.push({
-  //                 id: element.key,
-  //                 name: element.description,
-  //                 description: element.description,
-  //                 hasChildren: element.children.length,
-  //                 children: element.children
-  //               });
-  //             }
-  //             this.tree.treeModel.update();
-  //           });
-  //         }, error => {
-  //           if (error.status === 0) {
-  //             console.log('service down ', error);
-  //           } else {
-  //             this.alertService.error(error.statusText);
-  //           }
-  //         });
-  //   }
-  // }
-
   public onNodeActive(event) {
     this.getCategory(event.node.data.id, event.node.data.description);
   }
-
-  public toggleDropDown() {
-    const dropDown = document.querySelector('#dropdown');
-    dropDown.classList.toggle('is-active');
-  }
-
-  // public resetAllFilters() {
-  //   this.selectedRootCategory = 'General';
-  //   this.getRootCategories(true);
-  // }
 
   private getCategory(categoryKey: string, categoryDesc: string): void {
     /** request started */
