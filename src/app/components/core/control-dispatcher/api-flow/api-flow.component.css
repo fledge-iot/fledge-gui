@@ -1,0 +1,35 @@
+.context-menu {
+    border: none;
+}
+
+.valign-middle {
+    vertical-align: middle;
+}
+
+.api-card-content {
+    overflow: visible;
+}
+
+.ep-name {
+    height:1.5rem
+}
+
+.cell {
+    border: 1px solid transparent;
+    padding: 1px 1px;
+    width: 100%;
+    height: 100%;
+}
+
+.cell:hover {
+    cursor: pointer;
+    border: 1px dashed #c8c8c8;
+}
+
+.description {
+    max-width: 25rem;
+}
+
+#confirmation-execute-dialog .modal-card-body {
+    min-height: 22vh;
+}

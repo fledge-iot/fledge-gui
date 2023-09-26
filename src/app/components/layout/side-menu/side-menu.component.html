@@ -31,25 +31,30 @@
           (click)="isControlListOpen = !isControlListOpen">
           <span>Control</span>
           <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isControlListOpen ? 'Collapse' : 'Expand'">
-            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'"
+            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
               aria-hidden="true"></i>
           </span>
         </a>
         <div [hidden]="!isControlListOpen">
           <ul>
             <li>
-              <a id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
-                Scripts
-              </a>
-            </li>
-            <li>
               <a id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
                 ACLs
               </a>
             </li>
+            <!-- <li>
+              <a id="entry-point" routerLinkActive="is-active" routerLink='control-dispatcher/entry-points'>
+                API Entry Points
+              </a>
+            </li> -->
             <li>
               <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
             </li>
+            <li>
+              <a id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
+                Scripts
+              </a>
+            </li>   
           </ul>
         </div>
       </li>
@@ -86,7 +91,7 @@
           (click)="isLogsListOpen = !isLogsListOpen">
           <span>Logs</span>
           <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
-            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-up' : 'fas fa-xs fa-chevron-down'" aria-hidden="true"></i>
+            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'" aria-hidden="true"></i>
           </span>
         </a>
         <div [hidden]="!isLogsListOpen">

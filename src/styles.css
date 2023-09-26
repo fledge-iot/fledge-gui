@@ -8,6 +8,7 @@
 @import '@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css';
 @import 'bulma-steps/dist/css/bulma-steps.min.css';
 @import '@fortawesome/fontawesome-free/css/all.min.css';
+@import "~bootstrap-icons/font/bootstrap-icons.css";
 
 html,
 body,
@@ -381,5 +382,29 @@ a.dropdown-item:hover {
 
   span.tooltip {
     border-bottom: none;
+  }
+
+  .description-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 32rem
+  }
+
+  #confirmation-execute-dialog .modal-card-body {
+    min-height: 22vh;
+  }
+
+  .plugin-info {
+    color: gray;
+    font-size: 0.75rem;
+  }
+
+  .plus-icon {
+    font-size: 0.70rem;
+  }
+
+  .desc-text{
+    font-size: 0.95rem;
   }
  /*****************/

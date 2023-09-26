@@ -33,7 +33,7 @@
                 <th>Username</th>
                 <th>Role</th>
                 <th>Authentication Method</th>
-                <th>Description</th>
+                <th>Description</th>         
                 <th></th>
                 <th></th>
               </tr>
@@ -51,7 +51,7 @@
                   {{user.roleName}}
                 </td>
                 <td class="user-col">{{getAccessMethod(user.accessMethod)}}</td>
-                <td class="user-col desc-col">{{user.description}}</td>
+                <td class="user-col desc-col desc-text">{{user.description}}</td>               
                 <td class="tags-groups">
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
                   <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
@@ -81,17 +81,17 @@
                           Reset Password
                         </a>
                         <a class="dropdown-item"
-                          (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are you sure, you want to deactivate the user')">
+                          (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are You sure, you want to deactivate the user')">
                           <i class="fa fa-sm fa-trash-alt" aria-hidden="true"></i>
                           Deactivate
                         </a>
                         <!-- TODO: FOGL-5381
-                      <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'enableUser', 'Are you sure, you want to enable the user')">
+                      <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'enableUser', 'Are you sure, You want to enable the user')">
                         <i class="far fa-check-circle fa-fw fa-sm" aria-hidden="true"></i>
                         enable
                       </a> -->
                         <a class="dropdown-item"
-                          (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, you want to clear all active sessions for')">
+                          (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, You want to clear all active sessions for')">
                           <i class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>
                           Logout Active Sessions
                         </a>
@@ -110,12 +110,14 @@
             <tr>
               <th>ID</th>
               <th>Role</th>
+              <th>Description</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let role of roles">
               <td>{{role.id}}</td>
               <td>{{setRoleName(role.id)}}</td>
+              <td class="desc-text">{{role.description}}</td>
             </tr>
           </tbody>
         </table>
