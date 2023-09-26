@@ -20,12 +20,17 @@
         <div class="columns is-mobile">
           <div class="column">
             <label class="label is-small"  style="float:left">Service</label>
-            <a class="button is-small is-ghost pr-0" style="float:right; margin-top:-2px; font-size: 0.7rem;" title="Service/Instance configuration details">Configuration details</a>
+            <ng-container *ngIf="showConfigButton">
+              <button class="btn small-btn config-gear" (click)="navToInstanceConfiguration()">
+                <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" style="font-size: 14px;"
+                      data-tooltip="Service details">
+                      <i class="bi bi-gear-wide-connected"></i>
+                </span>
+              </button>
+              <a class="button is-small is-ghost pr-0 config-btn" title="Service/Instance configuration details"
+              (click)="navToInstanceConfiguration()">Configuration details</a>
+            </ng-container>
             <!-- click navToInstance(svcOrTask) | not for All or Storage; same for navToInstance(eventProcessor/instance)-->
-            <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" style="font-size: 14px;"
-                  data-tooltip="Service details">
-                  <i class="bi bi-gear-wide-connected"></i>
-            </span>
             <div id="dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -90,7 +95,6 @@
           </div>
         </div>
       </div>
-      <!-- <a class="button is-small is-ghost pl-0">Service/Instance details</a> -->
       <ng-container *ngFor="let log of logs">
         <p class="s-log" [innerHTML]="log"> </p>
       </ng-container>

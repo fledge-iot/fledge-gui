@@ -106,8 +106,8 @@ export class SouthServiceModalComponent implements OnInit {
         (data: any) => {
           const services = data.services as Service[];
           this.service = services.find(service => (service.name == this.serviceName));
-          // open modal window
-          this.toggleModal(true);
+          // open modal window if service name is valid otherwise redirect to list page
+          this.service !== undefined ? this.toggleModal(true) : this.navToSouthPage()
         },
         error => {
           if (error.status === 0) {

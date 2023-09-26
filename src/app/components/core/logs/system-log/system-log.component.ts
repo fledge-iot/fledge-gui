@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { sortBy } from 'lodash';
@@ -31,12 +31,14 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   offset = 0;
   searchTerm = '';
   keyword = "";
+  showConfigButton:boolean = false;
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private route: ActivatedRoute,
+    private router: Router,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -167,6 +169,12 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     }
     if (filter === 'source') {
       this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim();
+      if(this.source === '' || this.source === 'storage'){
+        this.showConfigButton = false;
+      }
+      else{
+        this.showConfigButton = true;
+      }
     } else {
       this.level = value.trim().toLowerCase() === 'debug' ? '' : value.trim().toLowerCase();
     }
@@ -236,6 +244,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.getSysLogs(true);
         this.getSchedules();
       });
+  }
+
+  navToInstanceConfiguration(){
+    this.router.navigate(['/south', this.source])
   }
 
   public ngOnDestroy(): void {
