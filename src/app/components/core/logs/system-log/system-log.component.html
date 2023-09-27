@@ -22,11 +22,11 @@
             <label class="label is-small"  style="float:left">Service</label>
             <ng-container *ngIf="showConfigButton">
               <button class="btn small-btn config-gear" (click)="navToInstanceConfiguration()">
-                <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" data-tooltip="Service/Instance configuration details">
+                <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" data-tooltip="Instance configuration details">
                       <i class="bi bi-gear-wide-connected"></i>
                 </span>
               </button>
-              <a class="button is-small is-ghost pr-0 config-btn" title="Service/Instance configuration details"
+              <a class="button is-small is-ghost pr-0 config-btn" title="Instance configuration details"
               (click)="navToInstanceConfiguration()">Configuration details</a>
             </ng-container>
             <!-- click navToInstance(svcOrTask) | not for All or Storage; same for navToInstance(eventProcessor/instance)-->
