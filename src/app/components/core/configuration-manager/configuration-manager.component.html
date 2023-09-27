@@ -4,7 +4,18 @@
     <div class="column is-one-quarter">
       <nav class="panel">
         <div id="root-children" class="panel-block" [ngClass]="{'empty-tree': !isChild}">
-          <tree-root #tree [nodes]="nodes" [options]="options" (activate)="onNodeActive($event)"></tree-root>
+          <div class="columns">
+            <div class="column is-10">
+              <tree-root #tree [nodes]="nodes" [options]="options" (activate)="onNodeActive($event)"></tree-root>
+            </div>
+            <div class="column">
+              <button class="button is-small" id="refresh-check" (click)="getTreeStructure()">
+                <span class="icon is-small">
+                  <i class="fa fa-sm fa-sync" title="Reload"></i>
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
     </div>

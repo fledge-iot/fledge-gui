@@ -46,7 +46,7 @@ export class ConfigurationManagerComponent implements OnInit {
     this.ngProgress.start();
     this.tree.treeModel.nodes = [];
 
-    this.nodes = [];
+    let _nodes = [];
     this.configService.getRootCategories().
       subscribe(
         (data) => {
@@ -61,7 +61,7 @@ export class ConfigurationManagerComponent implements OnInit {
           }
           this.isChild = true;
           data['categories'].forEach(element => {
-            this.nodes.push({
+            _nodes.push({
               id: element.key,
               name: (element.hasOwnProperty('displayName')) ? element.displayName : element.description,
               description: element.description,
@@ -70,19 +70,23 @@ export class ConfigurationManagerComponent implements OnInit {
           });
 
           // If category 'General' exists, show it on index 0
-          this.nodes.forEach((_n, i) => {
-            if (this.nodes[i]['id'] === 'General') {
-              const node = this.nodes.splice(i, 1);
-              this.nodes.unshift(node[0]);
+          _nodes.forEach((_n, i) => {
+            if (_nodes[i]['id'].toUpperCase() === 'GENERAL') {
+              _nodes.unshift(_nodes.splice(i, 1)[0]);
             }
           });
+          _nodes = _nodes.filter(n => {
+            return !["SOUTH", "NORTH", "NOTIFICATIONS"].includes(n['id'].toUpperCase());
+          });
 
-          const firstChild = this.nodes[0]['children'][0];
+          this.nodes = _nodes;
+
+          const firstChild = _nodes[0]['children'][0];
           
           this.getCategory(firstChild.key, firstChild.description);
           
           this.tree.treeModel.update();
-          if (this.tree.treeModel.getFirstRoot()) {          
+          if (this.tree.treeModel.getFirstRoot()) {  
             const firstRootChild = this.tree.treeModel.getNodeById(firstChild.id);
             firstRootChild.setActiveAndVisible();
           }
