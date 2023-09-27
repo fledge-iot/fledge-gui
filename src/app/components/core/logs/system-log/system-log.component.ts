@@ -32,6 +32,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   searchTerm = '';
   keyword = "";
   showConfigButton:boolean = false;
+  routePath: string = '';
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
@@ -93,6 +94,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           this.scheduleData = new Set(sortBy(serviceNorthTaskSchedules, (s: any) => {
             return s.name.toLowerCase();
           }));
+          if(this.source){
+            this.setRoutePath();
+            this.showConfigButton = true;
+          }
         },
         error => {
           if (error.status === 0) {
@@ -174,6 +179,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       }
       else{
         this.showConfigButton = true;
+        this.setRoutePath();
       }
     } else {
       this.level = value.trim().toLowerCase() === 'debug' ? '' : value.trim().toLowerCase();
@@ -246,8 +252,18 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       });
   }
 
+  setRoutePath() {
+    let sourceSchedule: any = [...this.scheduleData].find((sch: any) => sch.name === this.source)
+    if (sourceSchedule.processName === 'south_c') {
+      this.routePath = '/south';
+    }
+    else {
+      this.routePath = '/north';
+    }
+  }
+
   navToInstanceConfiguration(){
-    this.router.navigate(['/south', this.source])
+    this.router.navigate([this.routePath, this.source])
   }
 
   public ngOnDestroy(): void {
