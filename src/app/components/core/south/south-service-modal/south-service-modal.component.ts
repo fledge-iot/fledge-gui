@@ -84,6 +84,7 @@ export class SouthServiceModalComponent implements OnInit {
     private toastService: ToastService,
     private activatedRoute: ActivatedRoute,
     public cDRef: ChangeDetectorRef) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.serviceName = this.activatedRoute.snapshot.paramMap.get('name');
     if (this.serviceName) {
       this.getSouthboundServices(true);

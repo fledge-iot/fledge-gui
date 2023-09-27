@@ -86,6 +86,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     public cDRef: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
   ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.taskName = this.activatedRoute.snapshot.paramMap.get('name');
     if(this.taskName){
       this.getNorthTasks(true)
