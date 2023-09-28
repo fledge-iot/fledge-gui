@@ -9,7 +9,7 @@
               <tree-root #tree [nodes]="nodes" [options]="options" (activate)="onNodeActive($event)"></tree-root>
             </div>
             <div class="column">
-              <button class="button is-small" id="refresh-check" (click)="getTreeStructure()">
+              <button class="button is-small category-tree" id="refresh-tree" (click)="getTreeStructure()">
                 <span class="icon is-small">
                   <i class="fa fa-sm fa-sync" title="Reload"></i>
                 </span>

@@ -65,11 +65,12 @@ export class ConfigurationManagerComponent implements OnInit {
               id: element.key,
               name: (element.hasOwnProperty('displayName')) ? element.displayName : element.description,
               description: element.description,
-              hasChildren: (element.children.length) > 0 ? true : false , children: this.addNameKey(element.children)
+              hasChildren: (element.children.length > 0) ? true : false,
+              children: this.addNameKey(element.children)
             });
           });
 
-          // If category 'General' exists, show it on index 0
+          // If category group 'General' exists, show it on index 0
           _nodes.forEach((_n, i) => {
             if (_nodes[i]['id'].toUpperCase() === 'GENERAL') {
               _nodes.unshift(_nodes.splice(i, 1)[0]);
@@ -115,6 +116,12 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   public onNodeActive(event) {
+    // In case of root node, just expand the node and return
+    if (event.node.parent.parent === null) {
+      const node = this.tree.treeModel.getNodeById(event.node.data.id);
+      node.expand();
+      return;
+    }
     this.getCategory(event.node.data.id, event.node.data.description);
   }
 
