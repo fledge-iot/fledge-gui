@@ -416,7 +416,7 @@
                     <div class="field">
                         <div class="columns">
                             <div class="column is-2">
-                                <div *ngIf="editMode && allowExecute" class="field has-addons is-fullwidth">
+                                <div *ngIf="editMode && af.permitted" class="field has-addons is-fullwidth">
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth" (click)="checkAndRequestAPIFlow()">Execute</a>
                                     </p>
@@ -436,7 +436,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p *ngIf="editMode && !allowExecute && rolesService.hasControlAccess()" class="control">
+                                <p *ngIf="editMode && !af.permitted && rolesService.hasControlAccess()" class="control">
                                     <button class="button is-small is-danger is-outlined" type="button" (click)="openModal('confirmation-delete-dialog')">Delete</button>
                                 </p>
                             </div>

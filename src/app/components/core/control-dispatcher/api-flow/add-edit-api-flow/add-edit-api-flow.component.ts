@@ -44,7 +44,6 @@ export class AddEditAPIFlowComponent implements OnInit {
     destinationNames = [];
 
     editMode = false;
-    allowExecute = false;
     
     apiFlowName: string;
     af: APIFlow;
@@ -93,6 +92,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             type: 'write',
             description: '',
             operation_name: '',
+            permitted: false,
             destination: 'broadcast',
             constants: {},
             variables: {},
@@ -184,12 +184,8 @@ export class AddEditAPIFlowComponent implements OnInit {
             }
             this.selectedType = data.type;
             
-            // TODO: FOGL-8070
-            this.af.anonymous = data.anonymous === 't' || data.anonymous === true ? true : false;
-            
             this.fillParameters(data.variables, 'variables');
             this.fillParameters(data.constants, 'constants');
-            this.allowExecute = data.anonymous === true || (data.anonymous === false && data.allow.includes(this.loggedInUsername));
           }, error => {
             /** request completed */
             this.ngProgress.done();
