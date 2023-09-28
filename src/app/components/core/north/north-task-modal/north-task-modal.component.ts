@@ -86,11 +86,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     public cDRef: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
   ) {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.taskName = this.activatedRoute.snapshot.paramMap.get('name');
-    if(this.taskName){
-      this.getNorthTasks(true)
-    }
+    this.activatedRoute.paramMap.subscribe(params => {
+      this.taskName = params.get('name');
+      if (this.taskName) {
+        this.getNorthTasks(true)
+      }
+    })
    }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
