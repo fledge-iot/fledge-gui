@@ -136,6 +136,12 @@
             ]
           }
         },
+        "cypress-open": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "watch": true
+          }
+        },
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
