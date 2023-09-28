@@ -15,7 +15,6 @@ import {
 
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
-  public JSON;
   public isChild = true;
   validConfigForm = false;
 
@@ -33,9 +32,7 @@ export class ConfigurationManagerComponent implements OnInit {
     public ngProgress: ProgressBarService,
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService
-  ) {
-    this.JSON = JSON;
-  }
+  ) {}
 
   ngOnInit() {
     this.getTreeStructure();
