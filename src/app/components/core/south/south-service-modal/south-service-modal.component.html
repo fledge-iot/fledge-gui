@@ -5,7 +5,7 @@
       <span *ngIf="service" class="modal-card-title title-name">{{service.name}} <span *ngIf="isAddFilterWizard">- Add
           Filter</span>
           <span *ngIf="!isAddFilterWizard">
-            <i class="bi bi-info-circle plugin-info" aria-hidden="true" [title]="service?.plugin?.name"></i>
+            <i class="bi bi-info-circle plugin-info bi-icon" aria-hidden="true" [title]="service?.plugin?.name"></i>
           </span>
         <p class="help has-text-grey ctrl-pipeline">South Service</p>
       </span>
@@ -40,7 +40,7 @@
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
-                    <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
+                    <i class="bi bi-plus-circle plus-icon bi-icon" aria-hidden="true"></i>
                   </span>
                 </a>
               </span>

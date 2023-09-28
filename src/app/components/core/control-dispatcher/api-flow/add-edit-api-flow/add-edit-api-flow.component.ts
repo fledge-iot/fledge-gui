@@ -48,6 +48,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     
     apiFlowName: string;
     af: APIFlow;
+    
     apiFlowForm: FormGroup;
 
     allUsers: User[];
@@ -73,6 +74,9 @@ export class AddEditAPIFlowComponent implements OnInit {
         private controlUtilsService: ControlUtilsService,
         private router: Router) {
             this.apiFlowForm = this.fb.group({
+                name: ['', Validators.required],
+                description: ['', Validators.required],
+                operation_name: [''],
                 variables: this.fb.array([]),
                 constants: this.fb.array([])
             });
@@ -170,6 +174,11 @@ export class AddEditAPIFlowComponent implements OnInit {
             this.editMode = true;
             this.ngProgress.done();
             this.af = data;
+            
+            this.apiFlowForm.get('name').setValue(data.name);
+            this.apiFlowForm.get('description').setValue(data.description);
+            this.apiFlowForm.get('operation_name').setValue(data.operation_name);
+
             if (this.af.destination !== 'broadcast') {
                 this.selectedDestinationName = this.af[this.af.destination];
             }
@@ -194,8 +203,11 @@ export class AddEditAPIFlowComponent implements OnInit {
 
     saveAPIFlow(data) {
       let payload = this.af;
-
+      
+      payload.name = data.name;
+      payload.description = data.description;
       payload.type = this.selectedType;
+      payload.operation_name = data.operation_name;
 
       const destination = this.af.destination.toLowerCase();
       payload.destination = destination;     

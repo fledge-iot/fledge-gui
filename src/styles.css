@@ -404,6 +404,10 @@ a.dropdown-item:hover {
     font-size: 0.70rem;
   }
 
+  .bi-icon:hover {
+    color: rgb(91, 89, 89);
+  }
+
   .desc-text{
     font-size: 0.95rem;
   }

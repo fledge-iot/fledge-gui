@@ -33,14 +33,13 @@
                 <div class="field-body">
                     <div class="field">
                         <div class="control">
-                        <input #name=ngModel name="af.name" class="input" type="text" placeholder="Name" required
-                            [(ngModel)]="af.name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
+                        <input formControlName="name" class="input" type="text" placeholder="Name" required title="No single quotes and double quotes!" 
                             [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
                             [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
                             [readonly]="!rolesService.hasControlAccess()">
                         </div>
-                        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
-                            <div *ngIf="name.errors?.['required']">
+                        <div *ngIf="apiFlowForm.controls['name'].invalid" class="help is-danger">
+                            <div *ngIf=" apiFlowForm.controls['name'].touched && apiFlowForm.controls['name'].errors?.['required']">
                                 *required
                             </div>
                         </div>
@@ -77,14 +76,12 @@
                 <div class="field">
                     <ngContainer *ngIf="selectedType === 'operation' && rolesService.hasControlAccess()">
                         <div class="control">
-                            <input #operation_name=ngModel name="af.operation_name" class="input is-small" type="text" placeholder="Operation name" required
-                            [(ngModel)]="af.operation_name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
+                            <input formControlName="operation_name" class="input is-small" type="text" placeholder="Operation name"
+                            title="No single quotes and double quotes!"
                             [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off">
                         </div>
-                        <div *ngIf="operation_name.invalid && (operation_name.dirty || operation_name.touched)" class="help is-danger">
-                        <div *ngIf="operation_name.errors?.['required']">
+                        <div *ngIf="selectedType === 'operation' && apiFlowForm.controls.operation_name.value === ''" class="help is-danger">
                             *required
-                        </div>
                         </div>
                     </ngContainer>
                 </div>
@@ -197,7 +194,7 @@
                                                     <label class="label is-small has-text-left">Variables</label>
                                                 </div>
                                                 <div class="field-body">
-                                                    <button class="button px-0 pt-0 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
+                                                    <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
                                                         <span class="icon is-small pt-1 mr-0">
                                                             <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                                                         </span>
@@ -240,7 +237,7 @@
                                     <div class="columns">
                                         <div class="column is-one-fifth"></div>
                                         <div class="btn-column pt-2 pb-0 pl-2">
-                                            <button class="button px-0 pt-0 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
+                                            <button class="button px-0 pt-2 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
                                                 <span class="icon is-small pt-1 mr-0">
                                                     <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                                                 </span>
@@ -257,7 +254,7 @@
                                                     <label class="label is-small has-text-left">Constants</label>
                                                 </div>
                                                 <div class="field-body">
-                                                    <button class="button px-0 pt-0 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
+                                                    <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
                                                         <span class="icon is-small pt-1 mr-0">
                                                             <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                                                         </span>
@@ -300,7 +297,7 @@
                                     <div class="columns">
                                         <div class="column is-one-fifth"></div>
                                         <div class="btn-column pt-2 pb-0 pl-2">
-                                            <button class="button px-0 pt-0 is-small is-link is-light has-background-white"
+                                            <button class="button px-0 pt-2 is-small is-link is-light has-background-white"
                                             (click)="addValueControl('constants')">
                                                 <span class="icon is-small pt-1 mr-0">
                                                     <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
@@ -371,7 +368,7 @@
                                                 [ngClass]="{'is-static pb-4':!rolesService.hasControlAccess()}"
                                                 [readonly]="!rolesService.hasControlAccess()">
                                             </ng-template>
-                                            <p class="help">*Allow list will only be applicable when the anonymous access is disabled.</p>
+                                            <p class="help allow-list-text">*Allow list will only be applicable when the anonymous access is disabled.</p>
                                         </div>
                                     </div>
                                     </div>
@@ -394,11 +391,11 @@
                 <div class="field">
                     <ng-container *ngIf="rolesService.hasControlAccess(); else staticDescription">
                         <div class="control">
-                            <textarea rows="2" type="text" class="textarea is-small" placeholder="description" name="af.description" required
-                            [(ngModel)]="af.description" trim="blur" #description="ngModel" [ngModelOptions]="{standalone: true}"></textarea>
+                            <textarea rows="2" type="text" formControlName="description" class="textarea is-small" placeholder="description" required
+                            trim="blur"></textarea>
                         </div>
-                        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="help is-danger">
-                            <div *ngIf="description.errors?.['required']">
+                        <div *ngIf="apiFlowForm.controls['description'].invalid" class="help is-danger">
+                            <div *ngIf="apiFlowForm.controls['description'].touched && apiFlowForm.controls['description'].errors?.['required']">
                                 *required
                             </div>
                         </div>
@@ -450,7 +447,7 @@
                                     </p>
                                     <p class="control">
                                     <button (click)="saveAPIFlow(apiFlowForm.value)" type="submit" class="button is-small is-link"
-                                        [disabled]="apiFlowForm?.invalid">Save</button>
+                                    [disabled]="apiFlowForm?.invalid || (selectedType === 'operation' && apiFlowForm.controls.operation_name.value === '')">Save</button>
                                     </p>
                                 </div>
                             </div>
