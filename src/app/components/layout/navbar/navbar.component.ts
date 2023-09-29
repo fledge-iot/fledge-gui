@@ -421,5 +421,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public hideLoadingSpinner() {
     this.showSpinner = false;
   }
+
+  navToSyslogs(service) {
+    this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
+  }
 }
 

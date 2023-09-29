@@ -244,6 +244,14 @@
                               {{s.name}}&nbsp;
                             </td>
                             <td>
+                              <ng-container *ngIf="s.status !== 'running'">
+                                <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-hovered mr-2 ml-2"
+                                  data-tooltip="Show logs" (click)="navToSyslogs(s)">
+                                  <i class="far fa-file-alt"></i>
+                                </span>
+                              </ng-container>
+                            </td>
+                            <td>
                               <b>{{s.status}}</b>
                             </td>
                           </tr>
