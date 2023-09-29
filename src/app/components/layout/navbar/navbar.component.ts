@@ -425,5 +425,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   navToSyslogs(service) {
     this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
+
+  navToServiceConfiguration(service){
+    let routePath = service.type === 'Northbound' ? 'north' : 'south';
+    this.router.navigate([routePath, service.name])
+  }
 }
 

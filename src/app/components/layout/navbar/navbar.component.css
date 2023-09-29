@@ -96,3 +96,11 @@
   margin-top: 0px;
   font-size: 0.6rem;
  }
+
+ .ghost {
+  color:  #4a4a4a;
+ }
+
+ .ghost:hover {
+  color: #485fc7;
+ }
