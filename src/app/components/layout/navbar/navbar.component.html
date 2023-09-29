@@ -241,16 +241,16 @@
                               <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
                                 <i class="fa fa-sm fa-circle child-icon"></i>
                               </span>
-                              <ng-container *ngIf="s.type === 'Northbound' || s.type === 'Southbound'">
+                              <ng-container *ngIf="['Northbound', 'Southbound'].includes(s.type); else elseServiceTemplate">
                                 <a class="ghost" (click)="navToServiceConfiguration(s)">{{s.name}}</a>
                               </ng-container>
-                              <ng-container *ngIf="s.type !== 'Northbound' && s.type !== 'Southbound'">
+                              <ng-template #elseServiceTemplate>
                                 <span>{{s.name}}</span>
-                              </ng-container>
+                              </ng-template>
                               &nbsp;
                             </td>
                             <td>
-                              <ng-container *ngIf="s.status === 'Failed' || s.status === 'Unresponsive'">
+                              <ng-container *ngIf="s.status === 'failed' || s.status === 'unresponsive'">
                                 <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-hovered mr-2 ml-2"
                                   data-tooltip="Show logs" (click)="navToSyslogs(s)">
                                   <i class="far fa-sm fa-file-alt"></i>
