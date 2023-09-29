@@ -67,3 +67,13 @@ hr {
   padding-top: 1rem;
 }
 
+.modal-card-head {
+  padding: 15px !important;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.modal-subtitle {
+  margin-top: 0.35rem !important;
+}
+

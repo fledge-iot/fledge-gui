@@ -54,3 +54,13 @@ a {
   max-width: 1344px;
   margin: auto;
 }
+
+.modal-card-head {
+  padding: 15px !important;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.modal-subtitle {
+  margin-top: 0.35rem !important;
+}
