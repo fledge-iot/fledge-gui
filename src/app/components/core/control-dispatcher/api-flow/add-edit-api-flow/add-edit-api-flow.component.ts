@@ -177,7 +177,9 @@ export class AddEditAPIFlowComponent implements OnInit {
             
             this.apiFlowForm.get('name').setValue(data.name);
             this.apiFlowForm.get('description').setValue(data.description);
-            this.apiFlowForm.get('operation_name').setValue(data.operation_name);
+            if (data.type === 'operation') {
+              this.apiFlowForm.get('operation_name').setValue(data.operation_name);
+            }
 
             if (this.af.destination !== 'broadcast') {
                 this.selectedDestinationName = this.af[this.af.destination];

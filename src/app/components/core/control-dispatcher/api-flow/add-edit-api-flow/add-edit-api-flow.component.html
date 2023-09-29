@@ -447,7 +447,7 @@
                                     </p>
                                     <p class="control">
                                     <button (click)="saveAPIFlow(apiFlowForm.value)" type="submit" class="button is-small is-link"
-                                    [disabled]="apiFlowForm?.invalid || (selectedType === 'operation' && apiFlowForm.controls.operation_name.value === '')">Save</button>
+                                    [disabled]="apiFlowForm?.invalid || (selectedType === 'operation' && apiFlowForm.controls.operation_name.value.trim() === '')">Save</button>
                                     </p>
                                 </div>
                             </div>
