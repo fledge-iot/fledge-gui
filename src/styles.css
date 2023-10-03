@@ -397,12 +397,11 @@ a.dropdown-item:hover {
 
   .plugin-info {
     color: gray;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .plus-icon {
-    font-size: 1rem;
-    line-height: 1;
+    font-size: 0.80rem;
   }
 
   .bi:hover {
