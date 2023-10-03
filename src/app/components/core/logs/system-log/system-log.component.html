@@ -16,10 +16,17 @@
       </div>
     </header>
     <div class="card-content">
-      <div class="content">
+      <div class="content mb-3">
         <div class="columns is-mobile">
           <div class="column">
-            <label class="label is-small">Service</label>
+            <label class="label is-small is-pulled-left">Service</label>
+            <ng-container *ngIf="showConfigButton">
+              <button class="btn small-btn config-gear" (click)="navToInstanceConfiguration()">
+                <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" data-tooltip="Instance configuration details">
+                      <i class="bi bi-gear-wide-connected"></i>
+                </span>
+              </button>
+            </ng-container>
             <div id="dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"

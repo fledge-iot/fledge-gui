@@ -12,7 +12,7 @@
           <p class="help has-text-grey modal-subtitle">North Task</p>
         </ng-template>
       </span>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" [routerLink]="['/north']"></button>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isAddFilterWizard">
@@ -102,7 +102,7 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+                  <button class="button is-small" [routerLink]="['/north']">Cancel</button>
                 </p>
                 <p class="control">
                   <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()">Save</button>

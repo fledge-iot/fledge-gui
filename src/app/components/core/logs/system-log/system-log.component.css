@@ -42,3 +42,12 @@
 .card-header-title {
   max-height: 45px !important;
 }
+
+.config-gear {
+  vertical-align: top;
+  background: none;
+  border: none;
+  padding-top: 3px !important;
+  padding-bottom: 0px !important;
+  font-size: 14px;
+}
