@@ -205,8 +205,10 @@ export class AddEditAPIFlowComponent implements OnInit {
       payload.name = data.name;
       payload.description = data.description;
       payload.type = this.selectedType;
-      payload.operation_name = data.operation_name;
-
+      if (payload.type === 'operation') {
+        payload.operation_name = data.operation_name;
+      }
+      
       const destination = this.af.destination.toLowerCase();
       payload.destination = destination;     
       if (destination !== 'broadcast') {
