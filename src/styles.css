@@ -401,7 +401,11 @@ a.dropdown-item:hover {
   }
 
   .plus-icon {
-    font-size: 0.70rem;
+    font-size: 0.80rem;
+  }
+
+  .bi:hover {
+    color: rgb(91, 89, 89);
   }
 
   .desc-text{
