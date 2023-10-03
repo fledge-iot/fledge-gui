@@ -44,10 +44,10 @@ export class AddEditAPIFlowComponent implements OnInit {
     destinationNames = [];
 
     editMode = false;
-    allowExecute = false;
     
     apiFlowName: string;
     af: APIFlow;
+    
     apiFlowForm: FormGroup;
 
     allUsers: User[];
@@ -73,6 +73,9 @@ export class AddEditAPIFlowComponent implements OnInit {
         private controlUtilsService: ControlUtilsService,
         private router: Router) {
             this.apiFlowForm = this.fb.group({
+                name: ['', Validators.required],
+                description: ['', Validators.required],
+                operation_name: [''],
                 variables: this.fb.array([]),
                 constants: this.fb.array([])
             });
@@ -89,6 +92,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             type: 'write',
             description: '',
             operation_name: '',
+            permitted: false,
             destination: 'broadcast',
             constants: {},
             variables: {},
@@ -170,17 +174,20 @@ export class AddEditAPIFlowComponent implements OnInit {
             this.editMode = true;
             this.ngProgress.done();
             this.af = data;
+            
+            this.apiFlowForm.get('name').setValue(data.name);
+            this.apiFlowForm.get('description').setValue(data.description);
+            if (data.type === 'operation') {
+              this.apiFlowForm.get('operation_name').setValue(data.operation_name);
+            }
+
             if (this.af.destination !== 'broadcast') {
                 this.selectedDestinationName = this.af[this.af.destination];
             }
             this.selectedType = data.type;
             
-            // TODO: FOGL-8070
-            this.af.anonymous = data.anonymous === 't' || data.anonymous === true ? true : false;
-            
             this.fillParameters(data.variables, 'variables');
             this.fillParameters(data.constants, 'constants');
-            this.allowExecute = data.anonymous === true || (data.anonymous === false && data.allow.includes(this.loggedInUsername));
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -194,9 +201,14 @@ export class AddEditAPIFlowComponent implements OnInit {
 
     saveAPIFlow(data) {
       let payload = this.af;
-
+      
+      payload.name = data.name;
+      payload.description = data.description;
       payload.type = this.selectedType;
-
+      if (payload.type === 'operation') {
+        payload.operation_name = data.operation_name;
+      }
+      
       const destination = this.af.destination.toLowerCase();
       payload.destination = destination;     
       if (destination !== 'broadcast') {

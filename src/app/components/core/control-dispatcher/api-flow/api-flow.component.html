@@ -29,7 +29,6 @@
                     <ng-container *ngFor="let ep of apiFlows; let i = index">
                         <tr id="select{{i}}">
                             <td class="align-content">
-                                <!-- TODO: 8070, this requires check the same way, we have in details page for this.allowExecute; Here we need to check for each record while rendering --> 
                                 <a *ngIf="ep.permitted" class="button is-ghost ep-name mx-0 px-0" 
                                 (click)="getAndExecuteAPIFlow(ep.name);">
                                     {{ep.name}}
@@ -93,37 +92,42 @@
         <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
     </header>
     <section class="modal-card-body">
-        <form [formGroup]="apiFlowForm">
-            <div class="field is-horizontal pt-4">
-                <div class="field-body">
-                    <div class="field">
-                        <ng-container formArrayName="variables">
-                            <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
-                                <small class="text-secondary has-text-grey-light">
-                                    There are no variable parameters associated with this entry point.
-                                </small>
-                            </div>
-                            <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
-                                <div class="field is-horizontal">
-                                    <div class="field-body columns" [formGroupName]="i">
-                                        <div class="column is-3">
-                                            <div class="control">
-                                                <label class="label label-name has-text-left">{{v.value.vName}}</label>
-                                            </div>
-                                        </div>
-                                        <div class="column is-4">
-                                            <div class="control">
-                                                <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
-                                            </div>
-                                        </div>
+        <div class="columns">
+            <div class="column is-1"></div>
+            <div class="column py-5">
+                <form [formGroup]="apiFlowForm">
+                    <div class="field is-horizontal pt-4">
+                        <div class="field-body">
+                            <div class="field">
+                                <ng-container formArrayName="variables">
+                                    <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
+                                        <small class="text-secondary has-text-grey-light">
+                                            There are no variable parameters associated with this entry point.
+                                        </small>
                                     </div>
-                                </div>
-                            </ng-container>
-                        </ng-container>
+                                    <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
+                                        <div class="field is-horizontal">
+                                            <div class="field-body columns" [formGroupName]="i">
+                                                <div class="column is-4">
+                                                    <div class="control">
+                                                        <label class="label label-name has-text-left">{{v.value.vName}}</label>
+                                                    </div>
+                                                </div>
+                                                <div class="column is-4">
+                                                    <div class="control">
+                                                        <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
     </section>
     <footer class="modal-card-foot p-3">
         <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
