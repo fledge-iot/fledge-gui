@@ -24,6 +24,10 @@ const routes: Routes = [
     path: 'add',
     component: AddTaskWizardComponent,
     canActivate: [RolesGuard]
+  },
+  {
+    path: ':name',
+    component: NorthTaskModalComponent
   }
 ];
 
