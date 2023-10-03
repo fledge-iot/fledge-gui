@@ -38,10 +38,10 @@ export class SchedulesService {
   }
 
   /**
-   *  GET | /fledge/schedule/{schedule_id}
+   *  GET | /fledge/schedule/{scheduleId}
    */
-  public getSchedule(schedule_id) {
-    return this.http.get(this.SCHEDULE_URL + '/' + schedule_id).pipe(
+  public getSchedule(scheduleId: string) {
+    return this.http.get(this.SCHEDULE_URL + '/' + scheduleId).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

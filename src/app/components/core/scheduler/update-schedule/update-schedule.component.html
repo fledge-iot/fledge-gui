@@ -8,18 +8,28 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form [formGroup]="form" #f="ngForm" novalidate>
+      <form [formGroup]="form" novalidate>
         <ng-container *ngIf="rolesService.hasEditPermissions(); else staticForm">
           <div class="columns is-mobile">
             <div class="column">
               <div class="field">
                 <div class="form-group">
                   <label class="label is-small">Name</label>
-                  <p class="control is-fullwidth">
-                    <input type="text" class="input is-small" formControlName="name" placeholder="name" required
-                      trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN"/>
-                  </p>
-                  <small *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched" class="help is-danger level-left">Name is required</small>
+                  <ng-container *ngIf="schedule?.type !== 1; else staticName">
+                    <p class="control is-fullwidth">
+                      <input type="text" class="input is-small" formControlName="name" placeholder="name" required
+                        trim="blur" title="No single quotes and double quotes!"
+                        [pattern]="QUOTATION_VALIDATION_PATTERN" />
+                    </p>
+                    <small *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched"
+                      class="help is-danger level-left">Name is required</small>
+                  </ng-container>
+                  <ng-template #staticName>
+                    <p class="control is-fullwidth">
+                      <input type="text" class="input is-small is-static" formControlName="name" readonly />
+                    </p>
+                  </ng-template>
+
                 </div>
               </div>
             </div>
@@ -44,7 +54,7 @@
             <div class="column">
               <div class="field">
                 <label class="label is-small">Type</label>
-                <div class="control">
+                <div class="control" *ngIf="schedule?.type !== 1; else staticType">
                   <div id="type-dropdown" class="dropdown">
                     <div class="dropdown-trigger">
                       <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -65,6 +75,11 @@
                     </div>
                   </div>
                 </div>
+                <ng-template #staticType>
+                  <div class="control">
+                    <input type="text" class="input is-small is-static" [value]="selectedScheduleTypeName" readonly />
+                  </div>
+                </ng-template>
               </div>
             </div>
             <div class="column">
@@ -128,7 +143,8 @@
               <div class="field">
                 <label class="label is-small">Repeat Interval
                   <!-- &nbsp; -->
-                  <span class="tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                  <span class="tooltip has-tooltip-right has-tooltip-arrow"
+                    data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
                     <i class="far fa-sm fa-question-circle"></i>
                   </span>
                 </label>
@@ -227,7 +243,8 @@
               <div class="field">
                 <label class="label is-small">Repeat Interval
                   <!-- &nbsp; -->
-                  <span class="tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                  <span class="tooltip has-tooltip-right has-tooltip-arrow"
+                    data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
                     <i class="far fa-sm fa-question-circle"></i>
                   </span>
                 </label>
@@ -249,7 +266,7 @@
     <footer class="modal-card-foot">
       <button type="button" id="cancel" class="button is-small" (click)="toggleModal(false)">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
-        [disabled]="f.form.invalid" (click)="f.form.valid && updateSchedule()">Save</button>
+        [disabled]="form.invalid" (click)="form.valid && updateSchedule()">Save</button>
     </footer>
   </div>
 </div>
