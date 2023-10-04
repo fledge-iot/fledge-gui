@@ -38,7 +38,8 @@ yarn-error.log
 # e2e
 /e2e/*.js
 /e2e/*.map
-/e2e-test-report
+/e2e/reports/*
+/cypress/screenshots/*
 
 # System Files
 .DS_Store
