@@ -96,7 +96,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           }));
           if(this.source){
             this.setRoutePath();
-            this.showConfigButton = true;
           }
         },
         error => {
@@ -178,7 +177,6 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.showConfigButton = false;
       }
       else{
-        this.showConfigButton = true;
         this.setRoutePath();
       }
     } else {
@@ -256,9 +254,14 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     let sourceSchedule: any = [...this.scheduleData].find((sch: any) => sch.name === this.source)
     if (sourceSchedule.processName === 'south_c') {
       this.routePath = '/south';
+      this.showConfigButton = true;
+    }
+    else if (sourceSchedule.processName === 'north_c') {
+      this.routePath = '/north';
+      this.showConfigButton = true;
     }
     else {
-      this.routePath = '/north';
+      this.showConfigButton = false;
     }
   }
 
