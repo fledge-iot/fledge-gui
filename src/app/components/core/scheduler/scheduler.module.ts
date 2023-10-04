@@ -9,6 +9,7 @@ import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 const routes: Routes = [
   {
@@ -30,7 +31,8 @@ const routes: Routes = [
     PipesModule,
     AlertDialogModule,
     DirectivesModule,
-    SharedModule
+    SharedModule,
+    NgSelectModule
   ],
   providers: [],
   exports: []

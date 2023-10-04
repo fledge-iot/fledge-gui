@@ -14,16 +14,16 @@ import { Schedule } from '../schedule';
 })
 export class UpdateScheduleComponent implements OnInit, OnChanges {
   // Default selected schedule type is STARTUP = 1
-  public selectedScheduleTypeIndex: Number = 1;
-  public selectedScheduleTypeName: string;
+  //public selectedScheduleTypeIndex: Number = 1;
+  //public selectedScheduleTypeName: string;
   // Default selected day index is MONDAY = 1
-  public selectedDayIndex: Number = 1;
-  public selectedDayName: string;
+  //public selectedDayIndex: Number = 1;
+  //public selectedDayName: string;
 
-  public scheduleProcess = [];
-  public scheduleType = [];
+  //public scheduleProcess = [];
+  public scheduleTypes = [];
   public days = [];
-  public scheduleName: string;
+  //public scheduleName: string;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
 
@@ -40,15 +40,15 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     public rolesService: RolesService) {
     this.form = this.fb.group({
-      name: ['', [CustomValidator.nospaceValidator]],
-      type: [],
-      repeatDay: ['', [Validators.min(0), Validators.max(365)]],
-      repeat: ['', Validators.required],
-      exclusive: [Validators.required],
-      process_name: [Validators.required],
-      day: [Validators.required],
-      time: ['', Validators.required],
-      enabled: [Validators.required]
+      name: [, [CustomValidator.nospaceValidator]],
+      type: [, Validators.required],
+      repeatDay: [0, [Validators.min(0), Validators.max(365)]],
+      repeat: [0, Validators.required],
+      exclusive: [false, Validators.required],
+      processName: [],
+      day: [0, Validators.required],
+      time: [0, Validators.required],
+      enabled: [false, Validators.required]
     });
   }
 
@@ -60,11 +60,10 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['childData']) {
-      this.scheduleProcess = this.childData.schedule_process;
-      this.scheduleType = this.childData.schedule_type;
-      this.days = this.childData.day;
+      this.scheduleTypes = this.childData.schedule_type;
+      this.days = this.childData.day.map((day, index) => (day == 'None' ? { index: 0, name: day } : { index: index + 1, name: day }));
+      console.log(this.days);
     }
-    this.getSelectedDayIndex(this.days[0]);
     this.getSchedule(this.childData.id);
   }
 
@@ -72,14 +71,23 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
 
   }
 
+  setScheduleType(type) {
+    console.log('type', type);
+    this.form.controls['type'].patchValue(type);
+    this.form.controls['type'].updateValueAndValidity();
+    if (type.name == 'TIMED') {
+      this.setDayByIndex(0)
+    }
+  }
+
   /**
    *  To set schedule type key globally for required field handling on UI
    * @param value
    */
   public setScheduleTypeKey(value: string) {
-    this.selectedScheduleTypeName = value;
+    //this.selectedScheduleTypeName = value;
     if (value !== undefined) {
-      return this.scheduleType.find(object => object.name === value).index;
+      return this.scheduleTypes.find(object => object.name === value).index;
     }
   }
 
@@ -107,21 +115,25 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   /**
    * getSelectedDay
    */
-  public getSelectedDay(index) {
-    let selectedDay;
-    if (index == null) {
-      selectedDay = 'None';
-    } else {
-      selectedDay = this.days[index - 1];
-    }
-    return selectedDay;
+  public setDayByIndex(index: number) {
+    // if day == null  
+    index = index ? index : 0;
+    const day = this.days.find(day => day.index == index);
+    this.form.controls['day'].patchValue(day);
+    this.form.controls['day'].updateValueAndValidity();
+    return day;
+  }
+
+  setDay(day) {
+    this.form.controls['day'].patchValue(day);
+    this.form.controls['day'].updateValueAndValidity();
   }
 
   /**
    * getSelectedDay
    */
   public getSelectedDayIndex(day) {
-    this.selectedDayName = day;
+    //this.selectedDayName = day;
     return this.days.indexOf(day) + 1;
   }
 
@@ -136,29 +148,28 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     this.schedulesService.getSchedule(id).
       subscribe(
         (schedule: Schedule) => {
-          if (schedule.type === 'TIMED') {
-            this.selectedScheduleTypeIndex = this.setScheduleTypeKey(schedule.type);
-            this.selectedDayName = this.getSelectedDay(schedule.day);
-          } else {
-            this.selectedScheduleTypeIndex = this.setScheduleTypeKey(schedule.type);
-          }
-
           const repeatTime = Utils.secondsToDhms(schedule.repeat);
           const time = Utils.secondsToDhms(schedule.time);
-
-          // used for enable / disable switch only
-          this.scheduleName = schedule.name.replace(' ', '');
-          // Fill form field values
-          console.log('type', this.setScheduleTypeKey(schedule.type));
+          // this.form = this.fb.group({
+          //   name: [schedule.name, [CustomValidator.nospaceValidator]],
+          //   type: [schedule.type, Validators.required],
+          //   repeatDay: [repeatTime.days, [Validators.min(0), Validators.max(365)]],
+          //   repeat: [repeatTime.time, Validators.required],
+          //   exclusive: [schedule.exclusive, Validators.required],
+          //   process_name: [schedule.processName],
+          //   day: [this.getSelectedDay(schedule.day), Validators.required],
+          //   time: [time.time, Validators.required],
+          //   enabled: [schedule.enabled, Validators.required]
+          // });
 
           this.form.patchValue({
             name: schedule.name,
-            type: this.setScheduleTypeKey(schedule.type),
+            type: this.scheduleTypes.find(t => t.name === schedule.type),
             repeatDay: repeatTime.days,
             repeat: repeatTime.time,
             exclusive: schedule.exclusive,
-            process_name: schedule.processName,
-            day: this.selectedDayName,
+            processName: schedule.processName,
+            day: schedule.type == 'TIMED' ? this.setDayByIndex(schedule.day) : 0,
             time: time.time,
             enabled: schedule.enabled
           });
@@ -175,6 +186,18 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  compareType(item, selected) {
+    return item?.name === selected?.name
+  }
+
+  compareDay(item, selected) {
+    return item?.name === selected?.name;
+  }
+
+  getScheduleType() {
+    return this.form?.controls['type']?.value?.name;
   }
 
   public toggleModal(isOpen: Boolean) {
@@ -194,7 +217,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   getRepeatTime() {
     let repeatTime = 0;
     // If schedule type is Interval
-    if (this.selectedScheduleTypeIndex === 2 || this.selectedScheduleTypeIndex === 3) {
+    if (this.getScheduleType() === 'TIMED' || this.getScheduleType() === 'INTERVAL') {
       repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
         this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
     }
@@ -219,40 +242,25 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       this.toggleModal(false);
       return false;
     }
-    let payload: Schedule;
-    if (this.schedule.type === 1) {
-      payload = this.difference(this.form.value, this.schedule);
-      console.log('diff', payload);
-    } else {
-      const repeatTime = this.getRepeatTime();
-      this.selectedScheduleTypeIndex = this.setScheduleTypeKey(this.selectedScheduleTypeName);
-      let time = 0;
-      let dayIndex = 0;
-      if (this.selectedScheduleTypeIndex === 2) {   // If Type is TIMED == 2
-        time = Utils.convertTimeToSec(this.form.get('time').value);
-        const dayValue = this.selectedDayName;
-        dayIndex = dayValue !== undefined && dayValue !== 'None' ? (this.days.indexOf(this.selectedDayName) + 1) : 0;
-        // difference.day = dayIndex;
-        // difference.time = time;
-      }
-      // difference.day = time;
-      // difference.time = dayIndex;
-      // difference.repeat = repeatTime;
-      // difference.type = this.selectedScheduleTypeIndex;
-      payload = {
-        name: this.form.get('name').value,
-        type: this.selectedScheduleTypeIndex,
-        repeat: repeatTime,
-        day: dayIndex,
-        time: time,
-        exclusive: this.form.get('exclusive').value,
-        enabled: this.form.get('enabled').value
-      };
+    let payload: Schedule = this.difference(this.form.value, this.schedule);
+
+    if ('type' in payload) {
+      payload.type = payload.type.index;
     }
 
+    if (Object.keys(payload).some(key => payload.hasOwnProperty(key))) {
+      payload.repeat = this.getRepeatTime();
+      delete payload.repeatDay;
+    }
 
+    if ('time' in payload) {
+      payload.time = Utils.convertTimeToSec(this.form.get('time').value);
+    }
 
-
+    if ('day' in payload) {
+      payload.day = payload?.day.index == 0 ? 'None' : payload?.day.index;
+    }
+    console.log('diff', payload);
     this.schedulesService.updateSchedule(this.childData.id, payload).
       subscribe(
         () => {
@@ -265,7 +273,11 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText);
+            this.notify.emit();
+            this.toggleModal(false);
           }
         });
   }
 }
+
+

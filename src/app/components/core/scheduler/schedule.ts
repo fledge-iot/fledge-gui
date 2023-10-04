@@ -4,6 +4,7 @@ export interface Schedule {
     processName?: string
     type: any
     repeat: number
+    repeatDay?: number
     time: number
     day: any
     exclusive: boolean
