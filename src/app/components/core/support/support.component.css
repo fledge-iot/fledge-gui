@@ -10,3 +10,7 @@
 .is-hovered {
   cursor: pointer !important;
 }
+
+.help-pad {
+  margin-right: 0.7rem;
+}

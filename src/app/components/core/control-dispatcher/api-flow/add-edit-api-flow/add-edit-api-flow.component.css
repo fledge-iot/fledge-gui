@@ -83,3 +83,7 @@ span.is-small {
     font-size: 0.7em;
     color: gray;
 }
+
+.execute-dropdown {
+    width: unset;
+}
