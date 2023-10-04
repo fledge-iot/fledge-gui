@@ -140,6 +140,7 @@
           "builder": "@cypress/schematic:cypress",
           "options": {
             "devServerTarget": "fledge:serve",
+            "browser": "chrome",
             "headless": true
           },
           "configurations": {

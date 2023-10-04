@@ -7,18 +7,14 @@ describe('Fledge gui', () => {
   let skipLogin: SkipLogin;
   let adminLogin: AdminLogin;
   let nonAdminLogin: NonAdminLogin;
-  let isSetupInstance = false;
 
   skipLogin = new SkipLogin();
   adminLogin = new AdminLogin();
   nonAdminLogin = new NonAdminLogin();
 
-  before(() => {
-    if (!isSetupInstance) {
-      skipLogin.navigateToHome();
-      skipLogin.setUpInstance();
-      isSetupInstance = true;
-    }
+  beforeEach(() => {
+    skipLogin.setUpInstance();
+    skipLogin.navigateToHome();
   });
 
   if (environment.AUTH_OPTIONAL === true) {
@@ -165,10 +161,6 @@ describe('Fledge gui', () => {
       skipLogin.isPingIntervalDropdownPresent()
     });
   } else {
-    beforeEach(() => {
-      skipLogin.navigateToHome();
-    })
-
     it('Should Display User Management for Admin', () => {
       skipLogin.loginPageInputTag()
       skipLogin.getLoginButton().then(result => {
