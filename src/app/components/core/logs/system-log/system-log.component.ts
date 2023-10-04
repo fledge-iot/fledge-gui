@@ -252,11 +252,11 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   setRoutePath() {
     let sourceSchedule: any = [...this.scheduleData].find((sch: any) => sch.name === this.source)
-    if (sourceSchedule.processName === 'south_c') {
+    if (sourceSchedule.processName.toLowerCase() === 'south_c') {
       this.routePath = '/south';
       this.showConfigButton = true;
     }
-    else if (sourceSchedule.processName === 'north_c') {
+    else if (sourceSchedule.processName.toLowerCase() === 'north_c') {
       this.routePath = '/north';
       this.showConfigButton = true;
     }
