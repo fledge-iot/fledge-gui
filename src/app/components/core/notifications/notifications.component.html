@@ -57,7 +57,7 @@
       <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
         (click)="openNotificationServiceModal()" id="refresh-check">
         <span class="icon">
-          <i class="fa fa-sm fa-cog" aria-hidden="true"></i>
+          <i class="fa fa-sm fa-cog" aria-hidden="true" title="Notification Service Configuration"></i>
         </span>
       </a>
       <span *ngIf="isNotificationServiceEnabled"
