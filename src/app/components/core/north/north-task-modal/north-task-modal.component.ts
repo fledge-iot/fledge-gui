@@ -152,13 +152,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
 
     if (this.isAddFilterWizard) {
-      this.getCategory();
+      this.getNorthData();
       this.isAddFilterWizard = false;
     }
 
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
-      this.getCategory();
+      this.getNorthData();
       this.notify.emit(false);
       modal.classList.add('is-active');
       return;
