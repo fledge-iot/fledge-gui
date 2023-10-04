@@ -5,7 +5,7 @@ import {
 import { FormControl } from '@angular/forms';
 import { cloneDeep, isEmpty } from 'lodash';
 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   AlertService, AssetsService,
   ConfigurationControlService,
@@ -22,8 +22,8 @@ import { MAX_INT_SIZE } from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Subject, forkJoin, of } from 'rxjs';
+import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
 
@@ -46,7 +46,6 @@ export class SouthServiceModalComponent implements OnInit {
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
 
-  @Input() service: Service;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigurationGroupComponent;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
@@ -61,6 +60,10 @@ export class SouthServiceModalComponent implements OnInit {
 
   // hold all api calls in stack
   apiCallsStack = [];
+
+  service: Service;
+  serviceName = '';
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private router: Router,
@@ -79,16 +82,43 @@ export class SouthServiceModalComponent implements OnInit {
     public rolesService: RolesService,
     private response: ResponseHandler,
     private toastService: ToastService,
-    public cDRef: ChangeDetectorRef) { }
+    private activatedRoute: ActivatedRoute,
+    public cDRef: ChangeDetectorRef) {
+    this.activatedRoute.paramMap.subscribe(params => {
+      this.serviceName = params.get('name');
+      if (this.serviceName) {
+        this.getSouthboundServices(true);
+      }
+    })
+  }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      this.toggleModal(false);
+      this.navToSouthPage();
     }
   }
 
   ngOnInit() { }
+
+  public getSouthboundServices(caching: boolean) {
+    this.servicesApiService.getSouthServices(caching)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          const services = data.services as Service[];
+          this.service = services.find(service => (service.name == this.serviceName));
+          // open modal window if service name is valid otherwise redirect to list page
+          this.service !== undefined ? this.toggleModal(true) : this.navToSouthPage()
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
 
   ngAfterViewChecked() {
     this.cDRef.detectChanges();
@@ -303,7 +333,7 @@ export class SouthServiceModalComponent implements OnInit {
         (data) => {
           this.ngProgress.done();
           this.alertService.success(data['result'], true);
-          this.toggleModal(false);
+          this.navToSouthPage();
           this.closeModal('delete-service-dialog');
           setTimeout(() => {
             this.notify.emit();
@@ -363,7 +393,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.isAddFilterWizard = this.applicationTagClicked;
       return;
     }
-    this.toggleModal(false);
+    this.navToSouthPage();
   }
 
   /**
@@ -426,7 +456,7 @@ export class SouthServiceModalComponent implements OnInit {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
     if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) //&& isEmpty(this.changedFilterConfig))
     {
-      this.toggleModal(false);
+      this.navToSouthPage();
     }
   }
 
@@ -446,7 +476,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
-        this.toggleModal(false);
+        this.navToSouthPage();
       }
     }
 
@@ -466,10 +496,14 @@ export class SouthServiceModalComponent implements OnInit {
           }
         });
         this.notify.emit();
-        this.toggleModal(false);
+        this.navToSouthPage();
         this.apiCallsStack = [];
       });
     }
+  }
+
+  navToSouthPage() {
+    this.router.navigate(['/south']);
   }
 
   checkFormState() {
