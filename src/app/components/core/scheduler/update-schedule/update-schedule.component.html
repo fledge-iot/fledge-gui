@@ -55,7 +55,7 @@
                 <label class="label is-small">Type</label>
                 <ng-container *ngIf="schedule?.type.name != 'STARTUP'; else staticType">
                   <div class="control">
-                    <ng-select #type [items]="scheduleTypes" bindLabel="name" bindValue="index" formControlName="type"
+                    <ng-select [items]="scheduleTypes" bindLabel="name" bindValue="index" formControlName="type"
                       [searchable]="false" [clearable]="false" labelForId="type" [compareWith]="compareType"
                       (change)="setScheduleType($event)">
                     </ng-select>
