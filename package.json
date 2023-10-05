@@ -13,6 +13,7 @@
     "purge": "git clean -fdx && yarn cache clean",
     "pree2e": "bash git-version",
     "e2e": "ng e2e",
+    "e2e:watch": "ng e2e --headless false --watch true",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
