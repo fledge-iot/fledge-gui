@@ -5,7 +5,7 @@
       <p class="modal-card-title title-name">
         {{ rolesService.hasEditPermissions() ? 'Update Schedule' : 'View Schedule'}}
       </p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" (click)="navToSchedulesPage()"></button>
     </header>
     <section class="modal-card-body">
       <form [formGroup]="form" novalidate>
@@ -15,7 +15,7 @@
               <div class="field">
                 <div class="form-group">
                   <label class="label is-small">Name</label>
-                  <ng-container *ngIf="this.schedule?.type.name != 'STARTUP'; else staticName">
+                  <ng-container *ngIf="schedule?.type.name != 'STARTUP'; else staticName">
                     <p class="control is-fullwidth">
                       <input type="text" class="input is-small" formControlName="name" placeholder="name" required
                         trim="blur" title="No single quotes and double quotes!"
@@ -53,7 +53,7 @@
             <div class="column">
               <div class="field">
                 <label class="label is-small">Type</label>
-                <ng-container *ngIf="this.schedule?.type.name != 'STARTUP'; else staticType">
+                <ng-container *ngIf="schedule?.type.name != 'STARTUP'; else staticType">
                   <div class="control">
                     <ng-select #type [items]="scheduleTypes" bindLabel="name" bindValue="index" formControlName="type"
                       [searchable]="false" [clearable]="false" labelForId="type" [compareWith]="compareType"
@@ -63,7 +63,7 @@
                 </ng-container>
                 <ng-template #staticType>
                   <div class="control">
-                    <input type="text" class="input is-small is-static" [value]="getScheduleType()" readonly />
+                    <input type="text" class="input is-small is-static" [value]="scheduleType()" readonly />
                   </div>
                 </ng-template>
               </div>
@@ -78,7 +78,7 @@
               </div>
             </div>
           </div>
-          <div class="columns is-mobile" *ngIf="getScheduleType() == 'TIMED'">
+          <div class="columns is-mobile" *ngIf="scheduleType() == 'TIMED'">
             <!-- Show Day & Time field for "Timed" type schedule -->
             <div class="column">
               <div class="field">
@@ -109,7 +109,7 @@
               </div>
             </div>
           </div>
-          <div class="columns" *ngIf="getScheduleType() == 'TIMED' || getScheduleType() == 'INTERVAL'">
+          <div class="columns" *ngIf="scheduleType() == 'TIMED' || scheduleType() == 'INTERVAL'">
             <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule -->
             <div class="column">
               <div class="field">
@@ -237,9 +237,10 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button type="button" id="cancel" class="button is-small" (click)="toggleModal(false)">Cancel</button>
+      <button type="button" id="cancel" class="button is-small" (click)="navToSchedulesPage()">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
-        [disabled]="form?.invalid" (click)="form?.valid && updateSchedule()">Save</button>
+        [disabled]="form?.invalid || (!form.dirty && !form.touched)"
+        (click)="form?.valid && updateSchedule()">Save</button>
     </footer>
   </div>
 </div>

@@ -15,6 +15,11 @@ const routes: Routes = [
   {
     path: '',
     component: ListSchedulesComponent
+  },
+
+  {
+    path: ':id',
+    component: UpdateScheduleComponent
   }
 ];
 

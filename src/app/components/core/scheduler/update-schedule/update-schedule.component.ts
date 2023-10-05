@@ -1,40 +1,31 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, HostListener, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Component, EventEmitter, OnInit, Output, HostListener } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { AlertService, RolesService, SchedulesService } from '../../../../services';
-import Utils, { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
-import { cloneDeep, differenceWith, isEqual, transform, isObject } from 'lodash';
+import Utils, { QUOTATION_VALIDATION_PATTERN, weekDays } from '../../../../utils';
+import { cloneDeep } from 'lodash';
 import { Schedule } from '../schedule';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-update-schedule',
   templateUrl: './update-schedule.component.html',
   styleUrls: ['./update-schedule.component.css']
 })
-export class UpdateScheduleComponent implements OnInit, OnChanges {
-  // Default selected schedule type is STARTUP = 1
-  //public selectedScheduleTypeIndex: Number = 1;
-  //public selectedScheduleTypeName: string;
-  // Default selected day index is MONDAY = 1
-  //public selectedDayIndex: Number = 1;
-  //public selectedDayName: string;
-
-  //public scheduleProcess = [];
+export class UpdateScheduleComponent implements OnInit {
   public scheduleTypes = [];
   public days = [];
-  //public scheduleName: string;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
-
-
-  @Input() childData: { id: string, schedule_process: string[], schedule_type: any, day: string[] };
-  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to verify time format 00:00:00
   form: FormGroup;
 
   schedule: Schedule;
+  scheduleId: string;
 
   constructor(
+    public activatedRoute: ActivatedRoute,
+    public router: Router,
     private schedulesService: SchedulesService,
     public fb: FormBuilder,
     private alertService: AlertService,
@@ -50,44 +41,49 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
       time: [0, Validators.required],
       enabled: [false, Validators.required]
     });
+
+    this.activatedRoute.paramMap.subscribe(params => {
+      this.scheduleId = params.get('id');
+      if (this.scheduleId) {
+        this.getScheduleType();
+        this.getWeekDays();
+        this.getSchedule(this.scheduleId);
+      }
+    })
   }
 
   ngOnInit() { }
 
+  public getWeekDays() {
+    // convert enum to array;
+    const days = Object.keys(weekDays).map(key => weekDays[key]).filter(value => typeof value === 'string') as string[];
+    this.days = days.map((day, index) => (day == 'None' ? { index: 0, name: day } : { index: index, name: day }));
+  }
+
+  public getScheduleType(): void {
+    this.schedulesService.getScheduleType().
+      subscribe(
+        (data) => {
+          this.scheduleTypes = data['scheduleType'];
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText, true);
+          }
+        });
+  }
+
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.toggleModal(false);
+    this.navToSchedulesPage();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['childData']) {
-      this.scheduleTypes = this.childData.schedule_type;
-      this.days = this.childData.day.map((day, index) => (day == 'None' ? { index: 0, name: day } : { index: index + 1, name: day }));
-      console.log(this.days);
-    }
-    this.getSchedule(this.childData.id);
-  }
-
-  ngAfterViewInit() {
-
-  }
-
-  setScheduleType(type) {
-    console.log('type', type);
+  setScheduleType(type: any) {
     this.form.controls['type'].patchValue(type);
     this.form.controls['type'].updateValueAndValidity();
     if (type.name == 'TIMED') {
       this.setDayByIndex(0)
-    }
-  }
-
-  /**
-   *  To set schedule type key globally for required field handling on UI
-   * @param value
-   */
-  public setScheduleTypeKey(value: string) {
-    //this.selectedScheduleTypeName = value;
-    if (value !== undefined) {
-      return this.scheduleTypes.find(object => object.name === value).index;
     }
   }
 
@@ -112,29 +108,19 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     }
   }
 
-  /**
-   * getSelectedDay
-   */
   public setDayByIndex(index: number) {
-    // if day == null  
-    index = index ? index : 0;
     const day = this.days.find(day => day.index == index);
     this.form.controls['day'].patchValue(day);
     this.form.controls['day'].updateValueAndValidity();
+    // set default time 
+    this.form.controls['time'].patchValue('00:00:01');
+    this.form.controls['time'].updateValueAndValidity();
     return day;
   }
 
-  setDay(day) {
+  setDay(day: string) {
     this.form.controls['day'].patchValue(day);
     this.form.controls['day'].updateValueAndValidity();
-  }
-
-  /**
-   * getSelectedDay
-   */
-  public getSelectedDayIndex(day) {
-    //this.selectedDayName = day;
-    return this.days.indexOf(day) + 1;
   }
 
   /**
@@ -142,26 +128,11 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
    * @param id to get schedule
    */
   public getSchedule(id: string): void {
-    if (id === undefined) {
-      return;
-    }
     this.schedulesService.getSchedule(id).
       subscribe(
         (schedule: Schedule) => {
           const repeatTime = Utils.secondsToDhms(schedule.repeat);
           const time = Utils.secondsToDhms(schedule.time);
-          // this.form = this.fb.group({
-          //   name: [schedule.name, [CustomValidator.nospaceValidator]],
-          //   type: [schedule.type, Validators.required],
-          //   repeatDay: [repeatTime.days, [Validators.min(0), Validators.max(365)]],
-          //   repeat: [repeatTime.time, Validators.required],
-          //   exclusive: [schedule.exclusive, Validators.required],
-          //   process_name: [schedule.processName],
-          //   day: [this.getSelectedDay(schedule.day), Validators.required],
-          //   time: [time.time, Validators.required],
-          //   enabled: [schedule.enabled, Validators.required]
-          // });
-
           this.form.patchValue({
             name: schedule.name,
             type: this.scheduleTypes.find(t => t.name === schedule.type),
@@ -175,16 +146,15 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
           });
 
           this.schedule = cloneDeep(this.form.getRawValue());
-          console.log('schedule', this.schedule);
-          console.log('form', this.form.value);
-
+          this.toggleModal(true);
         },
         error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
+            this.alertService.error(error.statusText, true);
           }
+          this.navToSchedulesPage();
         });
   }
 
@@ -196,7 +166,7 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     return item?.name === selected?.name;
   }
 
-  getScheduleType() {
+  scheduleType() {
     return this.form?.controls['type']?.value?.name;
   }
 
@@ -217,32 +187,19 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
   getRepeatTime() {
     let repeatTime = 0;
     // If schedule type is Interval
-    if (this.getScheduleType() === 'TIMED' || this.getScheduleType() === 'INTERVAL') {
+    if (this.scheduleType() === 'TIMED' || this.scheduleType() === 'INTERVAL') {
       repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
         this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
     }
     return repeatTime;
   }
 
-  difference(currentObj, baseObj) {
-    function changes(current, base) {
-      return transform(current, function (result, value, key) {
-        if (!isEqual(value, base[key])) {
-          result[key] = (isObject(value) && isObject(base[key])) ? changes(value, base[key]) : value;
-        }
-      });
-    }
-    return changes(currentObj, baseObj);
-  }
-
   public updateSchedule() {
-    console.log('form', this.form.value);
-    console.log('child', this.schedule);
     if (!this.form.dirty && !this.form.touched) {
-      this.toggleModal(false);
+      this.navToSchedulesPage();
       return false;
     }
-    let payload: Schedule = this.difference(this.form.value, this.schedule);
+    let payload: Schedule = Utils.difference(this.form.value, this.schedule);
 
     if ('type' in payload) {
       payload.type = payload.type.index;
@@ -260,23 +217,25 @@ export class UpdateScheduleComponent implements OnInit, OnChanges {
     if ('day' in payload) {
       payload.day = payload?.day.index == 0 ? 'None' : payload?.day.index;
     }
-    console.log('diff', payload);
-    this.schedulesService.updateSchedule(this.childData.id, payload).
+
+    this.schedulesService.updateSchedule(this.scheduleId, payload).
       subscribe(
         () => {
-          this.alertService.success('Schedule updated successfully.');
-          this.notify.emit();
-          this.toggleModal(false);
+          this.alertService.success('Schedule updated successfully.', true);
+          this.navToSchedulesPage();
         },
         error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
-            this.notify.emit();
-            this.toggleModal(false);
+            this.alertService.error(error.statusText, true);
+            this.navToSchedulesPage();
           }
         });
+  }
+
+  navToSchedulesPage() {
+    this.router.navigate(['schedules']);
   }
 }
 

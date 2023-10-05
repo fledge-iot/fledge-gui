@@ -1,4 +1,6 @@
 import colorLib from '@kurkle/color';
+import { isEqual, transform, isObject } from 'lodash';
+
 
 export const POLLING_INTERVAL = 5000;   // milliseconds
 export const MAX_INT_SIZE = 2147483647;
@@ -36,6 +38,18 @@ const NAMED_COLORS = [
   CHART_COLORS.olive,
   CHART_COLORS.cyan,
 ];
+
+export enum weekDays {
+  None = 0,
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6,
+  Sunday = 7
+}
+
 
 export default class Utils {
 
@@ -128,6 +142,23 @@ export default class Utils {
     const green = Math.floor(Math.random() * 256 / 2);
     const blue = Math.floor(Math.random() * 256 / 2);
     return `rgb(${red},${green},${blue})`;
+  }
+
+  /**
+   * Find difference between objects
+   * @param currentObj
+   * @param baseObj 
+   * @returns difference 
+   */
+  public static difference(currentObj, baseObj) {
+    function changes(current, base) {
+      return transform(current, function (result, value, key) {
+        if (!isEqual(value, base[key])) {
+          result[key] = (isObject(value) && isObject(base[key])) ? changes(value, base[key]) : value;
+        }
+      });
+    }
+    return changes(currentObj, baseObj);
   }
 
 }
