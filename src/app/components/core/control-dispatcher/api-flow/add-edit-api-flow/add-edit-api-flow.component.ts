@@ -219,16 +219,8 @@ export class AddEditAPIFlowComponent implements OnInit {
       let constants = {};
       data.variables.forEach(v => { variables[v.vName] = v.vValue });
       data.constants.forEach(c => { constants[c.cName] = c.cValue });
-      if (Object.keys(variables).length !== 0) {
-          payload.variables = variables;
-      } else {
-          delete payload.variables;
-      }
-      if (Object.keys(constants).length !== 0) {
-          payload.constants = constants;
-      } else {
-          delete payload.constants;
-      }
+      payload.variables = variables;
+      payload.constants = constants;
 
       if (this.editMode) {
           this.updateAPIFlow();
