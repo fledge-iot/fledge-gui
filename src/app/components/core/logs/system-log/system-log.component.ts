@@ -5,6 +5,7 @@ import { takeWhile, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/o
 import { sortBy } from 'lodash';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../../services';
 import { POLLING_INTERVAL, DEBOUNCE_TIME } from '../../../../utils';
+import * as bulmaQuickview from './../../../../../../node_modules/bulma-quickview/dist/js/bulma-quickview.min.js'
 
 @Component({
   selector: 'app-system-log',
@@ -263,6 +264,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     else {
       this.showConfigButton = false;
     }
+    var quickviews = bulmaQuickview.attach();
   }
 
   navToInstanceConfiguration(){

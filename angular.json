@@ -38,11 +38,13 @@
               "./node_modules/@circlon/angular-tree-component/css/angular-tree-component.css",
               "./node_modules/animate.css/animate.css",
               "./node_modules/@ng-select/ng-select/themes/default.theme.css",
+              "./node_modules/bulma-quickview/dist/css/bulma-quickview.min.css",
               "src/styles.css"
             ],
             "scripts": [
               "./node_modules/plotly.js/dist/plotly.js",
-              "./node_modules/bulma-toast/dist/bulma-toast.min.js"
+              "./node_modules/bulma-toast/dist/bulma-toast.min.js",
+              "./node_modules/bulma-quickview/dist/js/bulma-quickview.min.js"
             ],
             "extraWebpackConfig": "webpack.config.js",
             "commonChunk": false
