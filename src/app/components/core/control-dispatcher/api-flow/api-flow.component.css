@@ -33,3 +33,7 @@
 #confirmation-execute-dialog .modal-card-body {
     min-height: 22vh;
 }
+
+.field-body .field {
+    margin-bottom: 5px;
+}
