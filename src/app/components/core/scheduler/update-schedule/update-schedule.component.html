@@ -173,8 +173,8 @@
               <div class="field">
                 <label class="label is-small">Type</label>
                 <div class="control">
-                  <input type="text" class="input is-small is-static" formControlName="type"
-                    [value]="selectedScheduleTypeName" readonly />
+                  <input type="text" class="input is-small is-static" [value]="form.get('type')?.value?.name"
+                    readonly />
                 </div>
               </div>
             </div>
@@ -187,7 +187,7 @@
               </div>
             </div>
           </div>
-          <div *ngIf="selectedScheduleTypeIndex == 2" class="columns is-mobile">
+          <div *ngIf="scheduleType() == 'TIMED'" class="columns is-mobile">
             <!-- Show Day & Time field for "Timed" type schedule -->
             <div class="column">
               <div class="field">
@@ -197,7 +197,7 @@
                   </span>
                 </label>
                 <div class="control">
-                  <input type="text" class="input is-small is-static" [value]="selectedDayName" readonly />
+                  <input type="text" class="input is-small is-static" [value]="form.get('day')?.value?.name" readonly />
                 </div>
               </div>
             </div>
@@ -205,12 +205,12 @@
               <div class="field">
                 <label class="label is-small">Time</label>
                 <p class="control is-fullwidth">
-                  <input class="input is-small is-static" type='text' formControlName="time" readonly>
+                  <input class="input is-small is-static" type='text' [value]="form.get('time')?.value" readonly>
                 </p>
               </div>
             </div>
           </div>
-          <div *ngIf="selectedScheduleTypeIndex == 2 || selectedScheduleTypeIndex == 3" class="columns">
+          <div *ngIf="scheduleType() == 'TIMED' || scheduleType() == 'INTERVAL'" class="columns">
             <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule -->
             <div class="column">
               <div class="field">
