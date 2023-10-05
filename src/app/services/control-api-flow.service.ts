@@ -18,7 +18,7 @@ export class ControlAPIFlowService {
   }
 
   getAPIFlow(name) {
-    return this.http.get(`${this.CONTROL_URL}/manage/${name}`).pipe(
+    return this.http.get(`${this.CONTROL_URL}/manage/${encodeURIComponent(name)}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
@@ -30,19 +30,19 @@ export class ControlAPIFlowService {
   }
 
   updateAPIFlow(name, payload: any) {
-    return this.http.put(`${this.CONTROL_URL}/manage/${name}`, payload).pipe(
+    return this.http.put(`${this.CONTROL_URL}/manage/${encodeURIComponent(name)}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
   deleteAPIFlow(name) {
-    return this.http.delete(`${this.CONTROL_URL}/manage/${name}`).pipe(
+    return this.http.delete(`${this.CONTROL_URL}/manage/${encodeURIComponent(name)}`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
 
   requestAPIFlow(name, payload: any) {
-    return this.http.put(`${this.CONTROL_URL}/request/${name}`, payload).pipe(
+    return this.http.put(`${this.CONTROL_URL}/request/${encodeURIComponent(name)}`, payload).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }
