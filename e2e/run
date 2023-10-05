@@ -3,5 +3,5 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y libgtk2.0-0 libgtk-3-0 libgbm
 
 yarn && yarn upgrade; 
 
-ELECTRON_RUN_AS_NODE=1; yarn e2e;
+ELECTRON_RUN_AS_NODE=1; yarn e2e --browser chrome;
 #Xvfb :1 -screen 0 1280x800x24 & export DISPLAY=:1; yarn e2e

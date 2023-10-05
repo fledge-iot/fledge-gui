@@ -78,3 +78,8 @@ span.is-small {
 [hidden] {
     display: none !important;
 }
+
+.allow-list-text {
+    font-size: 0.7em;
+    color: gray;
+}

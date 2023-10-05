@@ -3,7 +3,7 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <span *ngIf="isNotificationServiceAvailable" class="modal-card-title is-size-6">{{notificationServiceName}}
-        <p class="help has-text-grey ctrl-pipeline">Notification Service</p>
+        <p class="help has-text-grey modal-subtitle">Notification Service</p>
       </span>
       <span *ngIf="!isNotificationServiceAvailable" class="modal-card-title is-size-6">Notification Service</span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
