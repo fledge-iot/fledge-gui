@@ -109,6 +109,8 @@ export class UpdateScheduleComponent implements OnInit {
   }
 
   public setDayByIndex(index: number) {
+    // if day is null
+    index = index ? index : 0;
     const day = this.days.find(day => day.index == index);
     this.form.controls['day'].patchValue(day);
     this.form.controls['day'].updateValueAndValidity();
