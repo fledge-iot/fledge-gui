@@ -202,7 +202,7 @@ export class UpdateScheduleComponent implements OnInit {
     }
 
     if ('day' in payload) {
-      payload.day = payload?.day.index == 0 ? 'None' : payload?.day.index;
+      payload.day = payload?.day.index == 0 ? '' : payload?.day.index;
     }
 
     this.schedulesService.updateSchedule(this.scheduleId, payload).
