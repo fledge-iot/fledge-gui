@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TreeComponent } from '@circlon/angular-tree-component';
 import { isEmpty, cloneDeep } from 'lodash';
 
@@ -21,8 +21,7 @@ export class ConfigurationManagerComponent implements OnInit {
   nodes: any[] = [];
   options = {};
 
-  @ViewChild(TreeComponent, { static: true })
-  private tree: TreeComponent;
+  @ViewChild(TreeComponent, { static: true }) private tree: TreeComponent;
   changedConfig: any;
   categoryDataCopy: any;
 
@@ -31,8 +30,8 @@ export class ConfigurationManagerComponent implements OnInit {
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private configurationControlService: ConfigurationControlService,
-    private fileUploaderService: FileUploaderService
-  ) {}
+    private fileUploaderService: FileUploaderService,
+  ) { }
 
   ngOnInit() {
     this.getTreeStructure();
@@ -41,53 +40,17 @@ export class ConfigurationManagerComponent implements OnInit {
   public getTreeStructure() {
     /** request started */
     this.ngProgress.start();
-    this.tree.treeModel.nodes = [];
-
-    let _nodes = [];
     this.configService.getRootCategories().
       subscribe(
-        (data) => {
+        (data: any) => {
+          this.categoryData = data.categories;
+          // filter south, north & notification categories
+          this.categoryData = this.categoryData.filter((n: any) => {
+            return !["SOUTH", "NORTH", "NOTIFICATIONS"].includes(n.key.toUpperCase());
+          });
+          this.nodes = this.updateIdAndNameInTreeObject(this.categoryData)
           /** request completed */
           this.ngProgress.done();
-
-          // Check if there is any category
-          if (data['categories'].length === 0) {
-            this.isChild = false;
-            this.categoryData = [];
-            return;
-          }
-          this.isChild = true;
-          data['categories'].forEach(element => {
-            _nodes.push({
-              id: element.key,
-              name: (element.hasOwnProperty('displayName')) ? element.displayName : element.description,
-              description: element.description,
-              hasChildren: (element.children.length > 0) ? true : false,
-              children: this.addNameKey(element.children)
-            });
-          });
-
-          // If category group 'General' exists, show it on index 0
-          _nodes.forEach((_n, i) => {
-            if (_nodes[i]['id'].toUpperCase() === 'GENERAL') {
-              _nodes.unshift(_nodes.splice(i, 1)[0]);
-            }
-          });
-          _nodes = _nodes.filter(n => {
-            return !["SOUTH", "NORTH", "NOTIFICATIONS"].includes(n['id'].toUpperCase());
-          });
-
-          this.nodes = _nodes;
-
-          const firstChild = _nodes[0]['children'][0];
-          
-          this.getCategory(firstChild.key, firstChild.description);
-          
-          this.tree.treeModel.update();
-          if (this.tree.treeModel.getFirstRoot()) {  
-            const firstRootChild = this.tree.treeModel.getNodeById(firstChild.id);
-            firstRootChild.setActiveAndVisible();
-          }
         },
         error => {
           /** request completed */
@@ -95,31 +58,52 @@ export class ConfigurationManagerComponent implements OnInit {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
+            this.alertService.error(error.statusText, true);
           }
         });
   }
 
-  addNameKey(childrenData) {
-    Object.keys(childrenData).forEach((i) => {
-      childrenData[i]['name'] = childrenData[i]['displayName'];
-      childrenData[i]['id'] = childrenData[i]['key'];
-      delete childrenData[i]['displayName'];
-      if (childrenData[i]['children']) {
-        this.addNameKey(childrenData[i]['children']);
-      }  
-    });
-    return childrenData;
+  updateIdAndNameInTreeObject(tree: any) {
+    // Iterate through the array
+    tree.forEach((node: any) => {
+      // add key as Id and displayName/description as a name in the tree object
+      node.id = node.key;
+      node.name = (node.hasOwnProperty('displayName')) ? node.displayName : node.description;
+      node.hasChildren = false;
+      // If the object has 'children' property recurse 
+      if (Array.isArray(node.children) && node.children.length > 0) {
+        node.hasChildren = true;
+        this.updateIdAndNameInTreeObject(node.children);
+      }
+    })
+    return tree;
   }
 
-  public onNodeActive(event) {
-    // In case of root node, just expand the node and return
-    if (event.node.parent.parent === null) {
-      const node = this.tree.treeModel.getNodeById(event.node.data.id);
-      node.expand();
-      return;
+  onTreeLoad(tree: TreeComponent): void {
+    const child = tree.treeModel.nodes[0]?.children[0];
+    if (child) {
+      const firstRootChild = tree.treeModel.getNodeById(child.id);
+      firstRootChild.setActiveAndVisible();
+      this.getCategory(firstRootChild.data.id, firstRootChild.data.description);
     }
-    this.getCategory(event.node.data.id, event.node.data.description);
+  }
+
+  public onNodeActive(tree: TreeComponent) {
+    const rootId = tree.treeModel.focusedNodeId?.toString();
+    // In case of root node is in ['Advanced', 'General', 'Utilities'], 
+    // Expand the group and select first child
+    if (['Advanced', 'General', 'Utilities'].includes(rootId)) {
+      if (tree?.treeModel) {
+        const nodes = tree.treeModel.nodes;
+        const node = nodes.find(c => c.id == rootId)?.children[0];
+        const firstChild = tree.treeModel.getNodeById(node.id);
+        firstChild.setActiveAndVisible();
+        this.getCategory(node.id, node.description);
+      }
+    } else {
+      const child = tree.treeModel.getNodeById(rootId);
+      this.getCategory(rootId, child.data.description);
+    }
   }
 
   private getCategory(categoryKey: string, categoryDesc: string): void {
@@ -141,7 +125,7 @@ export class ConfigurationManagerComponent implements OnInit {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
+            this.alertService.error(error.statusText, true);
           }
         });
   }
@@ -197,7 +181,7 @@ export class ConfigurationManagerComponent implements OnInit {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
+            this.alertService.error(error.statusText, true);
           }
         });
   }
@@ -218,15 +202,5 @@ export class ConfigurationManagerComponent implements OnInit {
    */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-  }
-
-
-  /**
-   * Check if object has a specific key
-   * @param o Object
-   * @param name key name
-   */
-  public hasProperty(o, name) {
-    return o.hasOwnProperty(name);
   }
 }

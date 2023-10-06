@@ -6,7 +6,8 @@
         <div id="root-children" class="panel-block" [ngClass]="{'empty-tree': !isChild}">
           <div class="columns">
             <div class="column is-10">
-              <tree-root #tree [nodes]="nodes" [options]="options" (activate)="onNodeActive($event)"></tree-root>
+              <tree-root *ngIf="nodes" #tree [nodes]="nodes" [options]="options" (click)="onNodeActive(tree)"
+                (updateData)="onTreeLoad($event)"></tree-root>
             </div>
             <div class="column">
               <button class="button is-small category-tree" id="refresh-tree" (click)="getTreeStructure()">
@@ -26,7 +27,8 @@
             <div class="media">
               <div class="media-content">
                 <p class="subtitle is-6">{{ category.description }}
-                  <button class="button is-small" id="refresh-check" (click)="refreshCategory(category.name, category.description)">
+                  <button class="button is-small" id="refresh-check"
+                    (click)="refreshCategory(category.name, category.description)">
                     <span class="icon is-small">
                       <i class="fa fa-sm fa-sync" title="Reload"></i>
                     </span>
@@ -38,7 +40,7 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <app-configuration-group *ngIf="category" [category]="category" [from]="'config-manager'"
+            <app-configuration-group *ngIf="category?.config" [category]="category" [from]="'config-manager'"
               (changedConfigEvent)="getChangedConfig($event, category)" (formStatusEvent)="validConfigForm = $event">
             </app-configuration-group>
             <div class="columns" *ngIf="rolesService.hasEditPermissions()">
