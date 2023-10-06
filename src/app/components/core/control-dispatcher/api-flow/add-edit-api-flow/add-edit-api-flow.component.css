@@ -87,3 +87,9 @@ span.is-small {
 #ed-dropdown {
     width: unset;
 }
+
+@media screen and (min-width: 769px) {
+    .execute-field-body {
+        padding-top: 1rem;
+    }
+}

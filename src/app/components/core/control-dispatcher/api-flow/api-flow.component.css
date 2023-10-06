@@ -6,8 +6,10 @@
     vertical-align: middle;
 }
 
-.api-card-content {
-    overflow-y: visible;
+@media only screen and (min-width: 768px) {
+    .api-card-content {
+        overflow: visible;
+    }
 }
 
 .ep-name {
@@ -36,4 +38,10 @@
 
 .field-body .field {
     margin-bottom: 5px;
+}
+
+@media screen and (min-width: 769px) {
+    .execute-field-body {
+        padding-top: 1rem;
+    }
 }
