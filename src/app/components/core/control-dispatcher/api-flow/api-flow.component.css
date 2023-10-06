@@ -7,11 +7,11 @@
 }
 
 .api-card-content {
-    overflow: visible;
+    overflow-y: visible;
 }
 
 .ep-name {
-    height:1.5rem
+    height: 2rem
 }
 
 .cell {
