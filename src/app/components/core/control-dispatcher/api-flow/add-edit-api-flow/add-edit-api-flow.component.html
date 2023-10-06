@@ -420,7 +420,7 @@
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth" (click)="checkAndRequestAPIFlow()">Execute</a>
                                     </p>
-                                    <div *ngIf="rolesService.hasControlAccess()" id="ed-dropdown" class="dropdown is-right execute-dropdown">                                      
+                                    <div *ngIf="rolesService.hasControlAccess()" id="ed-dropdown" class="dropdown is-right">                       
                                         <div class="dropdown-trigger">
                                             <button class="button is-small small-btn" aria-haspopup="true"
                                             aria-controls="dropdown-menu" (click)="toggleDropdown('ed-dropdown')">
@@ -482,13 +482,10 @@
                             <ng-container formArrayName="variables">                    
                                 <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                                     <div class="field is-horizontal">
-                                        <div *ngIf="i > 0" class="field-label">
-                                            <label class="label"></label>
-                                        </div>
                                         <div class="field-body columns" [formGroupName]="i">
                                             <div class="column is-4">
                                                 <div class="control">
-                                                    <label class="label label-name has-text-left">{{v.value.vName}}</label>
+                                                    <label class="label has-text-left pt-1">{{v.value.vName}}</label>
                                                 </div>
                                             </div>
                                             <div class="column is-4">

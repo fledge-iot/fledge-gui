@@ -84,6 +84,6 @@ span.is-small {
     color: gray;
 }
 
-.execute-dropdown {
+#ed-dropdown {
     width: unset;
 }
