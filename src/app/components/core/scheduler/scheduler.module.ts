@@ -10,6 +10,7 @@ import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { ScheduleTypeResolver } from './update-schedule/schedule-type.resolver';
 
 const routes: Routes = [
   {
@@ -19,7 +20,10 @@ const routes: Routes = [
 
   {
     path: ':id',
-    component: UpdateScheduleComponent
+    component: UpdateScheduleComponent,
+    resolve: {
+      data: ScheduleTypeResolver
+    }
   }
 ];
 

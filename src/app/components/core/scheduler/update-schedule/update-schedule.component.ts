@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CustomValidator } from '../../../../directives/custom-validator';
@@ -42,10 +42,10 @@ export class UpdateScheduleComponent implements OnInit {
       enabled: [false, Validators.required]
     });
 
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.scheduleId = params.get('id');
+    this.activatedRoute.data.subscribe(result => {
+      this.scheduleId = result.data.id;
+      this.scheduleTypes = result.data.scheduleTypes;
       if (this.scheduleId) {
-        this.getScheduleType();
         this.getWeekDays();
         this.getSchedule(this.scheduleId);
       }
@@ -58,21 +58,6 @@ export class UpdateScheduleComponent implements OnInit {
     // convert enum to array;
     const days = Object.keys(weekDays).map(key => weekDays[key]).filter(value => typeof value === 'string') as string[];
     this.days = days.map((day, index) => (day == 'None' ? { index: 0, name: day } : { index: index, name: day }));
-  }
-
-  public getScheduleType(): void {
-    this.schedulesService.getScheduleType().
-      subscribe(
-        (data) => {
-          this.scheduleTypes = data['scheduleType'];
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText, true);
-          }
-        });
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -130,14 +115,14 @@ export class UpdateScheduleComponent implements OnInit {
    * @param id to get schedule
    */
   public getSchedule(id: string): void {
-    this.schedulesService.getSchedule(id).
-      subscribe(
+    this.schedulesService.getSchedule(id)
+      .subscribe(
         (schedule: Schedule) => {
           const repeatTime = Utils.secondsToDhms(schedule.repeat);
           const time = Utils.secondsToDhms(schedule.time);
           this.form.patchValue({
             name: schedule.name,
-            type: this.scheduleTypes.find(t => t.name === schedule.type),
+            type: this.scheduleTypes?.find(t => t.name === schedule.type),
             repeatDay: repeatTime.days,
             repeat: repeatTime.time,
             exclusive: schedule.exclusive,
