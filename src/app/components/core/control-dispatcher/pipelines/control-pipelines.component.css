@@ -41,3 +41,7 @@ span.is-small {
 .fa-plus {
     font-size: .65em;
 }
+
+.btn-margin {
+    margin: 17px 7px;
+}

@@ -18,11 +18,10 @@
   <div class="card">
     <div class="card-content step-content">
       <form #pipelineForm="ngForm" [hidden]="isAddFilterWizard">
-        <!-- TODO: FOGL-7803
-          <span (click)="goToLink()"
-          class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+        <span (click)="goToLink('control-pipelines')"
+          class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered pl-3 pb-3 help-icon" data-tooltip="Help">
           <i class="far fa-question-circle"></i>
-        </span> -->
+        </span>
         <div class="column">
           <div [hidden]="editMode" class="field is-horizontal">
             <div class="field-label">
