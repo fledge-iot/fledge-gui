@@ -92,11 +92,11 @@
         <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
     </header>
     <section class="modal-card-body">
-        <div class="columns">
+        <div class="columns is-mobile">
             <div class="column is-1"></div>
             <div class="column py-5">
                 <form [formGroup]="apiFlowForm">
-                    <div class="field is-horizontal pt-4">
+                    <div class="field is-horizontal execute-field-body">
                         <div class="field-body">
                             <div class="field">
                                 <ng-container formArrayName="variables">
@@ -110,7 +110,7 @@
                                             <div class="field-body columns" [formGroupName]="i">
                                                 <div class="column is-4">
                                                     <div class="control">
-                                                        <label class="label label-name has-text-left">{{v.value.vName}}</label>
+                                                        <label class="label has-text-left pt-1">{{v.value.vName}}</label>
                                                     </div>
                                                 </div>
                                                 <div class="column is-4">

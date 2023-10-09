@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
+
 import { APIFlow, User } from '../../../../../../../src/app/models';
 
 import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
@@ -71,6 +73,7 @@ export class AddEditAPIFlowComponent implements OnInit {
         public sharedService: SharedService,
         private userService: UserService,
         private controlUtilsService: ControlUtilsService,
+        private titlecasePipe: TitleCasePipe,
         private router: Router) {
             this.apiFlowForm = this.fb.group({
                 name: ['', Validators.required],
@@ -180,12 +183,13 @@ export class AddEditAPIFlowComponent implements OnInit {
             if (data.type === 'operation') {
               this.apiFlowForm.get('operation_name').setValue(data.operation_name);
             }
-
-            if (this.af.destination !== 'broadcast') {
-                this.selectedDestinationName = this.af[this.af.destination];
+            
+            this.getDestinationNames({'name': this.titlecasePipe.transform(this.af.destination)});
+            if (this.af.destination.toLowerCase() !== 'broadcast') {
+                this.selectedDestinationName = this.af[this.af.destination.toLowerCase()];
             }
             this.selectedType = data.type;
-            
+                     
             this.fillParameters(data.variables, 'variables');
             this.fillParameters(data.constants, 'constants');
           }, error => {
@@ -219,16 +223,8 @@ export class AddEditAPIFlowComponent implements OnInit {
       let constants = {};
       data.variables.forEach(v => { variables[v.vName] = v.vValue });
       data.constants.forEach(c => { constants[c.cName] = c.cValue });
-      if (Object.keys(variables).length !== 0) {
-          payload.variables = variables;
-      } else {
-          delete payload.variables;
-      }
-      if (Object.keys(constants).length !== 0) {
-          payload.constants = constants;
-      } else {
-          delete payload.constants;
-      }
+      payload.variables = variables;
+      payload.constants = constants;
 
       if (this.editMode) {
           this.updateAPIFlow();
@@ -298,9 +294,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     checkAndRequestAPIFlow() {
-      // TODO: FOGL-8079 (blank values for variables are not allowed)
-      // commented if block for forced testing only
-      if(this.getFormControls('variables').length > 0) {
+      if (this.getFormControls('variables').length > 0) {
         this.openModal('confirmation-execute-dialog')
       } else {
       this.requestAPIFlow({});
@@ -347,25 +341,25 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     getDestinationNames(selectedType) {
-        this.destinationNames = [];
-        this.selectedDestinationName = null;
-        this.af.destination = selectedType.name === 'Select Destination Type' ? '' : selectedType.name;
-        switch (selectedType.name) {
-          case 'Broadcast':
-            this.selectedDestinationName = null;
-            break;
-          case 'Service':
-            this.getServiceNames();
-            break;
-          case 'Asset':
-            this.getAssetNames();
-            break;
-          case 'Script':
-            this.getScriptNames();
-            break;
-          default:
-            break;
-        }
+      this.destinationNames = [];
+      this.selectedDestinationName = null;
+      this.af.destination = selectedType.name === 'Select Destination Type' ? '' : selectedType.name;
+      switch (selectedType.name) {
+        case 'Broadcast':
+          this.selectedDestinationName = null;
+          break;
+        case 'Service':
+          this.getServiceNames();
+          break;
+        case 'Asset':
+          this.getAssetNames();
+          break;
+        case 'Script':
+          this.getScriptNames();
+          break;
+        default:
+          break;
+      }
     }
 
     getServiceNames() {
@@ -405,7 +399,7 @@ export class AddEditAPIFlowComponent implements OnInit {
               })
               const SortedSouthboundSvc = southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
               const SortedNorthboundSvc = northboundSvc.sort((a, b) => a.name.localeCompare(b.name));
-              this.destinationNames = SortedSouthboundSvc.concat(SortedNorthboundSvc);            
+              this.destinationNames = SortedSouthboundSvc.concat(SortedNorthboundSvc);
             },
             error => {
               /** request completed */
