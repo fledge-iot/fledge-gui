@@ -17,6 +17,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
   public isChild = true;
   validConfigForm = false;
+  selectedNode = {id: '', description: ''};
 
   nodes: any[] = [];
   options = {};
@@ -80,10 +81,14 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   onTreeLoad(tree: TreeComponent): void {
+    if (this.selectedNode.id) {
+      this.getCategory(this.selectedNode.id, this.selectedNode.description);
+    }
     const child = tree.treeModel.nodes[0]?.children[0];
-    if (child) {
+    if (child && !this.selectedNode.id) {
       const firstRootChild = tree.treeModel.getNodeById(child.id);
       firstRootChild.setActiveAndVisible();
+      this.selectedNode = {id: firstRootChild.data.id, description: firstRootChild.data.description};
       this.getCategory(firstRootChild.data.id, firstRootChild.data.description);
     }
   }
@@ -98,10 +103,12 @@ export class ConfigurationManagerComponent implements OnInit {
         const node = nodes.find(c => c.id == rootId)?.children[0];
         const firstChild = tree.treeModel.getNodeById(node.id);
         firstChild.setActiveAndVisible();
+        this.selectedNode = {id: node.id, description: node.description};
         this.getCategory(node.id, node.description);
       }
     } else {
       const child = tree.treeModel.getNodeById(rootId);
+      this.selectedNode = {id: rootId, description: child.data.description};
       this.getCategory(rootId, child.data.description);
     }
   }
@@ -133,6 +140,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public refreshCategory(categoryKey: string, categoryDesc: string): void {
     this.changedConfig = null;
     this.validConfigForm = false;
+    this.selectedNode = {id: categoryKey, description: categoryDesc};
     this.getCategory(categoryKey, categoryDesc);
   }
 
@@ -174,6 +182,7 @@ export class ConfigurationManagerComponent implements OnInit {
         this.validConfigForm = false;
         this.alertService.success('Configuration updated successfully.', true);
         this.ngProgress.done();
+        this.selectedNode = {id: categoryName, description: categoryDescription};
         this.getCategory(categoryName, categoryDescription);
       },
         (error) => {

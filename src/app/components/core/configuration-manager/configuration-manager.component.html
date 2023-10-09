@@ -22,7 +22,7 @@
     </div>
     <div class="column">
       <div class="card" *ngFor="let category of categoryData">
-        <header class="card-header">
+        <header *ngIf="category?.config" class="card-header">
           <div class="card-header-title">
             <div class="media">
               <div class="media-content">
@@ -38,7 +38,7 @@
             </div>
           </div>
         </header>
-        <div class="card-content">
+        <div *ngIf="category?.config" class="card-content">
           <div class="content">
             <app-configuration-group *ngIf="category?.config" [category]="category" [from]="'config-manager'"
               (changedConfigEvent)="getChangedConfig($event, category)" (formStatusEvent)="validConfigForm = $event">
