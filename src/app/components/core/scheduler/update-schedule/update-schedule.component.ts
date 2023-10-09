@@ -145,11 +145,8 @@ export class UpdateScheduleComponent implements OnInit {
         });
   }
 
-  compareType(item, selected) {
-    return item?.name === selected?.name
-  }
 
-  compareDay(item, selected) {
+  compareSelectItem(item, selected) {
     return item?.name === selected?.name;
   }
 
@@ -174,7 +171,7 @@ export class UpdateScheduleComponent implements OnInit {
   getRepeatTime() {
     let repeatTime = 0;
     // If schedule type is Interval
-    if (this.scheduleType() === 'TIMED' || this.scheduleType() === 'INTERVAL') {
+    if (['TIMED', 'INTERVAL'].includes(this.scheduleType())) {
       repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
         this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
     }
@@ -225,5 +222,3 @@ export class UpdateScheduleComponent implements OnInit {
     this.router.navigate(['schedules']);
   }
 }
-
-

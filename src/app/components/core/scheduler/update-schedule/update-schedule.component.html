@@ -15,6 +15,7 @@
               <div class="field">
                 <div class="form-group">
                   <label class="label is-small">Name</label>
+                  <!-- Name field is not editable for STARTUP schedule -->
                   <ng-container *ngIf="schedule?.type?.name != 'STARTUP'; else staticName">
                     <p class="control is-fullwidth">
                       <input type="text" class="input is-small" formControlName="name" placeholder="name" required
@@ -53,10 +54,11 @@
             <div class="column">
               <div class="field">
                 <label class="label is-small">Type</label>
+                <!-- Schedule type STARTUP can't not be changed to other type -->
                 <ng-container *ngIf="schedule?.type?.name != 'STARTUP'; else staticType">
                   <div class="control">
                     <ng-select [items]="scheduleTypes" bindLabel="name" bindValue="index" formControlName="type"
-                      [searchable]="false" [clearable]="false" labelForId="type" [compareWith]="compareType"
+                      [searchable]="false" [clearable]="false" labelForId="type" [compareWith]="compareSelectItem"
                       (change)="setScheduleType($event)">
                     </ng-select>
                   </div>
@@ -90,7 +92,7 @@
                 </label>
                 <div class="control">
                   <ng-select [items]="days" bindLabel="name" formControlName="day" [searchable]="false"
-                    bindValue="index" [compareWith]="compareDay" [clearable]="false" labelForId="day"
+                    bindValue="index" [compareWith]="compareSelectItem" [clearable]="false" labelForId="day"
                     (change)="setDay($event)">
                   </ng-select>
 
