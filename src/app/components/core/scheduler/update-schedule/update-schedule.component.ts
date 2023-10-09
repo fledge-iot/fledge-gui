@@ -87,6 +87,12 @@ export class UpdateScheduleComponent implements OnInit {
       this.form.controls['repeat'].disable();
       this.form.controls['repeatDay'].disable();
     }
+
+    if (type.name == 'INTERVAL') {
+      // Disable time control
+      this.form.controls['time'].disable();
+      this.form.controls['day'].disable();
+    }
   }
 
   public toggleDropDown(id: string) {
