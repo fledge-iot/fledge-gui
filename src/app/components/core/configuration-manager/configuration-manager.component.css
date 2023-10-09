@@ -39,3 +39,8 @@
 .category-tree {
   padding-left: 2px;
 }
+
+
+::ng-deep .node-content-wrapper-active {
+  background: none !important;
+}
