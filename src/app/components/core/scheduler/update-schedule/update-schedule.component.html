@@ -54,7 +54,7 @@
             <div class="column">
               <div class="field">
                 <label class="label is-small">Type</label>
-                <!-- Schedule type STARTUP can't not be changed to other type -->
+                <!-- Schedule type STARTUP can't be changed to other type -->
                 <ng-container *ngIf="schedule?.type?.name != 'STARTUP'; else staticType">
                   <div class="control">
                     <ng-select [items]="scheduleTypes" bindLabel="name" bindValue="index" formControlName="type"
@@ -241,7 +241,7 @@
     <footer class="modal-card-foot">
       <button type="button" id="cancel" class="button is-small" (click)="navToSchedulesPage()">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
-        [disabled]="form?.invalid || (!form.dirty && !form.touched)"
+        [disabled]="form?.invalid || (!form.dirty && form.pristine)"
         (click)="form?.valid && updateSchedule()">Save</button>
     </footer>
   </div>

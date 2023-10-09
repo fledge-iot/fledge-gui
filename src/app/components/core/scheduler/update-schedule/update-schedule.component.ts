@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { AlertService, RolesService, SchedulesService } from '../../../../services';
 import Utils, { QUOTATION_VALIDATION_PATTERN, weekDays } from '../../../../utils';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 import { Schedule } from '../schedule';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -67,8 +67,25 @@ export class UpdateScheduleComponent implements OnInit {
   setScheduleType(type: any) {
     this.form.controls['type'].patchValue(type);
     this.form.controls['type'].updateValueAndValidity();
+
     if (type.name == 'TIMED') {
-      this.setDayByIndex(0)
+      const time = Utils.convertTimeToSec(this.form.get('time').value);
+      // Set time control value when type is TIMED 
+      if (time == 0) { this.form.controls['time'].patchValue('00:00:01') }
+    }
+
+    // Enable repeat & time control 
+    this.form.controls['time'].enable();
+    this.form.controls['day'].enable();
+    this.form.controls['repeat'].enable();
+    this.form.controls['repeatDay'].enable();
+
+    if (['MANUAL', 'STARTUP'].includes(type.name)) {
+      // Disable repeat & time control
+      this.form.controls['time'].disable();
+      this.form.controls['day'].disable();
+      this.form.controls['repeat'].disable();
+      this.form.controls['repeatDay'].disable();
     }
   }
 
@@ -127,7 +144,7 @@ export class UpdateScheduleComponent implements OnInit {
             repeat: repeatTime.time,
             exclusive: schedule.exclusive,
             processName: schedule.processName,
-            day: schedule.type == 'TIMED' ? this.setDayByIndex(schedule.day) : 0,
+            day: schedule.type == 'TIMED' ? this.setDayByIndex(schedule.day) : { index: 0, name: 'None' },
             time: time.time,
             enabled: schedule.enabled
           });
@@ -179,7 +196,7 @@ export class UpdateScheduleComponent implements OnInit {
   }
 
   public updateSchedule() {
-    if (!this.form.dirty && !this.form.touched) {
+    if (!this.form.dirty && this.form.pristine) {
       this.navToSchedulesPage();
       return false;
     }
@@ -189,7 +206,7 @@ export class UpdateScheduleComponent implements OnInit {
       payload.type = payload.type.index;
     }
 
-    if (Object.keys(payload).some(key => payload.hasOwnProperty(key))) {
+    if (payload.hasOwnProperty('repeat') || payload.hasOwnProperty('repeatDay')) {
       payload.repeat = this.getRepeatTime();
       delete payload.repeatDay;
     }
@@ -200,6 +217,12 @@ export class UpdateScheduleComponent implements OnInit {
 
     if ('day' in payload) {
       payload.day = payload?.day.index == 0 ? '' : payload?.day.index;
+    }
+
+    // no change in the form
+    if (isEmpty(payload)) {
+      this.navToSchedulesPage();
+      return false;
     }
 
     this.schedulesService.updateSchedule(this.scheduleId, payload).
