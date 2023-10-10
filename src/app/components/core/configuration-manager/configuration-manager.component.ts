@@ -45,11 +45,12 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data: any) => {
           this.categoryData = data.categories;
+          
           // filter south, north & notification categories
           this.categoryData = this.categoryData.filter((n: any) => {
             return !["SOUTH", "NORTH", "NOTIFICATIONS"].includes(n.key.toUpperCase());
           });
-          this.nodes = this.updateIdAndNameInTreeObject(this.categoryData)
+          this.nodes = this.updateIdAndNameInTreeObject(this.categoryData);
           /** request completed */
           this.ngProgress.done();
         },
@@ -65,6 +66,16 @@ export class ConfigurationManagerComponent implements OnInit {
   }
 
   updateIdAndNameInTreeObject(tree: any) {
+    // sort all nodes of tree
+    tree = tree.sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+    // If category group 'General' exists, show it on index 0
+    tree.forEach((_n, i) => {
+      if (tree[i]['key'].toUpperCase() === 'GENERAL') {
+        tree.unshift(tree.splice(i, 1)[0]);
+      }
+    });
+
     // Iterate through the array
     tree.forEach((node: any) => {
       // add key as Id and displayName/description as a name in the tree object
@@ -97,15 +108,13 @@ export class ConfigurationManagerComponent implements OnInit {
     const rootId = tree.treeModel.focusedNodeId?.toString();
     // In case of root node is in ['Advanced', 'General', 'Utilities'], 
     // Expand the group and select first child
-    if (['Advanced', 'General', 'Utilities'].includes(rootId)) {
-      if (tree?.treeModel) {
-        const nodes = tree.treeModel.nodes;
-        const node = nodes.find(c => c.id == rootId)?.children[0];
-        const firstChild = tree.treeModel.getNodeById(node.id);
-        firstChild.setActiveAndVisible();
-        this.selectedNode = {id: node.id, description: node.description};
-        this.getCategory(node.id, node.description);
-      }
+    if (['Advanced', 'General', 'Utilities'].includes(rootId)) {     
+      const nodes = tree.treeModel.nodes;
+      const node = nodes.find(c => c.id == rootId)?.children[0];
+      const firstChild = tree.treeModel.getNodeById(node.id);
+      firstChild.setActiveAndVisible();
+      this.selectedNode = {id: node.id, description: node.description};
+      this.getCategory(node.id, node.description);
     } else {
       const child = tree.treeModel.getNodeById(rootId);
       this.selectedNode = {id: rootId, description: child.data.description};
