@@ -2,24 +2,34 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title title-name">{{ rolesService.hasEditPermissions() ? 'Update Schedule' : 'View Schedule'
-        }}
+      <p class="modal-card-title title-name">
+        {{ rolesService.hasEditPermissions() ? 'Update Schedule' : 'View Schedule'}}
       </p>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" (click)="navToSchedulesPage()"></button>
     </header>
     <section class="modal-card-body">
-      <form [formGroup]="form" #f="ngForm" novalidate>
+      <form [formGroup]="form" novalidate>
         <ng-container *ngIf="rolesService.hasEditPermissions(); else staticForm">
           <div class="columns is-mobile">
             <div class="column">
               <div class="field">
                 <div class="form-group">
                   <label class="label is-small">Name</label>
-                  <p class="control is-fullwidth">
-                    <input type="text" class="input is-small" formControlName="name" placeholder="name" required
-                      trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN"/>
-                  </p>
-                  <small *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched" class="help is-danger level-left">Name is required</small>
+                  <!-- Name field is not editable for STARTUP schedule -->
+                  <ng-container *ngIf="schedule?.type?.name != 'STARTUP'; else staticName">
+                    <p class="control is-fullwidth">
+                      <input type="text" class="input is-small" formControlName="name" placeholder="name" required
+                        trim="blur" title="No single quotes and double quotes!"
+                        [pattern]="QUOTATION_VALIDATION_PATTERN" />
+                    </p>
+                    <small *ngIf="form?.controls['name']?.hasError('required') && form?.controls['name']?.touched"
+                      class="help is-danger level-left">Name is required</small>
+                  </ng-container>
+                  <ng-template #staticName>
+                    <p class="control is-fullwidth">
+                      <input type="text" class="input is-small is-static" formControlName="name" readonly />
+                    </p>
+                  </ng-template>
                 </div>
               </div>
             </div>
@@ -44,40 +54,33 @@
             <div class="column">
               <div class="field">
                 <label class="label is-small">Type</label>
-                <div class="control">
-                  <div id="type-dropdown" class="dropdown">
-                    <div class="dropdown-trigger">
-                      <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                        (click)="toggleDropDown('type-dropdown')">
-                        <span>{{selectedScheduleTypeName}}</span>
-                        <span class="icon is-small">
-                          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                      </button>
-                    </div>
-                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                      <div class="dropdown-content">
-                        <a class="dropdown-item" *ngFor="let type of scheduleType"
-                          (click)="toggleDropDown('type-dropdown');form.markAsTouched();selectedScheduleTypeIndex = setScheduleTypeKey(type.name)">
-                          {{type.name}}
-                        </a>
-                      </div>
-                    </div>
+                <!-- Schedule type STARTUP can't be changed to other type -->
+                <ng-container *ngIf="schedule?.type?.name != 'STARTUP'; else staticType">
+                  <div class="control">
+                    <ng-select [items]="scheduleTypes" bindLabel="name" bindValue="index" formControlName="type"
+                      [searchable]="false" [clearable]="false" labelForId="type" [compareWith]="compareSelectItem"
+                      (change)="setScheduleType($event)">
+                    </ng-select>
                   </div>
-                </div>
+                </ng-container>
+                <ng-template #staticType>
+                  <div class="control">
+                    <input type="text" class="input is-small is-static" [value]="scheduleType()" readonly />
+                  </div>
+                </ng-template>
               </div>
             </div>
             <div class="column">
               <div class="field">
                 <label class="label is-small">Process</label>
                 <div class="control">
-                  <input formControlName="process_name" readonly type="text" class="input is-small is-static"
+                  <input formControlName="processName" readonly type="text" class="input is-small is-static"
                     placeholder="process" />
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="selectedScheduleTypeIndex == 2" class="columns is-mobile">
+          <div class="columns is-mobile" *ngIf="scheduleType() == 'TIMED'">
             <!-- Show Day & Time field for "Timed" type schedule -->
             <div class="column">
               <div class="field">
@@ -88,25 +91,11 @@
                   </span>
                 </label>
                 <div class="control">
-                  <div id="day-dropdown" class="dropdown is-up">
-                    <div class="dropdown-trigger">
-                      <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                        (click)="toggleDropDown('day-dropdown')">
-                        <span>{{selectedDayName}}</span>
-                        <span class="icon is-small">
-                          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                      </button>
-                    </div>
-                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                      <div class="dropdown-content">
-                        <a class="dropdown-item" *ngFor="let d of days"
-                          (click)="toggleDropDown('day-dropdown');form.markAsTouched();selectedDayIndex = getSelectedDayIndex(d)">
-                          {{d}}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                  <ng-select [items]="days" bindLabel="name" formControlName="day" [searchable]="false"
+                    bindValue="index" [compareWith]="compareSelectItem" [clearable]="false" labelForId="day"
+                    (change)="setDay($event)">
+                  </ng-select>
+
                 </div>
               </div>
             </div>
@@ -122,13 +111,14 @@
               </div>
             </div>
           </div>
-          <div *ngIf="selectedScheduleTypeIndex == 2 || selectedScheduleTypeIndex == 3" class="columns">
+          <div class="columns" *ngIf="scheduleType() == 'TIMED' || scheduleType() == 'INTERVAL'">
             <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule -->
             <div class="column">
               <div class="field">
                 <label class="label is-small">Repeat Interval
                   <!-- &nbsp; -->
-                  <span class="tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                  <span class="tooltip has-tooltip-right has-tooltip-arrow"
+                    data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
                     <i class="far fa-sm fa-question-circle"></i>
                   </span>
                 </label>
@@ -185,7 +175,8 @@
               <div class="field">
                 <label class="label is-small">Type</label>
                 <div class="control">
-                  <input type="text" class="input is-small is-static" [value]="selectedScheduleTypeName" readonly />
+                  <input type="text" class="input is-small is-static" [value]="form.get('type')?.value?.name"
+                    readonly />
                 </div>
               </div>
             </div>
@@ -193,12 +184,12 @@
               <div class="field">
                 <label class="label is-small">Process</label>
                 <div class="control">
-                  <input formControlName="process_name" type="text" class="input is-small is-static" readOnly>
+                  <input formControlName="processName" type="text" class="input is-small is-static" readOnly>
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="selectedScheduleTypeIndex == 2" class="columns is-mobile">
+          <div *ngIf="scheduleType() == 'TIMED'" class="columns is-mobile">
             <!-- Show Day & Time field for "Timed" type schedule -->
             <div class="column">
               <div class="field">
@@ -208,7 +199,7 @@
                   </span>
                 </label>
                 <div class="control">
-                  <input type="text" class="input is-small is-static" [value]="selectedDayName" readonly />
+                  <input type="text" class="input is-small is-static" [value]="form.get('day')?.value?.name" readonly />
                 </div>
               </div>
             </div>
@@ -216,18 +207,19 @@
               <div class="field">
                 <label class="label is-small">Time</label>
                 <p class="control is-fullwidth">
-                  <input class="input is-small is-static" type='text' formControlName="time" readonly>
+                  <input class="input is-small is-static" type='text' [value]="form.get('time')?.value" readonly>
                 </p>
               </div>
             </div>
           </div>
-          <div *ngIf="selectedScheduleTypeIndex == 2 || selectedScheduleTypeIndex == 3" class="columns">
+          <div *ngIf="scheduleType() == 'TIMED' || scheduleType() == 'INTERVAL'" class="columns">
             <!-- Show "Repeat (Interval)" field for "Interval" and "TIMED" type schedule -->
             <div class="column">
               <div class="field">
                 <label class="label is-small">Repeat Interval
                   <!-- &nbsp; -->
-                  <span class="tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                  <span class="tooltip has-tooltip-right has-tooltip-arrow"
+                    data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
                     <i class="far fa-sm fa-question-circle"></i>
                   </span>
                 </label>
@@ -247,9 +239,10 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button type="button" id="cancel" class="button is-small" (click)="toggleModal(false)">Cancel</button>
+      <button type="button" id="cancel" class="button is-small" (click)="navToSchedulesPage()">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
-        [disabled]="f.form.invalid" (click)="f.form.valid && updateSchedule()">Save</button>
+        [disabled]="form?.invalid || (!form.dirty && form.pristine)"
+        (click)="form?.valid && updateSchedule()">Save</button>
     </footer>
   </div>
 </div>
