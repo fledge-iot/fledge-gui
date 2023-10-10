@@ -16,3 +16,17 @@
     width: 50%;
   }
 }
+
+:host ::ng-deep .ng-select .ng-select-container {
+  font-size: 0.8em;
+  min-height: 0px;
+}
+
+:host ::ng-deep .ng-select.ng-select-single .ng-select-container {
+  height: 2.3em;
+  font-size: 0.8em;
+}
+
+:host ::ng-deep .ng-select.ng-select-single .ng-dropdown-panel .ng-dropdown-panel-items  {
+    font-size: 0.8em !important;
+}
