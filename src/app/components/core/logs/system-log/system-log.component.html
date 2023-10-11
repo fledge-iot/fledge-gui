@@ -21,24 +21,6 @@
           <div class="column">
             <label class="label is-small is-pulled-left">Service</label>
             <ng-container *ngIf="showConfigButton">
-              <div id="quickviewDefault" class="quickview">
-                <header class="quickview-header">
-                  <p class="title">Quickview title</p>
-                  <span class="delete" data-dismiss="quickview"></span>
-                </header>
-              
-                <div class="quickview-body">
-                  <div class="quickview-block">
-                    ...
-                  </div>
-                </div>
-              
-                <footer class="quickview-footer">
-              
-                </footer>
-              </div>
-              
-              <button class="button is-small is-light like-link is-link is-pulled-right" data-show="quickview" data-target="quickviewDefault">Show configuration</button>
               <button class="btn small-btn config-gear" (click)="navToInstanceConfiguration()">
                 <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" data-tooltip="Instance configuration details">
                       <i class="bi bi-gear-wide-connected"></i>
