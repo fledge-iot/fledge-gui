@@ -64,3 +64,7 @@ a {
 .modal-subtitle {
   margin-top: 0.35rem !important;
 }
+
+.title {
+  margin-bottom: 0px !important;
+}

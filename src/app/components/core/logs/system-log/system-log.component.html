@@ -20,7 +20,7 @@
         <div class="columns is-mobile">
           <div class="column">
             <label class="label is-small is-pulled-left">Service</label>
-            <ng-container *ngIf="showConfigButton">
+            <ng-container *ngIf="showConfigButton && sourceName==undefined">
               <button class="btn small-btn config-gear" (click)="navToInstanceConfiguration()">
                 <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" data-tooltip="Instance configuration details">
                       <i class="bi bi-gear-wide-connected"></i>
@@ -42,13 +42,20 @@
                   <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterData('source', 'all')">
                     All
                   </a>
-                  <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterData('source', 'storage')">
-                    Storage
-                  </a>
-                  <a class="dropdown-item" *ngFor="let schedule of scheduleData"
-                    (click)="toggleDropDown('dropdown');filterData('source', schedule.name)">
-                    {{schedule.name}}
-                  </a>
+                  <ng-container *ngIf="sourceName==undefined; else sourceNameTemplate">
+                    <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterData('source', 'storage')">
+                      Storage
+                    </a>
+                    <a class="dropdown-item" *ngFor="let schedule of scheduleData"
+                      (click)="toggleDropDown('dropdown');filterData('source', schedule.name)">
+                      {{schedule.name}}
+                    </a>
+                  </ng-container>
+                  <ng-template #sourceNameTemplate>
+                    <a class="dropdown-item" (click)="toggleDropDown('dropdown');filterData('source', sourceName)">
+                      {{sourceName}}
+                    </a>
+                  </ng-template>
                 </div>
               </div>
             </div>

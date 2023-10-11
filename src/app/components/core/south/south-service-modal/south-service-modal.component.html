@@ -97,13 +97,13 @@
               </p>
               <div id="quickviewDefault" class="quickview">
                 <header class="quickview-header">
-                  <p class="title">System logs</p>
+                  <p class="title">System Logs</p>
                   <span class="delete" data-dismiss="quickview"></span>
                 </header>
               
                 <div class="quickview-body">
                   <div class="quickview-block">
-                    <app-system-log></app-system-log>
+                    <app-system-log [sourceName]="service.name"></app-system-log>
                   </div>
                 </div>
               
