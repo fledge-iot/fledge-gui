@@ -12,6 +12,7 @@ import { FilterModule } from '../filter/filter.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
+import { LogsModule } from '../logs/logs.module';
 
 const routes: Routes = [
   {
@@ -44,7 +45,8 @@ const routes: Routes = [
     SharedModule,
     DirectivesModule,
     FilterModule,
-    PipesModule
+    PipesModule,
+    LogsModule
   ],
   providers: [RolesGuard, ServicesApiService, PluginService, AssetsService, SchedulesService, FilterService],
 })

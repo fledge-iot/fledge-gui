@@ -95,6 +95,24 @@
                   <i class="far fa-file-alt"></i>
                 </span>
               </p>
+              <div id="quickviewDefault" class="quickview">
+                <header class="quickview-header">
+                  <p class="title">System logs</p>
+                  <span class="delete" data-dismiss="quickview"></span>
+                </header>
+              
+                <div class="quickview-body">
+                  <div class="quickview-block">
+                    <app-system-log></app-system-log>
+                  </div>
+                </div>
+              
+                <footer class="quickview-footer">
+              
+                </footer>
+              </div>
+              
+              <button class="button is-small is-light like-link is-link is-pulled-right" data-show="quickview" data-target="quickviewDefault">Show quick logs</button>
             </div>
             <p class="buttons is-pulled-right">
               <button (click)="getAssetReadings(service)" class="button is-small">
