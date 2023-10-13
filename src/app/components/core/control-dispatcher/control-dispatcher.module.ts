@@ -68,7 +68,7 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'task/:name',
+    path: 'task/:name', // TODO: Handle FOGL-8156 when this component is enabled
     component: ControlScheduleTaskDetailsComponent
   },
   {
