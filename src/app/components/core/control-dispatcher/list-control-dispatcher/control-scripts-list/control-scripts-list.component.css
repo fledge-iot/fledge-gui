@@ -15,15 +15,3 @@ tr:hover .btn-delete {
 .button.is-light {
   background-color: transparent !important
 }
-
-.is-hovered {
-  cursor: pointer !important;
-}
-
-.btn-margin {
-  margin: 17px 7px;
-}
-
-.fix-margin {
-  margin-top: 6px;
-}

@@ -418,4 +418,13 @@ a.dropdown-item:hover {
   .desc-text{
     font-size: 0.95rem;
   }
+
+  .help-pad {
+    margin: 17px 7px;
+    font-size: 0.9rem;
+  }
+
+  .is-hovered {
+    cursor: pointer !important;
+  }
  /*****************/

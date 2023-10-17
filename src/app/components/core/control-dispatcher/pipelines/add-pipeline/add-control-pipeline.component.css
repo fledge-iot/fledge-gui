@@ -73,10 +73,6 @@
     margin-bottom: 0px !important;
   }
 
-  .is-hovered {
-    cursor: pointer !important;
-  }
-
   .disabled {
     opacity: .7;
     pointer-events: none;

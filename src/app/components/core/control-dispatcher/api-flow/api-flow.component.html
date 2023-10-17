@@ -8,7 +8,7 @@
                     <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </button>
             </div>
-            <a *ngIf="rolesService.hasControlAccess()" class="fix-margin button is-light" [routerLink]="['/control-dispatcher/entry-point/add']">
+            <a *ngIf="rolesService.hasControlAccess()" class="fix-pad button is-light" [routerLink]="['/control-dispatcher/entry-point/add']">
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>

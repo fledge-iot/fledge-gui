@@ -27,7 +27,3 @@
   display: flex;
   align-items: center;
 }
-
-.is-hovered {
-  cursor: pointer !important;
-}

@@ -75,10 +75,6 @@
   display: none !important;
 }
 
-.is-hovered {
-  cursor: pointer !important;
-}
-
 .is-margin {
   margin-bottom: 0.5rem;
 }

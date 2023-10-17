@@ -11,10 +11,6 @@
   margin-right: 0.7rem;
 }
 
-.is-hovered {
-  cursor: pointer !important;
-}
-
 .sort-order {
   display: inline-block;
   cursor: pointer !important;
