@@ -266,7 +266,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   }
 
   navToInstanceConfiguration(){
-    this.router.navigate([this.routePath, this.source])
+    this.router.navigate([this.routePath, this.source, 'details'])
   }
 
   public ngOnDestroy(): void {
