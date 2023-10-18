@@ -7,13 +7,13 @@
         <span *ngIf="!isAddFilterWizard"><i class="bi bi-info-circle plugin-info" aria-hidden="true"
             [title]="task?.plugin.name"></i></span>
         <ng-container *ngIf="task?.processName === 'north_C'; else nTask">
-          <p class="help has-text-grey ctrl-pipeline">North Service</p>
+          <p class="help has-text-grey modal-subtitle">North Service</p>
         </ng-container>
         <ng-template #nTask>
-          <p class="help has-text-grey ctrl-pipeline">North Task</p>
+          <p class="help has-text-grey modal-subtitle">North Task</p>
         </ng-template>
       </span>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" [routerLink]="['/north']"></button>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isAddFilterWizard">
@@ -87,7 +87,7 @@
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
-                    <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
+                    <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
                   </span>
                 </a>
               </span>
@@ -103,7 +103,7 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+                  <button class="button is-small" [routerLink]="['/north']">Cancel</button>
                 </p>
                 <p class="control">
                   <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()">Save</button>

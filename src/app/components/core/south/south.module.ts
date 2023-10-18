@@ -32,6 +32,10 @@ const routes: Routes = [
     component: DetailsComponent,
     canActivate: [RolesGuard]
   },
+  {
+    path: ':name/details',
+    component: SouthServiceModalComponent
+  },
 ];
 
 @NgModule({

@@ -1,7 +1,4 @@
 @media screen and (min-width: 769px) {
-  .modal-card {
-    width: 70%;
-  }
   .field-body {
     flex-grow: 2 !important;
   }
@@ -62,3 +59,12 @@ hr {
   margin: 1.5rem 1rem;
 }
 
+.modal-card-head {
+  padding: 12px !important;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.modal-subtitle {
+  margin-top: 0.35rem !important;
+}

@@ -54,7 +54,6 @@ export class NorthComponent implements OnInit, OnDestroy {
     });
   }
 
-  @ViewChild(NorthTaskModalComponent, { static: true }) northTaskModal: NorthTaskModalComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   ngOnInit() {
@@ -101,9 +100,7 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   openNorthTaskModal(task) {
-    this.task = task;
-    // call child component method to toggle modal
-    this.northTaskModal.toggleModal(true);
+    this.router.navigate(['/north', task.name, 'details'])
   }
 
   onNotify() {

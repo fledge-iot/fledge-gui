@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { sortBy } from 'lodash';
@@ -31,12 +31,15 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   offset = 0;
   searchTerm = '';
   keyword = "";
+  showConfigButton:boolean = false;
+  routePath: string = '';
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private route: ActivatedRoute,
+    private router: Router,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -91,6 +94,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           this.scheduleData = new Set(sortBy(serviceNorthTaskSchedules, (s: any) => {
             return s.name.toLowerCase();
           }));
+          if(this.source){
+            this.setRoutePath();
+          }
         },
         error => {
           if (error.status === 0) {
@@ -167,6 +173,12 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     }
     if (filter === 'source') {
       this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim();
+      if(this.source === '' || this.source === 'storage'){
+        this.showConfigButton = false;
+      }
+      else{
+        this.setRoutePath();
+      }
     } else {
       this.level = value.trim().toLowerCase() === 'debug' ? '' : value.trim().toLowerCase();
     }
@@ -236,6 +248,25 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.getSysLogs(true);
         this.getSchedules();
       });
+  }
+
+  setRoutePath() {
+    let sourceSchedule: any = [...this.scheduleData].find((sch: any) => sch.name === this.source)
+    if (sourceSchedule.processName.toLowerCase() === 'south_c') {
+      this.routePath = '/south';
+      this.showConfigButton = true;
+    }
+    else if (sourceSchedule.processName.toLowerCase() === 'north_c') {
+      this.routePath = '/north';
+      this.showConfigButton = true;
+    }
+    else {
+      this.showConfigButton = false;
+    }
+  }
+
+  navToInstanceConfiguration(){
+    this.router.navigate([this.routePath, this.source, 'details'])
   }
 
   public ngOnDestroy(): void {

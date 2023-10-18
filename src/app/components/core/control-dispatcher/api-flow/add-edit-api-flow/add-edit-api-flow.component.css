@@ -78,3 +78,18 @@ span.is-small {
 [hidden] {
     display: none !important;
 }
+
+.allow-list-text {
+    font-size: 0.7em;
+    color: gray;
+}
+
+#ed-dropdown {
+    width: unset;
+}
+
+@media screen and (min-width: 769px) {
+    .execute-field-body {
+        padding-top: 1rem;
+    }
+}

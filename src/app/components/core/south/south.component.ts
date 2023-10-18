@@ -33,9 +33,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   selectedService = '';
   eventsTrack = [];
 
-  @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private servicesApiService: ServicesApiService,
@@ -152,6 +150,7 @@ export class SouthComponent implements OnInit, OnDestroy {
     // this.southServiceModal.service = service;
     // this.southServiceModal.toggleModal(true);
     this.router.navigate(['/south/details', service.name])
+   // this.router.navigate(['/south', service.name, 'details'])
   }
 
   onNotify() {

@@ -2,6 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TitleCasePipe } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -67,7 +68,7 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'task/:name',
+    path: 'task/:name', // TODO: Handle FOGL-8156 when this component is enabled
     component: ControlScheduleTaskDetailsComponent
   },
   {
@@ -93,7 +94,7 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'entry-point/:name',
+    path: 'entry-point/:name/details',
     component: AddEditAPIFlowComponent
   }
 ];
@@ -136,6 +137,6 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ],
   providers: [RolesGuard, ControlPipelinesService, NotificationsService,
-    FilterService, AssetsService]
+    FilterService, AssetsService, TitleCasePipe]
 })
 export class ControlDispatcherModule { }

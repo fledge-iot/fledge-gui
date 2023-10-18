@@ -6,7 +6,7 @@ import { FormBuilder, NgForm } from '@angular/forms';
 
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   AlertService, ConfigurationControlService, ConfigurationService,
   FileUploaderService, FilterService, NorthService, ProgressBarService,
@@ -18,8 +18,8 @@ import Utils from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Subject, forkJoin, of } from 'rxjs';
+import { catchError, map, takeUntil } from 'rxjs/operators';
 import { NorthTask } from '../north-task';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
 
@@ -45,7 +45,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @ViewChild('fg') form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
 
-  @Input() task: NorthTask;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigurationGroupComponent;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
@@ -62,6 +61,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   // To hold API calls to execute
   apiCallsStack = [];
   unsavedChangesInFilterForm: boolean = false;
+
+  task: NorthTask;
+  taskName = '';
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private router: Router,
@@ -81,12 +84,20 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private response: ResponseHandler,
     private toast: ToastService,
     public cDRef: ChangeDetectorRef,
-  ) { }
+    private activatedRoute: ActivatedRoute,
+  ) {
+    this.activatedRoute.paramMap.subscribe(params => {
+      this.taskName = params.get('name');
+      if (this.taskName) {
+        this.getNorthTasks(true)
+      }
+    })
+   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      this.toggleModal(false);
+      this.navToNorthPage();
     }
   }
 
@@ -141,12 +152,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
 
     if (this.isAddFilterWizard) {
-      this.getCategory();
+      this.getNorthData();
       this.isAddFilterWizard = false;
     }
 
     const modal = <HTMLDivElement>document.getElementById('north-task-modal');
     if (isOpen) {
+      this.getNorthData();
       this.notify.emit(false);
       modal.classList.add('is-active');
       return;
@@ -272,7 +284,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         (data: any) => {
           this.ngProgress.done();
           this.alertService.success(data.result, true);
-          this.toggleModal(false);
+          this.navToNorthPage();
           this.closeModal('delete-task-dialog');
           this.notify.emit();
         },
@@ -296,7 +308,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         (data: any) => {
           this.ngProgress.done();
           this.alertService.success(data.result, true);
-          this.toggleModal(false);
+          this.navToNorthPage();
           this.closeModal('delete-task-dialog');
           this.notify.emit();
         },
@@ -351,7 +363,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.isAddFilterWizard = this.applicationTagClicked;
       return;
     }
-    this.toggleModal(false);
+    this.navToNorthPage();
   }
 
   /**
@@ -422,7 +434,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
-        this.toggleModal(false);
+        this.navToNorthPage();
       }
     }
 
@@ -442,7 +454,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
           }
         });
         this.notify.emit();
-        this.toggleModal(false);
+        this.navToNorthPage();
         this.form.reset();
         this.apiCallsStack = [];
       });
@@ -457,7 +469,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
     if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) {
-      this.toggleModal(false);
+      this.navToNorthPage();
     }
   }
 
@@ -475,5 +487,28 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
     const noChange = isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration) && !this.unsavedChangesInFilterForm && !taskStateChanged;
     return noChange;
+  }
+
+  navToNorthPage(){
+    this.router.navigate(['/north']);
+  }
+
+  getNorthTasks(caching: boolean){
+    this.northService.getNorthTasks(caching)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          const tasks = data as NorthTask[];
+          this.task = tasks.find(task => (task.name == this.taskName));
+          // open modal window if task name is valid otherwise redirect to list page
+          this.task !== undefined ? this.toggleModal(true) : this.navToNorthPage()
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 }

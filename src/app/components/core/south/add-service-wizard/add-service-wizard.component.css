@@ -13,3 +13,7 @@
 .help-icon {
   cursor: pointer !important;
 }
+
+.enabled-field {
+  flex-grow: 0.5;
+}
