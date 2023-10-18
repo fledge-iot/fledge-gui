@@ -146,10 +146,12 @@ export class AddFilterWizardComponent implements OnInit {
     }
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 2:
         this.serviceForm.controls.plugin.enable();
         nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       default:
