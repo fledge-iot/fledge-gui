@@ -300,7 +300,7 @@ a.dropdown-item:hover {
   padding: 0%;
 }
 
-#refresh-check {
+#refresh-check, #refresh-tree {
   vertical-align: middle;
   background: none;
   border: none;

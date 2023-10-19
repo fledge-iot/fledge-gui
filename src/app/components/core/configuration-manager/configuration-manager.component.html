@@ -3,45 +3,32 @@
   <div class="columns is-multiline">
     <div class="column is-one-quarter">
       <nav class="panel">
-        <div class="panel-heading">
-          <div id="dropdown" class="dropdown">
-            <div class="dropdown-trigger">
-              <button class="button is-rounded is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                (click)=toggleDropDown()>
-                <span>{{selectedRootCategory}}</span>
+        <div id="root-children" class="panel-block" [ngClass]="{'empty-tree': !isChild}">
+          <div class="columns">
+            <div class="column is-10">
+              <tree-root *ngIf="nodes" #tree [nodes]="nodes" [options]="options" (click)="onNodeActive(tree)"
+                (updateData)="onTreeLoad($event)"></tree-root>
+            </div>
+            <div class="column">
+              <button class="button is-small category-tree" id="refresh-tree" (click)="getTreeStructure()">
                 <span class="icon is-small">
-                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                  <i class="fa fa-sm fa-sync" title="Reload"></i>
                 </span>
               </button>
             </div>
-            <div class="dropdown-menu" id="dropdown-menu" role="menu">
-              <div class="dropdown-content">
-                <a class="dropdown-item" *ngFor="let rootCategory of rootCategories"
-                  (click)="toggleDropDown();getSelectedCategoryConfig(rootCategory)">
-                  {{ hasProperty(rootCategory, 'displayName') === true ?
-                  rootCategory.displayName:rootCategory.description}}
-                </a>
-              </div>
-            </div>
           </div>
-        </div>
-        <div *ngIf="!isChild" class="panel-block no-cat">
-          <small class="no-rec">No Sub-categories</small>
-        </div>
-        <div id="root-children" class="panel-block" [ngClass]="{'empty-tree': !isChild}">
-          <tree-root #tree [nodes]="nodes" [options]="options" (toggleExpanded)="onNodeToggleExpanded($event)"
-            (activate)="onNodeActive($event)"></tree-root>
         </div>
       </nav>
     </div>
     <div class="column">
       <div class="card" *ngFor="let category of categoryData">
-        <header class="card-header">
+        <header *ngIf="category?.config" class="card-header">
           <div class="card-header-title">
             <div class="media">
               <div class="media-content">
                 <p class="subtitle is-6">{{ category.description }}
-                  <button class="button is-small" id="refresh-check" (click)="refreshCategory(category.name, category.description)">
+                  <button class="button is-small" id="refresh-check"
+                    (click)="refreshCategory(category.name, category.description)">
                     <span class="icon is-small">
                       <i class="fa fa-sm fa-sync" title="Reload"></i>
                     </span>
@@ -51,9 +38,9 @@
             </div>
           </div>
         </header>
-        <div class="card-content">
+        <div *ngIf="category?.config" class="card-content">
           <div class="content">
-            <app-configuration-group *ngIf="category" [category]="category" [from]="'config-manager'"
+            <app-configuration-group *ngIf="category?.config" [category]="category" [from]="'config-manager'"
               (changedConfigEvent)="getChangedConfig($event, category)" (formStatusEvent)="validConfigForm = $event">
             </app-configuration-group>
             <div class="columns" *ngIf="rolesService.hasEditPermissions()">
