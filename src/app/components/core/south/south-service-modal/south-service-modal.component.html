@@ -59,7 +59,7 @@
                   <button class="button is-small" [routerLink]="['/south']">Cancel</button>
                 </p>
                 <p class="control">
-                  <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()">Save</button>
+                  <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton" class="button is-small is-link" (click)="save()">Save</button>
                 </p>
               </div>
             </div>
@@ -97,7 +97,7 @@
               </p>
             </div>
             <p class="buttons is-pulled-right">
-              <button (click)="getAssetReadings(service)" class="button is-small">
+              <button (click)="getAssetReadings(service)" class="button is-small" [appDisableUntilResponse]="reenableButton">
                 <span>Export Readings</span>
               </button>
               <button *ngIf="rolesService.hasEditPermissions()" (click)="openModal('delete-service-dialog')"

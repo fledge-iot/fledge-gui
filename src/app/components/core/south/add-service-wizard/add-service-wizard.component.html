@@ -126,7 +126,7 @@
       </div>
       <div class="steps-action">
         <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
-          [disabled]="serviceForm.invalid || !validConfigurationForm">Next</button>
+          [disabled]="serviceForm.invalid || !validConfigurationForm" [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
     </div>
   </div>

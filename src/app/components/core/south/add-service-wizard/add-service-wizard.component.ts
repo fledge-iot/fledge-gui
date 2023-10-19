@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -37,6 +37,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
   serviceForm: FormGroup;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   @Input() categoryConfigurationData;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
@@ -171,6 +173,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
+        this.reenableButton.emit(false);
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -238,6 +241,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         (response) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(response['name'] + ' service added successfully.', true);
           if (files.length > 0) {
             const name = payload.name
@@ -248,6 +252,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         (error) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
