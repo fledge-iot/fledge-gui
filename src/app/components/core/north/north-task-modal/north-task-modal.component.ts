@@ -50,6 +50,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   // to hold child form state
   validConfigurationForm = true;
   validFilterConfigForm = true;
@@ -443,6 +445,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       forkJoin(this.apiCallsStack).subscribe((result) => {
         result.forEach((r: any) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (r.failed) {
             if (r.error.status === 0) {
               console.log('service down ', r.error);

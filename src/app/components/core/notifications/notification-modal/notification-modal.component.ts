@@ -41,6 +41,7 @@ export class NotificationModalComponent implements OnInit {
   ruleConfigurationCopy: any;
   deliveryConfigurationCopy: any;
 
+  public reenableButton = new EventEmitter<boolean>(false);
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     private notificationService: NotificationsService,
@@ -245,6 +246,7 @@ export class NotificationModalComponent implements OnInit {
       this.ngProgress.start();
       forkJoin(this.apiCallsStack).subscribe(() => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success('Configuration updated successfully.', true);
         this.toggleModal(false);
         this.apiCallsStack = [];

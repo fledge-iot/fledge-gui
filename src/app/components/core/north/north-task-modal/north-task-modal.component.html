@@ -105,7 +105,7 @@
                   <button class="button is-small" [routerLink]="['/north']">Cancel</button>
                 </p>
                 <p class="control">
-                  <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()">Save</button>
+                  <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()" [appDisableUntilResponse]="reenableButton">Save</button>
                 </p>
               </div>
             </div>

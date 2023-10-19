@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { cloneDeep, sortBy } from 'lodash';
@@ -52,6 +52,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     type: this.taskType,
     pluginName: ''
   };
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(private pluginService: PluginService,
     private alertService: AlertService,
@@ -146,6 +148,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
+        this.reenableButton.emit(false);
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -249,6 +252,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         () => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success('North instance added successfully.', true);
           if (files.length > 0) {
             const name = payload.name;
@@ -259,6 +263,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         (error) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -291,6 +296,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         (response) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(response['name'] + ' service added successfully.', true);
           if (files.length > 0) {
             const name = payload.name
@@ -301,6 +307,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         (error) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
