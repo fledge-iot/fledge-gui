@@ -492,100 +492,95 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getReadings(readings: any, optedTime: number) {
-    const numReadings = [];
-    const strReadings = [];
-    const arrReadings = [];
-    const imageReadings = [];
-
+   let assetFormatedReadings = {numReadings:[], strReadings:[], arrReadings:[], imageReadings:[]};
     // In case of multiple assets readings, merge all readings
     if ((this.additionalAssets.length > 1 && readings.length !== 0) || !(Array.isArray(readings))) {
       if (Object.keys(readings).length === this.additionalAssets.length) {
         let allAssetsReading = [];
         this.additionalAssets.forEach((asset) => {
-          allAssetsReading.push(...function () 
-            {
-              const values = [];
-              for (const r of readings[asset]) {
-                Object.entries(r.reading).forEach(([k, value]) => {
-                  // discard unuseful reading
-                  if (value === 'Data removed for brevity') {
-                    return;
-                  }
-                  if (typeof value === 'number') { 
-                    values.push({
-                      key: `${asset}.${k}`,
-                      read: { x: r.timestamp, y: value }
-                    });
-                  }
-                })
-              }
-              return values;
-            }()
-        );
+          let formatedReadings = readings[asset].map(d => { return {reading: d.reading, timestamp: d.timestamp}}).map(r => {
+            r.reading =  Object.assign(
+              {},
+              ...Object.keys(r.reading).map(key => ({[`${asset}.${key}`]: r.reading[key]}))
+            )
+            return r;
+          })
+          allAssetsReading.push(...formatedReadings);
+          assetFormatedReadings = this.readingFormate(allAssetsReading );
+          this.timestamps = allAssetsReading.reverse().map((r: any) => r.timestamp);
+         
         });
-
-        this.numberTypeReadingsList = allAssetsReading.length > 0 ? this.mergeObjects(allAssetsReading) : [];
-        console.log('allAssetsReading', allAssetsReading);
-        console.log('numberTypeReadingsList', this.numberTypeReadingsList);  
       } 
     } else {
-    this.timestamps = readings.reverse().map((r: any) => r.timestamp);
-    for (const r of readings) {
-      Object.entries(r.reading).forEach(([k, value]) => {
-        // discard unuseful reading
-        if (value === 'Data removed for brevity') {
-          return;
-        }
-        if (typeof value === 'number') {
-          numReadings.push({
-            key: k,
-            read: { x: r.timestamp, y: value }
-          });
-        } else if (typeof value === 'string') {
-          if (value.includes("__DPIMAGE")) {
-            this.getImageReadingsDimensions(value);
-            imageReadings.push({
-              datapoint: k,
-              imageData: value,
-              timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
-            });
-          } else {
-            strReadings.push({
-              key: k,
-              timestamp: r.timestamp,
-              data: value
-            });
-          }
-        } else if (Array.isArray(value)) {
-          arrReadings.push({
-            key: k,
-            read: value,
-            timestamp: r.timestamp
-          });
-        } else if (typeof value === 'object') {
-          strReadings.push({
-            key: k,
-            data: JSON.stringify(value),
-            timestamp: r.timestamp
-          });
-        }
-        else {
-          console.log('Failed to parse reading ', value, ' for key ', k);
-        }
-      });
+      assetFormatedReadings = this.readingFormate(readings);
+      this.timestamps = readings.reverse().map((r: any) => r.timestamp);
     }
-    this.imageReadings = imageReadings.length > 0 ? this.getImage(imageReadings) : [];
-    this.numberTypeReadingsList = numReadings.length > 0 ? this.mergeObjects(numReadings) : [];
-    this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
-    this.stringTypeReadingsList = mapValues(groupBy(strReadings,
+   
+    this.imageReadings = assetFormatedReadings.imageReadings.length > 0 ? this.getImage(assetFormatedReadings.imageReadings) : [];
+    this.numberTypeReadingsList = assetFormatedReadings.numReadings.length > 0 ? this.mergeObjects(assetFormatedReadings.numReadings) : [];
+    this.arrayTypeReadingsList = assetFormatedReadings.arrReadings.length > 0 ? this.mergeObjects(assetFormatedReadings.arrReadings) : [];
+    this.stringTypeReadingsList = mapValues(groupBy(assetFormatedReadings.strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
-    }
 
     this.setGraphStartTimestamp(optedTime);
     this.setInfoTextTimestamps();
     this.setGraphMinimumZoomValue();
     this.setTabData(optedTime);
   }
+
+
+ readingFormate(readings) { 
+  const numReadings = [];
+  const strReadings = [];
+  const arrReadings = [];
+  const imageReadings = [];
+  for (const r of readings) {
+    Object.entries(r.reading).forEach(([k, value]) => {
+      // discard unuseful reading
+      if (value === 'Data removed for brevity') {
+        return;
+      }
+      if (typeof value === 'number') {
+        numReadings.push({
+          key:k,
+          read: { x: r.timestamp, y: value }
+        });
+      } else if (typeof value === 'string') {
+        if (value.includes("__DPIMAGE")) {
+          this.getImageReadingsDimensions(value);
+          imageReadings.push({
+            datapoint:  k,
+            imageData: value,
+            timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
+          });
+        } else {
+          strReadings.push({
+            key:  k,
+            timestamp: r.timestamp,
+            data: value
+          });
+        }
+      } else if (Array.isArray(value)) {
+        arrReadings.push({
+          key: k,
+          read: value,
+          timestamp: r.timestamp
+        });
+      } else if (typeof value === 'object') {
+        strReadings.push({
+          key:  k,
+          data: JSON.stringify(value),
+          timestamp: r.timestamp
+        });
+      }
+      else {
+        console.log('Failed to parse reading ', value, ' for key ', k);
+      }
+    });
+  }
+  return {numReadings, strReadings, arrReadings, imageReadings}
+ }
+
 
   getMergedReadings(allAssetsReading) {
     let mergedReadings = [];
