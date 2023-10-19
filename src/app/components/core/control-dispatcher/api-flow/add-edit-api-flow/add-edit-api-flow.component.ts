@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 
 import { APIFlow, User } from '../../../../../../../src/app/models';
@@ -58,6 +58,8 @@ export class AddEditAPIFlowComponent implements OnInit {
     APIFlowType = ['write', 'operation'];
 
     destroy$: Subject<boolean> = new Subject<boolean>();
+
+    public reenableButton = new EventEmitter<boolean>(false);
     constructor(
         private route: ActivatedRoute,
         private assetService: AssetsService,
@@ -238,13 +240,15 @@ export class AddEditAPIFlowComponent implements OnInit {
       .subscribe(
         (data: any) => {
           /** request completed */
-          this.ngProgress.done();  
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.message, true);
           this.navigateToList();
         },
         error => {
           /** request completed but error */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -258,13 +262,15 @@ export class AddEditAPIFlowComponent implements OnInit {
       .subscribe(
         (data: any) => {
           /** request completed */
-          this.ngProgress.done();  
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.message, true);
           this.navigateToList();
         },
         error => {
           /** request completed but error */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

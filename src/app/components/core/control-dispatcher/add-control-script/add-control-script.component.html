@@ -111,7 +111,7 @@
                 </p>
                 <p class="control">
                   <button [disabled]="!scriptForm.valid || !scriptForm.dirty" (click)="onSubmit(scriptForm)"
-                    type="button" class="button is-small is-link">Save</button>
+                    type="button" class="button is-small is-link" [appDisableUntilResponse]="reenableButton">Save</button>
                 </p>
               </div>
             </div>

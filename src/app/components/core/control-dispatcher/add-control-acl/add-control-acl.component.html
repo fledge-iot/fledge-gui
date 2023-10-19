@@ -250,7 +250,7 @@
                 </p>
                 <p class="control">
                   <button [disabled]="!aclForm.valid || !aclForm.dirty" (click)="onSubmit(aclForm)" type="button"
-                    class="button is-small is-link">Save</button>
+                    class="button is-small is-link" [appDisableUntilResponse]="reenableButton">Save</button>
                 </p>
               </div>
             </div>
