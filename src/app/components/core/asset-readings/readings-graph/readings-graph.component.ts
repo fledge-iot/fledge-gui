@@ -502,19 +502,34 @@ export class ReadingsGraphComponent implements OnDestroy {
       if (Object.keys(readings).length === this.additionalAssets.length) {
         let allAssetsReading = [];
         this.additionalAssets.forEach((asset) => {
-          allAssetsReading.push(...readings[asset]);
+          allAssetsReading.push(...function () 
+            {
+              const values = [];
+              for (const r of readings[asset]) {
+                Object.entries(r.reading).forEach(([k, value]) => {
+                  // discard unuseful reading
+                  if (value === 'Data removed for brevity') {
+                    return;
+                  }
+                  if (typeof value === 'number') { 
+                    values.push({
+                      key: `${asset}.${k}`,
+                      read: { x: r.timestamp, y: value }
+                    });
+                  }
+                })
+              }
+              return values;
+            }()
+        );
         });
-        readings = this.getMergedReadings(allAssetsReading);
-      } else {
-        return;
-      }
-    }
-    this.timestamps = readings.reverse().map((r: any) => r.timestamp);
-    
-    this.setGraphStartTimestamp(optedTime);
-    this.setInfoTextTimestamps();
-    this.setGraphMinimumZoomValue();
 
+        this.numberTypeReadingsList = allAssetsReading.length > 0 ? this.mergeObjects(allAssetsReading) : [];
+        console.log('allAssetsReading', allAssetsReading);
+        console.log('numberTypeReadingsList', this.numberTypeReadingsList);  
+      } 
+    } else {
+    this.timestamps = readings.reverse().map((r: any) => r.timestamp);
     for (const r of readings) {
       Object.entries(r.reading).forEach(([k, value]) => {
         // discard unuseful reading
@@ -564,6 +579,11 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.arrayTypeReadingsList = arrReadings.length > 0 ? this.mergeObjects(arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
+    }
+
+    this.setGraphStartTimestamp(optedTime);
+    this.setInfoTextTimestamps();
+    this.setGraphMinimumZoomValue();
     this.setTabData(optedTime);
   }
 
