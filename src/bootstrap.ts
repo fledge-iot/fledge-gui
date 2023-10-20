@@ -13,6 +13,7 @@ import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/lint/lint';
 import 'codemirror/addon/lint/json-lint';
+import 'codemirror/addon/display/autorefresh';
 import jsonlint from 'jsonlint-mod';
 
 declare global {

@@ -21,7 +21,8 @@
     <div class="steps-content">
       <form [formGroup]="serviceForm" validate>
         <div class="box step-content is-active" id="c-1">
-          <span *ngIf="plugin" class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help" (click)="goToLink()">
+          <span *ngIf="plugin" class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+            data-tooltip="Help" (click)="goToLink()">
             <i class="far fa-question-circle"></i>
           </span>
           <div *ngIf="showSpinner" class="app-loading">
@@ -47,16 +48,16 @@
             <div class="field-body">
               <div class="select is-multiple">
                 <select multiple name="type" #selectedPlugin formControlName="plugin" id="pluginSelect"
-                  (change)="getDescription(selectedPlugin.value)" required>
+                  (change)="selectPlugin(selectedPlugin.value)" required>
                   <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
                 </select>
               </div>
               &nbsp;
-              <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin"
+              <small *ngIf="!serviceForm.controls['plugin'].hasError('multiplePlugins')"
                 class="help description level-left">{{
                 selectedPluginDescription }}</small>
-              <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
-              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
+              <small *ngIf="serviceForm.controls['plugin'].hasError('multiplePlugins')"
+                class="help is-danger level-left">* Please select a single plugin</small>
             </div>
           </div>
           <div class="field is-horizontal form-group is-right">
@@ -83,29 +84,35 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" formControlName="name" required
-                    (input)="validateServiceName($event)">
-                  <small *ngIf="!isValidName" class="help is-danger level-left">Service name is required</small>
+                  <input class="input" id="name" autocomplete="off" type="text" placeholder="name"
+                    formControlName="name" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN">
+                  <small
+                    *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
+                    class="help is-danger level-left">Service name is required</small>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="box step-content" id="c-2">
-          <app-view-config-item [categoryConfigurationData]="configurationData" [useProxy]="useProxy"
-            [pluginInfo]="{name: plugin,  type:serviceType}" (onConfigChanged)="getChangedConfig($event)"
-            [pageId]="'wizard'">
-          </app-view-config-item>
+          <app-configuration-group *ngIf="configurationData" [category]="configurationData"
+            (changedConfigEvent)="getChangedConfig($event)" [from]="'add-service-form'"
+            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
-        <div class="box step-content" id="c-3">
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label">Enabled</label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+        <div class="box step-content" id="c-3">    
+          <div class="column">
+            <div class="config-div">
+              <div class="field is-horizontal">
+                <div class="field-label has-text-centered enabled-field">
+                  <label class="label">Enabled</label>
+                </div>
+                <div class="field-body last-step-field">
+                  <div class="field">
+                    <div class="control">
+                      <input class="checkbox" type="checkbox" [checked]="isScheduleEnabled"
+                        (click)="onCheckboxClicked($event)">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -119,7 +126,7 @@
       </div>
       <div class="steps-action">
         <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
-          [disabled]="plugins.length === 0">Next</button>
+          [disabled]="serviceForm.invalid || !validConfigurationForm">Next</button>
       </div>
     </div>
   </div>

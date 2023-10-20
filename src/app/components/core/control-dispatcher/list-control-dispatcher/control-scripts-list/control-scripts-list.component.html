@@ -1,60 +1,83 @@
-<table class="table is-responsive is-hoverable" *ngIf="controlScripts.length > 0; else noscript">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let script of controlScripts">
-      <td>
-        <a [routerLink]="['script', script?.name]">
-          {{script?.name}}
-        </a>
-      </td>
-      <td>
-        <div *ngIf="sharedService.checkAuth()" class="dropdown is-hoverable">
-          <div class="dropdown-trigger">
-            <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
-              <span class="icon is-small">
-                <i class="fas fa-ellipsis-v fa-sm fa-fw" aria-hidden="true"></i>
-              </span>
-            </button>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu3" role="menu">
-            <div class="dropdown-content">
-              <!-- TODO: FOGL-6468 -->
-              <!-- <a *ngIf="script?.schedule?.name" class="dropdown-item" [routerLink]="['task', script?.schedule?.name]">
+<div class="container is-fluid">
+  <app-add-dispatcher-service></app-add-dispatcher-service>
+  <div class="card">
+    <header class="card-header">
+      <div id="control-acl" class="card-header-title">
+        Control Scripts
+        <button class="button is-small" id="refresh-check" title="Reload" (click)="getControlScripts()">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </div>
+      <a *ngIf="rolesService.hasControlAccess()" class="fix-margin button is-light" routerLink="add">
+        <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
+        <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+      </a>
+
+      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin"
+        data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
+        <i class="far fa-question-circle"></i>
+      </span>
+
+    </header>
+    <div class="card-content card-data">
+      <table class="table is-responsive is-hoverable" *ngIf="controlScripts.length > 0; else noscript">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let script of controlScripts">
+            <td>
+              <a [routerLink]="['/control-dispatcher/script', script?.name, 'details']">
+                {{script?.name}}
+              </a>
+            </td>
+            <td>
+              <div *ngIf="rolesService.hasControlAccess()" class="dropdown is-hoverable">
+                <div class="dropdown-trigger">
+                  <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
+                    <span class="icon is-small">
+                      <i class="fas fa-ellipsis-v fa-sm fa-fw" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                  <div class="dropdown-content">
+                    <!-- TODO: FOGL-6468 -->
+                    <!-- <a *ngIf="script?.schedule?.name" class="dropdown-item" [routerLink]="['task', script?.schedule?.name]">
                 <span>View script schedule</span>
               </a> -->
-              <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item"
-                (click)="setScript(script);openModal('confirmation-dialog')">
-                <span>Delete</span>
-              </a>
-            </div>
-          </div>
+                    <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item"
+                      (click)="setScript(script);openModal('confirmation-dialog')">
+                      <span>Delete</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #noscript>
+        <div class="has-text-centered">
+          <small class="text-secondary has-text-grey-light">No Control Scripts found.</small>
         </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<ng-template #noscript>
-  <div class="field-body">
-    <div class="field is-narrow">
-      <small class="text-secondary has-text-grey-light"> No control scripts found.</small>
+      </ng-template>
+      <app-confirmation-dialog id="confirmation-dialog">
+        <header class="modal-card-head">
+          <p class="modal-card-title is-size-6">Delete Script</p>
+          <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+        </header>
+        <section class="modal-card-body">
+          Are you sure, you want to delete the control script <b>{{script}}</b>?
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+          <button class="button is-small is-danger" (click)="deleteScript(script)">Delete</button>
+        </footer>
+      </app-confirmation-dialog>
     </div>
   </div>
-</ng-template>
-<app-confirmation-dialog id="confirmation-dialog">
-  <header class="modal-card-head">
-    <p class="modal-card-title is-size-6">Delete</p>
-    <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
-  </header>
-  <section class="modal-card-body">
-    Are you sure, you want to delete the control script <b>{{script}}</b>?
-  </section>
-  <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteScript(script)">Delete</button>
-  </footer>
-</app-confirmation-dialog>
+</div>

@@ -48,6 +48,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   uptime: any = '';
   viewPort: any = '';
   public showSpinner = false;
+  isManualRefresh = false;
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -82,8 +83,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((pingTime: number) => {
         if (pingTime === -1) {
+          this.isManualRefresh = true;
           this.stop();
         } else {
+          this.isManualRefresh = false;
           this.start(pingTime);
         }
       });
@@ -120,6 +123,12 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (sessionStorage.getItem('userName') != null) {
       this.userName = sessionStorage.getItem('userName');
+
+      this.sharedService.isUserLoggedIn.next({
+        'loggedIn': true,
+        'userName': sessionStorage.getItem('userName'),
+        'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
+      });
     }
     this.changeDetectorRef.detectChanges();
   }
@@ -411,6 +420,15 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  navToSyslogs(service) {
+    this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
+  }
+
+  navToServiceConfiguration(service){
+    let routePath = service.type === 'Northbound' ? 'north' : 'south';
+    this.router.navigate([routePath, service.name, 'details'])
   }
 }
 

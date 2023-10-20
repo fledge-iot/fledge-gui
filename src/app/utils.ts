@@ -1,10 +1,15 @@
 import colorLib from '@kurkle/color';
+import { isEqual, transform, isObject } from 'lodash';
+
 
 export const POLLING_INTERVAL = 5000;   // milliseconds
 export const MAX_INT_SIZE = 2147483647;
 export const GRAPH_REFRESH_INTERVAL = 5000; // milliseconds
 export const STATS_HISTORY_TIME_FILTER = '10'; // minutes
 export const ASSET_READINGS_TIME_FILTER = 600; // seconds
+export const QUOTATION_VALIDATION_PATTERN = '[^\x22\x27]+'; // Do not allow single quotes or double quotes
+export const DEBOUNCE_TIME = 1000; // milliseconds
+
 
 export const SUPPORTED_SERVICE_TYPES = ["Core", "Storage", "Southbound", "Northbound", "Notification", "Management", "Dispatcher", "BucketStorage"];
 
@@ -33,6 +38,18 @@ const NAMED_COLORS = [
   CHART_COLORS.olive,
   CHART_COLORS.cyan,
 ];
+
+export enum weekDays {
+  None = 0,
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6,
+  Sunday = 7
+}
+
 
 export default class Utils {
 
@@ -125,6 +142,23 @@ export default class Utils {
     const green = Math.floor(Math.random() * 256 / 2);
     const blue = Math.floor(Math.random() * 256 / 2);
     return `rgb(${red},${green},${blue})`;
+  }
+
+  /**
+   * Find difference between objects
+   * @param currentObj
+   * @param baseObj 
+   * @returns difference 
+   */
+  public static difference(currentObj, baseObj) {
+    function changes(current, base) {
+      return transform(current, function (result, value, key) {
+        if (!isEqual(value, base[key])) {
+          result[key] = (isObject(value) && isObject(base[key])) ? changes(value, base[key]) : value;
+        }
+      });
+    }
+    return changes(currentObj, baseObj);
   }
 
 }

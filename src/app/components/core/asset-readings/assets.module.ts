@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
+import { NgSelectModule } from '@ng-select/ng-select';
 
-import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { AssetsService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
@@ -12,18 +12,19 @@ import { NumberInputDebounceModule } from '../../common/number-input-debounce/nu
 import { PaginationModule } from '../../common/pagination/pagination.module';
 import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
 import { AssetsComponent } from './assets/assets.component';
+import { AssetReadingSummaryComponent } from './asset-reading-summary/asset-reading-summary.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: AssetsComponent,
-    canActivate: [AuthCheckGuard]
+    component: AssetsComponent
   }
 ];
 
 
 @NgModule({
   declarations: [
+    AssetReadingSummaryComponent,
     AssetsComponent,
     ReadingsGraphComponent
   ],
@@ -35,6 +36,7 @@ const routes: Routes = [
     ChartModule,
     NumberInputDebounceModule,
     PaginationModule,
+    NgSelectModule,
     SharedModule
   ],
   providers: [AssetsService],

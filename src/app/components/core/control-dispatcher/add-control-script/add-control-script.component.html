@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'scripts'}">Scripts</a></li>
+        <li><a [routerLink]="['/control-dispatcher/script']">Scripts</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">
             {{scriptName ? scriptName : 'Add' }}
@@ -10,7 +10,7 @@
         </li>
       </ul>
     </nav>
-    <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check">
+    <button *ngIf="editMode" (click)="refresh()" class="button is-small" title="Reload" id="refresh-check">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
@@ -18,7 +18,8 @@
     <div class="card-content step-content">
       <form #scriptForm="ngForm">
         <span (click)="goToLink('automation-scripts')"
-          class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+          data-tooltip="Help">
           <i class="far fa-question-circle"></i>
         </span>
         <div class="column is-four-fifths">
@@ -30,8 +31,9 @@
               <div class="field">
                 <div class="control">
                   <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
-                    [(ngModel)]="controlScript.name"
-                    [ngClass]="{'is-static': editMode, 'is-small':sharedService.checkAuth() && !editMode}"
+                    [(ngModel)]="controlScript.name" title="No single quotes and double quotes!"
+                    [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
+                    [ngClass]="{'is-static': editMode, 'is-small':rolesService.hasControlAccess() && !editMode}"
                     [readonly]="editMode">
                 </div>
                 <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
@@ -57,7 +59,7 @@
               <label class="label">ACL</label>
             </div>
             <div class="field-body">
-              <div class="field" *ngIf="sharedService.checkAuth();else staticACLDiv">
+              <div class="field" *ngIf="rolesService.hasControlAccess();else staticACLDiv">
                 <div class="control">
                   <div id="acl-dropdown" class="dropdown is-left">
                     <div class="dropdown-trigger">
@@ -82,15 +84,15 @@
                 <div class="field">
                   <div class="control">
                     <input name="acl" class="input" type="text" [value]="selectedACL ? selectedACL : 'None'"
-                      [ngClass]="{'is-static':!sharedService.checkAuth(), 'has-text-grey-light is-size-7':!selectedACL}"
-                      [readonly]="!sharedService.checkAuth()">
+                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedACL}"
+                      [readonly]="!rolesService.hasControlAccess()">
                   </div>
                 </div>
               </ng-template>
             </div>
           </div>
         </div>
-        <div *ngIf="sharedService.checkAuth()" class="column is-four-fifths">
+        <div *ngIf="rolesService.hasControlAccess()" class="column is-four-fifths">
           <div class="columns">
             <div class="column is-2"></div>
             <div class="column" *ngIf="editMode">
@@ -104,7 +106,7 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'scripts'}"
+                  <button type="button" [routerLink]="['/control-dispatcher/script']"
                     class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
@@ -125,10 +127,10 @@
     <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, you want to delete the control script <b>{{scriptName}}</b>?
+    Are you sure, You want to delete the control script <b>{{scriptName}}</b>?
   </section>
   <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteScript(scriptName)">Delete</button>
+    <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteScript(scriptName)">Delete</button>
   </footer>
 </app-confirmation-dialog>

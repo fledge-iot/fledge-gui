@@ -11,6 +11,7 @@
   margin: 0px;
   padding: 4px;
   background: white;
+  word-break: break-word;
 }
 
 .pagination-section {
@@ -22,14 +23,6 @@
 
 .card { overflow: visible;}
 .card-content { overflow: visible; }
-.card-header-title {
-  padding: unset;
-}
-
-.card-header-title {
-  padding: 0.75rem 1.5rem;
-  max-height: 48px !important;
-}
 
 #refresh-check {
   margin-left: 3px;
@@ -43,5 +36,18 @@
 }
 
 .checkmark {
-vertical-align: middle !important;
+  vertical-align: middle !important;
+}
+
+.card-header-title {
+  max-height: 45px !important;
+}
+
+.config-gear {
+  vertical-align: top;
+  background: none;
+  border: none;
+  padding-top: 3px !important;
+  padding-bottom: 0px !important;
+  font-size: 14px;
 }

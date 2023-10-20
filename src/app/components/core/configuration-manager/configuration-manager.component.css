@@ -26,3 +26,12 @@
 .empty-tree {
   display: none;
 }
+
+.save-btn {
+  margin-left: 10px !important;
+}
+
+.panel-heading {
+  padding: 0.45em 1em;
+  max-height: 48px;
+}

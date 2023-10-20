@@ -1,0 +1,318 @@
+<div class="container is-fluid">
+  <div class="navbar-item">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a (click)="navigateToCPList()">Control Pipelines</a></li>
+        <li class="is-active">
+          <a href="#" aria-current="page">
+            {{ editMode ? pipelineName : 'Add' }}
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <button type="button" *ngIf="editMode" (click)="getControlPipeline()" class="button is-small" title="Reload"
+      id="refresh-check">
+      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="card">
+    <div class="card-content step-content">
+      <form #pipelineForm="ngForm" [hidden]="isAddFilterWizard">
+        <span (click)="goToLink('control-pipelines')"
+          class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered pl-3 pb-3 help-icon" data-tooltip="Help">
+          <i class="far fa-question-circle"></i>
+        </span>
+        <div class="column">
+          <div [hidden]="editMode" class="field is-horizontal">
+            <div class="field-label">
+              <label class="label label-name">Name</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input #name=ngModel name="name" class="input name-field" type="text" placeholder="Name" required
+                    [(ngModel)]="pipelineName" title="No single quotes and double quotes!"
+                    [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
+                    [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field':!rolesService.hasControlAccess()}"
+                    [readonly]="!rolesService.hasControlAccess()">
+                </div>
+                <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
+                  <div *ngIf="name.errors?.['required']">
+                    *required
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label label-name">Execution</label>
+            </div>
+            <div class="field-body">
+              <div class="field" *ngIf="rolesService.hasControlAccess();else staticExecutionDiv">
+                <div class="control">
+                  <div id="execution-dropdown" class="dropdown is-left">
+                    <div class="dropdown-trigger">
+                      <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                        (click)="toggleDropdown('execution-dropdown')" placeholder="Select">
+                        <span>{{selectedExecution}}</span>
+                        <span class="icon is-small">
+                          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class="dropdown-content">
+                        <a (click)="selectValue('Shared', 'execution');toggleDropdown('execution-dropdown')"
+                          class="dropdown-item">Shared</a>
+                        <a (click)="selectValue('Exclusive', 'execution');toggleDropdown('execution-dropdown')"
+                          class="dropdown-item">Exclusive</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ng-template #staticExecutionDiv>
+                <div class="field">
+                  <div class="control">
+                    <input name="execution" class="input" type="text"
+                      [value]="selectedExecution ? selectedExecution : 'Select Execution'"
+                      [ngClass]="{'is-static static-field':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedExecution}"
+                      [readonly]="!rolesService.hasControlAccess()">
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label label-name">Source</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="field is-horizontal">
+                  <div class="field-body">
+                    <div class="field">
+                      <div class="control box">
+                        <div class="columns">
+                          <div class="column">
+                            <div class="field is-horizontal">
+                              <div class="field-label is-small">
+                                <label class="label is-small">Type</label>
+                              </div>
+                              <div class="field-body">
+                                <div class="field">
+                                  <div class="control" *ngIf="rolesService.hasControlAccess(); else staticSourceType">
+                                    <ng-select [clearable]="false" placeholder="Select Source Type"
+                                      [items]="sourceTypeList" [multiple]="false" bindLabel="name"
+                                      (change)="selectValue($event, 'sourceType')" [ngModel]="selectedSourceType.name"
+                                      [ngModelOptions]="{standalone: true}">
+                                    </ng-select>
+                                  </div>
+                                  <ng-template #staticSourceType>
+                                    <input name="sourceType" class="input" type="text"
+                                      [value]="selectedSourceType.name ? selectedSourceType.name : 'Select Source Type'"
+                                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedSourceType.name}"
+                                      [readonly]="!rolesService.hasControlAccess()">
+                                  </ng-template>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              *ngIf="selectedSourceType?.name && !(selectedSourceType.name === 'Any' || selectedSourceType.name === 'API')"
+                              class="field is-horizontal">
+                              <div class="field-label is-small">
+                                <label class="label is-small">Name</label>
+                              </div>
+                              <div class="field-body">
+                                <div class="field">
+                                  <div class="control" *ngIf="rolesService.hasControlAccess(); else staticSourceName">
+                                    <ng-select [clearable]="false" placeholder="Select Source" [items]="sourceNameList"
+                                      [multiple]="false" bindLabel="name" groupBy="groupbyType"
+                                      (change)="selectValue($event.name, 'sourceName')" [ngModel]="selectedSourceName"
+                                      [ngModelOptions]="{standalone: true}">
+                                    </ng-select>
+                                  </div>
+                                  <div *ngIf="!selectedSourceName && selectedSourceType" class="help is-danger">
+                                    *required
+                                  </div>
+                                  <ng-template #staticSourceName>
+                                    <input name="sourceName" class="input" type="text"
+                                      [value]="selectedSourceName ? selectedSourceName : 'Select Source Name'"
+                                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedSourceName}"
+                                      [readonly]="!rolesService.hasControlAccess()">
+                                  </ng-template>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="column is-1">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label has-text-left">
+              <label class="label label-name">Filters</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div>
+                  <app-filter-list *ngIf="filterPipeline.length > 0" #filtersListComponent [service]="pipelineName"
+                    [from]="'control-pipeline'" [filterPipeline]="filterPipeline"
+                    (controlPipelineFilters)="updateFilterPipelineReference($event)"
+                    (formStatus)="filterFormStatus($event)" [newAddedFilters]="newAddedFilters"></app-filter-list>
+                </div>
+                <div [ngClass]="{'add-filter-div': name.invalid}">
+                  <a [ngClass]="{'disabled-link': name.invalid}"
+                    *ngIf="filterPipeline.length > 0 && rolesService.hasControlAccess()"
+                    (click)="openAddFilterModal(true)" type="button" class="button is-small is-ghost px-0">Add new
+                    filter</a>
+                  <a [ngClass]="{'disabled-link': name.invalid}"
+                    *ngIf="filterPipeline.length === 0 && rolesService.hasControlAccess()"
+                    (click)="openAddFilterModal(true, name.value)" type="button"
+                    class="button is-small is-ghost px-0">Add
+                    filter</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label label-name">Destination</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="field is-horizontal">
+                  <div class="field-body">
+                    <div class="field">
+                      <div class="control box">
+                        <div class="columns">
+                          <div class="column">
+                            <div class="field is-horizontal">
+                              <div class="field-label is-small">
+                                <label class="label is-small">Type</label>
+                              </div>
+                              <div class="field-body">
+                                <div class="field">
+                                  <div class="control"
+                                    *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
+                                    <ng-select [clearable]="false" placeholder="Select Destination Type"
+                                      [items]="destinationTypeList" [multiple]="false" bindLabel="name"
+                                      (change)="selectValue($event, 'destinationType')"
+                                      [ngModel]="selectedDestinationType.name" [ngModelOptions]="{standalone: true}">
+                                    </ng-select>
+                                  </div>
+                                  <ng-template #staticDestinationType>
+                                    <input name="destinationType" class="input" type="text"
+                                      [value]="selectedDestinationType.name ? selectedDestinationType.name : 'Select Destination Name'"
+                                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationType.name}"
+                                      [readonly]="!rolesService.hasControlAccess()">
+                                  </ng-template>
+                                </div>
+                              </div>
+                            </div>
+                            <div *ngIf="selectedDestinationType?.name && !(selectedDestinationType.name === 'Any' || selectedDestinationType.name === 'Broadcast')"
+                              class="field is-horizontal">
+                              <div class="field-label is-small">
+                                <label class="label is-small">Name</label>
+                              </div>
+                              <div class="field-body">
+                                <div class="field">
+                                  <div class="control"
+                                    *ngIf="rolesService.hasControlAccess(); else staticDestinationName">
+                                    <ng-select [clearable]="false" placeholder="Select Destination"
+                                      [items]="destinationNameList" [multiple]="false" bindLabel="name"
+                                      groupBy="groupbyType" (change)="selectValue($event.name, 'destinationName')"
+                                      [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
+                                    </ng-select>
+                                  </div>
+                                  <div *ngIf="!selectedDestinationName && selectedDestinationType"
+                                    class="help is-danger">
+                                    *required
+                                  </div>
+                                  <ng-template #staticDestinationName>
+                                    <input name="destinationName" class="input" type="text"
+                                      [value]="selectedDestinationName ? selectedDestinationName : 'Select Destination Name'"
+                                      [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'has-text-grey-light is-size-7':!selectedDestinationName}"
+                                      [readonly]="!rolesService.hasControlAccess()">
+                                  </ng-template>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="column is-1">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label has-text-left">
+              <label class="label label-name">Enabled</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <input class="checkbox" [disabled]="!rolesService.hasControlAccess()" type="checkbox"
+                  [checked]="isPipelineEnabled" (click)="onCheckboxClicked($event)">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="rolesService.hasControlAccess()" class="column footer-padding">
+          <div class="columns">
+            <div class="column is-2"></div>
+            <div class="column" *ngIf="editMode">
+              <div class="field is-grouped control-pad">
+                <p class="control">
+                  <button (click)="openModal('confirmation-dialog')" type="button"
+                    class="button is-small is-danger is-outlined">Delete</button>
+                </p>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field is-grouped is-pulled-right">
+                <p class="control">
+                  <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
+                </p>
+                <p class="control">
+                  <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link"
+                    [disabled]="pipelineForm?.invalid || (!checkControlPipelineChange() && !unsavedChangesInFilterForm) ">Save</button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <ng-container *ngIf="isAddFilterWizard">
+        <app-add-pipeline-filter-modal [pipelineName]="pipelineName"
+          (notify)="addNewFitlerInPipeline($event)"></app-add-pipeline-filter-modal>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<app-confirmation-dialog id="confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, You want to delete the control pipeline <b>{{pipelineName}}</b>?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" type="button" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button class="button is-small is-danger" type="button" (click)="deletePipeline(pipelineID)">Delete</button>
+  </footer>
+</app-confirmation-dialog>
+<app-filter-alert *ngIf="unsavedChangesInFilterForm" (discardChanges)="discardUnsavedChanges()"
+  [filerDialogData]='confirmationDialogData'></app-filter-alert>

@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { interval, Subject, Subscription } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { fromEvent, interval, Subject, Subscription } from 'rxjs';
+import { takeWhile, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { sortBy } from 'lodash';
 import { AlertService, SystemLogService, PingService, ProgressBarService, SchedulesService } from '../../../../services';
-import { POLLING_INTERVAL } from '../../../../utils';
+import { POLLING_INTERVAL, DEBOUNCE_TIME } from '../../../../utils';
 
 @Component({
   selector: 'app-system-log',
@@ -23,16 +23,23 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
+  private fromEventSub: Subscription;
+
+  @ViewChild('search', { static: true }) search: ElementRef
 
   page = 1;
   offset = 0;
   searchTerm = '';
+  keyword = "";
+  showConfigButton:boolean = false;
+  routePath: string = '';
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private route: ActivatedRoute,
+    private router: Router,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -61,6 +68,13 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.getSysLogs(true);
         this.getSchedules();
       });
+
+    this.fromEventSub = fromEvent(this.search.nativeElement, 'input')    // handle search query
+      .pipe(distinctUntilChanged(), debounceTime(DEBOUNCE_TIME))
+      .subscribe(() => {
+        this.keyword = this.search.nativeElement.value;
+        this.getSysLogs();
+      })
   }
 
   public getSchedules(): void {
@@ -80,6 +94,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           this.scheduleData = new Set(sortBy(serviceNorthTaskSchedules, (s: any) => {
             return s.name.toLowerCase();
           }));
+          if(this.source){
+            this.setRoutePath();
+          }
         },
         error => {
           if (error.status === 0) {
@@ -156,6 +173,12 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     }
     if (filter === 'source') {
       this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim();
+      if(this.source === '' || this.source === 'storage'){
+        this.showConfigButton = false;
+      }
+      else{
+        this.setRoutePath();
+      }
     } else {
       this.level = value.trim().toLowerCase() === 'debug' ? '' : value.trim().toLowerCase();
     }
@@ -173,7 +196,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.limit === 0) {
       this.limit = this.DEFAULT_LIMIT;
     }
-    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.offset).
+    this.systemLogService.getSysLogs(this.source, this.level, this.limit, this.offset, this.keyword).
       subscribe(
         (data) => {
           if (autoRefresh === false) {
@@ -227,10 +250,30 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       });
   }
 
+  setRoutePath() {
+    let sourceSchedule: any = [...this.scheduleData].find((sch: any) => sch.name === this.source)
+    if (sourceSchedule.processName.toLowerCase() === 'south_c') {
+      this.routePath = '/south';
+      this.showConfigButton = true;
+    }
+    else if (sourceSchedule.processName.toLowerCase() === 'north_c') {
+      this.routePath = '/north';
+      this.showConfigButton = true;
+    }
+    else {
+      this.showConfigButton = false;
+    }
+  }
+
+  navToInstanceConfiguration(){
+    this.router.navigate([this.routePath, this.source, 'details'])
+  }
+
   public ngOnDestroy(): void {
     this.isAlive = false;
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
     this.subscription.unsubscribe();
+    this.fromEventSub.unsubscribe();
   }
 }

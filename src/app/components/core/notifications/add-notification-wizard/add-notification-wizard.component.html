@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="steps-content">
-      <form [formGroup]="notificationForm" validate>
+      <form [formGroup]="notificationForm" novalidate>
         <div class="box step-content  is-active" id="c-1">
           <div class="field is-horizontal form-group">
             <div class="field-label is-normal">
@@ -44,9 +44,9 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" #name formControlName="name" required
-                    (input)="validateNotificationName($event)">
-                  <small *ngIf="!isValidName" class="help is-danger level-left">Notification instance name is
+                  <input class="input" id="name" type="text" placeholder="name" formControlName="name" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off">
+                  <small *ngIf="name.hasError('required') && (name.dirty || name.touched)"
+                    class="help is-danger level-left"><sup>*</sup>Notification instance name is
                     required</small>
                 </div>
               </div>
@@ -60,7 +60,7 @@
               <div class="field">
                 <div class="control">
                   <input class="input" id="description" type="text" #desc placeholder="description"
-                    formControlName="description" required>
+                    formControlName="description">
                 </div>
               </div>
             </div>
@@ -81,7 +81,7 @@
               <div class="column is-vertical-center">
                 <div class="select is-multiple">
                   <select multiple name="type" #selectedPlugin formControlName="rule" id="rule"
-                    (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)" required>
+                    (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)">
                     <option *ngFor="let p of notificationRulePlugins" [value]="p.name"> {{ p.name }}</option>
                   </select>
                 </div>
@@ -93,7 +93,7 @@
                 <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
               <div *ngIf="selectedRulePlugin" class="column is-1">
-                <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+                <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink(selectedRulePlugin, notificationRulePlugins[0].type)">
                   <i class="far fa-question-circle"></i>
                 </span>
@@ -118,10 +118,9 @@
           </div>
         </div>
         <div class="box step-content" id="c-3">
-          <app-view-config-item #ruleConfigView [categoryConfigurationData]="rulePluginConfigurationData"
-            [pluginInfo]="{name: payload?.rule,  type:'rule'}" [useRuleProxy]="useRuleProxy"
-            (onConfigChanged)="getPluginChangedConfig($event, 'rule')" [pageId]="'wizard'">
-          </app-view-config-item>
+          <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
+            (changedConfigEvent)="getChangedRuleConfig($event)" [from]="'add-notification-form'"
+            (formStatusEvent)="checkRuleFormValidity($event)"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
@@ -139,7 +138,7 @@
               <div class="column is-vertical-center">
                 <div class="select is-multiple">
                   <select multiple name="type" #deliveryPlugin formControlName="delivery" id="notify"
-                    (change)="isPluginSelected(deliveryPlugin.value, notificationDeliveryPlugins[0].type)" required>
+                    (change)="isPluginSelected(deliveryPlugin.value, notificationDeliveryPlugins[0].type)">
                     <option *ngFor="let d of notificationDeliveryPlugins" [value]="d.name"> {{ d.name }}</option>
                   </select>
                 </div>
@@ -152,7 +151,7 @@
                 <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
               <div *ngIf="selectedDeliveryPlugin" class="column is-1">
-                <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+                <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink(selectedDeliveryPlugin, notificationDeliveryPlugins[0].type)">
                   <i class="far fa-question-circle"></i>
                 </span>
@@ -177,18 +176,20 @@
           </div>
         </div>
         <div class="box step-content" id="c-5">
-          <app-view-config-item #deliveryConfigView [categoryConfigurationData]="deliveryPluginConfigurationData"
-            [useDeliveryProxy]="useDeliveryProxy" [pluginInfo]="{name: payload?.channel,  type:'notify'}"
-            (onConfigChanged)="getPluginChangedConfig($event, 'delivery')" [pageId]="'wizard'">
-          </app-view-config-item>
+          <app-configuration-group #deliveryConfigView *ngIf="deliveryPluginConfiguration"
+            [category]="deliveryPluginConfiguration" (changedConfigEvent)="getChangedDeliveryConfig($event)"
+            [from]="'add-notification-form'"
+            (formStatusEvent)="validDeliveryConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-6">
+          <div class="column">
+            <div class="config-div">
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
                 data-tooltip="Type of notification">Type</label>
             </div>
-            <div class="field-body">
+            <div class="field-body last-step-field">
               <div id="notify-type-dropdown" class="dropdown notification-type">
                 <div class="dropdown-trigger">
                   <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -209,7 +210,7 @@
                 </div>
               </div>
               <div
-                class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon notification-type-help"
+                class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon notification-type-help"
                 data-tooltip="Help" (click)="goToNotificationTypeLink()">
                 <i class="far fa-question-circle"></i>
               </div>
@@ -217,11 +218,11 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
                 data-tooltip="A dead period (in seconds), during which notifications will not be sent regardless of the notification type.">Retrigger
                 Time</label>
             </div>
-            <div class="field-body">
+            <div class="field-body last-step-field">
               <div class="field">
                 <div class="control">
                   <input class="input is-small retrigger-time" #retriggerTime type='number' appNumberOnly min="0"
@@ -235,16 +236,18 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label has-text-left tooltip is-tooltip-right is-tooltip-multiline"
+              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
                 data-tooltip="Enabled">Enabled</label>
             </div>
-            <div class="field-body">
+            <div class="field-body last-step-field">
               <div class="field">
                 <div class="control">
                   <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
                 </div>
               </div>
             </div>
+          </div>
+          </div>
           </div>
         </div>
       </form>
@@ -254,7 +257,8 @@
         <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
       </div>
       <div class="steps-action">
-        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+        <button [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm"
+          (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
       </div>
     </div>
   </div>

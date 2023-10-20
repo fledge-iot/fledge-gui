@@ -1,15 +1,22 @@
-<div id="time-dropdown" class="dropdown is-left">
-  <div class="dropdown-trigger">
-    <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" (click)=toggleDropdown()>
-      <span>{{setDropdownLabel(optedTime)}}</span>
-      <span class="icon is-small">
-        <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-      </span>
-    </button>
+<div class="field has-addons">
+  <div class="control column is-7 no-padding">
+    <input class="input" id="time" type="number" #time min="1" max="getMaxTime()" appIntegerOnly>
   </div>
-  <div class="dropdown-menu" id="dropdown-menu" role="menu">
-    <div class="dropdown-content">
-      <a *ngFor="let time of graphTime" class="dropdown-item" (click)="setGraphTime(time.value)">{{time.key}}</a>
+
+  <div id="unit-dropdown" class="dropdown control column is-5 no-padding">
+    <div class="dropdown-trigger">
+      <button class="button is-small small-btn has-background-white-ter unit-button" aria-haspopup="true"
+        aria-controls="dropdown-menu" (click)=toggleDropdown()>
+        <span>{{selectedUnit}}</span>
+        <span class="icon is-small">
+          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+        </span>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+      <div class="dropdown-content">
+        <a *ngFor="let unit of graphUnit" class="dropdown-item" (click)="setGraphUnit(unit)">{{unit}}</a>
+      </div>
     </div>
   </div>
 </div>

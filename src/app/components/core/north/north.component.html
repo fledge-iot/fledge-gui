@@ -3,13 +3,13 @@
     <header class="card-header">
       <div id="north-tasks" class="card-header-title">
         North Instances
-        <button *ngIf="!isAlive" (click)="getNorthTasks(true)" class="button is-small" id="refresh-check">
+        <button *ngIf="!isAlive" (click)="getNorthTasks(true)" class="button is-small" title="Reload" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="rolesService?.hasEditPermissions()" id="add_task" class="fix-pad button is-light"
         (click)="addNorthInstance()" role="'admin'">
-        <p *ngIf="viewPort !== 'mobile'">Add &nbsp;</p>
+        <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
     </header>
@@ -46,8 +46,8 @@
                     <span *ngIf="t?.processName === 'north_C'" class="tag is-light is-rounded">Service</span>
                   </td>
                   <td>
-                    <span *ngIf="t.enabled == true" class="tag is-success">enabled</span>
-                    <span *ngIf="t.enabled == false" class="tag">disabled</span>
+                    <span *ngIf="t.enabled == true" class="tag is-light is-success">enabled</span>
+                    <span *ngIf="t.enabled == false" class="tag is-light">disabled</span>
                   </td>
                   <td>
                     <small>{{t?.plugin?.name}}</small>
@@ -67,5 +67,4 @@
     </div>
   </div>
 </div>
-<app-north-task-modal (notify)='onNotify()' [task]="task"></app-north-task-modal>
 <app-view-logs></app-view-logs>

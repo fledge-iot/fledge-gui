@@ -2,21 +2,26 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p *ngIf="notification != undefined" class="modal-card-title is-size-5">{{notification.name}}</p>
+      <span *ngIf="notification" class="modal-card-title title-name">{{notification.name}}
+        <span><i class="bi bi-info-circle plugin-info" aria-hidden="true" [title]="'Rule Plugin: ' + notification.rule + '&#013;Action Plugin: ' + notification.channel"></i></span>
+        <p class="help has-text-grey modal-subtitle">Notification Instance</p>
+      </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <div class="box">
-        <app-view-config-item *ngIf="category" [categoryConfigurationData]="category" [useProxy]="useProxy"
-          #notificationConfigView>
-        </app-view-config-item>
+        <app-configuration-group #notificationConfigView *ngIf="category" [category]="category" [from]="'notification'"
+          (changedConfigEvent)="getChangedNotificationConfig($event)"
+          (formStatusEvent)="validConfigurationForm = $event">
+        </app-configuration-group>
         <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Rule - ' + notification.rule">
         <div class="columns">
           <div class="column">
             <div class="field">
-              <app-view-config-item *ngIf="ruleConfiguration" [categoryConfigurationData]="ruleConfiguration"
-                [formId]="rule" [useRuleProxy]="useRuleProxy" #ruleConfigView>
-              </app-view-config-item>
+              <app-configuration-group #ruleConfigView *ngIf="ruleConfiguration" [category]="ruleConfiguration"
+                [from]="'rule-modal'" (changedConfigEvent)="getChangedRuleConfig($event)"
+                (formStatusEvent)="validConfigurationForm = $event">
+              </app-configuration-group>
             </div>
           </div>
         </div>
@@ -25,14 +30,14 @@
         <div class="columns">
           <div class="column">
             <div class="field">
-              <app-view-config-item *ngIf="deliveryConfiguration" #deliveryConfigView
-                [categoryConfigurationData]="deliveryConfiguration" [useDeliveryProxy]="useDeliveryProxy"
-                [formId]="delivery">
-              </app-view-config-item>
+              <app-configuration-group #deliveryConfigView *ngIf="deliveryConfiguration"
+                [category]="deliveryConfiguration" [from]="'delivery-modal'"
+                (changedConfigEvent)="getChangedDeliveryConfig($event)"
+                (formStatusEvent)="validConfigurationForm = $event">
+              </app-configuration-group>
             </div>
           </div>
         </div>
-        <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditPermissions()">
         <div class="columns" *ngIf="rolesService.hasEditPermissions()">
           <div class="column">
             <div class="field is-grouped is-pulled-right">
@@ -40,7 +45,7 @@
                 <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
               </p>
               <p class="control">
-                <button class="button is-small is-link" (click)="proxy()">Save</button>
+                <button class="button is-small is-link" (click)="save()">Save</button>
               </p>
             </div>
           </div>
@@ -48,7 +53,7 @@
         <hr class="hr-text" data-content="">
         <ng-container *ngIf="notification != undefined">
           <p class="buttons is-pulled-left">
-            <span class="icon is-small is-tooltip-right tooltip is-pulled-right is-hovered help-icon"
+            <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
               data-tooltip="Help" (click)="goToLink()">
               <i class="far fa-question-circle"></i>
             </span>

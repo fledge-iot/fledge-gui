@@ -17,4 +17,9 @@ export class CustomValidator {
       }
     });
   }
+
+  public static pluginsCountValidator(control: AbstractControl): { [s: string]: boolean } {
+    const value = control.value;
+    return value && value.length > 1 ? { multiplePlugins: true } : null;
+  }
 }

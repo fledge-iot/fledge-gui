@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { orderBy } from 'lodash';
-import { AlertService, ProgressBarService, RolesService, SharedService } from '../../../../../services';
+import { AlertService, ProgressBarService, RolesService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
+import { DocService } from '../../../../../services/doc.service';
 
 @Component({
   selector: 'app-control-scripts-list',
@@ -20,7 +21,7 @@ export class ControlScriptsListComponent implements OnInit {
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
     private dialogService: DialogService,
-    private sharedService: SharedService,
+    public docService: DocService,
     private ngProgress: ProgressBarService,
     public rolesService: RolesService) {
     this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
@@ -32,6 +33,10 @@ export class ControlScriptsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.getControlScripts();
+  }
+
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
   getControlScripts() {

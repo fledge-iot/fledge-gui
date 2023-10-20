@@ -1,0 +1,90 @@
+
+.columns-fields {
+  margin-top: auto;
+}
+
+.hidden {
+  display: none;
+}
+
+.panel {
+  background-color: #fff;
+  margin-top: 10px;
+}
+
+@media screen and (min-width: 769px) {
+  .field-body {
+    flex-grow: 2 !important;
+  }
+}
+
+.error {
+  color: red;
+}
+
+.tooltip.has-tooltip-multiline::before {
+  min-width: 16rem !important;
+}
+
+#confirm-password {
+  margin-top: 2%;
+}
+
+#confirm-password input {
+  padding-right: 2rem;
+}
+
+:host ::ng-deep ngx-codemirror .CodeMirror-wrap {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+}
+
+:host ::ng-deep ngx-codemirror.readonly-editor .CodeMirror-wrap {
+  background-color: #f5f5f5;
+  border-color: #f5f5f5;
+  box-shadow: none;
+  color: #7a7a7a;
+  cursor: not-allowed;
+}
+
+:host ::ng-deep ngx-codemirror.dark-bg-color .CodeMirror-wrap {
+  background-color: #2b2b2b !important;
+}
+
+:host ::ng-deep ngx-codemirror.readonly-editor .CodeMirror-cursors {
+  visibility: hidden !important;
+}
+
+:host ::ng-deep ngx-codemirror.readonly-editor .CodeMirror-lines {
+  border-color: #f5f5f5;
+  box-shadow: none;
+  color: #7a7a7a;
+  cursor: not-allowed;
+}
+
+.CodeMirror-scroll {
+  overflow: auto;
+  height: 100%;
+  /* This is needed to prevent an IE[67] bug where the scrolled content
+     is visible outside of the scrolling box. */
+  position: relative;
+  outline: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+}
+
+.is-margin {
+  margin-bottom: 0.5rem;
+}
+
+/* causing inconsistency on wizards and service/task details page (Advanced config + enabled) */
+/* commenting until we fix all such label as font-s .9rem pad top 3px and font-w 500 */
+/* .config-label {
+  font-weight: 500;
+} */

@@ -11,6 +11,7 @@ import { SouthServiceModalComponent } from './south-service-modal/south-service-
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
+import { Service } from './south-service';
 
 
 @Component({
@@ -19,7 +20,7 @@ import { DialogService } from '../../common/confirmation-dialog/dialog.service';
   styleUrls: ['./south.component.css']
 })
 export class SouthComponent implements OnInit, OnDestroy {
-  public service;
+  public service: Service;
   public southAseetsExpandedState = [];
   public southboundServices = [];
   public refreshSouthboundServiceInterval = POLLING_INTERVAL;
@@ -32,9 +33,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   selectedService = '';
   eventsTrack = [];
 
-  @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private servicesApiService: ServicesApiService,
@@ -144,10 +143,8 @@ export class SouthComponent implements OnInit, OnDestroy {
   /**
  * Open create scheduler modal dialog
  */
-  openSouthServiceModal(service) {
-    this.service = service;
-    this.southServiceModal.service = service;
-    this.southServiceModal.toggleModal(true);
+  openSouthServiceModal(service: Service) {
+    this.router.navigate(['/south', service.name, 'details'])
   }
 
   onNotify() {

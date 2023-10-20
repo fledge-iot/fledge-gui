@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'acls'}">ACLs</a></li>
+        <li><a [routerLink]="['/control-dispatcher/acl']">ACLs</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">
             {{editMode ? name : 'Add' }}
@@ -10,7 +10,7 @@
         </li>
       </ul>
     </nav>
-    <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check">
+    <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check" title="Reload">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
@@ -18,7 +18,7 @@
     <div class="card-content step-content">
       <form #aclForm="ngForm">
         <span (click)="goToLink('access-control-lists')"
-          class=" icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+          class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
           <i class="far fa-question-circle"></i>
         </span>
         <div class="column is-four-fifths">
@@ -30,8 +30,13 @@
               <div class="field">
                 <div class="control">
                   <input name="name" class="input" type="text" placeholder="Name" required [(ngModel)]="name"
+                    title="No single quotes and double quotes!" autocomplete="off"
                     [ngClass]="{'is-static static-acl':editMode, 'is-small':sharedService.checkAuth() && !editMode}"
                     [readonly]="!sharedService.checkAuth()">
+                  <small
+                    *ngIf="aclForm.controls['name']?.hasError('required') && (aclForm.controls['name']?.dirty || aclForm.controls['name']?.touched)"
+                    class="help is-danger level-left"><sup>*</sup>
+                    required</small>
                 </div>
               </div>
             </div>
@@ -240,7 +245,7 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button [routerLink]="['/control-dispatcher']" [queryParams]="{tab: 'acls'}"
+                  <button type="button" [routerLink]="['/control-dispatcher/acl']"
                     class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
@@ -259,7 +264,7 @@
 <ng-template #btnTemplate>
   <div class="field is-grouped">
     <div class="control">
-      <button (click)="addURLControl()" class="button is-small">
+      <button type="button" (click)="addURLControl()" class="button is-small">
         <span class="icon is-small">
           <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
         </span>
@@ -275,10 +280,10 @@
     <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, you want to delete the ACL <b>{{name}}</b>?
+    Are you sure, You want to delete the ACL <b>{{name}}</b>?
   </section>
   <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteAcl(name)">Delete</button>
+    <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteAcl(name)">Delete</button>
   </footer>
 </app-confirmation-dialog>

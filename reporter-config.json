@@ -1,0 +1,5 @@
+{
+    "reporterEnabled" : "cypress-junit-reporter, cypress-mochawesome-reporter",
+    "cypressJunitReporterReporterOptions" : {"mochaFile": "e2e/reports/xml/[hash].xml"},
+    "cypressMochawesomeReporterReporterOptions" : {"reportDir": "e2e/reports/html"}
+}

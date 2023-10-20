@@ -8,12 +8,13 @@ import { InputMaskDirective } from './input-mask.directive';
 import { InputTrimDirective } from './input-trim.directive';
 import { NumberOnlyDirective } from './number-only.directive';
 import { AccessControlDirective } from './access-control.directive';
+import { IntegerOnlyDirective } from './integer-only.directive';
 
 @NgModule({
   imports: [],
   declarations: [NumberOnlyDirective, CustomMinDirective, EqualValidatorDirective, InputMaskDirective,
-    InputTrimDirective, CustomMinDirective, CustomMaxDirective, CustomJsonDirective, AccessControlDirective],
+    InputTrimDirective, CustomMinDirective, CustomMaxDirective, CustomJsonDirective, AccessControlDirective, IntegerOnlyDirective],
   exports: [NumberOnlyDirective, EqualValidatorDirective, InputMaskDirective, InputTrimDirective,
-    CustomMinDirective, CustomMaxDirective, CustomJsonDirective, AccessControlDirective]
+    CustomMinDirective, CustomMaxDirective, CustomJsonDirective, AccessControlDirective, IntegerOnlyDirective]
 })
 export class DirectivesModule { }

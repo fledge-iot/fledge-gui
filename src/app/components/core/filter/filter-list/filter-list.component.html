@@ -1,0 +1,49 @@
+<div *ngIf="filterPipeline != undefined" class="view-content columns is-size-10">
+  <div class="column">
+    <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
+      <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="'list-item-' + i"
+        cdkDrag [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditPermissionsOnPage(from)">
+        <header class="card-header" cdkDragHandle
+          [ngClass]="{'cursor-default': filterPipeline.length < 2,'cursor-move': filterPipeline.length >= 2 && rolesService.hasEditPermissionsOnPage(type) }">
+          <span class="card-header-title filter-title">
+            <ng-container *ngIf="filterPipeline.length > 1 && rolesService.hasEditPermissionsOnPage(from)">
+              <i class="fa fa-xs fa-bars"></i>&nbsp;
+            </ng-container>
+            {{filter}}
+            <p class="plugin-name help has-text-grey my-0" [ngClass]="{'ml-4': filterPipeline.length > 1 && rolesService.hasEditPermissionsOnPage(from)}">{{getFilter(filter)?.plugin}}</p>
+          </span>
+          <a (click)="activeAccordion('list-item-'+ i)" class="card-header-icon">
+            <span class="icon">
+              <i class="fa fa-xs fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </a>
+        </header>
+        <div class="card-content" hidden>
+          <ng-container *ngIf="hasFilter(filter)">
+            <div class="field">
+              <app-configuration-group #filterConfigComponent [category]="getFilter(filter)" [from]="from"
+                (changedConfigEvent)="getChangedFilterConfig($event, filter)"
+                (formStatusEvent)="validFilterConfigForm = $event">
+              </app-configuration-group>
+            </div>
+            <div class="field">
+              <div class="field has-text-left">
+                <span
+                  class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
+                  data-tooltip="Help" (click)="goToLink({name: getFilter(filter)?.plugin, type: 'Filter'})">
+                  <i class="far fa-question-circle"></i>
+                </span>
+              </div>
+              <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissionsOnPage(from)">
+                <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-hovered" data-tooltip="Remove"
+                  (click)="deleteFilterReference(filter)">
+                  <i class="fa fa-trash-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

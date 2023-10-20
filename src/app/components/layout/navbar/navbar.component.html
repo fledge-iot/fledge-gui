@@ -11,7 +11,7 @@
         &nbsp;&nbsp;
         <b>
           <a *ngIf="!pingInfo.version" href="/" style="color: #363636;">Fledge</a>
-          <a *ngIf="pingInfo.version" id="hover-link" class="tooltip is-tooltip-bottom"
+          <a *ngIf="pingInfo.version" id="hover-link" class="tooltip has-tooltip-bottom has-tooltip-arrow"
             [attr.data-tooltip]="'v'+pingInfo.version" href="/" style="color: #363636;">Fledge</a>
         </b>
         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -31,76 +31,80 @@
     </div>
     <div *ngIf="viewPort == 'tablet'" class="navbar-item">
       <!-- tablet -->
-      <ng-container *ngIf="pingInfo.isAlive && !pingInfo.isAuth; else elseTabTemplate">
-        <div class="dropdown is-left" id="fledge-info" (click)="toggleInfoDropdown()">
-          <div class="dropdown-trigger">
-            <a id="hover-link" (click)="getServiceStatus()">
-              <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-                <i class="fa fa-sm fa-circle parent-icon"> </i>
-              </span>
-              <b
-                *ngIf="pingData['hostName'] && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
-              <span class="icon is-small">
-                <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-              </span>
-            </a>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-              <div class="dropdown-item">
-                <table>
-                  <tr>
-                    <td class="has-text-left">Received:&nbsp;</td>
-                    <td>
-                      <b>{{pingData['dataRead'] | number}}</b>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="has-text-left">Sent: </td>
-                    <td>
-                      <b>{{pingData['dataSent'] | number}}</b>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="has-text-left">Uptime: </td>
-                    <td>
-                      <b>{{uptime}}</b>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <hr class="dropdown-divider" *ngIf="servicesRecord.length !== 0">
-              <div *ngIf="showSpinner" class="app-loading">
-                &nbsp;
-                <svg class="spinner" viewBox="0 0 10 100">
-                  <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
-                </svg>
-              </div>
-              <ng-container *ngIf="!showSpinner && servicesRecord.length !== 0">
+      <div class="control">
+        <ng-container *ngIf="pingInfo.isAlive && !pingInfo.isAuth; else elseTabTemplate">
+          <div class="dropdown is-left" id="fledge-info" (click)="toggleInfoDropdown()">
+            <div class="dropdown-trigger">
+              <a id="hover-link" (click)="getServiceStatus()">
+                <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                  <i class="fa fa-sm fa-circle parent-icon"> </i>
+                </span>
+                <b
+                  *ngIf="pingData['hostName'] && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+                <span class="icon is-small">
+                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </a>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
                 <div class="dropdown-item">
                   <table>
-                    <tr *ngFor="let s of servicesRecord">
-                      <td class="has-text-left">
-                        <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                          <i class="fa fa-sm fa-circle child-icon"></i>
-                        </span>
-                        {{s.name}}&nbsp;
-                      </td>
+                    <tr>
+                      <td class="has-text-left">Received:&nbsp;</td>
                       <td>
-                        <b>{{s.status}}</b>
+                        <b>{{pingData['dataRead'] | number}}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="has-text-left">Sent: </td>
+                      <td>
+                        <b>{{pingData['dataSent'] | number}}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="has-text-left">Uptime: </td>
+                      <td>
+                        <b>{{uptime}}</b>
                       </td>
                     </tr>
                   </table>
                 </div>
-              </ng-container>
+                <hr class="dropdown-divider" *ngIf="servicesRecord.length !== 0">
+                <div *ngIf="showSpinner" class="app-loading">
+                  &nbsp;
+                  <svg class="spinner" viewBox="0 0 10 100">
+                    <circle class="path" cx="50%" cy="50%" r="8" fill="none" stroke-width="2" stroke-miterlimit="10" />
+                  </svg>
+                </div>
+                <ng-container *ngIf="!showSpinner && servicesRecord.length !== 0">
+                  <div class="dropdown-item">
+                    <table>
+                      <tr *ngFor="let s of servicesRecord">
+                        <td class="has-text-left">
+                          <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                            <i class="fa fa-sm fa-circle child-icon"></i>
+                          </span>
+                          {{s.name}}&nbsp;
+                        </td>
+                        <td>
+                          <b>{{s.status}}</b>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </ng-container>
+              </div>
             </div>
           </div>
-        </div>
-      </ng-container>
+        </ng-container>
+        <span *ngIf="isManualRefresh" class="help">&nbsp;&nbsp;Auto refresh
+          disabled</span>
+      </div>
       <ng-template #elseTabTemplate>
         <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <span class="icon has-text-success tooltip is-tooltip-right" data-tooltip="Authentication required.">
+            <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Authentication required.">
               <i class="fa fa-sm fa-circle parent-icon"> </i>
             </span>
           </div>
@@ -180,11 +184,13 @@
                 </div>
               </div>
             </div>
+            <span *ngIf="isManualRefresh" class="help">&nbsp;&nbsp; Auto refresh
+              disabled</span>
           </ng-container>
           <ng-template #elseMobileTemplate>
             <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
               <div class="control">
-                <span class="icon has-text-success tooltip is-tooltip-right" data-tooltip="Authentication required.">
+                <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Authentication required.">
                   <i class="fa fa-sm fa-circle parent-icon"> </i>
                 </span>
               </div>
@@ -208,11 +214,14 @@
                 <div class="dropdown-trigger">
                   <a id="hover-link" (mouseover)="getServiceStatus()"
                     [ngClass]="{'default-cursor': this.servicesRecord.length === 0}">
-                    <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-                      <i class="fa fa-sm fa-circle parent-icon"> </i>
-                    </span>
-                    <b
-                      *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
+                    <div>
+                      <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                        <i class="fa fa-sm fa-circle parent-icon"> </i>
+                      </span>
+                      <b *ngIf="pingData['hostName']  && pingData['serviceName']">
+                        {{pingInfo.hostName}}/{{pingData['serviceName']}}
+                      </b>
+                    </div>
                   </a>
                 </div>
                 <div class="dropdown-menu" id="dropdown-menu" role="menu">
@@ -232,7 +241,21 @@
                               <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
                                 <i class="fa fa-sm fa-circle child-icon"></i>
                               </span>
-                              {{s.name}}&nbsp;
+                              <ng-container *ngIf="['northbound', 'southbound'].includes(s.type.toLowerCase()); else elseServiceTemplate">
+                                <a class="ghost" (click)="navToServiceConfiguration(s)">{{s.name}}</a>
+                              </ng-container>
+                              <ng-template #elseServiceTemplate>
+                                <span>{{s.name}}</span>
+                              </ng-template>
+                              &nbsp;
+                            </td>
+                            <td>
+                              <ng-container *ngIf="['failed', 'unresponsive'].includes(s.status.toLowerCase())">
+                                <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-hovered mr-2 ml-2"
+                                  data-tooltip="Show logs" (click)="navToSyslogs(s)">
+                                  <i class="far fa-sm fa-file-alt"></i>
+                                </span>
+                              </ng-container>
                             </td>
                             <td>
                               <b>{{s.status}}</b>
@@ -244,6 +267,8 @@
                   </div>
                 </div>
               </div>
+              <span *ngIf="isManualRefresh" class="help">&nbsp;&nbsp; Auto refresh
+                disabled</span>
             </div>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span *ngIf="pingInfo.isSafeMode" class="tag is-dark is-rounded">SAFE MODE</span>
@@ -266,7 +291,7 @@
         <ng-template #elseTemplate>
           <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
             <div class="control">
-              <span class="icon has-text-success tooltip is-tooltip-right" data-tooltip="Authentication required.">
+              <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Authentication required.">
                 <i class="fa fa-sm fa-circle parent-icon"> </i>
               </span>
             </div>
@@ -286,7 +311,7 @@
         </div>
 
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
-          <div class="dropdown-content">
+          <div class="dropdown-content" [ngClass]="{'disabled': !pingInfo.isAlive}">
             <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item user-content">
               <i class="fa fa-sm fa-user" aria-hidden="true"></i>&nbsp; Profile
             </a>
@@ -309,7 +334,7 @@
     <div class="navbar-item">
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
-          <a class="tooltip is-tooltip-left" data-tooltip="Shut Down Fledge" (click)="openModal()">
+          <a class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Shut Down Fledge" (click)="openModal()">
             <i class="fa fa-power-off" aria-hidden="true"></i>
           </a>
         </span>
@@ -318,7 +343,7 @@
     <div class="navbar-item">
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
-          <a id="restart" class="tooltip is-tooltip-left" data-tooltip="Restart Fledge" (click)="openRestartModal()">
+          <a id="restart" class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Restart Fledge" (click)="openRestartModal()">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </a>
         </span>

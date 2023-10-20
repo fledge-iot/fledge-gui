@@ -3,7 +3,7 @@
     <header class="card-header">
       <p id="scheduled-process" class="card-header-title">
         Schedules &nbsp;
-        <button (click)="getSchedules()" class="button is-small" id="refresh-check">
+        <button (click)="getSchedules()" class="button is-small" title="Reload" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </p>
@@ -35,11 +35,11 @@
               </ng-container>
             </td>
             <td>
-              <a *ngIf="rolesService.hasEditPermissions()" (click)="editSchedule(schedule.id)"
+              <a *ngIf="rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
                 class="button is-text ed-btn" name={{schedule.name}}>
                 <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
               </a>
-              <a *ngIf="!rolesService.hasEditPermissions()" (click)="editSchedule(schedule.id)"
+              <a *ngIf="!rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
                 class="button is-small is-text" name={{schedule.name}}>
                 View
               </a>
@@ -50,5 +50,3 @@
     </div>
   </div>
 </div>
-<app-update-schedule (notify)='onNotify()' (process)='setScheduleProcess($event)' (type)='setScheduleType($event)'
-  [childData]='updateScheduleData'></app-update-schedule>

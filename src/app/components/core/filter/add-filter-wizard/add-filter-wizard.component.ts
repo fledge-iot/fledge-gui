@@ -1,13 +1,19 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { assign, reduce, sortBy, isEmpty } from 'lodash';
+import { sortBy, isEmpty, cloneDeep } from 'lodash';
 
-import { AlertService, ConfigurationService, FilterService, ServicesApiService, ProgressBarService } from '../../../../services';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
-import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import {
+  AlertService, ConfigurationService, FilterService, ServicesApiService,
+  ProgressBarService, FileUploaderService,
+  ConfigurationControlService,
+  ToastService
+} from '../../../../services';
+import { concatMap, delay, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
+import { CustomValidator } from '../../../../directives/custom-validator';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
+
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -19,21 +25,13 @@ export class AddFilterWizardComponent implements OnInit {
   public plugins = [];
   public categories = [];
   public configurationData;
-  public useProxy;
-  public isValidPlugin = true;
-  public isSinglePlugin = true;
-  public isValidName = true;
-  public payload: any;
   public selectedPluginDescription = '';
   public plugin: any;
   public pluginData = [];
-  public filesToUpload = [];
   public requestInProgress = false;
   public show = false;
   public stopLoading = false;
   public placeholderText = 'fetching available plugins...';
-  public disabledBtn = false;
-
   increment = 1;
   maxRetry = 15;
   initialDelay = 1000;
@@ -43,40 +41,53 @@ export class AddFilterWizardComponent implements OnInit {
   serviceForm = new FormGroup({
     name: new FormControl(),
     plugin: new FormControl(),
-    pluginToInstall: new FormControl()
+    pluginToInstall: new FormControl(),
+    config: new FormControl(null)
   });
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @Input() serviceName: any;
+  @Input() from: string;
 
-  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItem: ViewConfigItemComponent;
+  validChildConfigurationForm = true;
+  pluginConfiguration: any;
 
   constructor(private formBuilder: FormBuilder,
     private filterService: FilterService,
     private configurationService: ConfigurationService,
-    private configService: ConfigurationService,
+    private fileUploaderService: FileUploaderService,
     private alertService: AlertService,
+    private toast: ToastService,
     private service: ServicesApiService,
     private docService: DocService,
-    private validateFormService: ValidateFormService,
-    private ngProgress: ProgressBarService) { }
+    private configurationControlService: ConfigurationControlService,
+    private ngProgress: ProgressBarService,
+    private cdRef: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.getCategories();
     this.serviceForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      plugin: [{ value: '', disabled: false }, Validators.required],
-      pluginToInstall: [{ value: null, disabled: false }, Validators.required]
+      name: ['', [Validators.required, Validators.pattern(QUOTATION_VALIDATION_PATTERN), CustomValidator.nospaceValidator]],
+      plugin: [{ value: '', disabled: false }, [Validators.required, CustomValidator.pluginsCountValidator]],
+      pluginToInstall: [{ value: null, disabled: false }, [Validators.required]],
+      config: [null]
     });
     this.getInstalledFilterPlugins();
   }
 
+  ngAfterContentChecked() {
+    this.cdRef.detectChanges();
+  }
+
   toggleAvailablePlugins() {
     if (this.show) {
+      this.serviceForm.controls.pluginToInstall.disable();
+      this.serviceForm.controls.plugin.enable();
       this.show = false;
       return;
     }
     this.show = true;
+    this.serviceForm.controls.pluginToInstall.enable();
     this.getAvailablePlugins('Filter');
   }
 
@@ -137,6 +148,7 @@ export class AddFilterWizardComponent implements OnInit {
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     switch (+id) {
       case 2:
+        this.serviceForm.controls.plugin.enable();
         nxtButton.textContent = 'Next';
         nxtButton.disabled = false;
         break;
@@ -153,25 +165,15 @@ export class AddFilterWizardComponent implements OnInit {
     if (this.serviceForm.value['pluginToInstall']) {
       pluginToInstall = this.serviceForm.value['pluginToInstall'];
     }
-    if (pluginToInstall === null || pluginToInstall === undefined) {
-      this.isValidPlugin = false;
-      return;
-    }
     const isPluginInstalled = this.plugins.filter(p => p.name.toLowerCase() === pluginToInstall.toLowerCase());
     if (this.serviceForm.value['pluginToInstall'] && isPluginInstalled.length === 0) {
-      if (this.serviceForm.value['name'].trim() === '') {
-        this.isValidName = false;
-        return;
-      }
       this.installPlugin(this.serviceForm.value['pluginToInstall']);
     } else {
       this.moveNext();
     }
   }
 
-  moveNext() {
-    this.isValidPlugin = true;
-    this.isValidName = true;
+  moveNext(pluginInstalled = false) {
     const formValues = this.serviceForm.value;
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     if (first === undefined) {
@@ -183,20 +185,7 @@ export class AddFilterWizardComponent implements OnInit {
 
     switch (+id) {
       case 1:
-        if (formValues['plugin'] === '' && formValues['pluginToInstall'] === '') {
-          this.isValidPlugin = false;
-          return;
-        }
 
-        if (formValues['plugin'].length !== 1 && formValues['pluginToInstall'] === '') {
-          this.isSinglePlugin = false;
-          return;
-        }
-
-        if (formValues['name'].trim() === '') {
-          this.isValidName = false;
-          return;
-        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
 
@@ -209,35 +198,26 @@ export class AddFilterWizardComponent implements OnInit {
           this.alertService.error('A filter (or category) with this name already exists.');
           return;
         }
-
-        // create payload
-        if (formValues['name'].trim() !== '' && (formValues['plugin'].length > 0 || formValues['pluginToInstall'].length > 0)) {
-          let pluginValue;
+        let pluginValue = '';
+        if (formValues['name']?.trim() !== '' && (formValues['plugin']?.length > 0 || formValues['pluginToInstall']?.length > 0)) {
           if (formValues['pluginToInstall']) {
             pluginValue = this.plugins.find(p => p.name.toLowerCase() === formValues['pluginToInstall'].toLowerCase()).name;
           } else {
-            pluginValue = formValues['plugin'][0];
+            pluginValue = this.serviceForm.value['plugin'][0];
           }
-          this.payload = {
-            name: formValues['name'],
-            plugin: pluginValue
-          };
-
         }
-        this.getConfiguration(formValues['name'].trim());
+        if (pluginInstalled) {
+          this.getConfiguration(formValues['name'].trim(), pluginValue);
+        }
+
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        if (!this.validChildConfigurationForm) {
+          nxtButton.disabled = true;
+        }
         break;
       case 2:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItem))) {
-          return;
-        }
-        this.viewConfigItem.callFromWizard();
-        document.getElementById('vci-proxy').click();
-        if (this.viewConfigItem !== undefined && !this.viewConfigItem.isValidForm) {
-          return false;
-        }
-        this.addFilter(this.payload);
+        this.addFilter();
         break;
       default:
         break;
@@ -279,8 +259,8 @@ export class AddFilterWizardComponent implements OnInit {
     /** request started */
     this.ngProgress.start();
     this.serviceForm.controls.pluginToInstall.disable();
-    this.serviceForm.controls.plugin.disable();
-    this.disabledBtn = true;
+    this.serviceForm.controls.plugin.disable({ onlySelf: true });
+    this.serviceForm.setErrors({ 'invalid': true });
     this.alertService.activityMessage('Installing ' + pluginName + ' filter plugin...', true);
     this.service.installPlugin(pluginData).
       subscribe(
@@ -293,7 +273,7 @@ export class AddFilterWizardComponent implements OnInit {
           this.ngProgress.done();
           this.serviceForm.controls.pluginToInstall.enable();
           this.serviceForm.controls.plugin.enable();
-          this.disabledBtn = false;
+          this.serviceForm.setErrors({ 'invalid': false });
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -346,73 +326,89 @@ export class AddFilterWizardComponent implements OnInit {
       ).subscribe(() => {
         this.ngProgress.done();
         this.alertService.closeMessage();
-        this.alertService.success(`Plugin ${pluginName} installed successfully.`);
         this.getInstalledFilterPlugins(true);
+        this.alertService.success(`Plugin ${pluginName} installed successfully.`);
         this.serviceForm.controls.pluginToInstall.enable();
         this.serviceForm.controls.plugin.enable();
-        this.disabledBtn = false;
+        this.serviceForm.controls.plugin.clearValidators();
+        this.serviceForm.controls.plugin.updateValueAndValidity();
+        this.serviceForm.setErrors({ 'invalid': false });
       });
   }
 
-  getDescription(selectedPlugin) {
-    if (selectedPlugin === '') {
-      this.isValidPlugin = false;
-      this.selectedPluginDescription = '';
-      this.serviceForm.value['plugin'] = '';
-    } else {
-      this.isSinglePlugin = true;
-      this.isValidPlugin = true;
-      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
+  selectPlugin(selectedPlugin: string) {
+    this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
+    if (pluginInfo) {
+      // get configuration after filtering the readonly properties
+      pluginInfo.config = this.configurationControlService.getValidConfig(pluginInfo.config);
+      this.validChildConfigurationForm = true;
+      this.configurationData = null;
+      this.pluginConfiguration = null;
+      this.configurationData = pluginInfo;
+      this.pluginConfiguration = cloneDeep(pluginInfo);
+      this.selectedPluginDescription = pluginInfo.description;
+      this.serviceForm.controls['config'].patchValue(null);
+      this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.serviceForm.controls.pluginToInstall.reset();
+      this.serviceForm.controls.pluginToInstall.clearValidators();
+      this.serviceForm.controls.pluginToInstall.updateValueAndValidity();
     }
   }
 
   /**
    *  Get default configuration of a selected plugin
    */
-  private getConfiguration(filterName: string): void {
-    const config = this.plugins.map(p => {
-      if (p.name.toLowerCase() === this.payload.plugin.toLowerCase()) {
-        return p.config;
-      }
-    }).filter(value => value !== undefined);
-    // array to hold data to display on configuration page
-    this.configurationData = { key: this.serviceName + '_' + filterName, 'value': config };
-    this.useProxy = 'true';
+  private getConfiguration(filterName: string, pluginName: string): void {
+    const plugin = this.plugins.find(p => p.name.toLowerCase() === pluginName.toLowerCase());
+    if (plugin) {
+      this.configurationData = { key: this.serviceName + '_' + filterName, config: plugin.config };
+      this.pluginConfiguration = cloneDeep(plugin);
+    }
   }
 
   /**
-   * Get edited configuration from view filter config child page
+   * Get edited configuration of filter plugin
    * @param changedConfig changed configuration of a selected plugin
    */
-  getChangedConfig(changedConfig) {
-    // final array to hold changed configuration
-    let finalConfig = [];
-    changedConfig.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload = item.value;
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-        });
-      }
-    });
-
-    // convert finalConfig array in object of objects to pass in add service
-    finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    this.payload.filter_config = finalConfig;
+  getChangedConfig(changedConfig: any) {
+    const filterConfig = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration);
+    this.serviceForm.controls['config'].patchValue(filterConfig);
+    this.serviceForm.controls['config'].updateValueAndValidity({ onlySelf: true });
   }
 
   /**
    * Method to add filter
    * @param payload  to pass in request
    */
-  public addFilter(payload) {
+  public addFilter() {
+    let pluginValue;
+    if (this.serviceForm.value['pluginToInstall']) {
+      pluginValue = this.plugins.find(p => p.name.toLowerCase() === this.serviceForm.value['pluginToInstall'].toLowerCase()).name;
+    } else {
+      pluginValue = this.serviceForm.value['plugin'][0];
+    }
+
+    const payload = {
+      name: this.serviceForm.value['name'].trim(),
+      plugin: pluginValue,
+      ...this.serviceForm.value['config'] && { filter_config: this.serviceForm.value['config'] }
+    }
+
+    // extract script files to upload from final payload
+    const files = this.getScriptFilesToUpload(payload.filter_config);
     this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
-          this.alertService.success(data.filter + ' filter added successfully.', true);
-          this.addFilterPipeline({ 'pipeline': [payload.name] });
+          this.toast.success(data.filter + ' filter added successfully.');
+          if (this.from === 'control-pipeline') {
+            if (files) {
+              this.uploadScript(payload.name, files);
+            }
+            this.notify.emit({ 'filter': payload.name, files });
+          } else {
+            this.addFilterPipeline({ 'pipeline': [payload.name], files });
+          }
         },
         (error) => {
           if (error.status === 0) {
@@ -423,36 +419,23 @@ export class AddFilterWizardComponent implements OnInit {
         });
   }
 
-  public uploadScript() {
-    this.filesToUpload.forEach(data => {
-      let configItem: any;
-      configItem = Object.keys(data)[0];
-      const file = data[configItem];
-      const formData = new FormData();
-      formData.append('script', file);
-      this.configService.uploadFile(this.configurationData.key, configItem, formData)
-        .subscribe(() => {
-          this.filesToUpload = [];
-          this.alertService.success('configuration updated successfully.');
-        },
-          error => {
-            this.filesToUpload = [];
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
-    });
+  /**
+   * To upload script files of a configuration property
+   * @param categoryName name of the configuration category
+   * @param files : Scripts array to uplaod
+   */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
 
-
   public addFilterPipeline(payload) {
+    const name = this.serviceForm.value['name'];
     this.filterService.addFilterPipeline(payload, this.serviceName)
       .subscribe((data: any) => {
         this.notify.emit(data);
-        if (this.filesToUpload !== []) {
-          this.uploadScript();
+        if (payload?.files.length > 0) {
+          const filterName = this.serviceName + '_' + name
+          this.uploadScript(filterName, payload?.files);
         }
       },
         (error) => {
@@ -464,10 +447,8 @@ export class AddFilterWizardComponent implements OnInit {
         });
   }
 
-  validateServiceName(event) {
-    if (event.target.value.trim().length > 0) {
-      this.isValidName = true;
-    }
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
   }
 
   public getInstalledFilterPlugins(pluginInstalled?: boolean) {
@@ -477,7 +458,10 @@ export class AddFilterWizardComponent implements OnInit {
           return p.name.toLowerCase();
         });
         if (pluginInstalled) {
-          this.moveNext();
+          this.serviceForm.controls.plugin.disable();
+          this.serviceForm.controls.plugin.clearValidators();
+          this.serviceForm.controls.plugin.updateValueAndValidity();
+          this.moveNext(pluginInstalled);
         }
       },
       (error) => {
@@ -507,16 +491,20 @@ export class AddFilterWizardComponent implements OnInit {
 
   filterSelectionChanged(event: any) {
     if (event !== undefined) {
-      this.isValidPlugin = true;
+      this.serviceForm.controls.plugin.disable();
+      this.serviceForm.controls.pluginToInstall.enable();
     } else {
+      this.serviceForm.controls.plugin.enable();
       this.serviceForm.controls.pluginToInstall.reset();
+      this.serviceForm.controls.pluginToInstall.clearValidators();
+      this.serviceForm.controls.pluginToInstall.updateValueAndValidity();
     }
   }
 
   /**
    * Open readthedocs.io documentation of filter plugins
-   * @param selectedPlugin Selected filter plugin 
-   * 
+   * @param selectedPlugin Selected filter plugin
+   *
    */
   goToLink(selectedPlugin: string) {
     const pluginInfo = {

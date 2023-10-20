@@ -2,17 +2,53 @@
   <div class="modal-background"></div>
   <div class="modal-card animated fadeIn" [ngClass]="{overflow: timeDropDownOpened}">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">
-        {{assetCode}}
-        <button *ngIf="!isAlive" (click)="refresh()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      <span class="modal-card-title is-size-5">
+        <div class="asset-name">
+          <span class="asset-code">
+            {{assetCode}}
+          </span>
+          <button *ngIf="!isAlive" (click)="refresh()" title="Reload" class="button small-btn" id="refresh-check">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          </button>
+        </div>
+        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5) && infoTextTimestamps.start">
+          <span class="help" *ngIf="isAlive">
+            *Showing data from {{infoTextTimestamps.start}} to current time
+          </span>
+          <span class="help" *ngIf="!isAlive">
+            *Showing data from {{infoTextTimestamps.start}} to {{infoTextTimestamps.end}}
+          </span>
+        </ng-container>
+      </span>
+      <ng-container *ngIf="!isLatestReadings && !(selectedTab == 5)">
+        <ng-container *ngIf="!isReadingsFetched">
+          <button class="button small-btn is-loading spin-button"></button>
+        </ng-container>
+        <button [disabled]="isAlive" (click)="showBackwardReadingsGraphOrSummary()" class="button small-btn playback-button">
+          <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
-      </p>
+        <ng-container *ngIf="isAlive">
+          <button (click)="toggleAutoRefresh(false)" class="button small-btn playback-button">
+            <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!isAlive">
+          <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
+            class="button small-btn playback-button">
+            <i class="fa fa-sm fa-play" aria-hidden="true"></i>
+          </button>
+        </ng-container>
+        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraphOrSummary()"
+          class="button small-btn playback-button">
+          <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
+        </button>
+      </ng-container>
       <div class="close">
         <button class="delete" aria-label="close" (click)="toggleModal(false);loadPage = false"></button>
       </div>
     </header>
-    <section class="modal-card-body" [ngClass]="{overflow: timeDropDownOpened}">
+    <section class="modal-card-body"
+      [ngClass]="{overflow: timeDropDownOpened || numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList), overflowHide: imageReadings?.length>0 && isLatestReadings}">
       <ng-container *ngIf="loadPage; else tabs">
         <div class="app-loading">
           &nbsp;
@@ -22,13 +58,35 @@
         </div>
       </ng-container>
       <ng-template #tabs>
-        <div class="columns">
-          <div class="column is-2" *ngIf="!isLatestReadings">
+        <div class="columns" id="time-dropdown-container">
+          <div class="column is-2 time-dropdown" *ngIf="!isLatestReadings">
             <app-time-dropdown (updateGraphEvent)=getTimeBasedAssetReadingsAndSummary($event)
               (dropdownOpenEvent)="timeDropDownOpened = $event"></app-time-dropdown>
           </div>
+          <div class="column"
+            [ngClass]="{'is-7': rangeSliderService.getAlphControlStatus() && selectedTab === 1, 'is-9': !rangeSliderService.getAlphControlStatus() || selectedTab !== 1}"
+            *ngIf="!isLatestReadings && !(selectedTab == 4) && availableAssets.length > 0">
+            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true"
+              [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()" [clearable]="additionalAssets.length > 1"
+              (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
+            </ng-select>
+          </div>
+          <div class="column is-2" *ngIf="rangeSliderService.getAlphControlStatus() && selectedTab === 1">
+            <div class="range-wrap">
+              <app-range-slider></app-range-slider>
+            </div>
+          </div>
+          <div class="column">
+            <button *ngIf="zoomConfig.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset Zoom" class="button small-btn zoom-button">
+              <i class="fa fa-sm fa-search-minus" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div class="columns">
           <div class="column" *ngIf="!isLatestReadings">
-            <div class="tabs is-boxed is-fullwidth is-small" id="tabs">
+            <div
+              *ngIf="!(numberTypeReadingsList?.length === 0 && arrayTypeReadingsList?.length === 0 && isEmptyObject(stringTypeReadingsList))"
+              class="tabs is-boxed is-fullwidth is-small" id="tabs">
               <ul>
                 <li *ngIf="numberTypeReadingsList?.length > 0" [ngClass]="{'is-active': selectedTab == 1}" data-tab="1">
                   <a (click)="selectTab(1)">
@@ -62,7 +120,7 @@
         </div>
         <div class="columns">
           <div class="column">
-            <div id="tab-content">
+            <div id="tab-content" class="custom-height">
               <ng-container *ngIf="showSpinner; else DataDiv">
                 <div class="app-loading">
                   &nbsp;
@@ -72,10 +130,13 @@
                 </div>
               </ng-container>
               <ng-template #DataDiv>
-                <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
-                  <div *ngIf="rangeSliderService.getAlphControlStatus()" class="range-wrap is-pulled-right">
-                    <app-range-slider></app-range-slider>
+                <div *ngIf="numberTypeReadingsList?.length == 0 && arrayTypeReadingsList?.length == 0
+                  && isEmptyObject(stringTypeReadingsList) && imageReadings?.length == 0" class="custom-height no-reading">
+                  <div class="has-text-centered no-data"><small class="text-secondary has-text-grey-light">
+                      No readings available.</small>
                   </div>
+                </div>
+                <div *ngIf="selectedTab === 1 && numberTypeReadingsList?.length > 0" class="is-active" data-content="1">
                   <div>
                     <app-chart class="chart-container animated fadeIn" [from]="'asset'" [type]="assetChartType"
                       [data]="assetReadingValues" [options]="assetChartOptions" #assetChart>
@@ -95,7 +156,7 @@
                     </thead>
                     <tbody>
                       <tr *ngFor="let txtData of stringTypeReadingsList | keyvalue: keyDescOrder">
-                        <td>
+                        <td class="pt-4">
                           <small>{{txtData.key}}</small>
                         </td>
                         <td>
@@ -115,62 +176,59 @@
                   </table>
                 </div>
                 <div *ngIf="selectedTab === 4 && assetReadingSummary?.length > 0 && showSummaryTab() " data-content="4">
-                  <div [ngClass]="{'summary': buttonText !== ''}" class="animated fadeIn" *ngIf="!showSummarySpinner">
-                    <table class="table is-responsive is-borderless data-table">
-                      <tbody>
-                        <tr [ngClass]="{'animated fadeInDown': autoRefresh === false}"
-                          *ngFor="let asset of assetReadingSummary  | slice:0:summaryLimit">
-                          <td>
-                            <span>
-                              <b><small>{{asset.name}}</small></b>
-                            </span>
-                          </td>
-                          <ng-container *ngFor="let reading of asset.value">
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Avg </span>
-                                <span class="tag is-info">{{isNumber(reading.average)
-                                  ?
-                                  roundTo(reading.average,
-                                  5) : reading.average.toString().substring(0,6)}}
-                                </span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Min </span>
-                                <span class="tag is-info">{{isNumber(reading.min) ?
-                                  roundTo(reading.min, 5) : reading.min.toString().substring(0,6)}}</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="tags has-addons">
-                                <span class="tag is-light"> Max </span>
-                                <span class="tag is-info">{{isNumber(reading.max) ?
-                                  roundTo(reading.max, 5): reading.max.toString().substring(0,6)}}</span>
-                              </div>
-                            </td>
-                          </ng-container>
-                        </tr>
-                        <tr *ngIf="buttonText !== ''">
-                          <td><a class="button is-small is-text" (click)="showAll()">{{buttonText}}</a></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  <app-asset-reading-summary [buttonText]="buttonText" [showSummarySpinner]="showSummarySpinner"
+                    [autoRefresh]="autoRefresh" [assetReadingSummary]="assetReadingSummary"
+                    [summaryLimit]="summaryLimit"></app-asset-reading-summary>
                 </div>
                 <div *ngIf="selectedTab === 5" data-content="5">
-                  <div class="has-text-centered">
-                    <ng-container *ngFor="let read of imageReadings">
-                      <div id="tab-content">
-                        <img [src]="read.image" alt={{read.datapoint}}>
-                      </div>
-                      <small class="has-text-centered text-secondary has-text-grey-light">{{read?.datapoint}},
-                        Timestamp:
-                        {{read?.timestamp}}
-                      </small>
-                    </ng-container>
+                  <div class="columns margin-top">
+                    <div class="has-text-centered column"
+                      [ngClass]="{'is-12, image-reading-only': isEmptyObject(stringTypeReadingsList), 'is-8, image-with-data': !isEmptyObject(stringTypeReadingsList)}">
+                      <ng-container *ngFor="let read of imageReadings">
+                        <div id="tab-content">
+                          <img [src]="read.image" alt={{read.datapoint}}>
+                        </div>
+                        <small class="has-text-centered text-secondary has-text-grey-dark is-block">Width:
+                          {{imageReadingsDimensions.width}}px, Height:
+                          {{imageReadingsDimensions.height}}px, Depth: {{imageReadingsDimensions.depth}}px
+                        </small>
+                        <small
+                          class="has-text-centered text-secondary has-text-grey-dark is-block margin-bottom">{{read?.datapoint}},
+                          Timestamp:
+                          {{read?.timestamp}}
+                        </small>
+                      </ng-container>
+                    </div>
+                    <div *ngIf="!isEmptyObject(stringTypeReadingsList)" data-content="3"
+                      class="column is-4 image-with-data">
+                      <table class="table is-responsive is-borderless data-table">
+                        <thead>
+                          <tr>
+                            <th style="width: 40%" class="table-heading">Timestamp</th>
+                            <th class="table-heading">Reading</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let txtData of stringTypeReadingsList | keyvalue: keyDescOrder">
+                            <td class="table-data">
+                              <small>{{txtData.key}}</small>
+                            </td>
+                            <td>
+                              <table class="table is-responsive is-borderless">
+                                <tbody>
+                                  <ng-container *ngFor="let item of txtData.value">
+                                    <tr>
+                                      <td class="metadata">{{item.key}}</td>
+                                      <td class="metadata">{{item.data}}</td>
+                                    </tr>
+                                  </ng-container>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </ng-template>

@@ -16,3 +16,23 @@ tr:hover .btn-delete {
 .acl-usage {
   padding: 0.1em 0.7em;
 }
+
+.is-hovered {
+  cursor: pointer !important;
+}
+
+.btn-margin {
+margin: 17px 7px;
+}
+
+.context-menu {
+  border: none;
+}
+
+.fix-margin {
+  margin-top: 6px;
+}
+
+.is-hoverable.acl-table tr:hover .context-menu {
+  background-color: #fafafa; 
+}

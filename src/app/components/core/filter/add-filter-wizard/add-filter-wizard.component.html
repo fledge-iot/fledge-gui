@@ -30,10 +30,14 @@
               </div>
               <div class="field-body">
                 <div class="column">
-                  <ng-select #pluginToInstall [items]="pluginData" [searchable]="pluginData.length" [placeholder]="placeholderText" notFoundText="No plugin available to install"
-                    [loading]="!pluginData.length && !stopLoading" (change)="filterSelectionChanged($event)" bindLabel="pluginToInstall" formControlName="pluginToInstall">
+                  <ng-select #pluginToInstall [items]="pluginData" [searchable]="pluginData.length"
+                    [placeholder]="placeholderText" notFoundText="No plugins available to install"
+                    [loading]="!pluginData.length && !stopLoading" (change)="filterSelectionChanged($event)"
+                    bindLabel="pluginToInstall" formControlName="pluginToInstall">
                   </ng-select>
-                  <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
+                  <small
+                    *ngIf="serviceForm.controls['pluginToInstall'].hasError('required') && serviceForm.controls['pluginToInstall'].touched"
+                    class="help is-danger level-left">* Please select a valid plugin</small>
                 </div>
               </div>
             </div>
@@ -51,9 +55,11 @@
                 <div class="column">
                   <div class="field">
                     <div class="control">
-                      <input class="input" id="name" type="text" placeholder="name" formControlName="name" required
-                        (input)="validateServiceName($event)">
-                      <small *ngIf="!isValidName" class="help is-danger level-left">Application name is required</small>
+                      <input class="input" id="name" type="text" placeholder="name" title="No single quotes and double quotes!"
+                        autocomplete="off" formControlName="name">
+                      <small
+                        *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
+                        class="help is-danger level-left">Application name is required</small>
                     </div>
                   </div>
                 </div>
@@ -69,20 +75,21 @@
             </div>
             <div class="field-body">
               <div class="column is-vertical-center">
-              <div class="select is-multiple">
-                <select #selectedPlugin multiple name="type" formControlName="plugin"
-                  (change)="getDescription(selectedPlugin.value)" required>
-                  <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
-                </select>
+                <div class="select is-multiple">
+                  <select #selectedPlugin multiple name="type" formControlName="plugin"
+                    (change)="selectPlugin(selectedPlugin.value)">
+                    <option *ngFor="let p of plugins" [value]="p.name"> {{ p.name }}</option>
+                  </select>
+                </div>
+                &nbsp;
+                <small *ngIf="!serviceForm.controls['plugin'].hasError('required')
+                  && !serviceForm.controls['plugin'].hasError('multiplePlugins') "
+                  class="help description level-left">{{ selectedPluginDescription }}</small>
+
               </div>
-              &nbsp;
-              <small *ngIf="selectedPluginDescription && isValidPlugin && isSinglePlugin"
-                class="help description level-left">{{ selectedPluginDescription }}</small>
-              <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
-            </div>
             </div>
             <div *ngIf="plugin" class="column is-1">
-              <span class="icon is-small is-tooltip-left tooltip is-pulled-right is-hovered help-icon"
+              <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
                 data-tooltip="Help" (click)="goToLink(plugin)">
                 <i class="far fa-question-circle"></i>
               </span>
@@ -109,10 +116,16 @@
             </div>
             <div class="field-body">
               <div class="column" style="padding: 0;">
-                <ng-select #pluginToInstall *ngIf="show" [items]="pluginData" [searchable]="pluginData.length" [placeholder]="placeholderText" [loading]="!pluginData.length && !stopLoading"
-                  notFoundText="No plugin available to install" (change)="filterSelectionChanged($event)" bindLabel="pluginToInstall" formControlName="pluginToInstall">
+                <ng-select #pluginToInstall *ngIf="show" [items]="pluginData" [searchable]="pluginData.length"
+                  [placeholder]="placeholderText" [loading]="!pluginData.length && !stopLoading"
+                  notFoundText="No plugins available to install" (change)="filterSelectionChanged($event)"
+                  bindLabel="pluginToInstall" formControlName="pluginToInstall">
                 </ng-select>
-                <small *ngIf="!isValidPlugin" class="help is-danger level-left">* Please select a valid plugin</small>
+                <small
+                  *ngIf="serviceForm.controls['plugin'].hasError('required') && serviceForm.controls['plugin'].touched"
+                  class="help is-danger level-left">* Please select a valid plugin</small>
+                <small *ngIf="serviceForm.controls['plugin'].hasError('multiplePlugins')"
+                  class="help is-danger level-left">* Please select a single plugin</small>
                 <p id="requestInProgress" class="help has-text-centered"></p>
               </div>
             </div>
@@ -125,9 +138,11 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" formControlName="name" required
-                    (input)="validateServiceName($event)">
-                  <small *ngIf="!isValidName" class="help is-danger level-left">Application name is required</small>
+                  <input class="input" id="name" type="text" placeholder="name" title="No single quotes and double quotes!"
+                    autocomplete="off" formControlName="name">
+                  <small
+                    *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
+                    class="help is-danger level-left">Application name is required</small>
                 </div>
               </div>
             </div>
@@ -136,9 +151,11 @@
         </ng-container>
       </div>
       <div class="box step-content" id="c-2">
-        <app-view-config-item [hidden]="!configurationData" [categoryConfigurationData]="configurationData"
-        [pluginInfo]="{name: payload?.plugin,  type:'Filter'}"
-        [useProxy]="useProxy" (onConfigChanged)="getChangedConfig($event)" [pageId]="'wizard'"></app-view-config-item>
+        <app-configuration-group *ngIf="configurationData" #configChildComponent [category]="configurationData"
+          (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validChildConfigurationForm = $event"
+          [from]="'add-filter'">
+        </app-configuration-group>
+
       </div>
     </form>
   </div>
@@ -147,7 +164,8 @@
       <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
     </div>
     <div class="steps-action">
-      <button (click)="gotoNext()" data-nav="next" [disabled]="disabledBtn" class="button is-link" id="next">Next</button>
+      <button (click)="gotoNext()" data-nav="next" [disabled]="serviceForm.invalid || !validChildConfigurationForm"
+        class="button is-link" id="next">Next</button>
     </div>
   </div>
 </div>

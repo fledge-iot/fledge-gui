@@ -7,7 +7,7 @@ import { DialogService } from '../../../common/confirmation-dialog/dialog.servic
 import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { SUPPORTED_SERVICE_TYPES } from '../../../../utils';
+import { SUPPORTED_SERVICE_TYPES, QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -176,7 +176,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   addFormControls(index, urlData: any = null) {
-    this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator]);
+    this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);
     this.aclForm.form.addControl('urls', new FormGroup({}));
     this.initURLControl(index, urlData);
   }
@@ -297,7 +297,6 @@ export class AddControlAclComponent implements OnInit {
       service: services,
       url: urls
     }
-    console.log('payload', payload);
     if (this.editMode) {
       this.updateACL(payload);
       return;
@@ -308,7 +307,7 @@ export class AddControlAclComponent implements OnInit {
         this.ngProgress.done();
         this.alertService.success(`ACL ${payload['name']} created successfully.`);
         setTimeout(() => {
-          this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'acls' } });
+          this.router.navigate(['control-dispatcher', 'acl']);
         }, 1000);
       }, error => {
         this.ngProgress.done();
@@ -326,8 +325,8 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.updateACL(this.nameCopy, payload)
       .subscribe((data: any) => {
         this.name = this.nameCopy = payload.name;
-        this.router.navigate(['control-dispatcher/acl/', payload.name]);
-        this.alertService.success(data.message, true)
+        this.router.navigate(['control-dispatcher', 'acl']);
+        this.alertService.success(data.message, true);
         /** request completed */
         this.ngProgress.done();
         this.aclForm.form.markAsPristine();
@@ -348,10 +347,10 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.alertService.success(data.message);
+        this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'acls' } });
+        this.router.navigate(['control-dispatcher', 'acl']);
       }, error => {
         /** request completed */
         this.ngProgress.done();

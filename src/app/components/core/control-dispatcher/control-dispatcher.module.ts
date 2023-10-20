@@ -2,11 +2,12 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TitleCasePipe } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { TreeModule } from '@circlon/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthTypeGuard } from '../../../guards';
+import { RolesGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { AddControlAclComponent } from './add-control-acl/add-control-acl.component';
@@ -23,46 +24,84 @@ import { ControlScheduleTaskDetailsComponent } from './control-schedule-task/con
 import { AclListComponent } from './list-control-dispatcher/acl-list/acl-list.component';
 import { ControlScriptsListComponent } from './list-control-dispatcher/control-scripts-list/control-scripts-list.component';
 import { ControlTasksListComponent } from './list-control-dispatcher/control-tasks-list/control-tasks-list.component';
-import { ListControlDispatcherComponent } from './list-control-dispatcher/list-control-dispatcher.component';
+import { ControlPipelinesComponent } from './pipelines/control-pipelines.component';
+import { AddControlPipelineComponent } from './pipelines/add-pipeline/add-control-pipeline.component';
+import { AddPipelineFilterComponent } from './pipelines/add-pipeline-filter/add-pipeline-filter.component';
+import { ControlPipelinesService, NotificationsService, AssetsService, FilterService } from '../../../services';
+import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
+import { FilterModule } from '../filter/filter.module';
+import { AddDispatcherServiceComponent } from './add-dispatcher-service/add-dispatcher-service.component';
+import { APIFlowComponent } from './api-flow/api-flow.component';
+import { AddEditAPIFlowComponent } from './api-flow/add-edit-api-flow/add-edit-api-flow.component';
 
 const routes: Routes = [
 
   {
-    path: '',
-    component: ListControlDispatcherComponent,
+    path: 'script',
+    component: ControlScriptsListComponent,
   },
   {
     path: 'script/add',
     component: AddControlScriptComponent,
-    canActivate: [AuthTypeGuard]
+    canActivate: [RolesGuard]
   },
   {
-    path: 'script/:name',
+    path: 'script/:name/details',
     component: AddControlScriptComponent
+  },
+  {
+    path: 'acl',
+    component: AclListComponent,
   },
   {
     path: 'acl/add',
     component: AddControlAclComponent,
-    canActivate: [AuthTypeGuard]
+    canActivate: [RolesGuard]
   },
   {
-    path: 'acl/:name',
+    path: 'acl/:name/details',
     component: AddControlAclComponent
   },
   {
     path: 'task/add',
     component: ControlScheduleTaskDetailsComponent,
-    canActivate: [AuthTypeGuard]
+    canActivate: [RolesGuard]
   },
   {
-    path: 'task/:name',
+    path: 'task/:name', // TODO: Handle FOGL-8156 when this component is enabled
     component: ControlScheduleTaskDetailsComponent
   },
+  {
+    path: 'pipelines',
+    component: ControlPipelinesComponent
+  },
+  {
+    path: 'pipelines/add',
+    component: AddControlPipelineComponent,
+    canActivate: [RolesGuard]
+  },
+  {
+    path: 'pipelines/:id',
+    component: AddControlPipelineComponent
+  },
+  {
+    path: 'entry-points',
+    component: APIFlowComponent
+  },
+  {
+    path: 'entry-point/add',
+    component: AddEditAPIFlowComponent,
+    canActivate: [RolesGuard]
+  },
+  {
+    path: 'entry-point/:name/details',
+    component: AddEditAPIFlowComponent
+  }
 ];
 
 @NgModule({
   declarations: [
-    ListControlDispatcherComponent,
+    AddDispatcherServiceComponent,
     ControlScriptsListComponent,
     AddControlScriptComponent,
     AddStepComponent,
@@ -76,7 +115,12 @@ const routes: Routes = [
     AclListComponent,
     AddControlAclComponent,
     ControlTasksListComponent,
-    ControlScheduleTaskDetailsComponent
+    ControlScheduleTaskDetailsComponent,
+    ControlPipelinesComponent,
+    AddControlPipelineComponent,
+    AddPipelineFilterComponent,
+    APIFlowComponent,
+    AddEditAPIFlowComponent
   ],
   imports: [
     FormsModule,
@@ -88,8 +132,11 @@ const routes: Routes = [
     NgSelectModule,
     DirectivesModule,
     SharedModule,
+    AlertDialogModule,
+    FilterModule,
     RouterModule.forChild(routes)
   ],
-  providers: [AuthTypeGuard]
+  providers: [RolesGuard, ControlPipelinesService, NotificationsService,
+    FilterService, AssetsService, TitleCasePipe]
 })
 export class ControlDispatcherModule { }

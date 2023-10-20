@@ -66,10 +66,8 @@
   </tbody>
 </table>
 <ng-template #noscript>
-  <div class="field-body">
-    <div class="field is-narrow">
-      <small class="text-secondary has-text-grey-light"> No control script task schedules found.</small>
-    </div>
+  <div class="has-text-centered">
+    <small class="text-secondary has-text-grey-light">No Control script task schedules found.</small>
   </div>
 </ng-template>
 <app-confirmation-dialog id="confirmation-dialog">
@@ -78,7 +76,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, you want to delete task schedule for control script <b>{{script?.name}}</b>?
+    Are you sure, You want to delete task schedule for control script <b>{{script?.name}}</b>?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
@@ -92,7 +90,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('start-schedule-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, you want to start the task schedule for control script <b>{{script?.name}}</b>?
+    Are you sure, You want to start the task schedule for control script <b>{{script?.name}}</b>?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('start-schedule-dialog')">Cancel</button>

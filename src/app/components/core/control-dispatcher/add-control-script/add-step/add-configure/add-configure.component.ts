@@ -3,7 +3,7 @@ import { FormGroup, NgForm } from '@angular/forms';
 import { ITreeOptions, ITreeState, TreeComponent } from '@circlon/angular-tree-component';
 import { isEmpty, sortBy } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
-import { AlertService, ConfigurationService, SharedService } from '../../../../../../services';
+import { AlertService, ConfigurationService, RolesService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-configure',
@@ -41,7 +41,7 @@ export class AddConfigureComponent implements OnInit {
   constructor(
     private alertService: AlertService,
     private configurationService: ConfigurationService,
-    public sharedService: SharedService,
+    public rolesService: RolesService,
     private control: NgForm) { }
 
   ngOnChanges() {
@@ -57,11 +57,11 @@ export class AddConfigureComponent implements OnInit {
   }
 
   stepControlGroup(): FormGroup {
-    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
+    return this.stepsFormGroup()?.controls[`step-${this.controlIndex}`] as FormGroup;
   }
 
   configureControlGroup() {
-    return this.stepControlGroup().controls['configure'] as FormGroup;
+    return this.stepControlGroup()?.controls['configure'] as FormGroup;
   }
 
   public toggleDropDown(id: string) {
@@ -195,8 +195,8 @@ export class AddConfigureComponent implements OnInit {
     }
     this.selectedConfigItem = '';
     this.configValue = '';
-    this.configureControlGroup().controls['item'].setValue('');
-    this.configureControlGroup().controls['value'].setValue('');
+    this.configureControlGroup()?.controls['item'].setValue('');
+    this.configureControlGroup()?.controls['value'].setValue('');
 
   }
 

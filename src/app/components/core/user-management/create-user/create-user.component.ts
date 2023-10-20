@@ -34,7 +34,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    this.userRole = this.userRoles;
+    this.userRole = this.userRoles.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {

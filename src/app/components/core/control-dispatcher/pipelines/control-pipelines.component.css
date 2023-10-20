@@ -1,0 +1,47 @@
+table tr td {
+    vertical-align: middle;
+}
+
+.is-text {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.fade {
+    background-color:#f5f5f5 !important;
+}
+
+.pipeline-name {
+    color: #3273dc;
+    text-decoration: none;
+}
+
+.context-menu {
+    border: none;
+}
+
+.src-dest-name {
+    color: #707070;
+    font-size: .85rem;
+    margin-top: 0rem !important;
+}
+
+.is-hoverable.pipeline-table tr:hover .context-menu {
+    background-color: #fafafa; 
+}
+
+span.is-small {
+    font-size: 0.9rem;
+}
+
+.pipeline-table {
+    display: block;
+}
+
+.fa-plus {
+    font-size: .65em;
+}
+
+.btn-margin {
+    margin: 17px 7px;
+}

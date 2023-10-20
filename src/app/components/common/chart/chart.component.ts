@@ -1,5 +1,7 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { Chart } from 'chart.js';
+import { Chart } from 'chart.js/auto';
+import zoomPlugin from 'chartjs-plugin-zoom';
+import 'chartjs-adapter-moment';
 import { Subscription } from 'rxjs';
 import { isEmpty } from 'lodash';
 import Utils from '../../../utils';
@@ -13,7 +15,7 @@ import { RangeSliderService } from '../range-slider/range-slider.service';
 export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   chart: any;
   @Input() from: string;
-  @Input() type: string;
+  @Input() type: any;
   @Input() data: any;
   @Input() options: any;
   private subscription: Subscription;
@@ -26,6 +28,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     if (this.chart) {
       if (!isEmpty(this.data)) {
         this.chart.data = this.data;
+        this.chart.options = this.options;
         this.chart.update(0);
       }
     } else {
@@ -37,6 +40,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
         });
         this.chart.update(0);
       }
+      Chart.register(zoomPlugin);
     }
     // set alpha only for asset reading graphs
     if (this.from && this.from !== 'dashboard' && this.rangeSliderService.getAlphControlStatus()) {

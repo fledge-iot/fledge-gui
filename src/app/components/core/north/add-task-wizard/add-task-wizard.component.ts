@@ -1,18 +1,17 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { assign, cloneDeep, reduce, sortBy, map } from 'lodash';
+import { cloneDeep, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 import {
   AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
-  ServicesApiService, ConfigurationService
+  ServicesApiService, FileUploaderService, ConfigurationControlService
 } from '../../../../services';
-import Utils from '../../../../utils';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
+import Utils, { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
+import { CustomValidator } from '../../../../directives/custom-validator';
 
 @Component({
   selector: 'app-add-task-wizard',
@@ -23,35 +22,29 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   public plugins = [];
   public configurationData;
-  public useProxy;
-
-  public isValidName = true;
-  public isValidPlugin = true;
-  public isSinglePlugin = true;
-  public isValidDay = true;
-  public isValidTime = true;
+  public pluginConfiguration: any;
   public isScheduleEnabled = true;
-  public payload: any;
   public schedulesName = [];
   public selectedPluginDescription = '';
   public plugin: any;
   public showSpinner = false;
   public isService = false;
   private subscription: Subscription;
-  private filesToUpload = []
-
   public taskType = 'North';
+  // to hold child form state
+  validConfigurationForm = true;
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
   taskForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    plugin: new FormControl('', Validators.required),
+    name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+    plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
     repeatDays: new FormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
-    repeatTime: new FormControl('', [Validators.required])
+    repeatTime: new FormControl('', [Validators.required]),
+    config: new FormControl(null)
   });
 
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
   @Input() categoryConfigurationData;
-  @ViewChild(ViewConfigItemComponent, { static: true }) viewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
@@ -65,11 +58,12 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private schedulesService: SchedulesService,
     private router: Router,
     private ngProgress: ProgressBarService,
-    private validateFormService: ValidateFormService,
     private sharedService: SharedService,
     private servicesApiService: ServicesApiService,
     private docService: DocService,
-    private configService: ConfigurationService
+    private fileUploaderService: FileUploaderService,
+    private configurationControlService: ConfigurationControlService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -119,10 +113,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Back';
         nxtButton.disabled = false;
-        if (!this.viewConfigItemComponent !== undefined) {
-          this.viewConfigItemComponent.passwordOnChangeFired = false;
-          this.viewConfigItemComponent.passwordMatched.value = true;
-        }
         break;
       case 3:
         nxtButton.textContent = 'Next';
@@ -134,10 +124,6 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   }
 
   moveNext() {
-    this.isValidName = true;
-    this.isValidPlugin = true;
-    this.isValidDay = true;
-    this.isValidTime = true;
     const formValues = this.taskForm.value;
     const first = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = first.getAttribute('id');
@@ -146,43 +132,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
     switch (+id) {
       case 1:
-        if (formValues['plugin'] === '') {
-          this.isValidPlugin = false;
-          return;
-        }
-
-        if (formValues['plugin'].length !== 1) {
-          this.isSinglePlugin = false;
-          return;
-        }
-
-        if (formValues['name'] === '') {
-          this.isValidName = false;
-          return;
-        }
         nxtButton.textContent = 'Next';
         previousButton.disabled = false;
-        if (formValues['repeatDays'] === null || formValues['repeatDays'] === '') {
-          this.isValidDay = false;
-          return;
-        }
-        if (formValues['repeatTime'] === '' || formValues['repeatTime'] === 0) {
-          this.isValidTime = false;
-          return;
-        }
-
-        const repeatTime = formValues['repeatTime'] !== ('' || undefined) ? Utils.convertTimeToSec(
-          formValues['repeatTime'], formValues['repeatDays']) : 0;
-
-        if (repeatTime === 0) {
-          this.isValidTime = false;
-          return;
-        }
-
-        if (this.taskForm.invalid) {
-          return false;
-        }
-
         // To verify if task with given name already exist
         const isTaskNameExist = this.schedulesName.some(item => {
           return formValues['name'].trim() === item.name;
@@ -191,37 +142,18 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           this.alertService.error('A service/task already exists with this name.');
           return false;
         }
-
-        if (formValues['name'] !== '' && formValues['plugin'].length > 0 && formValues['repeatTime'].length > 0) {
-          this.payload = {
-            'name': formValues['name'],
-            'plugin': formValues['plugin'][0],
-            'type': this.taskType.toLowerCase(),
-            'schedule_repeat': repeatTime,
-            'schedule_type': '3',
-            'schedule_enabled': this.isScheduleEnabled
-          };
-        }
-        this.getConfiguration();
+        // check if configuration form is valid or invalid
+        this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent))) {
-          return;
-        }
-        this.viewConfigItemComponent.callFromWizard();
-        document.getElementById('vci-proxy').click();
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
       case 3:
         if (this.isService) {
-          delete this.payload.schedule_repeat;
-          delete this.payload.schedule_type;
-          delete this.payload.schedule_enabled;
-          this.payload.enabled = this.isScheduleEnabled;
-          this.addService(this.payload);
+          this.addService();
         } else {
-          this.addScheduledTask(this.payload);
+          this.addScheduledTask();
         }
         break;
       default:
@@ -292,24 +224,24 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   *  Get default configuration of a selected plugin
-   */
-  private getConfiguration(): void {
-    const config = this.plugins.map(p => {
-      if (p.name === this.payload.plugin) {
-        return p.config;
-      }
-    }).filter(value => value !== undefined);
+  private addScheduledTask() {
 
-    // array to hold data to display on configuration page
-    this.configurationData = { value: config };
-    this.useProxy = 'true';
-  }
+    const repeatTime = this.taskForm.value['repeatTime'] !== ('' || undefined) ? Utils.convertTimeToSec(
+      this.taskForm.value['repeatTime'], this.taskForm.value['repeatDays']) : 0;
+    const config = this.taskForm.value['config'];
+    const payload = {
+      name: this.taskForm.value['name'].trim(),
+      type: this.taskType.toLowerCase(),
+      plugin: this.taskForm.value['plugin'][0],
+      ...config && { config },
+      schedule_type: '3',
+      schedule_repeat: repeatTime,
+      schedule_enabled: this.isScheduleEnabled
+    };
 
+    // extract script files to upload from final payload
+    const files = this.getScriptFilesToUpload(payload.config);
 
-  private addScheduledTask(payload) {
-    this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
     this.schedulesService.createScheduledTask(payload)
@@ -318,7 +250,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.alertService.success('North instance added successfully.', true);
-          this.uploadScript();
+          if (files.length > 0) {
+            const name = payload.name;
+            this.uploadScript(name, files);
+          }
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -332,7 +267,22 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public addService(payload) {
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration, true);
+  }
+
+  public addService() {
+    const payload = {
+      name: this.taskForm.value['name'].trim(),
+      type: this.taskType.toLowerCase(),
+      plugin: this.taskForm.value['plugin'][0],
+      ...this.taskForm.value['config'] && { config: this.taskForm.value['config'] },
+      enabled: this.isScheduleEnabled
+    };
+
+    // extract script files to upload from final payload
+    const files = this.getScriptFilesToUpload(payload.config);
+
     this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
@@ -342,7 +292,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(response['name'] + ' service added successfully.', true);
-          this.uploadScript();
+          if (files.length > 0) {
+            const name = payload.name
+            this.uploadScript(name, files);
+          }
           this.router.navigate(['/north']);
         },
         (error) => {
@@ -356,109 +309,51 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public uploadScript() {
-    this.filesToUpload.forEach(data => {
-      const configItem = data.key;
-      const file = data.value[0].script;
-      const formData = new FormData();
-      formData.append('script', file);
-      this.configService.uploadFile(this.payload.name, configItem, formData)
-        .subscribe(() => {
-          this.filesToUpload = [];
-          this.alertService.success('Script uploaded successfully.');
-        },
-          error => {
-            this.filesToUpload = [];
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
-    });
+  /**
+  * To upload script files of a configuration property
+  * @param categoryName name of the configuration category
+  * @param files : Scripts array to uplaod
+  */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
+
   /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
-  getChangedConfig(changedConfig) {
-    const defaultConfig = map(this.configurationData.value[0], (v, key) => ({ key, ...v }));
-    // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      return changedConfig.some(e2 => {
-        return e1.key === e2.key;
-      });
-    });
-
-    // make a deep clone copy of matchedConfig array to remove extra keys(not required in payload)
-    const matchedConfigCopy = cloneDeep(matchedConfig);
-
-    /**
-     * merge new configuration with old configuration,
-     * where value key hold changed data in config object
-    */
-    matchedConfigCopy.forEach(e => {
-      changedConfig.forEach(c => {
-        if (e.key === c.key) {
-          e.value = c.type === 'script' ? c.value : c.value.toString();
-        }
-      });
-    });
-
-    // final array to hold changed configuration
-    let finalConfig = [];
-    matchedConfigCopy.forEach(item => {
-      if (item.type === 'script') {
-        this.filesToUpload.push(item);
-      } else {
-        finalConfig.push({
-          [item.key]: item.type === 'JSON' ? { value: JSON.parse(item.value) } : { value: item.value }
-        });
-      }
-    });
-
-    // convert finalConfig array in object of objects to pass in add task
-    finalConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    this.payload.config = finalConfig;
+  getChangedConfig(changedConfig: any) {
+    const config = this.configurationControlService.getChangedConfiguration(changedConfig, this.pluginConfiguration, true);
+    this.taskForm.controls['config'].patchValue(config);
+    this.taskForm.controls['config'].updateValueAndValidity({ onlySelf: true });
   }
 
-  validateTaskName(event) {
-    if (event.target.value.trim().length > 0) {
-      this.isValidName = true;
-    }
-  }
 
-  validateRepeatDays(event) {
-    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeatDays.invalid) {
-      this.isValidDay = true;
-    }
-  }
-
-  validateRepeatTime(event) {
-    if (event.target.value.trim().length > 0 && !this.taskForm.controls.repeatTime.invalid) {
-      this.isValidTime = true;
-    }
-  }
   setRepeatIntervalValue(event) {
-    this.taskForm.controls['repeatTime'].setValue(event.target.value.trim());
+    this.taskForm.controls['repeatTime'].patchValue(event.target.value.trim());
+    this.taskForm.controls['repeatTime'].updateValueAndValidity({ onlySelf: true });
   }
 
-  getDescription(selectedPlugin) {
-    if (selectedPlugin === '') {
-      this.isValidPlugin = false;
-      this.selectedPluginDescription = '';
-      this.taskForm.value['plugin'] = '';
-    } else {
-      this.isSinglePlugin = true;
-      this.isValidPlugin = true;
-      this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
-      this.selectedPluginDescription = this.plugins.find(p => p.name === this.plugin).description;
+  selectPlugin(selectedPlugin: string) {
+    this.validConfigurationForm = true;
+    this.configurationData = null;
+    this.pluginConfiguration = null;
+    this.plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
+    const pluginInfo = cloneDeep(this.plugins?.find(p => p.name === this.plugin));
+    if (pluginInfo) {
+      pluginInfo.config = this.configurationControlService.getValidConfig(pluginInfo.config);
+      this.configurationData = pluginInfo;
+      this.pluginConfiguration = cloneDeep(pluginInfo);
+      this.selectedPluginDescription = pluginInfo.description;
+      this.taskForm.controls['config'].patchValue(pluginInfo?.config);
+      this.taskForm.controls['config'].updateValueAndValidity({ onlySelf: true });
+      this.isScheduleEnabled = true; // set to default
+      this.cdRef.detectChanges();
     }
   }
 
   onCheckboxClicked(event) {
     this.isScheduleEnabled = event.target.checked ? true : false;
-    this.payload.schedule_enabled = this.isScheduleEnabled;
   }
 
   onServiceCheckboxClicked(event) {

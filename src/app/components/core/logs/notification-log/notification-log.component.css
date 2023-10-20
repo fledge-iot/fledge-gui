@@ -5,13 +5,11 @@
 .card {
   overflow: visible;
 }
-.card-content {
-  overflow: visible;
-}
 
-.card-header-title {
-  padding: 0.75rem 1.5rem;
-  max-height: 48px !important;
+@media only screen and (min-width: 768px) {
+  .card-content {
+    overflow: visible;
+  }
 }
 
 #refresh-check {
@@ -27,4 +25,8 @@
 
 .checkmark {
   vertical-align: middle !important;
+}
+
+.card-header-title {
+  max-height: 45px !important;
 }

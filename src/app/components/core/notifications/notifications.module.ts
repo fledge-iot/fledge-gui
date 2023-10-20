@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthCheckGuard } from '../../../guards';
+import { RolesGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
@@ -22,13 +22,12 @@ const routes: Routes = [
   {
     path: '',
     component: NotificationsComponent,
-    canActivate: [AuthCheckGuard],
     resolve: { service: ServiceResolver }
   },
   {
     path: 'add',
     component: AddNotificationWizardComponent,
-    canActivate: [AuthCheckGuard]
+    canActivate: [RolesGuard]
   }
 ];
 
@@ -52,6 +51,6 @@ const routes: Routes = [
     NumberInputDebounceModule,
     PaginationModule
   ],
-  providers: [ServicesApiService, NotificationsService],
+  providers: [RolesGuard, ServicesApiService, NotificationsService],
 })
 export class NotificationsModule { }

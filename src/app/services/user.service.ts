@@ -4,6 +4,8 @@ import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+import { PingService } from './ping.service';
+import { SharedService } from './shared.service';
 
 @Injectable()
 export class UserService {
@@ -11,7 +13,9 @@ export class UserService {
   private USER_URL = environment.BASE_URL + 'user';
   private ADMIN_URL = environment.BASE_URL + 'admin';
   private ROLE_URL = environment.BASE_URL + 'user/role';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private sharedService: SharedService,
+    private pingService: PingService) { }
 
   /**
    * Get all users
@@ -150,5 +154,24 @@ export class UserService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  setUserSession(data: any) {
+    sessionStorage.setItem('token', data['token']);
+    sessionStorage.setItem('uid', data['uid']);
+    sessionStorage.setItem('isAdmin', JSON.stringify(data['admin']));
+  }
+
+  emitUser(user: any) {
+    this.sharedService.isUserLoggedIn.next({
+      'loggedIn': true,
+      'userName': user['userName'],
+      'isAuthOptional': JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))
+    });
+    // save role id and user name in session storage
+    sessionStorage.setItem('roleId', user['roleId']);
+    this.sharedService.dataViewUserSubject.next(user['roleId']);
+    sessionStorage.setItem('userName', user['userName']);
+  }
+
 }
 

@@ -7,148 +7,186 @@ describe('Fledge gui', () => {
   let skipLogin: SkipLogin;
   let adminLogin: AdminLogin;
   let nonAdminLogin: NonAdminLogin;
-  let isSetupInstance = false;
 
   skipLogin = new SkipLogin();
   adminLogin = new AdminLogin();
   nonAdminLogin = new NonAdminLogin();
 
-  beforeAll(() => {
-    if (!isSetupInstance) {
-      skipLogin.navigateToHome();
-      skipLogin.setUpInstance();
-      isSetupInstance = true;
-    }
+  beforeEach(() => {
+    skipLogin.setUpInstance();
+    skipLogin.navigateToHome();
   });
 
   if (environment.AUTH_OPTIONAL === true) {
     it('Should Display Nav Title and App Status', () => {
       skipLogin.navigateToHome();
-      expect(skipLogin.getNavTitle()).toEqual('Fledge');
-      expect(skipLogin.getAppStatus()).toEqual(true);
-      expect(skipLogin.getReceived()).toContain('Received');
-      expect(skipLogin.getSent()).toContain('Sent');
-      expect(skipLogin.getUptime()).toContain('Uptime');
+      skipLogin.getNavTitle().then(title =>{
+        expect(title.trim()).to.equal('Fledge')
+      })
+      skipLogin.getAppStatus()
+      skipLogin.getReceived().then(received =>{
+        expect(received.split(':')[0].trim()).to.equal('Received')
+      })
+      skipLogin.getSent().then(sent =>{
+        expect(sent.split(':')[0].trim()).to.equal('Sent')
+      })
+      skipLogin.getUptime().then(uptime =>{
+        expect(uptime.split(':')[0].trim()).to.equal('Uptime')
+      })
     });
 
     it('Should Display Dashboard', () => {
-      expect(skipLogin.isDashboardTimeDropdownPresent()).toEqual(true);
-      expect(skipLogin.isDashboardGraphDropdownPresent()).toEqual(true);
+      skipLogin.navigateToHome();
+      skipLogin.isDashboardTimeDropdownPresent()
+      skipLogin.isDashboardGraphDropdownPresent()
     });
 
     // TODO: Test data required to pass below tests.
     // it('Should Display Assets & Readings', () => {
-    // skipLogin.navToAssetReadings();
-    // expect(skipLogin.getAssetTableHeader()).toEqual('Asset');
-    // expect(skipLogin.getReadingsTableHeader()).toEqual('Readings');
-
-    // skipLogin.clickChartIcon();
-    // expect(skipLogin.isChartDisplayed()).toEqual(true);
-    // skipLogin.closeChartModal();
+    //   skipLogin.navToAssetReadings();
+    //   skipLogin.getAssetTableHeader().then(header => {
+    //     expect(header.trim()).to.equal('Asset')
+    //   })
+    //   skipLogin.getReadingsTableHeader().then(header => {
+    //     expect(header.trim()).to.equal('Readings')
+    //   })
+    //   skipLogin.clickChartIcon();
+    //   skipLogin.isChartDisplayed()
+    //   skipLogin.closeChartModal();
     // });
 
     it('Should Display Audits Logs', () => {
       skipLogin.navToAuditLogs();
-      expect(skipLogin.getAuditLogsTitle()).toEqual('Audit Logs');
-      expect(skipLogin.isAuditLogsSourceDropdownPresent()).toEqual(true);
-      expect(skipLogin.isAuditLogsSeverityDropdownPresent()).toEqual(true);
+      skipLogin.getAuditLogsTitle().then(title =>{
+        expect(title.trim()).to.equal('Audit Logs')
+      })
+      skipLogin.isAuditLogsSourceDropdownPresent()
+      skipLogin.isAuditLogsSeverityDropdownPresent()
     });
 
     it('Should Display System Logs', () => {
       skipLogin.navToSystemLogs();
-      expect(skipLogin.getSystemLogTitle()).toEqual('System Logs');
-      expect(skipLogin.isSystemLogDropDownPresent()).toEqual(true);
-      expect(skipLogin.isSystemLogLevelDropdownPresent()).toEqual(true);
-      expect(skipLogin.getSystemLogInputTag()).toEqual(2);
+      skipLogin.getSystemLogTitle().then(title =>{
+        expect(title.trim()).to.equal('System Logs')
+      })
+      skipLogin.isSystemLogDropDownPresent()
+      skipLogin.isSystemLogLevelDropdownPresent()
+      skipLogin.getSystemLogInputTag()
     });
 
     it('Should Display Scheduled Tasks', () => {
       skipLogin.navToScheduledTasks();
-      expect(skipLogin.getSchedulesTitle()).toContain('Schedules');
-      expect(skipLogin.getSchedulesRefreshButton()).toEqual(true);
+      skipLogin.getSchedulesTitle().then(title =>{
+        expect(title.trim()).to.equal('Schedules')
+      })
+      skipLogin.getSchedulesRefreshButton()
     });
 
     it('Should Display Certificate Store', () => {
-      const KeyColumnsName = [
-        'Key',
-        'Extension'
-      ];
-      const CertificateColumnsName = [
-        'Certificate',
-        'Extension'
-      ];
       skipLogin.navToCertificateStore();
-      expect(skipLogin.getCertificateStoreTitle()).toContain('Certificate Store');
-      expect(skipLogin.getCertificateStoreRefreshButton()).toEqual(true);
-      for (const ColumnName in KeyColumnsName) {
-        expect(skipLogin.getCertificateStoreKeyColNames()).toContain(KeyColumnsName[ColumnName]);
-      }
-      for (const ColumnName in CertificateColumnsName) {
-        expect(skipLogin.getCertificateStoreCertColNames()).toContain(CertificateColumnsName[ColumnName]);
-      }
-      expect(skipLogin.getCertificateStoreImport()).toContain('Import');
+      skipLogin.getCertificateStoreTitle().then(title =>{
+        expect(title.trim()).to.equal('Certificate Store')
+      })
+      skipLogin.getCertificateStoreRefreshButton()
+      skipLogin.getCertificateStoreKeyColKeyName().then(columnName =>{
+        expect(columnName.trim()).to.equal('Key')
+      })
+      skipLogin.getCertificateStoreKeyColExtensionName().then(columnName =>{
+        expect(columnName.trim()).to.equal('Extension')
+      })
+      skipLogin.getCertificateStoreCertColKeyName().then(columnName =>{
+        expect(columnName.trim()).to.equal('Certificate')
+      })
+      skipLogin.getCertificateStoreCertColExtensionName().then(columnName =>{
+        expect(columnName.trim()).to.equal('Extension')
+      })
+      skipLogin.getCertificateStoreImport().then(importText =>{
+        expect(importText.trim()).to.equal('Import')
+      })
     });
 
     it('Should Display Backup & Restore', () => {
-      const ColumnsName = [
-        'Date & Time',
-        'Status'
-      ];
       skipLogin.navToBackupRestore();
-
-      expect(skipLogin.getBackupRestoreTitle()).toContain('Backups');
-
-      expect(skipLogin.noBackupRecord()).toContain('No Record');
-      expect(skipLogin.getRequestBackup()).toContain('Create New');
-
+      skipLogin.getBackupRestoreTitle().then(title =>{
+        expect(title.trim()).to.equal('Backups')
+      })
+      skipLogin.noBackupRecord().then(recordText =>{
+        expect(recordText.trim()).to.equal('No Record')
+      })
+      skipLogin.getRequestBackup().then(result =>{
+        expect(result.trim()).to.equal('Create New')
+      })
       skipLogin.clickRequestBackup();
-      for (const ColumnName in ColumnsName) {
-        expect(skipLogin.getBackupRestoreColNames()).toContain(ColumnsName[ColumnName]);
-      }
-      expect(skipLogin.getCreatedBackupRow()).toContain('COMPLETED');
+      skipLogin.getBackupRestoreColDateName().then(columnName =>{
+        expect(columnName.trim()).to.equal('Date & Time')
+      })
+      skipLogin.getBackupRestoreColStatusName().then(columnName =>{
+        expect(columnName.trim()).to.equal('Status')
+      })
+      skipLogin.getCreatedBackupRow().then(result =>{
+        expect(result.trim()).to.equal('COMPLETED')
+      })
       skipLogin.deleteBackup();
-      expect(skipLogin.noBackupRecord()).toContain('No Record');
+      skipLogin.noBackupRecord().then(recordText =>{
+        expect(recordText.trim()).to.equal('No Record')
+      })
     });
 
     it('Should Display Support Bundles', () => {
       skipLogin.navToSupportBundles();
-      expect(skipLogin.getSupportBundlesTitle()).toContain('Support Bundles');
-      expect(skipLogin.getSupportBundlesRefreshButton()).toEqual(true);
-      expect(skipLogin.getRequestNewBundle()).toContain('Request New');
-      expect(skipLogin.requestNewBundle()).toContain('Support bundle created successfully');
+      skipLogin.getSupportBundlesTitle().then(title =>{
+        expect(title.trim()).to.equal('Support Bundles')
+      })
+      skipLogin.getSupportBundlesRefreshButton()
+      skipLogin.getRequestNewBundle().then(result =>{
+        expect(result.trim()).to.equal('Request New')
+      })
+      skipLogin.requestNewBundle().then(result =>{
+        expect(result.trim()).to.equal('Support bundle created successfully')
+      })
     });
 
     it('Should Display Settings', () => {
       skipLogin.navToSettings();
-      expect(skipLogin.getSettingsTitle()).toContain('Connection Setup');
-      expect(skipLogin.getSettingsSelectTag()).toEqual(1);
-      expect(skipLogin.getSettingsHostInputTag()).toEqual(1);
-      expect(skipLogin.getSettingsPortInputTag()).toEqual(1);
-
-      expect(skipLogin.getSettingsSetUrlAndRestartButton().count()).toEqual(1);
-      expect(skipLogin.getSettingsSetUrlAndRestartButton().get(0).getText()).toEqual('Set the URL & Restart');
-
-      expect(skipLogin.isRefreshDashboardDropdownPresent()).toEqual(true);
-      expect(skipLogin.isPingIntervalDropdownPresent()).toEqual(true);
+      skipLogin.getSettingsTitle().then(title =>{
+        expect(title.trim()).to.equal('Connection Setup')
+      })
+      skipLogin.getSettingsSelectTag()
+      skipLogin.getSettingsHostInputTag()
+      skipLogin.getSettingsPortInputTag()
+      skipLogin.getSettingsSetUrlAndRestartButton().then(result =>{
+        expect(result.trim()).to.equal('Set the URL & Restart')
+      })
+      skipLogin.isRefreshDashboardDropdownPresent()
+      skipLogin.isPingIntervalDropdownPresent()
     });
   } else {
     it('Should Display User Management for Admin', () => {
-      // expect(skipLogin.loginPageInputTag()).toEqual(2);
-      // expect(skipLogin.getLoginButton()).toEqual('Log In');
+      skipLogin.loginPageInputTag()
+      skipLogin.getLoginButton().then(result => {
+        expect(result.trim()).to.equal('Log In')
+      })
       adminLogin.login();
-      expect(adminLogin.isUserManagementPresent()).toBe(true);
-
+      adminLogin.isUserManagementPresent()
       adminLogin.navToUserManagement();
-      expect(adminLogin.getAllTabs()).toContain('User Management');
-      expect(adminLogin.getAllTabs()).toContain('Roles');
-      expect(adminLogin.isAddUserPresent()).toContain('Add User');
+      adminLogin.getUserManagementTabName().then(tabName => {
+        expect(tabName.trim()).to.equal('User Management')
+      })
+      adminLogin.getRoleTabName().then(tabName => {
+        expect(tabName.trim()).to.equal('Roles')
+      })
+      adminLogin.isAddUserPresent().then(buttonText => {
+        expect(buttonText.trim()).to.equal('Add User')
+      })
       const ColumnsName = [
-        'ID',
+        'Name',
         'Username',
         'Role'
       ];
       for (const ColumnName in ColumnsName) {
-        expect(adminLogin.getUserManagementColNames()).toContain(ColumnsName[ColumnName]);
+        adminLogin.getUserManagementColNames().then(columnName => {
+          expect(columnName.trim()).contains(ColumnsName[ColumnName]);
+        })
       }
       adminLogin.gotoRoles();
       const RolesColumnsName = [
@@ -156,47 +194,75 @@ describe('Fledge gui', () => {
         'Role'
       ];
       for (const ColumnName in RolesColumnsName) {
-        expect(adminLogin.getRolesColNames()).toContain(ColumnsName[ColumnName]);
+        adminLogin.getRolesColNames().then(columnName => {
+          expect(columnName.trim()).contains(RolesColumnsName[ColumnName])
+        })
       }
     });
 
     it('Should Display Profile for Admin', () => {
+      adminLogin.login();
       adminLogin.navToProfile();
-      expect(adminLogin.profileTitle()).toEqual('Profile');
-      expect(adminLogin.labelUsername()).toEqual('Username');
-      expect(adminLogin.labelRole()).toEqual('Role');
-      expect(adminLogin.isChangePassword()).toEqual('change password');
-      expect(adminLogin.isLogoutActiveSessionButton()).toEqual('Logout Active Sessions');
-
+      adminLogin.profileTitle().then(title => {
+        expect(title.trim()).to.equal('Profile')
+      })
+      adminLogin.labelUsername().then(username => {
+        expect(username.trim()).to.equal('Username')
+      })
+      adminLogin.labelRole().then(role => {
+        expect(role.trim()).to.equal('Role')
+      })
+      adminLogin.isChangePassword().then(result => {
+        expect(result.trim()).to.equal('Change Password')
+      })
+      adminLogin.isLogoutActiveSessionButton().then(result => {
+        expect(result.trim()).to.equal('Log Out Active Sessions')
+      })
       adminLogin.changePassword();
-      expect(adminLogin.getInputTagCount()).toEqual(3);
-      expect(adminLogin.isSaveButton()).toEqual(true);
+      adminLogin.isInputTag()
+      adminLogin.isSaveButton()
       adminLogin.closeModal();
     });
 
     it('Should Logout Admin and Login non-admin User', () => {
+      adminLogin.login();
       adminLogin.logout();
-      expect(adminLogin.loginPageInputTag()).toEqual(2);
-      expect(adminLogin.getLoginButton()).toEqual('Log In');
+      adminLogin.loginPageInputTag()
+      adminLogin.getLoginButton().then(buttonText => {
+        expect(buttonText.trim()).to.equal('Log In')
+      })
       nonAdminLogin.login();
-      expect(nonAdminLogin.getLoggedInUsername()).toContain('user');
+      nonAdminLogin.getLoggedInUsername().then(user => {
+        expect(user.trim()).to.equal('user')
+      })
     });
 
     it('Should Not Display User Management for Non-Admin', () => {
-      expect(nonAdminLogin.isUserManagementPresent()).toBe(false);
+      nonAdminLogin.login();
+      nonAdminLogin.isUserManagementPresent()
     });
 
     it('Should Display Profile for Non-Admin', () => {
-      adminLogin.navToProfile();
-      expect(nonAdminLogin.profileTitle()).toEqual('Profile');
-      expect(nonAdminLogin.labelUsername()).toEqual('Username');
-      expect(nonAdminLogin.labelRole()).toEqual('Role');
-      expect(nonAdminLogin.isChangePassword()).toEqual('change password');
-      expect(nonAdminLogin.isLogoutActiveSessionButton()).toEqual('Logout Active Sessions');
-
+      nonAdminLogin.login();
+      nonAdminLogin.navToProfile();
+      nonAdminLogin.profileTitle().then(title => {
+        expect(title.trim()).to.equal('Profile')
+      })
+      nonAdminLogin.labelUsername().then(username => {
+        expect(username.trim()).to.equal('Username')
+      })
+      nonAdminLogin.labelRole().then(role => {
+        expect(role.trim()).to.equal('Role')
+      })
+      nonAdminLogin.isChangePassword().then(result => {
+        expect(result.trim()).to.equal('Change Password')
+      })
+      nonAdminLogin.isLogoutActiveSessionButton().then(result => {
+        expect(result.trim()).to.equal('Log Out Active Sessions')
+      })
       nonAdminLogin.changePassword();
-      expect(nonAdminLogin.getInputTagCount()).toEqual(3);
-      expect(nonAdminLogin.isSaveButton()).toEqual(true);
+      nonAdminLogin.isInputTag()
+      nonAdminLogin.isSaveButton()
       nonAdminLogin.closeModal();
     });
   }

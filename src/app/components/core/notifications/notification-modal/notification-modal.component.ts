@@ -1,68 +1,69 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, HostListener } from '@angular/core';
-
-import { isEmpty } from 'lodash';
-
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, HostListener } from '@angular/core';
+import { isEmpty, cloneDeep } from 'lodash';
 import {
   ConfigurationService, AlertService,
   ProgressBarService,
   NotificationsService,
-  RolesService
+  RolesService,
+  FileUploaderService,
+  ConfigurationControlService
 } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
-import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
+import { catchError } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-notification-modal',
   templateUrl: './notification-modal.component.html',
   styleUrls: ['./notification-modal.component.css']
 })
-export class NotificationModalComponent implements OnInit, OnChanges {
+export class NotificationModalComponent implements OnInit {
 
   @Input() notification: { notification: any };
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
-  public useRuleProxy: 'true';
-  public useDeliveryProxy: 'true';
-  public useProxy: 'true';
-  public category: any;
-  public ruleConfiguration: any;
-  public deliveryConfiguration: any;
-  public notificationRecord: any;
-  public changedChildConfig = [];
+  category: any;
+  ruleConfiguration: any;
+  deliveryConfiguration: any;
+  notificationRecord: any;
 
-  rulePluginChangedConfig = [];
-  deliveryPluginChangedConfig = [];
-  notificationChangedConfig = [];
+  rulePluginChangedConfig: any;
+  deliveryPluginChangedConfig: any;
+  notificationChangedConfig: any;
 
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild('notificationConfigView') viewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild('ruleConfigView') ruleConfigView: ViewConfigItemComponent;
-  @ViewChild('deliveryConfigView') deliveryConfigView: ViewConfigItemComponent;
+
+  // To hold API calls to execute
+  apiCallsStack = [];
+
+  categoryCopy: any;
+  ruleConfigurationCopy: any;
+  deliveryConfigurationCopy: any;
 
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     private notificationService: NotificationsService,
-    private validateFormService: ValidateFormService,
     public ngProgress: ProgressBarService,
     private docService: DocService,
+    private fileUploaderService: FileUploaderService,
+    private configurationControlService: ConfigurationControlService,
     public rolesService: RolesService) { }
 
   ngOnInit() { }
-
-  ngOnChanges() {
-    if (this.notification !== undefined) {
-      this.getCategory();
-      this.getRuleConfiguration();
-      this.getDeliveryConfiguration();
-    }
-  }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
       this.toggleModal(false);
+    }
+  }
+
+  getNotificationCategory() {
+    if (this.notification) {
+      this.getCategory();
+      this.getRuleConfiguration();
+      this.getDeliveryConfiguration();
     }
   }
 
@@ -72,20 +73,26 @@ export class NotificationModalComponent implements OnInit, OnChanges {
       modalWindow.classList.add('is-active');
       return;
     }
+
+    this.rulePluginChangedConfig = {};
+    this.deliveryPluginChangedConfig = {};
+    this.notificationChangedConfig = {};
+    this.apiCallsStack = [];
+    this.category = null;
     this.notify.emit(false);
+    this.ruleConfiguration = null;
+    this.deliveryConfiguration = null;
     modalWindow.classList.remove('is-active');
   }
 
   public getRuleConfiguration(): void {
-    const categoryValues = [];
     const notificationName = this.notification['name'];
     this.configService.getCategory(`rule${notificationName}`).
       subscribe(
         (data) => {
           if (!isEmpty(data)) {
-            categoryValues.push(data);
-            this.ruleConfiguration = { key: `rule${notificationName}`, value: categoryValues };
-            this.useRuleProxy = 'true';
+            this.ruleConfiguration = { key: `rule${notificationName}`, config: data };
+            this.ruleConfigurationCopy = cloneDeep({ key: `rule${notificationName}`, config: data });
           }
         },
         error => {
@@ -100,18 +107,20 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   public getDeliveryConfiguration(): void {
     /** request started */
     this.ngProgress.start();
-    const categoryValues = [];
     const notificationName = this.notification['name'];
     this.configService.getCategory(`delivery${notificationName}`).
       subscribe(
         (data) => {
           if (!isEmpty(data)) {
-            categoryValues.push(data);
-            this.deliveryConfiguration = { key: `delivery${notificationName}`, value: categoryValues };
-            this.useDeliveryProxy = 'true';
+            this.deliveryConfiguration = { key: `delivery${notificationName}`, config: data };
+            this.deliveryConfigurationCopy = cloneDeep({ key: `delivery${notificationName}`, config: data });
           }
+          /** request completed */
+          this.ngProgress.done();
         },
         error => {
+          /** request completed */
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -123,7 +132,6 @@ export class NotificationModalComponent implements OnInit, OnChanges {
   public getCategory(): void {
     /** request started */
     this.ngProgress.start();
-    const categoryValues = [];
     const notificationName = this.notification['name'];
     this.configService.getCategory(notificationName).
       subscribe(
@@ -131,10 +139,8 @@ export class NotificationModalComponent implements OnInit, OnChanges {
           if (!isEmpty(data)) {
             data.channel['readonly'] = 'true';
             data.rule['readonly'] = 'true';
-
-            categoryValues.push(data);
-            this.category = { key: notificationName, value: categoryValues };
-            this.useProxy = 'true';
+            this.category = { name: notificationName, config: data };
+            this.categoryCopy = cloneDeep({ name: notificationName, config: data });
           }
           /** request completed */
           this.ngProgress.done();
@@ -185,29 +191,80 @@ export class NotificationModalComponent implements OnInit, OnChanges {
         });
   }
 
-  proxy() {
-    if (!(this.validateFormService.checkViewConfigItemFormValidity(this.viewConfigItemComponent)
-      && this.validateFormService.checkViewConfigItemFormValidity(this.ruleConfigView)
-      && this.validateFormService.checkViewConfigItemFormValidity(this.deliveryConfigView))) {
+  getChangedNotificationConfig(changedConfiguration: any) {
+    this.notificationChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.categoryCopy);
+  }
+
+  getChangedRuleConfig(changedConfiguration: any) {
+    this.rulePluginChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.ruleConfigurationCopy);
+  }
+
+  getChangedDeliveryConfig(changedConfiguration: any) {
+    this.deliveryPluginChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.deliveryConfigurationCopy);
+  }
+
+  /**
+  * Get scripts to upload from a configuration item
+  * @param configuration  edited configuration from show configuration page
+  * @returns script files to upload
+  */
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
+  }
+
+  /**
+  * update plugin configuration
+  */
+  updateConfiguration(categoryName: string, configuration: any) {
+    const files = this.getScriptFilesToUpload(configuration);
+    if (files.length > 0) {
+      this.uploadScript(categoryName, files);
+    }
+
+    if (isEmpty(configuration)) {
       return;
     }
-    if (this.useProxy) {
-      document.getElementById('vci-proxy').click();
+
+    this.apiCallsStack.push(this.configService.
+      updateBulkConfiguration(categoryName, configuration).pipe(catchError(e => of(e))));
+  }
+
+  save() {
+    if (!isEmpty(this.notificationChangedConfig) && this.category?.name) {
+      this.updateConfiguration(this.category?.name, this.notificationChangedConfig);
     }
-    if (this.useRuleProxy) {
-      const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-rule');
-      for (const e of <any>el) {
-        e.click();
-      }
+    if (!isEmpty(this.ruleConfiguration) && this.ruleConfiguration?.key) {
+      this.updateConfiguration(this.ruleConfiguration?.key, this.rulePluginChangedConfig);
     }
-    if (this.useDeliveryProxy) {
-      const ele = <HTMLCollection>document.getElementsByClassName('vci-proxy-delivery');
-      for (const e of <any>ele) {
-        e.click();
-      }
+
+    if (!isEmpty(this.deliveryConfiguration) && this.deliveryConfiguration?.key) {
+      this.updateConfiguration(this.deliveryConfiguration?.key, this.deliveryPluginChangedConfig);
     }
-    this.notify.emit();
-    this.toggleModal(false);
+
+    if (this.apiCallsStack.length > 0) {
+      this.ngProgress.start();
+      forkJoin(this.apiCallsStack).subscribe(() => {
+        this.ngProgress.done();
+        this.alertService.success('Configuration updated successfully.', true);
+        this.toggleModal(false);
+        this.apiCallsStack = [];
+      });
+    } else {
+      this.toggleModal(false);
+    }
+  }
+
+  /**
+  * To upload script files of a configuration property
+  * @param categoryName name of the configuration category
+  * @param files : Scripts array to uplaod
+  */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+    if (isEmpty(this.notificationChangedConfig) && isEmpty(this.rulePluginChangedConfig)
+      && isEmpty(this.deliveryPluginChangedConfig)) {
+      this.toggleModal(false);
+    }
   }
 
   goToLink() {

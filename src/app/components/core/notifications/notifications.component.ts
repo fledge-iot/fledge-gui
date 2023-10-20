@@ -166,6 +166,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.notification.notificationEnabled = false;
     }
     this.notificationModal.notification = instance;
+    this.notificationModal.getNotificationCategory();
     this.notificationModal.toggleModal(true);
   }
 

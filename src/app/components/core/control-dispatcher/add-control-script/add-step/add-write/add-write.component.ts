@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ControlContainer, FormGroup, NgForm } from '@angular/forms';
-import { ServicesApiService, AlertService, SharedService } from '../../../../../../services';
+import { ServicesApiService, AlertService, RolesService } from '../../../../../../services';
 
 @Component({
   selector: 'app-add-write',
@@ -20,7 +20,7 @@ export class AddWriteComponent implements OnInit {
   constructor(
     private servicesApiService: ServicesApiService,
     private alertService: AlertService,
-    public sharedService: SharedService,
+    public rolesService: RolesService,
     private control: NgForm) { }
 
   ngOnChanges() {

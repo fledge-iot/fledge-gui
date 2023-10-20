@@ -6,11 +6,6 @@
     background-color:#f5f5f5 !important;
 }
 
-.card-header-title {
-  padding: 0.75rem 1.5rem;
-  max-height: 48px !important;
-}
-
 #refresh-check {
   margin-left: 3px;
 }
@@ -24,4 +19,8 @@
 
 .checkmark {
   vertical-align: middle !important;
+}
+
+.card-header-title {
+  max-height: 45px !important;
 }

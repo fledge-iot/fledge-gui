@@ -1,119 +1,101 @@
-import { browser, by, element } from 'protractor';
-
 export class AdminLogin {
-    EC = browser.ExpectedConditions;
 
   login() {
-    browser.ignoreSynchronization = true;
-    element(by.css('app-login form div:nth-child(1) div input[name="username"]')).sendKeys('admin');
-    element(by.css('app-login form input[name="password"]')).sendKeys('fledge');
-    browser.sleep(1000);
-    element(by.css('app-login form button.is-info')).click();
+    cy.get('app-login form div:nth-child(1) div input[name="username"]').type('admin')
+    cy.get('app-login form input[name="password"]').type('fledge')
+    cy.wait(1000)
+    cy.get('app-login form button.is-info').click()
   }
 
   isUserManagementPresent() {
-    browser.sleep(2000);
-    return element(by.id('user-management')).isPresent();
+    cy.wait(2000)
+    cy.get('#user-management').should('be.visible')
   }
 
   navToUserManagement() {
-    browser.ignoreSynchronization = true;
-    return browser.get('/#/user-management');
+    return cy.visit('/#/user-management')
   }
 
-  getAllTabs() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-user-management header .tabs ul')).getText();
+  getUserManagementTabName() {
+    return cy.get('app-user-management header .tabs ul li:nth-child(1)').invoke('text')
+  }
+
+  getRoleTabName() {
+    return cy.get('app-user-management header .tabs ul li:nth-child(2)').invoke('text')
   }
 
   isAddUserPresent() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-user-management header .tabs div')).getText();
+    return cy.get('app-user-management .add-btn').invoke('text')
   }
 
   getUserManagementColNames() {
-    browser.ignoreSynchronization = true;
-    return element(by.id('head')).getText();
+    return cy.get('#head').invoke('text')
   }
 
   gotoRoles() {
-    browser.ignoreSynchronization = true;
-    element(by.css('app-user-management header .tabs li:nth-child(2) a')).getText();
+    cy.get('app-user-management header .tabs ul li:nth-child(2)').click()
   }
 
   getRolesColNames() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-user-management table thead')).getText();
+    return cy.get('app-user-management table thead').invoke('text')
   }
 
   navToProfile() {
-    browser.ignoreSynchronization = true;
-    element(by.css('#dropdown-box > div.dropdown-trigger > a')).click();
-    element(by.css('#dropdown-menu > div > a:nth-child(1)')).click();
-    browser.sleep(2000);
+    cy.get('#dropdown-box').invoke('mouseenter')
+    cy.get('#dropdown-menu').invoke('show')
+    cy.get('#dropdown-menu > div > a.user-content:nth-child(1)').click({ force: true })
+    cy.wait(2000)
   }
 
   profileTitle() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('.card .card-header-title')).getText();
+    return cy.get('.card .card-header-title').invoke('text')
   }
 
   labelUsername() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#edit_profile > div:nth-child(1) > div > label')).getText();
+    return cy.get('#edit_profile > div:nth-child(2) > div > label').invoke('text')
   }
 
   labelRole() {
-    browser.ignoreSynchronization = true;
-    return  element(by.css('#edit_profile > div:nth-child(2) > div > label')).getText();
+    return cy.get('#edit_profile > div:nth-child(3) > div > label').invoke('text')
   }
 
   isChangePassword() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#edit_profile > div:nth-child(3) > div > a')).getText();
+    return cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(1)').invoke('text')
   }
 
   isLogoutActiveSessionButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('#edit_profile .button.is-warning')).getText();
+    return cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(2)').invoke('text')
   }
 
   changePassword() {
-    browser.ignoreSynchronization = true;
-    element(by.css('#edit_profile > div:nth-child(3) > div > a')).click();
+    cy.get('#edit_profile > div:nth-child(5) > div > a:nth-child(1)').click()
   }
 
-  getInputTagCount() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('#ngForm input')).count();
+  isInputTag() {
+    return cy.get('#ngForm input').should('be.visible')
   }
 
   isSaveButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.id('update')).isDisplayed();
+    return cy.get('#update').should('be.visible')
   }
 
   closeModal() {
-    browser.ignoreSynchronization = true;
-    element(by.css('#user_profile_modal .delete')).click();
+    cy.get('#user_profile_modal .delete').click()
   }
 
   logout() {
-    browser.ignoreSynchronization = true;
-    element(by.css('#dropdown-box > div.dropdown-trigger > a')).click();
-    // wait
-    browser.wait(this.EC.visibilityOf(element(by.css('#dropdown-menu > div > a:nth-child(2)'))), 2000);
-    element(by.css('#dropdown-menu > div > a:nth-child(2)')).click();
-    browser.sleep(1000);
+    cy.wait(2000)
+    cy.get('#dropdown-box').invoke('mouseenter')
+    cy.get('#dropdown-menu').invoke('show')
+    cy.get('#dropdown-menu > div > a.user-content:nth-child(2)').click({ force: true })
+    cy.wait(1000)
   }
 
   loginPageInputTag() {
-    browser.ignoreSynchronization = true;
-    return element.all(by.css('app-login form input')).count();
+    cy.get('app-login form input').should('be.visible')
   }
 
   getLoginButton() {
-    browser.ignoreSynchronization = true;
-    return element(by.css('app-login form button.is-info')).getText();
+    return cy.get('app-login form button.is-info').invoke('text')
   }
 }

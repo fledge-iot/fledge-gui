@@ -3,7 +3,7 @@
     <header class="card-header">
       <div class="card-header-title">
         <span>Notification Logs</span>
-        <button *ngIf="!isAlive" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
+        <button *ngIf="!isAlive" title="Reload" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
@@ -16,7 +16,7 @@
     </header>
     <div class="card-content">
       <div class="content">
-        <div class="columns is-mobile">
+        <div class="columns">
           <div class="column">
             <label class="label is-small">Source</label>
             <div id="dropdown" class="dropdown">

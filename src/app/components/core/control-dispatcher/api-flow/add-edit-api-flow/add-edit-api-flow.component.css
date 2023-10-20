@@ -1,0 +1,95 @@
+table tr td {
+    vertical-align: middle;
+}
+
+.is-text {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.ep-name{
+    color: #3273dc;
+    text-decoration: none;
+}
+
+.sub {
+    color: #707070;
+    font-size: .85rem;
+    margin-top: 0rem !important;
+}
+
+.ep-tbl {
+    display: block;
+}
+
+.is-hoverable.ep-tbl tr:hover .context-menu {
+    background-color: #fafafa; 
+}
+
+span.is-small {
+    font-size: 0.9rem;
+}
+
+.fa-plus {
+    font-size: .65em;
+}
+
+.field-body .field {
+    margin-bottom: 5px;
+}
+
+.label.is-small {
+    font-size: 0.85rem !important;
+}
+
+.valign-middle {
+    vertical-align: middle;
+}
+
+::ng-deep .ng-select .ng-select-container,
+::ng-deep .ng-select.ng-select .ng-select-container {
+  height: 30px !important;
+  font-size: 0.8em;
+  min-height: 28px !important;
+}
+
+::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+  color: #848181 !important;
+  font-size: 0.8rem !important;
+  max-height: 200px !important;
+}
+
+.anonymous-warning {
+    font-size: 0.8em;
+}
+
+.access-label {
+    white-space: nowrap;
+}
+
+.dd-menu {
+    min-width: 5rem;
+}
+
+#confirmation-execute-dialog .modal-card-body {
+    min-height: 22vh;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.allow-list-text {
+    font-size: 0.7em;
+    color: gray;
+}
+
+#ed-dropdown {
+    width: unset;
+}
+
+@media screen and (min-width: 769px) {
+    .execute-field-body {
+        padding-top: 1rem;
+    }
+}

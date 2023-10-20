@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { LookupService } from '../../../microfrontend/lookup.service';
 import { Microfrontend } from '../../../microfrontend/microfrontend';
 import { DocService } from '../../../services/doc.service';
@@ -7,6 +7,8 @@ import { SharedService } from '../../../services/shared.service';
 import { buildRoutes } from '../../../../menu-utils';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { RolesService, } from '../../../services';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-side-menu',
@@ -18,7 +20,12 @@ export class SideMenuComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
   microfrontends: Microfrontend[] = [];
 
+  isLogsListOpen = false;
+  isControlListOpen = false;
   isAdmin = false;
+  isServiceRunning = true;
+  private destroySubject: Subject<void> = new Subject();
+
   constructor(
     private router: Router,
     private docService: DocService,
@@ -26,7 +33,15 @@ export class SideMenuComponent implements OnInit {
     private lookupService: LookupService,
     public developerFeaturesService: DeveloperFeaturesService,
     public rolesService: RolesService
-  ) { }
+  ) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        // handle NavigationEnd event here
+        this.isLogsListOpen = event.url.includes('logs');
+        this.isControlListOpen = event.url.includes('control-dispatcher');
+      }
+    });
+  }
 
   async ngOnInit() {
     this.microfrontends = await this.lookupService.lookup();
@@ -34,13 +49,27 @@ export class SideMenuComponent implements OnInit {
     // reconfigure routes after dyanmic route load
     this.router.resetConfig(routes);
 
-    this.sharedService.isAdmin.subscribe(value => {
-      this.isAdmin = value;
-    });
-  }
+    this.sharedService.isAdmin
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(value => {
+        this.isAdmin = value;
+      });
 
+    // Check whether the service is up or not
+    this.sharedService.connectionInfo
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(connectionInfo => {
+        this.isServiceRunning = connectionInfo?.isServiceUp;
+      });
+  }
 
   goToLink() {
     this.docService.goToLink();
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe from all observables
+    this.destroySubject.next();
+    this.destroySubject.unsubscribe();
   }
 }

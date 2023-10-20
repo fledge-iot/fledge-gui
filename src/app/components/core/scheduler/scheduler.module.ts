@@ -4,18 +4,26 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { DirectivesModule } from '../../../directives/directives.module';
-import { AuthCheckGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { ListSchedulesComponent } from './list-schedules/list-schedules.component';
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { ScheduleTypeResolver } from './update-schedule/schedule-type.resolver';
 
 const routes: Routes = [
   {
     path: '',
-    component: ListSchedulesComponent,
-    canActivate: [AuthCheckGuard]
+    component: ListSchedulesComponent
+  },
+
+  {
+    path: ':id',
+    component: UpdateScheduleComponent,
+    resolve: {
+      data: ScheduleTypeResolver
+    }
   }
 ];
 
@@ -32,7 +40,8 @@ const routes: Routes = [
     PipesModule,
     AlertDialogModule,
     DirectivesModule,
-    SharedModule
+    SharedModule,
+    NgSelectModule
   ],
   providers: [],
   exports: []

@@ -86,6 +86,22 @@
   font-size: 0.7rem;
 }
 
-.default-cursor {
-  cursor: default;
-}
+.disabled {
+  opacity: .95;
+  background-color: whitesmoke;
+  pointer-events: none;
+ }
+
+ .help {
+  margin-top: 0px;
+  font-size: 0.6rem;
+ }
+
+ .ghost {
+  color:  #4a4a4a;
+  text-decoration: underline;
+ }
+
+ .ghost:hover {
+  color: #485fc7;
+ }

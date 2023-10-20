@@ -24,9 +24,6 @@ a { color: black; }
   .modal-card {
     width: 80%;
   }
-  .view-content {
-    display: block !important;
-  }
 }
 
 hr {
@@ -68,5 +65,15 @@ hr {
 .help-icon {
   cursor: pointer !important;
   padding-top: 1rem;
+}
+
+.modal-card-head {
+  padding: 12px !important;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.modal-subtitle {
+  margin-top: 0.35rem !important;
 }
 

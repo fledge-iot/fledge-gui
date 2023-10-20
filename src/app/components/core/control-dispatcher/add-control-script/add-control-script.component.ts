@@ -3,11 +3,13 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { AclService } from '../../../../services/acl.service';
-import { AlertService, ProgressBarService, SharedService } from '../../../../services';
+import { AlertService, ProgressBarService, RolesService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AddStepComponent } from './add-step/add-step.component';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
+
 
 @Component({
   selector: 'app-add-control-script',
@@ -26,6 +28,7 @@ export class AddControlScriptComponent implements OnInit {
   editMode = false;
   scriptName = '';
   controlScript = { name: '', steps: [], acl: '' };
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -37,6 +40,7 @@ export class AddControlScriptComponent implements OnInit {
     private dialogService: DialogService,
     public sharedService: SharedService,
     public docService: DocService,
+    public rolesService: RolesService,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -96,10 +100,10 @@ export class AddControlScriptComponent implements OnInit {
     this.controlService.deleteScript(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
-        this.alertService.success(data.message);
+        this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
-        this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'scripts' } });
+        this.router.navigate(['control-dispatcher', 'script']);
       }, error => {
         /** request completed */
         this.ngProgress.done();
@@ -232,7 +236,6 @@ export class AddControlScriptComponent implements OnInit {
         payload['acl'] = this.selectedACL ? this.selectedACL : '';
       }
     }
-    console.log('payload', payload);
     if (this.editMode) {
       this.updateControlScript(payload)
     } else {
@@ -244,7 +247,7 @@ export class AddControlScriptComponent implements OnInit {
           this.scriptForm.form.markAsUntouched();
           this.scriptForm.form.markAsPristine();
           setTimeout(() => {
-            this.router.navigate(['control-dispatcher'], { queryParams: { tab: 'scripts' } });
+            this.router.navigate(['control-dispatcher', 'script']);
           }, 1000);
         }, error => {
           this.ngProgress.done();
@@ -263,8 +266,8 @@ export class AddControlScriptComponent implements OnInit {
     this.controlService.updateScript(this.scriptName, payload)
       .subscribe((data: any) => {
         this.scriptName = payload.name;
-        this.router.navigate(['control-dispatcher/script/', payload.name]);
-        this.alertService.success(data.message, true)
+        this.router.navigate(['control-dispatcher', 'script']);
+        this.alertService.success(data.message, true);
         /** request completed */
         this.ngProgress.done();
         this.refresh();

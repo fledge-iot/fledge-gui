@@ -2,18 +2,18 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/co
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-
-import { assign, reduce, sortBy, isEmpty } from 'lodash';
+import { cloneDeep, sortBy } from 'lodash';
 
 import {
   NotificationsService, ProgressBarService,
-  AlertService, ConfigurationService, SharedService
+  AlertService, SharedService, ConfigurationControlService,
+  FileUploaderService
 } from '../../../../services/index';
-import { ViewConfigItemComponent } from '../../configuration-manager/view-config-item/view-config-item.component';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
-import { ValidateFormService } from '../../../../services/validate-form.service';
 import { DocService } from '../../../../services/doc.service';
+import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+
 
 @Component({
   selector: 'app-add-notification-wizard',
@@ -21,34 +21,29 @@ import { DocService } from '../../../../services/doc.service';
   styleUrls: ['./add-notification-wizard.component.css']
 })
 export class AddNotificationWizardComponent implements OnInit, OnDestroy {
-  @ViewChild('desc') description: ElementRef;
-  @ViewChild('name') name: ElementRef;
   @ViewChild('retriggerTime') retriggerTime: ElementRef;
 
   public notificationRulePlugins = [];
   public notificationDeliveryPlugins = [];
   public notificationTypeList = [];
 
-  public isValidName = true;
   public isRulePlugin = true;
   public isDeliveryPlugin = true;
   public isSinglePlugin = true;
   public isNotificationEnabled = true;
 
   public payload: any = {};
-  public rulePluginConfigurationData: any;
-  public rulePluginChangedConfig: any;
+  public rulePluginConfiguration: any;
+  public rulePluginConfigurationCopy: any;
 
-  public deliveryPluginConfigurationData: any;
-  public deliveryPluginChangedConfig: any;
+  public deliveryPluginConfiguration: any;
+  public deliveryPluginConfigurationCopy: any;
+
   public selectedRulePluginDescription: string;
   public selectedDeliveryPluginDescription: string;
 
   public selectedRulePlugin: string;
   public selectedDeliveryPlugin: string;
-
-  public useRuleProxy: string;
-  public useDeliveryProxy: string;
 
   public notificationType: string;
   private subscription: Subscription;
@@ -61,8 +56,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     retriggerTime: new FormControl()
   });
 
-  @ViewChild('ruleConfigView') ruleViewConfigItemComponent: ViewConfigItemComponent;
-  @ViewChild('deliveryConfigView') deliveryViewConfigItemComponent: ViewConfigItemComponent;
   @ViewChild(ViewLogsComponent, { static: true }) viewLogsComponent: ViewLogsComponent;
 
   public pluginData = {
@@ -71,14 +64,19 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     pluginName: ''
   };
 
+
+  QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
+  validRuleConfigurationForm = true;
+  validDeliveryConfigurationForm = true;
+
   constructor(private formBuilder: FormBuilder,
     private notificationService: NotificationsService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
-    private configService: ConfigurationService,
     private sharedService: SharedService,
-    private validateFormService: ValidateFormService,
     private docService: DocService,
+    private configurationControlService: ConfigurationControlService,
+    private fileUploaderService: FileUploaderService,
     private router: Router) { }
 
   ngOnInit() {
@@ -101,7 +99,20 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         showPackageLogs.isSubscribed = false;
       }
     });
+
+    this.name?.valueChanges?.subscribe(v => {
+      if (v.length > 0) {
+        this.description?.patchValue(`${v} notification instance`)
+      } else {
+        this.description.patchValue('');
+      }
+      this.notificationForm?.updateValueAndValidity();
+    })
   }
+
+  get name() { return this.notificationForm.get('name'); }
+
+  get description() { return this.notificationForm.get('description'); }
 
   /**
    * Open plugin modal
@@ -141,6 +152,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
             }
           },
           () => {
+            /** request completed */
+            this.ngProgress.done();
             setTimeout(() => {
               if (isPluginInstalled) {
                 this.pluginData.modalState = false;
@@ -205,7 +218,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   }
 
   moveNext() {
-    this.isValidName = true;
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
     const formValues = this.notificationForm.value;
@@ -215,15 +227,11 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 1:
-        if (formValues['name'].trim() === '') {
-          this.isValidName = false;
-          return;
-        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (formValues['name'].trim() !== '') {
-          this.payload.name = formValues['name'];
-          this.payload.description = this.description.nativeElement.value;
+          this.payload.name = formValues['name'].trim();
+          this.payload.description = formValues['description'];
         }
         if (this.notificationRulePlugins.length === 0) {
           nxtButton.disabled = true;
@@ -244,20 +252,13 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         if (formValues['rule'].length > 0) {
           this.payload.rule = formValues['rule'][0];
         }
-        this.getRulePluginConfiguration();
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
+        if (!this.validRuleConfigurationForm) {
+          nxtButton.disabled = true;
+        }
         break;
       case 3:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.ruleViewConfigItemComponent))) {
-          return;
-        }
-        this.ruleViewConfigItemComponent.callFromWizard();
-        // document.getElementById('vci-proxy-rule').click();
-        const el = <HTMLCollection>document.getElementsByClassName('vci-proxy-rule');
-        for (const e of <any>el) {
-          e.click();
-        }
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (this.notificationDeliveryPlugins.length === 0) {
@@ -281,17 +282,11 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
-        this.getDeliveryPluginConfiguration();
+        if (!this.validDeliveryConfigurationForm) {
+          nxtButton.disabled = true;
+        }
         break;
       case 5:
-        if (!(this.validateFormService.checkViewConfigItemFormValidity(this.deliveryViewConfigItemComponent))) {
-          return;
-        }
-        this.deliveryViewConfigItemComponent.callFromWizard();
-        const elm = <HTMLCollection>document.getElementsByClassName('vci-proxy-delivery');
-        for (const e of <any>elm) {
-          e.click();
-        }
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -333,21 +328,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-  *  Get default configuration of a selected plugin
-  */
-  private getRulePluginConfiguration(): void {
-    const config = this.notificationRulePlugins.map(p => {
-      if (p.name === this.payload.rule) {
-        return p.config;
-      }
-    }).filter(value => value !== undefined);
-
-    // array to hold data to display on configuration page
-    this.rulePluginConfigurationData = { value: config };
-    this.useRuleProxy = 'true';
-  }
-
   isPluginSelected(selectedPlugin, pluginType: string) {
     if (selectedPlugin === '') {
       this.isSinglePlugin = false;
@@ -356,44 +336,45 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const nxtButton = <HTMLButtonElement>document.getElementById('next');
-    nxtButton.disabled = false;
-
+    // const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    // nxtButton.disabled = false;
+    this.validRuleConfigurationForm = true;
+    this.validDeliveryConfigurationForm = true;
     this.isSinglePlugin = true;
     this.isRulePlugin = true;
     this.isDeliveryPlugin = true;
     const plugin = (selectedPlugin.slice(3).trim()).replace(/'/g, '');
     if (pluginType === 'rule') {
+      this.payload.rule_config = {};
       this.selectedRulePlugin = plugin;
       this.selectedRulePluginDescription = this.notificationRulePlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
+      this.getRulePluginConfiguration(plugin);
     } else {
+      this.payload.delivery_config = {};
       this.selectedDeliveryPlugin = plugin;
       this.selectedDeliveryPluginDescription = this.notificationDeliveryPlugins
         .find(p => p.config.plugin.default === plugin).config.plugin.description;
+      this.getDeliveryPluginConfiguration(plugin);
     }
   }
 
-  private getDeliveryPluginConfiguration(): void {
-    const config = this.notificationDeliveryPlugins.map(d => {
-      if (d.name === this.payload.channel) {
-        return d.config;
-      }
-    }).filter(value => value !== undefined);
-
-    // array to hold data to display on configuration page
-    this.deliveryPluginConfigurationData = { value: config };
-    this.useDeliveryProxy = 'true';
+  private getDeliveryPluginConfiguration(selectedPlugin: string): void {
+    const plugin = cloneDeep(this.notificationDeliveryPlugins.find(p => p.name === selectedPlugin));
+    if (plugin) {
+      this.deliveryPluginConfiguration = plugin;
+      this.deliveryPluginConfigurationCopy = cloneDeep(plugin);
+    }
   }
 
-  validateNotificationName(event: any) {
-    if (event.target.value.trim().length > 0) {
-      this.isValidName = true;
-    }
-    if (this.name.nativeElement.value.length > 0) {
-      this.description.nativeElement.value = this.name.nativeElement.value + ' notification instance';
-    } else {
-      this.description.nativeElement.value = '';
+  /**
+ *  Get default configuration of the selected plugin
+ */
+  private getRulePluginConfiguration(selectedPlugin: string): void {
+    const plugin = cloneDeep(this.notificationRulePlugins.find(p => p.name === selectedPlugin));
+    if (plugin) {
+      this.rulePluginConfiguration = plugin;
+      this.rulePluginConfigurationCopy = cloneDeep(plugin);
     }
   }
 
@@ -422,21 +403,19 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   }
 
   /**
+ * Get edited configuration from view config child page
+ * @param changedConfig changed configuration of a selected plugin
+ */
+  getChangedRuleConfig(changedConfig: any) {
+    this.payload.rule_config = this.configurationControlService.getChangedConfiguration(changedConfig, this.rulePluginConfigurationCopy);
+  }
+
+  /**
    * Get edited configuration from view config child page
    * @param changedConfig changed configuration of a selected plugin
    */
-  getPluginChangedConfig(changedConfig: any, pageId: string) {
-    const finalConfig = [];
-    changedConfig.forEach((item: any) => {
-      finalConfig.push({
-        [item.key]: item.type === 'JSON' ? JSON.parse(item.value) : item.value
-      });
-    });
-    if (pageId === 'rule') {
-      this.rulePluginChangedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    } else if (pageId === 'delivery') {
-      this.deliveryPluginChangedConfig = reduce(finalConfig, function (memo, current) { return assign(memo, current); }, {});
-    }
+  getChangedDeliveryConfig(changedConfig: any) {
+    this.payload.delivery_config = this.configurationControlService.getChangedConfiguration(changedConfig, this.deliveryPluginConfigurationCopy);
   }
 
   getNotificationTypeList() {
@@ -462,12 +441,9 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
    * @param previousButton button to go previous
    */
   public addNotificationInstance(payload: any) {
-    payload['rule_config'] = this.rulePluginChangedConfig;
-    payload['delivery_config'] = this.deliveryPluginChangedConfig;
-    const ruleScript = this.rulePluginChangedConfig.script;
-    const deliveryScript = this.deliveryPluginChangedConfig.script;
-    delete payload['rule_config'].script;  // delete script key from payload object
-    delete payload['delivery_config'].script; // delete script key from payload object
+    // extract script files to upload from final payload
+    const deliveryScriptFiles = this.getScriptFilesToUpload(payload.delivery_config);
+    const rulesScriptFiles = this.getScriptFilesToUpload(payload.rule_config);
 
     /** request started */
     this.ngProgress.start();
@@ -477,13 +453,13 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.alertService.success(data.result, true);
-
-          if (!isEmpty(ruleScript)) {
-            this.uploadScript(`rule${payload.name}`, ruleScript[0]);
+          const name = this.payload.name
+          if (rulesScriptFiles.length > 0) {
+            this.uploadScript(`rule${name}`, rulesScriptFiles);
           }
 
-          if (!isEmpty(deliveryScript)) {
-            this.uploadScript(`delivery${payload.name}`, deliveryScript[0]);
+          if (deliveryScriptFiles.length > 0) {
+            this.uploadScript(`delivery${name}`, deliveryScriptFiles);
           }
           this.router.navigate(['/notification']);
         },
@@ -498,21 +474,17 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         });
   }
 
-  public uploadScript(categoryName: string, config: any) {
-    const file = config.script;
-    const formData = new FormData();
-    formData.append('script', file);
-    this.configService.uploadFile(categoryName, 'script', formData)
-      .subscribe(() => {
-        this.alertService.success('configuration updated successfully.');
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
+  }
+
+  /**
+  * To upload script files of a configuration property
+  * @param categoryName name of the configuration category
+  * @param files : Scripts array to uplaod
+  */
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
 
   onNotify(event: any) {
@@ -558,6 +530,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   goToNotificationTypeLink() {
     const urlSlug = 'notification-types';
     this.docService.goToNotificationDocLink(urlSlug);
+  }
+
+  checkRuleFormValidity(formStatus: boolean) {
+    this.validRuleConfigurationForm = formStatus;
+    const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    !this.validRuleConfigurationForm ? nxtButton.disabled = true : nxtButton.disabled = false;
   }
 
 

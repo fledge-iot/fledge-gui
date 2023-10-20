@@ -67,7 +67,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.userService.getRole()
       .subscribe(
         (roleRecord) => {
-          this.roles = roleRecord['roles'];
+          this.roles = roleRecord['roles'].sort((a, b) => a.name.localeCompare(b.name));
           roleRecord['roles'].filter(role => {
             users.forEach(user => {
               if (role.id === user.roleId) {
@@ -87,6 +87,20 @@ export class UserManagementComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  getAccessMethod(accessMethod) {
+    switch (accessMethod) {
+      case 'cert':
+        return 'Certificate';
+        break;
+      case 'pwd':
+        return 'Password';
+        break;
+      default:
+        return 'Any';
+        break;
+    }
   }
 
   /**
