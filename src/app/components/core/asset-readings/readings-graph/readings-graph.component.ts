@@ -492,34 +492,34 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getReadings(readings: any, optedTime: number) {
-   let assetFormatedReadings = {numReadings:[], strReadings:[], arrReadings:[], imageReadings:[]};
+   let readingsClassificationPerType = {numReadings:[], strReadings:[], arrReadings:[], imageReadings:[]};
     // In case of multiple assets readings, merge all readings
     if ((this.additionalAssets.length > 1 && readings.length !== 0) || !(Array.isArray(readings))) {
       if (Object.keys(readings).length === this.additionalAssets.length) {
         let allAssetsReading = [];
         this.additionalAssets.forEach((asset) => {
-          let formatedReadings = readings[asset].map(d => { return {reading: d.reading, timestamp: d.timestamp}}).map(r => {
+          let formattedReadings = readings[asset].map(d => { return {reading: d.reading, timestamp: d.timestamp}}).map(r => {
             r.reading =  Object.assign(
               {},
               ...Object.keys(r.reading).map(key => ({[`${asset}.${key}`]: r.reading[key]}))
             )
             return r;
           })
-          allAssetsReading.push(...formatedReadings);
-          assetFormatedReadings = this.readingFormate(allAssetsReading );
+          allAssetsReading.push(...formattedReadings);
+          readingsClassificationPerType = this.readingFormat(allAssetsReading);
           this.timestamps = allAssetsReading.reverse().map((r: any) => r.timestamp);
          
         });
       } 
     } else {
-      assetFormatedReadings = this.readingFormate(readings);
+      readingsClassificationPerType = this.readingFormat(readings);
       this.timestamps = readings.reverse().map((r: any) => r.timestamp);
     }
    
-    this.imageReadings = assetFormatedReadings.imageReadings.length > 0 ? this.getImage(assetFormatedReadings.imageReadings) : [];
-    this.numberTypeReadingsList = assetFormatedReadings.numReadings.length > 0 ? this.mergeObjects(assetFormatedReadings.numReadings) : [];
-    this.arrayTypeReadingsList = assetFormatedReadings.arrReadings.length > 0 ? this.mergeObjects(assetFormatedReadings.arrReadings) : [];
-    this.stringTypeReadingsList = mapValues(groupBy(assetFormatedReadings.strReadings,
+    this.imageReadings = readingsClassificationPerType.imageReadings.length > 0 ? this.getImage(readingsClassificationPerType.imageReadings) : [];
+    this.numberTypeReadingsList = readingsClassificationPerType.numReadings.length > 0 ? this.mergeObjects(readingsClassificationPerType.numReadings) : [];
+    this.arrayTypeReadingsList = readingsClassificationPerType.arrReadings.length > 0 ? this.mergeObjects(readingsClassificationPerType.arrReadings) : [];
+    this.stringTypeReadingsList = mapValues(groupBy(readingsClassificationPerType.strReadings,
       (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
 
     this.setGraphStartTimestamp(optedTime);
@@ -529,7 +529,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
 
- readingFormate(readings) { 
+ readingFormat(readings) { 
   const numReadings = [];
   const strReadings = [];
   const arrReadings = [];
