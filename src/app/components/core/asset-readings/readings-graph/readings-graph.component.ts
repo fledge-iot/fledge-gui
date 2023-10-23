@@ -3,7 +3,7 @@ import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
-import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
+import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL, TIME_FORMAT } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
@@ -467,7 +467,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             imageReadings.push({
               datapoint: k,
               imageData: value,
-              timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
+              timestamp: this.dateFormatter.transform(r.timestamp, TIME_FORMAT)
             });
           } else {
             strReadings.push({
@@ -487,7 +487,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
     this.imageReadings = imageReadings.length > 0 ? this.getImage(imageReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(strReadings,
-      (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
+      (reading) => this.dateFormatter.transform(reading.timestamp, TIME_FORMAT)), rlist => rlist.map(read => omit(read, 'timestamp')));
     this.setTabData(this.optedTime);
   }
 
@@ -520,7 +520,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.numberTypeReadingsList = readingsClassificationPerType.numReadings.length > 0 ? this.mergeObjects(readingsClassificationPerType.numReadings) : [];
     this.arrayTypeReadingsList = readingsClassificationPerType.arrReadings.length > 0 ? this.mergeObjects(readingsClassificationPerType.arrReadings) : [];
     this.stringTypeReadingsList = mapValues(groupBy(readingsClassificationPerType.strReadings,
-      (reading) => this.dateFormatter.transform(reading.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')), rlist => rlist.map(read => omit(read, 'timestamp')));
+      (reading) => this.dateFormatter.transform(reading.timestamp, TIME_FORMAT)), rlist => rlist.map(read => omit(read, 'timestamp')));
 
     this.setGraphStartTimestamp(optedTime);
     this.setInfoTextTimestamps();
@@ -536,6 +536,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   const imageReadings = [];
   for (const r of readings) {
     Object.entries(r.reading).forEach(([k, value]) => {
+
       // discard unuseful reading
       if (value === 'Data removed for brevity') {
         return;
@@ -551,7 +552,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           imageReadings.push({
             datapoint:  k,
             imageData: value,
-            timestamp: this.dateFormatter.transform(r.timestamp, 'YYYY-MM-DD HH:mm:ss.SSS')
+            timestamp: this.dateFormatter.transform(r.timestamp, TIME_FORMAT)
           });
         } else {
           strReadings.push({
@@ -574,7 +575,9 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
       }
       else {
-        console.log('Failed to parse reading ', value, ' for key ', k);
+       
+        
+        console.log('Failed to parse reading ', value, 'of type', (typeof value), ' for key ', k);
       }
     });
   }
@@ -688,7 +691,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     assetReadings = orderBy(assetReadings, [reading => reading.key.toLowerCase()], ['asc']);
     for (const r of assetReadings) {
       r.read = r.read.map(dt => {
-        dt.x = this.dateFormatter.transform(dt.x, 'YYYY-MM-DD HH:mm:ss.SSS')
+        dt.x = this.dateFormatter.transform(dt.x, TIME_FORMAT)
         return dt;
       });
       const dsColor = Utils.namedColor(dataset.length);
@@ -751,7 +754,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           distribution: 'linear',
           type: 'time',
           time: {
-            tooltipFormat: 'YYYY-MM-DD HH:mm:ss.SSS',
+            tooltipFormat: TIME_FORMAT,
             displayFormats: {
               millisecond: 'HH:mm:ss.SSS',
               second: 'HH:mm:ss',
