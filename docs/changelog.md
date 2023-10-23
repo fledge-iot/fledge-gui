@@ -10,7 +10,7 @@
 
 ### Others
 
-- Disable buttons on click when API request is in progress, to avoid duplicate requests [#343](https://github.com/fledge-iot/fledge-gui/pull/343)
+- Disable buttons on click while the corresponding API request is in progress, to avoid duplicate requests [#343](https://github.com/fledge-iot/fledge-gui/pull/343)
 
 
 ## v2.2.1 [2023-1x-xx]
