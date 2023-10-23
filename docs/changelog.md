@@ -1,3 +1,24 @@
+## v2.x.x [202x-xx-xx]
+
+### Added
+
+### Changed
+
+- [FOGL-7948] Configuration page single tree structure for Categories. Removed the dropdown selector for root categories/parent groups [#330](https://github.com/fledge-iot/fledge-gui/pull/330)
+
+### Fixed
+
+### Others
+
+- Disable buttons on click when API request is in progress, to avoid duplicate requests [#343](https://github.com/fledge-iot/fledge-gui/pull/343)
+
+
+## v2.2.1 [2023-1x-xx]
+
+### Fixed
+
+- [FOGL-8199] Same datapoints/attributes for different asset not displaying correctly in the graph [#347](https://github.com/fledge-iot/fledge-gui/pull/347)
+
 ## v2.2.0 [2023-10-17]
 
 ### Added
