@@ -17,7 +17,7 @@
 
 ### Fixed
 
-- [FOGL-8199] Same datapoints/attributes for different asset not displaying correctly in the graph [#347](https://github.com/fledge-iot/fledge-gui/pull/347)
+- [FOGL-8199] Same name datapoints/attributes for different assets get merged in the graph display [#347](https://github.com/fledge-iot/fledge-gui/pull/347)
 
 ## v2.2.0 [2023-10-17]
 
