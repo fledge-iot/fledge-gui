@@ -50,7 +50,7 @@
         </p>
       </div>
 
-      <a *ngIf="rolesService?.hasControlAccess()" [disabled]="!isNotificationServiceEnabled" class="fix-pad button is-light" (click)="addNotificationInstance()">
+      <a *ngIf="rolesService?.hasControlAccess()" [ngClass]="{disabled: !isNotificationServiceEnabled}" class="fix-pad button is-light" id="add_notification_instance" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
