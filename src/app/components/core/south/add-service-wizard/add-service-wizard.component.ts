@@ -109,7 +109,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 2:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       case 3:

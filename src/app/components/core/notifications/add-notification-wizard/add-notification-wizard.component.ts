@@ -194,12 +194,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 2:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       case 3:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Previous';
         nxtButton.disabled = false;
         break;
       case 4:

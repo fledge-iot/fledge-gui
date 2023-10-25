@@ -113,7 +113,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 2:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       case 3:
@@ -135,6 +135,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 1:
         nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
         previousButton.disabled = false;
         // To verify if task with given name already exist
         const isTaskNameExist = this.schedulesName.some(item => {
