@@ -428,7 +428,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   navToServiceConfiguration(service){
     let routePath = service.type === 'Northbound' ? 'north' : 'south';
-    this.router.navigate([routePath, service.name])
+    this.router.navigate([routePath, service.name, 'details'])
   }
 }
 
