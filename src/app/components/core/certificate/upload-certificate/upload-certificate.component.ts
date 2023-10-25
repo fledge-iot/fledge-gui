@@ -19,6 +19,8 @@ export class UploadCertificateComponent implements OnInit {
   @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(private certificateService: CertificateService,
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
@@ -131,6 +133,7 @@ export class UploadCertificateComponent implements OnInit {
     formData.append('overwrite', this.overwrite);
     /** request started */
     this.ngProgress.start();
+    this.reenableButton.emit(false);
     this.certificateService.uploadCertificate(formData).
       subscribe(
         (data) => {
@@ -143,6 +146,7 @@ export class UploadCertificateComponent implements OnInit {
         error => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
