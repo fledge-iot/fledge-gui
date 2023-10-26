@@ -285,12 +285,14 @@ export class AddEditAPIFlowComponent implements OnInit {
           (data: any) => {
             /** request completed */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             this.alertService.success(data.message, true);
             this.navigateToList();
           },
           error => {
             /** request completed but error */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             if (error.status === 0) {
               console.log('service down ', error);
             } else {

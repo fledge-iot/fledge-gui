@@ -75,7 +75,7 @@
         </section>
         <footer class="modal-card-foot">
           <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-          <button class="button is-small is-danger" (click)="deleteScript(script)">Delete</button>
+          <button class="button is-small is-danger" (click)="deleteScript(script)" [appDisableUntilResponse]="reenableButton">Delete</button>
         </footer>
       </app-confirmation-dialog>
     </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AlertService, SharedService, ProgressBarService, RolesService } from '../../../../../services';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
@@ -17,6 +17,9 @@ export class AclListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   acl;
   private subscription: Subscription;
+
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(
     private aclService: AclService,
     private alertService: AlertService,
@@ -103,6 +106,7 @@ export class AclListComponent implements OnInit {
     this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
@@ -110,6 +114,7 @@ export class AclListComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {

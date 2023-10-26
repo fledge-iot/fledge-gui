@@ -352,6 +352,7 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
@@ -359,6 +360,7 @@ export class AddControlAclComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {

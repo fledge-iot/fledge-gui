@@ -281,6 +281,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.deletePipeline(id)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         this.router.navigate(['control-dispatcher/pipelines']);
@@ -288,6 +289,7 @@ export class AddControlPipelineComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {

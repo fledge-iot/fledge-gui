@@ -101,6 +101,7 @@ export class AddControlScriptComponent implements OnInit {
     this.controlService.deleteScript(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
@@ -108,6 +109,7 @@ export class AddControlScriptComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {
