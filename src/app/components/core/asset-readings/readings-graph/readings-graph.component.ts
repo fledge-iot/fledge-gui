@@ -102,6 +102,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   public toggleModal(shouldOpen: Boolean) {
     // reset all variable and array to default state
     this.assetReadingSummary = [];
+    // clear legend from session while closing the modal
+    if(!shouldOpen && this.additionalAssets.length> 0) {
+      this.clearLegendSelection();
+    }
     this.additionalAssets = [];
     this.buttonText = '';
     this.assetReadingValues = {};
@@ -109,7 +113,6 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.assetChartOptions = {};
     this.pauseTime = Date.now();
     this.backwardReadingCounter = 0;
-    sessionStorage.removeItem(this.assetCode);
     this.infoTextTimestamps.start = "";
     this.infoTextTimestamps.end = "";
     this.zoomConfig.isZoomed = false;
@@ -155,6 +158,12 @@ export class ReadingsGraphComponent implements OnDestroy {
     else {
       this.optedTime = ASSET_READINGS_TIME_FILTER;
     }
+  }
+
+  clearLegendSelection() {
+    this.additionalAssets.forEach(asset => {
+      sessionStorage.removeItem(asset);
+    });
   }
 
   getTimeBasedAssetReadingsAndSummary(timeObject) {
@@ -231,13 +240,21 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  addOrRemoveAsset() {
+  addOrRemoveAsset(asset: string) {
+    if (asset) {
+      /**
+       * clear legend object from session store 
+       *  for an asset removed from selection list
+       */
+      sessionStorage.removeItem(asset);
+    }
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   clearAdditionalAssets() {
     this.additionalAssets.push(this.selectedAsset);
     this.additionalAssets = [...this.additionalAssets];
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
   }
 
   getAssetLatestReadings(assetCode, isModalOpened = false) {
@@ -512,6 +529,16 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
       } 
     } else {
+       // add asset in key for all datapoints of the asset
+       readings.map((r) => {
+        r.reading = Object.assign(
+          {},
+          ...Object.keys(r.reading).map((key) => ({
+            [`${this.assetCode}.${key}`]: r.reading[key],
+          }))
+        );
+        return r;
+      });
       readingsClassificationPerType = this.readingFormat(readings);
       this.timestamps = readings.reverse().map((r: any) => r.timestamp);
     }
@@ -727,7 +754,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   public getLegendState(key) {
-    const selectedLegends = JSON.parse(sessionStorage.getItem(this.assetCode));
+    const asset = key.split(".")[0];
+    const selectedLegends = JSON.parse(sessionStorage.getItem(asset));
     if (selectedLegends == null) {
       return false;
     }
@@ -772,6 +800,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       plugins: {
         legend: {
           onClick: (_e, legendItem) => {
+            const asset = legendItem?.text.split(".")[0]; // split legend text to get asset name
             const index = legendItem.datasetIndex;
             const chart = this.assetChart.chart;
             const meta = chart.getDatasetMeta(index);
@@ -779,7 +808,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             * meta data have hidden property as null by default in chart.js
             */
             meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
-            let savedLegendState = JSON.parse(sessionStorage.getItem(this.assetCode));
+            let savedLegendState = JSON.parse(sessionStorage.getItem(asset));
             if (savedLegendState !== null) {
               if (legendItem.hidden === false) {
                 savedLegendState.push({ key: legendItem.text, selected: true });
@@ -789,7 +818,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             } else {
               savedLegendState = [{ key: legendItem.text, selected: true }];
             }
-            sessionStorage.setItem(this.assetCode, JSON.stringify(savedLegendState));
+            sessionStorage.setItem(asset, JSON.stringify(savedLegendState));
             chart.update();
           }
         },
