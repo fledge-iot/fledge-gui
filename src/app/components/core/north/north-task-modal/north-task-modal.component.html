@@ -176,6 +176,6 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('delete-task-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="onDelete(task)">Delete</button>
+    <button class="button is-small is-danger" (click)="onDelete(task)" [appDisableUntilResponse]="reenableButton">Delete</button>
   </footer>
 </app-confirmation-dialog>

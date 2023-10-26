@@ -165,7 +165,7 @@
     </div>
     <div class="steps-action">
       <button (click)="gotoNext()" data-nav="next" [disabled]="serviceForm.invalid || !validChildConfigurationForm"
-        class="button is-link" id="next">Next</button>
+        class="button is-link" id="next" [appDisableUntilResponse]="reenableButton">Next</button>
     </div>
   </div>
 </div>

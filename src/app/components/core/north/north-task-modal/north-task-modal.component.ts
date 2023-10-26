@@ -285,6 +285,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       .subscribe(
         (data: any) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.result, true);
           this.navToNorthPage();
           this.closeModal('delete-task-dialog');
@@ -292,6 +293,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -309,6 +311,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       .subscribe(
         (data: any) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.result, true);
           this.navToNorthPage();
           this.closeModal('delete-task-dialog');
@@ -316,6 +319,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

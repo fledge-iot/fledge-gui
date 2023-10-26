@@ -336,6 +336,7 @@ export class SouthServiceModalComponent implements OnInit {
       .subscribe(
         (data) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data['result'], true);
           this.navToSouthPage();
           this.closeModal('delete-service-dialog');
@@ -345,6 +346,7 @@ export class SouthServiceModalComponent implements OnInit {
         },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

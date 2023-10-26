@@ -127,6 +127,6 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('delete-service-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteService(service)">Delete</button>
+    <button class="button is-small is-danger" (click)="deleteService(service)" [appDisableUntilResponse]="reenableButton">Delete</button>
   </footer>
 </app-confirmation-dialog>

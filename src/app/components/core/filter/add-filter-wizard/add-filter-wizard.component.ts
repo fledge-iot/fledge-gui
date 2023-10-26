@@ -52,6 +52,8 @@ export class AddFilterWizardComponent implements OnInit {
   validChildConfigurationForm = true;
   pluginConfiguration: any;
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(private formBuilder: FormBuilder,
     private filterService: FilterService,
     private configurationService: ConfigurationService,
@@ -214,6 +216,7 @@ export class AddFilterWizardComponent implements OnInit {
 
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        this.reenableButton.emit(false);
         if (!this.validChildConfigurationForm) {
           nxtButton.disabled = true;
         }
@@ -402,6 +405,7 @@ export class AddFilterWizardComponent implements OnInit {
     this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
+          this.reenableButton.emit(false);
           this.toast.success(data.filter + ' filter added successfully.');
           if (this.from === 'control-pipeline') {
             if (files) {
@@ -413,6 +417,7 @@ export class AddFilterWizardComponent implements OnInit {
           }
         },
         (error) => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
