@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CertificateService } from '../../../services';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { DirectivesModule } from '../../../directives/directives.module';
+import { SharedModule } from '../../../shared.module';
 import { CertificateStoreComponent } from './certificate-store';
 import { UploadCertificateComponent } from './upload-certificate/upload-certificate.component';
 import { Routes, RouterModule } from '@angular/router';
@@ -27,6 +28,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     CommonModule,
     DirectivesModule,
+    SharedModule,
     AlertDialogModule
   ],
   providers: [CertificateService],

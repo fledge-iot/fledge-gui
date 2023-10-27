@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, EventEmitter } from '@angular/core';
 
 import { AlertService, CertificateService, ProgressBarService, RolesService, SharedService } from '../../../../services';
-import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { UploadCertificateComponent } from '../upload-certificate/upload-certificate.component';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -17,16 +17,8 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
   public certificateName = '';
   private viewPortSubscription: Subscription;
   viewPort: any = '';
+  certName: string = '';
 
-  // Object to hold data of certificate to delete
-  public childData = {
-    id: '',
-    name: '',
-    message: '',
-    key: ''
-  };
-
-  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(UploadCertificateComponent, { static: true }) uploadModal: UploadCertificateComponent;
 
   allowDelete = true;
@@ -36,6 +28,7 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
     private sharedService: SharedService,
+    private dialogService: DialogService,
     public rolesService: RolesService) { }
 
   ngOnInit() {
@@ -97,37 +90,17 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
     return nameWithExtension.substr(0, nameWithExtension.indexOf('.'));
   }
 
-  /**
-   * Open delete certificate modal dialog
-   * @param cert  name of the cert/key file of the certificate
-   * @param message   message to show on alert
-   * @param action here action is 'delete'
-   */
-  openDeleteModal(cert, message, action) {
-    this.childData = {
-      id: '',
-      name: cert,
-      message: message,
-      key: action
-    };
-    // call child component method to toggle modal
-    this.child.toggleModal(true);
-  }
-
-  /**
-   * Delete Certificate
-   * @param certificate  object of certificate, contains name and its type (cert/key)
-   */
-  deleteCertificate(certificate) {
+  deleteCertificate(type) {
     /** request started */
     this.ngProgress.start();
-    this.certService.deleteCertificate(certificate['name'], certificate['type']).
+    this.certService.deleteCertificate(this.certName, type).
       subscribe(
         (data) => {
           /** request completed */
-          this.ngProgress.done();        
+          this.ngProgress.done();
           this.reenableButton.emit(false);
           this.alertService.success(data['result']);
+          this.closeModal('delete-'+ type +'-dialog');
           this.getCertificates();
         },
         error => {
@@ -148,6 +121,16 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
    */
   onNotify() {
     this.getCertificates();
+  }
+
+  openModal(id: string, cert) {  
+    this.certName = cert;
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.certName = '';
+    this.dialogService.close(id);
   }
 
   public ngOnDestroy(): void {

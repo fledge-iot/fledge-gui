@@ -32,8 +32,7 @@
               <td class="showInCenter">{{key.split(".")[1]}}</td>
               <ng-container *ngIf="allowDelete">
                 <td class="showInCenter">
-                  <a (click)="openDeleteModal(key, 'Are you sure, You want to delete the key', 'deleteKey')"
-                    class="button is-text text-btn">
+                  <a (click)="openModal('delete-key-dialog', key)" class="button is-text text-btn">
                     delete
                   </a>
                 </td>
@@ -59,7 +58,7 @@
               <td class="showInCenter">{{cert.split(".")[1]}}</td>
               <ng-container *ngIf="allowDelete">
                 <td class="showInCenter">
-                  <a (click)="openDeleteModal(cert, 'Are you sure, You want to delete the certificate', 'deleteCertificate')"
+                  <a (click)="openModal('delete-cert-dialog', cert)"
                     class="button is-text text-btn">
                     delete
                   </a>
@@ -71,6 +70,33 @@
       </div>
     </div>
   </div>
-  <app-alert-dialog (deleteCertificate)='deleteCertificate($event)' [childData]='childData'></app-alert-dialog>
+  
+  <app-confirmation-dialog id="delete-key-dialog">
+    <header class="modal-card-head">
+      <span class="modal-card-title is-size-6">Delete Key</span>
+      <button class="delete" aria-label="close" (click)="closeModal('delete-key-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Are you sure, You want to delete the key <b>{{getName(certName)}}</b>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="closeModal('delete-key-dialog')">Cancel</button>
+      <button class="button is-small is-danger" (click)="deleteCertificate('key')" [appDisableUntilResponse]="reenableButton">Delete</button>
+    </footer>
+  </app-confirmation-dialog>
+
+  <app-confirmation-dialog id="delete-cert-dialog">
+    <header class="modal-card-head">
+      <span class="modal-card-title is-size-6">Delete Certificate</span>
+      <button class="delete" aria-label="close" (click)="closeModal('delete-cert-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Are you sure, You want to delete the certificate <b>{{getName(certName)}}</b>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="closeModal('delete-cert-dialog')">Cancel</button>
+      <button class="button is-small is-danger" (click)="deleteCertificate('cert')" [appDisableUntilResponse]="reenableButton">Delete</button>
+    </footer>
+  </app-confirmation-dialog>
   <app-upload-cert (notify)='onNotify()'></app-upload-cert>
 </div>

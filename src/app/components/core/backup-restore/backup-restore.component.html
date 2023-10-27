@@ -85,13 +85,13 @@
                 <ng-container *ngIf="rolesService.hasEditPermissions()">
                   <td class="align-content">
                     <a *ngIf="backup.status != 'RUNNING'" class="button is-text text-btn"
-                      (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
+                      (click)="openModal('delete-backup-dialog', backup)">delete
                     </a>
                   </td>
                   <td class="align-content">
                     <a *ngIf="(backup.status == 'COMPLETED' || backup.status == 'RESTORED')"
                       class="button is-text text-btn"
-                      (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
+                      (click)="openModal('restore-backup-dialog', backup)">restore
                     </a>
                   </td>
                 </ng-container>
@@ -108,7 +108,34 @@
       </ng-container>
     </div>
   </div>
-  <app-alert-dialog (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)'
-    (deleteBackup)='deleteBackup($event)' [childData]='childData'></app-alert-dialog>
+  <!-- delete-backup-dialog -->
+  <app-confirmation-dialog id="delete-backup-dialog">
+    <header class="modal-card-head">
+      <span class="modal-card-title is-size-6">Delete Backup</span>
+      <button class="delete" aria-label="close" (click)="closeModal('delete-backup-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Are you sure you want to delete the backup  <b>{{backup?.date}}</b>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="closeModal('delete-backup-dialog')">Cancel</button>
+      <button class="button is-small is-danger" (click)="deleteBackup(backup?.id)" [appDisableUntilResponse]="reenableButton">Delete</button>
+    </footer>
+  </app-confirmation-dialog>
+
+  <!-- restore-backup-dialog -->
+  <app-confirmation-dialog id="restore-backup-dialog">
+    <header class="modal-card-head">
+      <span class="modal-card-title is-size-6">Restore Backup</span>
+      <button class="delete" aria-label="close" (click)="closeModal('restore-backup-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Are you sure you want to restore the backup <b>{{backup?.date}}</b>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="closeModal('restore-backup-dialog')">Cancel</button>
+      <button class="button is-small is-warning" (click)="restoreBackup(backup?.id)" [appDisableUntilResponse]="reenableButton">Restore</button>
+    </footer>
+  </app-confirmation-dialog>
   <app-file-upload-modal></app-file-upload-modal>
 </div>
