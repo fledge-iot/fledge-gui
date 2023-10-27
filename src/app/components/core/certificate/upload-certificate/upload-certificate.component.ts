@@ -133,12 +133,12 @@ export class UploadCertificateComponent implements OnInit {
     formData.append('overwrite', this.overwrite);
     /** request started */
     this.ngProgress.start();
-    this.reenableButton.emit(false);
     this.certificateService.uploadCertificate(formData).
       subscribe(
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.notify.emit();
           this.toggleModal(false);
           this.alertService.success(data['result']);

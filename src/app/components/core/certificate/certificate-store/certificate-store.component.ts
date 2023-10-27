@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, EventEmitter } from '@angular/core';
 
 import { AlertService, CertificateService, ProgressBarService, RolesService, SharedService } from '../../../../services';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
@@ -30,6 +30,8 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
   @ViewChild(UploadCertificateComponent, { static: true }) uploadModal: UploadCertificateComponent;
 
   allowDelete = true;
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(private certService: CertificateService,
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
@@ -123,13 +125,15 @@ export class CertificateStoreComponent implements OnInit, OnDestroy {
       subscribe(
         (data) => {
           /** request completed */
-          this.ngProgress.done();
+          this.ngProgress.done();        
+          this.reenableButton.emit(false);
           this.alertService.success(data['result']);
           this.getCertificates();
         },
         error => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
