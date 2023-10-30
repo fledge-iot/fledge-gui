@@ -55,10 +55,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   public isLatestReadings = false;
   public pauseTime: number = Date.now();
   public backwardReadingCounter: number = 0;
-  public imageReadingsDimensions = {width: 0, height: 0, depth: 0};
-  public infoTextTimestamps = {start : "", end: ""};
+  public imageReadingsDimensions = { width: 0, height: 0, depth: 0 };
+  public infoTextTimestamps = { start: "", end: "" };
   public graphStartTimestamp: string;
-  public zoomConfig = {minZoomValue: 1, isZoomed: false};
+  public zoomConfig = { minZoomValue: 1, isZoomed: false };
   public isReadingsFetched = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -87,13 +87,13 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    if(event.key === 'Escape'){
+    if (event.key === 'Escape') {
       this.loadPage = false;
       this.toggleModal(false);
     }
     // reset graph zoom scale on pressing space key
-    else if(event.key === ' '){
-      if(this.zoomConfig.isZoomed){
+    else if (event.key === ' ') {
+      if (this.zoomConfig.isZoomed) {
         this.resetZoom();
       }
     }
@@ -103,7 +103,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     // reset all variable and array to default state
     this.assetReadingSummary = [];
     // clear legend from session while closing the modal
-    if(!shouldOpen && this.additionalAssets.length> 0) {
+    if (!shouldOpen && this.additionalAssets.length > 0) {
       this.clearLegendSelection();
     }
     this.additionalAssets = [];
@@ -509,16 +509,16 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getReadings(readings: any, optedTime: number) {
-    let readingsClassificationPerType = {numReadings:[], strReadings:[], arrReadings:[], imageReadings:[]};
+    let readingsClassificationPerType = { numReadings: [], strReadings: [], arrReadings: [], imageReadings: [] };
     // In case of multiple assets readings, merge all readings
     if ((this.additionalAssets.length > 1 && readings.length !== 0) || !(Array.isArray(readings))) {
       if (Object.keys(readings).length === this.additionalAssets.length) {
         let allAssetsReading = [];
         this.additionalAssets.forEach((asset) => {
-          let formattedReadings = readings[asset].map(d => { return {reading: d.reading, timestamp: d.timestamp}}).map(r => {
-            r.reading =  Object.assign(
+          let formattedReadings = readings[asset].map(d => { return { reading: d.reading, timestamp: d.timestamp } }).map(r => {
+            r.reading = Object.assign(
               {},
-              ...Object.keys(r.reading).map(key => ({[`${asset}.${key}`]: r.reading[key]}))
+              ...Object.keys(r.reading).map(key => ({ [`${asset}.${key}`]: r.reading[key] }))
             )
             return r;
           })
@@ -570,20 +570,20 @@ export class ReadingsGraphComponent implements OnDestroy {
         }
         if (typeof value === 'number') {
           numReadings.push({
-            key:k,
+            key: k,
             read: { x: r.timestamp, y: value }
           });
         } else if (typeof value === 'string') {
           if (value.includes("__DPIMAGE")) {
             this.getImageReadingsDimensions(value);
             imageReadings.push({
-              datapoint:  k,
+              datapoint: k,
               imageData: value,
               timestamp: this.dateFormatter.transform(r.timestamp, TIME_FORMAT)
             });
           } else {
             strReadings.push({
-              key:  k,
+              key: k,
               timestamp: r.timestamp,
               data: value
             });
@@ -596,19 +596,17 @@ export class ReadingsGraphComponent implements OnDestroy {
           });
         } else if (typeof value === 'object') {
           strReadings.push({
-            key:  k,
+            key: k,
             data: JSON.stringify(value),
             timestamp: r.timestamp
           });
         }
         else {
-
-
           console.log('Failed to parse reading ', value, 'of type', (typeof value), ' for key ', k);
         }
       });
     }
-    return {numReadings, strReadings, arrReadings, imageReadings}
+    return { numReadings, strReadings, arrReadings, imageReadings }
   }
 
 
@@ -801,11 +799,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         legend: {
           onClick: (_e, legendItem) => {
             const assetName = legendItem?.text;
-            const asset = this.additionalAssets.find(asset => {
-              if (assetName.includes(asset)) {
-                return asset;
-              }
-            })
+            const asset = this.additionalAssets.find(asset => (assetName.includes(asset)))
             const index = legendItem.datasetIndex;
             const chart = this.assetChart.chart;
             const meta = chart.getDatasetMeta(index);
@@ -834,7 +828,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             },
             mode: 'x',
             onZoomComplete: () => {
-              if(this.destroy$){
+              if (this.destroy$) {
                 this.destroy$.next();
               }
               this.zoomConfig.isZoomed = true;
@@ -951,10 +945,10 @@ export class ReadingsGraphComponent implements OnDestroy {
 
     // Instantly make a call on clicking play button
     if (this.isAlive) {
-      if(this.selectedTab === 4){
+      if (this.selectedTab === 4) {
         this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
       }
-      else{
+      else {
         this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
       }
     }
@@ -987,10 +981,10 @@ export class ReadingsGraphComponent implements OnDestroy {
     let currentTime = Date.now();
     let timeDifference = Math.floor((currentTime - this.pauseTime) / 1000);
     let previous = timeDifference + this.backwardReadingCounter * this.optedTime;
-    if(this.selectedTab === 4){
+    if (this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime, previous);
     }
-    else{
+    else {
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
     }
   }
