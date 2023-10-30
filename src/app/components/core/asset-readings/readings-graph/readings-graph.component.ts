@@ -509,7 +509,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getReadings(readings: any, optedTime: number) {
-   let readingsClassificationPerType = {numReadings:[], strReadings:[], arrReadings:[], imageReadings:[]};
+    let readingsClassificationPerType = {numReadings:[], strReadings:[], arrReadings:[], imageReadings:[]};
     // In case of multiple assets readings, merge all readings
     if ((this.additionalAssets.length > 1 && readings.length !== 0) || !(Array.isArray(readings))) {
       if (Object.keys(readings).length === this.additionalAssets.length) {
@@ -525,12 +525,12 @@ export class ReadingsGraphComponent implements OnDestroy {
           allAssetsReading.push(...formattedReadings);
           readingsClassificationPerType = this.readingFormat(allAssetsReading);
           this.timestamps = allAssetsReading.reverse().map((r: any) => r.timestamp);
-         
+
         });
-      } 
+      }
     } else {
-       // add asset in key for all datapoints of the asset
-       readings.map((r) => {
+      // add asset in key for all datapoints of the asset
+      readings.map((r) => {
         r.reading = Object.assign(
           {},
           ...Object.keys(r.reading).map((key) => ({
@@ -542,7 +542,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       readingsClassificationPerType = this.readingFormat(readings);
       this.timestamps = readings.reverse().map((r: any) => r.timestamp);
     }
-   
+
     this.imageReadings = readingsClassificationPerType.imageReadings.length > 0 ? this.getImage(readingsClassificationPerType.imageReadings) : [];
     this.numberTypeReadingsList = readingsClassificationPerType.numReadings.length > 0 ? this.mergeObjects(readingsClassificationPerType.numReadings) : [];
     this.arrayTypeReadingsList = readingsClassificationPerType.arrReadings.length > 0 ? this.mergeObjects(readingsClassificationPerType.arrReadings) : [];
@@ -556,60 +556,60 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
 
- readingFormat(readings) { 
-  const numReadings = [];
-  const strReadings = [];
-  const arrReadings = [];
-  const imageReadings = [];
-  for (const r of readings) {
-    Object.entries(r.reading).forEach(([k, value]) => {
+  readingFormat(readings) {
+    const numReadings = [];
+    const strReadings = [];
+    const arrReadings = [];
+    const imageReadings = [];
+    for (const r of readings) {
+      Object.entries(r.reading).forEach(([k, value]) => {
 
-      // discard unuseful reading
-      if (value === 'Data removed for brevity') {
-        return;
-      }
-      if (typeof value === 'number') {
-        numReadings.push({
-          key:k,
-          read: { x: r.timestamp, y: value }
-        });
-      } else if (typeof value === 'string') {
-        if (value.includes("__DPIMAGE")) {
-          this.getImageReadingsDimensions(value);
-          imageReadings.push({
-            datapoint:  k,
-            imageData: value,
-            timestamp: this.dateFormatter.transform(r.timestamp, TIME_FORMAT)
+        // discard unuseful reading
+        if (value === 'Data removed for brevity') {
+          return;
+        }
+        if (typeof value === 'number') {
+          numReadings.push({
+            key:k,
+            read: { x: r.timestamp, y: value }
           });
-        } else {
+        } else if (typeof value === 'string') {
+          if (value.includes("__DPIMAGE")) {
+            this.getImageReadingsDimensions(value);
+            imageReadings.push({
+              datapoint:  k,
+              imageData: value,
+              timestamp: this.dateFormatter.transform(r.timestamp, TIME_FORMAT)
+            });
+          } else {
+            strReadings.push({
+              key:  k,
+              timestamp: r.timestamp,
+              data: value
+            });
+          }
+        } else if (Array.isArray(value)) {
+          arrReadings.push({
+            key: k,
+            read: value,
+            timestamp: r.timestamp
+          });
+        } else if (typeof value === 'object') {
           strReadings.push({
             key:  k,
-            timestamp: r.timestamp,
-            data: value
+            data: JSON.stringify(value),
+            timestamp: r.timestamp
           });
         }
-      } else if (Array.isArray(value)) {
-        arrReadings.push({
-          key: k,
-          read: value,
-          timestamp: r.timestamp
-        });
-      } else if (typeof value === 'object') {
-        strReadings.push({
-          key:  k,
-          data: JSON.stringify(value),
-          timestamp: r.timestamp
-        });
-      }
-      else {
-       
-        
-        console.log('Failed to parse reading ', value, 'of type', (typeof value), ' for key ', k);
-      }
-    });
+        else {
+
+
+          console.log('Failed to parse reading ', value, 'of type', (typeof value), ' for key ', k);
+        }
+      });
+    }
+    return {numReadings, strReadings, arrReadings, imageReadings}
   }
-  return {numReadings, strReadings, arrReadings, imageReadings}
- }
 
 
   getMergedReadings(allAssetsReading) {
@@ -753,14 +753,14 @@ export class ReadingsGraphComponent implements OnDestroy {
     return cc;
   }
 
-  public getLegendState(key) {
-    const asset = key.split(".")[0];
+  public getLegendState(selectedAssetName: string) {
+    const asset = this.additionalAssets.find(assetName => (selectedAssetName.includes(assetName)))
     const selectedLegends = JSON.parse(sessionStorage.getItem(asset));
     if (selectedLegends == null) {
       return false;
     }
     for (const l of selectedLegends) {
-      if (l.key === key && l.selected === true) {
+      if (l.key === selectedAssetName && l.selected === true) {
         return true;
       }
     }
@@ -800,7 +800,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       plugins: {
         legend: {
           onClick: (_e, legendItem) => {
-            const asset = legendItem?.text.split(".")[0]; // split legend text to get asset name
+            const assetName = legendItem?.text;
+            const asset = this.additionalAssets.find(asset => {
+              if (assetName.includes(asset)) {
+                return asset;
+              }
+            })
             const index = legendItem.datasetIndex;
             const chart = this.assetChart.chart;
             const meta = chart.getDatasetMeta(index);
