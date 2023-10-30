@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnDestroy, HostListener, Output, ViewChild, ElementRef } from '@angular/core';
-import { orderBy, chain, map, groupBy, mapValues, omit } from 'lodash';
+import { orderBy, chain, map, groupBy, mapValues, omit, uniq } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
@@ -520,6 +520,7 @@ export class ReadingsGraphComponent implements OnDestroy {
               {},
               ...Object.keys(r.reading).map(key => ({ [`${asset}.${key}`]: r.reading[key] }))
             )
+            r.asset = asset;
             return r;
           })
           allAssetsReading.push(...formattedReadings);
@@ -537,6 +538,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             [`${this.assetCode}.${key}`]: r.reading[key],
           }))
         );
+        r.asset = this.assetCode;
         return r;
       });
       readingsClassificationPerType = this.readingFormat(readings);
@@ -571,7 +573,8 @@ export class ReadingsGraphComponent implements OnDestroy {
         if (typeof value === 'number') {
           numReadings.push({
             key: k,
-            read: { x: r.timestamp, y: value }
+            read: { x: r.timestamp, y: value },
+            asset: r.asset
           });
         } else if (typeof value === 'string') {
           if (value.includes("__DPIMAGE")) {
@@ -689,7 +692,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     return chain(assetReadings).groupBy('key').map(function (group, key) {
       return {
         key: key,
-        read: map(group, 'read')
+        read: map(group, 'read'),
+        asset: uniq(map(group, 'asset'))[0]
       };
     }).value();
   }
@@ -721,11 +725,12 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
       const dsColor = Utils.namedColor(dataset.length);
       const dt = {
+        asset: r.asset,
         label: r.key,
         data: r.read,
         fill: false,
         lineTension: 0.1,
-        hidden: this.getLegendState(r.key),
+        hidden: this.getLegendState(r.key, r.asset),
         backgroundColor: dsColor,
         borderColor: this.getColorCode(r.key.trim(), dsColor)
       };
@@ -751,14 +756,13 @@ export class ReadingsGraphComponent implements OnDestroy {
     return cc;
   }
 
-  public getLegendState(selectedAssetName: string) {
-    const asset = this.additionalAssets.find(assetName => (selectedAssetName.includes(assetName)))
+  public getLegendState(selectedLegend: string, asset: string) {
     const selectedLegends = JSON.parse(sessionStorage.getItem(asset));
     if (selectedLegends == null) {
       return false;
     }
     for (const l of selectedLegends) {
-      if (l.key === selectedAssetName && l.selected === true) {
+      if (l.key === selectedLegend && l.selected === true) {
         return true;
       }
     }
@@ -798,11 +802,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       plugins: {
         legend: {
           onClick: (_e, legendItem) => {
-            const assetName = legendItem?.text;
-            const asset = this.additionalAssets.find(asset => (assetName.includes(asset)))
             const index = legendItem.datasetIndex;
             const chart = this.assetChart.chart;
             const meta = chart.getDatasetMeta(index);
+            const asset = meta._dataset.asset;
             /**
             * meta data have hidden property as null by default in chart.js
             */
