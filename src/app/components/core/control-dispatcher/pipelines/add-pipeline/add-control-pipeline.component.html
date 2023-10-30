@@ -25,7 +25,7 @@
         <div class="column">
           <div [hidden]="editMode" class="field is-horizontal">
             <div class="field-label">
-              <label class="label label-name">Name</label>
+              <label class="label">Name</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -46,7 +46,7 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label label-name">Execution</label>
+              <label class="label">Execution</label>
             </div>
             <div class="field-body">
               <div class="field" *ngIf="rolesService.hasControlAccess();else staticExecutionDiv">
@@ -87,7 +87,7 @@
 
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label label-name">Source</label>
+              <label class="label">Source</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -99,7 +99,7 @@
                           <div class="column">
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label is-small">Type</label>
+                                <label class="label lbl-child">Type</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
@@ -123,7 +123,7 @@
                               *ngIf="selectedSourceType?.name && !(selectedSourceType.name === 'Any' || selectedSourceType.name === 'API')"
                               class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label is-small">Name</label>
+                                <label class="label lbl-child">Name</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
@@ -159,7 +159,7 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label has-text-left">
-              <label class="label label-name">Filters</label>
+              <label class="label">Filters</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -185,7 +185,7 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label">
-              <label class="label label-name">Destination</label>
+              <label class="label">Destination</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -197,7 +197,7 @@
                           <div class="column">
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label is-small">Type</label>
+                                <label class="label lbl-child">Type</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
@@ -221,7 +221,7 @@
                             <div *ngIf="selectedDestinationType?.name && !(selectedDestinationType.name === 'Any' || selectedDestinationType.name === 'Broadcast')"
                               class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label is-small">Name</label>
+                                <label class="label lbl-child">Name</label>
                               </div>
                               <div class="field-body">
                                 <div class="field">
@@ -259,7 +259,7 @@
           </div>
           <div class="field is-horizontal">
             <div class="field-label has-text-left">
-              <label class="label label-name">Enabled</label>
+              <label class="label">Enabled</label>
             </div>
             <div class="field-body">
               <div class="field">

@@ -55,8 +55,8 @@
                           <div class="column service-control">
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label" *ngIf="sharedService.checkAuth()">Names</label>
-                                <label class="label" *ngIf="!sharedService.checkAuth()">{{serviceNameList.length > 1 ?
+                                <label class="label lbl-child" *ngIf="sharedService.checkAuth()">Names</label>
+                                <label class="lbl-child" *ngIf="!sharedService.checkAuth()">{{serviceNameList.length > 1 ?
                                   'Names' : 'Name' }}</label>
                               </div>
                               <div class="field-body">
@@ -78,7 +78,7 @@
                             </div>
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
-                                <label class="label" *ngIf="sharedService.checkAuth()">Types</label>
+                                <label class="label lbl-child" *ngIf="sharedService.checkAuth()">Types</label>
                                 <label class="label" *ngIf="!sharedService.checkAuth()">{{serviceTypeList.length > 1 ?
                                   'Types' : 'Type' }}</label>
                               </div>
@@ -122,7 +122,7 @@
                       <div class="column acl-control">
                         <div class="field is-horizontal">
                           <div class="field-label is-small">
-                            <label class="label">URL</label>
+                            <label class="label lbl-child">URL</label>
                           </div>
                           <div class="field-body">
                             <div class="field">
@@ -138,7 +138,7 @@
                         </div>
                         <div class="field is-horizontal">
                           <div class="field-label is-small">
-                            <label class="label">ACLs</label>
+                            <label class="label lbl-child">ACLs</label>
                           </div>
                           <div class="field-body">
                             <div class="field">

@@ -19,7 +19,7 @@
       <div class="content mb-3">
         <div class="columns">
           <div class="column">
-            <label class="label is-small is-pulled-left">Service</label>
+            <label class="label lbl-top is-pulled-left">Service</label>
             <ng-container *ngIf="showConfigButton">
               <button class="btn small-btn config-gear" (click)="navToInstanceConfiguration()">
                 <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" data-tooltip="Instance configuration details">
@@ -54,7 +54,7 @@
             </div>
           </div>
           <div class="column">
-            <label class="label is-small">Severity</label>
+            <label class="label lbl-top">Severity</label>
             <div id="level-dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -84,7 +84,7 @@
             </div>
           </div>
           <div class="column">
-            <label class="label is-small">Search</label>
+            <label class="label lbl-top">Search</label>
             <input type="search" class="input is-fullwidth is-small" placeholder="search text"
               [(ngModel)]="searchTerm" #search/>
           </div>
