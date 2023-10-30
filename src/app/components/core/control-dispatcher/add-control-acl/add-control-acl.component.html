@@ -79,7 +79,7 @@
                             <div class="field is-horizontal">
                               <div class="field-label is-small">
                                 <label class="label lbl-child" *ngIf="sharedService.checkAuth()">Types</label>
-                                <label class="label" *ngIf="!sharedService.checkAuth()">{{serviceTypeList.length > 1 ?
+                                <label class="label lbl-child" *ngIf="!sharedService.checkAuth()">{{serviceTypeList.length > 1 ?
                                   'Types' : 'Type' }}</label>
                               </div>
                               <div class="field-body">

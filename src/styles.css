@@ -414,16 +414,12 @@ a.dropdown-item:hover {
     font-size: 0.95rem;
   }
 
-  .label, .is-small-font {
+  label {
     font-size: 0.9rem !important;
     font-weight: 500;
   }
 
   .lbl-child {
     font-size: 0.85rem !important;
-  }
-
-  .lbl-top {
-    font-size: 0.75rem !important;
   }
  /*****************/
