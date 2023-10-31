@@ -496,10 +496,12 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     openModal(id: string) {
+        this.reenableButton.emit(false);
         this.dialogService.open(id);
     }
     
     closeModal(id: string) {
+        this.reenableButton.emit(false);
         this.dialogService.close(id);
     }
 }

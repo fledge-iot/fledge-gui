@@ -239,10 +239,12 @@ export class APIFlowComponent implements OnInit {
     openModal(id: string, af) {
       this.epName = af.name;
       this.description = af.description;
+      this.reenableButton.emit(false);
       this.dialogService.open(id);
     }
 
     closeModal(id: string) {
+      this.reenableButton.emit(false);
       this.dialogService.close(id);
     }
 

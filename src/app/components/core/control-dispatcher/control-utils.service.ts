@@ -41,6 +41,7 @@ export class ControlUtilsService {
       }
     
     closeModal(id: string) {
-        this.dialogService.close(id);
+        this.reenableButton.emit(false);
+        this.dialogService.close(id);    
     }
 }
