@@ -405,7 +405,6 @@ export class AddFilterWizardComponent implements OnInit {
     this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
-          this.reenableButton.emit(false);
           this.toast.success(data.filter + ' filter added successfully.');
           if (this.from === 'control-pipeline') {
             if (files) {
@@ -443,9 +442,12 @@ export class AddFilterWizardComponent implements OnInit {
         if (payload?.files.length > 0) {
           const filterName = this.serviceName + '_' + name
           this.uploadScript(filterName, payload?.files);
+        } else {
+          this.reenableButton.emit(false);
         }
       },
         (error) => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
