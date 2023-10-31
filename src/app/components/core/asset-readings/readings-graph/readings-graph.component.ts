@@ -102,10 +102,6 @@ export class ReadingsGraphComponent implements OnDestroy {
   public toggleModal(shouldOpen: Boolean) {
     // reset all variable and array to default state
     this.assetReadingSummary = [];
-    // clear legend from session while closing the modal
-    if (!shouldOpen && this.additionalAssets.length > 0) {
-      this.clearLegendSelection();
-    }
     this.additionalAssets = [];
     this.buttonText = '';
     this.assetReadingValues = {};
@@ -120,6 +116,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
       this.additionalAssets.push(this.assetCode);
+      // clear legend from session store 
+      this.clearLegendSelection();
       chart_modal.classList.add('is-active');
       return;
     }
