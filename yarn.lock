@@ -338,6 +338,13 @@
   dependencies:
     tslib "^2.3.0"
 
+"@angular/elements@13":
+  version "13.4.0"
+  resolved "https://registry.yarnpkg.com/@angular/elements/-/elements-13.4.0.tgz#a296d09379a0318c5e4e59e03741194a33b8c74b"
+  integrity sha512-nE7P/aJhOVa7hRsZCvF8abLEltllf2HiZ1iF/fXK//Qpga1pwiN3ch03xiBs+md7jTTFuWa09sjtUSIojepGHw==
+  dependencies:
+    tslib "^2.3.0"
+
 "@angular/forms@~13.2.0":
   version "13.2.7"
   resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-13.2.7.tgz#176f7f64d9b3d46fa99b495d700dd440831cd07f"
@@ -1276,6 +1283,13 @@
   integrity sha512-9E9FJowqAsytyOY6LG+1KuueckRL+aQW+mKvXRXnuFGyRAyepJPmEo9vgMfXUA6O9u3IeEdv9MAkppFcaQwogQ==
   dependencies:
     regenerator-runtime "^0.13.4"
+
+"@babel/runtime@^7.21.0":
+  version "7.23.2"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.2.tgz#062b0ac103261d68a966c4c7baf2ae3e62ec3885"
+  integrity sha512-mM8eg4yl5D6i3lu2QKPuPH4FArvJ8KhTofbE7jwMUv9KX5mBvwPAqnV3MlyBNqdp9RyRKP6Yck8TrfYrPvX3bg==
+  dependencies:
+    regenerator-runtime "^0.14.0"
 
 "@babel/runtime@^7.8.4":
   version "7.17.9"
@@ -7837,6 +7851,11 @@ regenerator-runtime@0.13.9, regenerator-runtime@^0.13.4:
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz#8925742a98ffd90814988d7566ad30ca3b263b52"
   integrity sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==
 
+regenerator-runtime@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.14.0.tgz#5e19d68eb12d486f797e15a3c6a918f7cec5eb45"
+  integrity sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==
+
 regenerator-transform@^0.15.0:
   version "0.15.0"
   resolved "https://registry.yarnpkg.com/regenerator-transform/-/regenerator-transform-0.15.0.tgz#cbd9ead5d77fae1a48d957cf889ad0586adb6537"
@@ -8040,6 +8059,69 @@ restore-cursor@^3.1.0:
   dependencies:
     onetime "^5.1.0"
     signal-exit "^3.0.2"
+
+rete-angular-plugin@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/rete-angular-plugin/-/rete-angular-plugin-2.0.2.tgz#28ecbf426d55bde3611a1432c78351b98f85500b"
+  integrity sha512-6pBFHmk32hhkArZx4gOFVcR154lQXIRfEyLPACQJ9oKTRFu1GIz9UPzavY8GOH7N8FA1n6bHWRwrstLJv6iunA==
+  dependencies:
+    tslib "^2.3.0"
+
+rete-area-plugin@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/rete-area-plugin/-/rete-area-plugin-2.0.1.tgz#4a630c71e5f0c36fbca66314cc1af243633efdaa"
+  integrity sha512-H7IGv2Tfm1Tk928Hl6O9pS3JCmKboCFY4xqGm2TCXvzVAlHvmUV7mtkxlT1fCAZQMNin6ktwthCdQ455euHDgQ==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+rete-connection-plugin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/rete-connection-plugin/-/rete-connection-plugin-2.0.0.tgz#d50c5d42935a97148efc8795d815ef090000f2d5"
+  integrity sha512-8M+UC6gcWwTi0PEICprmCaoGxwEA4x42z0ywx3O5NQSILvkhWcvQXzHcyvwGx/LTsJT/UPzNjCfixu/TbRyTEw==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+rete-context-menu-plugin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/rete-context-menu-plugin/-/rete-context-menu-plugin-2.0.0.tgz#3d043df916e4131fcdb9161477f8e4aec63d5e34"
+  integrity sha512-cFqXUCgbuzdD994+cUgLNCiN/BeQzBb8PS1oZfJijL1RsHpRIlMM/pvVgGp1DJcveeIeKccndXb6UuzR9qfU4A==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+rete-dock-plugin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/rete-dock-plugin/-/rete-dock-plugin-2.0.0.tgz#e07b41551ebc1951fc092178f378657f3bdbf460"
+  integrity sha512-T5/lNrf0Y9ZvY4PLF1nPdBeEBGuPugMJzT/HIffMu/jVVIM5H/swLXU+eJIcrgKkCrsKAneSEacRtSBiaNzPgg==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+rete-history-plugin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/rete-history-plugin/-/rete-history-plugin-2.0.0.tgz#d4655876f2f6b6eef1386ef43d8eacc250f85bba"
+  integrity sha512-F2n5iacIthf0v83LRmrp4VPx1Q1QnRZ3Wu/pFzeecaNqstps07+D8O32p1yFUqj4Bsp/t6WtBxSYl1VcDuw56A==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+rete-render-utils@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/rete-render-utils/-/rete-render-utils-2.0.1.tgz#9a166d76c3e5273dcf33f10ef103202e36fd7e1a"
+  integrity sha512-mzNVADCE1iV0AlkVyz1Pai34GG55VYBIWWOv9MqHUl7jlnpNIIkx+hARIc3wgabcye46IdswQPUApuARhvjbmA==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+rete-scopes-plugin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/rete-scopes-plugin/-/rete-scopes-plugin-2.0.0.tgz#ea48dc84a2486901e6bf1d04415ea1eb616eac4c"
+  integrity sha512-jZ82fCzJa7iwRekA5bweDAfxhqnzvbF0X2uJAPt9uqq4xanFKn6Zxdt98ZbW3a5CnGBEIDY9+I1BpLZpCrHFig==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+rete@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/rete/-/rete-2.0.2.tgz#d5fc2fd7383716c12e8e9a7f7e56fa45adca4bfd"
+  integrity sha512-VZhyWl0E3dzcRRiN5OIVK4CIVcADZHO4XCFs85fjoi4ZYCPcB3P608wzq5MbdlYOfptPyuvKOrRqgFCtILdKIw==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
 
 retry@^0.12.0:
   version "0.12.0"

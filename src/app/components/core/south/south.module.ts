@@ -12,6 +12,7 @@ import { FilterModule } from '../filter/filter.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
+import { NodeEditorComponent } from '../../common/node-editor/node-editor.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,11 @@ const routes: Routes = [
   {
     path: 'add',
     component: AddServiceWizardComponent,
+    canActivate: [RolesGuard]
+  },
+  {
+    path: 'node-editor',
+    component: NodeEditorComponent,
     canActivate: [RolesGuard]
   },
   {
