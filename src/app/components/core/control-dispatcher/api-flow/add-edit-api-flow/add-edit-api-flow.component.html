@@ -28,7 +28,7 @@
             <div class="column is-four-fifths">
             <div [hidden]="editMode" class="field is-horizontal">
                 <div class="field-label">
-                <label class="label label-name has-text-left">Name</label>
+                <label class="label has-text-left">Name</label>
                 </div>
                 <div class="field-body">
                     <div class="field">
@@ -48,7 +48,7 @@
             </div>
             <div class="field is-horizontal">
                 <div class="field-label">
-                <label class="label label-name has-text-left">Type</label>
+                <label class="label has-text-left">Type</label>
                 </div>
                 <div class="field-body">
                 <div class="field" *ngIf="rolesService.hasControlAccess(); else staticTypeDiv">
@@ -105,7 +105,7 @@
     
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left">Destination</label>
+                    <label class="label has-text-left">Destination</label>
                 </div>
                 <div class="field-body">
                 <div class="field">
@@ -117,7 +117,7 @@
                                 <div class="column">
                                     <div class="field is-horizontal">
                                         <div class="field-label is-small">
-                                            <label class="label is-small has-text-left">Type</label>
+                                            <label class="label lbl-child has-text-left">Type</label>
                                         </div>
                                         <div class="field-body">
                                             <div class="field">
@@ -140,7 +140,7 @@
                                     <div *ngIf="af.destination && !((af.destination | titlecase) === 'Broadcast')"
                                     class="field is-horizontal mb-0">
                                     <div class="field-label is-small">
-                                        <label class="label is-small has-text-left">Name</label>
+                                        <label class="label lbl-child has-text-left">Name</label>
                                     </div>
                                     <div class="field-body">
                                         <div class="field mb-0">
@@ -177,7 +177,7 @@
             </div>
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left">Parameters</label>
+                    <label class="label has-text-left">Parameters</label>
                 </div>
                 <div class="field-body">
                 <div class="field">  
@@ -191,7 +191,7 @@
                                         <div *ngIf="getFormControls('variables').length === 0" class="field-label is-small">
                                             <div class="field is-horizontal">
                                                 <div class="field-label is-small">
-                                                    <label class="label is-small has-text-left">Variables</label>
+                                                    <label class="label lbl-child has-text-left">Variables</label>
                                                 </div>
                                                 <div class="field-body">
                                                     <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
@@ -206,7 +206,7 @@
                                         <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                                             <div class="field is-horizontal">
                                                 <div *ngIf="i === 0" class="field-label is-small">
-                                                    <label class="label is-small has-text-left">Variables</label>
+                                                    <label class="label lbl-child has-text-left">Variables</label>
                                                 </div>
                                                 <div *ngIf="i > 0" class="field-label">
                                                     <label class="label"></label>
@@ -251,7 +251,7 @@
                                         <div *ngIf="getFormControls('constants').length === 0" class="field-label is-small">
                                             <div class="field is-horizontal">
                                                 <div class="field-label is-small">
-                                                    <label class="label is-small has-text-left">Constants</label>
+                                                    <label class="label lbl-child has-text-left">Constants</label>
                                                 </div>
                                                 <div class="field-body">
                                                     <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
@@ -266,7 +266,7 @@
                                         <ng-container *ngFor="let c of getFormControls('constants'); let i = index">
                                             <div class="field is-horizontal">
                                                 <div *ngIf="i === 0" class="field-label is-small">
-                                                    <label class="label is-small has-text-left">Constants</label>
+                                                    <label class="label lbl-child has-text-left">Constants</label>
                                                 </div>
                                                 <div *ngIf="i > 0" class="field-label">
                                                     <label class="label"></label>
@@ -320,7 +320,7 @@
     
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left access-label" title="Access to execute the entry point">Execution Access</label>
+                    <label class="label has-text-left access-label" title="Access to execute the entry point">Execution Access</label>
                 </div>
                 <div class="field-body">
                 <div class="field">
@@ -337,7 +337,7 @@
                                     </article>
                                     <div class="field is-horizontal">
                                         <div class="field-label">
-                                            <label class="label is-small has-text-left" title="Access to execute the entry point">Anonymous</label>
+                                            <label class="label lbl-child has-text-left" title="Access to execute the entry point">Anonymous</label>
                                         </div>
                                         <div class="field-body">
                                             <div class="field">
@@ -351,7 +351,7 @@
                                     </div>
                                     <div class="field is-horizontal mb-0">
                                     <div class="field-label">
-                                        <label class="label is-small has-text-left">Allow Users</label>
+                                        <label class="label lbl-child has-text-left">Allow Users</label>
                                     </div>
                                     <div class="field-body">
                                         <div class="field mb-0">
@@ -385,7 +385,7 @@
 
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left">Description</label>
+                    <label class="label has-text-left">Description</label>
                 </div>
                 <div class="field-body">
                 <div class="field">

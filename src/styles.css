@@ -337,11 +337,6 @@ a.dropdown-item:hover {
   filter: blur(1px);
  }
 
- .is-small-font, .label {
-  font-size: 0.9rem !important;
-  font-weight: 500;
- }
-
  table thead th {
   font-size: 0.9rem !important;
   font-weight: 500;
@@ -426,5 +421,18 @@ a.dropdown-item:hover {
 
   .is-hovered {
     cursor: pointer !important;
+  }
+  
+  .is-horizontal .label {
+    font-size: 0.9rem;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .lbl-child {
+    font-size: 0.8rem !important;
   }
  /*****************/

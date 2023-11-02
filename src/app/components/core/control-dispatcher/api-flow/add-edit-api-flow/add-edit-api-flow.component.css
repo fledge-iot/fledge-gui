@@ -12,12 +12,6 @@ table tr td {
     text-decoration: none;
 }
 
-.sub {
-    color: #707070;
-    font-size: .85rem;
-    margin-top: 0rem !important;
-}
-
 .ep-tbl {
     display: block;
 }
@@ -36,10 +30,6 @@ span.is-small {
 
 .field-body .field {
     margin-bottom: 5px;
-}
-
-.label.is-small {
-    font-size: 0.85rem !important;
 }
 
 .valign-middle {

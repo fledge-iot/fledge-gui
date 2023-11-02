@@ -34,10 +34,6 @@
     height: inherit;
   }
 
-  .filter-name .fa-bars {
-    opacity: 0.5;
-  }
-
   .cdk-drag-preview {
     box-sizing: border-box;
     border-radius: 4px;
@@ -76,10 +72,6 @@
   .disabled {
     opacity: .7;
     pointer-events: none;
-  }
-
-  .filter-name, .label-name {
-    font-size: 0.9rem;
   }
 
   .filters {
@@ -137,8 +129,4 @@
 
   .add-filter-div {
     cursor: not-allowed;
-  }
-
-  .label.is-small {
-    font-size: 0.85rem !important;
   }
