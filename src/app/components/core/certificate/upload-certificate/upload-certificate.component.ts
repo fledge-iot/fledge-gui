@@ -116,11 +116,13 @@ export class UploadCertificateComponent implements OnInit {
     // Check if file has been uploaded or not
     if (!this.cert && !this.key) {
       this.alertService.error('Key or Certificate file is missing');
+      this.reenableButton.emit(false);
       return;
     }
     // Check if extension of uploaded Certificate and Key (if exist) is valid
     if ((this.cert && !this.certExtension) || (this.key && !this.keyExtension)) {
       this.alertService.error('Please upload files with correct format & extension');
+      this.reenableButton.emit(false);
       return;
     }
     const formData = new FormData();
