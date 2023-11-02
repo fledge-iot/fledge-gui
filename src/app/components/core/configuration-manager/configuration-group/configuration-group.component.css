@@ -82,3 +82,8 @@
 .invalid-tab, .tabs.is-boxed li.is-active a.invalid-tab {
   border-bottom-color: #f14668 !important;
 }
+
+.is-small-font {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+}
