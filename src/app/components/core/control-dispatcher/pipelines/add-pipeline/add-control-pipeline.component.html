@@ -23,7 +23,7 @@
           <i class="far fa-question-circle"></i>
         </span>
         <div class="column">
-          <div [hidden]="editMode" class="field is-horizontal">
+          <div class="field is-horizontal">
             <div class="field-label">
               <label class="label label-name">Name</label>
             </div>
@@ -287,7 +287,7 @@
                 </p>
                 <p class="control">
                   <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link"
-                    [disabled]="pipelineForm?.invalid || (!checkControlPipelineChange() && !unsavedChangesInFilterForm) ">Save</button>
+                    [disabled]="pipelineForm?.invalid || (!checkControlPipelineChange(name.value) && !unsavedChangesInFilterForm) ">Save</button>
                 </p>
               </div>
             </div>
