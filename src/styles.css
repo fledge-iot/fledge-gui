@@ -422,4 +422,8 @@ a.dropdown-item:hover {
   .lbl-child {
     font-size: 0.85rem !important;
   }
+
+  .lbl-top {
+    font-size: 0.75rem !important;
+  }
  /*****************/
