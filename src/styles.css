@@ -414,16 +414,16 @@ a.dropdown-item:hover {
     font-size: 0.95rem;
   }
 
+  .is-horizontal .label {
+    font-size: 0.9rem;
+  }
+
   .label {
-    font-size: 0.9rem !important;
+    font-size: 0.75rem;
     font-weight: 500;
   }
 
   .lbl-child {
     font-size: 0.85rem !important;
-  }
-
-  .lbl-top {
-    font-size: 0.75rem !important;
   }
  /*****************/
