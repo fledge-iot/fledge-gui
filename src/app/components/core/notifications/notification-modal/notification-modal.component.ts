@@ -74,6 +74,7 @@ export class NotificationModalComponent implements OnInit {
       return;
     }
 
+    this.reenableButton.emit(false);
     this.rulePluginChangedConfig = {};
     this.deliveryPluginChangedConfig = {};
     this.notificationChangedConfig = {};
@@ -211,6 +212,7 @@ export class NotificationModalComponent implements OnInit {
     }
 
     if (isEmpty(configuration)) {
+      this.reenableButton.emit(false);
       return;
     }
 

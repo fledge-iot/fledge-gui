@@ -111,6 +111,7 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   public toggleModal(isOpen: Boolean) {
     this.pluginInstallationState = false;
+    this.reenableButton.emit(false);
     const notificationServiceModal = <HTMLDivElement>document.getElementById('notification-service-modal');
     if (notificationServiceModal) {
       if (isOpen) {
@@ -464,6 +465,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
 
     if (isEmpty(configuration)) {
+      this.reenableButton.emit(false);
       return;
     }
 

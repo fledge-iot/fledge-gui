@@ -55,7 +55,7 @@
                 </p>
                 <p class="control">
                   <button [disabled]="!installationForm.valid" type="button" class="button is-small is-link"
-                    (click)="installPythonPackage()">Install</button>
+                    (click)="installPythonPackage()" [appDisableUntilResponse]="reenableButton">Install</button>
                 </p>
               </div>
             </div>
