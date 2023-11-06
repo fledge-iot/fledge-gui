@@ -10,6 +10,8 @@ export const ASSET_READINGS_TIME_FILTER = 600; // seconds
 export const QUOTATION_VALIDATION_PATTERN = '[^\x22\x27]+'; // Do not allow single quotes or double quotes
 export const DEBOUNCE_TIME = 1000; // milliseconds
 
+export const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss.SSS';
+
 
 export const SUPPORTED_SERVICE_TYPES = ["Core", "Storage", "Southbound", "Northbound", "Notification", "Management", "Dispatcher", "BucketStorage"];
 
