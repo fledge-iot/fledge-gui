@@ -242,7 +242,7 @@
       <button type="button" id="cancel" class="button is-small" (click)="navToSchedulesPage()">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
         [disabled]="form?.invalid || (!form.dirty && form.pristine)"
-        (click)="form?.valid && updateSchedule()">Save</button>
+        (click)="form?.valid && updateSchedule()" [appDisableUntilResponse]="reenableButton">Save</button>
     </footer>
   </div>
 </div>

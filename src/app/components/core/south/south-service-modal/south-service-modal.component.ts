@@ -46,6 +46,8 @@ export class SouthServiceModalComponent implements OnInit {
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('pluginConfigComponent') pluginConfigComponent: ConfigurationGroupComponent;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
@@ -314,10 +316,12 @@ export class SouthServiceModalComponent implements OnInit {
     this.assetService.getMultiAssetsReadings(assets).
       subscribe(
         (result: any) => {
+          this.reenableButton.emit(false);
           assetReadings = [].concat.apply([], result);
           this.generateCsv.download(assetReadings, fileName, 'service');
         },
         error => {
+          this.reenableButton.emit(false);
           console.log('error in response', error);
         });
   }
@@ -332,6 +336,7 @@ export class SouthServiceModalComponent implements OnInit {
       .subscribe(
         (data) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data['result'], true);
           this.navToSouthPage();
           this.closeModal('delete-service-dialog');
@@ -341,6 +346,7 @@ export class SouthServiceModalComponent implements OnInit {
         },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -485,6 +491,7 @@ export class SouthServiceModalComponent implements OnInit {
       forkJoin(this.apiCallsStack).subscribe((result) => {
         result.forEach((r: any) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (r.failed) {
             if (r.error.status === 0) {
               console.log('service down ', r.error);

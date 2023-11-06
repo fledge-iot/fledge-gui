@@ -50,6 +50,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
   @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   // to hold child form state
   validConfigurationForm = true;
   validFilterConfigForm = true;
@@ -283,6 +285,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       .subscribe(
         (data: any) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.result, true);
           this.navToNorthPage();
           this.closeModal('delete-task-dialog');
@@ -290,6 +293,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -307,6 +311,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       .subscribe(
         (data: any) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.result, true);
           this.navToNorthPage();
           this.closeModal('delete-task-dialog');
@@ -314,6 +319,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -443,6 +449,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       forkJoin(this.apiCallsStack).subscribe((result) => {
         result.forEach((r: any) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (r.failed) {
             if (r.error.status === 0) {
               console.log('service down ', r.error);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
@@ -34,6 +34,8 @@ export class APIFlowComponent implements OnInit {
     editMode: {};
 
     destroy$: Subject<boolean> = new Subject<boolean>();
+
+    public reenableButton = new EventEmitter<boolean>(false);
 
     constructor(
         private alertService: AlertService,
@@ -141,6 +143,7 @@ export class APIFlowComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
 
           // Remove from local arrays of apiFlows
           this.apiFlows = this.apiFlows.filter(api => api.name !== this.epName);  
@@ -151,6 +154,7 @@ export class APIFlowComponent implements OnInit {
         error => {
           /** request completed but error */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -235,10 +239,12 @@ export class APIFlowComponent implements OnInit {
     openModal(id: string, af) {
       this.epName = af.name;
       this.description = af.description;
+      this.reenableButton.emit(false);
       this.dialogService.open(id);
     }
 
     closeModal(id: string) {
+      this.reenableButton.emit(false);
       this.dialogService.close(id);
     }
 

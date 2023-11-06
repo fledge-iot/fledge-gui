@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
@@ -13,6 +13,8 @@ import { ToastService } from './toast.service';
 export class FileUploaderService {
 
   private CATEGORY_URL = environment.BASE_URL + 'category';
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(
     private http: HttpClient,
     private toastService: ToastService,
@@ -32,6 +34,7 @@ export class FileUploaderService {
       this.ngProgress.start();
       this.uploadFile(name, configProperty, formData)
         .subscribe(() => {
+          this.reenableButton.emit(false);
           this.toastService.success('Script uploaded successfully.');
           /** request done */
           this.ngProgress.done();
@@ -39,6 +42,7 @@ export class FileUploaderService {
           error => {
             /** request done */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             if (error.status === 0) {
               console.log('service down ', error);
             } else {

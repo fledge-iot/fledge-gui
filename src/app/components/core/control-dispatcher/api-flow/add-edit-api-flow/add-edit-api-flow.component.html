@@ -122,7 +122,7 @@
                                         <div class="field-body">
                                             <div class="field">
                                                 <div class="control" *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
-                                                    <ng-select [clearable]="false" placeholder="Select Destination Type"
+                                                    <ng-select class="select-input" [clearable]="false" placeholder="Select Destination Type"
                                                         [items]="destinationTypes" [multiple]="false" bindLabel="name"
                                                         (change)="getDestinationNames($event)"
                                                         [ngModel]="af.destination | titlecase" [ngModelOptions]="{standalone: true}">
@@ -146,7 +146,7 @@
                                         <div class="field mb-0">
                                         <div class="control"
                                             *ngIf="rolesService.hasControlAccess(); else staticDestinationName">
-                                            <ng-select [clearable]="false" placeholder="Select Destination"
+                                            <ng-select class="select-input" [clearable]="false" placeholder="Select Destination"
                                             [items]="destinationNames" [multiple]="false" bindLabel="name"
                                             groupBy="groupbyType" (change)="selectDestinationName($event.name)"
                                             [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
@@ -356,7 +356,7 @@
                                     <div class="field-body">
                                         <div class="field mb-0">
                                             <div class="control" *ngIf="rolesService.hasControlAccess(); else staticUsers">
-                                                <ng-select [clearable]="false" placeholder="Select Users"
+                                                <ng-select  class="select-input" [clearable]="false" placeholder="Select Users"
                                                     [items]="allUsers" [multiple]="true" bindLabel="userName"
                                                     (change)="selectAllowedUsers($event)"
                                                     [ngModel]="af.allow" [ngModelOptions]="{standalone: true}">
@@ -447,7 +447,7 @@
                                     </p>
                                     <p class="control">
                                     <button (click)="saveAPIFlow(apiFlowForm.value)" type="submit" class="button is-small is-link"
-                                    [disabled]="apiFlowForm?.invalid || (selectedType === 'operation' && apiFlowForm.controls.operation_name.value.trim() === '')">Save</button>
+                                    [disabled]="apiFlowForm?.invalid || (selectedType === 'operation' && apiFlowForm.controls.operation_name.value.trim() === '')" [appDisableUntilResponse]="reenableButton">Save</button>
                                     </p>
                                 </div>
                             </div>
@@ -506,7 +506,7 @@
 </section>
 <footer class="modal-card-foot p-3">
     <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-    <button class="button is-small is-info" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
+    <button class="button is-small is-info" type="button" (click)="requestAPIFlow(apiFlowForm.value)" [appDisableUntilResponse]="reenableButton">Execute</button>
 </footer>
 </app-confirmation-dialog>
 
@@ -520,6 +520,6 @@
     </section>
     <footer class="modal-card-foot">
         <button type="button" class="button is-small" (click)="closeModal('confirmation-delete-dialog')">Cancel</button>
-        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow()">Delete</button>
+        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow()" [appDisableUntilResponse]="reenableButton">Delete</button>
     </footer>
 </app-confirmation-dialog>

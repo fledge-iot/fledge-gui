@@ -6,7 +6,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form [formGroup]="form" id="ngForm" (ngSubmit)="uploadCertificate()" novalidate>
+      <form [formGroup]="form" id="ngForm" novalidate>
         <div class="columns">
           <div class="column">
             <div class="field is-horizontal">
@@ -78,7 +78,7 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" type="submit" form="ngForm" class="button is-info is-small">Import</button>
+      <button id="save" type="button" form="ngForm" class="button is-info is-small" (click)="uploadCertificate()" [appDisableUntilResponse]="reenableButton">Import</button>
     </footer>
   </div>
 </div>

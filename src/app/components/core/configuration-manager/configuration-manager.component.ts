@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { TreeComponent } from '@circlon/angular-tree-component';
 import { isEmpty, cloneDeep } from 'lodash';
 
@@ -25,6 +25,8 @@ export class ConfigurationManagerComponent implements OnInit {
   @ViewChild(TreeComponent, { static: true }) private tree: TreeComponent;
   changedConfig: any;
   categoryDataCopy: any;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(private configService: ConfigurationService,
     public rolesService: RolesService,
@@ -191,11 +193,13 @@ export class ConfigurationManagerComponent implements OnInit {
         this.validConfigForm = false;
         this.alertService.success('Configuration updated successfully.', true);
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.selectedNode = {id: categoryName, description: categoryDescription};
         this.getCategory(categoryName, categoryDescription);
       },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

@@ -8,7 +8,7 @@
                     <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </button>
             </div>
-            <a *ngIf="rolesService.hasControlAccess()" class="fix-margin button is-light" [routerLink]="['/control-dispatcher/entry-point/add']">
+            <a *ngIf="rolesService.hasControlAccess()" class="fix-pad button is-light" [routerLink]="['/control-dispatcher/entry-point/add']">
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
@@ -131,7 +131,7 @@
     </section>
     <footer class="modal-card-foot p-3">
         <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-        <button class="button is-small is-info" type="button" (click)="requestAPIFlow(epName, apiFlowForm.value)">Execute</button>
+        <button class="button is-small is-info" type="button" (click)="requestAPIFlow(epName, apiFlowForm.value)" [appDisableUntilResponse]="reenableButton">Execute</button>
     </footer>
 </app-confirmation-dialog>
     
@@ -145,6 +145,6 @@
     </section>
     <footer class="modal-card-foot">
         <button type="button" class="button is-small" (click)="closeModal('confirmation-delete-dialog')">Cancel</button>
-        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow('confirmation-delete-dialog')">Delete</button>
+        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow('confirmation-delete-dialog')" [appDisableUntilResponse]="reenableButton">Delete</button>
     </footer>
 </app-confirmation-dialog>

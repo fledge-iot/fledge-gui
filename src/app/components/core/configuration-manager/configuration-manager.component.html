@@ -48,7 +48,7 @@
               </div>
               <div class="column">
                 <button [disabled]="!validConfigForm" class="button is-small is-link save-btn"
-                  (click)="save(category.name, category.description)">Save</button>
+                  (click)="save(category.name, category.description)" [appDisableUntilResponse]="reenableButton">Save</button>
               </div>
             </div>
           </div>

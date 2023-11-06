@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { orderBy } from 'lodash';
 import { AlertService, ProgressBarService, RolesService } from '../../../../../services';
@@ -17,6 +17,8 @@ export class ControlScriptsListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   script;
   private subscription: Subscription;
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
@@ -75,6 +77,7 @@ export class ControlScriptsListComponent implements OnInit {
     this.controlService.deleteScript(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
@@ -82,6 +85,7 @@ export class ControlScriptsListComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {
