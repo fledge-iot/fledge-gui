@@ -89,12 +89,12 @@ const routes: Routes = [
     component: APIFlowComponent
   },
   {
-    path: 'entry-point/add',
+    path: 'entry-points/add',
     component: AddEditAPIFlowComponent,
     canActivate: [RolesGuard]
   },
   {
-    path: 'entry-point/:name/details',
+    path: 'entry-points/:name/details',
     component: AddEditAPIFlowComponent
   }
 ];
