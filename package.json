@@ -48,6 +48,7 @@
     "chartjs-adapter-moment": "^1.0.1",
     "chartjs-plugin-zoom": "^2.0.1",
     "codemirror": "^5.65.3",
+    "elkjs": "^0.8.2",
     "jsonlint-mod": "^1.7.6",
     "moment": "^2.29.3",
     "ng-sidebar": "^9.4.3",
@@ -56,6 +57,7 @@
     "rete": "^2.0.2",
     "rete-angular-plugin": "^2.0.2",
     "rete-area-plugin": "^2.0.1",
+    "rete-auto-arrange-plugin": "^2.0.0",
     "rete-connection-plugin": "^2.0.0",
     "rete-context-menu-plugin": "^2.0.0",
     "rete-dock-plugin": "^2.0.0",
@@ -64,6 +66,7 @@
     "rete-scopes-plugin": "^2.0.0",
     "rxjs": "~6.6.6",
     "tslib": "^2.3.0",
+    "web-worker": "^1.2.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
