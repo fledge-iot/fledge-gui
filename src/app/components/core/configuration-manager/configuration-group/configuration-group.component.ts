@@ -72,17 +72,90 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   categeryConfiguration() {
+    if (this.category) {
+      this.category.config['model'] = {
+        "description": "The machine learning model to use inspect the captured image for defects",
+        "displayName": "QA Model",
+        "order": "2",
+        "type": "bucket",
+        "properties": {
+          "constant": { "type": "MLModel", "name": "BadBottle" },
+          "key": {
+            "product": {
+              "description": "The bottle type being produced",
+              "displayName": "Bottle Type",
+              "type": "enumeration",
+              "options": [
+                "Wine Bottle",
+                "Bear Bottle",
+                "Whiskey Bottle",
+                "Milk Bottle"
+              ],
+              "default": "Milk Bottle"
+            },
+            "Object_Name": {
+              "description": "The demo model version to use, 0 represents the latest version",
+              "displayName": "Object Name",
+              "type": "string",
+              "default": "Glass"
+            },
+          },
+          "properties": {
+            "version": {
+              "description": "The model version to use, 0 represents the latest version",
+              "displayName": "Version",
+              "type": "string",
+              "default": "1.0.0"
+            },
+            "Modal": {
+              "description": "The dumy modal",
+              "displayName": "Demo Modal",
+              "type": "enumeration",
+              "default": "Bear Bottle",
+              "options": [
+                "Wine Bottle",
+                "Bear Bottle",
+                "Whiskey Bottle",
+                "Milk Bottle"
+              ]
+
+            }
+          }
+        },
+        "default": {
+          "type": "MLModel",
+          "name": "BadBottle",
+          "product": "Wine Bottle",
+          "version": "0"
+        },
+        "value": {
+          "type": "MLModel",
+          "name": "BadBottle",
+          "product": "Wine Bottle",
+          "version": "0"
+        }
+      }
+    }
+
+    const modelConfig = this.category.config['model']
+
+    delete this.category.config['model'];
+
+    // console.log('modelConfig', modelConfig);
     this.groups = [];
     const configItems = Object.keys(this.category.config).map(k => {
+
       this.category.config[k].key = k;
       return this.category.config[k];
     }).filter(obj => !obj.readonly); // remove readonly items from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
-
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
       return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
     }).value();
+
+    // this.groups.push({ category: 'test', group: 'QA Model', config: modelConfig.properties })
+    // console.log(this.groups);
 
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {

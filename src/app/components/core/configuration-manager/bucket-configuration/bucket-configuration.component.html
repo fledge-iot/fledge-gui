@@ -1,0 +1,22 @@
+<!-- {{dataModal | json}} -->
+
+<div class="view-content columns mb-0">
+    <div class="column py-0">
+        <div class="config-div py-0 mb-0">
+            <div class="field is-horizontal">
+                <div class="field-label has-text-left">
+                    <label class="label">{{constant.type}}</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input class="input is-fullwidth is-small is-static" [value]="constant.name" readonly>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<app-show-configuration [groupConfiguration]="key"></app-show-configuration>
+<app-show-configuration [groupConfiguration]="properties"></app-show-configuration>

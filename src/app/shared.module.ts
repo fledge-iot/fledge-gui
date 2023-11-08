@@ -16,6 +16,7 @@ import { PluginModalComponent } from './components/core/plugin-modal/plugin-moda
 import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ShowConfigurationComponent } from './components/core/configuration-manager/show-configuration/show-configuration.component';
+import { BucketConfigurationComponent } from './components/core/configuration-manager/bucket-configuration/bucket-configuration.component';
 
 @NgModule({
   imports: [
@@ -29,6 +30,7 @@ import { ShowConfigurationComponent } from './components/core/configuration-mana
   ],
   declarations: [
     ConfigurationGroupComponent,
+    BucketConfigurationComponent,
     ShowConfigurationComponent,
     PluginPersistDataComponent,
     PluginModalComponent,
