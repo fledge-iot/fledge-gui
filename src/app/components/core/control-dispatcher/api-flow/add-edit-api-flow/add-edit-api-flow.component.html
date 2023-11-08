@@ -39,7 +39,7 @@
                             [readonly]="!rolesService.hasControlAccess()">
                         </div>
                         <div *ngIf="apiFlowForm.controls['name'].invalid" class="help is-danger">
-                            <div *ngIf=" apiFlowForm.controls['name'].touched && apiFlowForm.controls['name'].errors?.['required']">
+                            <div *ngIf="apiFlowForm.controls['name'].errors?.['required']">
                                 *required
                             </div>
                         </div>
@@ -396,7 +396,7 @@
                             trim="blur"></textarea>
                         </div>
                         <div *ngIf="apiFlowForm.controls['description'].invalid" class="help is-danger">
-                            <div *ngIf="apiFlowForm.controls['description'].touched && apiFlowForm.controls['description'].errors?.['required']">
+                            <div *ngIf="apiFlowForm.controls['description'].errors?.['required']">
                                 *required
                             </div>
                         </div>
