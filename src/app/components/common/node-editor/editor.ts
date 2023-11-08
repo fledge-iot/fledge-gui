@@ -7,7 +7,7 @@ import { AutoArrangePlugin, Presets as ArrangePresets } from "rete-auto-arrange-
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { ScopesPlugin, Presets as ScopesPresets } from "rete-scopes-plugin";
-// import { CustomNodeComponent } from "./custom-node/custom-node.component";
+import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
 

@@ -17,6 +17,7 @@ import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ShowConfigurationComponent } from './components/core/configuration-manager/show-configuration/show-configuration.component';
 import { NodeEditorComponent } from './components/common/node-editor/node-editor.component';
+import { CustomNodeComponent } from './components/common/node-editor/custom-node/custom-node.component';
 
 @NgModule({
   imports: [
@@ -37,7 +38,8 @@ import { NodeEditorComponent } from './components/common/node-editor/node-editor
     TimeDropdownComponent,
     RangeSliderComponent,
     ConfirmationDialogComponent,
-    NodeEditorComponent
+    NodeEditorComponent,
+    CustomNodeComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -48,7 +50,8 @@ import { NodeEditorComponent } from './components/common/node-editor/node-editor
     TimeDropdownComponent,
     RangeSliderComponent,
     ConfirmationDialogComponent,
-    NodeEditorComponent
+    NodeEditorComponent,
+    CustomNodeComponent
   ]
 })
 export class SharedModule { }
