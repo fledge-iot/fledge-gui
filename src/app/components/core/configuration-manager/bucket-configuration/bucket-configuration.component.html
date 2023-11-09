@@ -5,7 +5,23 @@
         <div class="config-div py-0 mb-0">
             <div class="field is-horizontal">
                 <div class="field-label has-text-left">
-                    <label class="label">{{constant.type}}</label>
+                    <label class="label">Type</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input class="input is-fullwidth is-small is-static" [value]="constant.type" readonly>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column py-0">
+        <div class="config-div py-0 mb-0">
+            <div class="field is-horizontal">
+                <div class="field-label has-text-left">
+                    <label class="label">Name</label>
                 </div>
                 <div class="field-body">
                     <div class="field">

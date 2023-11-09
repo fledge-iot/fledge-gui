@@ -92,13 +92,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
                 "Milk Bottle"
               ],
               "default": "Milk Bottle"
-            },
-            "Object_Name": {
-              "description": "The demo model version to use, 0 represents the latest version",
-              "displayName": "Object Name",
-              "type": "string",
-              "default": "Glass"
-            },
+            }
           },
           "properties": {
             "version": {
@@ -106,19 +100,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
               "displayName": "Version",
               "type": "string",
               "default": "1.0.0"
-            },
-            "Modal": {
-              "description": "The dumy modal",
-              "displayName": "Demo Modal",
-              "type": "enumeration",
-              "default": "Bear Bottle",
-              "options": [
-                "Wine Bottle",
-                "Bear Bottle",
-                "Whiskey Bottle",
-                "Milk Bottle"
-              ]
-
             }
           }
         },
@@ -154,7 +135,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
     }).value();
 
-    // this.groups.push({ category: 'test', group: 'QA Model', config: modelConfig.properties })
+    this.groups.push({ category: 'test', group: 'QA Model', config: modelConfig.properties })
     // console.log(this.groups);
 
     // merge configuration of same group
