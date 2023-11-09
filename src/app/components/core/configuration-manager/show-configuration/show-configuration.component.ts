@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { filter, map, pairwise, startWith } from 'rxjs/operators';
 import { RolesService, ConfigurationControlService, ConfigurationBase } from '../../../../services';
@@ -19,9 +19,9 @@ export class ShowConfigurationComponent implements OnInit {
   @Output() event = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   configurations$: Observable<ConfigurationBase<any>[]>;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
     public rolesService: RolesService,
     public changeDetectorRef: ChangeDetectorRef,
     public configControlService: ConfigurationControlService) {

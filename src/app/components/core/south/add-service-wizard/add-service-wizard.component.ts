@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
@@ -36,7 +36,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   validConfigurationForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
-  serviceForm: FormGroup;
+  serviceForm: UntypedFormGroup;
 
   public reenableButton = new EventEmitter<boolean>(false);
 
@@ -48,7 +48,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     type: this.serviceType,
     pluginName: ''
   };
-  constructor(private formBuilder: FormBuilder,
+  constructor(private formBuilder: UntypedFormBuilder,
     private servicesApiService: ServicesApiService,
     private pluginService: PluginService,
     private alertService: AlertService,
@@ -65,9 +65,9 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getSchedules();
     this.serviceForm = this.formBuilder.group({
-      name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
-      plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
-      config: new FormControl(null)
+      name: new UntypedFormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+      plugin: new UntypedFormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
+      config: new UntypedFormControl(null)
     });
     this.getInstalledSouthPlugins();
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {

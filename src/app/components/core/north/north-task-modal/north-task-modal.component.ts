@@ -2,7 +2,7 @@ import {
   ChangeDetectorRef,
   Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild
 } from '@angular/core';
-import { FormBuilder, NgForm } from '@angular/forms';
+import { UntypedFormBuilder, NgForm } from '@angular/forms';
 
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
 
@@ -75,7 +75,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private northService: NorthService,
     private filterService: FilterService,
-    public fb: FormBuilder,
+    public fb: UntypedFormBuilder,
     private dialogService: DialogService,
     public ngProgress: ProgressBarService,
     private servicesApiService: ServicesApiService,

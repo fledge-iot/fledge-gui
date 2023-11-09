@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, NgForm } from '@angular/forms';
+import { UntypedFormGroup, NgForm } from '@angular/forms';
 import { ITreeOptions, ITreeState, TreeComponent } from '@circlon/angular-tree-component';
 import { isEmpty, sortBy } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
@@ -53,15 +53,15 @@ export class AddConfigureComponent implements OnInit {
   ngOnInit(): void { }
 
   stepsFormGroup() {
-    return this.control.form.controls['steps'] as FormGroup;
+    return this.control.form.controls['steps'] as UntypedFormGroup;
   }
 
-  stepControlGroup(): FormGroup {
-    return this.stepsFormGroup()?.controls[`step-${this.controlIndex}`] as FormGroup;
+  stepControlGroup(): UntypedFormGroup {
+    return this.stepsFormGroup()?.controls[`step-${this.controlIndex}`] as UntypedFormGroup;
   }
 
   configureControlGroup() {
-    return this.stepControlGroup()?.controls['configure'] as FormGroup;
+    return this.stepControlGroup()?.controls['configure'] as UntypedFormGroup;
   }
 
   public toggleDropDown(id: string) {
