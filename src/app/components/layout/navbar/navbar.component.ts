@@ -49,6 +49,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   viewPort: any = '';
   public showSpinner = false;
   isManualRefresh = false;
+  isUpdateAvailable = false;
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -240,6 +241,26 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  checkUpdate() {
+    this.ping.checkUpdate()
+      .then(data => {       
+          /** request completed */
+          this.ngProgress.done();         
+          if (data['updates'].indexOf('fledge') !== -1) {
+            this.isUpdateAvailable = true;
+          }
+        },
+        (error) => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   showProfile() {
     this.router.navigate(['/user/profile']);
   }
@@ -336,6 +357,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stop();
     this.timer = setInterval(function () {
       this.pingService();
+      this.checkUpdate();
     }.bind(this), pingInterval);
   }
 

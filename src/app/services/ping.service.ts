@@ -56,6 +56,12 @@ export class PingService {
       catchError(error => throwError(error)));
   }
 
+  checkUpdate() {
+    return this.http.get(environment.BASE_URL + 'update').pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
   public setDefaultPingTime() {
     const pingTime = localStorage.getItem('PING_INTERVAL');
     if (pingTime == null) {
