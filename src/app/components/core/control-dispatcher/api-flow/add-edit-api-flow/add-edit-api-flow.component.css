@@ -83,3 +83,7 @@ span.is-small {
         padding-top: 1rem;
     }
 }
+
+.input-error {
+    border: red 1px solid;
+}
