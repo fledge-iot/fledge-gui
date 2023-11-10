@@ -243,7 +243,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   checkUpdate() {
     this.ping.checkUpdate()
-      .then(data => {       
+      .subscribe(data => {       
           /** request completed */
           this.ngProgress.done();         
           if (data['updates'].indexOf('fledge') !== -1) {
