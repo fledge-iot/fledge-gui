@@ -9,6 +9,8 @@ export class SharedService {
   public showLogs: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public theme: BehaviorSubject<any> = new BehaviorSubject<any>(localStorage.getItem('OPTED_THEME') != null ?
     localStorage.getItem('OPTED_THEME') : 'light');
+  public checkUpdateInterval: BehaviorSubject<any> = new BehaviorSubject<any>(localStorage.getItem('OPTED_UPDATE_INTERVAL') != null ?
+    localStorage.getItem('OPTED_UPDATE_INTERVAL') : '604800000');
   public viewport: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public assets: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public connectionInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);

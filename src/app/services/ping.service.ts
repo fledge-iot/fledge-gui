@@ -11,9 +11,11 @@ export class PingService {
   private FLEDGE_RESTART_URL = environment.BASE_URL + 'restart';
   private GET_PING_URL = environment.BASE_URL + 'ping';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
+  private CHECK_UPDATE_INTERVAL = 604800000;
   pingIntervalChanged: BehaviorSubject<number> = new BehaviorSubject(0);
   refreshIntervalChanged: BehaviorSubject<number> = new BehaviorSubject(GRAPH_REFRESH_INTERVAL);
   pingResponse: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  checkUpdateResponse: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   constructor(private http: HttpClient) { }
 
   /**
@@ -56,8 +58,29 @@ export class PingService {
       catchError(error => throwError(error)));
   }
 
-  checkUpdate() {
-    return this.http.get(environment.BASE_URL + 'update').pipe(
+  /**
+   *  GET  | /fledge/update
+   */
+  checkUpdate(): Promise<any> {
+    return this.http.get(environment.BASE_URL + 'update')
+    .pipe(timeout(this.CHECK_UPDATE_INTERVAL))
+    .toPromise()
+    .then((res) => {
+      this.checkUpdateResponse.next(true);
+      return Promise.resolve(res);
+      })
+    .catch(err => {
+      if (err.status === 0 || err.status === 404) {
+        this.checkUpdateResponse.next(false);
+      } else {
+        this.checkUpdateResponse.next(true);
+      }
+      return Promise.reject(err);
+    });
+  }
+
+  update() {
+    return this.http.put(environment.BASE_URL + 'update', null).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

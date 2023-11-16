@@ -27,6 +27,7 @@ export class SettingsComponent implements OnInit {
   refreshInterval: string;
   serviceUrl = '';
   selectedTheme: string;
+  checkUpdateTime: string;
   isServiceUp = false;
   version;
   scheme; // default protocol
@@ -64,6 +65,7 @@ export class SettingsComponent implements OnInit {
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
+    this.checkUpdateTime = localStorage.getItem('OPTED_UPDATE_INTERVAL') != null ? localStorage.getItem('OPTED_UPDATE_INTERVAL') : '604800000';
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     this.readings_graph_default_time.nativeElement.value = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : 10;
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
@@ -143,6 +145,12 @@ export class SettingsComponent implements OnInit {
     this.selectedTheme = theme;
     localStorage.setItem('OPTED_THEME', theme);
     this.sharedService.theme.next(theme);
+  }
+
+  public checkUpdateInterval(updateTime: string) {
+    this.checkUpdateTime = updateTime;
+    localStorage.setItem('OPTED_UPDATE_INTERVAL', updateTime);
+    this.sharedService.checkUpdateInterval.next(+updateTime);
   }
 
   public setTimeZone(timezone: string) {

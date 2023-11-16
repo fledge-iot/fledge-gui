@@ -30,6 +30,7 @@ import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.co
 export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();
   public timer: any = '';
+  public updateTimer: any = '';
   public pingData = {};
   public servicesRecord = [];
   public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
@@ -49,7 +50,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   viewPort: any = '';
   public showSpinner = false;
   isManualRefresh = false;
-  isUpdateAvailable = false;
+  isUpdateAvailable = false; 
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -91,6 +92,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.start(pingTime);
         }
       });
+
+    this.sharedService.checkUpdateInterval
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((timeInterval: number) => {
+      if (timeInterval === -1) {
+        this.stopCheckUpdate();
+      } else {
+        this.startCheckUpdate(timeInterval);
+      }   
+    });
     this.onResize();
   }
 
@@ -242,23 +253,26 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkUpdate() {
-    this.ping.checkUpdate()
-      .subscribe(data => {       
-          /** request completed */
-          this.ngProgress.done();         
-          if (data['updates'].indexOf('fledge') !== -1) {
-            this.isUpdateAvailable = true;
-          }
-        },
-        (error) => {
-          /** request completed */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.ping.checkUpdate().then(data => {
+      /** request completed */
+      this.ngProgress.done();
+      if (data['updates'].indexOf('fledge') !== -1) {
+        this.isUpdateAvailable = true;
+      }
+    },
+    (error) => {
+      /** request completed */
+      this.ngProgress.done();
+      if (error.status === 0) {
+        console.log('service down ', error);
+      } else {
+        this.alertService.error(error.statusText);
+      }
+    });
+  }
+
+  getUpdateInterval() { 
+    return localStorage.getItem('OPTED_UPDATE_INTERVAL');
   }
 
   showProfile() {
@@ -357,12 +371,22 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stop();
     this.timer = setInterval(function () {
       this.pingService();
-      this.checkUpdate();
     }.bind(this), pingInterval);
   }
 
   public stop() {
     clearInterval(this.timer);
+  }
+
+  public startCheckUpdate(updateInterval) {
+    this.stopCheckUpdate();
+    this.updateTimer = setInterval(function () {
+      this.checkUpdate();
+    }.bind(this), updateInterval);
+  }
+
+  public stopCheckUpdate() {
+    clearInterval(this.updateTimer);
   }
 
   ngOnDestroy() {
@@ -442,6 +466,24 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  update() {
+    this.ping.update()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data) => {
+          this.ngProgress.done();
+          this.alertService.success(data['status']);
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   navToSyslogs(service) {
