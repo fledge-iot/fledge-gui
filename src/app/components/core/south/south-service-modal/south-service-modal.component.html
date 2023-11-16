@@ -56,7 +56,7 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button class="button is-small" [routerLink]="['/south']">Cancel</button>
+                  <button class="button is-small" (click)="navToSouth()" >Cancel</button>
                 </p>
                 <p class="control">
                   <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()">Save</button>

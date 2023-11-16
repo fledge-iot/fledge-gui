@@ -1,6 +1,6 @@
 <div class="title" data-testid="title">
     <span>{{data.label}}</span>
-    <ng-container *ngIf="data.label=='South_plugin' || data.label=='Filter'">
+    <ng-container *ngIf="data.label!=='Filter_branch' && data.label!=='Storage'">
         <button class="btn small-btn config-gear" (click)="addSouthService()">
             <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered"
                 data-tooltip="Configure south plugin">

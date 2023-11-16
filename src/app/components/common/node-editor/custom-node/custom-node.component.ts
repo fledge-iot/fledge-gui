@@ -7,7 +7,7 @@ import {
 } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: 'app-custom-node',
@@ -24,17 +24,27 @@ export class CustomNodeComponent implements OnChanges {
   @Input() rendered!: () => void;
 
   seed = 0;
+  public source = '';
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
   }
 
-  constructor(private cdr: ChangeDetectorRef, private router: Router) {
+  constructor(private cdr: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute) {
     this.cdr.detach();
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
   }
 
   ngOnChanges(): void {
-    console.log(this.data)
+    if(this.data.label === 'South_plugin' && this.source !== ''){
+      this.data.label = this.source;
+    }
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
@@ -51,9 +61,11 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   addSouthService() {
-    console.log(this.data)
     if(this.data.label === 'South_plugin'){
-      this.router.navigate(['/south/add']);
+      this.router.navigate(['/south/add'], { queryParams: { source: 'flowEditor' } });
+    }
+    else{
+      this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
     }
   }
 }
