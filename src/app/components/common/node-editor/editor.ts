@@ -6,7 +6,7 @@ import { ConnectionPlugin, Presets as ConnectionPresets } from "rete-connection-
 import { AutoArrangePlugin, Presets as ArrangePresets } from "rete-auto-arrange-plugin";
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
-import { ScopesPlugin, Presets as ScopesPresets } from "rete-scopes-plugin";
+// import { ScopesPlugin, Presets as ScopesPresets } from "rete-scopes-plugin";
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
@@ -87,14 +87,22 @@ export async function createEditor(container: HTMLElement, injector: Injector) {
         ])
     });
     const dock = new DockPlugin<Schemes>();
-    const scopes = new ScopesPlugin<Schemes>();
+    // const scopes = new ScopesPlugin<Schemes>();
 
-    render.addPreset(Presets.classic.setup());
+    render.addPreset(Presets.classic.setup(
+        {
+            customize: {
+                node() {
+                    return CustomNodeComponent;
+                }
+            }
+        }
+    ));
     connection.addPreset(ConnectionPresets.classic.setup());
     arrange.addPreset(ArrangePresets.classic.setup());
     render.addPreset(Presets.contextMenu.setup());
     dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
-    scopes.addPreset(ScopesPresets.classic.setup());
+    // scopes.addPreset(ScopesPresets.classic.setup());
     HistoryExtensions.keyboard(history);
     history.addPreset(HistoryPresets.classic.setup());
 
@@ -104,7 +112,7 @@ export async function createEditor(container: HTMLElement, injector: Injector) {
     area.use(arrange);
     area.use(contextMenu);
     area.use(dock);
-    area.use(scopes);
+    // area.use(scopes);
     area.use(history);
 
     dock.add(() => new Filter(socket));
@@ -139,6 +147,6 @@ export async function createEditor(container: HTMLElement, injector: Injector) {
         accumulating: AreaExtensions.accumulateOnCtrl()
     });
 
-    console.log(editor.getNodes())
-    console.log(editor.getConnections())
+    // console.log(editor.getNodes())
+    // console.log(editor.getConnections())
 }

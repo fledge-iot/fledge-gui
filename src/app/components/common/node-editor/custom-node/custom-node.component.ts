@@ -7,6 +7,7 @@ import {
 } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-custom-node',
@@ -28,7 +29,7 @@ export class CustomNodeComponent implements OnChanges {
     return this.data.selected;
   }
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(private cdr: ChangeDetectorRef, private router: Router) {
     this.cdr.detach();
   }
 
@@ -49,4 +50,10 @@ export class CustomNodeComponent implements OnChanges {
     return ai - bi;
   }
 
+  addSouthService() {
+    console.log(this.data)
+    if(this.data.label === 'South_plugin'){
+      this.router.navigate(['/south/add']);
+    }
+  }
 }

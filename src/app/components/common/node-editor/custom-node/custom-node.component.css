@@ -1,47 +1,76 @@
 :host {
-    display: block;
-    background: yellow;
-    border: 2px solid grey;
-    border-radius: 10px;
-    cursor: pointer;
-    box-sizing: border-box;
-    width: 200px;
-    height: auto;
-    padding-bottom: 6px;
-    position: relative;
-    user-select: none; }
-    :host:hover {
-      background: #333; }
-    :host.selected {
-      border-color: red; }
-    :host .title {
-      color: white;
-      font-family: sans-serif;
-      font-size: 18px;
-      padding: 8px; }
-    :host .output {
-      text-align: right; }
-    :host .input {
-      text-align: left; }
-    :host .output-socket {
-      text-align: right;
-      margin-right: -1px;
-      display: inline-block; }
-    :host .input-socket {
-      text-align: left;
-      margin-left: -1px;
-      display: inline-block; }
-    :host .input-title, :host .output-title {
-      vertical-align: middle;
-      color: white;
-      display: inline-block;
-      font-family: sans-serif;
-      font-size: 14px;
-      margin: 6px;
-      line-height: 16px; }
-    :host .input-control {
-      z-index: 1;
-      width: calc(100% - 28px);
-      vertical-align: middle;
-      display: inline-block; }
-  
+  display: block;
+  background: whitesmoke;
+  border: 2px solid grey;
+  border-radius: 10px;
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 200px;
+  height: auto;
+  padding-bottom: 6px;
+  position: relative;
+  user-select: none;
+}
+
+:host:hover {
+  background: aqua;
+}
+
+:host.selected {
+  border-color: red;
+}
+
+:host .title {
+  color: black;
+  font-family: sans-serif;
+  font-size: 18px;
+  padding: 8px;
+}
+
+:host .output {
+  text-align: right;
+}
+
+:host .input {
+  text-align: left;
+}
+
+:host .output-socket {
+  text-align: right;
+  margin-right: -1px;
+  display: inline-block;
+}
+
+:host .input-socket {
+  text-align: left;
+  margin-left: -1px;
+  display: inline-block;
+}
+
+:host .input-title,
+:host .output-title {
+  vertical-align: middle;
+  color: white;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 14px;
+  margin: 6px;
+  line-height: 16px;
+}
+
+:host .input-control {
+  z-index: 1;
+  width: calc(100% - 28px);
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.config-gear {
+  vertical-align: top;
+  background: none;
+  border: none;
+  padding-top: 3px !important;
+  padding-bottom: 0px !important;
+  font-size: 14px;
+  z-index: 999;
+}
