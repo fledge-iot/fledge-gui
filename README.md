@@ -15,7 +15,7 @@ Web GUI for Fledge
 To update yarn, Run `sudo npm i -g yarn`
 
 ```
-git clone https://github.com/fledge/fledge-gui.git
+git clone https://github.com/fledge-iot/fledge-gui.git
 cd fledge-gui
 ```
 
