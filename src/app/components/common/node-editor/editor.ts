@@ -69,7 +69,7 @@ class Filter_branch extends ClassicPreset.Node {
 
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
 
-export async function createEditor(container: HTMLElement, injector: Injector) {
+export async function createEditor(container: HTMLElement, injector: Injector, source: string) {
     const socket = new ClassicPreset.Socket("socket");
     const editor = new NodeEditor<Schemes>();
     const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -115,7 +115,9 @@ export async function createEditor(container: HTMLElement, injector: Injector) {
     // area.use(scopes);
     area.use(history);
 
-    dock.add(() => new Filter(socket));
+    if(source !== ''){
+        dock.add(() => new Filter(socket));
+    }
 
 
     const southPlugin = new South_plugin(socket);

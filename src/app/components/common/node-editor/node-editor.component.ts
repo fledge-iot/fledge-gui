@@ -1,5 +1,6 @@
 import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor } from './editor';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-node-editor',
@@ -9,8 +10,16 @@ import { createEditor } from './editor';
 export class NodeEditorComponent implements OnInit {
 
   @ViewChild("rete") container!: ElementRef;
+  public source = '';
 
-  constructor(public injector: Injector) { }
+  constructor(public injector: Injector,
+    private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
+  }
 
   ngOnInit(): void {
   }
@@ -19,7 +28,7 @@ export class NodeEditorComponent implements OnInit {
     const el = this.container.nativeElement;
 
     if (el) {
-      createEditor(el, this.injector);
+      createEditor(el, this.injector, this.source);
     }
   }
 
