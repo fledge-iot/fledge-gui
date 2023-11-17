@@ -64,6 +64,11 @@ export class CustomNodeComponent implements OnChanges {
     if(this.data.label === 'South_plugin'){
       this.router.navigate(['/south/add'], { queryParams: { source: 'flowEditor' } });
     }
+    else if(this.data.label === 'Filter'){
+      if(this.source){
+        this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
+      }
+    }
     else{
       this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
     }
