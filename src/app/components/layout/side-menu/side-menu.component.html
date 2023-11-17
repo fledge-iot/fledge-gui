@@ -1,146 +1,152 @@
-<ul class="menu-list">
-  <section [ngClass]="{'disabled':  !isServiceRunning}">
+<aside class="menu">
+  <ul class="menu-list">
+    <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
+      <li>
+        <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
+          Assets &amp; Readings
+        </a>
+      </li>
+      <article requiredViewEditorRole>
+        <li>
+          <a id=" south" routerLinkActive="is-active" routerLink='/south'>
+            South
+          </a>
+        </li>
+        <li>
+          <a id="north" routerLinkActive="is-active" routerLink='/north'>
+            North
+          </a>
+        </li>
+        <li>
+          <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
+            Notifications
+          </a>
+        </li>
+        <li>
+          <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
+            (click)="isControlListOpen = !isControlListOpen">
+            <span>Control</span>
+            <span class="icon is-small menu-toogle-icon is-pulled-right"
+              [title]="isControlListOpen ? 'Collapse' : 'Expand'">
+              <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
+                aria-hidden="true"></i>
+            </span>
+          </a>
+          <div [hidden]="!isControlListOpen">
+            <ul>
+              <li>
+                <a id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
+                  ACLs
+                </a>
+              </li>
+              <li>
+                <a id="entry-point" routerLinkActive="is-active" routerLink='control-dispatcher/entry-points'>
+                  API Entry Points
+                </a>
+              </li>
+              <li>
+                <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
+              </li>
+              <li>
+                <a id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
+                  Scripts
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li>
+          <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
+            Configuration
+          </a>
+        </li>
+        <li>
+          <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
+            Schedules
+          </a>
+        </li>
+        <li>
+          <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
+            Certificate Store
+          </a>
+        </li>
+        <li>
+          <ng-container *ngFor="let mfe of microfrontends"><a *ngIf="mfe?.displayName" routerLinkActive="is-active"
+              [routerLink]="mfe.routePath">
+              {{mfe.displayName}}</a>
+          </ng-container>
+        </li>
+        <li>
+          <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
+            routerLink='/backup-restore'>
+            Backup &amp; Restore
+          </a>
+        </li>
+        <li>
+          <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
+            (click)="isLogsListOpen = !isLogsListOpen">
+            <span>Logs</span>
+            <span class="icon is-small menu-toogle-icon is-pulled-right"
+              [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
+              <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
+                aria-hidden="true"></i>
+            </span>
+          </a>
+          <div [hidden]="!isLogsListOpen">
+            <ul>
+              <li>
+                <a id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
+              </li>
+              <li>
+                <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
+              </li>
+              <li>
+                <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
+              </li>
+              <li>
+                <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
+              </li>
+              <li>
+                <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
+            User Management
+          </a>
+        </li>
+
+        <li>
+          <a id="support" routerLinkActive="is-active" routerLink='/support'>
+            Support
+          </a>
+        </li>
+        <li>
+          <a id="developer" routerLinkActive="is-active" routerLink='/developer'
+            *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
+            Developer
+          </a>
+        </li>
+      </article>
+    </section>
     <li>
-      <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
-        Dashboard
+      <a id="setting" routerLinkActive="is-active" routerLink='/setting'
+        (click)="toggleSideMenu(); $event.preventDefault()">
+        Settings
       </a>
     </li>
     <li>
-      <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
-        Assets &amp; Readings
+      <a id="help" (click)="goToLink()" (click)="toggleSideMenu(); $event.preventDefault()">
+        Help
       </a>
     </li>
-    <article requiredViewEditorRole>
-      <li>
-        <a id=" south" routerLinkActive="is-active" routerLink='/south'>
-          South
-        </a>
-      </li>
-      <li>
-        <a id="north" routerLinkActive="is-active" routerLink='/north'>
-          North
-        </a>
-      </li>
-      <li>
-        <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
-          Notifications
-        </a>
-      </li>
-      <li>
-        <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
-          (click)="isControlListOpen = !isControlListOpen">
-          <span>Control</span>
-          <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isControlListOpen ? 'Collapse' : 'Expand'">
-            <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-              aria-hidden="true"></i>
-          </span>
-        </a>
-        <div [hidden]="!isControlListOpen">
-          <ul>
-            <li>
-              <a id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
-                ACLs
-              </a>
-            </li>
-            <li>
-              <a id="entry-point" routerLinkActive="is-active" routerLink='control-dispatcher/entry-points'>
-                API Entry Points
-              </a>
-            </li>
-            <li>
-              <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
-            </li>
-            <li>
-              <a id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
-                Scripts
-              </a>
-            </li>   
-          </ul>
-        </div>
-      </li>
-
-      <li>
-        <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
-          Configuration
-        </a>
-      </li>
-      <li>
-        <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
-          Schedules
-        </a>
-      </li>
-      <li>
-        <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
-          Certificate Store
-        </a>
-      </li>
-      <li>
-        <ng-container *ngFor="let mfe of microfrontends"><a *ngIf="mfe?.displayName" routerLinkActive="is-active"
-            [routerLink]="mfe.routePath">
-            {{mfe.displayName}}</a>
-        </ng-container>
-      </li>
-      <li>
-        <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
-          routerLink='/backup-restore'>
-          Backup &amp; Restore
-        </a>
-      </li>
-      <li>
-        <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
-          (click)="isLogsListOpen = !isLogsListOpen">
-          <span>Logs</span>
-          <span class="icon is-small menu-toogle-icon is-pulled-right" [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
-            <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'" aria-hidden="true"></i>
-          </span>
-        </a>
-        <div [hidden]="!isLogsListOpen">
-          <ul>
-            <li>
-              <a id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
-            </li>
-            <li>
-              <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
-            </li>
-            <li>
-              <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
-            </li>
-            <li>
-              <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
-            </li>
-            <li>
-              <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
-            </li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
-          User Management
-        </a>
-      </li>
-
-      <li>
-        <a id="support" routerLinkActive="is-active" routerLink='/support'>
-          Support
-        </a>
-      </li>
-      <li>
-        <a id="developer" routerLinkActive="is-active" routerLink='/developer'
-          *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
-          Developer
-        </a>
-      </li>
-    </article>
-  </section>
-  <li>
-    <a id="setting" routerLinkActive="is-active" routerLink='/setting'>
-      Settings
-    </a>
-  </li>
-  <li>
-    <a id="help" (click)="goToLink()">
-      Help
-    </a>
-  </li>
-</ul>
+  </ul>
+</aside>

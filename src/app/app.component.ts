@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SidebarModule } from 'ng-sidebar';
 import { Subject } from 'rxjs';
@@ -31,10 +31,17 @@ export class AppComponent implements OnInit {
     private ping: PingService,
     private sharedService: SharedService) { }
 
+
+  @ViewChild('navBurger') navBurger: ElementRef;
+  @ViewChild('navMenu') navMenu: ElementRef;
+
   public toggleSidebar() {
+    console.log('toggle', this.navMode, this._opened);
+
     if (this.navMode === 'over') {
       this._opened = !this._opened;
     }
+    console.log('opned', this._opened);
   }
 
   async ngOnInit() {

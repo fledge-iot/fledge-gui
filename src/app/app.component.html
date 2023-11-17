@@ -1,17 +1,23 @@
 <div class="app-navbar">
   <app-navbar (toggle)="toggleSidebar()"></app-navbar>
 </div>
-<ng-sidebar-container>
-  <ng-sidebar *ngIf="!isLoginView" #sidebar [(opened)]="_opened" sidebarClass="column is-2 sidebar">
+
+<!-- <section class="main-content"> -->
+<div class="columns m-0">
+  <!-- <ng-sidebar-container> -->
+  <!-- <ng-sidebar *ngIf="!isLoginView" #sidebar [(opened)]="_opened" sidebarClass="column is-2 sidebar"> -->
+  <div class="column is-2 is-sidebar-menu  p-0" [ngClass]="{'is-hidden-mobile': !_opened}">
     <app-side-menu (toggle)="toggleSidebar()"></app-side-menu>
-  </ng-sidebar>
-  <div ng-sidebar-content class="fixed-overflow c1" [ngClass]="{'column is-offset-2 is-10':!isLoginView}">
+  </div>
+  <!-- </ng-sidebar> -->
+  <!-- <div ng-sidebar-content class="fixed-overflow c1" [ngClass]="{'column is-offset-2 is-10':!isLoginView}"> -->
 
-    <div [ngClass]="{'overlay': !isServiceRunning
-      && !url?.includes('setting')
-      && !url?.includes('login') && !modalWindow}">
-    </div>
+  <!-- <div [ngClass]="{'overlay': !isServiceRunning
+          && !url?.includes('setting')
+          && !url?.includes('login') && !modalWindow}">
+      </div> -->
 
+  <div class="column is-10 is-fullheight is-mobile pt-3">
     <div class="page-container">
       <app-alert></app-alert>
       <app-progress-bar></app-progress-bar>
@@ -19,4 +25,4 @@
     </div>
     <app-footer></app-footer>
   </div>
-</ng-sidebar-container>
+</div>

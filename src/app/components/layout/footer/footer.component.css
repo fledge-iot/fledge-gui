@@ -1,7 +1,14 @@
-.git-hash {
-    padding: 4.65rem 1.5rem 6rem !important;
-}
+.footer {
+    position: relative;
+    vertical-align: top;
+    max-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: -webkit-fill-available;
+    top: 0;
+    bottom: 0;
+    padding: 30px;
+    margin-top: 123px;
 
-.content.has-text-centered {
-    padding-top: 4.25rem;
+
 }

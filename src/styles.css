@@ -27,12 +27,8 @@ html,
 
 @media only screen and (min-height: 769px) {
   aside {
-            overflow-y: hidden !important;
+    overflow-y: hidden !important;
   }
-}
-
-aside.column.is-2 {
-  padding: 0%;
 }
 
 #app {
@@ -131,17 +127,19 @@ table.scroll tbody {
 
 @keyframes dash {
   0% {
-      stroke-dasharray: 1, 200;
-      stroke-dashoffset: 0;
-    }
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+
   50% {
-      stroke-dasharray: 89, 200;
-      stroke-dashoffset: -35px;
-    }
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+
   100% {
-      stroke-dasharray: 89, 200;
-      stroke-dashoffset: -124px;
-    }
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
 }
 
 .logo {
@@ -259,14 +257,6 @@ table.scroll tbody {
   display: block;
 }
 
-.footer, .page-container:after {
-  height: 144px;
-}
-
-.footer {
-  padding: 6rem 1.5rem 6rem !important;
-}
-
 /**
 Custom css for bulma dropdown
 Card Modal dropdown issue(overlapping issue) https://github.com/jgthms/bulma/issues/936
@@ -280,7 +270,7 @@ Bulma Burger Dropdown rendering under other elements https://github.com/jgthms/b
   width: 100%
 }
 
-.dropdown-trigger > .button {
+.dropdown-trigger>.button {
   display: flex;
   width: 100%;
   justify-content: space-between
@@ -296,11 +286,12 @@ a.dropdown-item:hover {
   overflow: auto;
 }
 
-#avail-plugin{
+#avail-plugin {
   padding: 0%;
 }
 
-#refresh-check, #refresh-tree {
+#refresh-check,
+#refresh-tree {
   vertical-align: middle;
   background: none;
   border: none;
@@ -327,112 +318,114 @@ a.dropdown-item:hover {
 /* For modal card window */
 .modal-disabled {
   pointer-events: none;
- }
+}
 
- div:has(div.modal-disabled) {
+div:has(div.modal-disabled) {
   cursor: not-allowed;
- }
+}
 
- .blur {
+.blur {
   filter: blur(1px);
- }
+}
 
- table thead th {
+table thead th {
   font-size: 0.9rem !important;
   font-weight: 500;
- }
+}
 
- .title-name {
+.title-name {
   font-size: 0.9rem;
- }
+}
 
- .icon-group {
-  padding-left: 16px;;
- }
+.icon-group {
+  padding-left: 16px;
+  ;
+}
 
- .service-info {
+.service-info {
   max-width: 1344px;
   margin: auto;
   padding-bottom: 10px;
- }
+}
 
-  .service-info-text {
-    padding-left: 16px;
-  }
+.service-info-text {
+  padding-left: 16px;
+}
 
-  .config-div {
-    margin-top: 1vw;
-    margin-bottom: 1vw;
-  }
+.config-div {
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+}
 
-  @media screen and (min-width: 769px) {
-    .view-content {
-      display: block !important;
-    }
-  
-    .last-step-field {
-      flex-grow: 2 !important;
-    }
+@media screen and (min-width: 769px) {
+  .view-content {
+    display: block !important;
   }
 
-  span.tooltip {
-    border-bottom: none;
+  .last-step-field {
+    flex-grow: 2 !important;
   }
+}
 
-  .description-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 32rem
-  }
+span.tooltip {
+  border-bottom: none;
+}
 
-  #confirmation-execute-dialog .modal-card-body {
-    min-height: 22vh;
-  }
+.description-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 32rem
+}
 
-  .plugin-info {
-    color: gray;
-  }
+#confirmation-execute-dialog .modal-card-body {
+  min-height: 22vh;
+}
 
-  .plus-icon {
-    line-height: 1;
-  }
+.plugin-info {
+  color: gray;
+}
 
-  .bi-sm {
-    font-size: 0.9rem;
-  }
+.plus-icon {
+  line-height: 1;
+}
 
-  .bi-md {
-    font-size: 1rem;
-  }
+.bi-sm {
+  font-size: 0.9rem;
+}
 
-  .bi:hover {
-    color: rgb(91, 89, 89);
-  }
+.bi-md {
+  font-size: 1rem;
+}
 
-  .desc-text{
-    font-size: 0.95rem;
-  }
+.bi:hover {
+  color: rgb(91, 89, 89);
+}
 
-  .help-pad {
-    margin: 17px 7px;
-    font-size: 0.9rem;
-  }
+.desc-text {
+  font-size: 0.95rem;
+}
 
-  .is-hovered {
-    cursor: pointer !important;
-  }
-  
-  .is-horizontal .label {
-    font-size: 0.9rem;
-  }
+.help-pad {
+  margin: 17px 7px;
+  font-size: 0.9rem;
+}
 
-  .label {
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
+.is-hovered {
+  cursor: pointer !important;
+}
 
-  .lbl-child {
-    font-size: 0.8rem !important;
-  }
- /*****************/
+.is-horizontal .label {
+  font-size: 0.9rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.lbl-child {
+  font-size: 0.8rem !important;
+}
+
+/*****************/

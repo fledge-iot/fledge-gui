@@ -11,3 +11,17 @@
   bottom: 0;
   z-index: 999;
 }
+
+.is-fullheight {
+  min-height: calc(100vh - (3.25rem - .75rem));
+  max-height: calc(100vh - (3.25rem - .75rem));
+  height: calc(100vh - (3.25rem - .75rem));
+  overflow-y: auto;
+  overflow: auto;
+  /* position: sticky; */
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+}

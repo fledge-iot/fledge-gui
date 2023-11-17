@@ -26,6 +26,11 @@ export class SideMenuComponent implements OnInit {
   isServiceRunning = true;
   private destroySubject: Subject<void> = new Subject();
 
+
+  toggleSideMenu() {
+    this.toggle.next('toggleSidebar');
+  }
+
   constructor(
     private router: Router,
     private docService: DocService,
