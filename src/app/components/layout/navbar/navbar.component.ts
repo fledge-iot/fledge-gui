@@ -272,7 +272,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getUpdateInterval() { 
-    return localStorage.getItem('OPTED_UPDATE_INTERVAL');
+    return localStorage.getItem('UPDATE_CHECK_INTERVAL');
   }
 
   showProfile() {

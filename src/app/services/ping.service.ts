@@ -11,7 +11,7 @@ export class PingService {
   private FLEDGE_RESTART_URL = environment.BASE_URL + 'restart';
   private GET_PING_URL = environment.BASE_URL + 'ping';
   private REQUEST_TIMEOUT_INTERVAL = 5000;
-  private CHECK_UPDATE_INTERVAL = 604800000;
+  private CHECK_UPDATE_INTERVAL = 604800;
   pingIntervalChanged: BehaviorSubject<number> = new BehaviorSubject(0);
   refreshIntervalChanged: BehaviorSubject<number> = new BehaviorSubject(GRAPH_REFRESH_INTERVAL);
   pingResponse: BehaviorSubject<any> = new BehaviorSubject<any>(false);
