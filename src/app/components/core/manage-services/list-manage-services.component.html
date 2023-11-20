@@ -1,0 +1,37 @@
+<div class="container is-fluid">
+    <div class="navbar-item">
+        <p class="subtitle">
+            <b>Manage Services</b>     
+            <button (click)="getAllServices()" class="button is-small" title="Reload" id="refresh-check">
+                <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+            </button>
+        </p>
+    </div>
+    <div class="card">
+      <div class="card-content">
+        <div class="content">
+          <ng-container>
+            <table class="table is-fullwidth scroll is-responsive is-hoverable is-narrow" cellpadding="0" cellspacing="0">
+              <!-- <thead>
+                <tr>
+                  <th class="align-th">Services</th>
+                  <th class="align-th">Installed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let service of services" class="parent">
+                  <td class="align-content content-pad">
+                    <small>{{service.name}}</small>
+                  </td>
+                  <td class="align-content content-pad">
+                    <small>{{service.status}}</small>
+                  </td>
+                </tr>
+              </tbody> -->
+            </table>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  

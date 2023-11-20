@@ -32,3 +32,7 @@
 .no-padding {
   padding: 0px !important;
 }
+
+.manage-services-text {
+  font-size: 0.75rem;
+}
