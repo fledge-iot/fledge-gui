@@ -45,6 +45,9 @@ export class CustomNodeComponent implements OnChanges {
     if(this.data.label === 'South_plugin' && this.source !== ''){
       this.data.label = this.source;
     }
+    if(this.data.label === 'Filter'){
+      this.data.label = Object.keys(this.data.controls)[0]
+    }
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
@@ -64,10 +67,11 @@ export class CustomNodeComponent implements OnChanges {
     if(this.data.label === 'South_plugin'){
       this.router.navigate(['/south/add'], { queryParams: { source: 'flowEditor' } });
     }
+    else if(this.data.label === this.source){
+      this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
+    }
     else if(this.data.label === 'Filter'){
-      if(this.source){
-        this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
-      }
+      this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
     }
     else{
       this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
