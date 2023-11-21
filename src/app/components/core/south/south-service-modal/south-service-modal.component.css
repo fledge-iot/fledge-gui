@@ -64,3 +64,10 @@ a {
 .modal-subtitle {
   margin-top: 0.35rem !important;
 }
+
+.node-editor{
+  background: none;
+  border: none;
+  font-size: 14px;
+  margin-right: 15px;
+}
