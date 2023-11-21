@@ -56,6 +56,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(private servicesApiService: ServicesApiService,
     private status: ConnectedServiceStatus,
@@ -475,10 +476,12 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(
         (data) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data['status']);
         },
         error => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down', error);
           } else {

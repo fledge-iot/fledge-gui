@@ -335,7 +335,7 @@
       <div *ngIf="pingInfo.isAlive && isUpdateAvailable && getUpdateInterval() !== '-1'">
         <div class="dropdown is-right is-hoverable">
           <div class="dropdown-trigger">
-            <a aria-haspopup="true" aria-controls="dropdown-menu">
+            <a aria-haspopup="true" aria-controls="dropdown-menu" title="Updates">
               <span class="icon">
                 <i class="fa-regular fa-bell" aria-hidden="true"></i>
               </span>
@@ -344,7 +344,7 @@
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
               <a class="dropdown-item">
-                <span>A newer version is available. <a (click)="update()">Upgrade now</a></span>
+                <span>A newer version is available. <button (click)="update()" [appDisableUntilResponse]="reenableButton" class="button is-text text-btn upgrade-btn">Upgrade now</button></span>
               </a>
             </div>
           </div>
