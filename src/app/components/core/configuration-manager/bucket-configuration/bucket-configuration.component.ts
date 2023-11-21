@@ -47,15 +47,11 @@ export class BucketConfigurationComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log('data', this.dataModel);
-
     this.bucketConfig = JSON.parse(this.dataModel.properties);
     this.key = this.bucketConfig.key;
     this.properties = this.bucketConfig.properties;
     this.bucketModelConfiguration = { ...this.properties, ...this.key };
-
-    this.dataModel.value = this.dataModel.hasOwnProperty('value') ? JSON.parse(this.dataModel.value) : JSON.parse(this.dataModel.default);
-
+    this.dataModel.value = JSON.parse(this.dataModel.value);
     for (const key in this.bucketModelConfiguration) {
       if (this.dataModel.value.hasOwnProperty(key)) {
         this.bucketModelConfiguration[key].value = this.dataModel.value[key];

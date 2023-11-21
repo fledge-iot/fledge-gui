@@ -75,7 +75,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     let modelConfig = []
     this.groups = [];
     const configItems = Object.keys(this.category.config).map(k => {
-
       if (this.category.config[k].type == 'bucket') {
         this.category.config[k].key = k;
         modelConfig.push(this.category.config[k]);
@@ -90,9 +89,12 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     }).value();
 
     if (modelConfig.length > 0) {
-      modelConfig.forEach(m => {
-        this.groups.push({ category: this.category.name, group: (m.displayName ? m.displayName : m.description), config: m, type: m.type, key: m.key });
-      })
+      modelConfig.forEach(mConfig => {
+        if (!mConfig.hasOwnProperty('value')) {
+          mConfig.value = mConfig.default;
+        }
+        this.groups.push({ category: this.category.name, group: (mConfig.displayName ? mConfig.displayName : mConfig.description), config: mConfig, type: mConfig.type, key: mConfig.key });
+      });
     }
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
