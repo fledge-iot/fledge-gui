@@ -37,7 +37,8 @@ import {
   ServicesApiService,
   SupportService,
   SystemLogService,
-  UserService
+  UserService,
+  CheckUpdateService
 } from './services';
 import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
@@ -115,6 +116,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     AuditService,
     SystemLogService,
     PackagesLogService,
+    CheckUpdateService,
     ServicesApiService,
     {
       provide: APP_INITIALIZER,

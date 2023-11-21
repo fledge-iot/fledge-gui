@@ -14,7 +14,7 @@ import { sortBy } from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
-  AlertService, AuthService, ConnectedServiceStatus, PingService,
+  AlertService, AuthService, ConnectedServiceStatus, PingService, CheckUpdateService,
   ProgressBarService, ServicesApiService, RolesService
 } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
@@ -65,6 +65,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
     private ping: PingService,
+    private checkUpdateService: CheckUpdateService,
     private router: Router,
     public rolesService: RolesService) {
     // Subscribe to automatically update
@@ -96,10 +97,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sharedService.checkUpdateInterval
     .pipe(takeUntil(this.destroy$))
     .subscribe((timeInterval: number) => {
-      if (timeInterval === -1) {
+      if (+timeInterval === -1) {
         this.stopCheckUpdate();
       } else {
-        this.startCheckUpdate(timeInterval);
+        this.startCheckUpdate(+timeInterval);
       }   
     });
     this.onResize();
@@ -253,7 +254,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkUpdate() {
-    this.ping.checkUpdate().then(data => {
+    this.checkUpdateService.checkUpdate().then(data => {
       /** request completed */
       this.ngProgress.done();
       if (data['updates'].indexOf('fledge') !== -1) {
@@ -469,7 +470,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   update() {
-    this.ping.update()
+    this.checkUpdateService.update()
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {

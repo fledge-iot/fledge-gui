@@ -65,7 +65,7 @@ export class SettingsComponent implements OnInit {
     this.pingInterval = localStorage.getItem('PING_INTERVAL');
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
-    this.checkUpdateTime = localStorage.getItem('UPDATE_CHECK_INTERVAL') != null ? localStorage.getItem('UPDATE_CHECK_INTERVAL') : '604800';
+    this.checkUpdateTime = localStorage.getItem('UPDATE_CHECK_INTERVAL');
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     this.readings_graph_default_time.nativeElement.value = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : 10;
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');

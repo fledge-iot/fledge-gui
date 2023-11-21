@@ -227,8 +227,8 @@
                 <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                   (click)="toggleDropDown('check-update')">
                   <span *ngIf="checkUpdateTime === '-1'">Off</span>
-                  <span *ngIf="checkUpdateTime === '604800'">Weekly</span>
-                  <span *ngIf="checkUpdateTime === '86400'">Daily</span>
+                  <span *ngIf="checkUpdateTime === '604800000'">Weekly</span>
+                  <span *ngIf="checkUpdateTime === '86400000'">Daily</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                   </span>
@@ -237,8 +237,8 @@
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
                   <a class="dropdown-item" (click)="toggleDropDown('check-update');checkUpdateInterval('-1')">Off</a>
-                  <a class="dropdown-item" (click)="toggleDropDown('check-update');checkUpdateInterval('604800')">Weekly</a>
-                  <a class="dropdown-item" (click)="toggleDropDown('check-update');checkUpdateInterval('86400')">Daily</a>
+                  <a class="dropdown-item" (click)="toggleDropDown('check-update');checkUpdateInterval('604800000')">Weekly</a>
+                  <a class="dropdown-item" (click)="toggleDropDown('check-update');checkUpdateInterval('86400000')">Daily</a>
                 </div>
               </div>
             </div>
