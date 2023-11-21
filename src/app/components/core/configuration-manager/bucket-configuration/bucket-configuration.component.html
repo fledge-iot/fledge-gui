@@ -1,3 +1,3 @@
-<!-- {{dataModal | json}} -->
-<app-show-configuration [groupConfiguration]="key"></app-show-configuration>
-<app-show-configuration [groupConfiguration]="properties"></app-show-configuration>
+<app-show-configuration [groupConfiguration]="bucketModelConfiguration" [fullConfiguration]="bucketModelConfiguration"
+    (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
+    [group]="group"></app-show-configuration>

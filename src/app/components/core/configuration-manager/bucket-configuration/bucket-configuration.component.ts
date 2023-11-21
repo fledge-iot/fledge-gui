@@ -1,5 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
-
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 export interface Model {
   constant: Constant
@@ -17,14 +16,10 @@ export interface Property {
   description: string
   displayName: string
   type: string
-  options: string[]
+  options?: string[]
   default: string
   value?: string
 }
-
-
-
-
 
 @Component({
   selector: 'app-bucket-configuration',
@@ -33,48 +28,51 @@ export interface Property {
 })
 export class BucketConfigurationComponent implements OnInit {
 
-  constant: Constant;
-  key
+  key: any;
   properties: Property[];
-  data
+  @Input() dataModel;
+  bucketConfig: Model;
+  bucketModelConfiguration: any;
 
 
-  @Input() dataModal: Model;
-  constructor() {
+  // To hold the changed configuration values of a plugin
+  propertyChangedValues = {};
 
-  }
+  @Output() changedConfig = new EventEmitter<any>();
+  @Output() formStatusEvent = new EventEmitter<boolean>();
+
+  @Input() group: string = '';
+  @Input() from = '';
+
+  constructor() { }
 
   ngOnInit(): void {
-    console.log('hello', this.dataModal);
+    console.log('data', this.dataModel);
 
-    this.constant = this.dataModal.constant;
-    this.key = this.dataModal.key;
-    this.properties = this.dataModal.properties;
-    console.log(this.properties);
+    this.bucketConfig = JSON.parse(this.dataModel.properties);
+    this.key = this.bucketConfig.key;
+    this.properties = this.bucketConfig.properties;
+    this.bucketModelConfiguration = { ...this.properties, ...this.key };
 
-    this.data = Object.assign([this.key, this.properties], {})
-    console.log('data', this.data);
+    this.dataModel.value = this.dataModel.hasOwnProperty('value') ? JSON.parse(this.dataModel.value) : JSON.parse(this.dataModel.default);
 
-
-
-
-
-
-
-  }
-
-  ngAfterViewInit() {
-
-    if (this.key) {
-      console.log(this.key);
-
+    for (const key in this.bucketModelConfiguration) {
+      if (this.dataModel.value.hasOwnProperty(key)) {
+        this.bucketModelConfiguration[key].value = this.dataModel.value[key];
+      }
     }
-
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('bucket ', changes);
-
+  getChangedConfiguration(propertyChangedValues: any) {
+    this.propertyChangedValues = Object.assign({}, this.propertyChangedValues, propertyChangedValues);
+    this.propertyChangedValues = Object.assign({}, this.propertyChangedValues, this.bucketConfig.constant);
+    for (const key in this.propertyChangedValues) {
+      this.dataModel.value[key] = this.propertyChangedValues[key];
+    }
+    this.changedConfig.emit({ [this.dataModel.key]: JSON.stringify(this.dataModel.value) });
   }
 
+  formStatus(formState: any) {
+    this.formStatusEvent.emit(formState);
+  }
 }
