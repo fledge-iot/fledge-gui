@@ -428,4 +428,8 @@ span.tooltip {
   font-size: 0.8rem !important;
 }
 
+.card-header-title {
+  font-weight: 500;
+}
+
 /*****************/

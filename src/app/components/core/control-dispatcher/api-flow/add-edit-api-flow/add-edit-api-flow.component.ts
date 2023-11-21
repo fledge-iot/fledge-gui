@@ -111,7 +111,6 @@ export class AddEditAPIFlowComponent implements OnInit {
             if (this.apiFlowName) {
               this.getAPIFlow();
             } else {
-                this.addParameter({ index: 0, key: '', value: '' });
                 this.selectedType = 'write';
             }
         });     
