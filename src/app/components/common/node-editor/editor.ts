@@ -11,17 +11,17 @@ import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
 
-type Node = South_plugin | Filter | Filter_branch;
+type Node = South_service | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
 
-class South_plugin extends ClassicPreset.Node {
+class South_service extends ClassicPreset.Node {
     height = 140;
     width = 200;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket) {
-        super("South_plugin");
+        super("South_service");
 
         this.addControl("a", new ClassicPreset.InputControl("text", { initial: "hello" }));
         this.addOutput("port", new ClassicPreset.Output(socket));
@@ -54,13 +54,13 @@ class Filter extends ClassicPreset.Node {
     }
 }
 
-class Filter_branch extends ClassicPreset.Node {
+class Applications extends ClassicPreset.Node {
     height = 300;
     width = 600;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket) {
-        super("Filter_branch");
+        super("Applications");
 
         this.addInput("port", new ClassicPreset.Input(socket));
         this.addOutput("port", new ClassicPreset.Output(socket));
@@ -80,10 +80,10 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
 
     const contextMenu = new ContextMenuPlugin<Schemes>({
         items: ContextMenuPresets.classic.setup([
-            ["South_plugin", () => new South_plugin(socket)],
+            ["South_service", () => new South_service(socket)],
             // ["Extra", [["Filter", () => new Filter(socket)]]]
             ["Filter", () => new Filter(socket, 'Filter')],
-            ["Filter_branch", () => new Filter_branch(socket)]
+            ["Applications", () => new Applications(socket)]
         ])
     });
     const dock = new DockPlugin<Schemes>();
@@ -110,7 +110,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(connection);
     area.use(render);
     area.use(arrange);
-    area.use(contextMenu);
+    // area.use(contextMenu);
     area.use(dock);
     // area.use(scopes);
     area.use(history);
@@ -120,8 +120,8 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     }
 
 
-    const southPlugin = new South_plugin(socket);
-    const filterBranch = new Filter_branch(socket);
+    const southPlugin = new South_service(socket);
+    const filterBranch = new Applications(socket);
     const db = new Storage(socket);
 
     await editor.addNode(southPlugin);

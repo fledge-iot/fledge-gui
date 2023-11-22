@@ -13,11 +13,11 @@
 }
 
 :host:hover {
-  background: aqua;
+  background: white;
 }
 
 :host.selected {
-  border-color: red;
+  border-color: aqua;
 }
 
 :host .title {
@@ -73,4 +73,10 @@
   padding-bottom: 0px !important;
   font-size: 14px;
   z-index: 999;
+}
+
+.filter-text {
+  display: block;
+  color: grey;
+  font-size: 0.85rem;
 }

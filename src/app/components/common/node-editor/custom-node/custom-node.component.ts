@@ -42,7 +42,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
-    if(this.data.label === 'South_plugin' && this.source !== ''){
+    if(this.data.label === 'South_service' && this.source !== ''){
       this.data.label = this.source;
     }
     if(this.data.label === 'Filter'){
@@ -64,7 +64,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   addSouthService() {
-    if(this.data.label === 'South_plugin'){
+    if(this.data.label === 'South_service'){
       this.router.navigate(['/south/add'], { queryParams: { source: 'flowEditor' } });
     }
     else if(this.data.label === this.source){
