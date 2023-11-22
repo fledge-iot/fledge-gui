@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { RolesService } from '../services';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class RolesGuard  {
   constructor(private router: Router, public rolesService: RolesService) { }
   canActivate() {
     const canEdit = this.rolesService.hasEditPermissions();

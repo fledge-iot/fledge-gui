@@ -34,12 +34,9 @@ export class AppComponent implements OnInit {
   @ViewChild('navMenu') navMenu: ElementRef;
 
   public toggleSidebar() {
-    console.log('toggle', this.navMode, this._opened);
-
     if (this.navMode === 'over') {
       this._opened = !this._opened;
     }
-    console.log('opned', this._opened);
   }
 
   async ngOnInit() {

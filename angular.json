@@ -24,7 +24,11 @@
               "lodash",
               "chart.js",
               "@ctrl/ngx-codemirror",
-              "codemirror"
+              "codemirror",
+              "bulma-toast",
+              "mobx",
+              "jsonlint-mod",
+              "moment"
             ],
             "outputPath": "dist",
             "index": "src/fledge.html",
