@@ -32,7 +32,7 @@
     "@angular/platform-browser": "^16.2.12",
     "@angular/platform-browser-dynamic": "^16.2.12",
     "@angular/router": "^16.2.12",
-    "@angular/elements": "13",
+    "@angular/elements": "16",
     "@circlon/angular-tree-component": "^11.0.4",
     "@creativebulma/bulma-tooltip": "^1.2.0",
     "@ctrl/ngx-codemirror": "^5.1.1",
