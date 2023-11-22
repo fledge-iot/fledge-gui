@@ -42,6 +42,7 @@ export class SouthServiceModalComponent implements OnInit {
 
   assetReadings = [];
   public isAddFilterWizard;
+  public source = '';
 
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
@@ -92,6 +93,16 @@ export class SouthServiceModalComponent implements OnInit {
         this.getSouthboundServices(true);
       }
     })
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+        if(this.source === 'flowEditorFilter'){
+          setTimeout(() => {
+            this.openAddFilterModal(true);
+          }, 500);
+        }
+      }
+    });
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -511,6 +522,19 @@ export class SouthServiceModalComponent implements OnInit {
 
   navToSouthPage() {
     this.router.navigate(['/south']);
+  }
+
+  navToSouth(){
+    if(this.source === 'flowEditor' || this.source === 'flowEditorFilter'){
+      this.router.navigate(['/south/node-editor'], { queryParams: { source: this.serviceName } });
+    }
+    else{
+      this.router.navigate(['/south']);
+    }
+  }
+
+  openNodeEditor(){
+    this.router.navigate(['/south/node-editor'], { queryParams: { source: this.serviceName } });
   }
 
   checkFormState() {

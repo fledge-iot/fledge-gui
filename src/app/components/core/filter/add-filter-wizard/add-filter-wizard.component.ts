@@ -13,6 +13,7 @@ import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -51,6 +52,7 @@ export class AddFilterWizardComponent implements OnInit {
 
   validChildConfigurationForm = true;
   pluginConfiguration: any;
+  public source = '';
 
   public reenableButton = new EventEmitter<boolean>(false);
 
@@ -64,7 +66,15 @@ export class AddFilterWizardComponent implements OnInit {
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private ngProgress: ProgressBarService,
-    private cdRef: ChangeDetectorRef) { }
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private cdRef: ChangeDetectorRef) {
+      this.activatedRoute.queryParams.subscribe(params => {
+        if (params['source']) {
+          this.source = params['source'];
+        }
+      });
+    }
 
   ngOnInit() {
     this.getCategories();
@@ -444,6 +454,9 @@ export class AddFilterWizardComponent implements OnInit {
           this.uploadScript(filterName, payload?.files);
         } else {
           this.reenableButton.emit(false);
+        }
+        if(this.source === 'flowEditorFilter'){
+          this.router.navigate(['/south/node-editor'], { queryParams: { source: this.serviceName } });
         }
       },
         (error) => {

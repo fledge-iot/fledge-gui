@@ -16,6 +16,8 @@ import { PluginModalComponent } from './components/core/plugin-modal/plugin-moda
 import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ShowConfigurationComponent } from './components/core/configuration-manager/show-configuration/show-configuration.component';
+import { NodeEditorComponent } from './components/common/node-editor/node-editor.component';
+import { CustomNodeComponent } from './components/common/node-editor/custom-node/custom-node.component';
 
 @NgModule({
   imports: [
@@ -35,7 +37,9 @@ import { ShowConfigurationComponent } from './components/core/configuration-mana
     ViewLogsComponent,
     TimeDropdownComponent,
     RangeSliderComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    NodeEditorComponent,
+    CustomNodeComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -45,7 +49,9 @@ import { ShowConfigurationComponent } from './components/core/configuration-mana
     ViewLogsComponent,
     TimeDropdownComponent,
     RangeSliderComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    NodeEditorComponent,
+    CustomNodeComponent
   ]
 })
 export class SharedModule { }

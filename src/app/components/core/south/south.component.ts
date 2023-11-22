@@ -202,4 +202,8 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
+
+  openNodeEditor(){
+    this.router.navigate(['/south/node-editor']);
+  }
 }
