@@ -35,7 +35,7 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@circlon/angular-tree-component/css/angular-tree-component.css",
+              "./node_modules/@ali-hm/angular-tree-component/css/angular-tree-component.css",
               "./node_modules/animate.css/animate.css",
               "./node_modules/@ng-select/ng-select/themes/default.theme.css",
               "src/styles.css"

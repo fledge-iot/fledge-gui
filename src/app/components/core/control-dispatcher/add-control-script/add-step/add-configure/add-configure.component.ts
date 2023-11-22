@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup, NgForm } from '@angular/forms';
-import { ITreeOptions, ITreeState, TreeComponent } from '@circlon/angular-tree-component';
+import { ITreeOptions, ITreeState, TreeComponent } from '@ali-hm/angular-tree-component';
 import { isEmpty, sortBy } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
 import { AlertService, ConfigurationService, RolesService } from '../../../../../../services';

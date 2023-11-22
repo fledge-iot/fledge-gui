@@ -104,26 +104,26 @@ Set API base URL in `environments/environment.prod.ts`, You can always change it
 
 #### Dev
 
-| Library                         | Version | Latest Stable (? Y/n) | License |
-| ------------------------------- | ------- | --------------------- | ------- |
-| chart.js                        | 2.9.4   | 3.9.1                 | MIT     |
-| moment                          | 2.29.3  | 2.29.3                | MIT     |
-| ngx-progressbar                 | 8.0.0   | 9.0.0                 | MIT     |
-| node-git-describe               | 4.1.0   | 4.1.0                 | MIT     |
-| plotly.js                       | 2.12.1  | 2.12.1                | MIT     |
-| @ctrl/ngx-codemirror            | 5.1.1   | 5.1.1                 | MIT     |
-| codemirror                      | 5.65.3  | 5.65.3                | MIT     |
-| jsonlint-mod                    | 1.7.6   | 1.7.6                 | MIT     |
-| @ng-select/ng-select            | 8.1.1   | 8.1.1                 | MIT     |
-| @circlon/angular-tree-component | 11.0.4  | 11.0.4                | MIT     |
-| @kurkle/color                   | 0.1.9   | 0.1.9                 | MIT     |
-| Animate.css                     | 4.1.1   | 4.1.1                 | MIT     |
-| ngx-build-plus                  | 13.0.1  | 14.0.0                | MIT     |
-| bulma-toast                     | 2.4.2   | 2.4.2                 | MIT     |
-| cypress                         | 13.1.0  | 13.1.0                | MIT     |
-| cypress-junit-reporter          | 1.3.1   | 1.3.1                 | MIT     |
-| cypress-mochawesome-reporter    | 3.6.0   | 3.6.0                 | MIT     |
-| cypress-multi-reporters         | 1.6.3   | 1.6.3                 | MIT     |
+| Library                        | Version | Latest Stable (? Y/n) | License |
+| ------------------------------ | ------- | --------------------- | ------- |
+| chart.js                       | 2.9.4   | 3.9.1                 | MIT     |
+| moment                         | 2.29.3  | 2.29.3                | MIT     |
+| ngx-progressbar                | 8.0.0   | 9.0.0                 | MIT     |
+| node-git-describe              | 4.1.0   | 4.1.0                 | MIT     |
+| plotly.js                      | 2.12.1  | 2.12.1                | MIT     |
+| @ctrl/ngx-codemirror           | 5.1.1   | 5.1.1                 | MIT     |
+| codemirror                     | 5.65.3  | 5.65.3                | MIT     |
+| jsonlint-mod                   | 1.7.6   | 1.7.6                 | MIT     |
+| @ng-select/ng-select           | 8.1.1   | 8.1.1                 | MIT     |
+| @ali-hm/angular-tree-component | 12.0.5  | 12.0.5                | MIT     |
+| @kurkle/color                  | 0.1.9   | 0.1.9                 | MIT     |
+| Animate.css                    | 4.1.1   | 4.1.1                 | MIT     |
+| ngx-build-plus                 | 13.0.1  | 14.0.0                | MIT     |
+| bulma-toast                    | 2.4.2   | 2.4.2                 | MIT     |
+| cypress                        | 13.1.0  | 13.1.0                | MIT     |
+| cypress-junit-reporter         | 1.3.1   | 1.3.1                 | MIT     |
+| cypress-mochawesome-reporter   | 3.6.0   | 3.6.0                 | MIT     |
+| cypress-multi-reporters        | 1.6.3   | 1.6.3                 | MIT     |
 
 ## Update Dependencies
 

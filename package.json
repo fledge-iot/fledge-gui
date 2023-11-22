@@ -21,6 +21,7 @@
   },
   "private": true,
   "dependencies": {
+    "@ali-hm/angular-tree-component": "^12.0.5",
     "@angular-architects/module-federation": "~14.2.3",
     "@angular/animations": "^15.2.10",
     "@angular/cdk": "^14.2.7",
@@ -31,7 +32,6 @@
     "@angular/platform-browser": "^15.2.10",
     "@angular/platform-browser-dynamic": "^15.2.10",
     "@angular/router": "^15.2.10",
-    "@circlon/angular-tree-component": "^11.0.4",
     "@creativebulma/bulma-tooltip": "^1.2.0",
     "@ctrl/ngx-codemirror": "^5.1.1",
     "@cypress/schematic": "^2.5.1",
