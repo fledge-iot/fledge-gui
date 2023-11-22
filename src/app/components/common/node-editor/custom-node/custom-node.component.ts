@@ -8,6 +8,7 @@ import {
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
+import { SchedulesService } from "./../../../../services";
 
 @Component({
   selector: 'app-custom-node',
@@ -25,12 +26,15 @@ export class CustomNodeComponent implements OnChanges {
 
   seed = 0;
   public source = '';
+  helpText = '';
+  isEnabled: boolean = false;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
   }
 
   constructor(private cdr: ChangeDetectorRef,
+    private schedulesService: SchedulesService,
     private router: Router,
     private route: ActivatedRoute) {
     this.cdr.detach();
@@ -44,9 +48,16 @@ export class CustomNodeComponent implements OnChanges {
   ngOnChanges(): void {
     if(this.data.label === 'South_service' && this.source !== ''){
       this.data.label = this.source;
+      let status = Object.keys(this.data.controls)[0];
+      if(status === 'running'){
+        this.isEnabled = true;
+      }
     }
     if(this.data.label === 'Filter'){
       this.data.label = Object.keys(this.data.controls)[0]
+    }
+    if(this.data.label === 'Applications'){
+      this.helpText = 'Filters';
     }
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
@@ -64,17 +75,50 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   addSouthService() {
-    if(this.data.label === 'South_service'){
-      this.router.navigate(['/south/add'], { queryParams: { source: 'flowEditor' } });
-    }
-    else if(this.data.label === this.source){
+    this.router.navigate(['/south/add'], { queryParams: { source: 'flowEditor' } });
+  }
+
+  navToSouthService() {
+    if (this.data.label === this.source) {
       this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
     }
-    else if(this.data.label === 'Filter'){
+    else if (this.data.label === 'Filter') {
       this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
     }
-    else{
+    else {
       this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
     }
+  }
+
+  toggleEnabled(isEnabled){
+    this.isEnabled = isEnabled;
+    if(this.isEnabled){
+      this.enableSchedule(this.source);
+    }
+    else{
+      this.disableSchedule(this.source);
+    }
+  }
+
+  public disableSchedule(serviceName) {
+    this.schedulesService.disableScheduleByName(serviceName)
+      .subscribe(
+        () => {
+          console.log("schedule disabled");
+        },
+        error => {
+          console.log(error);
+        });
+  }
+
+  public enableSchedule(serviceName) {
+    this.schedulesService.enableScheduleByName(serviceName)
+      .subscribe(
+        () => {
+          console.log("schedule enabled");
+        },
+        error => {
+          console.log(error);
+        });
   }
 }

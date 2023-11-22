@@ -20,10 +20,12 @@ class South_service extends ClassicPreset.Node {
     width = 200;
     parent?: string;
 
-    constructor(socket: ClassicPreset.Socket) {
+    constructor(socket: ClassicPreset.Socket, service) {
         super("South_service");
 
-        this.addControl("a", new ClassicPreset.InputControl("text", { initial: "hello" }));
+        if(service){
+            this.addControl(service.status, new ClassicPreset.InputControl("text"));
+        }
         this.addOutput("port", new ClassicPreset.Output(socket));
     }
 }
@@ -69,7 +71,7 @@ class Applications extends ClassicPreset.Node {
 
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
 
-export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline) {
+export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service) {
     const socket = new ClassicPreset.Socket("socket");
     const editor = new NodeEditor<Schemes>();
     const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -78,14 +80,14 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     const arrange = new AutoArrangePlugin<Schemes>();
     const history = new HistoryPlugin<Schemes>();
 
-    const contextMenu = new ContextMenuPlugin<Schemes>({
-        items: ContextMenuPresets.classic.setup([
-            ["South_service", () => new South_service(socket)],
-            // ["Extra", [["Filter", () => new Filter(socket)]]]
-            ["Filter", () => new Filter(socket, 'Filter')],
-            ["Applications", () => new Applications(socket)]
-        ])
-    });
+    // const contextMenu = new ContextMenuPlugin<Schemes>({
+    //     items: ContextMenuPresets.classic.setup([
+    //         ["South_service", () => new South_service(socket)],
+    //         // ["Extra", [["Filter", () => new Filter(socket)]]]
+    //         ["Filter", () => new Filter(socket, 'Filter')],
+    //         ["Applications", () => new Applications(socket)]
+    //     ])
+    // });
     const dock = new DockPlugin<Schemes>();
     // const scopes = new ScopesPlugin<Schemes>();
 
@@ -120,7 +122,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     }
 
 
-    const southPlugin = new South_service(socket);
+    const southPlugin = new South_service(socket, service);
     const filterBranch = new Applications(socket);
     const db = new Storage(socket);
 

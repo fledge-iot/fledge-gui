@@ -69,13 +69,22 @@
   vertical-align: top;
   background: none;
   border: none;
+  padding-bottom: 0px !important;
+  font-size: 14px;
+  z-index: 999;
+}
+
+.add-btn {
+  vertical-align: top;
+  background: none;
+  border: none;
   padding-top: 3px !important;
   padding-bottom: 0px !important;
   font-size: 14px;
   z-index: 999;
 }
 
-.filter-text {
+.help {
   display: block;
   color: grey;
   font-size: 0.85rem;

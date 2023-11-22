@@ -1,7 +1,10 @@
 import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor } from './editor';
 import { ActivatedRoute } from '@angular/router';
-import { FilterService } from './../../../services';
+import { FilterService, ServicesApiService } from './../../../services';
+import { takeUntil } from 'rxjs/operators';
+import { Service } from '../../core/south/south-service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-node-editor',
@@ -14,13 +17,18 @@ export class NodeEditorComponent implements OnInit {
   public source = '';
   public filterPipeline: string[] = [];
 
+  service: Service;
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(public injector: Injector,
     private route: ActivatedRoute,
-    private filterService: FilterService,) {
+    private filterService: FilterService,
+    private servicesApiService: ServicesApiService,) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
         this.getFilterPipeline();
+        this.getSouthboundServices();
       }
     });
   }
@@ -33,8 +41,8 @@ export class NodeEditorComponent implements OnInit {
 
     if (el) {
       setTimeout(() => {
-        createEditor(el, this.injector, this.source, this.filterPipeline);
-      }, 100);
+        createEditor(el, this.injector, this.source, this.filterPipeline, this.service);
+      }, 400);
     }
   }
 
@@ -52,4 +60,16 @@ export class NodeEditorComponent implements OnInit {
         });
   }
 
+  getSouthboundServices() {
+    this.servicesApiService.getSouthServices(true)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          const services = data.services as Service[];
+          this.service = services.find(service => (service.name == this.source));
+        },
+        error => {
+          console.log('service down ', error);
+        });
+  }
 }
