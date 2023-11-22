@@ -23,6 +23,11 @@
     </ng-container>
     <span *ngIf="data.label!=='Storage'" class="help">{{helpText}}</span>
 </div>
+<div class="service-details">
+    <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South_service'">
+        <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+    </ng-container>
+</div>
 <div class="output" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
     [attr.data-testid]="'output-'+output.key">
     <div class="output-title" data-testid="output-title">

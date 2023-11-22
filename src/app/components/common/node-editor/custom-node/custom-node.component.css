@@ -89,3 +89,8 @@
   color: grey;
   font-size: 0.85rem;
 }
+
+.service-details{
+  display: flex;
+  justify-content: center;
+}

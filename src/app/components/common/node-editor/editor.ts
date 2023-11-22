@@ -23,8 +23,12 @@ class South_service extends ClassicPreset.Node {
     constructor(socket: ClassicPreset.Socket, service) {
         super("South_service");
 
+        // console.log(service);
         if(service){
+            this.addControl(service.management_port, new ClassicPreset.InputControl("text"));
             this.addControl(service.status, new ClassicPreset.InputControl("text"));
+            this.addControl(service.protocol, new ClassicPreset.InputControl("text"));
+            this.addControl(service.address, new ClassicPreset.InputControl("text"));
         }
         this.addOutput("port", new ClassicPreset.Output(socket));
     }

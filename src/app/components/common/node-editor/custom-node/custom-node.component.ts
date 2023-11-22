@@ -28,6 +28,7 @@ export class CustomNodeComponent implements OnChanges {
   public source = '';
   helpText = '';
   isEnabled: boolean = false;
+  service = {status:"", protocol:"", address:"", management_port:""}
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -48,8 +49,14 @@ export class CustomNodeComponent implements OnChanges {
   ngOnChanges(): void {
     if(this.data.label === 'South_service' && this.source !== ''){
       this.data.label = this.source;
-      let status = Object.keys(this.data.controls)[0];
-      if(status === 'running'){
+      // console.log(this.data.controls);
+      // console.log(Object.keys(this.data.controls));
+      this.service.management_port = Object.keys(this.data.controls)[0];
+      this.service.status = Object.keys(this.data.controls)[1];
+      this.service.protocol = Object.keys(this.data.controls)[2];
+      this.service.address = Object.keys(this.data.controls)[3];
+      // console.log(this.service);
+      if(this.service.status === 'running'){
         this.isEnabled = true;
       }
     }
