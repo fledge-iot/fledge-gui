@@ -29,6 +29,7 @@ class South_service extends ClassicPreset.Node {
             this.addControl(service.status, new ClassicPreset.InputControl("text"));
             this.addControl(service.protocol, new ClassicPreset.InputControl("text"));
             this.addControl(service.address, new ClassicPreset.InputControl("text"));
+            this.addControl(service.plugin.name, new ClassicPreset.InputControl("text"));
         }
         this.addOutput("port", new ClassicPreset.Output(socket));
     }

@@ -25,6 +25,7 @@
   font-family: sans-serif;
   font-size: 18px;
   padding: 8px;
+  margin-bottom: 4px;
 }
 
 :host .output {
@@ -84,7 +85,7 @@
   z-index: 999;
 }
 
-.help {
+.help-text {
   display: block;
   color: grey;
   font-size: 0.85rem;
