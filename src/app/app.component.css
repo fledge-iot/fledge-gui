@@ -1,27 +1,41 @@
-.c1 {
-  position: relative;
+@media screen and (max-width: 768px) {
+  .overlay {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    left: auto;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    z-index: 999;
+    height: 95%;
+    width: 100%;
+    text-align: center;
+  }
 }
 
-.overlay {
-  background: rgba(0, 0, 0, 0.5);
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 999;
+@media screen and (min-width: 770px) {
+  .overlay {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    left: auto;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 999;
+    height: 100%;
+    width: 83.5%;
+    text-align: center;
+  }
 }
 
 .is-fullheight {
+  position: relative;
   min-height: calc(100vh - (3.25rem - .75rem));
   max-height: calc(100vh - (3.25rem - .75rem));
   height: calc(100vh - (3.25rem - .75rem));
-  overflow-y: auto;
   overflow: auto;
-  /* position: sticky; */
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-
 }

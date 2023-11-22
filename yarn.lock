@@ -7386,11 +7386,6 @@ next-tick@^1.1.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.1.0.tgz#1836ee30ad56d67ef281b22bd199f709449b35eb"
   integrity sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==
 
-ng-sidebar@^9.4.3:
-  version "9.4.3"
-  resolved "https://registry.yarnpkg.com/ng-sidebar/-/ng-sidebar-9.4.3.tgz#c89631870896d13e6e1381790b16d6dd11767efc"
-  integrity sha512-TgBO/3xZG8zzUVaBeQB+YWodZ8Uc6j1C6gQf+u4oOEqoe6NNaYeDOTU/fooryL9PoFTivLOJdnHeCFx3lucpvQ==
-
 ngx-build-plus@^13.0.1:
   version "13.0.1"
   resolved "https://registry.yarnpkg.com/ngx-build-plus/-/ngx-build-plus-13.0.1.tgz#60d78d1f5a104e1c3338861b0c089b2ad1442809"

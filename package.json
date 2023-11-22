@@ -49,7 +49,6 @@
     "codemirror": "^5.65.3",
     "jsonlint-mod": "^1.7.6",
     "moment": "^2.29.3",
-    "ng-sidebar": "^9.4.3",
     "ngx-progressbar": "^8.0.0",
     "plotly.js": "^2.12.1",
     "rxjs": "~6.6.6",

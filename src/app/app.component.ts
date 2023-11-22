@@ -1,6 +1,5 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { SidebarModule } from 'ng-sidebar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -14,7 +13,6 @@ import { SharedService } from './services/shared.service';
 })
 export class AppComponent implements OnInit {
   title = 'app';
-  @ViewChild('sidebar') sidebar: SidebarModule;
   navMode = 'side';
 
   public _opened = true;

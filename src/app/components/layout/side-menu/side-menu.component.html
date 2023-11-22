@@ -29,7 +29,7 @@
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
-            (click)="isControlListOpen = !isControlListOpen">
+            (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
             <span>Control</span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isControlListOpen ? 'Collapse' : 'Expand'">
@@ -90,7 +90,7 @@
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
-            (click)="isLogsListOpen = !isLogsListOpen">
+            (click)="isLogsListOpen = !isLogsListOpen; $event.stopPropagation()">
             <span>Logs</span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isLogsListOpen ? 'Collapse' : 'Expand'">

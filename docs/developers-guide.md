@@ -35,11 +35,13 @@ Test report will be available in HTML & XML format in `fledge-gui/e2e/reports/`;
    ```
 
 2. Clone fledge-gui & run e2e test
+
    ```
    $ sudo git clone https://github.com/fledge/fledge-gui.git
    ```
+
    > For CI integration to run on Ubuntu machine, please use e2e/run script.
-   
+
    ```
    $ sudo yarn
    $ sudo yarn e2e
@@ -105,7 +107,6 @@ Set API base URL in `environments/environment.prod.ts`, You can always change it
 | Library                         | Version | Latest Stable (? Y/n) | License |
 | ------------------------------- | ------- | --------------------- | ------- |
 | chart.js                        | 2.9.4   | 3.9.1                 | MIT     |
-| ng-sidebar                      | 9.4.3   | 9.4.3                 | MIT     |
 | moment                          | 2.29.3  | 2.29.3                | MIT     |
 | ngx-progressbar                 | 8.0.0   | 9.0.0                 | MIT     |
 | node-git-describe               | 4.1.0   | 4.1.0                 | MIT     |
