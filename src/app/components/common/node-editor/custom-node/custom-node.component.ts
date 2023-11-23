@@ -9,6 +9,7 @@ import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import { SchedulesService } from "./../../../../services";
+import { DocService } from "../../../../services/doc.service";
 
 @Component({
   selector: 'app-custom-node',
@@ -36,6 +37,7 @@ export class CustomNodeComponent implements OnChanges {
 
   constructor(private cdr: ChangeDetectorRef,
     private schedulesService: SchedulesService,
+    private docService: DocService,
     private router: Router,
     private route: ActivatedRoute) {
     this.cdr.detach();
@@ -129,5 +131,9 @@ export class CustomNodeComponent implements OnChanges {
         error => {
           console.log(error);
         });
+  }
+
+  goToLink(pluginInfo) {
+    this.docService.goToPluginLink(pluginInfo);
   }
 }

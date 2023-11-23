@@ -28,6 +28,16 @@
         <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
     </ng-container>
 </div>
+<div class="mt-4">
+    <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South_service'">
+        <div class="is-pulled-left ml-2">
+            <span class="icon is-small has-tooltip-right has-tooltip-arrow is-pulled-left is-hovered" data-tooltip="Help"
+                (click)="goToLink({name: service.pluginName, type: 'South'})">
+                <i class="far fa-question-circle"></i>
+            </span>
+        </div>
+    </ng-container>
+</div>
 <div class="output" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
     [attr.data-testid]="'output-'+output.key">
     <div class="output-title" data-testid="output-title">
