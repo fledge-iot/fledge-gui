@@ -3,13 +3,15 @@ import { NodeEditor, GetSchemes, ClassicPreset } from "rete";
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
 import { AngularPlugin, Presets, AngularArea2D } from "rete-angular-plugin/13";
 import { ConnectionPlugin, Presets as ConnectionPresets } from "rete-connection-plugin";
-import { AutoArrangePlugin, Presets as ArrangePresets } from "rete-auto-arrange-plugin";
+import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "rete-auto-arrange-plugin";
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
 // import { ScopesPlugin, Presets as ScopesPresets } from "rete-scopes-plugin";
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
+import { easeInOut } from "popmotion";
+import { insertableNodes } from "./insert-node";
 
 type Node = South_service | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -24,7 +26,7 @@ class South_service extends ClassicPreset.Node {
         super("South_service");
 
         // console.log(service);
-        if(service){
+        if (service) {
             this.addControl(service.management_port, new ClassicPreset.InputControl("text"));
             this.addControl(service.status, new ClassicPreset.InputControl("text"));
             this.addControl(service.protocol, new ClassicPreset.InputControl("text"));
@@ -84,6 +86,36 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
     const arrange = new AutoArrangePlugin<Schemes>();
     const history = new HistoryPlugin<Schemes>();
+    const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
+        {
+            duration: 500,
+            timingFunction: easeInOut
+        }
+    );
+
+    insertableNodes(area, {
+        async createConnections(node, connection) {
+            await editor.addConnection(
+                new Connection(
+                    editor.getNode(connection.source),
+                    connection.sourceOutput,
+                    node,
+                    "port"
+                )
+            );
+            await editor.addConnection(
+                new Connection(
+                    node,
+                    "port",
+                    editor.getNode(connection.target),
+                    connection.targetInput
+                )
+            );
+            arrange.layout({
+                applier: animatedApplier
+            });
+        }
+    });
 
     // const contextMenu = new ContextMenuPlugin<Schemes>({
     //     items: ContextMenuPresets.classic.setup([
@@ -122,7 +154,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     // area.use(scopes);
     area.use(history);
 
-    if(source !== ''){
+    if (source !== '') {
         dock.add(() => new Filter(socket, 'Filter'));
     }
 
@@ -161,7 +193,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
             );
         }
         else {
-            let lastFilter = new Filter(socket, filterPipeline[fpLen -1]);
+            let lastFilter = new Filter(socket, filterPipeline[fpLen - 1]);
             await editor.addNode(lastFilter);
             await editor.addConnection(
                 new ClassicPreset.Connection(lastFilter, "port", db, "port")

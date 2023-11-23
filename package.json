@@ -54,6 +54,7 @@
     "ng-sidebar": "^9.4.3",
     "ngx-progressbar": "^8.0.0",
     "plotly.js": "^2.12.1",
+    "popmotion": "^11.0.5",
     "rete": "^2.0.2",
     "rete-angular-plugin": "^2.0.2",
     "rete-area-plugin": "^2.0.1",
