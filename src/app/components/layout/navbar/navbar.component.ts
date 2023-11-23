@@ -98,6 +98,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sharedService.checkUpdateInterval
     .pipe(takeUntil(this.destroy$))
     .subscribe((timeInterval: number) => {
+      if (timeInterval) {
+        this.checkUpdate();
+      }
       if (+timeInterval === -1) {
         this.stopCheckUpdate();
       } else {
@@ -478,6 +481,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.ngProgress.done();
           this.reenableButton.emit(false);
           this.alertService.success(data['status']);
+          this.isUpdateAvailable = false;   
         },
         error => {
           this.ngProgress.done();
