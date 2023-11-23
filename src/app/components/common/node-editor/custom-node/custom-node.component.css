@@ -30,10 +30,16 @@
 
 :host .output {
   text-align: right;
+  display: inline-block;
 }
 
 :host .input {
   text-align: left;
+  display: inline-block;
+  box-shadow: none !important;
+  background-color: inherit !important;
+  border: none !important;
+  width: inherit;
 }
 
 :host .output-socket {
@@ -95,4 +101,10 @@
   display: flex;
   justify-content: center;
   padding: 4px;
+}
+
+.node-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

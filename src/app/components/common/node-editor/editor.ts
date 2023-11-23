@@ -16,8 +16,8 @@ type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
 
 class South_service extends ClassicPreset.Node {
-    height = 140;
-    width = 200;
+    height = 180;
+    width = 220;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket, service) {
@@ -36,8 +36,8 @@ class South_service extends ClassicPreset.Node {
 }
 
 class Storage extends ClassicPreset.Node {
-    height = 140;
-    width = 200;
+    height = 120;
+    width = 160;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket) {
@@ -48,8 +48,8 @@ class Storage extends ClassicPreset.Node {
 }
 
 class Filter extends ClassicPreset.Node {
-    height = 140;
-    width = 200;
+    height = 180;
+    width = 220;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket, nodeName) {
