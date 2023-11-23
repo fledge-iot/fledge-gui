@@ -26,23 +26,21 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@angular-architects/module-federation-runtime@14.2.3":
-  version "14.2.3"
-  resolved "https://registry.yarnpkg.com/@angular-architects/module-federation-runtime/-/module-federation-runtime-14.2.3.tgz#2d8a4432f4821a5f3fd0e1087ea7737764aeb612"
-  integrity sha512-wtv8R07/MnGI8HqKPcP5mZQWegS4AmCMRLRcitjK/EnPIJSl0swIZL+eGnBXnqSaWqO/vYytkF7ZUg5JP1AKcA==
+"@angular-architects/module-federation-runtime@16.0.4":
+  version "16.0.4"
+  resolved "https://registry.yarnpkg.com/@angular-architects/module-federation-runtime/-/module-federation-runtime-16.0.4.tgz#425d197e60b00d0dde4181298ada54b7f729a75a"
+  integrity sha512-1qbS109+6Rq41wt0jp8w/to/zn3xY4IhvWlqhaMphZSD6bOZ0s/+MXdVo7p0iljA/lpNFAMVbYvarEpl6bSsjQ==
   dependencies:
     tslib "^2.0.0"
 
-"@angular-architects/module-federation@~14.2.3":
-  version "14.2.3"
-  resolved "https://registry.yarnpkg.com/@angular-architects/module-federation/-/module-federation-14.2.3.tgz#ea0f96b89aab502f86d1e03a2999f8db378b424c"
-  integrity sha512-1+0HJLbfa4c4GgdDze0wi9qB/wx6Z8vroQc1erRr6RdRfLr4m6f+Wq6sAIvSw87cB4UCF1NEQESPEEZgmvEA0g==
+"@angular-architects/module-federation@~16.0.4":
+  version "16.0.4"
+  resolved "https://registry.yarnpkg.com/@angular-architects/module-federation/-/module-federation-16.0.4.tgz#ce96d07414d20eeb79c8ec623cd9e0f715ae8b53"
+  integrity sha512-RQmHe7JqkPE4OAmNOxSKgFlGBoxi7Cy9THsbo5Leas8XQ3M2W3q2lBQF0woRNjMj575NaSQ84S7Tq8WvH+KGhw==
   dependencies:
-    "@angular-architects/module-federation-runtime" "14.2.3"
-    "@schematics/angular" "^13.0.4"
+    "@angular-architects/module-federation-runtime" "16.0.4"
     callsite "^1.0.0"
     node-fetch "^2.6.7"
-    rxjs "~6.6.3"
     semver "^7.3.5"
     word-wrap "^1.2.3"
 
@@ -2431,7 +2429,7 @@
     "@angular-devkit/schematics" "16.2.10"
     jsonc-parser "3.2.0"
 
-"@schematics/angular@^13.0.0", "@schematics/angular@^13.0.4":
+"@schematics/angular@^13.0.0":
   version "13.3.11"
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-13.3.11.tgz#7e3264c0da1ab16967eed85ef79c5445735c6160"
   integrity sha512-imKBnKYEse0SBVELZO/753nkpt3eEgpjrYkB+AFWF9YfO/4RGnYXDHoH8CFkzxPH9QQCgNrmsVFNiYGS+P/S1A==
@@ -9727,7 +9725,7 @@ rw@^1.3.3:
   resolved "https://registry.yarnpkg.com/rw/-/rw-1.3.3.tgz#3f862dfa91ab766b14885ef4d01124bfda074fb4"
   integrity sha512-PdhdWy89SiZogBLaw42zdeqtRJ//zFd2PgQavcICDUgJT5oW10QCRKbJ6bg4r0/UY2M6BWd5tkxuGFRvCkgfHQ==
 
-rxjs@6.6.7, rxjs@~6.6.0, rxjs@~6.6.3, rxjs@~6.6.6:
+rxjs@6.6.7, rxjs@~6.6.0, rxjs@~6.6.6:
   version "6.6.7"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==
