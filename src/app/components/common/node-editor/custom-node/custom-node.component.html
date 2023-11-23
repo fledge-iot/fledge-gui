@@ -30,11 +30,33 @@
 </div>
 <div class="mt-4">
     <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South_service'">
-        <div class="is-pulled-left ml-2">
+        <div class="is-pulled-left ml-2 mt-2">
             <span class="icon is-small has-tooltip-right has-tooltip-arrow is-pulled-left is-hovered" data-tooltip="Help"
                 (click)="goToLink({name: service.pluginName, type: 'South'})">
                 <i class="far fa-question-circle"></i>
             </span>
+            <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
+                data-tooltip="Show logs" (click)="navToSyslogs()">
+                <i class="far fa-file-alt"></i>
+            </span>
+        </div>
+        <div class="is-pulled-right">
+            <div class="dropdown is-hoverable">
+                <div class="dropdown-trigger">
+                    <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
+                        <span class="icon is-small">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw" aria-hidden="true"></i>
+                        </span>
+                    </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                    <div class="dropdown-content">
+                        <a class="dropdown-item">
+                            <span>Delete</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </ng-container>
 </div>

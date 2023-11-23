@@ -136,4 +136,8 @@ export class CustomNodeComponent implements OnChanges {
   goToLink(pluginInfo) {
     this.docService.goToPluginLink(pluginInfo);
   }
+
+  navToSyslogs() {
+    this.router.navigate(['logs/syslog'], { queryParams: { source: this.source } });
+  }
 }
