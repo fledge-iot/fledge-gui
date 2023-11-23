@@ -161,11 +161,11 @@
   </div>
   <div class="steps-actions">
     <div class="steps-action">
-      <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
+      <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
     </div>
     <div class="steps-action">
       <button (click)="gotoNext()" data-nav="next" [disabled]="serviceForm.invalid || !validChildConfigurationForm"
-        class="button is-link" id="next">Next</button>
+        class="button is-link" id="next" [appDisableUntilResponse]="reenableButton">Next</button>
     </div>
   </div>
 </div>

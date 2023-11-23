@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -30,6 +30,7 @@ export class AddControlScriptComponent implements OnInit {
   controlScript = { name: '', steps: [], acl: '' };
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
+  public reenableButton = new EventEmitter<boolean>(false);
   constructor(
     private cdRef: ChangeDetectorRef,
     private route: ActivatedRoute,
@@ -100,6 +101,7 @@ export class AddControlScriptComponent implements OnInit {
     this.controlService.deleteScript(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
@@ -107,6 +109,7 @@ export class AddControlScriptComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {
@@ -247,10 +250,12 @@ export class AddControlScriptComponent implements OnInit {
           this.scriptForm.form.markAsUntouched();
           this.scriptForm.form.markAsPristine();
           setTimeout(() => {
+            this.reenableButton.emit(false); 
             this.router.navigate(['control-dispatcher', 'script']);
           }, 1000);
         }, error => {
           this.ngProgress.done();
+          this.reenableButton.emit(false); 
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -265,6 +270,7 @@ export class AddControlScriptComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.updateScript(this.scriptName, payload)
       .subscribe((data: any) => {
+        this.reenableButton.emit(false); 
         this.scriptName = payload.name;
         this.router.navigate(['control-dispatcher', 'script']);
         this.alertService.success(data.message, true);
@@ -274,6 +280,7 @@ export class AddControlScriptComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false); 
         if (error.status === 0) {
           console.log('service down ', error);
         } else {

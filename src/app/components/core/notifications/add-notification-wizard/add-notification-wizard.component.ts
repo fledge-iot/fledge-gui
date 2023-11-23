@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -68,6 +68,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   validRuleConfigurationForm = true;
   validDeliveryConfigurationForm = true;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(private formBuilder: FormBuilder,
     private notificationService: NotificationsService,
@@ -192,12 +194,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 2:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       case 3:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Previous';
         nxtButton.disabled = false;
         break;
       case 4:
@@ -227,6 +229,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 1:
+        this.reenableButton.emit(false);
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (formValues['name'].trim() !== '') {
@@ -238,6 +241,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         break;
       case 2:
+        this.reenableButton.emit(false);
         nxtButton.disabled = false;
         if (formValues['rule'] === '') {
           this.isRulePlugin = false;
@@ -259,6 +263,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         break;
       case 3:
+        this.reenableButton.emit(false);
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         if (this.notificationDeliveryPlugins.length === 0) {
@@ -266,6 +271,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         break;
       case 4:
+        this.reenableButton.emit(false);
         if (formValues['delivery'] === '') {
           this.isDeliveryPlugin = false;
           return;
@@ -287,6 +293,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         break;
       case 5:
+        this.reenableButton.emit(false);
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -452,6 +459,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         (data: any) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.result, true);
           const name = this.payload.name
           if (rulesScriptFiles.length > 0) {
@@ -466,6 +474,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         (error) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

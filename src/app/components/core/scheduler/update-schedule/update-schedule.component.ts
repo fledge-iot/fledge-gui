@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CustomValidator } from '../../../../directives/custom-validator';
@@ -22,6 +22,8 @@ export class UpdateScheduleComponent implements OnInit {
 
   schedule: Schedule;
   scheduleId: string;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
     public activatedRoute: ActivatedRoute,
@@ -234,10 +236,12 @@ export class UpdateScheduleComponent implements OnInit {
     this.schedulesService.updateSchedule(this.scheduleId, payload).
       subscribe(
         () => {
+          this.reenableButton.emit(false);
           this.alertService.success('Schedule updated successfully.', true);
           this.navToSchedulesPage();
         },
         error => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

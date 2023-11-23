@@ -54,6 +54,8 @@ export class AddFilterWizardComponent implements OnInit {
   pluginConfiguration: any;
   public source = '';
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(private formBuilder: FormBuilder,
     private filterService: FilterService,
     private configurationService: ConfigurationService,
@@ -156,10 +158,12 @@ export class AddFilterWizardComponent implements OnInit {
     }
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 2:
         this.serviceForm.controls.plugin.enable();
         nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       default:
@@ -222,6 +226,7 @@ export class AddFilterWizardComponent implements OnInit {
 
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        this.reenableButton.emit(false);
         if (!this.validChildConfigurationForm) {
           nxtButton.disabled = true;
         }
@@ -421,6 +426,7 @@ export class AddFilterWizardComponent implements OnInit {
           }
         },
         (error) => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -446,12 +452,15 @@ export class AddFilterWizardComponent implements OnInit {
         if (payload?.files.length > 0) {
           const filterName = this.serviceName + '_' + name
           this.uploadScript(filterName, payload?.files);
+        } else {
+          this.reenableButton.emit(false);
         }
         if(this.source === 'flowEditorFilter'){
           this.router.navigate(['/south/node-editor'], { queryParams: { source: this.serviceName } });
         }
       },
         (error) => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

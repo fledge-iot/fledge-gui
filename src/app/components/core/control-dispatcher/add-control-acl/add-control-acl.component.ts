@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
@@ -33,6 +33,7 @@ export class AddControlAclComponent implements OnInit {
 
   @ViewChild('aclForm') aclForm: NgForm;
 
+  public reenableButton = new EventEmitter<boolean>(false);
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -307,10 +308,12 @@ export class AddControlAclComponent implements OnInit {
         this.ngProgress.done();
         this.alertService.success(`ACL ${payload['name']} created successfully.`);
         setTimeout(() => {
+          this.reenableButton.emit(false);
           this.router.navigate(['control-dispatcher', 'acl']);
         }, 1000);
       }, error => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -329,10 +332,12 @@ export class AddControlAclComponent implements OnInit {
         this.alertService.success(data.message, true);
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.aclForm.form.markAsPristine();
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -347,6 +352,7 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
@@ -354,6 +360,7 @@ export class AddControlAclComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {
