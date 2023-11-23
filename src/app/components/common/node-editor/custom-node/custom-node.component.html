@@ -2,7 +2,7 @@
     <div class="title" data-testid="title">
         <span>{{data.label}}</span>
         <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage'">
-            <ng-container *ngIf="data.label!=='South_service'; else southServiceTemplate">
+            <ng-container *ngIf="data.label!=='South' && data.label!=='Filter'; else southServiceTemplate">
                 <span class="is-pulled-right">
                     <input class="checkbox" type="checkbox" [checked]='isEnabled'
                         (click)="toggleEnabled($event.target.checked)">
@@ -15,11 +15,20 @@
                 </span>
             </ng-container>
             <ng-template #southServiceTemplate>
-                <button class="btn small-btn add-btn is-pulled-right" (click)="addSouthService()">
-                    <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
-                        <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
-                    </span>
-                </button>
+                <ng-container *ngIf="data.label==='South'">
+                    <button class="btn small-btn add-btn is-pulled-right" (click)="addSouthService()">
+                        <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
+                            <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
+                        </span>
+                    </button>
+                </ng-container>
+                <ng-container *ngIf="data.label==='Filter'">
+                    <button class="btn small-btn add-btn is-pulled-right" (click)="addFilter()">
+                        <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
+                            <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
+                        </span>
+                    </button>
+                </ng-container>
             </ng-template>
         </ng-container>
         <span *ngIf="data.label!=='Storage'" class="help-text">{{helpText}}</span>
@@ -48,18 +57,18 @@
         </div>
     </div>
     <div class="service-details">
-        <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South_service'">
-            <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+        <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South' && data.label!=='Filter'">
+            <small *ngIf="isServiceNode">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
         </ng-container>
     </div>
     <div class="mt-4">
-        <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South_service'">
+        <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South' && data.label!=='Filter'">
             <div class="is-pulled-left ml-2 mt-2">
                 <span class="icon is-small has-tooltip-right has-tooltip-arrow is-pulled-left is-hovered"
                     data-tooltip="Help" (click)="goToLink({name: service.pluginName, type: 'South'})">
                     <i class="far fa-question-circle"></i>
                 </span>
-                <span
+                <span *ngIf="isServiceNode"
                     class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
                     data-tooltip="Show logs" (click)="navToSyslogs()">
                     <i class="far fa-file-alt"></i>

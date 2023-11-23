@@ -13,17 +13,17 @@ import { addCustomBackground } from "./custom-background";
 import { easeInOut } from "popmotion";
 import { insertableNodes } from "./insert-node";
 
-type Node = South_service | Filter | Applications;
+type Node = South | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
 
-class South_service extends ClassicPreset.Node {
+class South extends ClassicPreset.Node {
     height = 180;
     width = 220;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket, service) {
-        super("South_service");
+        super("South");
 
         // console.log(service);
         if (service) {
@@ -50,8 +50,8 @@ class Storage extends ClassicPreset.Node {
 }
 
 class Filter extends ClassicPreset.Node {
-    height = 180;
-    width = 220;
+    height = 140;
+    width = 200;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket, nodeName) {
@@ -119,7 +119,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
 
     // const contextMenu = new ContextMenuPlugin<Schemes>({
     //     items: ContextMenuPresets.classic.setup([
-    //         ["South_service", () => new South_service(socket)],
+    //         ["South", () => new South(socket)],
     //         // ["Extra", [["Filter", () => new Filter(socket)]]]
     //         ["Filter", () => new Filter(socket, 'Filter')],
     //         ["Applications", () => new Applications(socket)]
@@ -159,7 +159,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     }
 
 
-    const southPlugin = new South_service(socket, service);
+    const southPlugin = new South(socket, service);
     const filterBranch = new Applications(socket);
     const db = new Storage(socket);
 

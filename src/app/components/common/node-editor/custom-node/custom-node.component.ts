@@ -30,6 +30,7 @@ export class CustomNodeComponent implements OnChanges {
   helpText = '';
   isEnabled: boolean = false;
   service = {status:"", protocol:"", address:"", management_port:"", pluginName:""}
+  isServiceNode: boolean = false;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -49,8 +50,9 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
-    if(this.data.label === 'South_service' && this.source !== ''){
+    if(this.data.label === 'South' && this.source !== ''){
       this.data.label = this.source;
+      this.isServiceNode = true;
       // console.log(this.data.controls);
       // console.log(Object.keys(this.data.controls));
       this.service.management_port = Object.keys(this.data.controls)[0];
@@ -90,15 +92,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   navToSouthService() {
-    if (this.data.label === this.source) {
-      this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
-    }
-    else if (this.data.label === 'Filter') {
-      this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
-    }
-    else {
-      this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
-    }
+    this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
   }
 
   toggleEnabled(isEnabled){
@@ -139,5 +133,9 @@ export class CustomNodeComponent implements OnChanges {
 
   navToSyslogs() {
     this.router.navigate(['logs/syslog'], { queryParams: { source: this.source } });
+  }
+
+  addFilter(){
+    this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
   }
 }
