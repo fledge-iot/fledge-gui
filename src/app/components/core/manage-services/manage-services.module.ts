@@ -1,9 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 import { RolesGuard } from '../../../guards';
 import { ListManageServicesComponent } from './list-manage-services.component';
 import { DirectivesModule } from '../../../directives/directives.module';
+import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
+import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
 
 const routes: Routes = [
   {
@@ -15,11 +19,14 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    ListManageServicesComponent
+    ListManageServicesComponent,
+    ManageServiceModalComponent
   ],
   imports: [
     CommonModule,
     DirectivesModule,
+    FormsModule,
+    AlertDialogModule,
     RouterModule.forChild(routes)
   ],
   providers: [RolesGuard],

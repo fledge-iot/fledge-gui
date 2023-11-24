@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AlertService, ProgressBarService, RolesService, ServicesApiService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
+
+import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
 
 @Component({
   selector: 'app-manage-services',
@@ -13,6 +15,13 @@ export class ListManageServicesComponent implements OnInit {
   viewPort: any = '';
   services = ['Notification Service', 'Dispatcher Service', 'Bucket Storage'];
   installedServices;
+
+  isServiceAvailable: boolean;
+  isServiceEnabled: boolean;
+  serviceData = {};
+  serviceName = '';
+  
+  @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
 
   constructor(
     public sharedService: SharedService,
@@ -51,6 +60,18 @@ export class ListManageServicesComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  /**
+   * Open Settings modal
+   */
+   openServiceModal() {
+    this.serviceData = {
+      serviceAvailable: this.isServiceAvailable,
+      serviceEnabled: this.isServiceEnabled,
+      serviceName: this.serviceName
+    };
+    this.serviceModal.toggleModal(true);
   }
 
   public ngOnDestroy(): void {

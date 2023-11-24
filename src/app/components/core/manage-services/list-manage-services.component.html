@@ -25,7 +25,7 @@
                   <small>{{service}}</small>
                 </td>
                 <td class="align-content content-pad">
-                  <a (click)="addService()" class="button is-text text-btn">
+                  <a (click)="openServiceModal()" class="button is-text text-btn">
                     Add
                   </a>
                 </td>
@@ -35,4 +35,4 @@
       </div>
     </div>
   </div>
-  
+  <app-manage-service-modal [serviceData]="serviceData"></app-manage-service-modal>
