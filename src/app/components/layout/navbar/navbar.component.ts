@@ -98,7 +98,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sharedService.checkUpdateInterval
     .pipe(takeUntil(this.destroy$))
     .subscribe((timeInterval: number) => {
-      if (timeInterval) {
+      if (timeInterval && +timeInterval !== -1) {
         this.checkUpdate();
       }
       if (+timeInterval === -1) {
