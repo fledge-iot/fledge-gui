@@ -126,3 +126,11 @@
   flex-direction: column;
   justify-content: center;
 }
+
+.storage {
+  width: 100px;
+}
+
+.storage-input {
+  margin-top: 2px;
+}

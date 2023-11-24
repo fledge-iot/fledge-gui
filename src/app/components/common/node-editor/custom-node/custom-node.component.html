@@ -1,4 +1,4 @@
-<div class="node-container">
+<div class="node-container" *ngIf="data.label!=='Storage'; else storageTemplate">
     <div class="title" data-testid="title">
         <span>{{data.label}}</span>
         <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage'">
@@ -101,3 +101,18 @@
         </ng-container>
     </div>
 </div>
+<ng-template #storageTemplate>
+    <div class="input is-pulled-left storage-input" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
+        [attr.data-testid]="'input-'+input.key">
+        <div class="input-socket" refComponent
+            [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
+            [emit]="emit" data-testid="input-socket"></div>
+        <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
+            {{input.value?.label}}
+        </div>
+        <div class="input-control" [style.display]="input.value?.control && input.value?.showControl ? '' : 'none'"
+            refComponent [data]="{type: 'control', payload: input.value?.control }" [emit]="emit"
+            data-testid="input-control"></div>
+    </div>
+    <img src="./../../../../../assets/storage.png" alt="" class="storage">
+</ng-template>

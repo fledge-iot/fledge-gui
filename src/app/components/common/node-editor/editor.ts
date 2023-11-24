@@ -44,8 +44,8 @@ class South extends ClassicPreset.Node {
 }
 
 class Storage extends ClassicPreset.Node {
-    height = 120;
-    width = 160;
+    height = 150;
+    width = 100;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket) {
