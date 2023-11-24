@@ -2,15 +2,14 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 export interface Model {
   constant: Constant
-  key
-  properties: []
+  key: {}
+  properties: Property[]
 }
 
 export interface Constant {
   type: string
   name: string
 }
-
 
 export interface Property {
   description: string
@@ -27,16 +26,9 @@ export interface Property {
   styleUrls: ['./bucket-configuration.component.css']
 })
 export class BucketConfigurationComponent implements OnInit {
-
-  key: any;
-  properties: Property[];
-  @Input() dataModel;
+  @Input() dataModel: any;
   bucketConfig: Model;
   bucketModelConfiguration: any;
-
-
-  // To hold the changed configuration values of a plugin
-  propertyChangedValues = {};
 
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -48,9 +40,7 @@ export class BucketConfigurationComponent implements OnInit {
 
   ngOnInit(): void {
     this.bucketConfig = JSON.parse(this.dataModel.properties);
-    this.key = this.bucketConfig.key;
-    this.properties = this.bucketConfig.properties;
-    this.bucketModelConfiguration = { ...this.properties, ...this.key };
+    this.bucketModelConfiguration = { ...this.bucketConfig?.key, ...this.bucketConfig?.properties };
     this.dataModel.value = typeof this.dataModel.value === 'string' ? JSON.parse(this.dataModel.value) : this.dataModel.value;
     for (const key in this.bucketModelConfiguration) {
       if (this.dataModel.value.hasOwnProperty(key)) {
@@ -59,13 +49,11 @@ export class BucketConfigurationComponent implements OnInit {
     }
   }
 
-
-
   getChangedConfiguration(propertyChangedValues: any) {
-    this.propertyChangedValues = Object.assign({}, this.propertyChangedValues, propertyChangedValues);
-    this.propertyChangedValues = Object.assign({}, this.propertyChangedValues, this.bucketConfig.constant);
-    for (const key in this.propertyChangedValues) {
-      this.dataModel.value[key] = this.propertyChangedValues[key];
+    for (const key in this.dataModel.value) {
+      if (Object.prototype.hasOwnProperty.call(propertyChangedValues, key)) {
+        this.dataModel.value[key] = propertyChangedValues[key];
+      }
     }
     this.changedConfig.emit({ [this.dataModel.key]: JSON.stringify(this.dataModel.value) });
   }

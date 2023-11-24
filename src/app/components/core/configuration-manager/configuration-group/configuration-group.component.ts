@@ -202,10 +202,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.changedConfigEvent.emit(this.configFormValues)
   }
 
-  getBucketChangedConfiguration(values: {}) {
-    this.changedConfigEvent.emit(values);
-  }
-
   /**
    * Get edited advance configuration
    * @param changedConfiguration changed configuration
