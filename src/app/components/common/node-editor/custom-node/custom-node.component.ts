@@ -141,4 +141,19 @@ export class CustomNodeComponent implements OnChanges {
   addFilter(){
     this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
   }
+
+  applyServiceStatusCustomCss(serviceStatus: string) {
+    if (serviceStatus.toLowerCase() === 'running') {
+      return 'has-text-success';
+    }
+    if (serviceStatus.toLowerCase() === 'unresponsive') {
+      return 'has-text-warning';
+    }
+    if (serviceStatus.toLowerCase() === 'shutdown') {
+      return 'has-text-grey-lighter';
+    }
+    if (serviceStatus.toLowerCase() === 'failed') {
+      return 'has-text-danger';
+    }
+  }
 }

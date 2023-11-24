@@ -18,7 +18,7 @@ type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
 
 class South extends ClassicPreset.Node {
-    height = 190;
+    height = 195;
     width = 220;
     parent?: string;
 
