@@ -125,12 +125,28 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
 
     // const contextMenu = new ContextMenuPlugin<Schemes>({
     //     items: ContextMenuPresets.classic.setup([
-    //         ["South", () => new South(socket)],
-    //         // ["Extra", [["Filter", () => new Filter(socket)]]]
-    //         ["Filter", () => new Filter(socket, 'Filter')],
-    //         ["Applications", () => new Applications(socket)]
+    //         ["Filter", () => new Filter(socket, 'Filter')]
     //     ])
     // });
+
+    const contextMenu = new ContextMenuPlugin<Schemes>({
+        items(context) {
+            if (context === 'root') {
+                return {
+                    searchBar: false,
+                    list: [
+                        {
+                            label: 'Filter', key: '1', handler: () => {
+                                let filter = new Filter(socket, 'Filter');
+                                editor.addNode(filter);
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    })
+
     const dock = new DockPlugin<Schemes>();
     // const scopes = new ScopesPlugin<Schemes>();
 
@@ -155,7 +171,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(connection);
     area.use(render);
     area.use(arrange);
-    // area.use(contextMenu);
+    area.use(contextMenu);
     area.use(dock);
     // area.use(scopes);
     area.use(history);

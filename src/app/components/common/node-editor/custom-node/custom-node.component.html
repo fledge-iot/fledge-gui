@@ -31,7 +31,7 @@
                 </ng-container>
             </ng-template>
         </ng-container>
-        <span *ngIf="data.label!=='Storage'" class="help-text">{{helpText}}</span>
+        <span *ngIf="data.label!=='Storage' && data.label!=='Filter'" class="help-text">{{helpText}}</span>
     </div>
     <div>
         <div class="output is-pulled-right" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
