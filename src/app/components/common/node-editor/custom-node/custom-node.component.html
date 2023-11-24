@@ -56,6 +56,12 @@
                 data-testid="input-control"></div>
         </div>
     </div>
+    <div class="reading-details">
+        <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South' && data.label!=='Filter'">
+            <small *ngIf="isServiceNode" class="reading has-tooltip-right has-tooltip-arrow" data-tooltip="Reading count">{{service.readingCount}}</small>
+            <small *ngIf="isServiceNode" class="asset has-tooltip-right has-tooltip-arrow" data-tooltip="Asset count">{{service.assetCount}}</small>
+        </ng-container>
+    </div>
     <div class="service-details">
         <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage' && data.label!=='South' && data.label!=='Filter'">
             <small *ngIf="isServiceNode">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>

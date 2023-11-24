@@ -29,7 +29,7 @@ export class CustomNodeComponent implements OnChanges {
   public source = '';
   helpText = '';
   isEnabled: boolean = false;
-  service = {status:"", protocol:"", address:"", management_port:"", pluginName:""}
+  service = {status:"", protocol:"", address:"", management_port:"", pluginName:"", assetCount:"", readingCount:""}
   isServiceNode: boolean = false;
 
   @HostBinding("class.selected") get selected() {
@@ -55,11 +55,13 @@ export class CustomNodeComponent implements OnChanges {
       this.isServiceNode = true;
       // console.log(this.data.controls);
       // console.log(Object.keys(this.data.controls));
-      this.service.management_port = Object.keys(this.data.controls)[0];
-      this.service.status = Object.keys(this.data.controls)[1];
-      this.service.protocol = Object.keys(this.data.controls)[2];
-      this.service.address = Object.keys(this.data.controls)[3];
-      this.service.pluginName = Object.keys(this.data.controls)[4];
+      this.service.status = Object.keys(this.data.controls)[0];
+      this.service.protocol = Object.keys(this.data.controls)[1];
+      this.service.address = Object.keys(this.data.controls)[2];
+      this.service.pluginName = Object.keys(this.data.controls)[3];
+      this.service.management_port = Object.keys(this.data.controls)[4].slice(3);
+      this.service.assetCount = Object.keys(this.data.controls)[5].slice(3);
+      this.service.readingCount = Object.keys(this.data.controls)[6].slice(3);
       console.log(this.service);
       if(this.service.status === 'running'){
         this.isEnabled = true;
@@ -67,7 +69,8 @@ export class CustomNodeComponent implements OnChanges {
       this.helpText = this.service.pluginName;
     }
     if(this.data.label === 'Filter'){
-      this.data.label = Object.keys(this.data.controls)[0]
+      this.data.label = Object.keys(this.data.controls)[0];
+      this.helpText = 'metadata';
     }
     if(this.data.label === 'Applications'){
       this.helpText = 'Filters';

@@ -24,8 +24,8 @@
   color: black;
   font-family: sans-serif;
   font-size: 18px;
-  padding: 8px;
-  margin-bottom: 4px;
+  padding: 8px 8px 0px 8px;
+  margin-bottom: 0px;
 }
 
 :host .output {
@@ -100,7 +100,25 @@
 .service-details{
   display: flex;
   justify-content: center;
-  padding: 4px;
+  padding: 0px 4px 4px 4px;
+}
+
+.reading-details{
+  display: flex;
+  justify-content: center;
+  padding: 0px 4px 4px 4px;
+}
+
+.reading{
+  font-size: larger;
+  font-weight: bolder;
+}
+
+.asset{
+  font-size: small;
+  color: grey;
+  padding-top: 8px;
+  padding-left: 4px;
 }
 
 .node-container {

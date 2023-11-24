@@ -18,7 +18,7 @@ type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
 
 class South extends ClassicPreset.Node {
-    height = 180;
+    height = 190;
     width = 220;
     parent?: string;
 
@@ -27,11 +27,17 @@ class South extends ClassicPreset.Node {
 
         // console.log(service);
         if (service) {
-            this.addControl(service.management_port, new ClassicPreset.InputControl("text"));
             this.addControl(service.status, new ClassicPreset.InputControl("text"));
             this.addControl(service.protocol, new ClassicPreset.InputControl("text"));
             this.addControl(service.address, new ClassicPreset.InputControl("text"));
             this.addControl(service.plugin.name, new ClassicPreset.InputControl("text"));
+            this.addControl("mgt"+service.management_port, new ClassicPreset.InputControl("text"));
+            let assetCount = service.assets.length;
+            let readingCount = service.assets.reduce((total, asset)=>{
+                return total + asset.count;
+            }, 0)
+            this.addControl("asc"+assetCount, new ClassicPreset.InputControl("text"));
+            this.addControl("rdc"+readingCount, new ClassicPreset.InputControl("text"));
         }
         this.addOutput("port", new ClassicPreset.Output(socket));
     }
@@ -50,7 +56,7 @@ class Storage extends ClassicPreset.Node {
 }
 
 class Filter extends ClassicPreset.Node {
-    height = 140;
+    height = 150;
     width = 200;
     parent?: string;
 
