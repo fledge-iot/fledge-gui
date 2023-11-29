@@ -12,6 +12,7 @@ import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "ret
 import { addCustomBackground } from "./custom-background";
 import { easeInOut } from "popmotion";
 import { insertableNodes } from "./insert-node";
+import { CustomConnectionComponent } from "./custom-connection/custom-connection.component";
 
 type Node = South | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -155,6 +156,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
             customize: {
                 node() {
                     return CustomNodeComponent;
+                },
+                connection() {
+                    return CustomConnectionComponent
                 }
             }
         }

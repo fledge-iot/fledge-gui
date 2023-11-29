@@ -19,6 +19,7 @@ import { ShowConfigurationComponent } from './components/core/configuration-mana
 import { NodeEditorComponent } from './components/common/node-editor/node-editor.component';
 import { CustomNodeComponent } from './components/common/node-editor/custom-node/custom-node.component';
 import { RefDirective } from './components/common/node-editor/ref.directive';
+import { CustomConnectionComponent } from './components/common/node-editor/custom-connection/custom-connection.component';
 
 @NgModule({
   imports: [
@@ -41,7 +42,8 @@ import { RefDirective } from './components/common/node-editor/ref.directive';
     ConfirmationDialogComponent,
     NodeEditorComponent,
     CustomNodeComponent,
-    RefDirective
+    RefDirective,
+    CustomConnectionComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -54,6 +56,7 @@ import { RefDirective } from './components/common/node-editor/ref.directive';
     ConfirmationDialogComponent,
     NodeEditorComponent,
     CustomNodeComponent,
+    CustomConnectionComponent,
     RefDirective
   ]
 })
