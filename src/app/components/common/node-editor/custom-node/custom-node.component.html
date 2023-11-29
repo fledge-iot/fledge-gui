@@ -1,7 +1,7 @@
 <div class="node-container" *ngIf="data.label!=='Storage'; else storageTemplate">
     <div class="title" data-testid="title">
         <span *ngIf="isServiceNode" class="icon health-icon" [ngClass]="applyServiceStatusCustomCss(service.status)">
-            <i class="fa fa-sm fa-circle child-icon"></i>
+            <i class="fa fa-2xs fa-circle child-icon"></i>
         </span>
         <span>{{data.label}}</span>
         <ng-container *ngIf="data.label!=='Applications' && data.label!=='Storage'">
