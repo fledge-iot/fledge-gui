@@ -105,6 +105,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.stopCheckUpdate();
       } else {
         if (timeInterval || (lastCheckUpdateTimePlusInterval === currentTime)) {
+          this.checkUpdate();
           this.startCheckUpdate(+timeInterval);
         }    
       }
@@ -266,7 +267,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       if (data['updates'].indexOf('fledge') !== -1) {
         this.isUpdateAvailable = true;
       }
-      localStorage.setItem('LAST_CHECK_UPDATE_TIME', new Date().getTime().toString());
+      const lastCheckUpdateTimePlusInterval = new Date(+localStorage.getItem('LAST_CHECK_UPDATE_TIME')).getTime() + new Date(+localStorage.getItem('UPDATE_CHECK_INTERVAL')).getTime();
+      const currentTime = new Date().getTime();
+      if (lastCheckUpdateTimePlusInterval === currentTime) {
+        localStorage.setItem('LAST_CHECK_UPDATE_TIME', new Date().getTime().toString());
+      }
     },
     (error) => {
       /** request completed */
