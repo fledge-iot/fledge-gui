@@ -98,14 +98,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sharedService.checkUpdateInterval
     .pipe(takeUntil(this.destroy$))
     .subscribe((timeInterval: number) => {
-      if (timeInterval && +timeInterval !== -1) {
-        this.checkUpdate();
-      }
+      const lastCheckUpdateTimePlusInterval = new Date(+localStorage.getItem('LAST_CHECK_UPDATE_TIME')).getTime() + new Date(+timeInterval).getTime();
+      const currentTime = new Date().getTime();
+
       if (+timeInterval === -1) {
         this.stopCheckUpdate();
       } else {
-        this.startCheckUpdate(+timeInterval);
-      }   
+        if (timeInterval || (lastCheckUpdateTimePlusInterval === currentTime)) {
+          this.startCheckUpdate(+timeInterval);
+        }    
+      }
     });
     this.onResize();
   }
@@ -264,6 +266,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       if (data['updates'].indexOf('fledge') !== -1) {
         this.isUpdateAvailable = true;
       }
+      localStorage.setItem('LAST_CHECK_UPDATE_TIME', new Date().getTime().toString());
     },
     (error) => {
       /** request completed */

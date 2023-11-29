@@ -66,7 +66,6 @@ export class SettingsComponent implements OnInit {
     this.refreshInterval = localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL');
     this.selectedTheme = localStorage.getItem('OPTED_THEME') != null ? localStorage.getItem('OPTED_THEME') : 'light';
     this.checkUpdateTime = (localStorage.getItem('UPDATE_CHECK_INTERVAL') != null && (localStorage.getItem('UPDATE_CHECK_INTERVAL') === '-1' || +localStorage.getItem('UPDATE_CHECK_INTERVAL') > 3600000)) ? localStorage.getItem('UPDATE_CHECK_INTERVAL') : '604800000';
-    this.sharedService.checkUpdateInterval.next(+this.checkUpdateTime);
     let rGraphDefaultDuration = localStorage.getItem('READINGS_GRAPH_DEFAULT_DURATION');
     this.readings_graph_default_time.nativeElement.value = rGraphDefaultDuration !== null ? parseInt(rGraphDefaultDuration) : 10;
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
@@ -151,6 +150,9 @@ export class SettingsComponent implements OnInit {
   public checkUpdateInterval(updateTime: string) {
     this.checkUpdateTime = updateTime;
     localStorage.setItem('UPDATE_CHECK_INTERVAL', updateTime);
+    if (updateTime !== '-1') {
+      localStorage.setItem('LAST_CHECK_UPDATE_TIME', new Date().getTime().toString());
+    }
     this.sharedService.checkUpdateInterval.next(+updateTime);
   }
 

@@ -118,4 +118,9 @@
 .upgrade-btn {
   padding-top: 0;
   height: 1.8em !important;
-} 
+}
+
+.update-dropdown-item {
+  cursor: default;
+}
+
