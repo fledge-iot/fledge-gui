@@ -81,7 +81,7 @@
                   <small>{{ backup.status }}</small>
                 </td>
                 <td>
-                  <div class="dropdown is-left is-hoverable">
+                  <div *ngIf="backup.status !== 'RUNNING'" class="dropdown is-left is-hoverable">
                     <div class="dropdown-trigger">
                         <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
                             <span class="icon">
