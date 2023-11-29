@@ -106,18 +106,18 @@
 .reading-details{
   display: flex;
   justify-content: center;
-  padding: 0px 4px 4px 4px;
+  padding: 0px 4px 0px 4px;
 }
 
 .reading{
-  font-size: larger;
+  font-size: 28px;
   font-weight: bolder;
 }
 
 .asset{
-  font-size: small;
+  font-size: 18px;
   color: grey;
-  padding-top: 8px;
+  padding-top: 14px;
   padding-left: 4px;
 }
 
@@ -128,7 +128,8 @@
 }
 
 .storage {
-  width: 100px;
+  width: 90px;
+  margin-left: 3px;
 }
 
 .storage-input {
