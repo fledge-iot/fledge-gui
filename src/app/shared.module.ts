@@ -20,6 +20,7 @@ import { NodeEditorComponent } from './components/common/node-editor/node-editor
 import { CustomNodeComponent } from './components/common/node-editor/custom-node/custom-node.component';
 import { RefDirective } from './components/common/node-editor/ref.directive';
 import { CustomConnectionComponent } from './components/common/node-editor/custom-connection/custom-connection.component';
+import { CustomSocketComponent } from './components/common/node-editor/custom-socket/custom-socket.component';
 
 @NgModule({
   imports: [
@@ -43,7 +44,8 @@ import { CustomConnectionComponent } from './components/common/node-editor/custo
     NodeEditorComponent,
     CustomNodeComponent,
     RefDirective,
-    CustomConnectionComponent
+    CustomConnectionComponent,
+    CustomSocketComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -57,6 +59,7 @@ import { CustomConnectionComponent } from './components/common/node-editor/custo
     NodeEditorComponent,
     CustomNodeComponent,
     CustomConnectionComponent,
+    CustomSocketComponent,
     RefDirective
   ]
 })

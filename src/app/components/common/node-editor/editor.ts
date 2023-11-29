@@ -13,6 +13,7 @@ import { addCustomBackground } from "./custom-background";
 import { easeInOut } from "popmotion";
 import { insertableNodes } from "./insert-node";
 import { CustomConnectionComponent } from "./custom-connection/custom-connection.component";
+import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
 
 type Node = South | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -159,6 +160,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
                 },
                 connection() {
                     return CustomConnectionComponent
+                },
+                socket() {
+                    return CustomSocketComponent
                 }
             }
         }
