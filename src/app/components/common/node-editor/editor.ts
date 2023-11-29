@@ -194,13 +194,13 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
 
     let fpLen = filterPipeline.length;
     if (fpLen == 0) {
-        await editor.addNode(filterBranch);
+        // await editor.addNode(filterBranch);
         await editor.addConnection(
-            new ClassicPreset.Connection(southPlugin, "port", filterBranch, "port")
+            new ClassicPreset.Connection(southPlugin, "port", db, "port")
         );
-        await editor.addConnection(
-            new ClassicPreset.Connection(filterBranch, "port", db, "port")
-        );
+        // await editor.addConnection(
+        //     new ClassicPreset.Connection(filterBranch, "port", db, "port")
+        // );
     }
     else {
         let firstFilter = new Filter(socket, filterPipeline[0]);

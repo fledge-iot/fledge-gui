@@ -8,7 +8,7 @@ import {
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
-import { SchedulesService } from "./../../../../services";
+import { SchedulesService, ServicesApiService } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 
 @Component({
@@ -40,7 +40,8 @@ export class CustomNodeComponent implements OnChanges {
     private schedulesService: SchedulesService,
     private docService: DocService,
     private router: Router,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private servicesApiService: ServicesApiService) {
     this.cdr.detach();
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
@@ -155,5 +156,22 @@ export class CustomNodeComponent implements OnChanges {
     if (serviceStatus.toLowerCase() === 'failed') {
       return 'has-text-danger';
     }
+  }
+
+  deleteService() {
+    if (this.isServiceNode) {
+      this.servicesApiService.deleteService(this.source)
+        .subscribe(
+          () => {
+            this.navToSouthPage();
+          },
+          (error) => {
+            console.log('service down ', error);
+          });
+    }
+  }
+
+  navToSouthPage() {
+    this.router.navigate(['/south']);
   }
 }
