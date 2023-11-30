@@ -98,6 +98,10 @@ export class JSONConfig extends ConfigurationBase<string> {
   override controlType = 'JSON';
 }
 
+export class BucketConfig extends ConfigurationBase<string> {
+  override controlType = 'BUCKET';
+}
+
 export class ScriptConfig extends ConfigurationBase<string> {
   override controlType = 'SCRIPT';
   override validFileExtension = true;
@@ -217,6 +221,20 @@ export class ConfigurationControlService {
             label: this.setDisplayName(element),
             description: element.description,
             value: JSON.stringify(JSON.parse(element.value), null, ' '),
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            editorOptions: this.setEditorConfig(element.type),
+            validity: element.validity
+          }));
+          break;
+        case 'BUCKET':
+          configurations.push(new BucketConfig({
+            key: key,
+            type: 'bucket',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
             order: element.order,
@@ -507,7 +525,7 @@ export class ConfigurationControlService {
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
       if (changedConfiguration.hasOwnProperty(e1.key)) {
-        if (e1.type == 'JSON') {
+        if (e1.type == 'JSON' || e1.type == 'bucket') {
           // compare JSON value for changed config
           const oldJsonValue = JSON.stringify(JSON.parse(e1.value ? e1.value : e1.default), null, ' ');
           const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
