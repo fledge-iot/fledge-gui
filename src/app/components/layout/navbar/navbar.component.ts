@@ -278,7 +278,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ngProgress.done();
       if (error.status === 0) {
         console.log('service down ', error);
-      } else {
+      } else if (error.message.includes('Could not run sudo apt update')) {
+        return;
+      } 
+      else {
         this.alertService.error(error.statusText);
       }
     });
