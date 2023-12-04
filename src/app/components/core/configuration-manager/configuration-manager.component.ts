@@ -17,7 +17,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
   public isChild = true;
   validConfigForm = false;
-  selectedNode = {id: '', description: ''};
+  selectedNode = { id: '', description: '' };
 
   nodes: any[] = [];
   options = {};
@@ -47,7 +47,7 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data: any) => {
           this.categoryData = data.categories;
-          
+
           // filter south, north & notification categories
           this.categoryData = this.categoryData.filter((n: any) => {
             return !["SOUTH", "NORTH", "NOTIFICATIONS"].includes(n.key.toUpperCase());
@@ -101,7 +101,7 @@ export class ConfigurationManagerComponent implements OnInit {
     if (child && !this.selectedNode.id) {
       const firstRootChild = tree.treeModel.getNodeById(child.id);
       firstRootChild.setActiveAndVisible();
-      this.selectedNode = {id: firstRootChild.data.id, description: firstRootChild.data.description};
+      this.selectedNode = { id: firstRootChild.data.id, description: firstRootChild.data.description };
       this.getCategory(firstRootChild.data.id, firstRootChild.data.description);
     }
   }
@@ -110,16 +110,16 @@ export class ConfigurationManagerComponent implements OnInit {
     const rootId = tree.treeModel.focusedNodeId?.toString();
     // In case of root node is in ['Advanced', 'General', 'Utilities'], 
     // Expand the group and select first child
-    if (['Advanced', 'General', 'Utilities'].includes(rootId)) {     
+    if (['Advanced', 'General', 'Utilities'].includes(rootId)) {
       const nodes = tree.treeModel.nodes;
       const node = nodes.find(c => c.id == rootId)?.children[0];
       const firstChild = tree.treeModel.getNodeById(node.id);
       firstChild.setActiveAndVisible();
-      this.selectedNode = {id: node.id, description: node.description};
+      this.selectedNode = { id: node.id, description: node.description };
       this.getCategory(node.id, node.description);
     } else {
       const child = tree.treeModel.getNodeById(rootId);
-      this.selectedNode = {id: rootId, description: child.data.description};
+      this.selectedNode = { id: rootId, description: child.data.description };
       this.getCategory(rootId, child.data.description);
     }
   }
@@ -151,7 +151,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public refreshCategory(categoryKey: string, categoryDesc: string): void {
     this.changedConfig = null;
     this.validConfigForm = false;
-    this.selectedNode = {id: categoryKey, description: categoryDesc};
+    this.selectedNode = { id: categoryKey, description: categoryDesc };
     this.getCategory(categoryKey, categoryDesc);
   }
 
@@ -194,7 +194,7 @@ export class ConfigurationManagerComponent implements OnInit {
         this.alertService.success('Configuration updated successfully.', true);
         this.ngProgress.done();
         this.reenableButton.emit(false);
-        this.selectedNode = {id: categoryName, description: categoryDescription};
+        this.selectedNode = { id: categoryName, description: categoryDescription };
         this.getCategory(categoryName, categoryDescription);
       },
         (error) => {
