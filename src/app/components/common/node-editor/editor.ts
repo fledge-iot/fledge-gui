@@ -14,75 +14,14 @@ import { easeInOut } from "popmotion";
 import { insertableNodes } from "./insert-node";
 import { CustomConnectionComponent } from "./custom-connection/custom-connection.component";
 import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
+import { South } from "./south";
+import { Storage } from "./storage";
+import { Filter } from "./filter";
+import { Applications } from "./applications";
 
 type Node = South | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
-
-class South extends ClassicPreset.Node {
-    height = 195;
-    width = 220;
-    parent?: string;
-
-    constructor(socket: ClassicPreset.Socket, service) {
-        super("South");
-
-        // console.log(service);
-        if (service) {
-            this.addControl(service.status, new ClassicPreset.InputControl("text"));
-            this.addControl(service.protocol, new ClassicPreset.InputControl("text"));
-            this.addControl(service.address, new ClassicPreset.InputControl("text"));
-            this.addControl(service.plugin.name, new ClassicPreset.InputControl("text"));
-            this.addControl("mgt"+service.management_port, new ClassicPreset.InputControl("text"));
-            let assetCount = service.assets.length;
-            let readingCount = service.assets.reduce((total, asset)=>{
-                return total + asset.count;
-            }, 0)
-            this.addControl("asc"+assetCount, new ClassicPreset.InputControl("text"));
-            this.addControl("rdc"+readingCount, new ClassicPreset.InputControl("text"));
-        }
-        this.addOutput("port", new ClassicPreset.Output(socket));
-    }
-}
-
-class Storage extends ClassicPreset.Node {
-    height = 150;
-    width = 100;
-    parent?: string;
-
-    constructor(socket: ClassicPreset.Socket) {
-        super("Storage");
-
-        this.addInput("port", new ClassicPreset.Input(socket));
-    }
-}
-
-class Filter extends ClassicPreset.Node {
-    height = 150;
-    width = 200;
-    parent?: string;
-
-    constructor(socket: ClassicPreset.Socket, nodeName) {
-        super("Filter");
-
-        this.addControl(nodeName, new ClassicPreset.InputControl("text", { initial: nodeName }));
-        this.addInput("port", new ClassicPreset.Input(socket));
-        this.addOutput("port", new ClassicPreset.Output(socket));
-    }
-}
-
-class Applications extends ClassicPreset.Node {
-    height = 300;
-    width = 600;
-    parent?: string;
-
-    constructor(socket: ClassicPreset.Socket) {
-        super("Applications");
-
-        this.addInput("port", new ClassicPreset.Input(socket));
-        this.addOutput("port", new ClassicPreset.Output(socket));
-    }
-}
 
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
 
@@ -188,7 +127,10 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
         dock.add(() => new Filter(socket, 'Filter'));
     }
 
+    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area);
+}
 
+async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area) {
     const southPlugin = new South(socket, service);
     const filterBranch = new Applications(socket);
     const db = new Storage(socket);
@@ -252,7 +194,4 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
         accumulating: AreaExtensions.accumulateOnCtrl()
     });
-
-    // console.log(editor.getNodes())
-    // console.log(editor.getConnections())
 }

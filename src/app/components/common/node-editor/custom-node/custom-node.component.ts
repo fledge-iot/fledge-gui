@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  HostBinding,
-  ChangeDetectorRef,
-  OnChanges
-} from "@angular/core";
+import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -26,10 +20,10 @@ export class CustomNodeComponent implements OnChanges {
   @Input() rendered!: () => void;
 
   seed = 0;
-  public source = '';
+  source = '';
   helpText = '';
   isEnabled: boolean = false;
-  service = {status:"", protocol:"", address:"", management_port:"", pluginName:"", assetCount:"", readingCount:""}
+  service = { status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "" }
   isServiceNode: boolean = false;
 
   @HostBinding("class.selected") get selected() {
@@ -51,29 +45,30 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
-    if(this.data.label === 'South' && this.source !== ''){
-      this.data.label = this.source;
-      this.isServiceNode = true;
-      // console.log(this.data.controls);
-      // console.log(Object.keys(this.data.controls));
-      this.service.status = Object.keys(this.data.controls)[0];
-      this.service.protocol = Object.keys(this.data.controls)[1];
-      this.service.address = Object.keys(this.data.controls)[2];
-      this.service.pluginName = Object.keys(this.data.controls)[3];
-      this.service.management_port = Object.keys(this.data.controls)[4].slice(3);
-      this.service.assetCount = Object.keys(this.data.controls)[5].slice(3);
-      this.service.readingCount = Object.keys(this.data.controls)[6].slice(3);
-      console.log(this.service);
-      if(this.service.status === 'running'){
-        this.isEnabled = true;
+    if (this.data.label === 'South') {
+      if (this.source !== '') {
+        this.data.label = this.source;
+        this.isServiceNode = true;
+
+        this.service.status = Object.keys(this.data.controls)[0];
+        this.service.protocol = Object.keys(this.data.controls)[1];
+        this.service.address = Object.keys(this.data.controls)[2];
+        this.service.pluginName = Object.keys(this.data.controls)[3];
+        this.service.management_port = Object.keys(this.data.controls)[4].slice(3);
+        this.service.assetCount = Object.keys(this.data.controls)[5].slice(3);
+        this.service.readingCount = Object.keys(this.data.controls)[6].slice(3);
+
+        if (this.service.status === 'running') {
+          this.isEnabled = true;
+        }
+        this.helpText = this.service.pluginName;
       }
-      this.helpText = this.service.pluginName;
     }
-    if(this.data.label === 'Filter'){
+    if (this.data.label === 'Filter') {
       this.data.label = Object.keys(this.data.controls)[0];
       this.helpText = 'metadata';
     }
-    if(this.data.label === 'Applications'){
+    if (this.data.label === 'Applications') {
       this.helpText = 'Filters';
     }
     this.cdr.detectChanges();
@@ -99,12 +94,24 @@ export class CustomNodeComponent implements OnChanges {
     this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
   }
 
-  toggleEnabled(isEnabled){
+  navToSyslogs() {
+    this.router.navigate(['logs/syslog'], { queryParams: { source: this.source } });
+  }
+
+  addFilter() {
+    this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
+  }
+
+  navToSouthPage() {
+    this.router.navigate(['/south']);
+  }
+
+  toggleEnabled(isEnabled) {
     this.isEnabled = isEnabled;
-    if(this.isEnabled){
+    if (this.isEnabled) {
       this.enableSchedule(this.source);
     }
-    else{
+    else {
       this.disableSchedule(this.source);
     }
   }
@@ -135,14 +142,6 @@ export class CustomNodeComponent implements OnChanges {
     this.docService.goToPluginLink(pluginInfo);
   }
 
-  navToSyslogs() {
-    this.router.navigate(['logs/syslog'], { queryParams: { source: this.source } });
-  }
-
-  addFilter(){
-    this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
-  }
-
   applyServiceStatusCustomCss(serviceStatus: string) {
     if (serviceStatus.toLowerCase() === 'running') {
       return 'has-text-success';
@@ -169,9 +168,5 @@ export class CustomNodeComponent implements OnChanges {
             console.log('service down ', error);
           });
     }
-  }
-
-  navToSouthPage() {
-    this.router.navigate(['/south']);
   }
 }
