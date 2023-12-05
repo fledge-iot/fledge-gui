@@ -77,6 +77,8 @@
                     data-tooltip="Help" (click)="goToLink({name: service.pluginName, type: 'South'})">
                     <i class="far fa-question-circle"></i>
                 </span>
+                <button class="button is-small is-light like-link is-link is-pulled-right" data-show="quickview"
+                    data-target="quickviewDefault">Show quick logs</button>
                 <span *ngIf="isServiceNode"
                     class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
                     data-tooltip="Show logs" (click)="navToSyslogs()">

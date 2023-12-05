@@ -22,6 +22,7 @@ import { CustomNodeComponent } from './components/common/node-editor/custom-node
 import { RefDirective } from './components/common/node-editor/ref.directive';
 import { CustomConnectionComponent } from './components/common/node-editor/custom-connection/custom-connection.component';
 import { CustomSocketComponent } from './components/common/node-editor/custom-socket/custom-socket.component';
+import { QuickviewModule } from './components/common/quickview/quickview.module';
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import { CustomSocketComponent } from './components/common/node-editor/custom-so
     FormsModule,
     DirectivesModule,
     NgSelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    QuickviewModule
   ],
   declarations: [
     ConfigurationGroupComponent,
