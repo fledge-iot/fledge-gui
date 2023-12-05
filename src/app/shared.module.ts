@@ -17,12 +17,6 @@ import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ShowConfigurationComponent } from './components/core/configuration-manager/show-configuration/show-configuration.component';
 import { BucketConfigurationComponent } from './components/core/configuration-manager/bucket-configuration/bucket-configuration.component';
-import { NodeEditorComponent } from './components/common/node-editor/node-editor.component';
-import { CustomNodeComponent } from './components/common/node-editor/custom-node/custom-node.component';
-import { RefDirective } from './components/common/node-editor/ref.directive';
-import { CustomConnectionComponent } from './components/common/node-editor/custom-connection/custom-connection.component';
-import { CustomSocketComponent } from './components/common/node-editor/custom-socket/custom-socket.component';
-import { QuickviewModule } from './components/common/quickview/quickview.module';
 
 @NgModule({
   imports: [
@@ -32,8 +26,7 @@ import { QuickviewModule } from './components/common/quickview/quickview.module'
     FormsModule,
     DirectivesModule,
     NgSelectModule,
-    ReactiveFormsModule,
-    QuickviewModule
+    ReactiveFormsModule
   ],
   declarations: [
     ConfigurationGroupComponent,
@@ -44,12 +37,7 @@ import { QuickviewModule } from './components/common/quickview/quickview.module'
     ViewLogsComponent,
     TimeDropdownComponent,
     RangeSliderComponent,
-    ConfirmationDialogComponent,
-    NodeEditorComponent,
-    CustomNodeComponent,
-    RefDirective,
-    CustomConnectionComponent,
-    CustomSocketComponent
+    ConfirmationDialogComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -59,12 +47,7 @@ import { QuickviewModule } from './components/common/quickview/quickview.module'
     ViewLogsComponent,
     TimeDropdownComponent,
     RangeSliderComponent,
-    ConfirmationDialogComponent,
-    NodeEditorComponent,
-    CustomNodeComponent,
-    CustomConnectionComponent,
-    CustomSocketComponent,
-    RefDirective
+    ConfirmationDialogComponent
   ]
 })
 export class SharedModule { }

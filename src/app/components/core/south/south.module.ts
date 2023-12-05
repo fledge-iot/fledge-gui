@@ -14,6 +14,7 @@ import { SouthServiceModalComponent } from './south-service-modal/south-service-
 import { SouthComponent } from './south.component';
 import { LogsModule } from '../logs/logs.module';
 import { NodeEditorComponent } from '../../common/node-editor/node-editor.component';
+import { FlowEditorModule } from '../../common/node-editor/flow-editor.module';
 
 const routes: Routes = [
   {
@@ -52,7 +53,8 @@ const routes: Routes = [
     DirectivesModule,
     FilterModule,
     PipesModule,
-    LogsModule
+    LogsModule,
+    FlowEditorModule
   ],
   providers: [RolesGuard, ServicesApiService, PluginService, AssetsService, SchedulesService, FilterService],
 })
