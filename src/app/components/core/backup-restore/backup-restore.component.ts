@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil, takeWhile } from 'rxjs/operators';
 import { DateFormatterPipe } from '../../../pipes';
 import { AlertService, PingService, ProgressBarService, RolesService, SharedService } from '../../../services';
 import { BackupRestoreService } from '../../../services/backup-restore.service';
+import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 import { DocService } from '../../../services/doc.service';
 import { POLLING_INTERVAL } from '../../../utils';
-import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { FileUploadModalComponent } from '../../common/file-upload-modal/file-upload-modal.component';
 
 @Component({
@@ -19,24 +19,19 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   public isAlive: boolean; // used to unsubscribe from the IntervalObservable
   // when OnDestroy is called.
 
-  // Object to hold child data
-  public childData = {
-    id: '',
-    name: '',
-    message: '',
-    key: ''
-  };
   public showSpinner = false;
   public refreshInterval = POLLING_INTERVAL;
   private viewPortSubscription: Subscription;
   viewPort: any = '';
+  backup: any;
 
-  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(FileUploadModalComponent, { static: true }) fileUploadModal: FileUploadModalComponent;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   ascSort = false;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(private backupRestoreService: BackupRestoreService,
     private alertService: AlertService,
@@ -45,6 +40,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     private dateFormatter: DateFormatterPipe,
     private docService: DocService,
     private ping: PingService,
+    private dialogService: DialogService,
     public rolesService: RolesService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -67,20 +63,6 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
       this.viewPort = viewport;
     });
-  }
-
-  /**
-  * Open modal
-  */
-  openModal(id, name, message, key) {
-    this.childData = {
-      id: id,
-      name: name,
-      message: message,
-      key: key
-    };
-    // call child component method to toggle modal
-    this.child.toggleModal(true);
   }
 
   sort() {
@@ -146,12 +128,15 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data) => {
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
+          this.closeModal('restore-backup-dialog');
           this.alertService.info(data['status']);
           this.getBackup();
-          this.ngProgress.done();
         },
         error => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -168,6 +153,8 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
+          this.closeModal('delete-backup-dialog');
           this.alertService.success(data['message']);
           // Remove from local array of backups
           this.backupData = this.backupData.filter(b => b.id !== id);
@@ -178,6 +165,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
         },
         error => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -223,6 +211,15 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   goToLink() {
     const urlSlug = 'backup.html'
     this.docService.goToViewQuickStartLink(urlSlug);
+  }
+
+  openModal(id: string, backup) {
+    this.dialogService.open(id);
+    this.backup = backup;
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
   }
 
   ngOnDestroy() {

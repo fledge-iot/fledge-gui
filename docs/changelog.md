@@ -1,3 +1,64 @@
+## v2.2.0 [2023-10-17]
+
+### Added
+
+- [FOGL-7553] GUI Configuration settings to define default time duration for readings graph [#274](https://github.com/fledge-iot/fledge-gui/pull/274)
+
+- [FOGL-7509] When the backend system is not available then the user interface components are made non-interactive & blur [#265](https://github.com/fledge-iot/fledge-gui/pull/265)
+
+- [FOGL-7555] Ability to choose & display other assets' data on readings graph
+
+- [FOGL-7656] Control to pause auto refresh of readings data
+
+- [FOGL-7659] Ability to see past data in charts
+
+- [FOGL-7692] Granularity options in time duration for readings graph rendering
+
+- [FOGL-7766] Width, height and depth information for image type data-points for the latest reading
+
+- [FOGL-7897] Ability to zoom into a graph 
+
+- [FOGL-7905] Ability to collapse/expand menu items having child nodes 
+
+- [FOGL-7937] Request in-progress indicator for each readings & summary API call 
+
+- [FOGL-7678] Control Pipelines
+
+- [FOGL-8115] Control API endpoints [#332](https://github.com/fledge-iot/fledge-gui/pull/332)
+
+- [FOGL-8117] Viewing Southbound & Northbound service details from System logs page & details/logs from Health popover for services in failed/unresponsive state 
+
+### Changed
+
+- [FOGL-7094] Display format of X-axis timestamps for one week data on readings graph
+
+- [FOGL-7809] Improved filters configuration update mechanism 
+
+- [FOGL-7191] Restricted entry of quote characters in an entity name [#249](https://github.com/fledge-iot/fledge-gui/pull/249)
+
+- [FOGL-8062] E2E tests migrated to cypress from protractor [#323](https://github.com/fledge-iot/fledge-gui/pull/323)
+
+### Fixed
+
+- [FOGL-7765] Latest reading in GUI does not show non-image data-points/attributes if an image is one of the data-points/attributes [#290](https://github.com/fledge-iot/fledge-gui/pull/290)
+
+- [FOGL-7789] View role user allowed to perform add/update/delete action when logged in using certificate [#293](https://github.com/fledge-iot/fledge-gui/pull/293)
+
+- [FOGL-7819] Validation check for mandatory configuration items in configuration tabs [#303](https://github.com/fledge-iot/fledge-gui/pull/303) 
+
+- [FOGL-6853] Text wrapping in the syslog display does not work with long words [#241](https://github.com/fledge-iot/fledge-gui/pull/241)
+
+- [FOGL-7247] Code mirror editor zig-zag issue for large content of JSON/script/code type configuration items [#238](https://github.com/fledge-iot/fledge-gui/pull/238)
+
+- [FOGL-7271] Getting error in console on Control Dispatcher page [#242](https://github.com/fledge-iot/fledge-gui/pull/242)
+
+- [FOGL-7294] Unable to upload file/update value for script type configuration item, unless the name is `script`
+
+### Others
+
+- Included Bootstrap icons [#327](https://github.com/fledge-iot/fledge-gui/pull/327)
+
+
 ## v2.1.0 [2022-12-26]
 
 #### Added

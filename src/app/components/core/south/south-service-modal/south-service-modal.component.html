@@ -59,7 +59,7 @@
                   <button class="button is-small" [routerLink]="['/south']">Cancel</button>
                 </p>
                 <p class="control">
-                  <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()">Save</button>
+                  <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton" class="button is-small is-link" (click)="save()">Save</button>
                 </p>
               </div>
             </div>
@@ -115,7 +115,7 @@
               <button class="button is-small is-light like-link is-link is-pulled-right" data-show="quickview" data-target="quickviewDefault">Show quick logs</button>
             </div>
             <p class="buttons is-pulled-right">
-              <button (click)="getAssetReadings(service)" class="button is-small">
+              <button (click)="getAssetReadings(service)" class="button is-small" [appDisableUntilResponse]="reenableButton">
                 <span>Export Readings</span>
               </button>
               <button *ngIf="rolesService.hasEditPermissions()" (click)="openModal('delete-service-dialog')"
@@ -145,6 +145,6 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('delete-service-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="deleteService(service)">Delete</button>
+    <button class="button is-small is-danger" (click)="deleteService(service)" [appDisableUntilResponse]="reenableButton">Delete</button>
   </footer>
 </app-confirmation-dialog>

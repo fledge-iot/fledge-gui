@@ -100,7 +100,7 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   openNorthTaskModal(task) {
-    this.router.navigate(['/north', task.name])
+    this.router.navigate(['/north', task.name, 'details'])
   }
 
   onNotify() {

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../services';
+import { Injectable, EventEmitter } from '@angular/core';
+import { ControlAPIFlowService, ProgressBarService, AlertService } from '../../../services';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 
 @Injectable({
@@ -7,34 +7,14 @@ import { DialogService } from '../../common/confirmation-dialog/dialog.service';
   })
 
 export class ControlUtilsService {
+    public reenableButton = new EventEmitter<boolean>(false);
+
     constructor(
         private controlAPIFlowService: ControlAPIFlowService,
         private ngProgress: ProgressBarService,
         private alertService: AlertService,
         private dialogService: DialogService){
     }
-
-    // public getDestinationNames(selectedType) {
-    //     this.destinationNames = [];
-    //     this.selectedDestinationName = null;
-    //     this.af.destination = selectedType.name === 'Select Destination Type' ? '' : selectedType.name;
-    //     switch (selectedType.name) {
-    //       case 'Broadcast':
-    //         this.selectedDestinationName = null;
-    //         break;
-    //       case 'Service':
-    //         this.getServiceNames();
-    //         break;
-    //       case 'Asset':
-    //         this.getAssetNames();
-    //         break;
-    //       case 'Script':
-    //         this.getScriptNames();
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    // }
 
     requestAPIFlow(name, payload) {
         let variables = {};
@@ -44,12 +24,14 @@ export class ControlUtilsService {
         .subscribe((data: any) => {
             /** request completed */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             this.alertService.success(data.message, true);
             this.closeModal('confirmation-execute-dialog');
             },
             error => {
             /** request completed but error */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             if (error.status === 0) {
                 console.log('service down ', error);
             } else {
@@ -59,6 +41,7 @@ export class ControlUtilsService {
       }
     
     closeModal(id: string) {
-        this.dialogService.close(id);
+        this.reenableButton.emit(false);
+        this.dialogService.close(id);    
     }
 }

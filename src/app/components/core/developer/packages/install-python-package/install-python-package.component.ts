@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertService, ProgressBarService } from '../../../../../services';
@@ -12,6 +12,8 @@ import { PackageManagerService } from '../../../../../services/package-manager.s
 export class InstallPythonPackageComponent implements OnInit {
   installationForm: FormGroup;
   submitted = false;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
     private router: Router,
@@ -42,12 +44,14 @@ export class InstallPythonPackageComponent implements OnInit {
           (data: any) => {
             /** request completed */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             this.alertService.success(data?.message, true);
             this.router.navigate(['developer/python/package/list']);
           },
           error => {
             /** request completed */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             if (error.status === 0) {
               console.log('service down ', error);
             } else {

@@ -10,6 +10,7 @@ import { AddFilterWizardComponent } from './add-filter-wizard/add-filter-wizard.
 import { FilterAlertComponent } from './filter-alert/filter-alert.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FilterListComponent } from './filter-list/filter-list.component';
+import { DirectivesModule } from '../../../directives/directives.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
@@ -26,6 +27,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     SharedModule,
     DragDropModule,
     PipesModule,
+    DirectivesModule,
     NgSelectModule
   ],
   exports: [AddFilterWizardComponent, FilterAlertComponent, FilterListComponent],

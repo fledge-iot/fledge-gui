@@ -300,7 +300,7 @@ a.dropdown-item:hover {
   padding: 0%;
 }
 
-#refresh-check {
+#refresh-check, #refresh-tree {
   vertical-align: middle;
   background: none;
   border: none;
@@ -335,11 +335,6 @@ a.dropdown-item:hover {
 
  .blur {
   filter: blur(1px);
- }
-
- .is-small-font, .label {
-  font-size: 0.9rem !important;
-  font-weight: 500;
  }
 
  table thead th {
@@ -417,5 +412,31 @@ a.dropdown-item:hover {
 
   .desc-text{
     font-size: 0.95rem;
+  }
+
+  .help-pad {
+    margin: 17px 7px;
+    font-size: 0.9rem;
+  }
+
+  .is-hovered {
+    cursor: pointer !important;
+  }
+  
+  .is-horizontal .label {
+    font-size: 0.9rem;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .lbl-child {
+    font-size: 0.8rem !important;
+  }
+
+  .card-header-title {
+    font-weight: 500;
   }
  /*****************/

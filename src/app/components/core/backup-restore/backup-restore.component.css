@@ -11,11 +11,17 @@
   margin-right: 0.7rem;
 }
 
-.is-hovered {
-  cursor: pointer !important;
-}
-
 .sort-order {
   display: inline-block;
   cursor: pointer !important;
+}
+
+.context-menu {
+  border: none;
+}
+
+@media only screen and (min-width: 768px) {
+  .backup-card-content {
+      overflow: visible;
+  }
 }

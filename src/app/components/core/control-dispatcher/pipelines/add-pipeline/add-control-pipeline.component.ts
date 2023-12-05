@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
@@ -76,6 +76,7 @@ export class AddControlPipelineComponent implements OnInit {
   // newly added filter List
   newAddedFilters: { filter: string, state: string }[] = [];
 
+  public reenableButton = new EventEmitter<boolean>(false);
   constructor(
     private cdRef: ChangeDetectorRef,
     private assetService: AssetsService,
@@ -280,6 +281,7 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.deletePipeline(id)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         this.router.navigate(['control-dispatcher/pipelines']);
@@ -287,6 +289,7 @@ export class AddControlPipelineComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {
@@ -599,12 +602,14 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.createPipeline(payload)
       .subscribe(() => {
         this.ngProgress.done();
+        this.reenableButton.emit(false); 
         this.alertService.success(`Control Pipeline ${payload['name']} created successfully.`);
         this.pipelineForm.form.markAsUntouched();
         this.pipelineForm.form.markAsPristine();
         this.navigateOnControlPipelineListPage();
       }, error => {
         this.ngProgress.done();
+        this.reenableButton.emit(false); 
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -639,12 +644,14 @@ export class AddControlPipelineComponent implements OnInit {
     this.ngProgress.start();
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
+        this.reenableButton.emit(false); 
         this.pipelineName = payload.name;
         this.toast.success(data.message);
         /** request completed */
         this.ngProgress.done();
         this.navigateOnControlPipelineListPage();
       }, error => {
+        this.reenableButton.emit(false); 
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {

@@ -144,7 +144,7 @@ export class SouthComponent implements OnInit, OnDestroy {
  * Open create scheduler modal dialog
  */
   openSouthServiceModal(service: Service) {
-    this.router.navigate(['/south', service.name])
+    this.router.navigate(['/south', service.name, 'details'])
   }
 
   onNotify() {

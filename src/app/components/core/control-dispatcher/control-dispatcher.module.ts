@@ -68,7 +68,7 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'task/:name',
+    path: 'task/:name', // TODO: Handle FOGL-8156 when this component is enabled
     component: ControlScheduleTaskDetailsComponent
   },
   {
@@ -89,12 +89,12 @@ const routes: Routes = [
     component: APIFlowComponent
   },
   {
-    path: 'entry-point/add',
+    path: 'entry-points/add',
     component: AddEditAPIFlowComponent,
     canActivate: [RolesGuard]
   },
   {
-    path: 'entry-point/:name',
+    path: 'entry-points/:name/details',
     component: AddEditAPIFlowComponent
   }
 ];

@@ -3,7 +3,7 @@
 }
 
 .columns {
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 .card {
@@ -31,7 +31,16 @@
   margin-left: 10px !important;
 }
 
-.panel-heading {
-  padding: 0.45em 1em;
-  max-height: 48px;
+.panel-block {
+  align-items: unset !important;
+  display: flow !important;
+}
+
+.category-tree {
+  padding-left: 2px;
+}
+
+
+::ng-deep .node-content-wrapper-active {
+  background: none !important;
 }

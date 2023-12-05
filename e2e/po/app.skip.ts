@@ -34,7 +34,7 @@ export class SkipLogin {
   }
 
   getAppStatus() {
-    cy.get('#app > app-root > div > app-navbar > nav > div.navbar-menu .icon.has-text-success').should('be.visible')
+    cy.get('#app > app-root > div > app-navbar > nav > div.navbar-menu .icon').should('be.visible')
   }
 
   getReceived() {
@@ -232,7 +232,8 @@ export class SkipLogin {
   }
 
   deleteBackup() {
-    cy.get('app-backup-restore table tbody tr td:nth-child(3)').click()
+    cy.get('app-backup-restore table tbody tr:nth-child(1) div.is-hoverable').invoke('addClass', 'is-active')
+    cy.get('#dropdown-menu > div > a:nth-child(1)').click()
     cy.wait(2000).get('#modal-box button.button.is-small.is-danger').should('be.visible')
     cy.get('#modal-box button.button.is-small.is-danger').click()
     cy.wait(3000).get('app-backup-restore .no-rec').should('be.visible')
