@@ -26,6 +26,8 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
+import * as bulmaQuickview from './../../../../../../node_modules/bulma-quickview/dist/js/bulma-quickview.min.js'
+import { SystemLogComponent } from '../../logs/system-log';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -112,7 +114,11 @@ export class SouthServiceModalComponent implements OnInit {
     }
   }
 
-  ngOnInit() { }
+  ngOnInit() { 
+    setTimeout(()=>{
+      bulmaQuickview.attach();
+    }, 1000)
+  }
 
   public getSouthboundServices(caching: boolean) {
     this.servicesApiService.getSouthServices(caching)

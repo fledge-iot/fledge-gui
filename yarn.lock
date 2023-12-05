@@ -2758,6 +2758,11 @@ builtins@^1.0.3:
   resolved "https://registry.yarnpkg.com/builtins/-/builtins-1.0.3.tgz#cb94faeb61c8696451db36534e1422f94f0aee88"
   integrity sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==
 
+bulma-quickview@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/bulma-quickview/-/bulma-quickview-2.0.0.tgz#ac85d6cc23f98bd4b4be5cef11e9524554d2bbf3"
+  integrity sha512-EJq9XYcJ+pG94FIYgw9AI2NoRDRjQX/Iua0H3iIJq4C3D+4sVOCg/Y+I7gd/G0v7fez/qvKX/S+91UZqaTmXSQ==
+
 bulma-steps@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/bulma-steps/-/bulma-steps-2.2.1.tgz#39cc353ae049701c60aa7c74a27bf56b8463cb1a"
