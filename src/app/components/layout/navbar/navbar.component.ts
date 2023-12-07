@@ -50,7 +50,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   viewPort: any = '';
   public showSpinner = false;
   isManualRefresh = false;
-  isUpdateAvailable = false; 
+  showBellIcon = false;
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -94,22 +94,24 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.start(pingTime);
         }
       });
-
     this.sharedService.checkUpdateInterval
     .pipe(takeUntil(this.destroy$))
     .subscribe((timeInterval: number) => {
       const lastCheckUpdateTimePlusInterval = new Date(+localStorage.getItem('LAST_CHECK_UPDATE_TIME')).getTime() + new Date(+timeInterval).getTime();
       const currentTime = new Date().getTime();
-
       if (+timeInterval === -1) {
         this.stopCheckUpdate();
       } else {
-        if (timeInterval || (lastCheckUpdateTimePlusInterval === currentTime)) {
-          this.checkUpdate();
+        if (+localStorage.getItem('UPDATE_CHECK_INTERVAL') !== +timeInterval || lastCheckUpdateTimePlusInterval === currentTime || localStorage.getItem('SHOW_BELL_ICON') === null) {
+          this.checkUpdate();         
           this.startCheckUpdate(+timeInterval);
+          localStorage.setItem('UPDATE_CHECK_INTERVAL', timeInterval.toString());
         }    
       }
     });
+    if (localStorage.getItem('SHOW_BELL_ICON') !== null) {
+      this.showBellIcon = localStorage.getItem('SHOW_BELL_ICON') === 'true' ? true : false;
+    }
     this.onResize();
   }
 
@@ -265,7 +267,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       /** request completed */
       this.ngProgress.done();
       if (data['updates'].indexOf('fledge') !== -1) {
-        this.isUpdateAvailable = true;
+        localStorage.setItem('SHOW_BELL_ICON', 'true');
+        this.showBellIcon = true;
       }
       const lastCheckUpdateTimePlusInterval = new Date(+localStorage.getItem('LAST_CHECK_UPDATE_TIME')).getTime() + new Date(+localStorage.getItem('UPDATE_CHECK_INTERVAL')).getTime();
       const currentTime = new Date().getTime();
@@ -492,7 +495,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.ngProgress.done();
           this.reenableButton.emit(false);
           this.alertService.success(data['status']);
-          this.isUpdateAvailable = false;   
+          localStorage.setItem('SHOW_BELL_ICON', 'false');
         },
         error => {
           this.ngProgress.done();

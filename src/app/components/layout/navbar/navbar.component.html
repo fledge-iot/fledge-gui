@@ -332,7 +332,7 @@
       </div>
     </div>
     <div class="navbar-item">
-      <div *ngIf="pingInfo.isAlive && isUpdateAvailable && getUpdateInterval() !== '-1'">
+      <div *ngIf="pingInfo.isAlive && showBellIcon && getUpdateInterval() !== '-1'">
         <div class="dropdown is-right is-hoverable">
           <div class="dropdown-trigger">
             <a aria-haspopup="true" aria-controls="dropdown-menu" title="Updates">

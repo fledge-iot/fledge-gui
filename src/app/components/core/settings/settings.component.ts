@@ -149,7 +149,6 @@ export class SettingsComponent implements OnInit {
 
   public checkUpdateInterval(updateTime: string) {
     this.checkUpdateTime = updateTime;
-    localStorage.setItem('UPDATE_CHECK_INTERVAL', updateTime);
     if (updateTime !== '-1') {
       localStorage.setItem('LAST_CHECK_UPDATE_TIME', new Date().getTime().toString());
     }
