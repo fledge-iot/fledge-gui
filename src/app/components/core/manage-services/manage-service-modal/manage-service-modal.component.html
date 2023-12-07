@@ -5,7 +5,7 @@
       <span *ngIf="isServiceAvailable" class="modal-card-title is-size-6">{{serviceName}}
         <p class="help has-text-grey modal-subtitle">Service</p>
       </span>
-      <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">Service</span>
+      <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceModalName}} Service</span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -20,7 +20,7 @@
                 <div class="field is-narrow">
                   <input *ngIf="!isServiceAvailable" type="text" class="input is-small"
                     name="serviceName" [(ngModel)]="serviceName"
-                    placeholder="Fledge Notifications" required trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"/>
+                    [placeholder]= "serviceModalName + ' Service'" required trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"/>
                   <small
                     *ngIf="(fg?.touched || fg?.controls['serviceName']?.dirty) && fg?.controls['serviceName']?.hasError('required')"
                     class="help is-danger level-left">*required</small>
@@ -113,6 +113,4 @@
       </div>
     </section>
   </div>
-  <app-alert-dialog (deleteService)='deleteService($event)'
-    [serviceRecord]='serviceRecord'></app-alert-dialog>
 </div>

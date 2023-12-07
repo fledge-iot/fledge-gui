@@ -8,6 +8,8 @@ import { ListManageServicesComponent } from './list-manage-services.component';
 import { DirectivesModule } from '../../../directives/directives.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
+import { NotificationsService } from '../../../services';
+import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
   {
@@ -27,8 +29,9 @@ const routes: Routes = [
     DirectivesModule,
     FormsModule,
     AlertDialogModule,
+    SharedModule,
     RouterModule.forChild(routes)
   ],
-  providers: [RolesGuard],
+  providers: [RolesGuard, NotificationsService],
 })
 export class ManageServicesModule { }

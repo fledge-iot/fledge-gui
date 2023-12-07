@@ -1,31 +1,80 @@
 <div class="container is-fluid">
+  <div class="navbar-item">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a [routerLink]="['/setting']">Settings</a></li>
+        <li class="is-active">
+          <a href="#" aria-current="page">Manage Services</a>
+        </li>
+      </ul>
+    </nav>
+    <button class="button is-small" id="refresh-check" title="Reload">
+      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+    </button>
+  </div>
     <div id="connection" class="card">
-      <header class="card-header">
-        <p class="card-header-title">
-          Manage Service
-        </p>
-      </header>
-      <div id="connection-content" class="card-content">
-        <table class="table is-fullwidth scroll is-responsive is-hoverable is-narrow" cellpadding="0" cellspacing="0">
+      <div class="card-content">
+        <table class="table is-responsive is-hoverable is-narrow service-table" cellpadding="0" cellspacing="0">
           <tbody>
             <tbody>
-              <tr *ngFor="let service of installedServices">
+              <tr *ngFor="let service of installedExternalServices">
                 <td class="align-content content-pad">
-                  <small>{{service}}</small>
+                  <small>{{service.name}}</small>
+                </td>
+                <td><small>{{service.type}} Service</small></td>
+                <td>
+                  <div class="tags has-addons">
+                    <span class="tag is-light is-success">Installed</span>
+                  </div>
+                </td>
+                <td>
+                  <a class="button cog-icon" (click)="openServiceModal(service.type)">
+                    <span class="icon">
+                      <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
+                    </span>
+                  </a>
+                </td>
+                <td>
+                  <div *ngIf="sharedService.checkAuth()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
+                    <div class="dropdown-trigger">
+                      <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                        <span class="icon">
+                          <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
+                        </span>
+                      </a>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                      <div class="dropdown-content">
+                        <a *ngIf="sharedService.checkAuth()" class="dropdown-item"
+                          (click)="openModal('confirmation-dialog')">
+                          <span>Disable</span>
+                        </a>
+                        <a *ngIf="sharedService.checkAuth()" class="dropdown-item"
+                          (click)="setService(service);openModal('delete-confirmation-dialog')">
+                          <span>Delete</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
         <hr>
-        <table class="table is-fullwidth scroll is-responsive is-hoverable is-narrow" cellpadding="0" cellspacing="0">
+        <table class="table is-responsive is-hoverable is-narrow" cellpadding="0" cellspacing="0">
           <tbody>
             <tbody>
-              <tr *ngFor="let service of services">
+              <tr *ngFor="let service of externalServices">
                 <td class="align-content content-pad">
                   <small>{{service}}</small>
                 </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td class="align-content content-pad">
-                  <a (click)="openServiceModal()" class="button is-text text-btn">
+                  <a (click)="openServiceModal(service)" class="button is-text text-btn">
                     Add
                   </a>
                 </td>
@@ -36,3 +85,16 @@
     </div>
   </div>
   <app-manage-service-modal [serviceData]="serviceData"></app-manage-service-modal>
+  <app-confirmation-dialog id="delete-confirmation-dialog">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-6">Delete</p>
+      <button type="button" class="delete" aria-label="close" (click)="closeModal('delete-confirmation-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Deleting this service can not be undone. Continue?
+    </section>
+    <footer class="modal-card-foot">
+      <button type="button" class="button is-small" (click)="closeModal('delete-confirmation-dialog')">Cancel</button>
+      <button type="button" class="button is-small is-danger" (click)="deleteService()" [appDisableUntilResponse]="reenableButton">Delete</button>
+    </footer>
+  </app-confirmation-dialog>

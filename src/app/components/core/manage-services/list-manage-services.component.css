@@ -1,0 +1,30 @@
+.btn-delete {
+    border-color: transparent !important;
+    opacity: 0;
+}
+
+tr:hover .btn-delete {
+    opacity: 1;
+}
+
+.context-menu {
+    border: none;
+}
+
+.is-hoverable.service-table tr:hover .context-menu {
+    background-color: #fafafa; 
+}
+
+.cog-icon {
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+}
+
+#refresh-check {
+    margin-left: 3px;
+}
+  
+.breadcrumb {
+    margin-bottom: 0px !important;
+}
