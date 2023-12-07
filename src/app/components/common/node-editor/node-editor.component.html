@@ -1,4 +1,12 @@
 <div>
     <div class="rete" #rete></div>
-    <app-quickview></app-quickview>
+    <app-quickview>
+        <ng-container *ngIf="showConfiguration">
+            <app-configuration-group *ngIf="category" [category]="category"
+                [from]="'south'"></app-configuration-group>
+        </ng-container>
+        <ng-container *ngIf="showLogs">
+            <app-system-log [sourceName]="source"></app-system-log>
+        </ng-container>
+    </app-quickview>
 </div>

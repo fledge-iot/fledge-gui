@@ -4,6 +4,7 @@ import { KeyValue } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import { SchedulesService, ServicesApiService } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
+import { FlowEditorService } from "../flow-editor.service";
 
 @Component({
   selector: 'app-custom-node',
@@ -35,7 +36,8 @@ export class CustomNodeComponent implements OnChanges {
     private docService: DocService,
     private router: Router,
     private route: ActivatedRoute,
-    private servicesApiService: ServicesApiService) {
+    private servicesApiService: ServicesApiService,
+    public flowEditorService: FlowEditorService) {
     this.cdr.detach();
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
@@ -92,6 +94,14 @@ export class CustomNodeComponent implements OnChanges {
 
   navToSouthService() {
     this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
+  }
+
+  showConfigurationInQuickview() {
+    this.flowEditorService.showItemsInQuickview.next({showConfiguration: true, showLogs: false});
+  }
+
+  showLogsInQuickview() {
+    this.flowEditorService.showItemsInQuickview.next({showConfiguration: false, showLogs: true});
   }
 
   navToSyslogs() {

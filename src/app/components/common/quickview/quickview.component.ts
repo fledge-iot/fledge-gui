@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import * as bulmaQuickview from './../../../../../node_modules/bulma-quickview/dist/js/bulma-quickview.min.js'
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-quickview',
@@ -10,14 +9,8 @@ import { ActivatedRoute } from '@angular/router';
 export class QuickviewComponent implements OnInit {
 
   title = "Quickview title";
-  source = "";
 
-  constructor(private route: ActivatedRoute,) {
-    this.route.queryParams.subscribe(params => {
-      if (params['source']) {
-        this.source = params['source'];
-      }
-    });
+  constructor() {
   }
 
   ngOnInit(): void {

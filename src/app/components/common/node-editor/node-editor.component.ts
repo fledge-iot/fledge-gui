@@ -1,10 +1,11 @@
 import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor } from './editor';
 import { ActivatedRoute } from '@angular/router';
-import { FilterService, ServicesApiService } from './../../../services';
+import { ConfigurationService, FilterService, ServicesApiService } from './../../../services';
 import { takeUntil } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { FlowEditorService } from './flow-editor.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -16,24 +17,35 @@ export class NodeEditorComponent implements OnInit {
   @ViewChild("rete") container!: ElementRef;
   public source = '';
   public filterPipeline: string[] = [];
+  public category: any;
+  private subscription: Subscription;
 
+  showConfiguration: boolean = false;
+  showLogs: boolean = false;
   service: Service;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
     private filterService: FilterService,
-    private servicesApiService: ServicesApiService,) {
+    private servicesApiService: ServicesApiService,
+    private configService: ConfigurationService,
+    public flowEditorService: FlowEditorService) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
         this.getFilterPipeline();
         this.getSouthboundServices();
+        this.getCategory();
       }
     });
   }
 
   ngOnInit(): void {
+    this.subscription = this.flowEditorService.showItemsInQuickview.subscribe(data => {
+      this.showConfiguration = data.showConfiguration;
+      this.showLogs = data.showLogs;
+    })
   }
 
   ngAfterViewInit(): void {
@@ -71,5 +83,22 @@ export class NodeEditorComponent implements OnInit {
         error => {
           console.log('service down ', error);
         });
+  }
+
+  public getCategory(): void {
+    /** request started */
+    this.configService.getCategory(this.source).
+      subscribe(
+        (data) => {
+          this.category = { name: this.source, config: data };
+        },
+        error => {
+          console.log('service down ', error);
+        }
+      );
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

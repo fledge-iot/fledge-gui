@@ -6,6 +6,8 @@ import { CustomSocketComponent } from './custom-socket/custom-socket.component';
 import { CustomConnectionComponent } from './custom-connection/custom-connection.component';
 import { RefDirective } from './ref.directive';
 import { QuickviewModule } from '../quickview/quickview.module';
+import { LogsModule } from '../../core/logs/logs.module';
+import { SharedModule } from './../../../shared.module';
 
 
 
@@ -17,7 +19,9 @@ import { QuickviewModule } from '../quickview/quickview.module';
     RefDirective],
   imports: [
     CommonModule,
-    QuickviewModule
+    QuickviewModule,
+    LogsModule,
+    SharedModule
   ],
   exports: [NodeEditorComponent,
     CustomNodeComponent,
