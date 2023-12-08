@@ -1,4 +1,5 @@
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+
 const mf = require("@angular-architects/module-federation/webpack");
 const path = require("path");
 const share = mf.share;

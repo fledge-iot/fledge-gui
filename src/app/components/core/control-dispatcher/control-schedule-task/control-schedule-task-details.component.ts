@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AlertService, ConfigurationService, ProgressBarService, SchedulesService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { isEmpty } from 'lodash';
@@ -16,7 +16,7 @@ export class ControlScheduleTaskDetailsComponent implements OnInit {
   script = '';
   scriptData: any;
   writeScriptParameters = [];
-  controlForm: FormGroup;
+  controlForm: UntypedFormGroup;
   editMode = false;
   constructor(
     public sharedService: SharedService,
@@ -25,7 +25,7 @@ export class ControlScheduleTaskDetailsComponent implements OnInit {
     private dialogService: DialogService,
     private schedulesService: SchedulesService,
     private ngProgress: ProgressBarService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private route: ActivatedRoute,
     private configService: ConfigurationService,
     private router: Router) {
@@ -55,24 +55,24 @@ export class ControlScheduleTaskDetailsComponent implements OnInit {
 
   addParameter(param = null) {
     // add parameter to the list
-    const control = <FormArray>this.controlForm.controls['parameters'];
+    const control = <UntypedFormArray>this.controlForm.controls['parameters'];
     control.push(this.initParameter(param));
   }
 
   removeParameter(index: number) {
     // remove parameter from the list
-    const control = <FormArray>this.controlForm.controls['parameters'];
+    const control = <UntypedFormArray>this.controlForm.controls['parameters'];
     control.removeAt(index);
     this.controlForm.markAsDirty();
   }
 
   clearForm() {
-    const control = <FormArray>this.controlForm.controls['parameters'];
+    const control = <UntypedFormArray>this.controlForm.controls['parameters'];
     control.clear();
   }
 
   getParametersFormControls(): AbstractControl[] {
-    return (<FormArray>this.controlForm.get('parameters')).controls
+    return (<UntypedFormArray>this.controlForm.get('parameters')).controls
   }
 
   public toggleDropDown(id: string) {

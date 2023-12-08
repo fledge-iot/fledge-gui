@@ -3,7 +3,7 @@ import { TitleCasePipe } from '@angular/common';
 
 import { APIFlow, User } from '../../../../../../../src/app/models';
 
-import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
+import { Validators, UntypedFormGroup, UntypedFormBuilder, AbstractControl, UntypedFormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ControlUtilsService } from '../../control-utils.service';
@@ -50,7 +50,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     apiFlowName: string;
     af: APIFlow;
     
-    apiFlowForm: FormGroup;
+    apiFlowForm: UntypedFormGroup;
 
     allUsers: User[];
     loggedInUsername: string;
@@ -69,7 +69,7 @@ export class AddEditAPIFlowComponent implements OnInit {
         private schedulesService: SchedulesService,
         private alertService: AlertService,
         private ngProgress: ProgressBarService,
-        private fb: FormBuilder,
+        private fb: UntypedFormBuilder,
         public rolesService: RolesService,
         private dialogService: DialogService,
         public sharedService: SharedService,
@@ -118,19 +118,19 @@ export class AddEditAPIFlowComponent implements OnInit {
 
     addParameter(param = null, controlType = null) {
         if (controlType == null) {
-            const variableControl = <FormArray>this.apiFlowForm.controls['variables'];
-            const constControl = <FormArray>this.apiFlowForm.controls['constants'];
+            const variableControl = <UntypedFormArray>this.apiFlowForm.controls['variables'];
+            const constControl = <UntypedFormArray>this.apiFlowForm.controls['constants'];
             variableControl.push(this.initParameter(param, 'variables'));
             constControl.push(this.initParameter(param, 'constants'));
         } else {
-            const control = <FormArray>this.apiFlowForm.controls[controlType];
+            const control = <UntypedFormArray>this.apiFlowForm.controls[controlType];
             control.push(this.initParameter(param, controlType));
         }
     }
 
     removeParameter(index: number, param) {
       // remove parameter from the list
-      const control = <FormArray>this.apiFlowForm.controls[param];
+      const control = <UntypedFormArray>this.apiFlowForm.controls[param];
       control.removeAt(index);
       this.apiFlowForm.markAsDirty();    
     }
@@ -150,7 +150,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     fillParameters(param, controlType) {
-      let c = <FormArray>this.apiFlowForm.controls[controlType];
+      let c = <UntypedFormArray>this.apiFlowForm.controls[controlType];
       c.clear();
       let i = 0;
       for (const [key, value] of Object.entries(param)) {
@@ -340,7 +340,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     getFormControls(type): AbstractControl[] {
-      return (<FormArray>this.apiFlowForm.get(type)).controls;
+      return (<UntypedFormArray>this.apiFlowForm.get(type)).controls;
     }
 
     selectDestinationName(value) {
@@ -464,7 +464,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     addValueControl(controlType) {
-        const control = <FormArray>this.apiFlowForm.controls[controlType];
+        const control = <UntypedFormArray>this.apiFlowForm.controls[controlType];
         this.addParameter({index: control.value.length, key: '', value: ''}, controlType);
     }
 

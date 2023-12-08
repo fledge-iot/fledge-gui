@@ -1,6 +1,5 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { SidebarModule } from 'ng-sidebar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -14,7 +13,6 @@ import { SharedService } from './services/shared.service';
 })
 export class AppComponent implements OnInit {
   title = 'app';
-  @ViewChild('sidebar') sidebar: SidebarModule;
   navMode = 'side';
 
   public _opened = true;
@@ -30,6 +28,10 @@ export class AppComponent implements OnInit {
   constructor(private router: Router,
     private ping: PingService,
     private sharedService: SharedService) { }
+
+
+  @ViewChild('navBurger') navBurger: ElementRef;
+  @ViewChild('navMenu') navMenu: ElementRef;
 
   public toggleSidebar() {
     if (this.navMode === 'over') {

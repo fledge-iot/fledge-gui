@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
@@ -48,12 +48,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   public notificationType: string;
   private subscription: Subscription;
 
-  notificationForm = new FormGroup({
-    name: new FormControl(),
-    description: new FormControl(),
-    rule: new FormControl(),
-    delivery: new FormControl(),
-    retriggerTime: new FormControl()
+  notificationForm = new UntypedFormGroup({
+    name: new UntypedFormControl(),
+    description: new UntypedFormControl(),
+    rule: new UntypedFormControl(),
+    delivery: new UntypedFormControl(),
+    retriggerTime: new UntypedFormControl()
   });
 
   @ViewChild(ViewLogsComponent, { static: true }) viewLogsComponent: ViewLogsComponent;
@@ -71,7 +71,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
   public reenableButton = new EventEmitter<boolean>(false);
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private formBuilder: UntypedFormBuilder,
     private notificationService: NotificationsService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,

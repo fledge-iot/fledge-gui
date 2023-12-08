@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
 
@@ -9,7 +9,7 @@ import { AlertService, CertificateService, ProgressBarService } from '../../../.
   styleUrls: ['./upload-certificate.component.css']
 })
 export class UploadCertificateComponent implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   key;
   cert;
   overwrite = '0';
@@ -24,7 +24,7 @@ export class UploadCertificateComponent implements OnInit {
   constructor(private certificateService: CertificateService,
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
-    public formBuilder: FormBuilder) { }
+    public formBuilder: UntypedFormBuilder) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.toggleModal(false);
