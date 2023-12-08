@@ -109,11 +109,11 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   showConfigurationInQuickview() {
-    this.flowEditorService.showItemsInQuickview.next({showConfiguration: true, showLogs: false});
+    this.flowEditorService.showItemsInQuickview.next({showConfiguration: true, showLogs: false, serviceName: this.service.name});
   }
 
   showLogsInQuickview() {
-    this.flowEditorService.showItemsInQuickview.next({showConfiguration: false, showLogs: true});
+    this.flowEditorService.showItemsInQuickview.next({showConfiguration: false, showLogs: true, serviceName: this.service.name});
   }
 
   navToSyslogs() {
@@ -200,5 +200,9 @@ export class CustomNodeComponent implements OnChanges {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  openServiceDetails() {
+    this.router.navigate(['/south/node-editor'], { queryParams: { source: this.service.name } });
   }
 }

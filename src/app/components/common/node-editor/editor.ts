@@ -118,12 +118,12 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(connection);
     area.use(render);
     area.use(arrange);
-    area.use(contextMenu);
     area.use(dock);
     // area.use(scopes);
     area.use(history);
 
     if (source !== '' && source !== "nodelist") {
+        area.use(contextMenu);
         dock.add(() => new Filter(socket, 'Filter'));
     }
 

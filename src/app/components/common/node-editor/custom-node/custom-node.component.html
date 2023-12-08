@@ -97,6 +97,11 @@
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                         <div class="dropdown-content">
+                            <ng-container *ngIf="source=='nodelist'">
+                                <a class="dropdown-item" (click)="openServiceDetails()">
+                                    <span>Details</span>
+                                </a>
+                            </ng-container>
                             <a class="dropdown-item" (click)="deleteService()">
                                 <span>Delete</span>
                             </a>

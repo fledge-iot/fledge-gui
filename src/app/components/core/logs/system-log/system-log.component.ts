@@ -78,6 +78,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.getSysLogs();
       })
       
+  }
+
+  ngOnChanges(){
     if(this.sourceName){
       this.source = this.sourceName;
     }

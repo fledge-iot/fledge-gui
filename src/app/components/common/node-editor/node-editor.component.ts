@@ -25,6 +25,7 @@ export class NodeEditorComponent implements OnInit {
   service: Service;
   services: Service[];
   destroy$: Subject<boolean> = new Subject<boolean>();
+  serviceName = '';
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -38,7 +39,6 @@ export class NodeEditorComponent implements OnInit {
         this.getSouthboundServices();
         if(this.source !== "nodelist"){
           this.getFilterPipeline();
-          this.getCategory();
         }
       }
     });
@@ -48,6 +48,10 @@ export class NodeEditorComponent implements OnInit {
     this.subscription = this.flowEditorService.showItemsInQuickview.subscribe(data => {
       this.showConfiguration = data.showConfiguration;
       this.showLogs = data.showLogs;
+      this.serviceName = data.serviceName;
+      if(this.showConfiguration){
+        this.getCategory();
+      }
     })
   }
 
@@ -91,10 +95,10 @@ export class NodeEditorComponent implements OnInit {
 
   public getCategory(): void {
     /** request started */
-    this.configService.getCategory(this.source).
+    this.configService.getCategory(this.serviceName).
       subscribe(
         (data) => {
-          this.category = { name: this.source, config: data };
+          this.category = { name: this.serviceName, config: data };
         },
         error => {
           console.log('service down ', error);
