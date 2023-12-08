@@ -105,9 +105,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         if (+localStorage.getItem('UPDATE_CHECK_INTERVAL') !== +timeInterval || lastCheckUpdateTimePlusInterval === currentTime || localStorage.getItem('SHOW_BELL_ICON') === null) {
           this.checkUpdate();         
           this.startCheckUpdate(+timeInterval);
-          localStorage.setItem('UPDATE_CHECK_INTERVAL', timeInterval.toString());
         }    
       }
+      localStorage.setItem('UPDATE_CHECK_INTERVAL', timeInterval.toString());
     });
     if (localStorage.getItem('SHOW_BELL_ICON') !== null) {
       this.showBellIcon = localStorage.getItem('SHOW_BELL_ICON') === 'true' ? true : false;
@@ -281,9 +281,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ngProgress.done();
       if (error.status === 0) {
         console.log('service down ', error);
-      } else if (error.message.includes('Could not run sudo apt update')) {
+      } else if (error.status === 500) {
         return;
-      } 
+      }
       else {
         this.alertService.error(error.statusText);
       }
