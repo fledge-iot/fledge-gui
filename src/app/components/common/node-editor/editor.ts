@@ -25,7 +25,7 @@ type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
 
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
 
-export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service) {
+export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services) {
     const socket = new ClassicPreset.Socket("socket");
     const editor = new NodeEditor<Schemes>();
     const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -123,65 +123,74 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     // area.use(scopes);
     area.use(history);
 
-    if (source !== '') {
+    if (source !== '' && source !== "nodelist") {
         dock.add(() => new Filter(socket, 'Filter'));
     }
 
-    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area);
+    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services);
 }
 
-async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area) {
-    const southPlugin = new South(socket, service);
-    const filterBranch = new Applications(socket);
-    const db = new Storage(socket);
+async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services) {
 
-    await editor.addNode(southPlugin);
-    await editor.addNode(db);
-
-    // await area.translate(southPlugin.id, { x: -350, y: 0 });
-    // await area.translate(filterBranch.id, { x: 0, y: 0 });
-    // await area.translate(db.id, { x: 950, y: 0 });
-
-    let fpLen = filterPipeline.length;
-    if (fpLen == 0) {
-        // await editor.addNode(filterBranch);
-        await editor.addConnection(
-            new ClassicPreset.Connection(southPlugin, "port", db, "port")
-        );
-        // await editor.addConnection(
-        //     new ClassicPreset.Connection(filterBranch, "port", db, "port")
-        // );
-    }
-    else {
-        let firstFilter = new Filter(socket, filterPipeline[0]);
-        await editor.addNode(firstFilter);
-        await editor.addConnection(
-            new ClassicPreset.Connection(southPlugin, "port", firstFilter, "port")
-        );
-
-        if (fpLen == 1) {
+    if(source !== "nodelist"){
+        const southPlugin = new South(socket, service);
+        const filterBranch = new Applications(socket);
+        const db = new Storage(socket);
+    
+        await editor.addNode(southPlugin);
+        await editor.addNode(db);
+    
+        // await area.translate(southPlugin.id, { x: -350, y: 0 });
+        // await area.translate(filterBranch.id, { x: 0, y: 0 });
+        // await area.translate(db.id, { x: 950, y: 0 });
+    
+        let fpLen = filterPipeline.length;
+        if (fpLen == 0) {
+            // await editor.addNode(filterBranch);
             await editor.addConnection(
-                new ClassicPreset.Connection(firstFilter, "port", db, "port")
+                new ClassicPreset.Connection(southPlugin, "port", db, "port")
             );
+            // await editor.addConnection(
+            //     new ClassicPreset.Connection(filterBranch, "port", db, "port")
+            // );
         }
         else {
-            let lastFilter = new Filter(socket, filterPipeline[fpLen - 1]);
-            await editor.addNode(lastFilter);
+            let firstFilter = new Filter(socket, filterPipeline[0]);
+            await editor.addNode(firstFilter);
             await editor.addConnection(
-                new ClassicPreset.Connection(lastFilter, "port", db, "port")
+                new ClassicPreset.Connection(southPlugin, "port", firstFilter, "port")
             );
-
-            for (let i = 1; i < fpLen - 1; i++) {
-                let midFilter = new Filter(socket, filterPipeline[i]);
-                await editor.addNode(midFilter);
+    
+            if (fpLen == 1) {
                 await editor.addConnection(
-                    new ClassicPreset.Connection(firstFilter, "port", midFilter, "port")
+                    new ClassicPreset.Connection(firstFilter, "port", db, "port")
                 );
-                firstFilter = midFilter;
             }
-            await editor.addConnection(
-                new ClassicPreset.Connection(firstFilter, "port", lastFilter, "port")
-            );
+            else {
+                let lastFilter = new Filter(socket, filterPipeline[fpLen - 1]);
+                await editor.addNode(lastFilter);
+                await editor.addConnection(
+                    new ClassicPreset.Connection(lastFilter, "port", db, "port")
+                );
+    
+                for (let i = 1; i < fpLen - 1; i++) {
+                    let midFilter = new Filter(socket, filterPipeline[i]);
+                    await editor.addNode(midFilter);
+                    await editor.addConnection(
+                        new ClassicPreset.Connection(firstFilter, "port", midFilter, "port")
+                    );
+                    firstFilter = midFilter;
+                }
+                await editor.addConnection(
+                    new ClassicPreset.Connection(firstFilter, "port", lastFilter, "port")
+                );
+            }
+        }
+    }
+    else{
+        for (let i=0; i<services.length; i++){
+            const southPlugin = new South(socket, services[i]);
+            await editor.addNode(southPlugin);
         }
     }
 

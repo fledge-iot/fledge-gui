@@ -23,6 +23,7 @@ export class NodeEditorComponent implements OnInit {
   showConfiguration: boolean = false;
   showLogs: boolean = false;
   service: Service;
+  services: Service[];
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(public injector: Injector,
@@ -34,9 +35,11 @@ export class NodeEditorComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
-        this.getFilterPipeline();
         this.getSouthboundServices();
-        this.getCategory();
+        if(this.source !== "nodelist"){
+          this.getFilterPipeline();
+          this.getCategory();
+        }
       }
     });
   }
@@ -53,7 +56,7 @@ export class NodeEditorComponent implements OnInit {
 
     if (el) {
       setTimeout(() => {
-        createEditor(el, this.injector, this.source, this.filterPipeline, this.service);
+        createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services);
       }, 400);
     }
   }
@@ -78,6 +81,7 @@ export class NodeEditorComponent implements OnInit {
       .subscribe(
         (data: any) => {
           const services = data.services as Service[];
+          this.services = services;
           this.service = services.find(service => (service.name == this.source));
         },
         error => {

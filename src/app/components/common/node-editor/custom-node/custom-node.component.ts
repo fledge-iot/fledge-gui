@@ -24,7 +24,7 @@ export class CustomNodeComponent implements OnChanges {
   source = '';
   helpText = '';
   isEnabled: boolean = false;
-  service = { status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "" }
+  service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "" }
   isServiceNode: boolean = false;
 
   @HostBinding("class.selected") get selected() {
@@ -49,17 +49,18 @@ export class CustomNodeComponent implements OnChanges {
   ngOnChanges(): void {
     if (this.data.label === 'South') {
       if (this.source !== '') {
-        this.data.label = this.source;
         this.isServiceNode = true;
-
-        this.service.status = Object.keys(this.data.controls)[0];
-        this.service.protocol = Object.keys(this.data.controls)[1];
-        this.service.address = Object.keys(this.data.controls)[2];
-        this.service.pluginName = Object.keys(this.data.controls)[3];
-        this.service.management_port = Object.keys(this.data.controls)[4].slice(3);
-        this.service.assetCount = Object.keys(this.data.controls)[5].slice(3);
-        this.service.readingCount = Object.keys(this.data.controls)[6].slice(3);
-
+        
+        this.service.name = Object.keys(this.data.controls)[0];
+        this.service.status = Object.keys(this.data.controls)[1];
+        this.service.protocol = Object.keys(this.data.controls)[2];
+        this.service.address = Object.keys(this.data.controls)[3];
+        this.service.pluginName = Object.keys(this.data.controls)[4];
+        this.service.management_port = Object.keys(this.data.controls)[5].slice(3);
+        this.service.assetCount = Object.keys(this.data.controls)[6].slice(3);
+        this.service.readingCount = Object.keys(this.data.controls)[7].slice(3);
+        
+        this.data.label = this.service.name;
         if (this.service.status === 'running') {
           this.isEnabled = true;
         }
@@ -93,7 +94,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   navToSouthService() {
-    this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditor' } })
+    this.router.navigate(['/south', this.service.name, 'details'], { queryParams: { source: 'flowEditor' } })
   }
 
   showConfigurationInQuickview() {
@@ -105,11 +106,11 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   navToSyslogs() {
-    this.router.navigate(['logs/syslog'], { queryParams: { source: this.source } });
+    this.router.navigate(['logs/syslog'], { queryParams: { source: this.service.name } });
   }
 
   addFilter() {
-    this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
+    this.router.navigate(['/south', this.service.name, 'details'], { queryParams: { source: 'flowEditorFilter' } })
   }
 
   navToSouthPage() {
@@ -119,10 +120,10 @@ export class CustomNodeComponent implements OnChanges {
   toggleEnabled(isEnabled) {
     this.isEnabled = isEnabled;
     if (this.isEnabled) {
-      this.enableSchedule(this.source);
+      this.enableSchedule(this.service.name);
     }
     else {
-      this.disableSchedule(this.source);
+      this.disableSchedule(this.service.name);
     }
   }
 
@@ -169,7 +170,7 @@ export class CustomNodeComponent implements OnChanges {
 
   deleteService() {
     if (this.isServiceNode) {
-      this.servicesApiService.deleteService(this.source)
+      this.servicesApiService.deleteService(this.service.name)
         .subscribe(
           () => {
             this.navToSouthPage();

@@ -10,6 +10,7 @@ export class South extends ClassicPreset.Node {
         super("South");
 
         if (service) {
+            this.addControl(service.name, new ClassicPreset.InputControl("text"));
             this.addControl(service.status, new ClassicPreset.InputControl("text"));
             this.addControl(service.protocol, new ClassicPreset.InputControl("text"));
             this.addControl(service.address, new ClassicPreset.InputControl("text"));
