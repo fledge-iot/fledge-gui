@@ -1,10 +1,11 @@
 import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { SchedulesService, ServicesApiService } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-custom-node',
@@ -26,6 +27,7 @@ export class CustomNodeComponent implements OnChanges {
   isEnabled: boolean = false;
   service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "" }
   isServiceNode: boolean = false;
+  subscription: Subscription;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -42,6 +44,15 @@ export class CustomNodeComponent implements OnChanges {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
+      }
+    });
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    };
+    this.router.navigated = false;
+    this.subscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.router.navigated = false;
       }
     });
   }
@@ -132,6 +143,9 @@ export class CustomNodeComponent implements OnChanges {
       .subscribe(
         () => {
           console.log("schedule disabled");
+          setTimeout(() => {
+            this.router.navigate(['/south/node-editor'], { queryParams: { source: 'nodelist' } });
+          }, 2000);
         },
         error => {
           console.log(error);
@@ -143,6 +157,9 @@ export class CustomNodeComponent implements OnChanges {
       .subscribe(
         () => {
           console.log("schedule enabled");
+          setTimeout(() => {
+            this.router.navigate(['/south/node-editor'], { queryParams: { source: 'nodelist' } });
+          }, 2000);
         },
         error => {
           console.log(error);
@@ -173,11 +190,15 @@ export class CustomNodeComponent implements OnChanges {
       this.servicesApiService.deleteService(this.service.name)
         .subscribe(
           () => {
-            this.navToSouthPage();
+            this.router.navigate(['/south/node-editor'], { queryParams: { source: 'nodelist' } });
           },
           (error) => {
             console.log('service down ', error);
           });
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

@@ -37,15 +37,17 @@
         <span *ngIf="data.label!=='Filter'" class="help-text">{{helpText}}</span>
     </div>
     <div>
-        <div class="output is-pulled-right" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
-            [attr.data-testid]="'output-'+output.key">
-            <div class="output-title" data-testid="output-title">
-                {{output.value?.label}}
+        <ng-container *ngIf="source!=='nodelist'">
+            <div class="output is-pulled-right" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
+                [attr.data-testid]="'output-'+output.key">
+                <div class="output-title" data-testid="output-title">
+                    {{output.value?.label}}
+                </div>
+                <div class="output-socket" refComponent
+                    [data]="{type: 'socket', side: 'output', key: output.key, nodeId: data.id, payload: output.value?.socket, seed: seed }"
+                    [emit]="emit" data-testid="output-socket"></div>
             </div>
-            <div class="output-socket" refComponent
-                [data]="{type: 'socket', side: 'output', key: output.key, nodeId: data.id, payload: output.value?.socket, seed: seed }"
-                [emit]="emit" data-testid="output-socket"></div>
-        </div>
+        </ng-container>
         <div class="input is-pulled-left" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
             [attr.data-testid]="'input-'+input.key">
             <div class="input-socket" refComponent
@@ -59,7 +61,7 @@
                 data-testid="input-control"></div>
         </div>
     </div>
-    <div class="reading-details">
+    <div class="reading-details" [ngClass]="{'mt-5': source=='nodelist'}">
         <ng-container *ngIf="isServiceNode">
             <small class="reading has-tooltip-right has-tooltip-arrow" data-tooltip="Reading count">{{service.readingCount}}</small>
             <small class="asset has-tooltip-right has-tooltip-arrow" data-tooltip="Asset count">{{service.assetCount}}</small>
