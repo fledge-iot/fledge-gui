@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class AdminGuard  {
   constructor(private router: Router) { }
   canActivate() {
     const isAdmin = JSON.parse(sessionStorage.getItem('isAdmin'));

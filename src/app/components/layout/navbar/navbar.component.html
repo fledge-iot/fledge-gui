@@ -1,6 +1,6 @@
 <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <div class="navbar-burger" (click)="toggleClick()">
+    <div id="menu-toggle" class="navbar-burger" (click)="toggleClick()">
       <span></span>
       <span></span>
       <span></span>
@@ -104,7 +104,8 @@
       <ng-template #elseTabTemplate>
         <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Authentication required.">
+            <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow"
+              data-tooltip="Authentication required.">
               <i class="fa fa-sm fa-circle parent-icon"> </i>
             </span>
           </div>
@@ -190,7 +191,8 @@
           <ng-template #elseMobileTemplate>
             <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
               <div class="control">
-                <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Authentication required.">
+                <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow"
+                  data-tooltip="Authentication required.">
                   <i class="fa fa-sm fa-circle parent-icon"> </i>
                 </span>
               </div>
@@ -241,7 +243,8 @@
                               <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
                                 <i class="fa fa-sm fa-circle child-icon"></i>
                               </span>
-                              <ng-container *ngIf="['northbound', 'southbound'].includes(s.type.toLowerCase()); else elseServiceTemplate">
+                              <ng-container
+                                *ngIf="['northbound', 'southbound'].includes(s.type.toLowerCase()); else elseServiceTemplate">
                                 <a class="ghost" (click)="navToServiceConfiguration(s)">{{s.name}}</a>
                               </ng-container>
                               <ng-template #elseServiceTemplate>
@@ -251,7 +254,8 @@
                             </td>
                             <td>
                               <ng-container *ngIf="['failed', 'unresponsive'].includes(s.status.toLowerCase())">
-                                <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-hovered mr-2 ml-2"
+                                <span
+                                  class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-hovered mr-2 ml-2"
                                   data-tooltip="Show logs" (click)="navToSyslogs(s)">
                                   <i class="far fa-sm fa-file-alt"></i>
                                 </span>
@@ -291,7 +295,8 @@
         <ng-template #elseTemplate>
           <div *ngIf="pingInfo.isAuth" class="field is-grouped is-grouped-multiline">
             <div class="control">
-              <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Authentication required.">
+              <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow"
+                data-tooltip="Authentication required.">
                 <i class="fa fa-sm fa-circle parent-icon"> </i>
               </span>
             </div>
@@ -363,7 +368,8 @@
     <div class="navbar-item">
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
-          <a id="restart" class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Restart Fledge" (click)="openRestartModal()">
+          <a id="restart" class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Restart Fledge"
+            (click)="openRestartModal()">
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </a>
         </span>

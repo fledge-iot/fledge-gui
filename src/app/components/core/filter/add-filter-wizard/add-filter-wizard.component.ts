@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { sortBy, isEmpty, cloneDeep } from 'lodash';
 
 import {
@@ -38,11 +38,11 @@ export class AddFilterWizardComponent implements OnInit {
 
   installPluginSub: Subscription;
 
-  serviceForm = new FormGroup({
-    name: new FormControl(),
-    plugin: new FormControl(),
-    pluginToInstall: new FormControl(),
-    config: new FormControl(null)
+  serviceForm = new UntypedFormGroup({
+    name: new UntypedFormControl(),
+    plugin: new UntypedFormControl(),
+    pluginToInstall: new UntypedFormControl(),
+    config: new UntypedFormControl(null)
   });
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -54,7 +54,7 @@ export class AddFilterWizardComponent implements OnInit {
 
   public reenableButton = new EventEmitter<boolean>(false);
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private formBuilder: UntypedFormBuilder,
     private filterService: FilterService,
     private configurationService: ConfigurationService,
     private fileUploaderService: FileUploaderService,

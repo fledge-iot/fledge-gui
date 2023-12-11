@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import { TreeComponent } from '@circlon/angular-tree-component';
+import { TreeComponent } from '@ali-hm/angular-tree-component';
 import { isEmpty, cloneDeep } from 'lodash';
 
 import {
