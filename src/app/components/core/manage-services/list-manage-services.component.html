@@ -8,13 +8,13 @@
         </li>
       </ul>
     </nav>
-    <button class="button is-small" id="refresh-check" title="Reload">
+    <button class="button is-small" id="refresh-check" title="Reload" (click)="checkSelectedServiceStatus()">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
     <div id="connection" class="card">
       <div class="card-content">
-        <table class="table is-responsive is-hoverable is-narrow service-table" cellpadding="0" cellspacing="0">
+        <table *ngIf="installedExternalServices.length > 0" class="table is-responsive is-hoverable is-narrow service-table" cellpadding="0" cellspacing="0">
           <tbody>
             <tbody>
               <tr *ngFor="let service of installedExternalServices">
@@ -60,7 +60,6 @@
               </tr>
             </tbody>
           </table>
-        <hr>
         <table class="table is-responsive is-hoverable is-narrow" cellpadding="0" cellspacing="0">
           <tbody>
             <tbody>
@@ -84,7 +83,7 @@
       </div>
     </div>
   </div>
-  <app-manage-service-modal [serviceData]="serviceData"></app-manage-service-modal>
+  <app-manage-service-modal (notify)="checkSelectedServiceStatus()" [serviceData]="serviceData"></app-manage-service-modal>
   <app-confirmation-dialog id="delete-confirmation-dialog">
     <header class="modal-card-head">
       <p class="modal-card-title is-size-6">Delete</p>

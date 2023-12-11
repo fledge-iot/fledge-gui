@@ -1,4 +1,4 @@
-import { Component, OnChanges, Input, SimpleChanges, ViewChild, HostListener, EventEmitter } from '@angular/core';
+import { Component, OnChanges, Input, SimpleChanges, ViewChild, Output, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
@@ -30,7 +30,7 @@ export class ManageServiceModalComponent implements OnChanges {
   serviceName = '';
   serviceModalName = '';
   availableServices = [];
-  servicePackageName = 'fledge-service-notification';
+  servicePackageName = 'fledge-service-';
   btnText = 'Add';
   showDeleteBtn = true;
   public serviceRecord;
@@ -50,6 +50,7 @@ export class ManageServiceModalComponent implements OnChanges {
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   changedConfig: any;
   categoryCopy: { name: string; config: Object; };
@@ -73,6 +74,7 @@ export class ManageServiceModalComponent implements OnChanges {
     public rolesService: RolesService) { }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log('child', this.child);
     if (changes['serviceData']) {
       const service = this.serviceData?.serviceNameInfo?.find((s) => s.key === this.serviceData.serviceModalName);
       this.serviceName = service ? service['value'] : '';
@@ -80,6 +82,7 @@ export class ManageServiceModalComponent implements OnChanges {
       this.isServiceAvailable = this.serviceData?.serviceAvailable?.indexOf(this.serviceData.serviceModalName) !== -1;
       this.serviceModalName = this.serviceData?.serviceModalName;   
     }
+    console.log('this.serviceData', this.serviceData);
 
     this.enabled = this.isServiceEnabled;
     this.btnText = 'Add';
@@ -130,6 +133,7 @@ export class ManageServiceModalComponent implements OnChanges {
         serviceModal.classList.add('is-active');
         return;
       }
+      this.notify.emit(false);
       serviceModal.classList.remove('is-active');
       this.category = '';
     }
@@ -244,7 +248,10 @@ export class ManageServiceModalComponent implements OnChanges {
       key: 'deleteService'
     };
     // call child component method to toggle modal
-    this.child.toggleModal(true, '#manage-service-modal ');
+    // if (this.child) {
+
+    // }
+    this.child?.toggleModal(true, '#manage-service-modal');
   }
 
   public async getInstalledServicesList() {
@@ -271,7 +278,7 @@ export class ManageServiceModalComponent implements OnChanges {
     this.pluginInstallationState = true;
     const servicePayload = {
       format: 'repository',
-      name: this.servicePackageName,
+      name: this.servicePackageName + this.serviceModalName.toLowerCase(),
       version: ''
     };
 
@@ -380,7 +387,7 @@ export class ManageServiceModalComponent implements OnChanges {
 
   public async addServiceEvent() {
     await this.getInstalledServicesList();
-    if (!this.availableServices.includes('notification')) {
+    if (!this.availableServices.includes(this.serviceModalName.toLowerCase())) {
       this.installService();
     } else {
       this.addService(false);

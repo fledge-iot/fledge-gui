@@ -56,6 +56,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     public rolesService: RolesService) { }
 
   ngOnInit() {
+    console.log('not11111');
     this.onNotifySettingModal();
     this.checkNotificationServiceStatus();
     this.getNotificationInstance();
@@ -128,6 +129,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   onNotify() {
     this.isNotificationModalOpen = false;
     setTimeout(() => {
+      console.log('onNotify');
       this.getNotificationInstance();
     }, 2000);
   }
