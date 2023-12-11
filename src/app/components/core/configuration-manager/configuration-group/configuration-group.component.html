@@ -1,4 +1,11 @@
-<div class="container">
+<div class="container" [ngClass]="{'is-fluid': sourceName}">
+  <div *ngIf="sourceName" class="card custom-quickview-card">
+    <header class="card-header custom-quickview-header">
+      <div class="card-header-title custom-quickview-title">
+        <span>{{sourceName}}/Configuration</span>
+      </div>
+    </header>
+  </div>
   <div class="configuration_group_wrapper">
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div id="groupNavContents" class="nav groupNav_contents">
@@ -53,7 +60,7 @@
   </ng-container>
   <ng-template #group>
     <!-- if user coming from config-manager component don't show the group border -->
-    <div [ngClass]="{'highlight': from !== 'config-manager'}">
+    <div [ngClass]="{'highlight': from !== 'config-manager', 'custom-quickview-configuration': sourceName}">
       <ng-container *ngFor="let g of groups">
         <ng-container *ngIf="from == 'config-manager';else showGroup">
           <app-bucket-configuration *ngIf="g.type == 'bucket'" [dataModel]="g.config"

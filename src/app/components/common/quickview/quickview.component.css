@@ -7,11 +7,6 @@
     justify-content: space-between;
 }
 
-.delete {
-    margin-top: 12px;
-    margin-right: 12px;
-}
-
 .quickview.is-active {
     right: 0 !important;
 }

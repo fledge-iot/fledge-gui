@@ -1,7 +1,8 @@
 <div class="container is-fluid">
-  <div class="card">
-    <header class="card-header">
+  <div class="card" [ngClass]="{'custom-quickview-card': sourceName}">
+    <header class="card-header" [ngClass]="{'custom-quickview-header': sourceName}">
       <div class="card-header-title">
+        <span *ngIf="sourceName">{{sourceName}}/</span>
         <span>System Logs</span>
         <a *ngIf="!isAlive || page > 1" (click)="onFirst()" title="Reload" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>

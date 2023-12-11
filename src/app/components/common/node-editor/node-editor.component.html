@@ -3,7 +3,7 @@
     <app-quickview>
         <ng-container *ngIf="showConfiguration">
             <app-configuration-group *ngIf="category" [category]="category"
-                [from]="'south'"></app-configuration-group>
+                [from]="'south'" [sourceName]="serviceName"></app-configuration-group>
         </ng-container>
         <ng-container *ngIf="showLogs">
             <app-system-log [sourceName]="serviceName"></app-system-log>
