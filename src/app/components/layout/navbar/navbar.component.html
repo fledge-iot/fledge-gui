@@ -349,7 +349,10 @@
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
               <a class="dropdown-item update-dropdown-item">
-                <span>A newer version is available. <button (click)="update()" [appDisableUntilResponse]="reenableButton" class="button is-text text-btn upgrade-btn">Upgrade now</button></span>
+                <span>A newer version is available.
+                  <!-- TODO: It is commented till the polling of the update call based on ping alive after update -->
+                  <!-- <button (click)="update()" [appDisableUntilResponse]="reenableButton" class="button is-text text-btn upgrade-btn">Upgrade now</button> -->
+                </span>
               </a>
             </div>
           </div>
