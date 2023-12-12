@@ -6,7 +6,7 @@ import { interval, Subscription, Subject } from 'rxjs';
 
 import { PingService, ServicesApiService, ProgressBarService, SharedService, AssetsService, RolesService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
-import { POLLING_INTERVAL } from '../../../utils';
+import { POLLING_INTERVAL, FLOW_EDITOR_VIEW } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
@@ -46,6 +46,11 @@ export class SouthComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private sharedService: SharedService,
     public rolesService: RolesService) {
+    if(FLOW_EDITOR_VIEW){
+      setTimeout(() => {
+        this.openNodeEditorListPage();
+      }, 1);
+    }
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
@@ -205,5 +210,9 @@ export class SouthComponent implements OnInit, OnDestroy {
 
   openNodeEditor(){
     this.router.navigate(['/south/node-editor']);
+  }
+
+  openNodeEditorListPage(){
+    this.router.navigate(['/south/node-editor'], { queryParams: { source: 'nodelist' } });
   }
 }

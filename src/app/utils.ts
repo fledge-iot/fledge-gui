@@ -9,6 +9,7 @@ export const STATS_HISTORY_TIME_FILTER = '10'; // minutes
 export const ASSET_READINGS_TIME_FILTER = 600; // seconds
 export const QUOTATION_VALIDATION_PATTERN = '[^\x22\x27]+'; // Do not allow single quotes or double quotes
 export const DEBOUNCE_TIME = 1000; // milliseconds
+export const FLOW_EDITOR_VIEW = false;
 
 export const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss.SSS';
 
