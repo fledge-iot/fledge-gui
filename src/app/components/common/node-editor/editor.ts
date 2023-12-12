@@ -186,19 +186,27 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                 );
             }
         }
+        await arrange.layout();
+        AreaExtensions.zoomAt(area, editor.getNodes());
     }
     else{
+        let j=0;
+        let k=0;
         for (let i=0; i<services.length; i++){
             const southPlugin = new South(socket, services[i]);
             await editor.addNode(southPlugin);
+            if(j<6){
+                await area.translate(southPlugin.id, { x: 250*j, y: 250*k });
+                j++;
+                if(j==6){
+                    j=0; k++;
+                }
+            }
         }
     }
 
 
-    await arrange.layout();
-
     addCustomBackground(area);
-    AreaExtensions.zoomAt(area, editor.getNodes());
     // AreaExtensions.simpleNodesOrder(area);
     AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
         accumulating: AreaExtensions.accumulateOnCtrl()

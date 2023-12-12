@@ -1,8 +1,8 @@
 :host {
   display: block;
   background: whitesmoke;
-  border: 2px solid grey;
-  border-radius: 10px;
+  border: 1px solid silver;
+  border-radius: 3px;
   cursor: pointer;
   box-sizing: border-box;
   width: 200px;
