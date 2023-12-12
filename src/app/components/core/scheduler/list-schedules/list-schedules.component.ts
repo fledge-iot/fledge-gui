@@ -49,7 +49,7 @@ export class ListSchedulesComponent implements OnInit {
            *
            */
           data.schedules.forEach(sch => {
-            if (!['south_c', 'north_c', 'north_C', 'south', 'north', 'notification_c', 'automation_script'].includes(sch.processName)) {
+            if (!['south_c', 'north_c', 'north_C', 'south', 'north', 'notification_c', 'automation_script', 'dispatcher_c', 'bucket_storage_c'].includes(sch.processName)) {
               this.scheduleData.push(sch);
             }
           });

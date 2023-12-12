@@ -19,12 +19,12 @@
             <tbody>
               <tr *ngFor="let service of installedExternalServices">
                 <td class="align-content content-pad">
-                  <small>{{service.name}}</small>
+                  <small>{{service.type !== 'BucketStorage' ? service.type : 'Bucket Storage'}} Service</small>
+                  <p class="help has-text-grey modal-subtitle">{{service.name}}</p>
                 </td>
-                <td><small>{{service.type}} Service</small></td>
                 <td>
                   <div class="tags has-addons">
-                    <span class="tag is-light is-success">Installed</span>
+                    <span class="tag is-light">Installed</span>
                   </div>
                 </td>
                 <td>
@@ -74,7 +74,7 @@
                 <td></td>
                 <td class="align-content content-pad">
                   <a (click)="openServiceModal(service)" class="button is-text text-btn">
-                    Add
+                    Install
                   </a>
                 </td>
               </tr>

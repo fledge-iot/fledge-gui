@@ -176,16 +176,13 @@ export class ListManageServicesComponent implements OnInit {
         (data: any) => {
           const schedule = data.schedules.find((item: any) => item.processName === serviceName + '_c');
           if (schedule === undefined) {
-            if (this.serviceAvailable && this.serviceEnabled ) {
-              const availableService = this.serviceAvailable.find((s) => s === serviceName);
-              this.serviceAvailable = availableService?.type;
-              const enabledService = this.serviceEnabled.find((s) => s === serviceName);
-              this.serviceEnabled = enabledService?.type;
-              this.serviceNameInfo = this.serviceNameInfo.filter((s) => s.value === serviceName.name);
-            }           
+            const availableService = this.serviceAvailable?.find((s) => s === serviceName);
+            this.serviceAvailable = availableService ? availableService.type : this.serviceAvailable;
+            const enabledService = this.serviceEnabled?.find((s) => s === serviceName);
+            this.serviceEnabled = enabledService ? enabledService.type : this.serviceEnabled;
+            this.serviceNameInfo = this.serviceNameInfo?.filter((s) => s.value === serviceName.name);           
             return;
           }
-
           this.serviceNameInfo.push({key: serviceName, value: schedule.name});
           this.serviceAvailable.push(serviceName);
           if (schedule.enabled) {
