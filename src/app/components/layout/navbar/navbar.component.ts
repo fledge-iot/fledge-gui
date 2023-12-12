@@ -281,10 +281,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ngProgress.done();
       if (error.status === 0) {
         console.log('service down ', error);
-      } else if (error.status === 500) {
-        return;
-      }
-      else {
+      } else {
         this.alertService.error(error.statusText);
       }
     });
