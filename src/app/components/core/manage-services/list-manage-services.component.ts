@@ -46,16 +46,16 @@ export class ListManageServicesComponent implements OnInit {
       .subscribe(viewport => {
         this.viewPort = viewport;
       });
+      this.externalServices = this.services.sort((a, b) => a.localeCompare(b));
+      // southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
       this.checkSelectedServiceStatus();
   }
 
   public async checkSelectedServiceStatus(refresh: boolean = false) {
-    
-    
-    console.log('availableService4', this.serviceAvailable);
-    console.log('serviceEnabled4', this.serviceEnabled);
     await this.getInstalledServicesList();
     this.installedExternalServices = [];
+    this.serviceAvailable = [];
+    this.serviceEnabled = [];
     for (const service of this.services) {
       if (this.installedServices.includes(service.toLowerCase())) {
         if (refresh) {
@@ -63,34 +63,17 @@ export class ListManageServicesComponent implements OnInit {
           return;
         }
         this.checkInstalledServices(service);
-        this.getServiceByType(service);
       } else {
-        if (this.serviceAvailable && this.serviceEnabled) {    
-          console.log('availableService5', this.serviceAvailable);
-          console.log('serviceEnabled5', this.serviceEnabled);    
-          // const availableService = this.serviceAvailable?.find((s) => s === service);
-          // const index: number = this.serviceAvailable.indexOf(service);
+        if (this.serviceAvailable && this.serviceEnabled) {  
           if (this.serviceAvailable.indexOf(service) !== -1) {
-            // this.serviceAvailable.splice(this.serviceAvailable.indexOf(service), 1);
             this.serviceAvailable = this.serviceAvailable[this.serviceAvailable.indexOf(service)];
           }
-
-          // console.log('index', index);
-          console.log('service11', service);
-          // this.serviceAvailable = availableService?.type;
-
-          // const enabledService = this.serviceEnabled?.find((s) => s === service);
-          // this.serviceEnabled = enabledService?.type;
-          // const index2: number = this.serviceEnabled.indexOf(service);
           if (this.serviceEnabled.indexOf(service) !== -1) {
-            // this.serviceEnabled.splice(index2, 1);
             this.serviceEnabled = this.serviceEnabled[this.serviceEnabled.indexOf(service)];
           }
-          console.log('availableService6', this.serviceAvailable);
-          console.log('serviceEnabled6', this.serviceEnabled);
         }
-        this.externalServices = this.services;
       }
+      this.getServiceByType(service);
     }
   }
 
@@ -135,7 +118,10 @@ export class ListManageServicesComponent implements OnInit {
       .subscribe((res: any) => {
         this.ngProgress.done();
         this.installedExternalServices.push(res.services[0]);
-        this.externalServices = this.services.filter((s) => s !== service);
+        this.installedExternalServices = this.installedExternalServices?.sort((a, b) => a.name.localeCompare(b.name));
+        
+        this.externalServices = this.externalServices?.filter((s) => s !== res.services[0].type);  
+        this.externalServices = this.externalServices?.sort((a, b) => a.localeCompare(b));
       },
         (error) => {
           this.ngProgress.done();
@@ -171,15 +157,13 @@ export class ListManageServicesComponent implements OnInit {
   }
 
   checkServiceEnabled(service: any, serviceName) {
-    console.log('availableService2', this.serviceAvailable);
-    console.log('serviceEnabled2', this.serviceEnabled);
     if (service) {
       this.serviceNameInfo.push({key: service.type, value: service.name});
       this.serviceAvailable.push(service.type);
       this.serviceEnabled.push(service.type);
       if (service.status.toLowerCase() === 'shutdown') {
-        const enabledService = this.serviceEnabled.find((s) => s !== service);
-        this.serviceEnabled = enabledService.type;
+        const enabledService = this.serviceEnabled.find((s) => s !== service.type);
+        this.serviceEnabled = enabledService;
       }
     } else {
       this.getSchedules(serviceName);
@@ -187,20 +171,13 @@ export class ListManageServicesComponent implements OnInit {
   }
 
   public getSchedules(serviceName): void {
-    console.log('serviceName99', serviceName);
-    console.log('availableService33', this.serviceAvailable);
-    console.log('serviceEnabled33', this.serviceEnabled);
-    // FixMe
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
-          console.log('data.schedules', data.schedules);
           const schedule = data.schedules.find((item: any) => item.processName === serviceName + '_c');
           if (schedule === undefined) {
             if (this.serviceAvailable && this.serviceEnabled ) {
-              console.log('serviceAvailable', this.serviceAvailable);
               const availableService = this.serviceAvailable.find((s) => s === serviceName);
-              console.log('service', serviceName);
               this.serviceAvailable = availableService?.type;
               const enabledService = this.serviceEnabled.find((s) => s === serviceName);
               this.serviceEnabled = enabledService?.type;

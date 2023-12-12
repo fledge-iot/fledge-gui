@@ -74,7 +74,6 @@ export class ManageServiceModalComponent implements OnChanges {
     public rolesService: RolesService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('child', this.child);
     if (changes['serviceData']) {
       const service = this.serviceData?.serviceNameInfo?.find((s) => s.key === this.serviceData.serviceModalName);
       this.serviceName = service ? service['value'] : '';
@@ -82,7 +81,6 @@ export class ManageServiceModalComponent implements OnChanges {
       this.isServiceAvailable = this.serviceData?.serviceAvailable?.indexOf(this.serviceData.serviceModalName) !== -1;
       this.serviceModalName = this.serviceData?.serviceModalName;   
     }
-    console.log('this.serviceData', this.serviceData);
 
     this.enabled = this.isServiceEnabled;
     this.btnText = 'Add';
