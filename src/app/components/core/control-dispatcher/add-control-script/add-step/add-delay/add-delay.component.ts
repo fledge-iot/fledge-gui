@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup, NgForm } from '@angular/forms';
+import { UntypedFormGroup, NgForm } from '@angular/forms';
 import { RolesService } from '../../../../../../services';
 
 @Component({
@@ -29,15 +29,15 @@ export class AddDelayComponent implements OnInit {
   ngOnInit(): void { }
 
   stepsFormGroup() {
-    return this.control.form.controls['steps'] as FormGroup;
+    return this.control.form.controls['steps'] as UntypedFormGroup;
   }
 
-  stepControlGroup(): FormGroup {
-    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
+  stepControlGroup(): UntypedFormGroup {
+    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as UntypedFormGroup;
   }
 
   delayFromGroup() {
-    return this.stepControlGroup().controls['delay'] as FormGroup;
+    return this.stepControlGroup().controls['delay'] as UntypedFormGroup;
   }
 
   setDuration(value: number) {

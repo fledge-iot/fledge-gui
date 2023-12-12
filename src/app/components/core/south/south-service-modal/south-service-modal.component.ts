@@ -2,7 +2,7 @@ import {
   ChangeDetectorRef,
   Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { cloneDeep, isEmpty } from 'lodash';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -35,7 +35,7 @@ import { FilterListComponent } from '../../filter/filter-list/filter-list.compon
 export class SouthServiceModalComponent implements OnInit {
 
   public category: any;
-  svcCheckbox: FormControl = new FormControl();
+  svcCheckbox: UntypedFormControl = new UntypedFormControl();
   public filterPipeline: string[] = [];
   public applicationTagClicked = false;
   public unsavedChangesInFilterForm = false;

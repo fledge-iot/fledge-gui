@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { TreeModule } from '@circlon/angular-tree-component';
+import { TreeModule } from '@ali-hm/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DirectivesModule } from '../../../directives/directives.module';
 import { RolesGuard } from '../../../guards';

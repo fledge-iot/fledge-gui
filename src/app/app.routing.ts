@@ -101,4 +101,4 @@ export const appRoutes: Routes = [
   { path: '**', redirectTo: '' }
 ];
 
-export const routing = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules, relativeLinkResolution: 'legacy' });
+export const routing = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules });

@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { DARK_ALERTS, AlertService, SharedService } from '../../../services';
 
 @Component({
-    moduleId: module.id.toString(),
     selector: 'app-alert',
     templateUrl: 'alert.component.html',
     styleUrls: ['./alert.component.css']

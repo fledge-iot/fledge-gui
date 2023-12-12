@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ControlContainer, FormGroup, NgForm } from '@angular/forms';
+import { ControlContainer, UntypedFormGroup, NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
 import { AlertService, RolesService } from '../../../../../../services';
@@ -87,15 +87,15 @@ export class AddScriptComponent implements OnInit {
   }
 
   stepsFormGroup() {
-    return this.control.form.controls['steps'] as FormGroup;
+    return this.control.form.controls['steps'] as UntypedFormGroup;
   }
 
-  stepControlGroup(): FormGroup {
-    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as FormGroup;
+  stepControlGroup(): UntypedFormGroup {
+    return this.stepsFormGroup().controls[`step-${this.controlIndex}`] as UntypedFormGroup;
   }
 
   scriptControlGroup() {
-    return this.stepControlGroup().controls['script'] as FormGroup;
+    return this.stepControlGroup().controls['script'] as UntypedFormGroup;
   }
 
   setOrder() {

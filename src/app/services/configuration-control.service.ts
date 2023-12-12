@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { AclService } from './acl.service';
 import { orderBy, map, cloneDeep, reduce, assign } from 'lodash';
 
@@ -96,6 +96,10 @@ export class FloatConfig extends ConfigurationBase<string> {
 
 export class JSONConfig extends ConfigurationBase<string> {
   override controlType = 'JSON';
+}
+
+export class BucketConfig extends ConfigurationBase<string> {
+  override controlType = 'BUCKET';
 }
 
 export class ScriptConfig extends ConfigurationBase<string> {
@@ -217,6 +221,20 @@ export class ConfigurationControlService {
             label: this.setDisplayName(element),
             description: element.description,
             value: JSON.stringify(JSON.parse(element.value), null, ' '),
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            editorOptions: this.setEditorConfig(element.type),
+            validity: element.validity
+          }));
+          break;
+        case 'BUCKET':
+          configurations.push(new BucketConfig({
+            key: key,
+            type: 'bucket',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
             order: element.order,
@@ -349,14 +367,14 @@ export class ConfigurationControlService {
     const group: any = {};
     groupConfigurations.forEach(configuration => {
       group[configuration.key] =
-        new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
+        new UntypedFormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
       // create an file uploader form control for script type
       if (configuration.controlType.toLocaleLowerCase() == 'script') {
         group[configuration.key + '-file-control'] =
-          new FormControl({ value: '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
+          new UntypedFormControl({ value: '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
       }
     });
-    return new FormGroup(group);
+    return new UntypedFormGroup(group);
   }
 
   /**
@@ -381,7 +399,7 @@ export class ConfigurationControlService {
     }
   }
 
-  checkConfigItemValidityOnChange(form: FormGroup, config: ConfigurationBase<string>, fullConfiguration: any) {
+  checkConfigItemValidityOnChange(form: UntypedFormGroup, config: ConfigurationBase<string>, fullConfiguration: any) {
     // update config value in a global config object
     if (fullConfiguration) {
       fullConfiguration[config.key].value = config.value;
@@ -416,7 +434,7 @@ export class ConfigurationControlService {
    * @param form Configuration control form
    * @param fullConfiguration plugin configuration
    */
-  checkConfigItemOnGroupChange(form: FormGroup, fullConfiguration: any) {
+  checkConfigItemOnGroupChange(form: UntypedFormGroup, fullConfiguration: any) {
     if (fullConfiguration) {
       Object.keys(fullConfiguration).forEach(key => {
         const cnf = fullConfiguration[key];
@@ -428,7 +446,7 @@ export class ConfigurationControlService {
     }
   }
 
-  setFormControlState(cnf: any, form: FormGroup, validExpression: boolean, configControl = null) {
+  setFormControlState(cnf: any, form: UntypedFormGroup, validExpression: boolean, configControl = null) {
     if (cnf.key == 'script') {
       if (validExpression) {
         const control = configControl?.key == 'script' ? configControl : cnf;
@@ -507,7 +525,7 @@ export class ConfigurationControlService {
     // make a copy of matched config items having changed values
     const matchedConfig = defaultConfig.filter(e1 => {
       if (changedConfiguration.hasOwnProperty(e1.key)) {
-        if (e1.type == 'JSON') {
+        if (e1.type == 'JSON' || e1.type == 'bucket') {
           // compare JSON value for changed config
           const oldJsonValue = JSON.stringify(JSON.parse(e1.value ? e1.value : e1.default), null, ' ');
           const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
