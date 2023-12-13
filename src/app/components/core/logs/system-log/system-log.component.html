@@ -2,8 +2,8 @@
   <div class="card" [ngClass]="{'custom-quickview-card': sourceName}">
     <header class="card-header" [ngClass]="{'custom-quickview-header': sourceName}">
       <div class="card-header-title">
-        <span *ngIf="sourceName">{{sourceName}}/</span>
-        <span>System Logs</span>
+        <span *ngIf="sourceName">{{sourceName}}/&nbsp;</span>
+        <span>Logs</span>
         <a *ngIf="!isAlive || page > 1" (click)="onFirst()" title="Reload" class="button is-small" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </a>

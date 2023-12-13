@@ -196,10 +196,10 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
         for (let i=0; i<services.length; i++){
             const southPlugin = new South(socket, services[i]);
             await editor.addNode(southPlugin);
-            if(j<6){
+            if(j<4){
                 await area.translate(southPlugin.id, { x: 250*j, y: 250*k });
                 j++;
-                if(j==6){
+                if(j==4){
                     j=0; k++;
                 }
             }

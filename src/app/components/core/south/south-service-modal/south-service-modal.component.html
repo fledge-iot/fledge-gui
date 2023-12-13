@@ -9,11 +9,11 @@
           </span>
         <p class="help has-text-grey modal-subtitle">South Service</p>
       </span>
-      <button class="btn small-btn node-editor" (click)="openNodeEditor()">
+      <!-- <button class="btn small-btn node-editor" (click)="openNodeEditor()">
         <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Flow editor view">
           <i class="bi bi-diagram-3 bi-md"></i>
         </span>
-      </button>
+      </button> -->
       <button class="delete" aria-label="close" [routerLink]="['/south']"></button>
     </header>
     <section class="modal-card-body">
@@ -100,24 +100,6 @@
                   <i class="far fa-file-alt"></i>
                 </span>
               </p>
-              <div id="quickviewDefault" class="quickview">
-                <header class="quickview-header">
-                  <p class="title">System Logs</p>
-                  <span class="delete" data-dismiss="quickview"></span>
-                </header>
-              
-                <div class="quickview-body">
-                  <div class="quickview-block">
-                    <app-system-log [sourceName]="service.name"></app-system-log>
-                  </div>
-                </div>
-              
-                <footer class="quickview-footer">
-              
-                </footer>
-              </div>
-              
-              <button class="button is-small is-light like-link is-link is-pulled-right" data-show="quickview" data-target="quickviewDefault">Show quick logs</button>
             </div>
             <p class="buttons is-pulled-right">
               <button (click)="getAssetReadings(service)" class="button is-small" [appDisableUntilResponse]="reenableButton">

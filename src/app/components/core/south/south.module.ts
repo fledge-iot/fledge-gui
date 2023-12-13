@@ -12,7 +12,6 @@ import { FilterModule } from '../filter/filter.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
-import { LogsModule } from '../logs/logs.module';
 import { NodeEditorComponent } from '../../common/node-editor/node-editor.component';
 import { FlowEditorModule } from '../../common/node-editor/flow-editor.module';
 
@@ -53,7 +52,6 @@ const routes: Routes = [
     DirectivesModule,
     FilterModule,
     PipesModule,
-    LogsModule,
     FlowEditorModule
   ],
   providers: [RolesGuard, ServicesApiService, PluginService, AssetsService, SchedulesService, FilterService],
