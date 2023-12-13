@@ -85,6 +85,9 @@ export class CustomNodeComponent implements OnChanges {
     if (this.data.label === 'Applications') {
       this.helpText = 'Filters';
     }
+    if(this.data.label === 'AddService'){
+      this.data.label = "";
+    }
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
@@ -204,5 +207,9 @@ export class CustomNodeComponent implements OnChanges {
 
   openServiceDetails() {
     this.router.navigate(['/south/node-editor'], { queryParams: { source: this.service.name } });
+  }
+  
+  navToAddServicePage() {
+    this.router.navigate(['/south/node-editor']);
   }
 }

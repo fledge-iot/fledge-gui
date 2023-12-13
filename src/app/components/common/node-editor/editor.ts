@@ -18,6 +18,7 @@ import { South } from "./south";
 import { Storage } from "./storage";
 import { Filter } from "./filter";
 import { Applications } from "./applications";
+import { AddService } from "./add-service";
 
 type Node = South | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -203,6 +204,9 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                 }
             }
         }
+        const addService = new AddService();
+        await editor.addNode(addService);
+        await area.translate(addService.id, { x: 250*j, y: 250*k });
     }
 
 
