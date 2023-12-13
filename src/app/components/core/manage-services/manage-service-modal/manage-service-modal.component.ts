@@ -27,8 +27,8 @@ export class ManageServiceModalComponent implements OnChanges {
   category: any;
   isServiceAvailable = false;
   isServiceEnabled = false;
-  serviceName = '';
   serviceModalName = '';
+  serviceName = '';
   availableServices = [];
   servicePackageName = 'fledge-service-';
   btnText = 'Add';
@@ -44,8 +44,7 @@ export class ManageServiceModalComponent implements OnChanges {
 
   service;
   @Input() serviceData: {
-    serviceAvailable: string[], serviceEnabled: string[],
-    serviceNameInfo: [{key: '', value: ''}], serviceModalName: string
+    isServiceAvailable: boolean, isServiceEnabled: boolean, name: string, serviceModalName: string
   };
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
@@ -75,16 +74,14 @@ export class ManageServiceModalComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['serviceData']) {
-      const service = this.serviceData?.serviceNameInfo?.find((s) => s.key === this.serviceData.serviceModalName);
-      this.serviceName = service ? service['value'] : '';
-      this.isServiceEnabled = this.serviceData?.serviceEnabled?.indexOf(this.serviceData.serviceModalName) !== -1;
-      this.isServiceAvailable = this.serviceData?.serviceAvailable?.indexOf(this.serviceData.serviceModalName) !== -1;
-      this.serviceModalName = this.serviceData?.serviceModalName;   
+      this.serviceName = this.serviceData.name ? this.serviceData.name : ''; ;
+      this.isServiceEnabled = this.serviceData.isServiceEnabled;
+      this.isServiceAvailable = this.serviceData.isServiceAvailable;
+      this.serviceModalName = this.serviceData.serviceModalName;
     }
-
     this.enabled = this.isServiceEnabled;
     this.btnText = 'Add';
-    if (this.isServiceAvailable && this.serviceName) {
+    if (this.isServiceAvailable) {
       this.showDeleteBtn = true;
       this.btnText = 'Save';
       this.getCategory();
@@ -92,7 +89,7 @@ export class ManageServiceModalComponent implements OnChanges {
   }
 
   ngOnInit() {
-    if (this.serviceModalName) {
+    if (this.serviceName) {
       this.getService();
     }
   }
@@ -171,9 +168,6 @@ export class ManageServiceModalComponent implements OnChanges {
           this.isServiceAvailable = true;
           this.btnText = 'Save';
           this.toggleModal(false);
-          // setTimeout(() => {
-          //   this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
-          // }, 1000);
         },
         (error) => {
           /** request done */
@@ -246,9 +240,6 @@ export class ManageServiceModalComponent implements OnChanges {
       key: 'deleteService'
     };
     // call child component method to toggle modal
-    // if (this.child) {
-
-    // }
     this.child?.toggleModal(true, '#manage-service-modal');
   }
 
@@ -370,7 +361,6 @@ export class ManageServiceModalComponent implements OnChanges {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isServiceEnabled = false;
-          // this.notificationService.notifyServiceEmitter.next({ isEnabled: this.isNotificationServiceEnabled });
         },
         error => {
           /** request completed */

@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { orderBy } from 'lodash';
 import { ActivatedRoute } from '@angular/router';
 
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, NotificationsService } from '../../../services';
@@ -15,7 +16,7 @@ import { ManageServiceModalComponent } from './manage-service-modal/manage-servi
 export class ListManageServicesComponent implements OnInit {
   private viewPortSubscription: Subscription;
   viewPort: any = '';
-  services = ['Notification', 'Dispatcher', 'BucketStorage'];
+  services = [{ type: 'Notification'}, { type: 'Dispatcher'}, { type: 'BucketStorage'}];
   installedServices = [];
 
   serviceAvailable = [];
@@ -24,6 +25,8 @@ export class ListManageServicesComponent implements OnInit {
   serviceNameInfo = [];
   installedExternalServices = [];
   externalServices = [];
+
+  servicesData = [];
 
   service: any;
   
@@ -46,35 +49,30 @@ export class ListManageServicesComponent implements OnInit {
       .subscribe(viewport => {
         this.viewPort = viewport;
       });
-      this.externalServices = this.services.sort((a, b) => a.localeCompare(b));
-      // southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
+      this.servicesData = this.services.sort((a, b) => a.type.localeCompare(b.type));
       this.checkSelectedServiceStatus();
   }
 
-  public async checkSelectedServiceStatus(refresh: boolean = false) {
-    await this.getInstalledServicesList();
+  public async checkSelectedServiceStatus() {
     this.installedExternalServices = [];
+    await this.getInstalledServicesList();
     this.serviceAvailable = [];
     this.serviceEnabled = [];
     for (const service of this.services) {
-      if (this.installedServices.includes(service.toLowerCase())) {
-        if (refresh) {
-          this.checkServiceStatus(service);
-          return;
-        }
-        this.checkInstalledServices(service);
+      if (this.installedServices.includes(service.type.toLowerCase())) {
+        this.checkInstalledServices(service.type);
+        this.getServiceByType(service.type);
       } else {
         if (this.serviceAvailable && this.serviceEnabled) {  
-          if (this.serviceAvailable.indexOf(service) !== -1) {
-            this.serviceAvailable = this.serviceAvailable[this.serviceAvailable.indexOf(service)];
+          if (this.serviceAvailable.indexOf(service.type) !== -1) {
+            this.serviceAvailable = this.serviceAvailable[this.serviceAvailable.indexOf(service.type)];
           }
           if (this.serviceEnabled.indexOf(service) !== -1) {
-            this.serviceEnabled = this.serviceEnabled[this.serviceEnabled.indexOf(service)];
+            this.serviceEnabled = this.serviceEnabled[this.serviceEnabled.indexOf(service.type)];
           }
         }
       }
-      this.getServiceByType(service);
-    }
+    }  
   }
 
   checkInstalledServices(serviceName) {
@@ -116,12 +114,15 @@ export class ListManageServicesComponent implements OnInit {
     this.ngProgress.start();
     this.servicesApiService.getServiceByType(service)
       .subscribe((res: any) => {
-        this.ngProgress.done();
-        this.installedExternalServices.push(res.services[0]);
-        this.installedExternalServices = this.installedExternalServices?.sort((a, b) => a.name.localeCompare(b.name));
-        
-        this.externalServices = this.externalServices?.filter((s) => s !== res.services[0].type);  
-        this.externalServices = this.externalServices?.sort((a, b) => a.localeCompare(b));
+        this.ngProgress.done();       
+        const availableServices = this.servicesData?.filter((s) => s.type !== res.services[0].type);
+        this.installedExternalServices.push(res.services[0]); 
+
+        const availableServicesNames  = new Set(this.installedExternalServices.map(({ name }) => name));
+        this.servicesData = [
+          ...orderBy(this.installedExternalServices, 'name'),
+          ...orderBy(availableServices, 'name').filter(({ name }) => !availableServicesNames.has(name))
+        ];
       },
         (error) => {
           this.ngProgress.done();
@@ -157,13 +158,14 @@ export class ListManageServicesComponent implements OnInit {
   }
 
   checkServiceEnabled(service: any, serviceName) {
-    if (service) {
-      this.serviceNameInfo.push({key: service.type, value: service.name});
-      this.serviceAvailable.push(service.type);
-      this.serviceEnabled.push(service.type);
+    const selectedService = this.servicesData.find((s) => s.type === service?.type);
+    if (service) {    
+      selectedService.name = service.name;
+      selectedService.isServiceAvailable = true;
+      selectedService.isServiceEnabled = true;
+      selectedService.status = service.status;
       if (service.status.toLowerCase() === 'shutdown') {
-        const enabledService = this.serviceEnabled.find((s) => s !== service.type);
-        this.serviceEnabled = enabledService;
+        selectedService.isServiceEnabled = false;
       }
     } else {
       this.getSchedules(serviceName);
@@ -171,22 +173,21 @@ export class ListManageServicesComponent implements OnInit {
   }
 
   public getSchedules(serviceName): void {
+    const selectedService = this.servicesData.find((s) => s.type === serviceName);
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
           const schedule = data.schedules.find((item: any) => item.processName === serviceName + '_c');
           if (schedule === undefined) {
-            const availableService = this.serviceAvailable?.find((s) => s === serviceName);
-            this.serviceAvailable = availableService ? availableService.type : this.serviceAvailable;
-            const enabledService = this.serviceEnabled?.find((s) => s === serviceName);
-            this.serviceEnabled = enabledService ? enabledService.type : this.serviceEnabled;
-            this.serviceNameInfo = this.serviceNameInfo?.filter((s) => s.value === serviceName.name);           
+            selectedService.isServiceAvailable = false;
+            selectedService.isServiceEnabled = false;
+            selectedService.name = '';
             return;
           }
-          this.serviceNameInfo.push({key: serviceName, value: schedule.name});
-          this.serviceAvailable.push(serviceName);
+          selectedService.name = schedule.name;
+          selectedService.isServiceAvailable = true;
           if (schedule.enabled) {
-            this.serviceEnabled.push(serviceName);
+            selectedService.isServiceEnabled = true;
           }
         },
         error => {
@@ -202,28 +203,88 @@ export class ListManageServicesComponent implements OnInit {
    * Open Settings modal
    */
    openServiceModal(service) {
-    this.serviceData = {
-      serviceAvailable: this.serviceAvailable,
-      serviceEnabled: this.serviceEnabled,
-      serviceNameInfo: this.serviceNameInfo,
-      serviceModalName: service
-    };
+    const selectedService = this.servicesData.find((s) => s.type === service);
+    selectedService.serviceModalName = service;
+    this.serviceData = selectedService;
     this.serviceModal.toggleModal(true);
   }
 
   deleteService() {
     this.ngProgress.start();
-    this.notificationService.deleteNotificationService(this.service.name)
+    this.servicesApiService.deleteService(this.service.name)
       .subscribe(
         (data: any) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data['result'], true);
-          this.notificationService.notifyServiceEmitter.next({ isAddDeleteAction: true });
           this.closeModal('delete-confirmation-dialog');
           this.checkSelectedServiceStatus();
         },
         error => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  stateUpdate() {
+    if (this.service.status === 'shutdown') {
+      this.enableService();
+    } else {
+      this.disableService();
+    }
+  }
+
+  enableService() {
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.enableScheduleByName(this.service.name).
+      subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
+          this.alertService.success(data['message'], true);
+          const selectedService = this.servicesData.find((s) => s.name === this.service.name);
+          selectedService.isServiceEnabled = true;
+          this.closeModal('confirmation-dialog');
+          this.checkSelectedServiceStatus();
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  disableService() {
+    /** request started */
+    this.ngProgress.start();
+    this.schedulesService.disableScheduleByName(this.service.name).
+      subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
+          this.alertService.success(data['message'], true);
+          const selectedService = this.servicesData.find((s) => s.name === this.service.name);
+          selectedService.isServiceEnabled = false;
+          this.closeModal('confirmation-dialog');
+          this.checkSelectedServiceStatus();
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

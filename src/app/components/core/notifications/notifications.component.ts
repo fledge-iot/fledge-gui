@@ -56,7 +56,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     public rolesService: RolesService) { }
 
   ngOnInit() {
-    console.log('not11111');
     this.onNotifySettingModal();
     this.checkNotificationServiceStatus();
     this.getNotificationInstance();
