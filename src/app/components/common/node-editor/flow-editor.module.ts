@@ -8,6 +8,7 @@ import { RefDirective } from './ref.directive';
 import { QuickviewModule } from '../quickview/quickview.module';
 import { LogsModule } from '../../core/logs/logs.module';
 import { SharedModule } from './../../../shared.module';
+import { RouterModule } from '@angular/router';
 
 
 
@@ -21,7 +22,8 @@ import { SharedModule } from './../../../shared.module';
     CommonModule,
     QuickviewModule,
     LogsModule,
-    SharedModule
+    SharedModule,
+    RouterModule
   ],
   exports: [NodeEditorComponent,
     CustomNodeComponent,
