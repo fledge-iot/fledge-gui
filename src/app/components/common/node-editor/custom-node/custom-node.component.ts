@@ -129,7 +129,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   addFilter() {
-    this.router.navigate(['/south', this.service.name, 'details'], { queryParams: { source: 'flowEditorFilter' } })
+    this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } })
   }
 
   navToSouthPage() {
