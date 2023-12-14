@@ -341,10 +341,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/elements@13":
-  version "13.4.0"
-  resolved "https://registry.yarnpkg.com/@angular/elements/-/elements-13.4.0.tgz#a296d09379a0318c5e4e59e03741194a33b8c74b"
-  integrity sha512-nE7P/aJhOVa7hRsZCvF8abLEltllf2HiZ1iF/fXK//Qpga1pwiN3ch03xiBs+md7jTTFuWa09sjtUSIojepGHw==
+"@angular/elements@16":
+  version "16.2.12"
+  resolved "https://registry.yarnpkg.com/@angular/elements/-/elements-16.2.12.tgz#1c858ea366325c58929dd6b95789c37624ccc2b5"
+  integrity sha512-x5EPsoh6hikR52yWh4w9E+YEIIsHwPq88dlamTjDbqlShNfMFg9vRRTIGd0xzrSKc0yM/kkXNMzJUMcZAVdycQ==
   dependencies:
     tslib "^2.3.0"
 

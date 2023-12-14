@@ -1,7 +1,7 @@
 import { Injector } from "@angular/core";
 import { NodeEditor, GetSchemes, ClassicPreset } from "rete";
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
-import { AngularPlugin, Presets, AngularArea2D } from "rete-angular-plugin/13";
+import { AngularPlugin, Presets, AngularArea2D } from "rete-angular-plugin/16";
 import { ConnectionPlugin, Presets as ConnectionPresets } from "rete-connection-plugin";
 import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "rete-auto-arrange-plugin";
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
