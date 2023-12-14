@@ -24,8 +24,8 @@ export class DocService {
     window.open(`${packageInfo.doc_url}${this.version}/plugins/${p}/index.html`, '_blank');
   }
 
-  goToNotificationDocLink(slug: string) {
-    window.open(`${packageInfo.doc_url}${this.version}/services/fledge-service-notification/index.html#${slug}`, '_blank');
+  goToServiceDocLink(slug: string, repoName: string = null) {
+    window.open(`${packageInfo.doc_url}${this.version}/services/${repoName}/index.html#${slug}`, '_blank');
   }
 
   goToSetPointControlDocLink(slug: string) {

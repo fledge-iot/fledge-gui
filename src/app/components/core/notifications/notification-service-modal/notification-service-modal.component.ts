@@ -509,6 +509,6 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   goToLink() {
     const urlSlug = 'configuring-the-notification-service';
-    this.docService.goToNotificationDocLink(urlSlug);
+    this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { orderBy } from 'lodash';
-import { ActivatedRoute } from '@angular/router';
 
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, NotificationsService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
@@ -16,16 +15,11 @@ import { ManageServiceModalComponent } from './manage-service-modal/manage-servi
 export class ListManageServicesComponent implements OnInit {
   private viewPortSubscription: Subscription;
   viewPort: any = '';
-  services = [{ type: 'Notification'}, { type: 'Dispatcher'}, { type: 'BucketStorage'}];
+  services = [{ type: 'Notification'}, { type: 'Dispatcher'}, { type: 'BucketStorage'}, { type: 'Poll Agent'}];
   installedServices = [];
 
-  serviceAvailable = [];
-  serviceEnabled = [];
   serviceData = {};
-  serviceNameInfo = [];
   installedExternalServices = [];
-  externalServices = [];
-
   servicesData = [];
 
   service: any;
@@ -37,9 +31,7 @@ export class ListManageServicesComponent implements OnInit {
     public sharedService: SharedService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
-    private route: ActivatedRoute,
     private dialogService: DialogService,
-    private notificationService: NotificationsService,
     public servicesApiService: ServicesApiService,
     public rolesService: RolesService,
     public schedulesService: SchedulesService) { }
@@ -56,21 +48,14 @@ export class ListManageServicesComponent implements OnInit {
   public async checkSelectedServiceStatus() {
     this.installedExternalServices = [];
     await this.getInstalledServicesList();
-    this.serviceAvailable = [];
-    this.serviceEnabled = [];
     for (const service of this.services) {
       if (this.installedServices.includes(service.type.toLowerCase())) {
         this.checkInstalledServices(service.type);
         this.getServiceByType(service.type);
       } else {
-        if (this.serviceAvailable && this.serviceEnabled) {  
-          if (this.serviceAvailable.indexOf(service.type) !== -1) {
-            this.serviceAvailable = this.serviceAvailable[this.serviceAvailable.indexOf(service.type)];
-          }
-          if (this.serviceEnabled.indexOf(service) !== -1) {
-            this.serviceEnabled = this.serviceEnabled[this.serviceEnabled.indexOf(service.type)];
-          }
-        }
+        const selectedService = this.servicesData.find((s) => s.type === service?.type);
+        selectedService.isServiceAvailable = false;
+        selectedService.isServiceEnabled = false;
       }
     }  
   }
@@ -291,6 +276,21 @@ export class ListManageServicesComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  applyClass(serviceStatus: string) {
+    if (serviceStatus.toLowerCase() === 'running') {
+      return 'is-info';
+    }
+    if (serviceStatus.toLowerCase() === 'unresponsive') {
+      return 'is-warning';
+    }
+    if (serviceStatus.toLowerCase() === 'shutdown') {
+      return 'is-lighter';
+    }
+    if (serviceStatus.toLowerCase() === 'failed') {
+      return 'is-danger';
+    }
   }
 
   setService(service) {

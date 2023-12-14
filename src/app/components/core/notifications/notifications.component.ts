@@ -261,7 +261,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           }
         });
   }
-
+  
   /**
    * Open Notification Settings modal
    */
@@ -275,7 +275,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   goToLink(urlSlug: string) {
-    this.docService.goToNotificationDocLink(urlSlug);
+    this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 
   ngOnDestroy() {

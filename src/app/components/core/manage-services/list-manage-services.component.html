@@ -24,7 +24,7 @@
                 </td>
                 <td>
                   <div *ngIf="service?.name" class="tags has-addons">
-                    <span class="tag is-light" [ngClass]="{'is-info': service?.status === 'running'}">{{service?.status}}</span>
+                    <span class="tag is-light" [ngClass]="applyClass(service?.status)">{{service?.status}}</span>
                   </div>
                 </td>
                 <td>

@@ -30,7 +30,7 @@ export class ManageServiceModalComponent implements OnChanges {
   serviceModalName = '';
   serviceName = '';
   availableServices = [];
-  servicePackageName = 'fledge-service-';
+  packageNamePrefix = 'fledge-service-';
   btnText = 'Add';
   showDeleteBtn = true;
   public serviceRecord;
@@ -265,9 +265,13 @@ export class ManageServiceModalComponent implements OnChanges {
 
   installService() {
     this.pluginInstallationState = true;
+    let repoToInstall = this.packageNamePrefix + this.serviceModalName.toLowerCase();
+    if (this.serviceModalName === 'Poll Agent') {
+      repoToInstall = this.packageNamePrefix + 'management';
+    }
     const servicePayload = {
       format: 'repository',
-      name: this.servicePackageName + this.serviceModalName.toLowerCase(),
+      name: repoToInstall,
       version: ''
     };
 
@@ -488,6 +492,10 @@ export class ManageServiceModalComponent implements OnChanges {
 
   goToLink() {
     const urlSlug = 'configuring-the-service';
-    // this.docService.goToDocLink(urlSlug);
+    let repoName = this.packageNamePrefix + this.serviceModalName.toLowerCase();
+    if (this.serviceModalName === 'Poll Agent') {
+      repoName = this.packageNamePrefix + 'management';
+    }
+    this.docService.goToServiceDocLink(urlSlug, repoName);
   }
 }
