@@ -1,5 +1,5 @@
 import { Component, OnChanges, Input, SimpleChanges, ViewChild, HostListener, EventEmitter } from '@angular/core';
-import { FormBuilder, NgForm } from '@angular/forms';
+import { UntypedFormBuilder, NgForm } from '@angular/forms';
 import {
   ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService,
@@ -60,7 +60,7 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   constructor(
     private router: Router,
-    public fb: FormBuilder,
+    public fb: UntypedFormBuilder,
     public ngProgress: ProgressBarService,
     private configService: ConfigurationService,
     public schedulesService: SchedulesService,

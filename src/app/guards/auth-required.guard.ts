@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Injectable()
-export class AuthRequiredGuard implements CanActivate {
+export class AuthRequiredGuard  {
   constructor(private router: Router) { }
   canActivate() {
     if (sessionStorage.getItem('token') || sessionStorage.getItem('LOGIN_SKIPPED') == 'true') {

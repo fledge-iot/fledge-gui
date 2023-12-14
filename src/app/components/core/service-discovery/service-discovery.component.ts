@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, Validators, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { DiscoveryService } from '../../../services';
@@ -24,9 +24,9 @@ export class ServiceDiscoveryComponent implements OnInit {
   connectedProtocol;
   connectedHost;
   connectedPort;
-  form: FormGroup;
+  form: UntypedFormGroup;
   constructor(private discoveryService: DiscoveryService, private router: Router,
-    public fb: FormBuilder, private status: ConnectedServiceStatus) {
+    public fb: UntypedFormBuilder, private status: ConnectedServiceStatus) {
     this.JSON = JSON;
     this.discoveryHost = localStorage.getItem('DISCOVERY_HOST') != null ? localStorage.getItem('DISCOVERY_HOST') : 'localhost';
     this.discoveryPort = localStorage.getItem('DISCOVERY_PORT') != null ? localStorage.getItem('DISCOVERY_PORT') : '3000';

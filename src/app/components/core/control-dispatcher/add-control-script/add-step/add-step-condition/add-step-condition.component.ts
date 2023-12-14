@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, NgForm } from '@angular/forms';
 import { RolesService, SharedService } from '../../../../../../services';
 
 @Component({
@@ -58,22 +58,22 @@ export class AddStepConditionComponent implements OnInit {
 
   addConditionControl() {
     this.showConditionControl = true;
-    this.conditionControls().addControl('key', new FormControl(''));
-    this.conditionControls().addControl('condition', new FormControl(this.conditions[0]));
-    this.conditionControls().addControl('value', new FormControl(''));
+    this.conditionControls().addControl('key', new UntypedFormControl(''));
+    this.conditionControls().addControl('condition', new UntypedFormControl(this.conditions[0]));
+    this.conditionControls().addControl('value', new UntypedFormControl(''));
   }
 
   stepsFormGroup() {
-    return this.control.form.controls['steps'] as FormGroup;
+    return this.control.form.controls['steps'] as UntypedFormGroup;
   }
 
-  stepControlGroup(): FormGroup {
-    return this.stepsFormGroup().controls[`step-${this.index}`] as FormGroup;
+  stepControlGroup(): UntypedFormGroup {
+    return this.stepsFormGroup().controls[`step-${this.index}`] as UntypedFormGroup;
   }
 
-  conditionControls(): FormGroup {
-    const stepControl = this.stepControlGroup().controls[this.from] as FormGroup;
-    const conditionControl = stepControl.controls['condition'] as FormGroup;
+  conditionControls(): UntypedFormGroup {
+    const stepControl = this.stepControlGroup().controls[this.from] as UntypedFormGroup;
+    const conditionControl = stepControl.controls['condition'] as UntypedFormGroup;
     return conditionControl;
   }
 

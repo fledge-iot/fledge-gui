@@ -24,7 +24,11 @@
               "lodash",
               "chart.js",
               "@ctrl/ngx-codemirror",
-              "codemirror"
+              "codemirror",
+              "bulma-toast",
+              "mobx",
+              "jsonlint-mod",
+              "moment"
             ],
             "outputPath": "dist",
             "index": "src/fledge.html",
@@ -35,7 +39,7 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@circlon/angular-tree-component/css/angular-tree-component.css",
+              "./node_modules/@ali-hm/angular-tree-component/css/angular-tree-component.css",
               "./node_modules/animate.css/animate.css",
               "./node_modules/@ng-select/ng-select/themes/default.theme.css",
               "./node_modules/bulma-quickview/dist/css/bulma-quickview.min.css",
@@ -153,6 +157,5 @@
         }
       }
     }
-  },
-  "defaultProject": "fledge"
+  }
 }

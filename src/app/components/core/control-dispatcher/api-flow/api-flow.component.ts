@@ -2,7 +2,7 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
-import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
+import { Validators, UntypedFormGroup, UntypedFormBuilder, AbstractControl, UntypedFormArray } from '@angular/forms';
 import { UserService } from '../../../../services';
 import { ControlUtilsService } from '../control-utils.service';
 
@@ -29,7 +29,7 @@ export class APIFlowComponent implements OnInit {
     allUsers: User[];
   
     // Check if it can be removed
-    apiFlowForm: FormGroup;
+    apiFlowForm: UntypedFormGroup;
 
     editMode: {};
 
@@ -44,7 +44,7 @@ export class APIFlowComponent implements OnInit {
         public docService: DocService,
         private userService: UserService,
         private ngProgress: ProgressBarService,
-        private fb: FormBuilder,
+        private fb: UntypedFormBuilder,
         public sharedService: SharedService,
         private controlUtilsService: ControlUtilsService,
         public rolesService: RolesService) {
@@ -64,7 +64,7 @@ export class APIFlowComponent implements OnInit {
     }
 
     addParameter(param) {
-        const control = <FormArray>this.apiFlowForm.controls['variables'];
+        const control = <UntypedFormArray>this.apiFlowForm.controls['variables'];
         control.push(this.initParameter(param));
     }
 
@@ -84,7 +84,7 @@ export class APIFlowComponent implements OnInit {
     }
 
     getFormControls(type): AbstractControl[] {
-        return (<FormArray>this.apiFlowForm.get(type)).controls;
+        return (<UntypedFormArray>this.apiFlowForm.get(type)).controls;
     }
 
     getAPIFlows() {
@@ -113,7 +113,7 @@ export class APIFlowComponent implements OnInit {
         this.controlAPIFlowService.getAPIFlow(name)
           .subscribe((af: APIFlow) => {
             this.ngProgress.done();
-            let v = <FormArray>this.apiFlowForm.controls['variables'];
+            let v = <UntypedFormArray>this.apiFlowForm.controls['variables'];
             v.clear();
             this.fillParameters(af.variables);
             // TODO: FOGL-8079 (blank values for variables are not allowed)

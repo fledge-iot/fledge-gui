@@ -9,7 +9,6 @@ import { Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
-  moduleId: module.id.toString(),
   selector: 'app-login',
   templateUrl: 'login.component.html',
   styleUrls: ['./login.component.css']

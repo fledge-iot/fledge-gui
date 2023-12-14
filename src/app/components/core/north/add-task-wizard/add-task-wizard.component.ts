@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { cloneDeep, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -35,12 +35,12 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   validConfigurationForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
-  taskForm = new FormGroup({
-    name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
-    plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
-    repeatDays: new FormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
-    repeatTime: new FormControl('', [Validators.required]),
-    config: new FormControl(null)
+  taskForm = new UntypedFormGroup({
+    name: new UntypedFormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+    plugin: new UntypedFormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
+    repeatDays: new UntypedFormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
+    repeatTime: new UntypedFormControl('', [Validators.required]),
+    config: new UntypedFormControl(null)
   });
 
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
