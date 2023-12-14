@@ -152,7 +152,7 @@ export class CustomNodeComponent implements OnChanges {
         () => {
           console.log("schedule disabled");
           setTimeout(() => {
-            this.router.navigate(['/south/node-editor'], { queryParams: { source: 'nodelist' } });
+            this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
           }, 2000);
         },
         error => {
@@ -166,7 +166,7 @@ export class CustomNodeComponent implements OnChanges {
         () => {
           console.log("schedule enabled");
           setTimeout(() => {
-            this.router.navigate(['/south/node-editor'], { queryParams: { source: 'nodelist' } });
+            this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
           }, 2000);
         },
         error => {
@@ -198,7 +198,7 @@ export class CustomNodeComponent implements OnChanges {
       this.servicesApiService.deleteService(this.service.name)
         .subscribe(
           () => {
-            this.router.navigate(['/south/node-editor'], { queryParams: { source: 'nodelist' } });
+            this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
           },
           (error) => {
             console.log('service down ', error);
@@ -211,10 +211,10 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   openServiceDetails() {
-    this.router.navigate(['/south/node-editor'], { queryParams: { source: this.service.name } });
+    this.router.navigate(['/south/flow'], { queryParams: { source: this.service.name } });
   }
   
   navToAddServicePage() {
-    this.router.navigate(['/south/node-editor']);
+    this.router.navigate(['/south/flow']);
   }
 }

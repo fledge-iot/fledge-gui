@@ -2,7 +2,7 @@
     <div class="navbar-item" *ngIf="source!=='nodelist'">
         <nav class="breadcrumb" aria-label="breadcrumbs">
             <ul>
-                <li><a [routerLink]="['/south/node-editor']" [queryParams]="{ source: 'nodelist' }">Flow Editor</a></li>
+                <li><a [routerLink]="['/south/flow']" [queryParams]="{ source: 'nodelist' }">Flow Editor</a></li>
                 <li class="is-active">
                     <a href="#" aria-current="page">
                         {{source ? source : 'Add'}}

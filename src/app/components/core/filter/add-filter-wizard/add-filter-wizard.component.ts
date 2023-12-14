@@ -456,7 +456,7 @@ export class AddFilterWizardComponent implements OnInit {
           this.reenableButton.emit(false);
         }
         if(this.source === 'flowEditorFilter'){
-          this.router.navigate(['/south/node-editor'], { queryParams: { source: this.serviceName } });
+          this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
         }
       },
         (error) => {

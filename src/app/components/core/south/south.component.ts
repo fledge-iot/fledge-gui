@@ -48,7 +48,7 @@ export class SouthComponent implements OnInit, OnDestroy {
     public rolesService: RolesService) {
     if(FLOW_EDITOR_VIEW){
       setTimeout(() => {
-        this.openNodeEditorListPage();
+        this.navToFlowEditor();
       }, 1);
     }
     this.isAlive = true;
@@ -208,11 +208,11 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.destroy$.unsubscribe();
   }
 
-  openNodeEditor(){
-    this.router.navigate(['/south/node-editor']);
+  navToFlowEditorAddPage(){
+    this.router.navigate(['/south/flow']);
   }
 
-  openNodeEditorListPage(){
-    this.router.navigate(['/south/node-editor'], { queryParams: { source: 'nodelist' } });
+  navToFlowEditor(){
+    this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
   }
 }

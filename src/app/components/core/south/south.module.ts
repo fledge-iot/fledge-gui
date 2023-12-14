@@ -26,7 +26,7 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'node-editor',
+    path: 'flow',
     component: NodeEditorComponent,
     canActivate: [RolesGuard]
   },
