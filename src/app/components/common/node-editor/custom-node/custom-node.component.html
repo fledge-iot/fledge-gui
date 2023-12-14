@@ -70,10 +70,10 @@
         </div>
         <div class="service-details">
             <ng-container *ngIf="isServiceNode">
-                <small *ngIf="isServiceNode">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                <small *ngIf="service.status!=='shutdown'">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
             </ng-container>
         </div>
-        <div [ngClass]="{'mt-5':!isServiceNode, 'mt-1': isServiceNode}">
+        <div [ngClass]="{'mt-5':!isServiceNode || service.status=='shutdown', 'mt-1': isServiceNode}">
             <ng-container *ngIf="data.label!=='Applications' && data.label!=='South' && data.label!=='Filter'">
                 <div class="is-pulled-left ml-2 mt-2">
                     <span class="icon is-small has-tooltip-right has-tooltip-arrow is-pulled-left is-hovered"

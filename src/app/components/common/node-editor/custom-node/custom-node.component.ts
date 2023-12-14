@@ -63,13 +63,18 @@ export class CustomNodeComponent implements OnChanges {
         this.isServiceNode = true;
         
         this.service.name = Object.keys(this.data.controls)[0];
-        this.service.status = Object.keys(this.data.controls)[1];
-        this.service.protocol = Object.keys(this.data.controls)[2];
-        this.service.address = Object.keys(this.data.controls)[3];
-        this.service.pluginName = Object.keys(this.data.controls)[4];
-        this.service.management_port = Object.keys(this.data.controls)[5].slice(3);
-        this.service.assetCount = Object.keys(this.data.controls)[6].slice(3);
-        this.service.readingCount = Object.keys(this.data.controls)[7].slice(3);
+        this.service.pluginName = Object.keys(this.data.controls)[1];
+        this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
+        this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
+        this.service.status = Object.keys(this.data.controls)[4];
+        if(this.service.status === ''){
+          this.service.status = 'shutdown';
+        }
+        if(this.service.status !== 'shutdown'){
+          this.service.protocol = Object.keys(this.data.controls)[5];
+          this.service.address = Object.keys(this.data.controls)[6];
+          this.service.management_port = Object.keys(this.data.controls)[7].slice(3);
+        }
         
         this.data.label = this.service.name;
         if (this.service.status === 'running') {
