@@ -625,8 +625,8 @@ export class AddControlPipelineComponent implements OnInit {
     }, 1000);
   }
 
-  goToLink(pluginInfo) {
-    this.docService.goToSetPointControlDocLink(pluginInfo);
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
   onCheckboxClicked(event) {
