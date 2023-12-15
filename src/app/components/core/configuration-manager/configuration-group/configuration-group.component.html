@@ -1,11 +1,12 @@
 <div class="container" [ngClass]="{'is-fluid': sourceName}">
-  <div *ngIf="sourceName" class="card custom-quickview-card">
-    <header class="card-header custom-quickview-header">
-      <div class="card-header-title custom-quickview-title">
-        <span>{{sourceName}}/&nbsp;Configuration</span>
-      </div>
-    </header>
-  </div>
+  <nav *ngIf="sourceName" class="breadcrumb" aria-label="breadcrumbs">
+    <ul>
+      <li class="is-active"><a>{{sourceName}}</a></li>
+      <li class="is-active">
+        <a href="#" aria-current="page">Configuration</a>
+      </li>
+    </ul>
+  </nav>
   <div class="configuration_group_wrapper">
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div id="groupNavContents" class="nav groupNav_contents">

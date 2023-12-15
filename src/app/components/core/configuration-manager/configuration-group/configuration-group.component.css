@@ -19,18 +19,10 @@
   border: none !important;
 }
 
-.custom-quickview-card {
-  box-shadow: none;
-  margin-bottom: 24px;
-}
-
-.custom-quickview-header {
-  box-shadow: none;
-  background-color: white;
-}
-
-.custom-quickview-title {
-  padding-left: 0px !important;
+.breadcrumb {
+  margin-left: 1.5rem;
+  padding-top: 0.85rem;
+  margin-top: 10px;
 }
 
 .tabs {

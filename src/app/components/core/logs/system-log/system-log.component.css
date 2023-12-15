@@ -56,7 +56,18 @@
   box-shadow: none;
 }
 
-.custom-quickview-header {
-  box-shadow: none;
-  background-color: white;
+.breadcrumb-container {
+  display: flex;
+  align-items: stretch;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-grow: 1;
+  margin-left: 1.5rem;
+  padding-top: 0.85rem;
+}
+
+.fix-pad {
+  padding-top: 1.1rem;
 }

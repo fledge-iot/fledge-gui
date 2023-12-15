@@ -1,21 +1,38 @@
 <div class="container is-fluid">
   <div class="card" [ngClass]="{'custom-quickview-card': sourceName}">
-    <header class="card-header" [ngClass]="{'custom-quickview-header': sourceName}">
-      <div class="card-header-title">
-        <span *ngIf="sourceName">{{sourceName}}/&nbsp;</span>
-        <span>Logs</span>
-        <a *ngIf="!isAlive || page > 1" (click)="onFirst()" title="Reload" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </a>
-      </div>
+    <div class="breadcrumb-container" *ngIf="sourceName; else cardHeaderTemplate">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li class="is-active"><a>{{sourceName}}</a></li>
+          <li class="is-active">
+            <a href="#" aria-current="page">Logs</a>
+          </li>
+        </ul>
+      </nav>
       <div *ngIf="refreshInterval !== -1 && page === 1" class="fix-pad auto-refresh">
         <label class="checkbox">
-          <input class="checkmark" type="checkbox" [checked]='isAlive'
-            (click)="toggleAutoRefresh($event.target.checked)">
+          <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event.target.checked)">
           Auto Refresh
         </label>
       </div>
-    </header>
+    </div>
+    <ng-template #cardHeaderTemplate>
+      <header class="card-header">
+        <div class="card-header-title">
+          <span>System Logs</span>
+          <a *ngIf="!isAlive || page > 1" (click)="onFirst()" title="Reload" class="button is-small" id="refresh-check">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          </a>
+        </div>
+        <div *ngIf="refreshInterval !== -1 && page === 1" class="fix-pad auto-refresh">
+          <label class="checkbox">
+            <input class="checkmark" type="checkbox" [checked]='isAlive'
+              (click)="toggleAutoRefresh($event.target.checked)">
+            Auto Refresh
+          </label>
+        </div>
+      </header>
+    </ng-template>
     <div class="card-content">
       <div class="content mb-3">
         <div class="columns">
