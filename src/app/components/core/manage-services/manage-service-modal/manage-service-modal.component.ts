@@ -266,8 +266,8 @@ export class ManageServiceModalComponent implements OnChanges {
   installService() {
     this.pluginInstallationState = true;
     let repoToInstall = this.packageNamePrefix + this.serviceModalName.toLowerCase();
-    if (this.serviceModalName === 'Poll Agent') {
-      repoToInstall = this.packageNamePrefix + 'management';
+    if (this.serviceModalName === 'BucketStorage') {
+      repoToInstall = this.packageNamePrefix + 'bucket';
     }
     const servicePayload = {
       format: 'repository',

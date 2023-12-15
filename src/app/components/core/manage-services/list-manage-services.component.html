@@ -20,11 +20,11 @@
               <tr *ngFor="let service of servicesData">
                 <td class="align-content content-pad">
                   <small>{{service?.type !== 'BucketStorage' ? service?.type : 'Bucket Storage'}} Service</small>
-                  <p class="help has-text-grey modal-subtitle">{{service?.name}}</p>
+                  <p class="help has-text-grey modal-subtitle mt-0">{{service?.name}}</p>
                 </td>
                 <td>
                   <div *ngIf="service?.name" class="tags has-addons">
-                    <span class="tag is-light" [ngClass]="applyClass(service?.status)">{{service?.status}}</span>
+                    <span class="tag" [ngClass]="applyClass(service?.status)">{{service?.status}}</span>
                   </div>
                 </td>
                 <td>
@@ -32,9 +32,6 @@
                     <span class="icon">
                       <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
                     </span>
-                  </a>
-                  <a *ngIf="!service?.name" (click)="openServiceModal(service?.type)" class="button is-text text-btn">
-                    Install
                   </a>
                 </td>
                 <td>
@@ -63,6 +60,9 @@
                       </div>
                     </div>
                   </div>
+                  <a *ngIf="!service?.name" (click)="openServiceModal(service?.type)" class="button is-text text-btn">
+                    {{service?.btntxt}}
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -86,11 +86,11 @@
   </app-confirmation-dialog>
   <app-confirmation-dialog id="confirmation-dialog">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-6">Delete</p>
+      <p class="modal-card-title is-size-6">{{service?.status === 'shutdown' ? 'Enable' : 'Disable'}}</p>
       <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
     </header>
     <section class="modal-card-body">
-      Are you sure, You want to {{service?.status === 'shutdown' ? 'Enable' : 'Disable'}} the service?
+      Are you sure, You want to {{service?.status === 'shutdown' ? 'enable' : 'disable'}} the service {{service?.name}}?
     </section>
     <footer class="modal-card-foot">
       <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>

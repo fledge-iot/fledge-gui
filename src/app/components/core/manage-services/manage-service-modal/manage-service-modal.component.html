@@ -20,7 +20,7 @@
                 <div class="field is-narrow">
                   <input *ngIf="!isServiceAvailable" type="text" class="input is-small"
                     name="serviceName" [(ngModel)]="serviceName"
-                    [placeholder]= "serviceModalName !== 'BucketStorage' ? serviceModalName : 'Bucket Storage'+ ' Service'" required trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"/>
+                    [placeholder]= "(serviceModalName !== 'BucketStorage' ? serviceModalName : 'Bucket Storage') +' Service'" required trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"/>
                   <small
                     *ngIf="(fg?.touched || fg?.controls['serviceName']?.dirty) && fg?.controls['serviceName']?.hasError('required')"
                     class="help is-danger level-left">*required</small>

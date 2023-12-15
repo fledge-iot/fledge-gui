@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { orderBy } from 'lodash';
 
-import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, NotificationsService } from '../../../services';
+import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
@@ -15,13 +15,12 @@ import { ManageServiceModalComponent } from './manage-service-modal/manage-servi
 export class ListManageServicesComponent implements OnInit {
   private viewPortSubscription: Subscription;
   viewPort: any = '';
-  services = [{ type: 'Notification'}, { type: 'Dispatcher'}, { type: 'BucketStorage'}, { type: 'Poll Agent'}];
+  services = [{ type: 'Notification'}, { type: 'Dispatcher'}, { type: 'BucketStorage'}, { type: 'Management'}];
   installedServices = [];
 
   serviceData = {};
   installedExternalServices = [];
   servicesData = [];
-
   service: any;
   
   public reenableButton = new EventEmitter<boolean>(false);
@@ -47,35 +46,22 @@ export class ListManageServicesComponent implements OnInit {
 
   public async checkSelectedServiceStatus() {
     this.installedExternalServices = [];
-    await this.getInstalledServicesList();
+    await this.getInstalledServices();
     for (const service of this.services) {
+      const selectedService = this.servicesData.find((s) => s.type === service?.type);
       if (this.installedServices.includes(service.type.toLowerCase())) {
-        this.checkInstalledServices(service.type);
+        this.checkServiceStatus(service.type);
         this.getServiceByType(service.type);
+        selectedService.btntxt = 'Add';
       } else {
-        const selectedService = this.servicesData.find((s) => s.type === service?.type);
         selectedService.isServiceAvailable = false;
         selectedService.isServiceEnabled = false;
+        selectedService.btntxt = 'Install';
       }
     }  
   }
 
-  checkInstalledServices(serviceName) {
-    this.servicesApiService.getAllServices()
-    .subscribe((res: any) => {
-      const service = res.services.find((s) => s.type === serviceName);
-      this.checkServiceEnabled(service, serviceName);
-    },
-      (error) => {
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
-  }
-
-  public async getInstalledServicesList() {
+  public async getInstalledServices() {
     /** request start */
     this.ngProgress.start();
     await this.servicesApiService.getInstalledServices().
@@ -280,7 +266,7 @@ export class ListManageServicesComponent implements OnInit {
 
   applyClass(serviceStatus: string) {
     if (serviceStatus.toLowerCase() === 'running') {
-      return 'is-info';
+      return 'is-success';
     }
     if (serviceStatus.toLowerCase() === 'unresponsive') {
       return 'is-warning';
