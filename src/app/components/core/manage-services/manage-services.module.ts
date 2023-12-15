@@ -13,7 +13,7 @@ import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
   {
-    path: 'services/list',
+    path: '',
     canActivate: [RolesGuard],
     component: ListManageServicesComponent
   }

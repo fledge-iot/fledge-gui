@@ -80,7 +80,7 @@ export const appRoutes: Routes = [
   },
   { path: 'setting', component: SettingsComponent },
   {
-    path: 'manage-services',
+    path: 'settings/manage-services',
     canActivate: [AuthRequiredGuard, DataViewRoleGuard],
     loadChildren: () => import('./components/core/manage-services/manage-services.module')
       .then(m => m.ManageServicesModule)

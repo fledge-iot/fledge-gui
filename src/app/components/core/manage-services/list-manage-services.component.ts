@@ -130,7 +130,7 @@ export class ListManageServicesComponent implements OnInit {
 
   checkServiceEnabled(service: any, serviceName) {
     const selectedService = this.servicesData.find((s) => s.type === service?.type);
-    if (service) {    
+    if (service) {
       selectedService.name = service.name;
       selectedService.isServiceAvailable = true;
       selectedService.isServiceEnabled = true;
@@ -266,7 +266,7 @@ export class ListManageServicesComponent implements OnInit {
 
   applyClass(serviceStatus: string) {
     if (serviceStatus.toLowerCase() === 'running') {
-      return 'is-success';
+      return 'is-light is-success';
     }
     if (serviceStatus.toLowerCase() === 'unresponsive') {
       return 'is-warning';
