@@ -2,7 +2,7 @@ import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges } from "@an
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { SchedulesService, ServicesApiService } from "./../../../../services";
+import { ConfigurationService, SchedulesService, ServicesApiService } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subscription } from "rxjs";
@@ -30,6 +30,7 @@ export class CustomNodeComponent implements OnChanges {
   isServiceNode: boolean = false;
   subscription: Subscription;
   pluginName = '';
+  isFilterNode: boolean = false;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -41,7 +42,8 @@ export class CustomNodeComponent implements OnChanges {
     private router: Router,
     private route: ActivatedRoute,
     private servicesApiService: ServicesApiService,
-    public flowEditorService: FlowEditorService) {
+    public flowEditorService: FlowEditorService,
+    private configService: ConfigurationService,) {
     this.cdr.detach();
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
@@ -87,6 +89,7 @@ export class CustomNodeComponent implements OnChanges {
       }
     }
     if (this.data.label === 'Filter') {
+      this.isFilterNode = true;
       this.filter.name = Object.keys(this.data.controls)[0];
       this.filter.pluginName = Object.keys(this.data.controls)[1];
       this.filter.enabled = Object.keys(this.data.controls)[2];
@@ -150,11 +153,16 @@ export class CustomNodeComponent implements OnChanges {
 
   toggleEnabled(isEnabled) {
     this.isEnabled = isEnabled;
-    if (this.isEnabled) {
-      this.enableSchedule(this.service.name);
+    if(this.isServiceNode){
+      if (this.isEnabled) {
+        this.enableSchedule(this.service.name);
+      }
+      else {
+        this.disableSchedule(this.service.name);
+      }
     }
-    else {
-      this.disableSchedule(this.service.name);
+    if(this.isFilterNode){
+      this.updateFilterConfiguration();
     }
   }
 
@@ -233,5 +241,23 @@ export class CustomNodeComponent implements OnChanges {
   
   navToAddServicePage() {
     this.router.navigate(['/south/flow']);
+  }
+
+  updateFilterConfiguration() {
+    let catName = `${this.source}_${this.filter.name}`;
+    this.configService.
+      updateBulkConfiguration(catName, { enable: String(this.isEnabled) })
+      .subscribe(
+        () => {
+          if(this.isEnabled){
+            console.log(this.filter.name + " filter enabled");
+          }
+          else{
+            console.log(this.filter.name + " filter disabled");
+          }
+        },
+        (error) => {
+          console.log('service down ', error);
+        });
   }
 }
