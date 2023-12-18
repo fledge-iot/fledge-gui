@@ -26,8 +26,10 @@ export class CustomNodeComponent implements OnChanges {
   helpText = '';
   isEnabled: boolean = false;
   service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "" }
+  filter = { pluginName: '', enabled: 'false', name: ''}
   isServiceNode: boolean = false;
   subscription: Subscription;
+  pluginName = '';
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -81,11 +83,21 @@ export class CustomNodeComponent implements OnChanges {
           this.isEnabled = true;
         }
         this.helpText = this.service.pluginName;
+        this.pluginName = this.service.pluginName;
       }
     }
     if (this.data.label === 'Filter') {
-      this.data.label = Object.keys(this.data.controls)[0];
-      this.helpText = 'metadata';
+      this.filter.name = Object.keys(this.data.controls)[0];
+      this.filter.pluginName = Object.keys(this.data.controls)[1];
+      this.filter.enabled = Object.keys(this.data.controls)[2];
+      this.data.label = this.filter.name;
+      if(this.filter.name !== "Filter"){
+        this.helpText = this.filter.pluginName;
+        this.pluginName = this.filter.pluginName;
+        if(this.filter.enabled === 'true'){
+          this.isEnabled = true;
+        }
+      }
     }
     if (this.data.label === 'Applications') {
       this.helpText = 'Filters';
@@ -174,8 +186,13 @@ export class CustomNodeComponent implements OnChanges {
         });
   }
 
-  goToLink(pluginInfo) {
-    this.docService.goToPluginLink(pluginInfo);
+  goToLink() {
+    if(this.isServiceNode){
+      this.docService.goToPluginLink({name: this.pluginName, type: 'South'});
+    }
+    else{
+      this.docService.goToPluginLink({name: this.pluginName, type: 'Filter'});
+    }
   }
 
   applyServiceStatusCustomCss(serviceStatus: string) {

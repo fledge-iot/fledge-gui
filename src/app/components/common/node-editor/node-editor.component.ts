@@ -17,6 +17,7 @@ export class NodeEditorComponent implements OnInit {
   @ViewChild("rete") container!: ElementRef;
   public source = '';
   public filterPipeline: string[] = [];
+  public filterConfigurations: any[] = [];
   public category: any;
   private subscription: Subscription;
 
@@ -60,8 +61,8 @@ export class NodeEditorComponent implements OnInit {
 
     if (el) {
       setTimeout(() => {
-        createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services);
-      }, 400);
+        createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations);
+      }, 3000);
     }
   }
 
@@ -69,6 +70,7 @@ export class NodeEditorComponent implements OnInit {
     this.filterService.getFilterPipeline(this.source)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
+        this.createFilterConfigurationsArray();
       },
         error => {
           if (error.status === 404) {
@@ -108,5 +110,25 @@ export class NodeEditorComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  getFilterConfiguration(filterName: string) {
+    let catName = `${this.source}_${filterName}`
+    this.filterService.getFilterConfiguration(catName)
+      .subscribe((data: any) => {
+        if (data) {
+          let filterConfig = {pluginName: data.plugin.value, enabled: data.enable.value, filterName: filterName};
+          this.filterConfigurations.push(filterConfig);
+        }
+      },
+        error => {
+          console.log('service down ', error);
+        });
+  }
+
+  createFilterConfigurationsArray(){
+    this.filterPipeline.forEach((filterName)=>{
+      this,this.getFilterConfiguration(filterName)
+    })
   }
 }

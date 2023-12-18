@@ -77,7 +77,7 @@
             <ng-container *ngIf="data.label!=='Applications' && data.label!=='South' && data.label!=='Filter'">
                 <div class="is-pulled-left ml-2 mt-2">
                     <span class="icon is-small has-tooltip-right has-tooltip-arrow is-pulled-left is-hovered"
-                        data-tooltip="Help" (click)="goToLink({name: service.pluginName, type: 'South'})">
+                        data-tooltip="Help" (click)="goToLink()">
                         <i class="far fa-question-circle"></i>
                     </span>
                     <span *ngIf="isServiceNode"

@@ -26,7 +26,7 @@ type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
 
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
 
-export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services) {
+export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations) {
     const socket = new ClassicPreset.Socket("socket");
     const editor = new NodeEditor<Schemes>();
     const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -79,7 +79,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
                     list: [
                         {
                             label: 'Filter', key: '1', handler: () => {
-                                let filter = new Filter(socket, 'Filter');
+                                let filter = new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter'});
                                 editor.addNode(filter);
                             }
                         }
@@ -125,13 +125,13 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
 
     if (source !== '' && source !== "nodelist") {
         area.use(contextMenu);
-        dock.add(() => new Filter(socket, 'Filter'));
+        dock.add(() => new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter'}));
     }
 
-    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services);
+    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations);
 }
 
-async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services) {
+async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations) {
 
     if(source !== "nodelist"){
         const southPlugin = new South(socket, service);
@@ -156,7 +156,8 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
             // );
         }
         else {
-            let firstFilter = new Filter(socket, filterPipeline[0]);
+            let firstFilterConfig = filterConfigurations.find((f:any) => f.filterName === filterPipeline[0])
+            let firstFilter = new Filter(socket, firstFilterConfig);
             await editor.addNode(firstFilter);
             await editor.addConnection(
                 new ClassicPreset.Connection(southPlugin, "port", firstFilter, "port")
@@ -168,14 +169,16 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                 );
             }
             else {
-                let lastFilter = new Filter(socket, filterPipeline[fpLen - 1]);
+                let lastFilterConfig = filterConfigurations.find((f:any) => f.filterName === filterPipeline[fpLen - 1])
+                let lastFilter = new Filter(socket, lastFilterConfig);
                 await editor.addNode(lastFilter);
                 await editor.addConnection(
                     new ClassicPreset.Connection(lastFilter, "port", db, "port")
                 );
     
                 for (let i = 1; i < fpLen - 1; i++) {
-                    let midFilter = new Filter(socket, filterPipeline[i]);
+                    let midFilterConfig = filterConfigurations.find((f:any) => f.filterName === filterPipeline[i])
+                    let midFilter = new Filter(socket, midFilterConfig);
                     await editor.addNode(midFilter);
                     await editor.addConnection(
                         new ClassicPreset.Connection(firstFilter, "port", midFilter, "port")
