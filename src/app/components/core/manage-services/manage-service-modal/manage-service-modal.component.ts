@@ -74,7 +74,7 @@ export class ManageServiceModalComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['serviceData']) {
-      this.serviceName = this.serviceData.name ? this.serviceData.name : ''; ;
+      this.serviceName = this.serviceData.name ? this.serviceData.name : '';
       this.isServiceEnabled = this.serviceData.isServiceEnabled;
       this.isServiceAvailable = this.serviceData.isServiceAvailable;
       this.serviceModalName = this.serviceData.serviceModalName;
@@ -92,18 +92,6 @@ export class ManageServiceModalComponent implements OnChanges {
     if (this.serviceName) {
       this.getService();
     }
-  }
-
-  refreshPageData() {
-    this.changedConfig = null;
-    this.validForm = true;
-    this.advancedConfiguration = [];
-    this.getCategory();
-    if (this.configComponent) {
-      this.configComponent?.updateCategroyConfig(this.categoryCopy.config);
-      this.configComponent.getChildConfigData();
-    }
-    this.enabled = this.isServiceEnabled;
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -128,7 +116,7 @@ export class ManageServiceModalComponent implements OnChanges {
         serviceModal.classList.add('is-active');
         return;
       }
-      this.notify.emit(false);
+      this.notify.emit();
       serviceModal.classList.remove('is-active');
       this.category = '';
     }
@@ -423,6 +411,10 @@ export class ManageServiceModalComponent implements OnChanges {
   }
 
   save() {
+    if (!this.isServiceAvailable && !this.form.controls['serviceName'].value) {
+      this.alertService.error('Missing service name');
+      return;
+    }
     this.stateUpdate();
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);

@@ -85,10 +85,10 @@ export class ListManageServicesComponent implements OnInit {
     this.ngProgress.start();
     this.servicesApiService.getServiceByType(service)
       .subscribe((res: any) => {
-        this.ngProgress.done();       
+        this.ngProgress.done();
         const availableServices = this.servicesData?.filter((s) => s.type !== res.services[0].type);
         this.installedExternalServices.push(res.services[0]); 
-
+        
         const availableServicesNames  = new Set(this.installedExternalServices.map(({ name }) => name));
         this.servicesData = [
           ...orderBy(this.installedExternalServices, 'name'),
@@ -128,7 +128,7 @@ export class ListManageServicesComponent implements OnInit {
         });
   }
 
-  checkServiceEnabled(service: any, serviceName) {
+  checkServiceEnabled(service: any, serviceType) {
     const selectedService = this.servicesData.find((s) => s.type === service?.type);
     if (service) {
       selectedService.name = service.name;
@@ -139,16 +139,16 @@ export class ListManageServicesComponent implements OnInit {
         selectedService.isServiceEnabled = false;
       }
     } else {
-      this.getSchedules(serviceName);
+      this.getSchedules(serviceType);
     }
   }
 
-  public getSchedules(serviceName): void {
-    const selectedService = this.servicesData.find((s) => s.type === serviceName);
+  public getSchedules(serviceType): void {
+    const selectedService = this.servicesData.find((s) => s.type === serviceType);
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
-          const schedule = data.schedules.find((item: any) => item.processName === serviceName + '_c');
+          const schedule = data.schedules.find((item: any) => item.processName === serviceType + '_c');
           if (schedule === undefined) {
             selectedService.isServiceAvailable = false;
             selectedService.isServiceEnabled = false;
@@ -269,14 +269,20 @@ export class ListManageServicesComponent implements OnInit {
       return 'is-light is-success';
     }
     if (serviceStatus.toLowerCase() === 'unresponsive') {
-      return 'is-warning';
+      return 'is-light is-warning';
     }
     if (serviceStatus.toLowerCase() === 'shutdown') {
-      return 'is-lighter';
+      return 'is-light';
     }
     if (serviceStatus.toLowerCase() === 'failed') {
-      return 'is-danger';
+      return 'is-light is-danger';
     }
+  }
+
+  onNotify() {
+    setTimeout(() => {
+      this.checkSelectedServiceStatus();
+    }, 2000);
   }
 
   setService(service) {

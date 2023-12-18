@@ -219,7 +219,7 @@ export class ConfigurationManagerComponent implements OnInit {
         (data: any) => {
           this.scheduleNames = [];
           data.schedules.forEach(sch => {
-            if (['notification_c', 'dispatcher_c', 'bucket_storage_c', 'management_c'].includes(sch.processName)) {
+            if (['notification_c', 'dispatcher_c', 'bucket_storage_c', 'management'].includes(sch.processName)) {
               this.scheduleNames.push(sch.name.toUpperCase());
             }
           });

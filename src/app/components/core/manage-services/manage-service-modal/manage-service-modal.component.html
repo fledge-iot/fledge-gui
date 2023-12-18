@@ -67,8 +67,7 @@
                 (click)="toggleModal(false)">Cancel</button>
             </p>
             <p class="control">
-              <button
-                [disabled]="pluginInstallationState || fg.controls['serviceName']?.invalid || !validForm"
+              <button [disabled]="pluginInstallationState || fg.controls['serviceName']?.invalid || !validForm"
                 class="button is-small is-link" (click)="save()" [appDisableUntilResponse]="reenableButton">{{btnText}}</button>
             </p>
           </div>
