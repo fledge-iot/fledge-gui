@@ -1,4 +1,4 @@
-import { Component, OnChanges, Input, SimpleChanges, ViewChild, Output, HostListener, EventEmitter } from '@angular/core';
+import { Component, ViewChild, Output, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
@@ -7,6 +7,7 @@ import {
   ConfigurationControlService,
   FileUploaderService
 } from '../../../../services';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty, cloneDeep } from 'lodash';
@@ -22,7 +23,7 @@ import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
   templateUrl: './manage-service-modal.component.html',
   styleUrls: ['./manage-service-modal.component.css']
 })
-export class ManageServiceModalComponent implements OnChanges {
+export class ManageServiceModalComponent {
   enabled: Boolean;
   category: any;
   isServiceAvailable = false;
@@ -43,7 +44,7 @@ export class ManageServiceModalComponent implements OnChanges {
   state$ = new BehaviorSubject<any>(null);
 
   service;
-  @Input() serviceData: {
+  serviceInfo: {
     isServiceAvailable: boolean, isServiceEnabled: boolean, name: string, serviceModalName: string
   };
   @ViewChild('fg') form: NgForm;
@@ -68,16 +69,23 @@ export class ManageServiceModalComponent implements OnChanges {
     public servicesApiService: ServicesApiService,
     public alertService: AlertService,
     private docService: DocService,
+    private dialogService: DialogService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
     public rolesService: RolesService) { }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['serviceData']) {
-      this.serviceName = this.serviceData.name ? this.serviceData.name : '';
-      this.isServiceEnabled = this.serviceData.isServiceEnabled;
-      this.isServiceAvailable = this.serviceData.isServiceAvailable;
-      this.serviceModalName = this.serviceData.serviceModalName;
+  ngOnInit() {
+    if (this.serviceName) {
+      this.getService();
+    }
+  }
+
+  getServiceInfo(serviceInfo) {
+    if (serviceInfo) {
+      this.serviceName = serviceInfo.name ? serviceInfo.name : '';
+      this.isServiceEnabled = serviceInfo.isServiceEnabled;
+      this.isServiceAvailable = serviceInfo.isServiceAvailable;
+      this.serviceModalName = serviceInfo.serviceModalName;
     }
     this.enabled = this.isServiceEnabled;
     this.btnText = 'Add';
@@ -85,12 +93,6 @@ export class ManageServiceModalComponent implements OnChanges {
       this.showDeleteBtn = true;
       this.btnText = 'Save';
       this.getCategory();
-    }
-  }
-
-  ngOnInit() {
-    if (this.serviceName) {
-      this.getService();
     }
   }
 
@@ -217,18 +219,38 @@ export class ManageServiceModalComponent implements OnChanges {
       });
   }
 
-
   /**
    * Open delete modal
    */
-  openDeleteModal(name: string) {
-    this.serviceRecord = {
-      name: name,
-      message: 'Deleting this service can not be undone. Continue',
-      key: 'deleteService'
-    };
-    // call child component method to toggle modal
-    this.child?.toggleModal(true, '#manage-service-modal');
+  openDeleteModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeDeleteModal(id: string) {
+    this.dialogService.close(id);
+  }
+
+  delete() {
+    this.ngProgress.start();
+    this.servicesApiService.deleteService(this.serviceName)
+      .subscribe(
+        (data: any) => {
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
+          this.alertService.success(data['result'], true);
+          this.closeDeleteModal('confirmation-delete-dialog');
+          this.toggleModal(false);
+          this.form.reset();
+        },
+        error => {
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   public async getInstalledServicesList() {

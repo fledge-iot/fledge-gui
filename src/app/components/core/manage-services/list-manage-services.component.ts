@@ -18,7 +18,7 @@ export class ListManageServicesComponent implements OnInit {
   services = [{ type: 'Notification'}, { type: 'Dispatcher'}, { type: 'BucketStorage'}, { type: 'Management'}];
   installedServices = [];
 
-  serviceData = {};
+  serviceInfo = {};
   installedExternalServices = [];
   servicesData = [];
   service: any;
@@ -85,15 +85,20 @@ export class ListManageServicesComponent implements OnInit {
     this.ngProgress.start();
     this.servicesApiService.getServiceByType(service)
       .subscribe((res: any) => {
-        this.ngProgress.done();
-        const availableServices = this.servicesData?.filter((s) => s.type !== res.services[0].type);
-        this.installedExternalServices.push(res.services[0]); 
+        this.ngProgress.done();       
+        const installedService = this.servicesData?.filter((s) => s.type === res.services[0].type);  
+        this.installedExternalServices.push(...installedService);
         
-        const availableServicesNames  = new Set(this.installedExternalServices.map(({ name }) => name));
-        this.servicesData = [
-          ...orderBy(this.installedExternalServices, 'name'),
-          ...orderBy(availableServices, 'name').filter(({ name }) => !availableServicesNames.has(name))
+        const availableServices = this.servicesData?.filter((s) => s.type !== res.services[0].type);
+
+        const servicesData = [
+          ...orderBy(this.installedExternalServices, 'type'),
+          ...orderBy(availableServices, 'type')
         ];
+
+        this.servicesData = servicesData.filter(
+          (service, i) => i === servicesData.indexOf(service),
+        );
       },
         (error) => {
           this.ngProgress.done();
@@ -176,8 +181,9 @@ export class ListManageServicesComponent implements OnInit {
    openServiceModal(service) {
     const selectedService = this.servicesData.find((s) => s.type === service);
     selectedService.serviceModalName = service;
-    this.serviceData = selectedService;
+    this.serviceInfo = selectedService;
     this.serviceModal.toggleModal(true);
+    this.serviceModal.getServiceInfo(this.serviceInfo);
   }
 
   deleteService() {
@@ -223,7 +229,9 @@ export class ListManageServicesComponent implements OnInit {
           const selectedService = this.servicesData.find((s) => s.name === this.service.name);
           selectedService.isServiceEnabled = true;
           this.closeModal('confirmation-dialog');
-          this.checkSelectedServiceStatus();
+          setTimeout(() => {
+            this.checkSelectedServiceStatus();
+          }, 2000);
         },
         error => {
           /** request completed */
