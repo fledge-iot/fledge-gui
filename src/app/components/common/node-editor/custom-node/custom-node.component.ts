@@ -218,7 +218,7 @@ export class CustomNodeComponent implements OnChanges {
     }
   }
 
-  deleteService() {
+  deleteFilterOrService() {
     if (this.isServiceNode) {
       this.servicesApiService.deleteService(this.service.name)
         .subscribe(
@@ -228,6 +228,9 @@ export class CustomNodeComponent implements OnChanges {
           (error) => {
             console.log('service down ', error);
           });
+    }
+    if(this.isFilterNode){
+      this.flowEditorService.filterInfo.next({name: this.filter.name})
     }
   }
 

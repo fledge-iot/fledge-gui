@@ -1,6 +1,6 @@
 import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor } from './editor';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConfigurationService, FilterService, ServicesApiService } from './../../../services';
 import { takeUntil } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
@@ -20,6 +20,7 @@ export class NodeEditorComponent implements OnInit {
   public filterConfigurations: any[] = [];
   public category: any;
   private subscription: Subscription;
+  private filterSubscription: Subscription;
 
   showConfiguration: boolean = false;
   showLogs: boolean = false;
@@ -27,13 +28,15 @@ export class NodeEditorComponent implements OnInit {
   services: Service[];
   destroy$: Subject<boolean> = new Subject<boolean>();
   serviceName = '';
+  filterName = '';
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
     private filterService: FilterService,
     private servicesApiService: ServicesApiService,
     private configService: ConfigurationService,
-    public flowEditorService: FlowEditorService) {
+    public flowEditorService: FlowEditorService,
+    private router: Router) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
@@ -52,6 +55,13 @@ export class NodeEditorComponent implements OnInit {
       this.serviceName = data.serviceName;
       if(this.showConfiguration){
         this.getCategory();
+      }
+    })
+    this.filterSubscription = this.flowEditorService.filterInfo.subscribe(data => {
+      this.filterName = data.name;
+      if(this.filterPipeline.indexOf(this.filterName)!== -1){
+        this.filterPipeline = this.filterPipeline.filter(f => f !== this.filterName);
+        this.deleteFilter();
       }
     })
   }
@@ -110,6 +120,7 @@ export class NodeEditorComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.filterSubscription.unsubscribe();
   }
 
   getFilterConfiguration(filterName: string) {
@@ -130,5 +141,23 @@ export class NodeEditorComponent implements OnInit {
     this.filterPipeline.forEach((filterName)=>{
       this,this.getFilterConfiguration(filterName)
     })
+  }
+
+  deleteFilter() {
+    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.source)
+      .subscribe(() => {
+        this.filterService.deleteFilter(this.filterName).subscribe(() => {
+          console.log(this.filterName + " filter deleted");
+          setTimeout(() => {
+            this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
+          }, 1000);
+        },
+          (error) => {
+            console.log('service down ', error);
+          });
+      },
+        (error) => {
+          console.log('service down ', error);
+        });
   }
 }

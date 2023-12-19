@@ -16,7 +16,7 @@ export class QuickviewComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(()=>{
       bulmaQuickview.attach();
-    }, 1000)
+    }, 3100)
   }
 
 }
