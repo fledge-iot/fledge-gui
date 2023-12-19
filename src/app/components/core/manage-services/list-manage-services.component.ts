@@ -46,7 +46,7 @@ export class ListManageServicesComponent implements OnInit {
 
   public async checkSelectedServiceStatus() {
     this.installedExternalServices = [];
-    await this.getInstalledServices();
+    await this.getInstalledServices();  
     for (const service of this.services) {
       const selectedService = this.servicesData.find((s) => s.type === service?.type);
       if (this.installedServices.includes(service.type.toLowerCase())) {
@@ -85,27 +85,29 @@ export class ListManageServicesComponent implements OnInit {
     this.ngProgress.start();
     this.servicesApiService.getServiceByType(service)
       .subscribe((res: any) => {
-        this.ngProgress.done();       
-        const installedService = this.servicesData?.filter((s) => s.type === res.services[0].type);  
-        this.installedExternalServices.push(...installedService);
-        
-        const availableServices = this.servicesData?.filter((s) => s.type !== res.services[0].type);
-
-        const servicesData = [
-          ...orderBy(this.installedExternalServices, 'type'),
-          ...orderBy(availableServices, 'type')
-        ];
-
-        this.servicesData = servicesData.filter(
-          (service, i) => i === servicesData.indexOf(service),
-        );
+        this.ngProgress.done();   
+        this.getServicesData(res.services[0].type);
       },
         (error) => {
           this.ngProgress.done();
+          this.getServicesData(service);
           if (error.status === 0) {
             console.log('service down ', error);
           }
         });
+  }
+
+  getServicesData(service) {
+    const installedService = this.servicesData?.filter((s) => s.type === service);
+    this.installedExternalServices.push(...installedService);
+    
+    const availableServices = this.servicesData?.filter((s) => s.type !== service.type);
+
+    const servicesData = [
+      ...orderBy(this.installedExternalServices, 'type'),
+      ...orderBy(availableServices, 'type')
+    ];
+    this.servicesData = servicesData.filter((s, i) => i === servicesData.indexOf(s));
   }
 
   public checkServiceStatus(serviceName) {
@@ -153,18 +155,18 @@ export class ListManageServicesComponent implements OnInit {
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
-          const schedule = data.schedules.find((item: any) => item.processName === serviceType + '_c');
+          const schedule = data.schedules.find((item: any) => item.processName === serviceType.toLowerCase() + '_c');
           if (schedule === undefined) {
             selectedService.isServiceAvailable = false;
             selectedService.isServiceEnabled = false;
+            selectedService.status = 'installed';
             selectedService.name = '';
             return;
           }
           selectedService.name = schedule.name;
           selectedService.isServiceAvailable = true;
-          if (schedule.enabled) {
-            selectedService.isServiceEnabled = true;
-          }
+          selectedService.status = schedule.enabled ? 'enabled' : 'disabled';
+          selectedService.isServiceEnabled = schedule.enabled;
         },
         error => {
           if (error.status === 0) {
@@ -274,16 +276,16 @@ export class ListManageServicesComponent implements OnInit {
 
   applyClass(serviceStatus: string) {
     if (serviceStatus.toLowerCase() === 'running') {
-      return 'is-light is-success';
+      return 'is-success';
     }
     if (serviceStatus.toLowerCase() === 'unresponsive') {
-      return 'is-light is-warning';
+      return 'is-warning';
     }
-    if (serviceStatus.toLowerCase() === 'shutdown') {
-      return 'is-light';
+    if (serviceStatus.toLowerCase() === 'installed') {
+      return 'is-info';
     }
     if (serviceStatus.toLowerCase() === 'failed') {
-      return 'is-light is-danger';
+      return 'is-danger';
     }
   }
 

@@ -23,8 +23,8 @@
                   <p class="help has-text-grey modal-subtitle mt-0">{{service?.name}}</p>
                 </td>
                 <td>
-                  <div *ngIf="service?.name" class="tags has-addons">
-                    <span class="tag" [ngClass]="applyClass(service?.status)">{{service?.status}}</span>
+                  <div *ngIf="service?.status" class="tags has-addons">
+                    <span class="tag is-light" [ngClass]="applyClass(service?.status)">{{service?.status}}</span>
                   </div>
                 </td>
                 <td>
