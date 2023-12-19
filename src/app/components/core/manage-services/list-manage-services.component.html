@@ -24,8 +24,14 @@
               <td>
                 {{ s.state }}
               </td>
+
               <td>
                 {{ s.added ? "" : "Add" }}
+              </td>
+              <td>
+                <div *ngIf="s.added">
+                {{ ["shutdown", "disabled"].includes(s.state) ? "Enable" : "Disable" }}
+                </div>
               </td>
 
                 

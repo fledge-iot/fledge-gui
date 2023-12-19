@@ -132,6 +132,7 @@ sleep (time) {
             if(found_sch !== undefined){
               replacement.name = found_sch.name;
               replacement.added = true
+              replacement.state = "disabled" // can be enabled too, if in bad state  
               atIndex = idx;
             }
           } 
