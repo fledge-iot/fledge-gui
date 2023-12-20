@@ -26,9 +26,10 @@ type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
 
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
 
+let editor = new NodeEditor<Schemes>();
 export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations) {
     const socket = new ClassicPreset.Socket("socket");
-    const editor = new NodeEditor<Schemes>();
+    editor = new NodeEditor<Schemes>();
     const area = new AreaPlugin<Schemes, AreaExtra>(container);
     const connection = new ConnectionPlugin<Schemes, AreaExtra>();
     const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
@@ -218,4 +219,22 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
     AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
         accumulating: AreaExtensions.accumulateOnCtrl()
     });
+}
+
+export function getUpdatedFilterPipeline() {
+    let nodes = editor.getNodes();
+    let connections = editor.getConnections();
+    let updatedFilterPipeline: string[] = [];
+
+    if (connections.length === nodes.length - 1) {
+        let sourceNode = nodes[0];
+        while (connections.find(c => c.source === sourceNode.id)) {
+            let connection = connections.find(c => c.source === sourceNode.id)
+            let filterNode = editor.getNode(connection.target);
+            updatedFilterPipeline.push(filterNode.label);
+            sourceNode = filterNode;
+        }
+        updatedFilterPipeline.pop()
+    }
+    return updatedFilterPipeline;
 }

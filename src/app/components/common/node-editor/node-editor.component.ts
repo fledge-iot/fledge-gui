@@ -1,5 +1,5 @@
 import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor } from './editor';
+import { createEditor, getUpdatedFilterPipeline } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfigurationService, FilterService, ServicesApiService } from './../../../services';
 import { takeUntil } from 'rxjs/operators';
@@ -17,6 +17,7 @@ export class NodeEditorComponent implements OnInit {
   @ViewChild("rete") container!: ElementRef;
   public source = '';
   public filterPipeline: string[] = [];
+  public updatedFilterPipeline: string[] = [];
   public filterConfigurations: any[] = [];
   public category: any;
   private subscription: Subscription;
@@ -155,6 +156,31 @@ export class NodeEditorComponent implements OnInit {
           (error) => {
             console.log('service down ', error);
           });
+      },
+        (error) => {
+          console.log('service down ', error);
+        });
+  }
+
+  save() {
+    this.updatedFilterPipeline = getUpdatedFilterPipeline();
+    if (this.updatedFilterPipeline.length !== 0) {
+      for (let i = 0; i < this.filterPipeline.length; i++) {
+        if (this.filterPipeline[i] !== this.updatedFilterPipeline[i]) {
+          this.updateFilterPipeline(this.updatedFilterPipeline);
+          return;
+        }
+      }
+    }
+  }
+
+  updateFilterPipeline(filterPipeline) {
+    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.source)
+      .subscribe(() => {
+        console.log("pipeline updated");
+        setTimeout(() => {
+          this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
+        }, 1000);
       },
         (error) => {
           console.log('service down ', error);
