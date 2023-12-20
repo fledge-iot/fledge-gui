@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { orderBy } from 'lodash';
+import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService } from '../../../services';
+
+import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
@@ -13,9 +14,6 @@ import { ManageServiceModalComponent } from './manage-service-modal/manage-servi
   styleUrls: ["./list-manage-services.component.css"],
 })
 export class ListManageServicesComponent implements OnInit {
-  private viewPortSubscription: Subscription;
-  viewPort: any = "";
-
   expectedServices = [
     {
       "package": "fledge-service-notification",
@@ -64,8 +62,7 @@ export class ListManageServicesComponent implements OnInit {
   servicesSchedules = [];
 
   public reenableButton = new EventEmitter<boolean>(false);
-  @ViewChild(ManageServiceModalComponent, { static: true })
-  serviceModal: ManageServiceModalComponent;
+  @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
 
   constructor(
     public sharedService: SharedService,
@@ -74,114 +71,101 @@ export class ListManageServicesComponent implements OnInit {
     private dialogService: DialogService,
     public servicesApiService: ServicesApiService,
     public rolesService: RolesService,
-    public schedulesService: SchedulesService
+    public schedulesService: SchedulesService,
+    private response: ResponseHandler
   ) {}
 
-// sleep time expects milliseconds
-sleep (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
-
   ngOnInit() {
-    // this.viewPortSubscription = this.sharedService.viewport.subscribe(
-    //   (viewport) => {
-    //     this.viewPort = viewport;
-    //   }
-    // );
+    this.showServices();
+  }
 
-    
+  showServices() {
     this.getServices();
     this.getSchedules();
-    // TODO: Use forkJoin
-    this.sleep(1000).then(() => {
-      this.getInstalledServices();
-      this.getAvaiableServices();
-    });
-  }
 
-  public async getInstalledServices() {
-    /** request start */
-    this.ngProgress.start();
-    await this.servicesApiService
-      .getInstalledServices()
-      .then((data) => {
-        /** request done */
-        this.ngProgress.done();
-        let svcs = data["services"].filter(
-          (s) => !["south", "north", "storage"].includes(s)
-        );
-
-        this.installedServicePkgs = this.expectedServices.filter(
-          (s) => svcs.includes(s.process) 
-        );
-        console.log("Installed:");
-        console.log(this.installedServicePkgs);
-
-        //
-  
-        let replacement;
-        let atIndex = -1
-        this.installedServicePkgs.forEach((installed, idx) =>{
-          replacement = structuredClone(installed);
-          console.log(this.servicesSchedules)
-          let found_svc = this.servicesRegistry.find(s => s.type == installed.type);
-          console.log("Found svc: ", found_svc)
-          if(found_svc === undefined){
-            let found_sch = this.servicesSchedules.find(s => s.processName == installed["schedule_process"]);
-            console.log("Found sch: ", found_svc)
-            if(found_sch !== undefined){
-              replacement.name = found_sch.name;
-              replacement.added = true
-              replacement.state = "disabled" // can be enabled too, if in bad state  
-              atIndex = idx;
+    let callsStack = {
+      installed: this.servicesApiService.getInstalledServices(),
+      available: this.servicesApiService.getAvailableServices()
+    }
+    forkJoin(callsStack)
+      .pipe(
+        map((response: any) => {
+          const installed = <Array<any>>response.installed;
+          const available = <Array<any>>response.available;
+          const result: any[] = [];
+          result.push({
+            ...{ 'installed': installed },
+            ...{ 'available': available }
+          });
+          this.getInstalledServices(installed["services"]);
+          this.getAvaiableServices(available["services"]);
+          console.log('rr', result); 
+          return result;
+        })
+      )
+      .subscribe((result) => {
+        result.forEach((r: any) => {
+          this.ngProgress.done();
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.alertService.error(r.error.statusText);
             }
-          } 
-          else {
-            replacement.name = found_svc.name;
-            replacement.added = true
-            replacement.state = found_svc.status; 
-            atIndex = idx; 
-          } 
+          } else {
+            this.response.handleResponseMessage(r.type);
+          }
         });
-        if(atIndex != -1){
-          console.log("DOING REPLACEMENT...");
-          this.installedServicePkgs[atIndex] = replacement;
-          console.log(this.installedServicePkgs);
-          console.log("REPLACEMENT DONE!");
-        }
-      })
-      .catch((error) => {
-        /** request done */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log("service down ", error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
       });
   }
 
-  public async getAvaiableServices() {
-    this.ngProgress.start();
-    await this.servicesApiService
-      .getAvailableServices()
-      .then((data) => {
-        this.ngProgress.done();
-        let svcs = data["services"];
-        this.availableServicePkgs = this.expectedServices.filter(
-          (s) => svcs.includes(s.package) 
-        );
+  public getInstalledServices(services) {   
+    let svcs = services.filter(
+      (s) => !["south", "north", "storage"].includes(s)
+    );
+    this.installedServicePkgs = this.expectedServices.filter(
+      (s) => svcs.includes(s.process)
+    );
 
-        console.log(this.availableServicePkgs);
-      })
-      .catch((error) => {
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log("service down ", error);
+    let replacement;
+    let atIndex = -1
+    this.installedServicePkgs.forEach((installed, idx) =>{
+      replacement = structuredClone(installed);
+      console.log('idx', idx);
+      let found_svc = this.servicesRegistry.find(s => s.type == installed.type);
+      if (found_svc === undefined){
+        let found_sch = this.servicesSchedules.find(s => s.processName == installed["schedule_process"]);
+        console.log("Found sch: ", found_svc)
+        if (found_sch !== undefined){
+          replacement.name = found_sch.name;
+          replacement.added = true;
+          replacement.state = "disabled"; // can be enabled too, if in bad state  
+          atIndex = idx;
         } else {
-          this.alertService.error(error.statusText);
+          replacement.name = '';
+          replacement.added = false;
+          replacement.state = '';
+          atIndex = idx;
         }
-      });
+      } else {
+        replacement.name = found_svc.name;
+        replacement.added = true;
+        replacement.state = found_svc.status;
+        replacement.enabled = found_svc.enabled;
+        atIndex = idx;
+      }
+    if (atIndex != -1){
+      this.installedServicePkgs[atIndex] = replacement;
+    }
+  });
+  }
+
+  public getAvaiableServices(services) {
+    let svcs = services;
+    this.availableServicePkgs = this.expectedServices.filter(
+      (s) => svcs.includes(s.package) 
+    );
+    console.log('availableServicePkgs', this.availableServicePkgs);
   }
 
   public getServices() {
@@ -195,15 +179,8 @@ sleep (time) {
         this.expectedServices.forEach(function(v) {
           expectedTypes.push(v["type"]);
         });
-        
-        // REMOVEME
-        console.log(expectedTypes)
 
         this.servicesRegistry = res.services.filter((s) => expectedTypes.includes(s.type));
-        
-        // REMOVEME
-        console.log("servicesRegistry")
-        console.log(this.servicesRegistry)
       },
       (error) => {
         /** request done */
@@ -219,14 +196,12 @@ sleep (time) {
   public getSchedules(): void {
     this.schedulesService.getSchedules().subscribe(
       (data: any) => {
-
         // We don't care for schedules which are not in expectedServices
         var expectedP = []
         this.expectedServices.forEach(function(v) {
           expectedP.push(v["schedule_process"]);
         });
         this.servicesSchedules = data.schedules.filter((sch) => expectedP.includes(sch.processName));
-        console.log(this.servicesSchedules)
       },
       (error) => {
         if (error.status === 0) {
@@ -238,6 +213,21 @@ sleep (time) {
     );
   }
 
+  /**
+    * Open Settings modal
+    */
+   openServiceModal(service) {
+    this.serviceModal.toggleModal(true);
+    this.serviceModal.getServiceInfo(service);
+  }
+
+  onNotify() {
+    console.log('notify');
+    setTimeout(() => {
+      this.showServices();
+    }, 3000);
+  }
+
   deleteService() {
     this.ngProgress.start();
     this.servicesApiService.deleteService(this.service.name).subscribe(
@@ -246,6 +236,9 @@ sleep (time) {
         this.reenableButton.emit(false);
         this.alertService.success(data["result"], true);
         this.closeModal("delete-confirmation-dialog");
+        setTimeout(() => {
+          this.showServices();
+        }, 2000);
       },
       (error) => {
         this.ngProgress.done();
@@ -268,6 +261,10 @@ sleep (time) {
         this.ngProgress.done();
         this.reenableButton.emit(false);
         this.alertService.success(data["message"], true);
+        this.closeModal('confirmation-dialog');
+        setTimeout(() => {
+          this.showServices();
+        }, 2000);
       },
       (error) => {
         /** request completed */
@@ -291,6 +288,10 @@ sleep (time) {
         this.ngProgress.done();
         this.reenableButton.emit(false);
         this.alertService.success(data["message"], true);
+        this.closeModal('confirmation-dialog');
+        setTimeout(() => {
+          this.showServices();
+        }, 2000);
       },
       (error) => {
         /** request completed */
@@ -319,8 +320,17 @@ sleep (time) {
       return "is-danger";
     }
   }
+
   setService(service) {
     this.service = service;
+  }
+
+  stateUpdate() {
+    if (["shutdown", "disabled"].includes(this.service.state) === true) {
+      this.enableService();
+    } else {
+      this.disableService();
+    }
   }
 
   openModal(id: string) {
@@ -329,9 +339,5 @@ sleep (time) {
 
   closeModal(id: string) {
     this.dialogService.close(id);
-  }
-
-  public ngOnDestroy(): void {
-    // this.viewPortSubscription.unsubscribe();
   }
 }

@@ -8,7 +8,7 @@
         </li>
       </ul>
     </nav>
-    <button class="button is-small" id="refresh-check" title="Reload">
+    <button class="button is-small" id="refresh-check" title="Reload" (click)="showServices()">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
@@ -22,19 +22,47 @@
                 <p class="help has-text-grey modal-subtitle mt-0">{{s.name}}</p>
               </td>
               <td>
-                {{ s.state }}
-              </td>
-
-              <td>
-                {{ s.added ? "" : "Add" }}
-              </td>
-              <td>
-                <div *ngIf="s.added">
-                {{ ["shutdown", "disabled"].includes(s.state) ? "Enable" : "Disable" }}
+                <div *ngIf="s?.state" class="tags has-addons">
+                  <span class="tag is-light" [ngClass]="applyClass(s?.state)">{{s?.state}}</span>
                 </div>
               </td>
-
-                
+              <td>
+                <a *ngIf="s?.name" class="button cog-icon" (click)="openServiceModal(s)">
+                  <span class="icon">
+                    <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
+                  </span>
+                </a>
+              </td>
+              
+              <td *ngIf="sharedService.checkAuth()">
+                <a *ngIf="!s.added" (click)="openServiceModal(s)" class="button is-text text-btn">
+                  Add
+                </a>
+                <div *ngIf="s?.name" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
+                  <div class="dropdown-trigger">
+                    <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                      <span class="icon">
+                        <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
+                      </span>
+                    </a>
+                  </div>
+                  <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                    <div class="dropdown-content">
+                      <a *ngIf="sharedService.checkAuth() && s.added" class="dropdown-item"
+                        (click)="setService(s);openModal('confirmation-dialog')">
+                        <span>{{ ["shutdown", "disabled"].includes(s.state) ? "Enable" : "Disable" }}</span>
+                      </a>
+                      <a *ngIf="sharedService.checkAuth()" class="dropdown-item"
+                        (click)="setService(s);openModal('delete-confirmation-dialog')">
+                        <span>Delete</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <a *ngIf="!service?.name" (click)="openServiceModal(service?.type)" class="button is-text text-btn">
+                  {{service?.btntxt}}
+                </a>
+              </td>             
              </tr>
             </tbody>
         </table>
@@ -45,11 +73,41 @@
                 <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
               </td>
                 <td class="align-content content-pad">
-                  Install
+                  <a (click)="openServiceModal(s)" class="button is-text text-btn">
+                    Install
+                  </a>
                 </td>     
              </tr>
             </tbody>
-        </table >
+        </table>
+      </div>
+    </div>
 </div>
-</div>
-</div>
+<app-manage-service-modal (notify)="onNotify()"></app-manage-service-modal>
+<app-confirmation-dialog id="delete-confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('delete-confirmation-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Deleting this service can not be undone. Continue?
+  </section>
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small" (click)="closeModal('delete-confirmation-dialog')">Cancel</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteService()" [appDisableUntilResponse]="reenableButton">Delete</button>
+  </footer>
+</app-confirmation-dialog>
+<app-confirmation-dialog id="confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">{{ ["shutdown", "disabled"].includes(service?.state) ? "Enable" : "Disable" }}</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, You want to {{ ["shutdown", "disabled"].includes(service?.state) ? "enable" : "disable" }} the service {{service?.name}}?
+  </section>
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button type="button" class="button is-small" [ngClass]="{'is-info': ['shutdown', 'disabled'].includes(service?.state), 'is-danger': !['shutdown', 'disabled'].includes(service?.state)}" (click)="stateUpdate()" [appDisableUntilResponse]="reenableButton">{{ ["shutdown", "disabled"].includes(service?.state) ? "Enable" : "Disable" }}</button>
+  </footer>
+</app-confirmation-dialog>
+

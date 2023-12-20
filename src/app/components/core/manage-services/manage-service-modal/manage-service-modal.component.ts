@@ -83,11 +83,11 @@ export class ManageServiceModalComponent {
   getServiceInfo(serviceInfo) {
     if (serviceInfo) {
       this.serviceName = serviceInfo.name ? serviceInfo.name : '';
-      this.isServiceEnabled = serviceInfo.isServiceEnabled;
-      this.isServiceAvailable = serviceInfo.isServiceAvailable;
-      this.serviceModalName = serviceInfo.serviceModalName;
+      this.isServiceEnabled = ["shutdown", "disabled"].includes(serviceInfo.state) ? false : true;
+      this.isServiceAvailable = serviceInfo.added;
+      this.serviceModalName = serviceInfo.process;
     }
-    this.enabled = this.isServiceEnabled;
+    this.enabled =  this.isServiceEnabled;
     this.btnText = 'Add';
     if (this.isServiceAvailable) {
       this.showDeleteBtn = true;
@@ -352,7 +352,6 @@ export class ManageServiceModalComponent {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isServiceEnabled = true;
-          this.service.notifyServiceEmitter.next({ isEnabled: this.isServiceEnabled });
         },
         error => {
           /** request completed */
