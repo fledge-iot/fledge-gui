@@ -92,7 +92,7 @@ export class ListManageServicesComponent implements OnInit {
       installed: this.servicesApiService.getInstalledServices(),
       available: this.servicesApiService.getAvailableServices()
     }
-    this.sleep(1000).then(() => {
+    this.sleep(500).then(() => {
       forkJoin(callsStack)
         .pipe(
           map((response: any) => {
@@ -168,15 +168,20 @@ export class ListManageServicesComponent implements OnInit {
       }
       if (atIndex != -1){
         this.installedServicePkgs[atIndex] = replacement;
-      }   
+      }
     });
+
+    const addedServices = this.installedServicePkgs.filter((s) => s.added === true);
+    const servicesToAdd = this.installedServicePkgs.filter((s) => s.added === false);
+    this.installedServicePkgs = addedServices.sort((a, b) => a.type.localeCompare(b.type)).concat(servicesToAdd.sort((a, b) => a.type.localeCompare(b.type)));
   }
 
   public getAvaiableServices(services) {
     let svcs = services;
-    this.availableServicePkgs = this.expectedServices.filter(
+    const availableServices = this.expectedServices.filter(
       (s) => svcs.includes(s.package)
     );
+    this.availableServicePkgs = availableServices.sort((a, b) => a.type.localeCompare(b.type))
   }
 
   public getServices() {

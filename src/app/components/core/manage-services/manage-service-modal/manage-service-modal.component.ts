@@ -142,7 +142,7 @@ export class ManageServiceModalComponent {
     const name = formValues.serviceName;
     const payload = {
       name: name,
-      type: this.serviceProcessName,
+      type: this.serviceType.toLowerCase(),
       enabled: formValues.enabled
     };
     if (!installationState) {

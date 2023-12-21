@@ -16,7 +16,8 @@
       <div class="card-content">
         <table class="table is-responsive service-table is-hoverable is-narrow mb-0" [ngClass]="{'tbl-border': availableServicePkgs.length > 0}">
           <tbody>
-             <tr *ngFor="let s of installedServicePkgs">
+            <ng-container *ngFor="let s of installedServicePkgs; let i = index;">
+             <tr>
               <td class="align-content content-pad">
                 <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
                 <p class="help has-text-grey modal-subtitle mt-0">{{s.name}}</p>
@@ -32,8 +33,7 @@
                     <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
                   </span>
                 </a>
-              </td>
-              
+              </td>          
               <td *ngIf="sharedService.checkAuth()">
                 <a *ngIf="!s.added" (click)="openServiceModal(s)" class="button is-text text-btn">
                   Add
@@ -61,6 +61,19 @@
                 </div>
               </td>             
              </tr>
+            </ng-container>
+             <!-- <tr *ngFor="let s of availableServicePkgs">
+              <td class="align-content content-pad">
+                <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
+              </td>
+              <td></td>
+              <td></td>
+              <td class="align-content content-pad">
+                <a (click)="openServiceModal(s)" class="button is-text text-btn">
+                  Install
+                </a>
+              </td>     
+             </tr> -->
             </tbody>
         </table>
         <table class="table is-responsive is-hoverable is-narrow">
