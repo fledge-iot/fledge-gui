@@ -145,13 +145,13 @@ export class ListManageServicesComponent implements OnInit {
     let atIndex = -1;
     this.installedServicePkgs.forEach((installed, idx) => {
       replacement = structuredClone(installed);
-      let found_svc = this.servicesRegistry.find(s => s.type == installed.type);
-      if (found_svc === undefined){
-        let found_sch = this.servicesSchedules.find(s => s.processName == installed["schedule_process"]);
-        if (found_sch !== undefined){
-          replacement.name = found_sch.name;
+      let foundService = this.servicesRegistry.find(s => s.type == installed.type);
+      if (foundService === undefined){
+        let foundSchedule = this.servicesSchedules.find(s => s.processName == installed["schedule_process"]);
+        if (foundSchedule !== undefined){
+          replacement.name = foundSchedule.name;
           replacement.added = true;
-          replacement.state = found_sch.enabled === true ? 'enabled' : 'disabled';
+          replacement.state = foundSchedule.enabled === true ? 'enabled' : 'disabled';
           atIndex = idx;
         } else {
           replacement.name = '';
@@ -160,10 +160,10 @@ export class ListManageServicesComponent implements OnInit {
           atIndex = idx;
         }
       } else {
-        replacement.name = found_svc.name;
+        replacement.name = foundService.name;
         replacement.added = true;
-        replacement.state = found_svc.status;
-        replacement.enabled = found_svc.enabled;
+        replacement.state = foundService.status;
+        replacement.enabled = foundService.enabled;
         atIndex = idx;
       }
       if (atIndex != -1){
@@ -325,7 +325,7 @@ export class ListManageServicesComponent implements OnInit {
   }
 
   stateUpdate() {
-    if (["shutdown", "disabled"].includes(this.service.state) === true) {
+    if (["shutdown", "disabled"].includes(this.service.state)) {
       this.enableService();
     } else {
       this.disableService();

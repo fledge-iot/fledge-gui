@@ -130,6 +130,7 @@ export class ManageServiceModalComponent {
       this.service = res.services[0];
     },
     (error) => {
+      this.ngProgress.done();
       if (error.status === 0) {
         console.log('service down ', error);
       }
@@ -353,7 +354,11 @@ export class ManageServiceModalComponent {
   }
 
   public async addServiceEvent() {
-    if (!this.availableServices.includes(this.serviceProcessName)) {
+    let availableServicesProcessName = []
+    this.availableServices.forEach(function(s) {
+      availableServicesProcessName.push(s["process"]);
+    });
+    if (availableServicesProcessName.includes(this.serviceProcessName)) {
       this.installService();
     } else {
       this.addService(false);
