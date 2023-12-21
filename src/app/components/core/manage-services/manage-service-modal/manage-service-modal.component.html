@@ -3,9 +3,9 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <span *ngIf="isServiceAvailable" class="modal-card-title is-size-6">{{serviceName}}
-        <p class="help has-text-grey modal-subtitle">Service</p>
+        <p class="help has-text-grey modal-subtitle">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</p>
       </span>
-      <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceModalName !== 'BucketStorage' ? serviceModalName : 'Bucket Storage'}} Service</span>
+      <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -20,7 +20,7 @@
                 <div class="field is-narrow">
                   <input *ngIf="!isServiceAvailable" type="text" class="input is-small"
                     name="serviceName" [(ngModel)]="serviceName"
-                    [placeholder]= "(serviceModalName !== 'BucketStorage' ? serviceModalName : 'Bucket Storage') +' Service'" required trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"/>
+                    [placeholder]= "(serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage') +' Service'" required trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"/>
                   <small
                     *ngIf="(fg?.touched || fg?.controls['serviceName']?.dirty) && fg?.controls['serviceName']?.hasError('required')"
                     class="help is-danger level-left">*required</small>
@@ -63,11 +63,11 @@
           </div>
           <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
             <p class="control">
-              <button [disabled]="pluginInstallationState" class="button is-small" id="cancel"
+              <button [disabled]="serviceInstallationState" class="button is-small" id="cancel"
                 (click)="toggleModal(false)">Cancel</button>
             </p>
             <p class="control">
-              <button [disabled]="pluginInstallationState || fg.controls['serviceName']?.invalid || !validForm"
+              <button [disabled]="serviceInstallationState || fg.controls['serviceName']?.invalid || !validForm"
                 class="button is-small is-link" (click)="save()" [appDisableUntilResponse]="reenableButton">{{btnText}}</button>
             </p>
           </div>

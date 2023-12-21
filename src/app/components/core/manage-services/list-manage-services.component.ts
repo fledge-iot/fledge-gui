@@ -79,6 +79,11 @@ export class ListManageServicesComponent implements OnInit {
     this.showServices();
   }
 
+  // sleep time expects milliseconds
+  sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
   showServices() {
     this.getServices();
     this.getSchedules();
@@ -87,36 +92,45 @@ export class ListManageServicesComponent implements OnInit {
       installed: this.servicesApiService.getInstalledServices(),
       available: this.servicesApiService.getAvailableServices()
     }
-    forkJoin(callsStack)
-      .pipe(
-        map((response: any) => {
-          const installed = <Array<any>>response.installed;
-          const available = <Array<any>>response.available;
-          const result: any[] = [];
-          result.push({
-            ...{ 'installed': installed },
-            ...{ 'available': available }
-          });
-          this.getInstalledServices(installed["services"]);
-          this.getAvaiableServices(available["services"]);
-          console.log('rr', result); 
-          return result;
-        })
-      )
-      .subscribe((result) => {
-        result.forEach((r: any) => {
-          this.ngProgress.done();
-          if (r.failed) {
-            if (r.error.status === 0) {
-              console.log('service down ', r.error);
+    this.sleep(1000).then(() => {
+      forkJoin(callsStack)
+        .pipe(
+          map((response: any) => {
+            const installed = <Array<any>>response.installed;
+            const available = <Array<any>>response.available;
+            const result: any[] = [];
+            result.push({
+              ...{ 'installed': installed },
+              ...{ 'available': available }
+            });
+            this.getInstalledServices(installed["services"]);
+            this.getAvaiableServices(available["services"]);
+
+            let installedServicePkgsNames = []
+            this.installedServicePkgs.forEach(function(s) {
+              installedServicePkgsNames.push(s["package"]);
+            });
+
+            // Remove service name from available list if it is already installed
+            this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
+            return result;
+          })
+        )
+        .subscribe((result) => {
+          result.forEach((r: any) => {
+            this.ngProgress.done();
+            if (r.failed) {
+              if (r.error.status === 0) {
+                console.log('service down ', r.error);
+              } else {
+                this.alertService.error(r.error.statusText);
+              }
             } else {
-              this.alertService.error(r.error.statusText);
+              this.response.handleResponseMessage(r.type);
             }
-          } else {
-            this.response.handleResponseMessage(r.type);
-          }
+          });
         });
-      });
+    });
   }
 
   public getInstalledServices(services) {   
@@ -128,18 +142,16 @@ export class ListManageServicesComponent implements OnInit {
     );
 
     let replacement;
-    let atIndex = -1
-    this.installedServicePkgs.forEach((installed, idx) =>{
+    let atIndex = -1;
+    this.installedServicePkgs.forEach((installed, idx) => {
       replacement = structuredClone(installed);
-      console.log('idx', idx);
       let found_svc = this.servicesRegistry.find(s => s.type == installed.type);
       if (found_svc === undefined){
         let found_sch = this.servicesSchedules.find(s => s.processName == installed["schedule_process"]);
-        console.log("Found sch: ", found_svc)
         if (found_sch !== undefined){
           replacement.name = found_sch.name;
           replacement.added = true;
-          replacement.state = "disabled"; // can be enabled too, if in bad state  
+          replacement.state = found_sch.enabled === true ? 'enabled' : 'disabled';
           atIndex = idx;
         } else {
           replacement.name = '';
@@ -154,18 +166,17 @@ export class ListManageServicesComponent implements OnInit {
         replacement.enabled = found_svc.enabled;
         atIndex = idx;
       }
-    if (atIndex != -1){
-      this.installedServicePkgs[atIndex] = replacement;
-    }
-  });
+      if (atIndex != -1){
+        this.installedServicePkgs[atIndex] = replacement;
+      }   
+    });
   }
 
   public getAvaiableServices(services) {
     let svcs = services;
     this.availableServicePkgs = this.expectedServices.filter(
-      (s) => svcs.includes(s.package) 
+      (s) => svcs.includes(s.package)
     );
-    console.log('availableServicePkgs', this.availableServicePkgs);
   }
 
   public getServices() {
@@ -218,11 +229,11 @@ export class ListManageServicesComponent implements OnInit {
     */
    openServiceModal(service) {
     this.serviceModal.toggleModal(true);
-    this.serviceModal.getServiceInfo(service);
+    this.serviceModal.getServiceInfo(service, this.availableServicePkgs);
   }
 
   onNotify() {
-    console.log('notify');
+    // added 3 second wait after redirecting list page from modal beacuse it takes sometime to get data from API
     setTimeout(() => {
       this.showServices();
     }, 3000);
@@ -236,9 +247,7 @@ export class ListManageServicesComponent implements OnInit {
         this.reenableButton.emit(false);
         this.alertService.success(data["result"], true);
         this.closeModal("delete-confirmation-dialog");
-        setTimeout(() => {
-          this.showServices();
-        }, 2000);
+        this.onNotify();
       },
       (error) => {
         this.ngProgress.done();
@@ -253,21 +262,16 @@ export class ListManageServicesComponent implements OnInit {
   }
 
   enableService() {
-    /** request started */
     this.ngProgress.start();
     this.schedulesService.enableScheduleByName(this.service.name).subscribe(
       (data) => {
-        /** request completed */
         this.ngProgress.done();
         this.reenableButton.emit(false);
         this.alertService.success(data["message"], true);
         this.closeModal('confirmation-dialog');
-        setTimeout(() => {
-          this.showServices();
-        }, 2000);
+        this.onNotify();
       },
       (error) => {
-        /** request completed */
         this.ngProgress.done();
         this.reenableButton.emit(false);
         if (error.status === 0) {
@@ -280,21 +284,16 @@ export class ListManageServicesComponent implements OnInit {
   }
 
   disableService() {
-    /** request started */
     this.ngProgress.start();
     this.schedulesService.disableScheduleByName(this.service.name).subscribe(
       (data) => {
-        /** request completed */
         this.ngProgress.done();
         this.reenableButton.emit(false);
         this.alertService.success(data["message"], true);
         this.closeModal('confirmation-dialog');
-        setTimeout(() => {
-          this.showServices();
-        }, 2000);
+        this.onNotify();
       },
       (error) => {
-        /** request completed */
         this.ngProgress.done();
         this.reenableButton.emit(false);
         if (error.status === 0) {

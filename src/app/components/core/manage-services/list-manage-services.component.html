@@ -14,7 +14,7 @@
   </div>
     <div class="card">
       <div class="card-content">
-        <table class="table is-responsive is-hoverable is-narrow mb-0" style="border-bottom: 1px dashed silver">
+        <table class="table is-responsive is-hoverable is-narrow mb-0" [ngClass]="{'tbl-border': availableServicePkgs.length > 0}">
           <tbody>
              <tr *ngFor="let s of installedServicePkgs">
               <td class="align-content content-pad">
@@ -59,9 +59,6 @@
                     </div>
                   </div>
                 </div>
-                <a *ngIf="!service?.name" (click)="openServiceModal(service?.type)" class="button is-text text-btn">
-                  {{service?.btntxt}}
-                </a>
               </td>             
              </tr>
             </tbody>
@@ -72,11 +69,13 @@
               <td class="align-content content-pad">
                 <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
               </td>
-                <td class="align-content content-pad">
-                  <a (click)="openServiceModal(s)" class="button is-text text-btn">
-                    Install
-                  </a>
-                </td>     
+              <td></td>
+              <td></td>
+              <td class="align-content content-pad">
+                <a (click)="openServiceModal(s)" class="button is-text text-btn">
+                  Install
+                </a>
+              </td>     
              </tr>
             </tbody>
         </table>

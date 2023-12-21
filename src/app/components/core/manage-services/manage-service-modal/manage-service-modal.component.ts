@@ -28,25 +28,22 @@ export class ManageServiceModalComponent {
   category: any;
   isServiceAvailable = false;
   isServiceEnabled = false;
-  serviceModalName = '';
+  serviceProcessName = '';
+  serviceType = '';
   serviceName = '';
   availableServices = [];
-  packageNamePrefix = 'fledge-service-';
+  packageName = '';
   btnText = 'Add';
   showDeleteBtn = true;
-  public serviceRecord;
 
-  pluginInstallationState = false;
+  serviceInstallationState = false;
 
   increment = 1;
   maxRetry = 15;
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
-
   service;
-  serviceInfo: {
-    isServiceAvailable: boolean, isServiceEnabled: boolean, name: string, serviceModalName: string
-  };
+
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
@@ -74,19 +71,17 @@ export class ManageServiceModalComponent {
     private configurationControlService: ConfigurationControlService,
     public rolesService: RolesService) { }
 
-  ngOnInit() {
-    if (this.serviceName) {
-      this.getService();
-    }
-  }
+  ngOnInit() { }
 
-  getServiceInfo(serviceInfo) {
-    if (serviceInfo) {
-      this.serviceName = serviceInfo.name ? serviceInfo.name : '';
-      this.isServiceEnabled = ["shutdown", "disabled"].includes(serviceInfo.state) ? false : true;
-      this.isServiceAvailable = serviceInfo.added;
-      this.serviceModalName = serviceInfo.process;
-    }
+  getServiceInfo(serviceInfo, availableServicePkgs) {
+    this.serviceName = serviceInfo.name ? serviceInfo.name : '';
+    this.isServiceEnabled = ["shutdown", "disabled", ""].includes(serviceInfo.state) ? false : true;
+    this.isServiceAvailable = serviceInfo.added;
+    this.serviceProcessName = serviceInfo.process;
+    this.serviceType = serviceInfo.type;
+    this.packageName = serviceInfo.package;
+    this.availableServices = availableServicePkgs;
+
     this.enabled =  this.isServiceEnabled;
     this.btnText = 'Add';
     if (this.isServiceAvailable) {
@@ -94,16 +89,19 @@ export class ManageServiceModalComponent {
       this.btnText = 'Save';
       this.getCategory();
     }
+    if (this.serviceType) {
+      this.getService();
+    }   
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    if (!this.pluginInstallationState) {
+    if (!this.serviceInstallationState) {
       this.toggleModal(false);
     }
   }
 
   public toggleModal(isOpen: Boolean) {
-    this.pluginInstallationState = false;
+    this.serviceInstallationState = false;
     this.reenableButton.emit(false);
     const serviceModal = <HTMLDivElement>document.getElementById('manage-service-modal');
     if (serviceModal) {
@@ -126,16 +124,16 @@ export class ManageServiceModalComponent {
 
   public getService() {
     this.ngProgress.start();
-    this.servicesApiService.getServiceByType(this.serviceModalName)
-      .subscribe((res: any) => {
-        this.ngProgress.done();
-        this.service = res.services[0];
-      },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          }
-        });
+    this.servicesApiService.getServiceByType(this.serviceType)
+    .subscribe((res: any) => {
+      this.ngProgress.done();
+      this.service = res.services[0];
+    },
+    (error) => {
+      if (error.status === 0) {
+        console.log('service down ', error);
+      }
+    });
   }
 
   addService(installationState = false) {
@@ -143,10 +141,9 @@ export class ManageServiceModalComponent {
     const name = formValues.serviceName;
     const payload = {
       name: name,
-      type: this.serviceModalName.toLowerCase(),
+      type: this.serviceProcessName,
       enabled: formValues.enabled
     };
-    /** request start */
     if (!installationState) {
       this.ngProgress.start();
     }
@@ -160,7 +157,6 @@ export class ManageServiceModalComponent {
           this.toggleModal(false);
         },
         (error) => {
-          /** request done */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -170,7 +166,7 @@ export class ManageServiceModalComponent {
         });
   }
 
-  monitorServiceInstallationStatus(data: any, pluginName: string) {
+  pollServiceInstallationStatus(data: any, pluginName: string) {
     this.servicesApiService.monitorPluginInstallationStatus(data.statusLink)
       .pipe(
         take(1),
@@ -203,7 +199,7 @@ export class ManageServiceModalComponent {
             // Throw error after exceed number of attempts
             concatMap(o => {
               if (this.increment > this.maxRetry) {
-                this.pluginInstallationState = false;
+                this.serviceInstallationState = false;
                 this.ngProgress.done();
                 this.alertService.closeMessage();
                 // tslint:disable-next-line: max-line-length
@@ -214,7 +210,7 @@ export class ManageServiceModalComponent {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        this.pluginInstallationState = false;
+        this.serviceInstallationState = false;
         this.addService(true);
       });
   }
@@ -253,35 +249,11 @@ export class ManageServiceModalComponent {
         });
   }
 
-  public async getInstalledServicesList() {
-    /** request start */
-    this.ngProgress.start();
-    await this.servicesApiService.getInstalledServices().
-      then(data => {
-        /** request done */
-        this.ngProgress.done();
-        this.availableServices = data['services'];
-      })
-      .catch(error => {
-        /** request done */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
-  }
-
   installService() {
-    this.pluginInstallationState = true;
-    let repoToInstall = this.packageNamePrefix + this.serviceModalName.toLowerCase();
-    if (this.serviceModalName === 'BucketStorage') {
-      repoToInstall = this.packageNamePrefix + 'bucket';
-    }
+    this.serviceInstallationState = true;
     const servicePayload = {
       format: 'repository',
-      name: repoToInstall,
+      name: this.packageName,
       version: ''
     };
 
@@ -291,11 +263,11 @@ export class ManageServiceModalComponent {
     this.servicesApiService.installService(servicePayload).
       subscribe(
         (data: any) => {
-          this.monitorServiceInstallationStatus(data, servicePayload.name);
+          this.pollServiceInstallationStatus(data, servicePayload.name);
         },
         error => {
           /** request done */
-          this.pluginInstallationState = false;
+          this.serviceInstallationState = false;
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -343,18 +315,15 @@ export class ManageServiceModalComponent {
     if (name != null) {
       serviceName = name;
     }
-    /** request started */
     this.ngProgress.start();
     this.schedulesService.enableScheduleByName(serviceName).
       subscribe(
         (data) => {
-          /** request completed */
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isServiceEnabled = true;
         },
         error => {
-          /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -365,18 +334,15 @@ export class ManageServiceModalComponent {
   }
 
   disableService() {
-    /** request started */
     this.ngProgress.start();
     this.schedulesService.disableScheduleByName(this.serviceName).
       subscribe(
         (data) => {
-          /** request completed */
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isServiceEnabled = false;
         },
         error => {
-          /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -387,8 +353,7 @@ export class ManageServiceModalComponent {
   }
 
   public async addServiceEvent() {
-    await this.getInstalledServicesList();
-    if (!this.availableServices.includes(this.serviceModalName.toLowerCase())) {
+    if (!this.availableServices.includes(this.serviceProcessName)) {
       this.installService();
     } else {
       this.addService(false);
@@ -445,7 +410,7 @@ export class ManageServiceModalComponent {
         this.updateConfiguration(element.key, element.config);
       });
     }
-
+    
     this.toggleModal(false);
   }
 
@@ -505,10 +470,11 @@ export class ManageServiceModalComponent {
 
   goToLink() {
     const urlSlug = 'configuring-the-service';
-    let repoName = this.packageNamePrefix + this.serviceModalName.toLowerCase();
-    if (this.serviceModalName === 'Poll Agent') {
-      repoName = this.packageNamePrefix + 'management';
+    let processName = this.serviceProcessName;
+    if (this.serviceProcessName === 'bucket') {
+      processName = 'bucketstorage';
     }
+    let repoName = 'fledge-service-' + processName;
     this.docService.goToServiceDocLink(urlSlug, repoName);
   }
 }

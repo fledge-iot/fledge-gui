@@ -28,3 +28,7 @@ tr:hover .btn-delete {
 .breadcrumb {
     margin-bottom: 0px !important;
 }
+
+.tbl-border {
+    border-bottom: 1px dashed silver;
+}
