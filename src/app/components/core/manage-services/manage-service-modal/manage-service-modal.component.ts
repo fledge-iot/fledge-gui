@@ -90,7 +90,7 @@ export class ManageServiceModalComponent {
       this.getCategory();
     }
     if (this.serviceType) {
-      this.getService();
+      this.getServiceByType();
     }   
   }
 
@@ -122,7 +122,7 @@ export class ManageServiceModalComponent {
     }
   }
 
-  public getService() {
+  public getServiceByType() {
     this.ngProgress.start();
     this.servicesApiService.getServiceByType(this.serviceType)
     .subscribe((res: any) => {
@@ -470,11 +470,11 @@ export class ManageServiceModalComponent {
 
   goToLink() {
     const urlSlug = 'configuring-the-service';
-    let processName = this.serviceProcessName;
-    if (this.serviceProcessName === 'bucket') {
-      processName = 'bucketstorage';
+    // ReadTheDoc is available only for Notification service yet
+    if (this.serviceProcessName === 'notification') {
+      let repoName = 'fledge-service-' + this.serviceProcessName;
+      this.docService.goToServiceDocLink(urlSlug, repoName);
     }
-    let repoName = 'fledge-service-' + processName;
-    this.docService.goToServiceDocLink(urlSlug, repoName);
+    return;  
   }
 }
