@@ -21,6 +21,10 @@ tr:hover .btn-delete {
     font-size: 0.85rem;
 }
 
+.service-table {
+    width: 50%;
+}
+
 #refresh-check {
     margin-left: 3px;
 }

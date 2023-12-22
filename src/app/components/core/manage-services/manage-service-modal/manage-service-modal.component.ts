@@ -159,6 +159,7 @@ export class ManageServiceModalComponent {
         },
         (error) => {
           this.ngProgress.done();
+          this.toggleModal(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -202,6 +203,7 @@ export class ManageServiceModalComponent {
               if (this.increment > this.maxRetry) {
                 this.serviceInstallationState = false;
                 this.ngProgress.done();
+                this.toggleModal(false);
                 this.alertService.closeMessage();
                 // tslint:disable-next-line: max-line-length
                 return throwError(`Failed to get expected results in ${this.maxRetry} attempts, tried with incremental time delay starting with 2s, for installing plugin ${pluginName}`);
@@ -211,7 +213,7 @@ export class ManageServiceModalComponent {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        this.serviceInstallationState = false;
+        this.serviceInstallationState = false;     
         this.addService(true);
       });
   }
@@ -269,6 +271,7 @@ export class ManageServiceModalComponent {
         error => {
           /** request done */
           this.serviceInstallationState = false;
+          this.toggleModal(false);
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -409,14 +412,14 @@ export class ManageServiceModalComponent {
     this.stateUpdate();
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
+      this.toggleModal(false);
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
+      this.toggleModal(false);
     }
-    
-    this.toggleModal(false);
   }
 
   /**
@@ -474,11 +477,13 @@ export class ManageServiceModalComponent {
   }
 
   goToLink() {
-    const urlSlug = 'configuring-the-service';
-    // ReadTheDoc is available only for Notification service yet
+    // ReadTheDoc is not available for Bucket and Management Services
+    // TODO: FOGL-5650/FOGL-6589
     if (this.serviceProcessName === 'notification') {
-      let repoName = 'fledge-service-' + this.serviceProcessName;
-      this.docService.goToServiceDocLink(urlSlug, repoName);
+      this.docService.goToServiceDocLink('configuring-the-service', 'fledge-service-' + this.serviceProcessName);
+    }
+    if (this.serviceProcessName === 'dispatcher') {
+      this.docService.goToSetPointControlDocLink('control-dispatcher-service');
     }
     return;  
   }

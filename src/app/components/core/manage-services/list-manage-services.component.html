@@ -14,84 +14,89 @@
   </div>
     <div class="card">
       <div class="card-content">
-        <table class="table is-responsive service-table is-hoverable is-narrow mb-0" [ngClass]="{'tbl-border': availableServicePkgs.length > 0}">
-          <tbody>
-            <ng-container *ngFor="let s of installedServicePkgs; let i = index;">
-             <tr>
-              <td class="align-content content-pad">
-                <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
-                <p class="help has-text-grey modal-subtitle mt-0">{{s.name}}</p>
-              </td>
-              <td>
-                <div *ngIf="s?.state" class="tags has-addons">
-                  <span class="tag is-light" [ngClass]="applyClass(s?.state)">{{s?.state}}</span>
-                </div>
-              </td>
-              <td>
-                <a *ngIf="s?.name" class="button cog-icon" (click)="openServiceModal(s)">
-                  <span class="icon">
-                    <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
-                  </span>
-                </a>
-              </td>          
-              <td *ngIf="sharedService.checkAuth()">
-                <a *ngIf="!s.added" (click)="openServiceModal(s)" class="button is-text text-btn">
-                  Add
-                </a>
-                <div *ngIf="s?.name" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
-                  <div class="dropdown-trigger">
-                    <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
-                      <span class="icon">
-                        <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
-                      </span>
-                    </a>
+        <div *ngIf="showLoading" class="has-text-centered has-text-grey">
+          Loading...
+        </div>
+        <ng-container *ngIf="!showLoading">
+          <table class="table is-responsive service-table is-hoverable mb-0" [ngClass]="{'tbl-border': availableServicePkgs.length > 0}">
+            <tbody>
+              <ng-container *ngFor="let s of installedServicePkgs; let i = index;">
+              <tr>
+                <td class="align-content content-pad py-1">
+                  <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
+                  <p class="help has-text-grey modal-subtitle mt-0">{{s.name}}</p>
+                </td>
+                <td class="py-1">
+                  <div *ngIf="s?.state" class="tags has-addons">
+                    <span class="tag is-light" [ngClass]="applyClass(s?.state)">{{s?.state}}</span>
                   </div>
-                  <div class="dropdown-menu" id="dropdown-menu3" role="menu">
-                    <div class="dropdown-content">
-                      <a *ngIf="sharedService.checkAuth() && s.added" class="dropdown-item"
-                        (click)="setService(s);openModal('confirmation-dialog')">
-                        <span>{{ ["shutdown", "disabled"].includes(s.state) ? "Enable" : "Disable" }}</span>
-                      </a>
-                      <a *ngIf="sharedService.checkAuth()" class="dropdown-item"
-                        (click)="setService(s);openModal('delete-confirmation-dialog')">
-                        <span>Delete</span>
+                </td>
+                <td class="py-1">
+                  <a *ngIf="s?.name" class="button cog-icon" (click)="openServiceModal(s)">
+                    <span class="icon">
+                      <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
+                    </span>
+                  </a>
+                </td>          
+                <td *ngIf="sharedService.checkAuth()" class="py-1">
+                  <a *ngIf="!s.added" (click)="openServiceModal(s)" class="button is-text text-btn">
+                    Add
+                  </a>
+                  <div *ngIf="s?.name" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
+                    <div class="dropdown-trigger">
+                      <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                        <span class="icon">
+                          <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
+                        </span>
                       </a>
                     </div>
+                    <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                      <div class="dropdown-content">
+                        <a *ngIf="sharedService.checkAuth() && s.added" class="dropdown-item"
+                          (click)="setService(s);openModal('confirmation-dialog')">
+                          <span>{{ ["shutdown", "disabled"].includes(s.state) ? "Enable" : "Disable" }}</span>
+                        </a>
+                        <a *ngIf="sharedService.checkAuth()" class="dropdown-item"
+                          (click)="setService(s);openModal('delete-confirmation-dialog')">
+                          <span>Delete</span>
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </td>             
-             </tr>
-            </ng-container>
-             <!-- <tr *ngFor="let s of availableServicePkgs">
-              <td class="align-content content-pad">
-                <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
-              </td>
-              <td></td>
-              <td></td>
-              <td class="align-content content-pad">
-                <a (click)="openServiceModal(s)" class="button is-text text-btn">
-                  Install
-                </a>
-              </td>     
-             </tr> -->
-            </tbody>
-        </table>
-        <table class="table is-responsive is-hoverable is-narrow">
-          <tbody>
-             <tr *ngFor="let s of availableServicePkgs">
-              <td class="align-content content-pad">
-                <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
-              </td>
-              <td></td>
-              <td></td>
-              <td class="align-content content-pad">
-                <a (click)="openServiceModal(s)" class="button is-text text-btn">
-                  Install
-                </a>
-              </td>     
-             </tr>
-            </tbody>
-        </table>
+                </td>             
+              </tr>
+              </ng-container>
+              <!-- <tr *ngFor="let s of availableServicePkgs">
+                <td class="align-content content-pad">
+                  <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
+                </td>
+                <td></td>
+                <td></td>
+                <td class="align-content content-pad">
+                  <a (click)="openServiceModal(s)" class="button is-text text-btn">
+                    Install
+                  </a>
+                </td>     
+              </tr> -->
+              </tbody>
+          </table>
+          <table class="table is-responsive is-hoverable service-table">
+            <tbody>
+              <tr *ngFor="let s of availableServicePkgs">
+                <td class="align-content content-pad py-1">
+                  <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
+                </td>
+                <td></td>
+                <td></td>
+                <td class="align-content content-pad py-1">
+                  <a (click)="openServiceModal(s)" class="button is-text text-btn">
+                    Install
+                  </a>
+                </td>     
+              </tr>
+              </tbody>
+          </table>
+        </ng-container>
       </div>
     </div>
 </div>
@@ -102,7 +107,7 @@
     <button type="button" class="delete" aria-label="close" (click)="closeModal('delete-confirmation-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Deleting this service can not be undone. Continue?
+    Deleting {{service?.name}} service can not be undone. Continue?
   </section>
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeModal('delete-confirmation-dialog')">Cancel</button>

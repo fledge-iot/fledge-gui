@@ -61,6 +61,8 @@ export class ListManageServicesComponent implements OnInit {
   servicesRegistry = [];
   servicesSchedules = [];
 
+  showLoading = false;
+
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
 
@@ -76,6 +78,7 @@ export class ListManageServicesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.showLoadingText();
     this.showServices();
   }
 
@@ -113,12 +116,14 @@ export class ListManageServicesComponent implements OnInit {
 
             // Remove service name from available list if it is already installed
             this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
+            this.hideLoadingText();
             return result;
           })
         )
         .subscribe((result) => {
           result.forEach((r: any) => {
             this.ngProgress.done();
+            this.hideLoadingText();
             if (r.failed) {
               if (r.error.status === 0) {
                 console.log('service down ', r.error);
@@ -323,6 +328,9 @@ export class ListManageServicesComponent implements OnInit {
     if (serviceStatus.toLowerCase() === "failed") {
       return "is-danger";
     }
+    if (serviceStatus.toLowerCase() === "enabled") {
+      return "is-info";
+    }
   }
 
   setService(service) {
@@ -335,6 +343,14 @@ export class ListManageServicesComponent implements OnInit {
     } else {
       this.disableService();
     }
+  }
+
+  public showLoadingText() {
+    this.showLoading = true;
+  }
+
+  public hideLoadingText() {
+    this.showLoading = false;
   }
 
   openModal(id: string) {

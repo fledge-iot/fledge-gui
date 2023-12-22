@@ -36,7 +36,7 @@
           </app-configuration-group>
           <div class="columns">
             <div class="column">
-              <div class="field is-horizontal" [ngClass]="{'enable-div': category}">
+              <div class="field is-horizontal enable-div">
                 <div class="field-label has-text-left" [ngClass]="{'service-label':!isServiceAvailable === true}">
                   <label class="label">Enabled</label>
                 </div>
@@ -120,7 +120,7 @@
     <button type="button" class="delete" aria-label="close" (click)="closeDeleteModal('confirmation-delete-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Deleting this service can not be undone. Continue?
+    Deleting {{serviceName}} service can not be undone. Continue?
   </section>
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeDeleteModal('confirmation-delete-dialog')">Cancel</button>
