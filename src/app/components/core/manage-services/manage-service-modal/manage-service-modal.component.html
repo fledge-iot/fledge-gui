@@ -36,7 +36,7 @@
           </app-configuration-group>
           <div class="columns">
             <div class="column">
-              <div class="field is-horizontal enable-div">
+              <div class="field is-horizontal" [ngClass]="{'enable-div': isServiceAvailable}">
                 <div class="field-label has-text-left" [ngClass]="{'service-label':!isServiceAvailable === true}">
                   <label class="label">Enabled</label>
                 </div>

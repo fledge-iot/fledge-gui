@@ -33,11 +33,14 @@ tr:hover .btn-delete {
     margin-bottom: 0px !important;
 }
 
-.tbl-border {
-    border-bottom: 1px dashed silver;
+.dashed-border td {
+    border-top: 1px dashed silver;
 }
 
 .card-content {
     overflow: visible;
 }
 
+.remove-border td {
+    border-bottom: 0px;
+}

@@ -18,15 +18,15 @@
           Loading...
         </div>
         <ng-container *ngIf="!showLoading">
-          <table class="table is-responsive service-table is-hoverable mb-0" [ngClass]="{'tbl-border': availableServicePkgs.length > 0}">
+          <table class="table is-responsive service-table is-hoverable mb-0">
             <tbody>
               <ng-container *ngFor="let s of installedServicePkgs; let i = index;">
-              <tr>
+              <tr [ngClass]="{'remove-border': (installedServicePkgs.length - 1) === i}">
                 <td class="align-content content-pad py-1">
                   <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
                   <p class="help has-text-grey modal-subtitle mt-0">{{s.name}}</p>
                 </td>
-                <td class="py-1">
+                <td class="py-3">
                   <div *ngIf="s?.state" class="tags has-addons">
                     <span class="tag is-light" [ngClass]="applyClass(s?.state)">{{s?.state}}</span>
                   </div>
@@ -66,35 +66,21 @@
                 </td>             
               </tr>
               </ng-container>
-              <!-- <tr *ngFor="let s of availableServicePkgs">
-                <td class="align-content content-pad">
-                  <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
-                </td>
-                <td></td>
-                <td></td>
-                <td class="align-content content-pad">
-                  <a (click)="openServiceModal(s)" class="button is-text text-btn">
-                    Install
-                  </a>
-                </td>     
-              </tr> -->
-              </tbody>
-          </table>
-          <table class="table is-responsive is-hoverable service-table">
-            <tbody>
-              <tr *ngFor="let s of availableServicePkgs">
-                <td class="align-content content-pad py-1">
-                  <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
-                </td>
-                <td></td>
-                <td></td>
-                <td class="align-content content-pad py-1">
-                  <a (click)="openServiceModal(s)" class="button is-text text-btn">
-                    Install
-                  </a>
-                </td>     
-              </tr>
-              </tbody>
+              <ng-container *ngFor="let s of availableServicePkgs; let j = index;">
+                <tr [ngClass]="{'dashed-border': j === 0}">
+                  <td class="align-content content-pad">
+                    <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td class="align-content content-pad">
+                    <a (click)="openServiceModal(s)" class="button is-text text-btn">
+                      Install
+                    </a>
+                  </td>     
+                </tr>
+              </ng-container>
+            </tbody>
           </table>
         </ng-container>
       </div>
