@@ -67,7 +67,7 @@
               </tr>
               </ng-container>
               <ng-container *ngFor="let s of availableServicePkgs; let j = index;">
-                <tr [ngClass]="{'dashed-border': j === 0}">
+                <tr [ngClass]="{'dashed-border': (j === 0 && installedServicePkgs.length > 0)}">
                   <td class="align-content content-pad">
                     <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
                   </td>
