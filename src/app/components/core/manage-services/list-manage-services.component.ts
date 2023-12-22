@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter, OnDestroy } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
-
+import { Subscription } from 'rxjs';
 
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
@@ -13,7 +13,7 @@ import { ManageServiceModalComponent } from './manage-service-modal/manage-servi
   templateUrl: "./list-manage-services.component.html",
   styleUrls: ["./list-manage-services.component.css"],
 })
-export class ListManageServicesComponent implements OnInit {
+export class ListManageServicesComponent implements OnInit, OnDestroy {
   expectedServices = [
     {
       "package": "fledge-service-notification",
@@ -62,6 +62,8 @@ export class ListManageServicesComponent implements OnInit {
   servicesSchedules = [];
 
   showLoading = false;
+  viewPortSubscription: Subscription;
+  viewPort: any = '';
 
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
@@ -78,6 +80,9 @@ export class ListManageServicesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
+      this.viewPort = viewport;
+    });
     this.showLoadingText();
     this.showServices();
   }
@@ -359,5 +364,9 @@ export class ListManageServicesComponent implements OnInit {
 
   closeModal(id: string) {
     this.dialogService.close(id);
+  }
+
+  public ngOnDestroy(): void {
+    this.viewPortSubscription.unsubscribe();
   }
 }

@@ -13,7 +13,7 @@
     </button>
   </div>
     <div class="card">
-      <div class="card-content">
+      <div class="card-content" [ngClass]="{'change-overflow': viewPort !== 'mobile'}">
         <div *ngIf="showLoading" class="has-text-centered has-text-grey">
           Loading...
         </div>

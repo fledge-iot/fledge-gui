@@ -324,11 +324,13 @@ export class ManageServiceModalComponent {
       subscribe(
         (data) => {
           this.ngProgress.done();
+          this.toggleModal(false);
           this.alertService.success(data['message'], true);
           this.isServiceEnabled = true;
         },
         error => {
           this.ngProgress.done();
+          this.toggleModal(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -345,9 +347,11 @@ export class ManageServiceModalComponent {
           this.ngProgress.done();
           this.alertService.success(data['message'], true);
           this.isServiceEnabled = false;
+          this.toggleModal(false);
         },
         error => {
           this.ngProgress.done();
+          this.toggleModal(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
