@@ -9,9 +9,7 @@
 ### Fixed
 
 - [FOGL-8199] Same name datapoints/attributes for different assets get merged in the graph display [#347](https://github.com/fledge-iot/fledge-gui/pull/347)
-  
-- [FOGL-7368]: Added left & right slider indicator when configuration group tabs are not visible [#250](https://github.com/fledge-iot/fledge-gui/pull/250)
-
+ 
 ### Others
 
 - Disable buttons on click while the corresponding API request is in progress, to avoid duplicate requests [#343](https://github.com/fledge-iot/fledge-gui/pull/343)
@@ -55,7 +53,9 @@
 
 - [FOGL-7191] Restricted entry of quote characters in an entity name [#249](https://github.com/fledge-iot/fledge-gui/pull/249)
 
-- [FOGL-7475] System Logs page search improvements to search data from backend through API [#270](https://github.com/fledge-iot/fledge-gui/pull/270) 
+- [FOGL-7475] System Logs page search improvements to search data from backend through API [#270](https://github.com/fledge-iot/fledge-gui/pull/270)
+
+- [FOGL-7368]: Added left & right slider indicator when configuration group tabs are not visible [#250](https://github.com/fledge-iot/fledge-gui/pull/250)
 
 - [FOGL-8062] E2E tests migrated to cypress from protractor [#323](https://github.com/fledge-iot/fledge-gui/pull/323)
 
@@ -78,6 +78,7 @@
 ### Others
 
 - Included Bootstrap icons [#327](https://github.com/fledge-iot/fledge-gui/pull/327)
+
 
 ## v2.1.0 [2022-12-26]
 
