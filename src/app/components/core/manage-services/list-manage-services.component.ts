@@ -166,7 +166,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         } else {
           replacement.name = '';
           replacement.added = false;
-          replacement.state = '';
+          replacement.state = 'installed';
           atIndex = idx;
         }
       } else {
@@ -333,7 +333,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     if (serviceStatus.toLowerCase() === "failed") {
       return "is-danger";
     }
-    if (serviceStatus.toLowerCase() === "enabled") {
+    if (serviceStatus.toLowerCase() === "enabled" || serviceStatus.toLowerCase() === "installed") {
       return "is-info";
     }
   }
