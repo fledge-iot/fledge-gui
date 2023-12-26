@@ -193,8 +193,8 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
         //         );
         //     }
         // }
-        
-        filterPipeline = ["rename1", ["meta1", "delta1"], "fft1", ["exp1"], "asset1", ["log1"]];
+
+        // filterPipeline = ["rename1", ["meta1", "delta1"], "fft1", ["exp1"], "asset1", ["log1"]];
         let fpLen = filterPipeline.length;
         if (fpLen == 0) {
             await editor.addConnection(

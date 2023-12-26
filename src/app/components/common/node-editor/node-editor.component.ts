@@ -16,7 +16,7 @@ export class NodeEditorComponent implements OnInit {
 
   @ViewChild("rete") container!: ElementRef;
   public source = '';
-  public filterPipeline: string[] = [];
+  public filterPipeline = [];
   public updatedFilterPipeline: string[] = [];
   public filterConfigurations: any[] = [];
   public category: any;
@@ -60,10 +60,26 @@ export class NodeEditorComponent implements OnInit {
     })
     this.filterSubscription = this.flowEditorService.filterInfo.subscribe(data => {
       this.filterName = data.name;
-      if(this.filterPipeline.indexOf(this.filterName)!== -1){
-        this.filterPipeline = this.filterPipeline.filter(f => f !== this.filterName);
-        this.deleteFilter();
+      for(let i=0; i<this.filterPipeline.length; i++){
+        if(typeof(this.filterPipeline[i]) === "string"){
+          if(this.filterPipeline[i] === this.filterName){
+            this.filterPipeline = this.filterPipeline.filter(f => f !== this.filterName);
+            // this.deleteFilter();
+            break;
+          }
+        }
+        else{
+          if(this.filterPipeline[i].indexOf(this.filterName)!== -1){
+            this.filterPipeline[i] = this.filterPipeline[i].filter(f => f !== this.filterName);
+            if(this.filterPipeline[i].length === 0){
+              this.filterPipeline.splice(i, 1);
+            }
+            // this.deleteFilter();
+            break;
+          }
+        }
       }
+      console.log(this.filterPipeline);
     })
   }
 
@@ -81,6 +97,7 @@ export class NodeEditorComponent implements OnInit {
     this.filterService.getFilterPipeline(this.source)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
+        this.filterPipeline = ["rename1", ["meta1", "delta1"], "fft1", ["exp1"], "asset1", ["log1"]];
         this.createFilterConfigurationsArray();
       },
         error => {
@@ -139,8 +156,9 @@ export class NodeEditorComponent implements OnInit {
   }
 
   createFilterConfigurationsArray(){
-    this.filterPipeline.forEach((filterName)=>{
-      this,this.getFilterConfiguration(filterName)
+    let flattenedFilterPipeline = [].concat(...this.filterPipeline)
+    flattenedFilterPipeline.forEach((filterName)=>{
+      this.getFilterConfiguration(filterName)
     })
   }
 
