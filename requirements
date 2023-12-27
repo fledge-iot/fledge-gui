@@ -28,7 +28,7 @@ install_nodejs () {
       sudo chmod 500 nsolid_setup_deb.sh
       # sudo chmod +r "/usr/share/keyrings/nodesource.gpg" 
       sudo ./nsolid_setup_deb.sh ${requiredNodeVer}
-      sudo apt install nodejs -y
+      sudo $1 install nodejs -y
   fi
 }
 
