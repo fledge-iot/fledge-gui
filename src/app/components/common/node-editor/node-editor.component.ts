@@ -17,7 +17,7 @@ export class NodeEditorComponent implements OnInit {
   @ViewChild("rete") container!: ElementRef;
   public source = '';
   public filterPipeline = [];
-  public updatedFilterPipeline: string[] = [];
+  public updatedFilterPipeline = [];
   public filterConfigurations: any[] = [];
   public category: any;
   private subscription: Subscription;
@@ -97,7 +97,7 @@ export class NodeEditorComponent implements OnInit {
     this.filterService.getFilterPipeline(this.source)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
-        this.filterPipeline = ["rename1", ["meta1", "delta1"], "fft1", ["exp1"], "asset1", ["log1"]];
+        this.filterPipeline = ["rename1", ["meta1", "delta1"], "fft1", ["exp1"], ["asset1", "log1"]];
         this.createFilterConfigurationsArray();
       },
         error => {
@@ -181,19 +181,18 @@ export class NodeEditorComponent implements OnInit {
   }
 
   save() {
-    this.updatedFilterPipeline = getUpdatedFilterPipeline();
-    if (this.updatedFilterPipeline.length !== 0) {
-      for (let i = 0; i < this.filterPipeline.length; i++) {
-        if (this.filterPipeline[i] !== this.updatedFilterPipeline[i]) {
-          this.updateFilterPipeline(this.updatedFilterPipeline);
-          return;
-        }
+    let updatedPipeline = getUpdatedFilterPipeline();
+    if(updatedPipeline && updatedPipeline.length > 0){
+      this.updatedFilterPipeline = updatedPipeline;
+      if(this.isPipelineUpdated()){
+        console.log("pipeline updated")
+        // this.updateFilterPipeline();
       }
     }
   }
 
-  updateFilterPipeline(filterPipeline) {
-    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.source)
+  updateFilterPipeline() {
+    this.filterService.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline }, this.source)
       .subscribe(() => {
         console.log("pipeline updated");
         setTimeout(() => {
@@ -203,5 +202,32 @@ export class NodeEditorComponent implements OnInit {
         (error) => {
           console.log('service down ', error);
         });
+  }
+
+  isPipelineUpdated(){
+    if(this.filterPipeline.length !== this.updatedFilterPipeline.length){
+      return true;
+    }
+    for(let i=0; i<this.filterPipeline.length; i++){
+      if(typeof(this.filterPipeline[i]) !== typeof(this.updatedFilterPipeline[i])){
+        return true;
+      }
+      if(typeof(this.filterPipeline[i]) === "string"){
+        if(this.filterPipeline[i] !== this.updatedFilterPipeline[i]){
+          return true;
+        }
+      }
+      else{
+        if(this.filterPipeline[i].length !== this.updatedFilterPipeline[i].length){
+          return true;
+        }
+        for(let j=0; j<this.filterPipeline[i].length; j++){
+          if(this.filterPipeline[i][j] !== this.updatedFilterPipeline[i][j]){
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 }

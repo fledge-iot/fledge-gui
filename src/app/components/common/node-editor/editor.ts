@@ -281,17 +281,80 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
 export function getUpdatedFilterPipeline() {
     let nodes = editor.getNodes();
     let connections = editor.getConnections();
-    let updatedFilterPipeline: string[] = [];
 
-    if (connections.length === nodes.length - 1) {
-        let sourceNode = nodes[0];
-        while (connections.find(c => c.source === sourceNode.id)) {
-            let connection = connections.find(c => c.source === sourceNode.id)
-            let filterNode = editor.getNode(connection.target);
-            updatedFilterPipeline.push(filterNode.label);
+    for(let i=0; i<nodes.length; i++){
+        if(i==0){
+            if(!connections.find(c => c.source === nodes[i].id)){
+                console.log("Dangling connection");
+                return false;
+            }
+        }
+        else if(i==1){
+            if(!connections.find(c => c.target === nodes[i].id)){
+                console.log("Dangling connection");
+                return false;
+            }
+        }
+        else{
+            if(!connections.find(c => c.source === nodes[i].id) || !connections.find(c => c.target === nodes[i].id)){
+                console.log("Dangling connection");
+                return false;
+            }
+        }
+    }
+
+    let updatedFilterPipeline = [];
+    let sourceNode = nodes[0];
+    while(connections.find(c => c.source === sourceNode.id)){
+        let previousSourceNode = sourceNode;
+        let connlist = connections.filter(c => c.source === sourceNode.id);
+        if(connlist.length === 1){
+            let filterNode = editor.getNode(connlist[0].target);
+            if(filterNode.label !== "storage"){
+                updatedFilterPipeline.push(filterNode.label);
+            }
             sourceNode = filterNode;
         }
-        updatedFilterPipeline.pop()
+        else{
+            for(let i=0; i<connlist.length; i++){
+                let node = editor.getNode(connlist[i].target);
+                let branch = getBranchNodes(connections, node);
+                if(branch){
+                    updatedFilterPipeline.push(branch);
+                }
+                else{
+                    if(node.label !== "Storage"){
+                        updatedFilterPipeline.push(node.label);
+                    }
+                    sourceNode = node;
+                }
+            }
+        }
+        if(previousSourceNode === sourceNode){
+            break;
+        }
     }
+    console.log(updatedFilterPipeline)
     return updatedFilterPipeline;
+}
+
+function getBranchNodes(connections, node) {
+    if (node.label === "Storage") {
+        return;
+    }
+    let branchNodes = [];
+    branchNodes.push(node.label);
+    while (connections.find(c => c.source === node.id)) {
+        let connlist = connections.filter(c => c.source === node.id);
+        if (connlist.length === 1) {
+            let filterNode = editor.getNode(connlist[0].target);
+            branchNodes.push(filterNode.label);
+            node = filterNode;
+        }
+        else {
+            return;
+        }
+    }
+    branchNodes.pop();
+    return branchNodes;
 }
