@@ -12,10 +12,10 @@
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
-            <!-- <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin"
-                data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
+            <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
+                data-tooltip="Help" (click)="goToLink('api-control-invocation')">
                 <i class="far fa-question-circle"></i>
-            </span> -->
+            </span>
         </header>
         <div class="card-content api-card-content card-data">
             <table class="table is-responsive is-hoverable ep-tbl" *ngIf="apiFlows.length > 0; else nothing">
