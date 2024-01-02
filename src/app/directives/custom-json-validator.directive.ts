@@ -1,5 +1,5 @@
 import { Directive, Input } from '@angular/core';
-import { FormControl, NG_VALIDATORS, Validator } from '@angular/forms';
+import { UntypedFormControl, NG_VALIDATORS, Validator } from '@angular/forms';
 
 @Directive({
   selector: '[jsonValue][formControlName],[jsonValue][formControl],[jsonValue][ngModel]',
@@ -9,7 +9,7 @@ export class CustomJsonDirective implements Validator {
   @Input()
   jsonValue: string;
   parseError: boolean;
-  validate(c: FormControl): { [key: string]: any } {
+  validate(c: UntypedFormControl): { [key: string]: any } {
     const v = c.value;
     try {
       this.jsonValue = JSON.parse(v);

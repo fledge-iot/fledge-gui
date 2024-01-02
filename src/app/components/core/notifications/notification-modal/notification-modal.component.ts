@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { isEmpty, cloneDeep } from 'lodash';
 import {
   ConfigurationService, AlertService,
@@ -8,8 +8,8 @@ import {
   FileUploaderService,
   ConfigurationControlService
 } from '../../../../services';
-import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { DocService } from '../../../../services/doc.service';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { catchError } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 
@@ -32,8 +32,6 @@ export class NotificationModalComponent implements OnInit {
   deliveryPluginChangedConfig: any;
   notificationChangedConfig: any;
 
-  @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-
   // To hold API calls to execute
   apiCallsStack = [];
 
@@ -41,10 +39,12 @@ export class NotificationModalComponent implements OnInit {
   ruleConfigurationCopy: any;
   deliveryConfigurationCopy: any;
 
+  public reenableButton = new EventEmitter<boolean>(false);
   constructor(private configService: ConfigurationService,
     private alertService: AlertService,
     private notificationService: NotificationsService,
     public ngProgress: ProgressBarService,
+    private dialogService: DialogService,
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
@@ -74,6 +74,7 @@ export class NotificationModalComponent implements OnInit {
       return;
     }
 
+    this.reenableButton.emit(false);
     this.rulePluginChangedConfig = {};
     this.deliveryPluginChangedConfig = {};
     this.notificationChangedConfig = {};
@@ -156,19 +157,8 @@ export class NotificationModalComponent implements OnInit {
         });
   }
 
-  /**
-   * Open delete modal
-   * @param message   message to show on alert
-   * @param action here action is 'deleteNotification'
-   */
-  openDeleteModal(name: string) {
-    this.notificationRecord = {
-      name: name,
-      message: 'Deleting this notification instance can not be undone. Continue',
-      key: 'deleteNotification'
-    };
-    // call child component method to toggle modal
-    this.child.toggleModal(true);
+  closeModal(id: string) {
+    this.dialogService.close(id);
   }
 
   deleteNotification(notificationName: string) {
@@ -222,6 +212,7 @@ export class NotificationModalComponent implements OnInit {
     }
 
     if (isEmpty(configuration)) {
+      this.reenableButton.emit(false);
       return;
     }
 
@@ -245,6 +236,7 @@ export class NotificationModalComponent implements OnInit {
       this.ngProgress.start();
       forkJoin(this.apiCallsStack).subscribe(() => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success('Configuration updated successfully.', true);
         this.toggleModal(false);
         this.apiCallsStack = [];
@@ -252,6 +244,10 @@ export class NotificationModalComponent implements OnInit {
     } else {
       this.toggleModal(false);
     }
+  }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
   }
 
   /**

@@ -1,5 +1,5 @@
-import { Component, OnInit, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { AlertService, RolesService, SchedulesService } from '../../../../services';
@@ -18,16 +18,18 @@ export class UpdateScheduleComponent implements OnInit {
   public days = [];
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$'; // Regex to verify time format 00:00:00
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   schedule: Schedule;
   scheduleId: string;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
     public activatedRoute: ActivatedRoute,
     public router: Router,
     private schedulesService: SchedulesService,
-    public fb: FormBuilder,
+    public fb: UntypedFormBuilder,
     private alertService: AlertService,
     public rolesService: RolesService) {
     this.form = this.fb.group({
@@ -234,10 +236,12 @@ export class UpdateScheduleComponent implements OnInit {
     this.schedulesService.updateSchedule(this.scheduleId, payload).
       subscribe(
         () => {
+          this.reenableButton.emit(false);
           this.alertService.success('Schedule updated successfully.', true);
           this.navToSchedulesPage();
         },
         error => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

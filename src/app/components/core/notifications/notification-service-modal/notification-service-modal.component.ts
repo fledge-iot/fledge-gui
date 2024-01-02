@@ -1,5 +1,5 @@
-import { Component, OnChanges, Input, SimpleChanges, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, NgForm } from '@angular/forms';
+import { Component, OnChanges, Input, SimpleChanges, ViewChild, HostListener, EventEmitter } from '@angular/core';
+import { UntypedFormBuilder, NgForm } from '@angular/forms';
 import {
   ProgressBarService, NotificationsService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService,
@@ -56,9 +56,11 @@ export class NotificationServiceModalComponent implements OnChanges {
   validForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(
     private router: Router,
-    public fb: FormBuilder,
+    public fb: UntypedFormBuilder,
     public ngProgress: ProgressBarService,
     private configService: ConfigurationService,
     public schedulesService: SchedulesService,
@@ -109,6 +111,7 @@ export class NotificationServiceModalComponent implements OnChanges {
 
   public toggleModal(isOpen: Boolean) {
     this.pluginInstallationState = false;
+    this.reenableButton.emit(false);
     const notificationServiceModal = <HTMLDivElement>document.getElementById('notification-service-modal');
     if (notificationServiceModal) {
       if (isOpen) {
@@ -462,6 +465,7 @@ export class NotificationServiceModalComponent implements OnChanges {
     }
 
     if (isEmpty(configuration)) {
+      this.reenableButton.emit(false);
       return;
     }
 
@@ -469,10 +473,12 @@ export class NotificationServiceModalComponent implements OnChanges {
       updateBulkConfiguration(categoryName, configuration)
       .subscribe(() => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success('Configuration updated successfully.', true);
       },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

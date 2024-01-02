@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges, Output, EventEmitter, HostListener } from '@angular/core';
 import { isEmpty } from 'lodash';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
 
 import { ServicesApiService, AlertService, ProgressBarService } from '../../../services';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
@@ -15,7 +15,7 @@ export class PluginModalComponent implements OnInit, OnChanges {
 
   plugins = [];
   installButtonEnabled = true;
-  pluginForm: FormGroup;
+  pluginForm: UntypedFormGroup;
   stopLoading = false;
   placeholderText = 'fetching available plugins...';
 
@@ -36,8 +36,8 @@ export class PluginModalComponent implements OnInit, OnChanges {
     private ngProgress: ProgressBarService) { }
 
   ngOnInit() {
-    this.pluginForm = new FormGroup({
-      pluginName: new FormControl({ value: null, disabled: false }, Validators.required)
+    this.pluginForm = new UntypedFormGroup({
+      pluginName: new UntypedFormControl({ value: null, disabled: false }, Validators.required)
     });
   }
 

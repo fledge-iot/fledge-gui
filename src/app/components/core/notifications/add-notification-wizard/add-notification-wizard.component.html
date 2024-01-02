@@ -254,11 +254,11 @@
     </div>
     <div class="steps-actions">
       <div class="steps-action">
-        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
+        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
       </div>
       <div class="steps-action">
         <button [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm"
-          (click)="moveNext()" data-nav="next" class="button is-link" id="next">Next</button>
+          (click)="moveNext()" data-nav="next" class="button is-link" id="next" [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
     </div>
   </div>

@@ -2,7 +2,6 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { SidebarModule } from 'ng-sidebar';
 import { NgProgressModule } from 'ngx-progressbar';
 
 import { AppComponent } from './app.component';
@@ -83,7 +82,6 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     ReactiveFormsModule,
     HttpClientModule,
     routing,
-    SidebarModule.forRoot(),
     NgProgressModule,
     PipesModule,
     AlertDialogModule,

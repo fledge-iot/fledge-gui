@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+
 import { RolesService } from '../services';
 
 @Injectable()
-export class DataViewRoleGuard implements CanActivate {
+export class DataViewRoleGuard  {
     constructor(public rolesService: RolesService) { }
     canActivate() {
         const isDataViewRole = this.rolesService.hasDataViewRole();

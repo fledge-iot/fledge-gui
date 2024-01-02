@@ -69,7 +69,7 @@
             <p class="control">
               <button
                 [disabled]="pluginInstallationState || fg.controls['notificationServiceName']?.invalid || !validForm"
-                class="button is-small is-link" (click)="save()">{{btnText}}</button>
+                class="button is-small is-link" (click)="save()" [appDisableUntilResponse]="reenableButton">{{btnText}}</button>
             </p>
           </div>
         </div>

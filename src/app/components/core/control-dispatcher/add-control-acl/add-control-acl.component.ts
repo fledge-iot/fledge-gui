@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, ProgressBarService, ServicesApiService, SharedService } from '../../../../services';
 import { AclService } from '../../../../services/acl.service';
@@ -33,6 +33,7 @@ export class AddControlAclComponent implements OnInit {
 
   @ViewChild('aclForm') aclForm: NgForm;
 
+  public reenableButton = new EventEmitter<boolean>(false);
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -177,13 +178,13 @@ export class AddControlAclComponent implements OnInit {
 
   addFormControls(index, urlData: any = null) {
     this.aclForm.form.controls['name'].setValidators([Validators.required, CustomValidator.nospaceValidator, Validators.pattern(QUOTATION_VALIDATION_PATTERN)]);
-    this.aclForm.form.addControl('urls', new FormGroup({}));
+    this.aclForm.form.addControl('urls', new UntypedFormGroup({}));
     this.initURLControl(index, urlData);
   }
 
   addURLControl() {
     if (this.aclURLsList.length === 0) {
-      this.aclForm.form.addControl('urls', new FormGroup({}));
+      this.aclForm.form.addControl('urls', new UntypedFormGroup({}));
       this.initURLControl(1);
       return;
     }
@@ -192,27 +193,27 @@ export class AddControlAclComponent implements OnInit {
   }
 
   initURLControl(index: number, urlData: any = null) {
-    this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
-      url: new FormControl(urlData ? urlData?.url : '', [Validators.required, CustomValidator.nospaceValidator]),
-      acl: new FormControl(urlData ? urlData?.acl : [])
+    this.urlFormGroup().addControl(`url-${index}`, new UntypedFormGroup({
+      url: new UntypedFormControl(urlData ? urlData?.url : '', [Validators.required, CustomValidator.nospaceValidator]),
+      acl: new UntypedFormControl(urlData ? urlData?.acl : [])
     }));
     this.aclURLsList.push({ index: index, url: '', acl: [] });
   }
 
   addNewURLControl(index: number, urlData: any = null) {
-    this.aclForm.form.addControl('urls', new FormGroup({}));
-    this.urlFormGroup().addControl(`url-${index}`, new FormGroup({
-      url: new FormControl(urlData ? urlData?.url : '', [Validators.required, CustomValidator.nospaceValidator]),
-      acl: new FormControl(urlData ? urlData?.acl : [])
+    this.aclForm.form.addControl('urls', new UntypedFormGroup({}));
+    this.urlFormGroup().addControl(`url-${index}`, new UntypedFormGroup({
+      url: new UntypedFormControl(urlData ? urlData?.url : '', [Validators.required, CustomValidator.nospaceValidator]),
+      acl: new UntypedFormControl(urlData ? urlData?.acl : [])
     }));
   }
 
-  urlFormGroup(): FormGroup {
-    return this.aclForm.controls['urls'] as FormGroup;
+  urlFormGroup(): UntypedFormGroup {
+    return this.aclForm.controls['urls'] as UntypedFormGroup;
   }
 
-  urlControl(index: number): FormGroup {
-    return this.urlFormGroup().controls[`url-${index}`] as FormGroup;
+  urlControl(index: number): UntypedFormGroup {
+    return this.urlFormGroup().controls[`url-${index}`] as UntypedFormGroup;
   }
 
   deleteURLControl(index) {
@@ -270,7 +271,7 @@ export class AddControlAclComponent implements OnInit {
   }
 
   setURL(index, value) {
-    const urlControl = (this.urlFormGroup().controls[`url-${index}`] as FormGroup).controls['url'];
+    const urlControl = (this.urlFormGroup().controls[`url-${index}`] as UntypedFormGroup).controls['url'];
     urlControl.setValue(value.trim());
     this.aclForm.form.markAsDirty();
   }
@@ -307,10 +308,12 @@ export class AddControlAclComponent implements OnInit {
         this.ngProgress.done();
         this.alertService.success(`ACL ${payload['name']} created successfully.`);
         setTimeout(() => {
+          this.reenableButton.emit(false);
           this.router.navigate(['control-dispatcher', 'acl']);
         }, 1000);
       }, error => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -329,10 +332,12 @@ export class AddControlAclComponent implements OnInit {
         this.alertService.success(data.message, true);
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.aclForm.form.markAsPristine();
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -347,6 +352,7 @@ export class AddControlAclComponent implements OnInit {
     this.aclService.deleteACL(acl)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success(data.message, true);
         // close modal
         this.closeModal('confirmation-dialog');
@@ -354,6 +360,7 @@ export class AddControlAclComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {
