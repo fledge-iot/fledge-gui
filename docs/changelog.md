@@ -2,18 +2,22 @@
 
 ### Added
 
+- [FOGL-8276]: Support for model selection configuration items [#355](https://github.com/fledge-iot/fledge-gui/pull/355)
+- [FOGL-8340]: Added documentation links for online help on Control API Entry Points screens [#366](https://github.com/fledge-iot/fledge-gui/pull/366)
+
 ### Changed
 
 - [FOGL-7948] Configuration page single tree structure for Categories. Removed the dropdown selector for root categories/parent groups [#330](https://github.com/fledge-iot/fledge-gui/pull/330)
 
 ### Fixed
 
+- [FOGL-8342] Broken exported readings CSV file for the fields which contains comma [#361](https://github.com/fledge-iot/fledge-gui/pull/361)
 - [FOGL-8199] Same name datapoints/attributes for different assets get merged in the graph display [#347](https://github.com/fledge-iot/fledge-gui/pull/347)
- 
+
 ### Others
 
+- [FOGL-8254]: Upgraded to Angular 16 (including compatible TypeScript / CLI versions) [#356](https://github.com/fledge-iot/fledge-gui/pull/356)
 - Disable buttons on click while the corresponding API request is in progress, to avoid duplicate requests [#343](https://github.com/fledge-iot/fledge-gui/pull/343)
-
 
 ## v2.2.0 [2023-10-17]
 
@@ -78,7 +82,6 @@
 ### Others
 
 - Included Bootstrap icons [#327](https://github.com/fledge-iot/fledge-gui/pull/327)
-
 
 ## v2.1.0 [2022-12-26]
 
