@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ProgressBarService, SchedulesService, ServicesApiService, SharedService } from '../../../../services';
+import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 
@@ -21,7 +21,8 @@ export class AddDispatcherServiceComponent implements OnInit {
     public schedulesService: SchedulesService,
     public servicesApiService: ServicesApiService,
     public ngProgress: ProgressBarService,
-    public docService: DocService
+    public docService: DocService,
+    public rolesService: RolesService
   ) { }
 
   ngOnInit(): void {

@@ -6,6 +6,8 @@
         added.</span>
       <span *ngIf="dispatcherServiceAdded && dispatcherServiceEnabled === false">Dispatcher service is not
         enabled.</span>
+      &nbsp;<a *ngIf="rolesService.hasEditPermissions() && (dispatcherServiceInstalled === false || dispatcherServiceAdded === false || dispatcherServiceEnabled === false)"
+        routerLink="/settings/manage-services"><strong>Configure</strong></a>
       <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
         <span class="icon">
           <i class="fa fa-sm fa-sync" aria-hidden="true" title="Recheck"></i>

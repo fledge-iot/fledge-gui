@@ -75,7 +75,7 @@ export class ManageServiceModalComponent {
 
   getServiceInfo(serviceInfo, availableServicePkgs) {
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
-    this.isServiceEnabled = ["shutdown", "disabled", "installed"].includes(serviceInfo.state) ? false : true;
+    this.isServiceEnabled = ["shutdown", "disabled", "installed", ""].includes(serviceInfo.state) ? false : true;
     this.isServiceAvailable = serviceInfo.added;
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
