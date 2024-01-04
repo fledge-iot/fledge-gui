@@ -132,12 +132,10 @@ export class ConfigurationManagerComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+          this.categoryData = [];
           if (!isEmpty(data)) {
             this.categoryData = [{ name: categoryKey, config: data, description: categoryDesc }];
             this.categoryDataCopy = cloneDeep(this.categoryData);
-          }
-          else{
-            this.categoryData = [];
           }
         },
         error => {
