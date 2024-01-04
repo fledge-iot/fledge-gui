@@ -21,39 +21,54 @@
       </nav>
     </div>
     <div class="column">
-      <div class="card" *ngFor="let category of categoryData">
-        <header *ngIf="category?.config" class="card-header">
-          <div class="card-header-title">
-            <div class="media">
-              <div class="media-content">
-                <p class="subtitle is-6">{{ category.description }}
-                  <button class="button is-small" id="refresh-check"
-                    (click)="refreshCategory(category.name, category.description)">
-                    <span class="icon is-small">
-                      <i class="fa fa-sm fa-sync" title="Reload"></i>
-                    </span>
-                  </button>
-                </p>
+      <ng-container *ngIf="categoryData.length>0; else emptyCategoryTemplate">
+        <div class="card" *ngFor="let category of categoryData">
+          <header *ngIf="category?.config" class="card-header">
+            <div class="card-header-title">
+              <div class="media">
+                <div class="media-content">
+                  <p class="subtitle is-6">{{ category.description }}
+                    <button class="button is-small" id="refresh-check"
+                      (click)="refreshCategory(category.name, category.description)">
+                      <span class="icon is-small">
+                        <i class="fa fa-sm fa-sync" title="Reload"></i>
+                      </span>
+                    </button>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </header>
-        <div *ngIf="category?.config" class="card-content">
-          <div class="content">
-            <app-configuration-group *ngIf="category?.config" [category]="category" [from]="'config-manager'"
-              (changedConfigEvent)="getChangedConfig($event, category)" (formStatusEvent)="validConfigForm = $event">
-            </app-configuration-group>
-            <div class="columns" *ngIf="rolesService.hasEditPermissions()">
-              <div class="column is-4">
-              </div>
-              <div class="column">
-                <button [disabled]="!validConfigForm" class="button is-small is-link save-btn"
-                  (click)="save(category.name, category.description)" [appDisableUntilResponse]="reenableButton">Save</button>
+          </header>
+          <div *ngIf="category?.config" class="card-content">
+            <div class="content">
+              <app-configuration-group *ngIf="category?.config" [category]="category" [from]="'config-manager'"
+                (changedConfigEvent)="getChangedConfig($event, category)" (formStatusEvent)="validConfigForm = $event">
+              </app-configuration-group>
+              <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+                <div class="column is-4">
+                </div>
+                <div class="column">
+                  <button [disabled]="!validConfigForm" class="button is-small is-link save-btn"
+                    (click)="save(category.name, category.description)" [appDisableUntilResponse]="reenableButton">Save</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </ng-container>
+      <ng-template #emptyCategoryTemplate>
+        <div class="card">
+          <div class="card-content">
+            <div class="content">
+              <div class="has-text-centered">
+                <small class="no-rec">
+                  No Configuration items are associated with this category. Please check the children nodes.
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>
