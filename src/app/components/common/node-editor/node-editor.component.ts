@@ -30,6 +30,7 @@ export class NodeEditorComponent implements OnInit {
   destroy$: Subject<boolean> = new Subject<boolean>();
   serviceName = '';
   filterName = '';
+  isfilterPipelineFetched = false;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -59,27 +60,39 @@ export class NodeEditorComponent implements OnInit {
       }
     })
     this.filterSubscription = this.flowEditorService.filterInfo.subscribe(data => {
-      this.filterName = data.name;
-      for(let i=0; i<this.filterPipeline.length; i++){
-        if(typeof(this.filterPipeline[i]) === "string"){
-          if(this.filterPipeline[i] === this.filterName){
-            this.filterPipeline = this.filterPipeline.filter(f => f !== this.filterName);
-            // this.deleteFilter();
-            break;
+      if (data.name !== "newPipelineFilter") {
+        this.filterName = data.name;
+        for (let i = 0; i < this.filterPipeline.length; i++) {
+          if (typeof (this.filterPipeline[i]) === "string") {
+            if (this.filterPipeline[i] === this.filterName) {
+              this.filterPipeline = this.filterPipeline.filter(f => f !== this.filterName);
+              // this.deleteFilter();
+              break;
+            }
+          }
+          else {
+            if (this.filterPipeline[i].indexOf(this.filterName) !== -1) {
+              this.filterPipeline[i] = this.filterPipeline[i].filter(f => f !== this.filterName);
+              if (this.filterPipeline[i].length === 0) {
+                this.filterPipeline.splice(i, 1);
+              }
+              // this.deleteFilter();
+              break;
+            }
           }
         }
-        else{
-          if(this.filterPipeline[i].indexOf(this.filterName)!== -1){
-            this.filterPipeline[i] = this.filterPipeline[i].filter(f => f !== this.filterName);
-            if(this.filterPipeline[i].length === 0){
-              this.filterPipeline.splice(i, 1);
-            }
-            // this.deleteFilter();
-            break;
+        console.log(this.filterPipeline);
+      }
+      else {
+        if(this.isfilterPipelineFetched){
+          let updatedPipeline = getUpdatedFilterPipeline();
+          if (updatedPipeline && updatedPipeline.length > 0) {
+            this.updatedFilterPipeline = updatedPipeline;
+            this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
+            this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } });
           }
         }
       }
-      console.log(this.filterPipeline);
     })
   }
 
@@ -98,6 +111,7 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
         this.filterPipeline = ["rename1", ["meta1", "delta1"], "fft1", ["exp1"], ["asset1", "log1"]];
+        this.isfilterPipelineFetched = true;
         this.createFilterConfigurationsArray();
       },
         error => {
