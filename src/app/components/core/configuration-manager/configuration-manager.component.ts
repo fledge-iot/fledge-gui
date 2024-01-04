@@ -136,6 +136,9 @@ export class ConfigurationManagerComponent implements OnInit {
             this.categoryData = [{ name: categoryKey, config: data, description: categoryDesc }];
             this.categoryDataCopy = cloneDeep(this.categoryData);
           }
+          else{
+            this.categoryData = [];
+          }
         },
         error => {
           /** request completed */
