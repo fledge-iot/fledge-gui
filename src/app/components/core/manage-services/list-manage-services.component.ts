@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, EventEmitter, OnDestroy } from '@angular/
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
@@ -77,7 +78,8 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     public servicesApiService: ServicesApiService,
     public rolesService: RolesService,
     public schedulesService: SchedulesService,
-    private response: ResponseHandler
+    private response: ResponseHandler,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -350,6 +352,10 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     } else {
       this.disableService();
     }
+  }
+
+  viewLogs(name: string) {
+    this.router.navigate(['logs/syslog'], { queryParams: { source: name } });
   }
 
   public showLoadingText() {

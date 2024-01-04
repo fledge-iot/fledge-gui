@@ -30,7 +30,7 @@
           </div>
         </div>
         <div>
-          <app-configuration-group #configComponent *ngIf="category" [category]="category" [from]="'notification'"
+          <app-configuration-group #configComponent *ngIf="category" [category]="category" [from]="'manage-services'"
             (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validForm = $event"
             (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)">
           </app-configuration-group>

@@ -46,12 +46,15 @@
                     <div class="dropdown-trigger pl-3">
                       <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
                         <span class="icon">
-                          <i class="fas fa-ellipsis-v fa-xs fa-fw text-gray-600"></i>
+                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
                         </span>
                       </a>
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                       <div class="dropdown-content">
+                        <a *ngIf="s.added" class="dropdown-item" (click)="viewLogs(s?.name)">
+                          <span>View Logs</span>
+                        </a>
                         <a *ngIf="sharedService.checkAuth() && s.added" class="dropdown-item"
                           (click)="setService(s);openModal('confirmation-dialog')">
                           <span>{{ ["shutdown", "disabled"].includes(s.state) ? "Enable" : "Disable" }}</span>

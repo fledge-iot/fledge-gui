@@ -24,7 +24,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   // To hold the changed configuration values of a plugin
   configFormValues = {};
 
-  pages = ['south', 'north', 'notification'];
+  pages = ['south', 'north', 'notification', 'manage-services'];
   @Input() from;
   categoryKey = '';
 
@@ -128,6 +128,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   public getChildConfigData() {
+    console.log('this.from', this.from);
+    console.log('this.category', this.category);
     this.dynamicCategoriesGroup = [];
     // No advance configuration on add form
     if (this.pages.includes(this.from) && this.category) {
