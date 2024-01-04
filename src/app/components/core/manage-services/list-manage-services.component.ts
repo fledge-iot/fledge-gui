@@ -64,6 +64,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
   showLoading = false;
   viewPortSubscription: Subscription;
   viewPort: any = '';
+  pollingScheduleID: string;
 
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
@@ -227,6 +228,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         this.expectedServices.forEach(function(v) {
           expectedP.push(v["schedule_process"]);
         });
+        this.pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
         this.servicesSchedules = data.schedules.filter((sch) => expectedP.includes(sch.processName));
       },
       (error) => {
@@ -244,7 +246,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     */
    openServiceModal(service) {
     this.serviceModal.toggleModal(true);
-    this.serviceModal.getServiceInfo(service, this.availableServicePkgs);
+    this.serviceModal.getServiceInfo(service, this.availableServicePkgs, this.pollingScheduleID);
   }
 
   onNotify() {

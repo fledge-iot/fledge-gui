@@ -54,7 +54,7 @@ export class ManageServiceModalComponent {
   advancedConfiguration = [];
   validForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
-
+  pollingScheduleID: string;
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
@@ -73,7 +73,7 @@ export class ManageServiceModalComponent {
 
   ngOnInit() { }
 
-  getServiceInfo(serviceInfo, availableServicePkgs) {
+  getServiceInfo(serviceInfo, availableServicePkgs, pollingScheduleID) {
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
     this.isServiceEnabled = ["shutdown", "disabled", "installed", ""].includes(serviceInfo.state) ? false : true;
     this.isServiceAvailable = serviceInfo.added;
@@ -81,6 +81,10 @@ export class ManageServiceModalComponent {
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
     this.availableServices = availableServicePkgs;
+
+    if (pollingScheduleID) {
+      this.pollingScheduleID = pollingScheduleID;
+    }
 
     this.enabled =  this.isServiceEnabled;
     this.btnText = 'Add';

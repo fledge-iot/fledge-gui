@@ -60,6 +60,11 @@
                 <i class="far fa-question-circle"></i>
               </span>
             </p>
+            <p *ngIf="serviceType === 'Management'" class="control">
+              <a class="button is-ghost title-name is-pulled-right" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'manage-services' }">
+                Polling Schedule
+              </a>
+            </p>
           </div>
           <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
             <p class="control">
