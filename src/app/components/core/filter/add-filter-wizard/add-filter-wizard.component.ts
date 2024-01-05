@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { sortBy, isEmpty, cloneDeep } from 'lodash';
 
 import {
@@ -38,11 +38,11 @@ export class AddFilterWizardComponent implements OnInit {
 
   installPluginSub: Subscription;
 
-  serviceForm = new FormGroup({
-    name: new FormControl(),
-    plugin: new FormControl(),
-    pluginToInstall: new FormControl(),
-    config: new FormControl(null)
+  serviceForm = new UntypedFormGroup({
+    name: new UntypedFormControl(),
+    plugin: new UntypedFormControl(),
+    pluginToInstall: new UntypedFormControl(),
+    config: new UntypedFormControl(null)
   });
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -52,7 +52,9 @@ export class AddFilterWizardComponent implements OnInit {
   validChildConfigurationForm = true;
   pluginConfiguration: any;
 
-  constructor(private formBuilder: FormBuilder,
+  public reenableButton = new EventEmitter<boolean>(false);
+
+  constructor(private formBuilder: UntypedFormBuilder,
     private filterService: FilterService,
     private configurationService: ConfigurationService,
     private fileUploaderService: FileUploaderService,
@@ -146,10 +148,12 @@ export class AddFilterWizardComponent implements OnInit {
     }
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 2:
         this.serviceForm.controls.plugin.enable();
         nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       default:
@@ -212,6 +216,7 @@ export class AddFilterWizardComponent implements OnInit {
 
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        this.reenableButton.emit(false);
         if (!this.validChildConfigurationForm) {
           nxtButton.disabled = true;
         }
@@ -411,6 +416,7 @@ export class AddFilterWizardComponent implements OnInit {
           }
         },
         (error) => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -436,9 +442,12 @@ export class AddFilterWizardComponent implements OnInit {
         if (payload?.files.length > 0) {
           const filterName = this.serviceName + '_' + name
           this.uploadScript(filterName, payload?.files);
+        } else {
+          this.reenableButton.emit(false);
         }
       },
         (error) => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

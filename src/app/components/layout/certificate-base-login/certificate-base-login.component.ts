@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ProgressBarService, AlertService, AuthService, PingService, UserService } from '../../../services';
 import { Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { switchMap } from 'rxjs/operators';
   styleUrls: ['./certificate-base-login.component.css']
 })
 export class CertificateBaseLoginComponent implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   isCertificateExt = true;
   certificateFile: any;
   certificateContent: any = '';
@@ -22,7 +22,7 @@ export class CertificateBaseLoginComponent implements OnInit {
     private ping: PingService,
     private router: Router,
     private userService: UserService,
-    public formBuilder: FormBuilder) { }
+    public formBuilder: UntypedFormBuilder) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({

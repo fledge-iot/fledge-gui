@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { orderBy } from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -19,6 +19,8 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   public childData = {};
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
@@ -81,6 +83,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data['message']);
           // delete pipeline locally from pipelines array
           const index: number = this.pipelines.findIndex((pipeline) => pipeline.id === id);
@@ -91,6 +94,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
         error => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

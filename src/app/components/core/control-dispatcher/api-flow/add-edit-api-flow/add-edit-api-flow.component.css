@@ -12,12 +12,6 @@ table tr td {
     text-decoration: none;
 }
 
-.sub {
-    color: #707070;
-    font-size: .85rem;
-    margin-top: 0rem !important;
-}
-
 .ep-tbl {
     display: block;
 }
@@ -38,22 +32,18 @@ span.is-small {
     margin-bottom: 5px;
 }
 
-.label.is-small {
-    font-size: 0.85rem !important;
-}
-
 .valign-middle {
     vertical-align: middle;
 }
 
-::ng-deep .ng-select .ng-select-container,
-::ng-deep .ng-select.ng-select .ng-select-container {
+::ng-deep .select-input .ng-select-container,
+::ng-deep .select-input.ng-select .ng-select-container {
   height: 30px !important;
   font-size: 0.8em;
   min-height: 28px !important;
 }
 
-::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+::ng-deep .select-input .ng-dropdown-panel .ng-dropdown-panel-items {
   color: #848181 !important;
   font-size: 0.8rem !important;
   max-height: 200px !important;
@@ -92,4 +82,8 @@ span.is-small {
     .execute-field-body {
         padding-top: 1rem;
     }
+}
+
+.input-error {
+    border: red 1px solid;
 }

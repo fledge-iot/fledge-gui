@@ -1,3 +1,24 @@
+## v2.3.0 [2023-12-28]
+
+### Added
+
+- [FOGL-8276]: Support for model selection configuration items [#355](https://github.com/fledge-iot/fledge-gui/pull/355)
+- [FOGL-8340]: Added documentation links for online help on Control API Entry Points screens [#366](https://github.com/fledge-iot/fledge-gui/pull/366)
+
+### Changed
+
+- [FOGL-7948] Configuration page single tree structure for Categories. Removed the dropdown selector for root categories/parent groups [#330](https://github.com/fledge-iot/fledge-gui/pull/330)
+
+### Fixed
+
+- [FOGL-8342] Broken exported readings CSV file for the fields which contains comma [#361](https://github.com/fledge-iot/fledge-gui/pull/361)
+- [FOGL-8199] Same name datapoints/attributes for different assets get merged in the graph display [#347](https://github.com/fledge-iot/fledge-gui/pull/347)
+
+### Others
+
+- [FOGL-8254]: Upgraded to Angular 16 (including compatible TypeScript / CLI versions) [#356](https://github.com/fledge-iot/fledge-gui/pull/356)
+- Disable buttons on click while the corresponding API request is in progress, to avoid duplicate requests [#343](https://github.com/fledge-iot/fledge-gui/pull/343)
+
 ## v2.2.0 [2023-10-17]
 
 ### Added
@@ -16,25 +37,29 @@
 
 - [FOGL-7766] Width, height and depth information for image type data-points for the latest reading
 
-- [FOGL-7897] Ability to zoom into a graph 
+- [FOGL-7897] Ability to zoom into a graph
 
-- [FOGL-7905] Ability to collapse/expand menu items having child nodes 
+- [FOGL-7905] Ability to collapse/expand menu items having child nodes
 
-- [FOGL-7937] Request in-progress indicator for each readings & summary API call 
+- [FOGL-7937] Request in-progress indicator for each readings & summary API call
 
 - [FOGL-7678] Control Pipelines
 
 - [FOGL-8115] Control API endpoints [#332](https://github.com/fledge-iot/fledge-gui/pull/332)
 
-- [FOGL-8117] Viewing Southbound & Northbound service details from System logs page & details/logs from Health popover for services in failed/unresponsive state 
+- [FOGL-8117] Viewing Southbound & Northbound service details from System logs page & details/logs from Health popover for services in failed/unresponsive state
 
 ### Changed
 
 - [FOGL-7094] Display format of X-axis timestamps for one week data on readings graph
 
-- [FOGL-7809] Improved filters configuration update mechanism 
+- [FOGL-7809] Improved filters configuration update mechanism
 
 - [FOGL-7191] Restricted entry of quote characters in an entity name [#249](https://github.com/fledge-iot/fledge-gui/pull/249)
+
+- [FOGL-7475] System Logs page search improvements to search data from backend through API [#270](https://github.com/fledge-iot/fledge-gui/pull/270)
+
+- [FOGL-7368]: Added left & right slider indicator when configuration group tabs are not visible [#250](https://github.com/fledge-iot/fledge-gui/pull/250)
 
 - [FOGL-8062] E2E tests migrated to cypress from protractor [#323](https://github.com/fledge-iot/fledge-gui/pull/323)
 
@@ -44,7 +69,7 @@
 
 - [FOGL-7789] View role user allowed to perform add/update/delete action when logged in using certificate [#293](https://github.com/fledge-iot/fledge-gui/pull/293)
 
-- [FOGL-7819] Validation check for mandatory configuration items in configuration tabs [#303](https://github.com/fledge-iot/fledge-gui/pull/303) 
+- [FOGL-7819] Validation check for mandatory configuration items in configuration tabs [#303](https://github.com/fledge-iot/fledge-gui/pull/303)
 
 - [FOGL-6853] Text wrapping in the syslog display does not work with long words [#241](https://github.com/fledge-iot/fledge-gui/pull/241)
 
@@ -58,14 +83,12 @@
 
 - Included Bootstrap icons [#327](https://github.com/fledge-iot/fledge-gui/pull/327)
 
-
 ## v2.1.0 [2022-12-26]
 
 #### Added
 
 - [FOGL-7108] Role based access for view & data_view role users [#231](https://github.com/fledge-iot/fledge-gui/pull/231)
 - [FOGL-7126] South and North instances's details modal configuration grouping based on group key [#234](https://github.com/fledge-iot/fledge-gui/pull/234)
-
 
 #### Changed
 
@@ -80,7 +103,6 @@
 
 - Certificate based login modal UI improvements [#214](https://github.com/fledge-iot/fledge-gui/pull/214)
 
-
 ## v2.0.1 [2022-10-20]
 
 #### Added
@@ -90,7 +112,6 @@
 #### Changed
 
 - [FOGL-6994] Improved the way of showing build version and documentation help URL links for released vs nightly versions [#156](https://github.com/fledge-iot/fledge-gui/pull/156)
-
 
 ## v2.0.0 [2022-09-09]
 

@@ -67,6 +67,7 @@ export class ConfigurationService {
   getRootCategories() {
     let params = new HttpParams();
     params = params.set('root', 'true');
+    params = params.set('children', 'true');
     return this.http.get(this.CATEGORY_URL, { params: params }).pipe(
       map(response => response),
       catchError(error => throwError(error)));

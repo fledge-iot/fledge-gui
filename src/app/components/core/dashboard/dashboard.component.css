@@ -11,10 +11,6 @@
   padding-top: 1.0rem !important;
 }
 
-.is-hovered {
-  cursor: pointer !important;
-  }
-
 .dropdown-content {
   width: auto;
   height: auto;

@@ -6,6 +6,7 @@ import { ListPythonPackagesComponent } from './packages/list-python-packages/lis
 import { InstallPythonPackageComponent } from './packages/install-python-package/install-python-package.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DeveloperGuard } from '../../../guards/developer.guard';
+import { DirectivesModule } from '../../../directives/directives.module';
 
 const routes: Routes = [
   {
@@ -34,6 +35,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    DirectivesModule,
     RouterModule.forChild(routes)
   ],
   providers: [DeveloperGuard],
