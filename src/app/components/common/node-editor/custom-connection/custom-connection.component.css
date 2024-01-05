@@ -8,7 +8,7 @@ svg {
 
 svg path {
     fill: none;
-    stroke-width: 2px;
+    stroke-width: 1px;
     stroke: steelblue;
     pointer-events: auto;
 }
