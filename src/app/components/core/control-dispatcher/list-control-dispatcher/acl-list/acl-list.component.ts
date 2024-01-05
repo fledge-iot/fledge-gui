@@ -16,6 +16,7 @@ export class AclListComponent implements OnInit {
   controlAcls: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   acl;
+  isServiceAvailable = false;
   private subscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
@@ -15,6 +15,9 @@ export class AddDispatcherServiceComponent implements OnInit {
   dispatcherServiceInstalled;
   dispatcherServiceAdded;
   dispatcherServiceEnabled;
+
+  @Output() serviceStatusEvent = new EventEmitter<boolean>();
+
   constructor(
     public controlService: ControlDispatcherService,
     public sharedService: SharedService,
@@ -44,6 +47,7 @@ export class AddDispatcherServiceComponent implements OnInit {
           this.dispatcherServiceInstalled = false;
           this.dispatcherServiceAdded = false;
           this.dispatcherServiceEnabled = false;
+          this.serviceStatusEvent.emit(this.dispatcherServiceInstalled && this.dispatcherServiceAdded);
         }
       })
       .catch(error => {
@@ -70,6 +74,7 @@ export class AddDispatcherServiceComponent implements OnInit {
           if (schedule?.enabled) {
             this.dispatcherServiceEnabled = true;
           }
+          this.serviceStatusEvent.emit(this.dispatcherServiceInstalled && this.dispatcherServiceAdded);
         },
         error => {
           /** request done */
@@ -85,8 +90,6 @@ export class AddDispatcherServiceComponent implements OnInit {
   refresh(tab: string) {
     this.controlService.triggerRefreshEvent.next(tab);
   }
-
-
 
   public ngOnDestroy(): void {
     if (this.viewPortSubscription) {

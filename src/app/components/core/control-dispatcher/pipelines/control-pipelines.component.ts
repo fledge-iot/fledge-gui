@@ -17,6 +17,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   pipelines = [];
   public showSpinner = false;
   public childData = {};
+  isServiceAvailable = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 

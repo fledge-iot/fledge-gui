@@ -297,10 +297,8 @@ export class ManageServiceModalComponent {
     this.configService.getCategory(this.serviceName).
       subscribe(
         (data) => {
-          if (!isEmpty(data)) {
-            this.category = { name: this.serviceName, config: data };
-            this.categoryCopy = cloneDeep({ name: this.serviceName, config: data });
-          }
+          this.category = { name: this.serviceName, config: data };
+          this.categoryCopy = cloneDeep({ name: this.serviceName, config: data });
           /** request completed */
           this.ngProgress.done();
         },

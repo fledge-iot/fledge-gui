@@ -33,7 +33,7 @@
                 </td>
                 <td class="py-1">
                   <a *ngIf="s?.name" class="button cog-icon" (click)="openServiceModal(s)">
-                    <span class="icon">
+                    <span class="icon mt-2">
                       <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
                     </span>
                   </a>
@@ -45,7 +45,7 @@
                   <div *ngIf="s?.name" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
                     <div class="dropdown-trigger pl-3">
                       <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
-                        <span class="icon">
+                        <span class="icon mt-3">
                           <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
                         </span>
                       </a>

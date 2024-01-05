@@ -17,6 +17,7 @@ export class ControlScriptsListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   script;
   private subscription: Subscription;
+  isServiceAvailable = false;
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(

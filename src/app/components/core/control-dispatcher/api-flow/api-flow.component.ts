@@ -24,7 +24,8 @@ export class APIFlowComponent implements OnInit {
     epName: string = '';
     description: string = '';
 
-
+    isServiceAvailable = false;
+    
     loggedInUsername: string;
     allUsers: User[];
   

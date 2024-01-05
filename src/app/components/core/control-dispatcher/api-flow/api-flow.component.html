@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-    <app-add-dispatcher-service></app-add-dispatcher-service>
+    <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event"></app-add-dispatcher-service>
     <div class="card">
         <header class="card-header">
             <div id="control-api-flow" class="card-header-title">
@@ -12,10 +12,12 @@
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
-            <!-- <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin"
-                data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
-                <i class="far fa-question-circle"></i>
-            </span> -->
+            <a *ngIf="isServiceAvailable && rolesService.hasControlAccess()" class="button cog-icon"
+                routerLink="/settings/manage-services" id="config-icon">
+                <span class="icon">
+                <i class="fa fa-sm fa-cog" aria-hidden="true" title="Dispatcher Service Configuration"></i>
+                </span>
+            </a>
         </header>
         <div class="card-content api-card-content card-data">
             <table class="table is-responsive is-hoverable ep-tbl" *ngIf="apiFlows.length > 0; else nothing">

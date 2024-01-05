@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <app-add-dispatcher-service></app-add-dispatcher-service>
+  <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event"></app-add-dispatcher-service>
   <div class="card">
     <header class="card-header">
       <div id="control-acl" class="card-header-title">
@@ -11,6 +11,13 @@
       <a *ngIf="rolesService.hasControlAccess()" class="fix-pad button is-light" routerLink="add">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+      </a>
+
+      <a *ngIf="isServiceAvailable && rolesService.hasControlAccess()" class="button cog-icon"
+        routerLink="/settings/manage-services" id="config-icon">
+        <span class="icon">
+        <i class="fa fa-sm fa-cog" aria-hidden="true" title="Dispatcher Service Configuration"></i>
+        </span>
       </a>
 
       <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"

@@ -74,28 +74,30 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   categeryConfiguration() {
     let modelConfig = []
     this.groups = [];
-    const configItems = Object.keys(this.category.config).map(k => {
-      if (this.category.config[k].type == 'bucket') {
-        this.category.config[k].key = k;
-        modelConfig.push(this.category.config[k]);
-      }
-      this.category.config[k].key = k;
-      return this.category.config[k];
-    }).filter(obj => !obj.readonly && obj.type != 'bucket'); // remove readonly & type=bucket items from config array
-
-    this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
-      const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
-      return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
-    }).value();
-
-    if (modelConfig.length > 0) {
-      modelConfig.forEach(mConfig => {
-        if (!mConfig.hasOwnProperty('value')) {
-          mConfig.value = mConfig.default;
+    if (this.category.config && this.category.name) {
+      const configItems = Object.keys(this.category.config).map(k => {
+        if (this.category.config[k].type == 'bucket') {
+          this.category.config[k].key = k;
+          modelConfig.push(this.category.config[k]);
         }
-        this.groups.push({ category: this.category.name, group: (mConfig.displayName ? mConfig.displayName : mConfig.description), config: mConfig, type: mConfig.type, key: mConfig.key });
-      });
-    }
+        this.category.config[k].key = k;
+        return this.category.config[k];
+      }).filter(obj => !obj.readonly && obj.type != 'bucket'); // remove readonly & type=bucket items from config array
+  
+      this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
+        const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
+        return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
+      }).value();
+  
+      if (modelConfig.length > 0) {
+        modelConfig.forEach(mConfig => {
+          if (!mConfig.hasOwnProperty('value')) {
+            mConfig.value = mConfig.default;
+          }
+          this.groups.push({ category: this.category.name, group: (mConfig.displayName ? mConfig.displayName : mConfig.description), config: mConfig, type: mConfig.type, key: mConfig.key });
+        });
+      }
+    }  
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
       if (pre.group == cur.group) {
@@ -128,8 +130,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   public getChildConfigData() {
-    console.log('this.from', this.from);
-    console.log('this.category', this.category);
     this.dynamicCategoriesGroup = [];
     // No advance configuration on add form
     if (this.pages.includes(this.from) && this.category) {
