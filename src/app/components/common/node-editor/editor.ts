@@ -19,10 +19,11 @@ import { Storage } from "./storage";
 import { Filter } from "./filter";
 import { Applications } from "./applications";
 import { AddService } from "./add-service";
+import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 
 type Node = South | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
-type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
+type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
 
@@ -41,6 +42,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
             timingFunction: easeInOut
         }
     );
+    const minimap = new MinimapPlugin<Schemes>({
+        boundViewport: true
+    });
 
     insertableNodes(area, {
         async createConnections(node, connection) {
@@ -121,6 +125,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     // scopes.addPreset(ScopesPresets.classic.setup());
     HistoryExtensions.keyboard(history);
     history.addPreset(HistoryPresets.classic.setup());
+    render.addPreset(Presets.minimap.setup({ size: 150 }));
 
     editor.use(area);
     area.use(connection);
@@ -129,6 +134,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(dock);
     // area.use(scopes);
     area.use(history);
+    area.use(minimap);
 
     if (source !== '' && source !== "nodelist") {
         area.use(contextMenu);
@@ -275,6 +281,9 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
     // AreaExtensions.simpleNodesOrder(area);
     AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
         accumulating: AreaExtensions.accumulateOnCtrl()
+    });
+    AreaExtensions.restrictor(area, {
+        scaling: () => ({ min: 0.5, max: 2 }),
     });
 }
 

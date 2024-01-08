@@ -63,6 +63,7 @@
     "rete-context-menu-plugin": "^2.0.0",
     "rete-dock-plugin": "^2.0.0",
     "rete-history-plugin": "^2.0.0",
+    "rete-minimap-plugin": "^2.0.1",
     "rete-render-utils": "^2.0.1",
     "rete-scopes-plugin": "^2.0.0",
     "rxjs": "~6.6.6",

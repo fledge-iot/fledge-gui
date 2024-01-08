@@ -9660,6 +9660,13 @@ rete-history-plugin@^2.0.0:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
+rete-minimap-plugin@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/rete-minimap-plugin/-/rete-minimap-plugin-2.0.1.tgz#8b2905eede80577bae71c0a7d8479065b0b96287"
+  integrity sha512-WV6SedWqdTRWqbCDKsjXQYTBFOjDdRDDOPVJqWdCu6jiq53EcHKNSyYCJ2OnUIvW6V6vSQf5SaoEn8jsmVbgkw==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
 rete-render-utils@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/rete-render-utils/-/rete-render-utils-2.0.1.tgz#9a166d76c3e5273dcf33f10ef103202e36fd7e1a"
