@@ -8,6 +8,7 @@ import { AlertService, ProgressBarService, RolesService, ServicesApiService, Sch
 import { SharedService } from '../../../services/shared.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
+import { ManageServicesContextMenuComponent } from './manage-services-context-menu/manage-services-context-menu.component';
 
 @Component({
   selector: "app-manage-services",
@@ -56,9 +57,6 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
   installedServicePkgs = [];
   availableServicePkgs = [];
 
-  // Chosen service to act upon from list 
-  service: any;
-
   servicesRegistry = [];
   servicesSchedules = [];
 
@@ -69,6 +67,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
 
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
+  @ViewChild(ManageServicesContextMenuComponent, { static: true }) contextMenu: ManageServicesContextMenuComponent;
 
   constructor(
     public sharedService: SharedService,
@@ -251,22 +250,22 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     this.serviceModal.getServiceInfo(service, this.availableServicePkgs, this.pollingScheduleID);
   }
 
-  onNotify() {
+  getData() {
     // added 3 second wait after redirecting list page from modal beacuse it takes sometime to get data from API
     setTimeout(() => {
       this.showServices();
     }, 3000);
   }
 
-  deleteService() {
+  deleteService(serviceName) {
     this.ngProgress.start();
-    this.servicesApiService.deleteService(this.service.name).subscribe(
+    this.servicesApiService.deleteService(serviceName).subscribe(
       (data: any) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
         this.alertService.success(data["result"], true);
         this.closeModal("delete-confirmation-dialog");
-        this.onNotify();
+        this.getData();
       },
       (error) => {
         this.ngProgress.done();
@@ -280,15 +279,15 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     );
   }
 
-  enableService() {
+  enableService(serviceName) {
     this.ngProgress.start();
-    this.schedulesService.enableScheduleByName(this.service.name).subscribe(
+    this.schedulesService.enableScheduleByName(serviceName).subscribe(
       (data) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
         this.alertService.success(data["message"], true);
         this.closeModal('confirmation-dialog');
-        this.onNotify();
+        this.getData();
       },
       (error) => {
         this.ngProgress.done();
@@ -302,15 +301,15 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     );
   }
 
-  disableService() {
+  disableService(serviceName) {
     this.ngProgress.start();
-    this.schedulesService.disableScheduleByName(this.service.name).subscribe(
+    this.schedulesService.disableScheduleByName(serviceName).subscribe(
       (data) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
         this.alertService.success(data["message"], true);
         this.closeModal('confirmation-dialog');
-        this.onNotify();
+        this.getData();
       },
       (error) => {
         this.ngProgress.done();
@@ -342,20 +341,22 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  setService(service) {
-    this.service = service;
-  }
-
-  stateUpdate() {
-    if (["shutdown", "disabled"].includes(this.service.state)) {
-      this.enableService();
-    } else {
-      this.disableService();
+  onNotifyEvent(event) {
+    console.log('event', event);
+    // this.service = event.service;
+    if (!event) {
+      this.getData();
+      return;
     }
-  }
-
-  viewLogs(name: string) {
-    this.router.navigate(['logs/syslog'], { queryParams: { source: name } });
+    if (event.state === 'delete') {
+      this.deleteService(event.service);
+    }
+    if (event.state === 'disable') {
+      this.disableService(event.service);
+    }
+    if (event.state === 'enable') {
+      this.enableService(event.service);
+    }
   }
 
   public showLoadingText() {

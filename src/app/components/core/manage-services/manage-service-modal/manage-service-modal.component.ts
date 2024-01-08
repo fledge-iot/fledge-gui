@@ -104,7 +104,7 @@ export class ManageServiceModalComponent {
     }
   }
 
-  public toggleModal(isOpen: Boolean) {
+  public toggleModal(isOpen: Boolean, isNotify = true) {
     this.serviceInstallationState = false;
     this.reenableButton.emit(false);
     const serviceModal = <HTMLDivElement>document.getElementById('manage-service-modal');
@@ -120,7 +120,9 @@ export class ManageServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      this.notify.emit();
+      if (isNotify) {
+        this.notify.emit();
+      }    
       serviceModal.classList.remove('is-active');
       this.category = '';
     }
@@ -234,26 +236,9 @@ export class ManageServiceModalComponent {
   }
 
   delete() {
-    this.ngProgress.start();
-    this.servicesApiService.deleteService(this.serviceName)
-      .subscribe(
-        (data: any) => {
-          this.ngProgress.done();
-          this.reenableButton.emit(false);
-          this.alertService.success(data['result'], true);
-          this.closeDeleteModal('confirmation-delete-dialog');
-          this.toggleModal(false);
-          this.form.reset();
-        },
-        error => {
-          this.ngProgress.done();
-          this.reenableButton.emit(false);
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.notify.emit({service: this.serviceName, state: 'delete'});
+    this.closeDeleteModal('confirmation-delete-dialog');
+    this.toggleModal(false, false);
   }
 
   installService() {
@@ -321,45 +306,15 @@ export class ManageServiceModalComponent {
     if (name != null) {
       serviceName = name;
     }
-    this.ngProgress.start();
-    this.schedulesService.enableScheduleByName(serviceName).
-      subscribe(
-        (data) => {
-          this.ngProgress.done();
-          this.toggleModal(false);
-          this.alertService.success(data['message'], true);
-          this.isServiceEnabled = true;
-        },
-        error => {
-          this.ngProgress.done();
-          this.toggleModal(false);
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.notify.emit({service: serviceName, state: 'enable'});
+    this.toggleModal(false, false);
+    this.isServiceEnabled = true;
   }
 
   disableService() {
-    this.ngProgress.start();
-    this.schedulesService.disableScheduleByName(this.serviceName).
-      subscribe(
-        (data) => {
-          this.ngProgress.done();
-          this.alertService.success(data['message'], true);
-          this.isServiceEnabled = false;
-          this.toggleModal(false);
-        },
-        error => {
-          this.ngProgress.done();
-          this.toggleModal(false);
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.notify.emit({service: this.serviceName, state: 'disable'});
+    this.toggleModal(false, false);
+    this.isServiceEnabled = false;
   }
 
   public async addServiceEvent() {

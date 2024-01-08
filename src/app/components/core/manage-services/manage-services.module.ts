@@ -8,6 +8,7 @@ import { ListManageServicesComponent } from './list-manage-services.component';
 import { DirectivesModule } from '../../../directives/directives.module';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
+import { ManageServicesContextMenuComponent } from './manage-services-context-menu/manage-services-context-menu.component';
 import { NotificationsService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
 
@@ -22,7 +23,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     ListManageServicesComponent,
-    ManageServiceModalComponent
+    ManageServiceModalComponent,
+    ManageServicesContextMenuComponent
   ],
   imports: [
     CommonModule,

@@ -11,10 +11,6 @@ tr:hover .btn-delete {
     border: none;
 }
 
-.is-hoverable.service-table tr:hover .context-menu {
-    background-color: #fafafa; 
-}
-
 .cog-icon {
     background: none;
     border: none;
