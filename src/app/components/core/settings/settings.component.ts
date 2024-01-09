@@ -210,8 +210,4 @@ export class SettingsComponent implements OnInit {
     localStorage.setItem('READINGS_GRAPH_DEFAULT_UNIT', unit);
     this.toggleDropDown('readings-graph-default-duration');
   }
-
-  navToMangeServices() {
-    console.log('navToMangeServices');
-  }
 }

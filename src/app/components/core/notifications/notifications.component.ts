@@ -128,7 +128,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   onNotify() {
     this.isNotificationModalOpen = false;
     setTimeout(() => {
-      console.log('onNotify');
       this.getNotificationInstance();
     }, 2000);
   }

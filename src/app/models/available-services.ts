@@ -1,4 +1,4 @@
-// interface for Control Available Services
+// interface for Available Services
 
 export class AvailableServices {
   services: string[];
