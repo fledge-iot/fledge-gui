@@ -24,10 +24,6 @@
   margin-top: 10px;
 }
 
-.is-hovered {
-  cursor: pointer !important;
-}
-
 .notification-type-help {
   margin: 7px;
 }

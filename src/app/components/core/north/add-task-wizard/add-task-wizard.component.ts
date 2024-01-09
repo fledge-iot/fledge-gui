@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { cloneDeep, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -35,12 +35,12 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   validConfigurationForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
-  taskForm = new FormGroup({
-    name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
-    plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
-    repeatDays: new FormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
-    repeatTime: new FormControl('', [Validators.required]),
-    config: new FormControl(null)
+  taskForm = new UntypedFormGroup({
+    name: new UntypedFormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+    plugin: new UntypedFormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
+    repeatDays: new UntypedFormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
+    repeatTime: new UntypedFormControl('', [Validators.required]),
+    config: new UntypedFormControl(null)
   });
 
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
@@ -52,6 +52,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     type: this.taskType,
     pluginName: ''
   };
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(private pluginService: PluginService,
     private alertService: AlertService,
@@ -111,7 +113,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 2:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       case 3:
@@ -133,6 +135,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 1:
         nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
         previousButton.disabled = false;
         // To verify if task with given name already exist
         const isTaskNameExist = this.schedulesName.some(item => {
@@ -146,6 +149,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
+        this.reenableButton.emit(false);
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -249,6 +253,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         () => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success('North instance added successfully.', true);
           if (files.length > 0) {
             const name = payload.name;
@@ -259,6 +264,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         (error) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -291,6 +297,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         (response) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(response['name'] + ' service added successfully.', true);
           if (files.length > 0) {
             const name = payload.name
@@ -301,6 +308,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         (error) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

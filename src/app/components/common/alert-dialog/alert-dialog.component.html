@@ -27,7 +27,7 @@
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
       <button *ngIf="childData" class="button is-small"
         [ngClass]="{'is-danger': childData.actionButtonValue === 'Delete', 'is-warning': childData.actionButtonValue === 'Restore' || 'Clear Sessions' }"
-        (click)="triggerAction()">{{childData.actionButtonValue}}</button>
+        (click)="triggerAction()" [appDisableUntilResponse]="reenableButton">{{childData.actionButtonValue}}</button>
       <button *ngIf="serviceRecord" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
       <button *ngIf="notificationRecord" class="button is-small is-danger" (click)="triggerAction()">Delete</button>
       <button *ngIf="notificationServiceRecord" class="button is-small is-danger"
