@@ -2,13 +2,13 @@ import { Component, OnInit, ViewChild, EventEmitter, OnDestroy } from '@angular/
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
 
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
 import { ManageServicesContextMenuComponent } from './manage-services-context-menu/manage-services-context-menu.component';
+import { AvailableServices, Schedule, Service } from '../../../../../src/app/models';
 
 @Component({
   selector: "app-manage-services",
@@ -51,7 +51,8 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
       "type": "Dispatcher",
       "name": "",
       "state": "",
-      "added": false    }
+      "added": false
+    }
   ];
 
   installedServicePkgs = [];
@@ -77,8 +78,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     public servicesApiService: ServicesApiService,
     public rolesService: RolesService,
     public schedulesService: SchedulesService,
-    private response: ResponseHandler,
-    private router: Router
+    private response: ResponseHandler
   ) {}
 
   ngOnInit() {
@@ -89,63 +89,62 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     this.showServices();
   }
 
-  // sleep time expects milliseconds
-  sleep (time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
-  }
-
   showServices() {
-    this.getServices();
-    this.getSchedules();
-
     let callsStack = {
+      services: this.servicesApiService.getAllServices(),
+      schedules: this.schedulesService.getSchedules(),
       installed: this.servicesApiService.getInstalledServices(),
       available: this.servicesApiService.getAvailableServices()
     }
-    this.sleep(500).then(() => {
-      forkJoin(callsStack)
-        .pipe(
-          map((response: any) => {
-            const installed = <Array<any>>response.installed;
-            const available = <Array<any>>response.available;
-            const result: any[] = [];
-            result.push({
-              ...{ 'installed': installed },
-              ...{ 'available': available }
-            });
-            this.getInstalledServices(installed["services"]);
-            this.getAvaiableServices(available["services"]);
-
-            let installedServicePkgsNames = []
-            this.installedServicePkgs.forEach(function(s) {
-              installedServicePkgsNames.push(s["package"]);
-            });
-
-            // Remove service name from available list if it is already installed
-            this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
-            this.hideLoadingText();
-            return result;
-          })
-        )
-        .subscribe((result) => {
-          result.forEach((r: any) => {
-            this.ngProgress.done();
-            this.hideLoadingText();
-            if (r.failed) {
-              if (r.error.status === 0) {
-                console.log('service down ', r.error);
-              } else {
-                this.alertService.error(r.error.statusText);
-              }
-            } else {
-              this.response.handleResponseMessage(r.type);
-            }
+    forkJoin(callsStack)
+      .pipe(
+        map((response: any) => {
+          const services = <Array<Service[]>>response.services;
+          const schedules = <Array<Schedule[]>>response.schedules;
+          const installed = <Array<string[]>>response.installed;
+          const available = <Array<AvailableServices>>response.available;
+          const result: any[] = [];
+          result.push({
+            ...{ 'services': services },
+            ...{ 'schedules': schedules },
+            ...{ 'installed': installed },
+            ...{ 'available': available }
           });
-        });
-    });
-  }
 
-  public getInstalledServices(services) {   
+          this.getServices(services["services"]);
+          this.getSchedules(schedules["schedules"]);
+          this.getInstalledServices(installed["services"]);
+          this.getAvaiableServices(available["services"]);
+
+          let installedServicePkgsNames = []
+          this.installedServicePkgs.forEach(function(s) {
+            installedServicePkgsNames.push(s["package"]);
+          });
+
+          // Remove service name from available list if it is already installed
+          this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
+          this.hideLoadingText();
+          return result;
+        })
+      )
+      .subscribe((result) => {
+        result.forEach((r: any) => {
+          this.ngProgress.done();
+          this.hideLoadingText();
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.alertService.error(r.error.statusText);
+            }
+          } else {
+            this.response.handleResponseMessage(r.type);
+          }
+        });
+      });
+}
+
+  public getInstalledServices(services) {
     let svcs = services.filter(
       (s) => !["south", "north", "storage"].includes(s)
     );
@@ -182,7 +181,6 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         this.installedServicePkgs[atIndex] = replacement;
       }
     });
-
     const addedServices = this.installedServicePkgs.filter((s) => s.added === true);
     const servicesToAdd = this.installedServicePkgs.filter((s) => s.added === false);
     this.installedServicePkgs = addedServices.sort((a, b) => a.type.localeCompare(b.type)).concat(servicesToAdd.sort((a, b) => a.type.localeCompare(b.type)));
@@ -196,50 +194,23 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     this.availableServicePkgs = availableServices.sort((a, b) => a.type.localeCompare(b.type))
   }
 
-  public getServices() {
-    this.ngProgress.start();
-    this.servicesApiService.getAllServices().subscribe(
-      (res: any) => {
-        this.ngProgress.done();
-
-         // We don't care for services which are not in expectedServices
-        var expectedTypes = []
-        this.expectedServices.forEach(function(v) {
-          expectedTypes.push(v["type"]);
-        });
-
-        this.servicesRegistry = res.services.filter((s) => expectedTypes.includes(s.type));
-      },
-      (error) => {
-        /** request done */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log("service down ", error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      }
-    );
+  public getServices(services) {
+    // We don't care for services which are not in expectedServices
+    let expectedTypes = []
+    this.expectedServices.forEach(function(v) {
+      expectedTypes.push(v["type"]);
+    });
+    this.servicesRegistry = services.filter((s) => expectedTypes.includes(s.type));
   }
-  public getSchedules(): void {
-    this.schedulesService.getSchedules().subscribe(
-      (data: any) => {
-        // We don't care for schedules which are not in expectedServices
-        var expectedP = []
-        this.expectedServices.forEach(function(v) {
-          expectedP.push(v["schedule_process"]);
-        });
-        this.pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
-        this.servicesSchedules = data.schedules.filter((sch) => expectedP.includes(sch.processName));
-      },
-      (error) => {
-        if (error.status === 0) {
-          console.log("service down ", error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      }
-    );
+
+  public getSchedules(schedules): void {
+    // We don't care for schedules which are not in expectedServices
+    var expectedP = []
+    this.expectedServices.forEach(function(v) {
+      expectedP.push(v["schedule_process"]);
+    });
+    this.pollingScheduleID = schedules.find(s => s.processName === 'manage')?.id;
+    this.servicesSchedules = schedules.filter((sch) => expectedP.includes(sch.processName));
   }
 
   /**
@@ -342,20 +313,25 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
   }
 
   onNotifyEvent(event) {
-    console.log('event', event);
-    // this.service = event.service;
-    if (!event) {
+    if (event?.isCancelEvent) {
+      return;
+    }
+    if (!event?.state) {
       this.getData();
       return;
     }
-    if (event.state === 'delete') {
-      this.deleteService(event.service);
-    }
-    if (event.state === 'disable') {
-      this.disableService(event.service);
-    }
-    if (event.state === 'enable') {
-      this.enableService(event.service);
+    switch (event.state) {
+      case 'delete':
+        this.deleteService(event.service);
+        break;
+      case 'disable':
+        this.disableService(event.service);
+        break;
+      case 'enable':
+        this.enableService(event.service);
+        break;
+      default:
+        break;
     }
   }
 

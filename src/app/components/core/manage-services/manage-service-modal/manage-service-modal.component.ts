@@ -100,11 +100,11 @@ export class ManageServiceModalComponent {
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.serviceInstallationState) {
-      this.toggleModal(false);
+      this.toggleModal(false, {isCancelEvent: true});
     }
   }
 
-  public toggleModal(isOpen: Boolean, isNotify = true) {
+  public toggleModal(isOpen: Boolean, emitData = null) {
     this.serviceInstallationState = false;
     this.reenableButton.emit(false);
     const serviceModal = <HTMLDivElement>document.getElementById('manage-service-modal');
@@ -120,9 +120,7 @@ export class ManageServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      if (isNotify) {
-        this.notify.emit();
-      }    
+      this.notify.emit(emitData);
       serviceModal.classList.remove('is-active');
       this.category = '';
     }
@@ -161,11 +159,11 @@ export class ManageServiceModalComponent {
           this.alertService.success('Service added successfully.', true);
           this.isServiceAvailable = true;
           this.btnText = 'Save';
-          this.toggleModal(false);
+          this.toggleModal(false, {isCancelEvent: false});
         },
         (error) => {
           this.ngProgress.done();
-          this.toggleModal(false);
+          this.toggleModal(false, {isCancelEvent: false});
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -209,7 +207,7 @@ export class ManageServiceModalComponent {
               if (this.increment > this.maxRetry) {
                 this.serviceInstallationState = false;
                 this.ngProgress.done();
-                this.toggleModal(false);
+                this.toggleModal(false, { isCancelEvent: false});
                 this.alertService.closeMessage();
                 // tslint:disable-next-line: max-line-length
                 return throwError(`Failed to get expected results in ${this.maxRetry} attempts, tried with incremental time delay starting with 2s, for installing plugin ${pluginName}`);
@@ -236,9 +234,8 @@ export class ManageServiceModalComponent {
   }
 
   delete() {
-    this.notify.emit({service: this.serviceName, state: 'delete'});
     this.closeDeleteModal('confirmation-delete-dialog');
-    this.toggleModal(false, false);
+    this.toggleModal(false, {service: this.serviceName, state: 'delete', isCancelEvent: false});
   }
 
   installService() {
@@ -260,7 +257,7 @@ export class ManageServiceModalComponent {
         error => {
           /** request done */
           this.serviceInstallationState = false;
-          this.toggleModal(false);
+          this.toggleModal(false, {isCancelEvent: false});
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -306,14 +303,12 @@ export class ManageServiceModalComponent {
     if (name != null) {
       serviceName = name;
     }
-    this.notify.emit({service: serviceName, state: 'enable'});
-    this.toggleModal(false, false);
+    this.toggleModal(false, {service: serviceName, state: 'enable', isCancelEvent: false});
     this.isServiceEnabled = true;
   }
 
   disableService() {
-    this.notify.emit({service: this.serviceName, state: 'disable'});
-    this.toggleModal(false, false);
+    this.toggleModal(false, {service: this.serviceName, state: 'disable', isCancelEvent: false});
     this.isServiceEnabled = false;
   }
 
@@ -373,13 +368,13 @@ export class ManageServiceModalComponent {
     this.stateUpdate();
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
-      this.toggleModal(false);
+      this.toggleModal(false, {isCancelEvent: false});
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
-      this.toggleModal(false);
+      this.toggleModal(false, {isCancelEvent: false});
     }
   }
 

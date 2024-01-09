@@ -6,7 +6,7 @@
         <p class="help has-text-grey modal-subtitle">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</p>
       </span>
       <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</span>
-      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
+      <button class="delete" aria-label="close" (click)="toggleModal(false, {isCancelEvent: true})"></button>
     </header>
     <section class="modal-card-body">
       <form name="manage-service-form" id="serviceForm" #fg="ngForm">
@@ -69,7 +69,7 @@
           <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
             <p class="control">
               <button [disabled]="serviceInstallationState" class="button is-small" id="cancel"
-                (click)="toggleModal(false)">Cancel</button>
+                (click)="toggleModal(false, {isCancelEvent: true})">Cancel</button>
             </p>
             <p class="control">
               <button [disabled]="serviceInstallationState || fg.controls['serviceName']?.invalid || !validForm"
