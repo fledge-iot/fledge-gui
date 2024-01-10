@@ -43,7 +43,7 @@ export class AddStepComponent implements OnInit {
   ngAfterViewInit() {
     setTimeout(() => {
       if (!this.update) {
-        this.initStepFormGroup(0);
+        this.initStepFormGroup(1);
       }
     }, 0);
   }
@@ -63,7 +63,7 @@ export class AddStepComponent implements OnInit {
       const maxOrder = Math.max(...this.stepControlsList.map(o => o.order));
       this.initStepFormGroup(maxOrder + 1)
     } else {
-      this.initStepFormGroup(0)
+      this.initStepFormGroup(1)
     }
   }
 

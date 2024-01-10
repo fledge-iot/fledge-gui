@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { cloneDeep, isEmpty } from 'lodash';
+import { cloneDeep, isEmpty, pickBy } from 'lodash';
 import { AclService } from '../../../../services/acl.service';
 import { AlertService, ProgressBarService, RolesService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
@@ -156,6 +156,7 @@ export class AddControlScriptComponent implements OnInit {
     Object.values(steps).map((val: any) => {
       let values;
       for (const key in val) {
+        val[key] = pickBy(val[key]); // remove null, undefine from object
         const element = val[key];
         if ('condition' in element) {
           if (isEmpty(element['condition'].key) || element['condition'].value == null) {
@@ -190,15 +191,25 @@ export class AddControlScriptComponent implements OnInit {
 
         values = Object.values(values)
           .map((v: any) => {
-            return { [v.key]: v.value };
-          }).reduce((r, c) => ({ ...r, ...c }), {})
+            return {
+              ...(v.key?.trim() && { [v.key?.trim()]: v.value?.trim() })
+            };
+          }).reduce((r, c) => ({ ...r, ...c }), {});
 
-        if ('write' in val) {
-          val['write'].values = values;
-        } else if ('operation' in val) {
-          val['operation'].parameters = values;
-        } else if ('script' in val) {
-          val['script'].parameters = values;
+        for (const key in val) {
+          if (['operation', 'script', 'write'].includes(key)) {
+            if (key !== 'write') {
+              val[key].parameters = values;
+              if (Object.keys(values).length == 0) {
+                delete val[key]?.parameters;
+              }
+              return;
+            }
+            val[key].values = values;
+            if (Object.keys(values).length == 0) {
+              delete val[key]?.values;
+            }
+          }
         }
       }
       return val;
@@ -207,7 +218,7 @@ export class AddControlScriptComponent implements OnInit {
     steps = steps.filter(s => Object.keys(s).length !== 0);
     steps.forEach(step => {
       const index = this.stepControlsList.findIndex(s => s.order === Object.values(step)[0]['order']);
-      Object.values(step)[0]['order'] = index;
+      Object.values(step)[0]['order'] = index + 1;
     });
     return steps;
   }
@@ -250,12 +261,12 @@ export class AddControlScriptComponent implements OnInit {
           this.scriptForm.form.markAsUntouched();
           this.scriptForm.form.markAsPristine();
           setTimeout(() => {
-            this.reenableButton.emit(false); 
+            this.reenableButton.emit(false);
             this.router.navigate(['control-dispatcher', 'script']);
           }, 1000);
         }, error => {
           this.ngProgress.done();
-          this.reenableButton.emit(false); 
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -270,7 +281,7 @@ export class AddControlScriptComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.updateScript(this.scriptName, payload)
       .subscribe((data: any) => {
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         this.scriptName = payload.name;
         this.router.navigate(['control-dispatcher', 'script']);
         this.alertService.success(data.message, true);
@@ -280,7 +291,7 @@ export class AddControlScriptComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
