@@ -1,3 +1,4 @@
-<svg data-testid="connection">
-    <path [attr.d]="path" />
+<svg data-testid="connection" (click)="selectConnection()">
+    <path [attr.d]="path" class="hoverPath"></path>
+    <path [attr.d]="path" #svgpath/>
 </svg>

@@ -1,5 +1,5 @@
-import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline } from './editor';
+import { Component, ElementRef, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfigurationService, FilterService, ServicesApiService } from './../../../services';
 import { takeUntil } from 'rxjs/operators';
@@ -22,6 +22,7 @@ export class NodeEditorComponent implements OnInit {
   public category: any;
   private subscription: Subscription;
   private filterSubscription: Subscription;
+  private connectionSubscription: Subscription;
 
   showConfiguration: boolean = false;
   showLogs: boolean = false;
@@ -31,6 +32,7 @@ export class NodeEditorComponent implements OnInit {
   serviceName = '';
   filterName = '';
   isfilterPipelineFetched = false;
+  selectedConnectionId = "";
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -50,6 +52,13 @@ export class NodeEditorComponent implements OnInit {
     });
   }
 
+  @HostListener('document:keydown.delete', ['$event']) onKeydownHandler() {
+    this.deleteSelectedConnection();
+  }
+  @HostListener('click')
+  onClick() {
+    this.flowEditorService.canvasClick.next({canvasClicked: true,  connectionId: this.selectedConnectionId});
+  }
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.subscribe(data => {
       this.showConfiguration = data.showConfiguration;
@@ -92,6 +101,14 @@ export class NodeEditorComponent implements OnInit {
             this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } });
           }
         }
+      }
+    })
+    this.connectionSubscription = this.flowEditorService.connectionInfo.subscribe(data => {
+      if(data.selected){
+        this.selectedConnectionId = data.id;
+      }
+      else{
+        this.selectedConnectionId = "";
       }
     })
   }
@@ -153,6 +170,7 @@ export class NodeEditorComponent implements OnInit {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
+    this.connectionSubscription.unsubscribe();
   }
 
   getFilterConfiguration(filterName: string) {
@@ -243,5 +261,11 @@ export class NodeEditorComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  deleteSelectedConnection(){
+    if(this.selectedConnectionId){
+      deleteConnection(this.selectedConnectionId);
+    }
   }
 }

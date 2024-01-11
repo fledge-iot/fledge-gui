@@ -113,12 +113,13 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
         }
     ));
     // connection.addPreset(ConnectionPresets.classic.setup());
-    connection.addPreset(({ side }) => {
-        if (side === "output") {
-            return new BidirectFlow()
-        }
-        return new ClassicFlow()
-    })
+    connection.addPreset(() => new BidirectFlow())
+    // connection.addPreset(({ side }) => {
+    //     if (side === "output") {
+    //         return new BidirectFlow()
+    //     }
+    //     return new ClassicFlow()
+    // })
     arrange.addPreset(ArrangePresets.classic.setup());
     render.addPreset(Presets.contextMenu.setup());
     dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
@@ -366,4 +367,8 @@ function getBranchNodes(connections, node) {
     }
     branchNodes.pop();
     return branchNodes;
+}
+
+export function deleteConnection(connectionId){
+    editor.removeConnection(connectionId);
 }

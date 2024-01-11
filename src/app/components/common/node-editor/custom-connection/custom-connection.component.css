@@ -12,3 +12,8 @@ svg path {
     stroke: steelblue;
     pointer-events: auto;
 }
+
+.hoverPath {
+    stroke-width: 12px !important;
+    stroke: transparent !important;
+}
