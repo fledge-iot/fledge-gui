@@ -152,19 +152,21 @@ export class AddControlScriptComponent implements OnInit {
     this.scriptForm.form.markAsDirty();
   }
 
-  flattenPayload(steps: any) {
-    Object.values(steps).map((val: any) => {
-      let values;
-      for (const key in val) {
-        val[key] = pickBy(val[key]); // remove null, undefine from object
-        const element = val[key];
-        if ('condition' in element) {
-          if (isEmpty(element['condition'].key) || element['condition'].value == null) {
-            delete element['condition'];
+
+  flattenPayload(steps: any[]) {
+    steps.forEach((val: any) => {
+      const keys = Object.keys(val);
+      keys.forEach(key => {
+        // remove invalid(null, undefined) values from object 
+        val[key] = pickBy(val[key]);
+        if ('condition' in val[key]) {
+          if (isEmpty(val[key]['condition'].key) || val[key]['condition'].value == null) {
+            delete val[key]['condition'];
           }
         }
-      }
+      });
 
+      let values;
       if ('configure' in val || 'delay' in val) {
         values = val;
       } else if ('write' in val) {
@@ -174,6 +176,7 @@ export class AddControlScriptComponent implements OnInit {
       } else if ('script' in val) {
         values = val['script'].parameters;
       }
+
       if (values) {
         values = Object.values(values).reduce((acc: any, obj: any) => {
           let found = false;
@@ -196,19 +199,27 @@ export class AddControlScriptComponent implements OnInit {
             };
           }).reduce((r, c) => ({ ...r, ...c }), {});
 
-        for (const key in val) {
-          if (['operation', 'script', 'write'].includes(key)) {
-            if (key !== 'write') {
-              val[key].parameters = values;
-              if (Object.keys(values).length == 0) {
-                delete val[key]?.parameters;
-              }
-              return;
-            }
-            val[key].values = values;
-            if (Object.keys(values).length == 0) {
-              delete val[key]?.values;
-            }
+        // update write step object
+        if (val.hasOwnProperty('write')) {
+          val['write'].values = values;
+          if (this.isEmptyObject(values)) {
+            delete val['write']?.values;
+          }
+        }
+
+        // update operation step object
+        if (val.hasOwnProperty('operation')) {
+          val['operation'].parameters = values;
+          if (this.isEmptyObject(values)) {
+            delete val['operation']?.parameters;
+          }
+        }
+
+        // update scripts step object
+        if (val.hasOwnProperty('script')) {
+          val['script'].parameters = values;
+          if (this.isEmptyObject(values)) {
+            delete val['script']?.parameters;
           }
         }
       }
@@ -221,6 +232,11 @@ export class AddControlScriptComponent implements OnInit {
       Object.values(step)[0]['order'] = index + 1;
     });
     return steps;
+  }
+
+  isEmptyObject(values = {}) {
+    // check if object = {}
+    return Object.keys(values).length == 0 ? true : false;
   }
 
   updatedStepList(list) {

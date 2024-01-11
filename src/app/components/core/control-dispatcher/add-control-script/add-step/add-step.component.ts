@@ -63,6 +63,7 @@ export class AddStepComponent implements OnInit {
       const maxOrder = Math.max(...this.stepControlsList.map(o => o.order));
       this.initStepFormGroup(maxOrder + 1)
     } else {
+      // Initialize step formgroup with parameter value 1 to set order of the initial control
       this.initStepFormGroup(1)
     }
   }
