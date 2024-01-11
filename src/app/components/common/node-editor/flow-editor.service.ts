@@ -12,4 +12,13 @@ export class FlowEditorService {
   public connectionInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public canvasClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   constructor() { }
+
+  public flowEditorControl(visible: boolean) {
+    localStorage.setItem('FLOW_EDITOR', JSON.stringify(visible));
+  }
+
+  public getFlowEditorStatus(): boolean {
+    const controlStatus: boolean = JSON.parse(localStorage.getItem('FLOW_EDITOR'));
+    return controlStatus ? controlStatus : false;
+  }
 }

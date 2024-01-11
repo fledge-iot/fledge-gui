@@ -6,12 +6,13 @@ import { interval, Subscription, Subject } from 'rxjs';
 
 import { PingService, ServicesApiService, ProgressBarService, SharedService, AssetsService, RolesService } from '../../../services';
 import { AlertService } from '../../../services/alert.service';
-import { POLLING_INTERVAL, FLOW_EDITOR_VIEW } from '../../../utils';
+import { POLLING_INTERVAL } from '../../../utils';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 import { Service } from './south-service';
+import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
 
 @Component({
@@ -45,8 +46,9 @@ export class SouthComponent implements OnInit, OnDestroy {
     private ping: PingService,
     private dialogService: DialogService,
     private sharedService: SharedService,
-    public rolesService: RolesService) {
-    if(FLOW_EDITOR_VIEW){
+    public rolesService: RolesService,
+    public flowEditorService: FlowEditorService) {
+    if(flowEditorService.getFlowEditorStatus()){
       setTimeout(() => {
         this.navToFlowEditor();
       }, 1);
