@@ -13,8 +13,8 @@
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
 
-      <div class="cog-icon">
-          <app-dispatcher-service-config *ngIf="isServiceAvailable"></app-dispatcher-service-config>
+      <div *ngIf="isServiceAvailable" class="cog-icon">
+        <app-dispatcher-service-config></app-dispatcher-service-config>
       </div>
 
       <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
