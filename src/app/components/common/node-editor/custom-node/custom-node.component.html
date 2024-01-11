@@ -123,7 +123,7 @@
     </ng-template>
 </div>
 <ng-template #storageTemplate>
-    <div class="input is-pulled-left storage-input" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
+    <div class="input is-pulled-left storage-input input-container" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
         [attr.data-testid]="'input-'+input.key">
         <div class="input-socket" refComponent
             [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
