@@ -12,12 +12,9 @@
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
-      <a *ngIf="isServiceAvailable && rolesService.hasControlAccess()" class="button cog-icon"
-        routerLink="/settings/manage-services" id="config-icon">
-        <span class="icon">
-        <i class="fa fa-sm fa-cog" aria-hidden="true" title="Dispatcher Service Configuration"></i>
-        </span>
-      </a>
+      <div class="cog-icon">
+        <app-dispatcher-service-config *ngIf="isServiceAvailable"></app-dispatcher-service-config>
+      </div>
       <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
         data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
         <i class="far fa-question-circle"></i>

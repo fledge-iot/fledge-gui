@@ -17,6 +17,7 @@ import { DocService } from '../../../../services/doc.service';
 import { Router } from '@angular/router';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import { Service } from '../../../../../../src/app/models';
 
 @Component({
   selector: 'app-manage-service-modal',
@@ -42,7 +43,7 @@ export class ManageServiceModalComponent {
   maxRetry = 15;
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
-  service;
+  service: Service;
 
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
@@ -129,9 +130,9 @@ export class ManageServiceModalComponent {
   public getServiceByType() {
     this.ngProgress.start();
     this.servicesApiService.getServiceByType(this.serviceType)
-    .subscribe((res: any) => {
+    .subscribe((res: Service) => {
       this.ngProgress.done();
-      this.service = res.services[0];
+      this.service = res['services'][0];
     },
     (error) => {
       this.ngProgress.done();
@@ -231,11 +232,6 @@ export class ManageServiceModalComponent {
 
   closeDeleteModal(id: string) {
     this.dialogService.close(id);
-  }
-
-  delete() {
-    this.closeDeleteModal('confirmation-delete-dialog');
-    this.toggleModal(false, {service: this.serviceName, state: 'delete', isCancelEvent: false});
   }
 
   installService() {

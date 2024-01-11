@@ -13,7 +13,9 @@ import { DialogService } from '../../../common/confirmation-dialog/dialog.servic
 
 export class ManageServicesContextMenuComponent implements OnInit {
     @Input() service;
+    @Input() index;
     @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+
     public reenableButton = new EventEmitter<boolean>(false);
 
     constructor(
@@ -23,7 +25,7 @@ export class ManageServicesContextMenuComponent implements OnInit {
         private router: Router
       ) {}
     
-    ngOnInit() {}
+    ngOnInit() { }
 
     openModal(id: string) {
         this.dialogService.open(id);
@@ -31,18 +33,6 @@ export class ManageServicesContextMenuComponent implements OnInit {
     
     closeModal(id: string) {
         this.dialogService.close(id);
-    }
-
-    stateUpdate() {
-        if (["shutdown", "disabled"].includes(this.service.state)) {
-            this.notify.emit({service: this.service.name, state: 'enable'});
-        } else {
-            this.notify.emit({service: this.service.name, state: 'disable'});
-        }
-      }
-
-    deleteService() {
-        this.notify.emit({service: this.service.name, state: 'delete'});
     }
 
     viewLogs(name: string) {

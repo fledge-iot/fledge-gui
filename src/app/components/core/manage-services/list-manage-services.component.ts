@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -33,7 +33,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
       "type": "BucketStorage",
       "name": "",
       "state": "",
-      "added": false    
+      "added": false 
     },
     {
       "package": "fledge-service-management",
@@ -66,10 +66,11 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
   viewPort: any = '';
   pollingScheduleID: string;
 
+  service;
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
-  @ViewChild(ManageServicesContextMenuComponent, { static: true }) contextMenu: ManageServicesContextMenuComponent;
-
+  @ViewChildren(ManageServicesContextMenuComponent) contextMenus: QueryList<ManageServicesContextMenuComponent>;
+  
   constructor(
     public sharedService: SharedService,
     private alertService: AlertService,
@@ -196,21 +197,13 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
 
   public getServices(services) {
     // We don't care for services which are not in expectedServices
-    let expectedTypes = []
-    this.expectedServices.forEach(function(v) {
-      expectedTypes.push(v["type"]);
-    });
-    this.servicesRegistry = services.filter((s) => expectedTypes.includes(s.type));
+    this.servicesRegistry = services.filter((s) => this.expectedServices.some(es => es.type == s.type));
   }
 
   public getSchedules(schedules): void {
     // We don't care for schedules which are not in expectedServices
-    var expectedP = []
-    this.expectedServices.forEach(function(v) {
-      expectedP.push(v["schedule_process"]);
-    });
+    this.servicesSchedules = schedules.filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
     this.pollingScheduleID = schedules.find(s => s.processName === 'manage')?.id;
-    this.servicesSchedules = schedules.filter((sch) => expectedP.includes(sch.processName));
   }
 
   /**
@@ -218,6 +211,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     */
    openServiceModal(service) {
     this.serviceModal.toggleModal(true);
+    this.setService(service);
     this.serviceModal.getServiceInfo(service, this.availableServicePkgs, this.pollingScheduleID);
   }
 
@@ -236,6 +230,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         this.reenableButton.emit(false);
         this.alertService.success(data["result"], true);
         this.closeModal("delete-confirmation-dialog");
+        this.closeServiceModal();
         this.getData();
       },
       (error) => {
@@ -258,6 +253,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         this.reenableButton.emit(false);
         this.alertService.success(data["message"], true);
         this.closeModal('confirmation-dialog');
+        this.closeServiceModal();
         this.getData();
       },
       (error) => {
@@ -280,6 +276,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         this.reenableButton.emit(false);
         this.alertService.success(data["message"], true);
         this.closeModal('confirmation-dialog');
+        this.closeServiceModal();
         this.getData();
       },
       (error) => {
@@ -294,6 +291,13 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     );
   }
 
+  closeServiceModal() {
+    const serviceModal = <HTMLDivElement>document.getElementById('manage-service-modal');
+    if (serviceModal) {
+      this.serviceModal.toggleModal(false);
+    }
+  }
+  
   applyClass(serviceStatus: string) {
     if (serviceStatus.toLowerCase() === "running") {
       return "is-success";
@@ -349,6 +353,18 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
 
   closeModal(id: string) {
     this.dialogService.close(id);
+  }
+
+  stateUpdate() {
+    if (["shutdown", "disabled"].includes(this.service.state)) {
+        this.enableService(this.service.name);
+    } else {
+      this.disableService(this.service.name);
+    }
+  }
+
+  setService(service) {
+    this.service = service;
   }
 
   public ngOnDestroy(): void {

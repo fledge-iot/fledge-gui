@@ -42,7 +42,7 @@
                   <a *ngIf="!s.added" (click)="openServiceModal(s)" class="button is-text text-btn">
                     Add
                   </a>
-                  <app-manage-services-context-menu *ngIf="s?.name" [service]="s" (notify)="onNotifyEvent($event)"></app-manage-services-context-menu>
+                  <app-manage-services-context-menu *ngIf="s?.name" [service]="s" [index]="i" (notify)="onNotifyEvent($event)" (click)="setService(s)"></app-manage-services-context-menu>
                 </td>             
               </tr>
               </ng-container>
@@ -68,3 +68,29 @@
 </div>
 <app-manage-service-modal (notify)="onNotifyEvent($event)"></app-manage-service-modal>
 
+<app-confirmation-dialog id="delete-confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('delete-confirmation-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Deleting {{service?.name}} service can not be undone. Continue?
+  </section>
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small" (click)="closeModal('delete-confirmation-dialog')">Cancel</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteService(service?.name)" [appDisableUntilResponse]="reenableButton">Delete</button>
+  </footer>
+</app-confirmation-dialog>
+<app-confirmation-dialog id="confirmation-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">{{ ["shutdown", "disabled"].includes(service?.state) ? "Enable" : "Disable" }}</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, You want to {{ ["shutdown", "disabled"].includes(service?.state) ? "enable" : "disable" }} the service {{service?.name}}?
+  </section>
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
+    <button type="button" class="button is-small" [ngClass]="{'is-info': ['shutdown', 'disabled'].includes(service?.state), 'is-danger': !['shutdown', 'disabled'].includes(service?.state)}" (click)="stateUpdate()" [appDisableUntilResponse]="reenableButton">{{ ["shutdown", "disabled"].includes(service?.state) ? "Enable" : "Disable" }}</button>
+  </footer>
+</app-confirmation-dialog>

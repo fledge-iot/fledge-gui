@@ -1,10 +1,10 @@
 <div class="container is-fluid">
   <div>
-    <ng-container *ngIf="isNotificationServiceAvailable === false || !isNotificationServiceEnabled">
+    <ng-container *ngIf="isNotificationServiceAvailable == false && isNotificationServiceEnabled == false">
       <article class="message is-warning">
         <div class="message-body">
           Notification service is not added
-          or enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
+          and enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
             routerLink="/settings/manage-services"><strong>Configure</strong></a>
                     
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small"title="Recheck"  id="refresh-check">
