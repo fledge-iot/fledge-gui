@@ -114,12 +114,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     ));
     // connection.addPreset(ConnectionPresets.classic.setup());
     connection.addPreset(() => new BidirectFlow())
-    // connection.addPreset(({ side }) => {
-    //     if (side === "output") {
-    //         return new BidirectFlow()
-    //     }
-    //     return new ClassicFlow()
-    // })
     arrange.addPreset(ArrangePresets.classic.setup());
     render.addPreset(Presets.contextMenu.setup());
     dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
@@ -155,53 +149,6 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
         await editor.addNode(southPlugin);
         await editor.addNode(db);
 
-        // let fpLen = filterPipeline.length;
-        // if (fpLen == 0) {
-        //     // await editor.addNode(filterBranch);
-        //     await editor.addConnection(
-        //         new ClassicPreset.Connection(southPlugin, "port", db, "port")
-        //     );
-        //     // await editor.addConnection(
-        //     //     new ClassicPreset.Connection(filterBranch, "port", db, "port")
-        //     // );
-        // }
-        // else {
-        //     let firstFilterConfig = filterConfigurations.find((f:any) => f.filterName === filterPipeline[0])
-        //     let firstFilter = new Filter(socket, firstFilterConfig);
-        //     await editor.addNode(firstFilter);
-        //     await editor.addConnection(
-        //         new ClassicPreset.Connection(southPlugin, "port", firstFilter, "port")
-        //     );
-
-        //     if (fpLen == 1) {
-        //         await editor.addConnection(
-        //             new ClassicPreset.Connection(firstFilter, "port", db, "port")
-        //         );
-        //     }
-        //     else {
-        //         let lastFilterConfig = filterConfigurations.find((f:any) => f.filterName === filterPipeline[fpLen - 1])
-        //         let lastFilter = new Filter(socket, lastFilterConfig);
-        //         await editor.addNode(lastFilter);
-        //         await editor.addConnection(
-        //             new ClassicPreset.Connection(lastFilter, "port", db, "port")
-        //         );
-
-        //         for (let i = 1; i < fpLen - 1; i++) {
-        //             let midFilterConfig = filterConfigurations.find((f:any) => f.filterName === filterPipeline[i])
-        //             let midFilter = new Filter(socket, midFilterConfig);
-        //             await editor.addNode(midFilter);
-        //             await editor.addConnection(
-        //                 new ClassicPreset.Connection(firstFilter, "port", midFilter, "port")
-        //             );
-        //             firstFilter = midFilter;
-        //         }
-        //         await editor.addConnection(
-        //             new ClassicPreset.Connection(firstFilter, "port", lastFilter, "port")
-        //         );
-        //     }
-        // }
-
-        // filterPipeline = ["rename1", ["meta1", "delta1"], "fft1", ["exp1"], "asset1", ["log1"]];
         let fpLen = filterPipeline.length;
         if (fpLen == 0) {
             await editor.addConnection(

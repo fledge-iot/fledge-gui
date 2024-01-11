@@ -1,11 +1,11 @@
 :host {
     display: inline-block;
     cursor: pointer;
-    border: 5px solid white;
+    border: 8px solid white;
     border-radius: 12px;
     width: 24px;
     height: 24px;
-    margin: 6px;
+    margin: 6px 1px;
     vertical-align: middle;
     background: #96b38a;
     z-index: 2;
