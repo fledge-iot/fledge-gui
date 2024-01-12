@@ -97,6 +97,7 @@ export class NodeEditorComponent implements OnInit {
           let updatedPipeline = getUpdatedFilterPipeline();
           if (updatedPipeline && updatedPipeline.length > 0) {
             this.updatedFilterPipeline = updatedPipeline;
+            console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
             this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } });
           }
@@ -134,6 +135,7 @@ export class NodeEditorComponent implements OnInit {
         error => {
           if (error.status === 404) {
             this.filterPipeline = [];
+            this.isfilterPipelineFetched = true;
           } else {
             console.log('Error ', error);
           }
@@ -216,8 +218,9 @@ export class NodeEditorComponent implements OnInit {
     let updatedPipeline = getUpdatedFilterPipeline();
     if(updatedPipeline && updatedPipeline.length > 0){
       this.updatedFilterPipeline = updatedPipeline;
-      if(this.isPipelineUpdated()){
+      if(this.isPipelineUpdated() && this.isEachFilterConfigured()){
         console.log("pipeline updated")
+        console.log(this.updatedFilterPipeline);
         // this.updateFilterPipeline();
       }
     }
@@ -267,5 +270,23 @@ export class NodeEditorComponent implements OnInit {
     if(this.selectedConnectionId){
       deleteConnection(this.selectedConnectionId);
     }
+  }
+
+  isEachFilterConfigured() {
+    for(let i=0; i<this.updatedFilterPipeline.length; i++){
+      if(typeof(this.updatedFilterPipeline[i]) === "string"){
+        if(this.updatedFilterPipeline[i] === "Filter"){
+          console.log("filter configuration not added");
+          return false;
+        }
+      }
+      else {
+        if(this.updatedFilterPipeline[i].indexOf("Filter") !== -1){
+          console.log("filter configuration not added");
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

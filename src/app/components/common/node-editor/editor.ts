@@ -267,7 +267,7 @@ export function getUpdatedFilterPipeline() {
         let connlist = connections.filter(c => c.source === sourceNode.id);
         if(connlist.length === 1){
             let filterNode = editor.getNode(connlist[0].target);
-            if(filterNode.label !== "storage"){
+            if(filterNode.label !== "Storage"){
                 updatedFilterPipeline.push(filterNode.label);
             }
             sourceNode = filterNode;
@@ -291,7 +291,6 @@ export function getUpdatedFilterPipeline() {
             break;
         }
     }
-    console.log(updatedFilterPipeline)
     return updatedFilterPipeline;
 }
 
