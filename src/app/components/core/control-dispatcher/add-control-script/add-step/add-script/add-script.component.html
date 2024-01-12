@@ -8,7 +8,7 @@
         <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
-              aria-controls="dropdown-menu">
+              aria-controls="dropdown-menu" [ngClass]="{'required-field': !config.name}">
               <span>{{config?.name ? config?.name : 'Select script'}}</span>
               <span class="icon is-small">
                 <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>

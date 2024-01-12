@@ -432,4 +432,8 @@ span.tooltip {
   font-weight: 500;
 }
 
+.required-field {
+  border-color: red;
+}
+
 /*****************/

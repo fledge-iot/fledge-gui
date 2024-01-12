@@ -51,7 +51,7 @@ export class AddStepConditionComponent implements OnInit {
 
   setCondition(condition) {
     this.condition.condition = condition;
-    this.conditionControls().controls['condition'].patchValue(condition);
+    this.conditionControls().controls['condition']?.patchValue(condition);
     this.conditionControls().markAsTouched();
     this.conditionControls().markAsDirty();
   }
@@ -88,14 +88,14 @@ export class AddStepConditionComponent implements OnInit {
 
   setConditionValue(value) {
     this.condition.value = value;
-    this.conditionControls().controls['value'].patchValue(value);
+    this.conditionControls().controls['value']?.patchValue(value);
     this.conditionControls().markAsTouched();
     this.conditionControls().markAsDirty();
   }
 
   setConditionKey(key) {
     this.condition.key = key.trim();
-    this.conditionControls().controls['key'].patchValue(key.trim());
+    this.conditionControls().controls['key']?.patchValue(key.trim());
     this.conditionControls().markAsTouched();
     this.conditionControls().markAsDirty();
   }
