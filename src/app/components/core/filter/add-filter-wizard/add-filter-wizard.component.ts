@@ -200,6 +200,7 @@ export class AddFilterWizardComponent implements OnInit {
         });
         if (isFilterExist) {
           this.alertService.error('A filter (or category) with this name already exists.');
+          this.reenableButton.emit(false);
           return;
         }
         let pluginValue = '';

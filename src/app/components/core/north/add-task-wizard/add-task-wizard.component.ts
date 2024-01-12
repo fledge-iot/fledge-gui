@@ -143,6 +143,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         });
         if (isTaskNameExist) {
           this.alertService.error('A service/task already exists with this name.');
+          this.reenableButton.emit(false);
           return false;
         }
         // check if configuration form is valid or invalid

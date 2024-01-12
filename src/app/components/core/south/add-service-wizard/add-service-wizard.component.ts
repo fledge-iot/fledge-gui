@@ -167,6 +167,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         });
         if (isServiceNameExist) {
           this.alertService.error('A service/task already exists with this name.');
+          this.reenableButton.emit(false);
           return false;
         }
         // check if configuration form is valid or invalid
