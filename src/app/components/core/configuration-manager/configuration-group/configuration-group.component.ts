@@ -33,6 +33,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   changedAdvanceConfiguration: any;
   changedSecurityConfiguration: any;
   dynamicCategoriesGroup = [];
+  groupTabs = [];
 
   constructor(
     public developerFeaturesService: DeveloperFeaturesService,
@@ -113,6 +114,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return acc;
       }, []);
 
+    this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
   }
@@ -124,6 +126,13 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   selectTab(tab: string) {
     if (tab !== this.selectedGroup) {
       this.selectedGroup = tab;
+    }
+  }
+
+  getGroups() {
+    this.groupTabs = [...this.groups.map(g => g.group), ...this.dynamicCategoriesGroup.map(g => g.group),];
+    if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
+      this.groupTabs.push('developer');
     }
   }
 
@@ -251,6 +260,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return acc;
       }, []);
 
+    this.getGroups();
     // set advance as a first tab if no default config
     if (this.groups.length == 0) {
       this.selectedGroup = dynamicGroups[0]?.group
