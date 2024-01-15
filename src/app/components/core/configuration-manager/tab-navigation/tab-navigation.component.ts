@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
   selector: 'app-tab-navigation',
@@ -12,6 +12,9 @@ export class TabNavigationComponent {
   @Input() tabs: string[] = [];
   activeTab = 0;
   @Output() selectedTabEvent = new EventEmitter<string>();
+
+  constructor(private cdrf: ChangeDetectorRef) { }
+
   prevTab() {
     this.activeTab--;
     this.currentTab = this.tabs[this.activeTab];
@@ -33,6 +36,12 @@ export class TabNavigationComponent {
 
   isLastTab() {
     return this.activeTab === this.tabs.length - 1;
+  }
+
+  setTab(index: number) {
+    this.activeTab = index;
+    this.currentTab = this.tabs[index];
+    this.cdrf.detectChanges();
   }
 }
 

@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep, uniqWith } from 'lodash';
 import { TabHeader } from './tab-header-slider';
+import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
 
 @Component({
   selector: 'app-configuration-group',
@@ -20,6 +21,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
   @Output() changedAdvanceConfigEvent = new EventEmitter<any>();
+
+  @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
 
   // To hold the changed configuration values of a plugin
   configFormValues = {};
@@ -120,12 +123,16 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   /**
-   * Set configuration of the selected child category
-   * @param category Object{key, description, displayName}
+   * Set tab in the group
+   * @param tab tab index
    */
   selectTab(tab: string) {
     if (tab !== this.selectedGroup) {
       this.selectedGroup = tab;
+    }
+    if (this.tabNavigationComponent) {
+      const tabIndex = this.groupTabs.findIndex(t => t === this.selectedGroup);
+      this.tabNavigationComponent.setTab(tabIndex);
     }
   }
 
