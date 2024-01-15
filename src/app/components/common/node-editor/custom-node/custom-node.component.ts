@@ -1,4 +1,4 @@
-import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges } from "@angular/core";
+import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
@@ -26,7 +26,7 @@ export class CustomNodeComponent implements OnChanges {
   helpText = '';
   isEnabled: boolean = false;
   service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "" }
-  filter = { pluginName: '', enabled: 'false', name: ''}
+  filter = { pluginName: '', enabled: 'false', name: '', color: ''}
   isServiceNode: boolean = false;
   subscription: Subscription;
   pluginName = '';
@@ -43,7 +43,8 @@ export class CustomNodeComponent implements OnChanges {
     private route: ActivatedRoute,
     private servicesApiService: ServicesApiService,
     public flowEditorService: FlowEditorService,
-    private configService: ConfigurationService,) {
+    private configService: ConfigurationService,
+    private elRef: ElementRef) {
     this.cdr.detach();
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
@@ -93,6 +94,8 @@ export class CustomNodeComponent implements OnChanges {
       this.filter.name = Object.keys(this.data.controls)[0];
       this.filter.pluginName = Object.keys(this.data.controls)[1];
       this.filter.enabled = Object.keys(this.data.controls)[2];
+      this.filter.color = Object.keys(this.data.controls)[3];
+      this.elRef.nativeElement.style.background = this.filter.color;
       this.data.label = this.filter.name;
       if(this.filter.name !== "Filter"){
         this.helpText = this.filter.pluginName;
@@ -100,6 +103,9 @@ export class CustomNodeComponent implements OnChanges {
         if(this.filter.enabled === 'true'){
           this.isEnabled = true;
         }
+      }
+      else{
+        this.elRef.nativeElement.style.background = "#fffb80"
       }
     }
     if (this.data.label === 'Applications') {

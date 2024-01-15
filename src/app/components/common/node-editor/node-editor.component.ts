@@ -128,7 +128,7 @@ export class NodeEditorComponent implements OnInit {
     this.filterService.getFilterPipeline(this.source)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
-        this.filterPipeline = ["rename1", ["meta1", "delta1"], "fft1", ["exp1"], ["asset1", "log1"]];
+        this.filterPipeline = ["rename2", ["meta2", "change2", "delta2"], "fft2", ["exp2"], ["asset2", "log2"]];
         this.isfilterPipelineFetched = true;
         this.createFilterConfigurationsArray();
       },
@@ -180,7 +180,7 @@ export class NodeEditorComponent implements OnInit {
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
         if (data) {
-          let filterConfig = {pluginName: data.plugin.value, enabled: data.enable.value, filterName: filterName};
+          let filterConfig = {pluginName: data.plugin.value, enabled: data.enable.value, filterName: filterName, color: "whitesmoke"};
           this.filterConfigurations.push(filterConfig);
         }
       },

@@ -168,6 +168,7 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
         }
         else {
             let previousNode = southPlugin;
+            let colorCount=0;
             for (let i = 0; i < fpLen; i++) {
                 let pipelineItem = filterPipeline[i];
                 if (typeof (pipelineItem) === "string") {
@@ -184,6 +185,7 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                     let tempNode = previousNode;
                     for (let j = 0; j < piLen; j++) {
                         let nextNodeConfig = filterConfigurations.find((f: any) => f.filterName === pipelineItem[j])
+                        nextNodeConfig.color = rgbToHex(235-(10*colorCount), 235, 235);
                         let nextNode = new Filter(socket, nextNodeConfig);
                         await editor.addNode(nextNode);
                         await editor.addConnection(
@@ -194,6 +196,7 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                     await editor.addConnection(
                         new ClassicPreset.Connection(tempNode, "port", db, "port")
                     );
+                    colorCount++;
                 }
             }
             if (previousNode != southPlugin) {
@@ -317,4 +320,8 @@ function getBranchNodes(connections, node) {
 
 export function deleteConnection(connectionId){
     editor.removeConnection(connectionId);
+}
+
+function rgbToHex(r, g, b){
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
