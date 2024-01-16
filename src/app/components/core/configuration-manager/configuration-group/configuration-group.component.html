@@ -20,10 +20,10 @@
               </h6>
             </li>
             <ng-container *ngIf="from !== 'notification'">
-              <li [ngClass]="{'is-active': selectedGroup == 'developer'}"
+              <li [ngClass]="{'is-active': selectedGroup == 'Developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
                 <h6 class="is-6 is-small-font">
-                  <a (click)="selectTab('developer')">Developer</a>
+                  <a (click)="selectTab('Developer')">Developer</a>
                 </h6>
               </li>
             </ng-container>
@@ -85,12 +85,12 @@
         </ng-template>
       </ng-container>
       <ng-container *ngIf="from !== 'notification'">
-        <app-plugin-persist-data *ngIf="selectedGroup == 'developer' && pages.includes(from)"
+        <app-plugin-persist-data *ngIf="selectedGroup == 'Developer' && pages.includes(from)"
           [serviceStaus]="serviceStatus" [serviceName]="category?.name" [pluginName]="plugin">
         </app-plugin-persist-data>
       </ng-container>
-      <app-tab-navigation #tabNaigation *ngIf="groupTabs && !['config-manager'].includes(from)" [tabs]="groupTabs"
-        (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
+      <app-tab-navigation #tabNaigation *ngIf="groupTabs && !['notification', 'config-manager'].includes(from)"
+        [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
     </div>
   </ng-template>
 </div>

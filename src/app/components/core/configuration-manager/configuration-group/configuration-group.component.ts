@@ -139,7 +139,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   getGroups() {
     this.groupTabs = [...this.groups.map(g => g.group), ...this.dynamicCategoriesGroup.map(g => g.group),];
     if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
-      this.groupTabs.push('developer');
+      this.groupTabs.push('Developer');
     }
   }
 
