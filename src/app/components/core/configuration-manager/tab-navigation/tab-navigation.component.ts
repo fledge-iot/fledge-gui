@@ -17,8 +17,7 @@ export class TabNavigationComponent {
 
   prevTab() {
     this.activeTab--;
-    this.currentTab = this.tabs[this.activeTab];
-    this.selectedTabEvent.emit(this.currentTab);
+    this.setCurrentTab();
   }
 
   nextTab() {
@@ -26,6 +25,10 @@ export class TabNavigationComponent {
       return;
     }
     this.activeTab++;
+    this.setCurrentTab();
+  }
+
+  setCurrentTab() {
     this.currentTab = this.tabs[this.activeTab];
     this.selectedTabEvent.emit(this.currentTab);
   }
