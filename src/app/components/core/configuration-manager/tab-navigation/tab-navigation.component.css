@@ -1,0 +1,4 @@
+ .tab-navigation.button:focus:not(:active),
+ .tab-navigation.button.is-focused:not(:active) {
+   box-shadow: none !important
+ }

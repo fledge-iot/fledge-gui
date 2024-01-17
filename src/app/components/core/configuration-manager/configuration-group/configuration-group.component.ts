@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep, uniqWith } from 'lodash';
 import { TabHeader } from './tab-header-slider';
+import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
 
 @Component({
   selector: 'app-configuration-group',
@@ -21,6 +22,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Output() formStatusEvent = new EventEmitter<boolean>();
   @Output() changedAdvanceConfigEvent = new EventEmitter<any>();
 
+  @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
+
   // To hold the changed configuration values of a plugin
   configFormValues = {};
 
@@ -33,6 +36,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   changedAdvanceConfiguration: any;
   changedSecurityConfiguration: any;
   dynamicCategoriesGroup = [];
+  groupTabs = [];
 
   constructor(
     public developerFeaturesService: DeveloperFeaturesService,
@@ -113,17 +117,29 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return acc;
       }, []);
 
+    this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
   }
 
   /**
-   * Set configuration of the selected child category
-   * @param category Object{key, description, displayName}
+   * Set tab in the group
+   * @param tab tab index
    */
   selectTab(tab: string) {
     if (tab !== this.selectedGroup) {
       this.selectedGroup = tab;
+    }
+    if (this.tabNavigationComponent) {
+      const tabIndex = this.groupTabs.findIndex(t => t === this.selectedGroup);
+      this.tabNavigationComponent.setTab(tabIndex);
+    }
+  }
+
+  getGroups() {
+    this.groupTabs = [...this.groups.map(g => g.group), ...this.dynamicCategoriesGroup.map(g => g.group),];
+    if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
+      this.groupTabs.push('Developer');
     }
   }
 
@@ -251,6 +267,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return acc;
       }, []);
 
+    this.getGroups();
     // set advance as a first tab if no default config
     if (this.groups.length == 0) {
       this.selectedGroup = dynamicGroups[0]?.group
