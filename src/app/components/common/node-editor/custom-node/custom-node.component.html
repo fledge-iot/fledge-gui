@@ -37,10 +37,16 @@
             </ng-container>
             <span *ngIf="data.label!=='Filter'" class="help-text">{{helpText}}</span>
         </div>
-        <div>
+        <div [ngClass]="{'mt-1':!isServiceNode}">
+            <ng-container *ngIf="isServiceNode">
+                <div class="reading-details">
+                    <small class="reading has-tooltip-right has-tooltip-arrow" data-tooltip="Reading count">{{service.readingCount}}</small>
+                    <small class="asset has-tooltip-right has-tooltip-arrow" data-tooltip="Asset count">{{service.assetCount}}</small>
+                </div>
+            </ng-container>
             <ng-container *ngIf="source!=='nodelist'">
                 <div class="output is-pulled-right" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
-                    [attr.data-testid]="'output-'+output.key">
+                    [attr.data-testid]="'output-'+output.key" [ngClass]="{'output-container': isServiceNode}">
                     <div class="output-title" data-testid="output-title">
                         {{output.value?.label}}
                     </div>
@@ -57,23 +63,12 @@
                 <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
                     {{input.value?.label}}
                 </div>
-                <div class="input-control" [style.display]="input.value?.control && input.value?.showControl ? '' : 'none'"
+                <!-- <div class="input-control" [style.display]="input.value?.control && input.value?.showControl ? '' : 'none'"
                     refComponent [data]="{type: 'control', payload: input.value?.control }" [emit]="emit"
-                    data-testid="input-control"></div>
+                    data-testid="input-control"></div> -->
             </div>
         </div>
-        <div class="reading-details" [ngClass]="{'mt-5': source=='nodelist'}">
-            <ng-container *ngIf="isServiceNode">
-                <small class="reading has-tooltip-right has-tooltip-arrow" data-tooltip="Reading count">{{service.readingCount}}</small>
-                <small class="asset has-tooltip-right has-tooltip-arrow" data-tooltip="Asset count">{{service.assetCount}}</small>
-            </ng-container>
-        </div>
-        <div class="service-details">
-            <ng-container *ngIf="isServiceNode">
-                <small *ngIf="service.status!=='shutdown'">{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
-            </ng-container>
-        </div>
-        <div [ngClass]="{'mt-5':!isServiceNode || service.status=='shutdown', 'mt-1': isServiceNode}">
+        <div [ngClass]="{'mt-1':!isServiceNode}">
             <ng-container *ngIf="data.label!=='Applications' && data.label!=='South' && data.label!=='Filter'">
                 <div class="is-pulled-left ml-2 mt-2">
                     <span class="icon is-small has-tooltip-right has-tooltip-arrow is-pulled-left is-hovered"
@@ -87,7 +82,7 @@
                         <i class="far fa-file-alt"></i>
                     </span>
                 </div>
-                <div class="is-pulled-right">
+                <div class="is-pulled-right mr-1">
                     <div class="dropdown is-hoverable">
                         <div class="dropdown-trigger">
                             <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">

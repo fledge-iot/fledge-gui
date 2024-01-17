@@ -2,7 +2,7 @@ import { ClassicPreset } from "rete";
 
 
 export class South extends ClassicPreset.Node {
-    height = 195;
+    height = 110;
     width = 220;
     parent?: string;
 
