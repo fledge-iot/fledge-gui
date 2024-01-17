@@ -180,7 +180,7 @@ export class NodeEditorComponent implements OnInit {
     this.filterService.getFilterConfiguration(catName)
       .subscribe((data: any) => {
         if (data) {
-          let filterConfig = {pluginName: data.plugin.value, enabled: data.enable.value, filterName: filterName, color: "whitesmoke"};
+          let filterConfig = {pluginName: data.plugin.value, enabled: data.enable.value, filterName: filterName, color: "#F9CB9C"};
           this.filterConfigurations.push(filterConfig);
         }
       },

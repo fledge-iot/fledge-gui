@@ -52,14 +52,14 @@
                     </div>
                     <div class="output-socket" refComponent
                         [data]="{type: 'socket', side: 'output', key: output.key, nodeId: data.id, payload: output.value?.socket, seed: seed }"
-                        [emit]="emit" data-testid="output-socket"></div>
+                        [emit]="emit" data-testid="output-socket" title="Source"></div>
                 </div>
             </ng-container>
             <div class="input is-pulled-left input-container" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
                 [attr.data-testid]="'input-'+input.key">
                 <div class="input-socket" refComponent
                     [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
-                    [emit]="emit" data-testid="input-socket"></div>
+                    [emit]="emit" data-testid="input-socket" title="Destination"></div>
                 <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
                     {{input.value?.label}}
                 </div>
@@ -85,7 +85,7 @@
                 <div class="is-pulled-right mr-1">
                     <div class="dropdown is-hoverable">
                         <div class="dropdown-trigger">
-                            <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
+                            <button class="button is-white is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
                                 <span class="icon is-small">
                                     <i class="fas fa-ellipsis-v fa-sm fa-fw" aria-hidden="true"></i>
                                 </span>
@@ -122,7 +122,7 @@
         [attr.data-testid]="'input-'+input.key">
         <div class="input-socket" refComponent
             [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
-            [emit]="emit" data-testid="input-socket"></div>
+            [emit]="emit" data-testid="input-socket" title="Destination"></div>
         <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
             {{input.value?.label}}
         </div>

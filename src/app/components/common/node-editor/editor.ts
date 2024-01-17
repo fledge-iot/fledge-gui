@@ -133,7 +133,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
 
     if (source !== '' && source !== "nodelist") {
         area.use(contextMenu);
-        dock.add(() => new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter'}));
+        dock.add(() => new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C"}));
     }
 
     createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations);

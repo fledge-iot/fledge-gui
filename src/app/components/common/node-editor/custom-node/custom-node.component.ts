@@ -64,6 +64,7 @@ export class CustomNodeComponent implements OnChanges {
 
   ngOnChanges(): void {
     if (this.data.label === 'South') {
+      this.elRef.nativeElement.style.borderColor = "#B6D7A8";
       if (this.source !== '') {
         this.isServiceNode = true;
         
@@ -95,7 +96,7 @@ export class CustomNodeComponent implements OnChanges {
       this.filter.pluginName = Object.keys(this.data.controls)[1];
       this.filter.enabled = Object.keys(this.data.controls)[2];
       this.filter.color = Object.keys(this.data.controls)[3];
-      this.elRef.nativeElement.style.background = this.filter.color;
+      this.elRef.nativeElement.style.borderColor = this.filter.color;
       this.data.label = this.filter.name;
       if(this.filter.name !== "Filter"){
         this.helpText = this.filter.pluginName;
@@ -104,15 +105,15 @@ export class CustomNodeComponent implements OnChanges {
           this.isEnabled = true;
         }
       }
-      else{
-        this.elRef.nativeElement.style.background = "#fffb80"
-      }
     }
     if (this.data.label === 'Applications') {
       this.helpText = 'Filters';
     }
     if(this.data.label === 'AddService'){
       this.data.label = "";
+    }
+    if(this.data.label === 'Storage'){
+      this.elRef.nativeElement.style.borderColor = "#999999";
     }
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());

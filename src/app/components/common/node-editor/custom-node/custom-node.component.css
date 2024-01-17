@@ -1,7 +1,7 @@
 :host {
   display: block;
-  background: whitesmoke;
-  border: 1px solid silver;
+  background: white;
+  border: 4px solid silver;
   border-radius: 10px;
   cursor: pointer;
   box-sizing: border-box;
@@ -13,7 +13,7 @@
 }
 
 :host:hover {
-  background: white;
+  background: whitesmoke;
 }
 :host:hover .reading, :host:hover .asset{
   visibility: visible;
