@@ -89,14 +89,12 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     });
     
     this.showLoadingText();
-    console.log('serviceType', this.serviceType);
-    if (this.serviceType === undefined) {
+    if (!this.serviceType) {
       this.showServices();
     }
   }
 
   showServices(from = null) {
-    console.log('from', from);
     let callsStack = {
       services: this.servicesApiService.getAllServices(),
       schedules: this.schedulesService.getSchedules(),
@@ -134,7 +132,6 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
 
           if (from !== null) {
             const service = this.installedServicePkgs.find((s) => s.process === from);
-            console.log('from service', service);
             this.openServiceModal(service);
           }
           return result;
@@ -222,7 +219,6 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     * Open Settings modal
     */
    openServiceModal(service) {
-    console.log('s', service);
     this.serviceModal.toggleModal(true);
     this.setService(service);
     this.serviceModal.getServiceInfo(service, this.availableServicePkgs, this.pollingScheduleID);

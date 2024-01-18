@@ -15,6 +15,7 @@ import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';
 import { ShowConfigurationComponent } from './components/core/configuration-manager/show-configuration/show-configuration.component';
 import { BucketConfigurationComponent } from './components/core/configuration-manager/bucket-configuration/bucket-configuration.component';
+import { TabNavigationComponent } from './components/core/configuration-manager/tab-navigation/tab-navigation.component';
 
 @NgModule({
   imports: [
@@ -35,7 +36,8 @@ import { BucketConfigurationComponent } from './components/core/configuration-ma
     ViewLogsComponent,
     TimeDropdownComponent,
     RangeSliderComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    TabNavigationComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -45,7 +47,8 @@ import { BucketConfigurationComponent } from './components/core/configuration-ma
     ViewLogsComponent,
     TimeDropdownComponent,
     RangeSliderComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    TabNavigationComponent
   ]
 })
 export class SharedModule { }

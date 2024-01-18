@@ -75,25 +75,16 @@ export class ManageServiceModalComponent {
   ngOnInit() { }
 
   getServiceInfo(serviceInfo, availableServicePkgs, pollingScheduleID) {
-    console.log('serviceInfo', serviceInfo);
-    console.log('serviceInfo.name', serviceInfo.name);
-    console.log('availableServicePkgs', availableServicePkgs);
-    console.log('pollingScheduleID', pollingScheduleID);
-
-
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
-    // this.serviceName = serviceInfo
     this.isServiceEnabled = ["shutdown", "disabled", "installed", ""].includes(serviceInfo.state) ? false : true;
     this.isServiceAvailable = serviceInfo.added;
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
-    this.availableServices = availableServicePkgs;
-    
+    this.availableServices = availableServicePkgs;  
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
-
     this.enabled =  this.isServiceEnabled;
     this.btnText = 'Add';
     if (this.isServiceAvailable) {
@@ -104,7 +95,6 @@ export class ManageServiceModalComponent {
     if (this.serviceType) {
       this.getServiceByType();
     }
-    console.log('serviceName', this.serviceName); 
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {

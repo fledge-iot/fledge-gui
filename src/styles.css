@@ -441,4 +441,7 @@ span.tooltip {
   display: none !important;
 }
 
+.required-field {
+  border-color: red;
+}
 /*****************/
