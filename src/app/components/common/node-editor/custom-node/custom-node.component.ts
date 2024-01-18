@@ -183,9 +183,6 @@ export class CustomNodeComponent implements OnChanges {
       .subscribe(
         () => {
           console.log("schedule disabled");
-          setTimeout(() => {
-            this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
-          }, 2000);
         },
         error => {
           console.log(error);
@@ -197,9 +194,6 @@ export class CustomNodeComponent implements OnChanges {
       .subscribe(
         () => {
           console.log("schedule enabled");
-          setTimeout(() => {
-            this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
-          }, 2000);
         },
         error => {
           console.log(error);

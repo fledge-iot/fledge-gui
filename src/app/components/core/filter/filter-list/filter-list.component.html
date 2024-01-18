@@ -34,7 +34,7 @@
                   <i class="far fa-question-circle"></i>
                 </span>
               </div>
-              <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissionsOnPage(from)">
+              <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissionsOnPage(from) && !sourceName">
                 <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-hovered" data-tooltip="Remove"
                   (click)="deleteFilterReference(filter)">
                   <i class="fa fa-trash-alt" aria-hidden="true"></i>
