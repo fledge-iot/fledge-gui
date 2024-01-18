@@ -28,7 +28,9 @@
               "bulma-toast",
               "mobx",
               "jsonlint-mod",
-              "moment"
+              "moment",
+              "elkjs",
+              "@babel/runtime/regenerator"
             ],
             "outputPath": "dist",
             "index": "src/fledge.html",

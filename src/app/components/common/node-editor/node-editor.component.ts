@@ -87,7 +87,7 @@ export class NodeEditorComponent implements OnInit {
               if (this.filterPipeline[i].length === 0) {
                 this.filterPipeline.splice(i, 1);
               }
-              // this.deleteFilter();
+              this.deleteFilter();
               break;
             }
           }
