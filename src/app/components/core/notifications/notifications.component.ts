@@ -11,7 +11,8 @@ import {
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
+import { ListManageServicesComponent } from '../developer/manage-services/list-manage-services.component';
+
 import { DocService } from '../../../services/doc.service';
 
 @Component({
@@ -37,12 +38,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private viewPortSubscription: Subscription;
   public showSpinner = false;
   public notificationServiceData = {};
+  public showConfigureModal = false;
 
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  @ViewChild(NotificationServiceModalComponent, { static: true }) notificationServiceModal: NotificationServiceModalComponent;
-
+  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  
   constructor(
     public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
@@ -231,10 +233,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public enableNotificationService() {
-    this.notificationServiceModal.enableNotificationService(this.notificationServiceName);
-  }
-
   public getSchedules(): void {
     this.schedulesService.getSchedules().
       subscribe(
@@ -262,15 +260,16 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
   
   /**
-   * Open Notification Settings modal
+   * Open Configure Service modal
    */
-  openNotificationServiceModal() {
+   openServiceConfigureModal() {
     this.notificationServiceData = {
       notificationServiceAvailable: this.isNotificationServiceAvailable,
       notificationServiceEnabled: this.isNotificationServiceEnabled,
       notificationServiceName: this.notificationServiceName
     };
-    this.notificationServiceModal.toggleModal(true);
+    this.showConfigureModal = true;
+    this.listManageServicesComponent.showServices('notification');
   }
 
   goToLink(urlSlug: string) {

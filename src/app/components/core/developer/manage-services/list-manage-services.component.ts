@@ -1,17 +1,17 @@
-import { Component, OnInit, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
-import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../services';
-import { SharedService } from '../../../services/shared.service';
-import { DialogService } from '../../common/confirmation-dialog/dialog.service';
+import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../../services';
+import { SharedService } from '../../../../services/shared.service';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
 import { ManageServicesContextMenuComponent } from './manage-services-context-menu/manage-services-context-menu.component';
-import { AvailableServices, Schedule, Service } from '../../../../../src/app/models';
+import { AvailableServices, Schedule, Service } from '../../../../models';
 
 @Component({
-  selector: "app-manage-services",
+  selector: "app-list-manage-services",
   templateUrl: "./list-manage-services.component.html",
   styleUrls: ["./list-manage-services.component.css"],
 })
@@ -70,7 +70,8 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
   @ViewChildren(ManageServicesContextMenuComponent) contextMenus: QueryList<ManageServicesContextMenuComponent>;
-  
+  @Input() serviceType: string;
+
   constructor(
     public sharedService: SharedService,
     private alertService: AlertService,
@@ -86,11 +87,16 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
       this.viewPort = viewport;
     });
+    
     this.showLoadingText();
-    this.showServices();
+    console.log('serviceType', this.serviceType);
+    if (this.serviceType === undefined) {
+      this.showServices();
+    }
   }
 
-  showServices() {
+  showServices(from = null) {
+    console.log('from', from);
     let callsStack = {
       services: this.servicesApiService.getAllServices(),
       schedules: this.schedulesService.getSchedules(),
@@ -125,6 +131,12 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
           // Remove service name from available list if it is already installed
           this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
           this.hideLoadingText();
+
+          if (from !== null) {
+            const service = this.installedServicePkgs.find((s) => s.process === from);
+            console.log('from service', service);
+            this.openServiceModal(service);
+          }
           return result;
         })
       )
@@ -210,6 +222,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     * Open Settings modal
     */
    openServiceModal(service) {
+    console.log('s', service);
     this.serviceModal.toggleModal(true);
     this.setService(service);
     this.serviceModal.getServiceInfo(service, this.availableServicePkgs, this.pollingScheduleID);

@@ -6,18 +6,18 @@ import {
   RolesService,
   ConfigurationControlService,
   FileUploaderService
-} from '../../../../services';
-import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
+} from '../../../../../services';
+import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
-import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
+import { AlertDialogComponent } from '../../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty, cloneDeep } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
-import { DocService } from '../../../../services/doc.service';
+import { DocService } from '../../../../../services/doc.service';
 import { Router } from '@angular/router';
-import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
-import { Service } from '../../../../../../src/app/models';
+import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
+import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
+import { Service } from '../../../../../models';
 
 @Component({
   selector: 'app-manage-service-modal',
@@ -75,14 +75,21 @@ export class ManageServiceModalComponent {
   ngOnInit() { }
 
   getServiceInfo(serviceInfo, availableServicePkgs, pollingScheduleID) {
+    console.log('serviceInfo', serviceInfo);
+    console.log('serviceInfo.name', serviceInfo.name);
+    console.log('availableServicePkgs', availableServicePkgs);
+    console.log('pollingScheduleID', pollingScheduleID);
+
+
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
+    // this.serviceName = serviceInfo
     this.isServiceEnabled = ["shutdown", "disabled", "installed", ""].includes(serviceInfo.state) ? false : true;
     this.isServiceAvailable = serviceInfo.added;
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
     this.availableServices = availableServicePkgs;
-
+    
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
@@ -96,7 +103,8 @@ export class ManageServiceModalComponent {
     }
     if (this.serviceType) {
       this.getServiceByType();
-    }   
+    }
+    console.log('serviceName', this.serviceName); 
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {

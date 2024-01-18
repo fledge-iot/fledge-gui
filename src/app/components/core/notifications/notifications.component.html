@@ -5,7 +5,7 @@
         <div class="message-body">
           Notification service is not added
           and enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
-            routerLink="/settings/manage-services"><strong>Configure</strong></a>
+            (click)="openServiceConfigureModal()"><strong>Configure</strong></a>
                     
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small"title="Recheck"  id="refresh-check">
             <span class="icon">
@@ -38,7 +38,7 @@
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
       <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
-        (click)="openNotificationServiceModal()" id="refresh-check">
+        (click)="openServiceConfigureModal()" id="refresh-check">
         <span class="icon">
           <i class="fa fa-sm fa-cog" aria-hidden="true" title="Notification Service Configuration"></i>
         </span>
@@ -106,4 +106,4 @@
 </div>
 <app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>
 <app-view-logs></app-view-logs>
-<app-notification-service-modal [notificationServiceData]="notificationServiceData"></app-notification-service-modal>
+<app-list-manage-services [hidden]="!showConfigureModal" [serviceType]="'notification'"></app-list-manage-services>

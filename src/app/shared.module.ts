@@ -9,9 +9,7 @@ import { RangeSliderComponent } from './components/common/range-slider/range-sli
 import { TimeDropdownComponent } from './components/common/time-dropdown/time-dropdown.component';
 import { ConfigurationGroupComponent } from './components/core/configuration-manager/configuration-group/configuration-group.component';
 import { PluginPersistDataComponent } from './components/core/configuration-manager/plugin-persist-data/plugin-persist-data.component';
-import {
-  ViewLogsComponent
-} from './components/core/logs/packages-log/view-logs/view-logs.component';
+import { ViewLogsComponent } from './components/core/logs/packages-log/view-logs/view-logs.component';
 import { PluginModalComponent } from './components/core/plugin-modal/plugin-modal.component';
 import { DirectivesModule } from './directives/directives.module';
 import { PipesModule } from './pipes/pipes.module';

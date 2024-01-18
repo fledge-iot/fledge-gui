@@ -79,12 +79,6 @@ export const appRoutes: Routes = [
       .then(m => m.DeveloperModule)
   },
   { path: 'setting', component: SettingsComponent },
-  {
-    path: 'settings/manage-services',
-    canActivate: [AuthRequiredGuard, DataViewRoleGuard],
-    loadChildren: () => import('./components/core/manage-services/manage-services.module')
-      .then(m => m.ManageServicesModule)
-  },
   { path: 'service-discovery', component: ServiceDiscoveryComponent },
   // user-management
   {

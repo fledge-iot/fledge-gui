@@ -1,10 +1,12 @@
-<div class="container is-fluid">
+<div *ngIf="!serviceType" class="container is-fluid">
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a [routerLink]="['/setting']">Settings</a></li>
+        <li><a [routerLink]="['/developer/list']">Developer</a></li>
         <li class="is-active">
-          <a href="#" aria-current="page">Manage Services</a>
+          <a href="#" aria-current="page">
+            Configure Services
+          </a>
         </li>
       </ul>
     </nav>

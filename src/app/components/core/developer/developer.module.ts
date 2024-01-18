@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { DeveloperComponent } from './developer.component';
@@ -8,9 +9,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DeveloperGuard } from '../../../guards/developer.guard';
 import { DirectivesModule } from '../../../directives/directives.module';
 
+import { ListManageServicesComponent } from './manage-services/list-manage-services.component';
+import { ManageServiceModalComponent } from './manage-services/manage-service-modal/manage-service-modal.component';
+import { ManageServicesContextMenuComponent } from './manage-services/manage-services-context-menu/manage-services-context-menu.component';
+import { SharedModule } from '../../../shared.module';
+
 const routes: Routes = [
   {
-    path: '',
+    path: 'list',
     canActivate: [DeveloperGuard],
     component: DeveloperComponent
   },
@@ -23,6 +29,11 @@ const routes: Routes = [
     path: 'python/package/add',
     canActivate: [DeveloperGuard],
     component: InstallPythonPackageComponent
+  },
+  {
+    path: 'manage-services',
+    canActivate: [DeveloperGuard],
+    component: ListManageServicesComponent
   }
 ];
 
@@ -30,14 +41,20 @@ const routes: Routes = [
   declarations: [
     DeveloperComponent,
     ListPythonPackagesComponent,
-    InstallPythonPackageComponent
+    InstallPythonPackageComponent,
+    ListManageServicesComponent,
+    ManageServiceModalComponent,
+    ManageServicesContextMenuComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     DirectivesModule,
+    FormsModule,
+    SharedModule,
     RouterModule.forChild(routes)
   ],
   providers: [DeveloperGuard],
+  exports: [ListManageServicesComponent, ManageServiceModalComponent]
 })
 export class DeveloperModule { }

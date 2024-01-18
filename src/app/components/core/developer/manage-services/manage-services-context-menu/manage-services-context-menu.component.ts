@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ServicesApiService } from '../../../../services';
-import { SharedService } from '../../../../services/shared.service';
-import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
+import { ServicesApiService } from '../../../../../services';
+import { SharedService } from '../../../../../services/shared.service';
+import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: "app-manage-services-context-menu",
