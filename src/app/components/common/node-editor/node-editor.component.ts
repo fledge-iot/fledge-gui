@@ -77,7 +77,7 @@ export class NodeEditorComponent implements OnInit {
           if (typeof (this.filterPipeline[i]) === "string") {
             if (this.filterPipeline[i] === this.filterName) {
               this.filterPipeline = this.filterPipeline.filter(f => f !== this.filterName);
-              // this.deleteFilter();
+              this.deleteFilter();
               break;
             }
           }
@@ -130,7 +130,7 @@ export class NodeEditorComponent implements OnInit {
     this.filterService.getFilterPipeline(this.source)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
-        this.filterPipeline = ["rename2", ["meta2", "change2", "delta2"], "fft2", ["exp2"], ["asset2", "log2"]];
+        // this.filterPipeline = ["rename2", ["meta2", "change2", "delta2"], "fft2", ["exp2"], ["asset2", "log2"]];
         this.isfilterPipelineFetched = true;
         this.createFilterConfigurationsArray();
       },
@@ -221,9 +221,9 @@ export class NodeEditorComponent implements OnInit {
     if(updatedPipeline && updatedPipeline.length > 0){
       this.updatedFilterPipeline = updatedPipeline;
       if(this.isPipelineUpdated() && this.isEachFilterConfigured()){
-        console.log("pipeline updated")
+        // console.log("pipeline updated")
+        this.updateFilterPipeline();
         console.log(this.updatedFilterPipeline);
-        // this.updateFilterPipeline();
       }
     }
   }
