@@ -27,6 +27,7 @@ export class FilterListComponent {
   @Input() filterPipeline: string[] = [];
   @Input() service: string = '';
   @Input() from: string = '';
+  @Input() sourceName;
   @Input() newAddedFilters: { filter: string, state: string }[] = [];
   @Output() formStatus = new EventEmitter<boolean>();
   @Output() controlPipelineFilters = new EventEmitter<string[]>();

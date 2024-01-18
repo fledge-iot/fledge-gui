@@ -14,9 +14,12 @@
     </div>
     <div class="rete" #rete></div>
     <app-quickview>
-        <ng-container *ngIf="showConfiguration">
+        <ng-container *ngIf="showPluginConfiguration">
             <app-configuration-group *ngIf="category" [category]="category"
                 [from]="'south'" [sourceName]="serviceName"></app-configuration-group>
+        </ng-container>
+        <ng-container *ngIf="showFilterConfiguration">
+            <app-filter-list [service]="serviceName" [sourceName]="serviceName" [filterPipeline]="filterPipeline"></app-filter-list>
         </ng-container>
         <ng-container *ngIf="showLogs">
             <app-system-log [sourceName]="serviceName"></app-system-log>

@@ -24,7 +24,8 @@ export class NodeEditorComponent implements OnInit {
   private filterSubscription: Subscription;
   private connectionSubscription: Subscription;
 
-  showConfiguration: boolean = false;
+  showPluginConfiguration: boolean = false;
+  showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
   service: Service;
   services: Service[];
@@ -61,10 +62,11 @@ export class NodeEditorComponent implements OnInit {
   }
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.subscribe(data => {
-      this.showConfiguration = data.showConfiguration;
+      this.showPluginConfiguration = data.showPluginConfiguration;
+      this.showFilterConfiguration = data.showFilterConfiguration;
       this.showLogs = data.showLogs;
       this.serviceName = data.serviceName;
-      if(this.showConfiguration){
+      if(this.showPluginConfiguration){
         this.getCategory();
       }
     })
