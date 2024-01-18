@@ -6,6 +6,7 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { Router } from '@angular/router';
 import { DocService } from '../../../../services/doc.service';
 import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
+import { ListManageServicesComponent } from '../../developer/manage-services/list-manage-services.component';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -14,6 +15,8 @@ import { AlertService, ControlPipelinesService, ProgressBarService, RolesService
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+
   pipelines = [];
   public showSpinner = false;
   public childData = {};
@@ -22,6 +25,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal: boolean = false;
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
@@ -163,6 +167,14 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  /**
+ * Open Configure Service modal
+ */
+  openServiceConfigureModal() {
+    this.showConfigureModal = true;
+    this.listManageServicesComponent.showServices('dispatcher');
   }
 
   public ngOnDestroy(): void {

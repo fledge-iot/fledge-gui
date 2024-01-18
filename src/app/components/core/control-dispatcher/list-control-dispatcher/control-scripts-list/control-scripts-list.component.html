@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event"></app-add-dispatcher-service>
+  <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="openServiceConfigureModal()"></app-add-dispatcher-service>
   <div class="card">
     <header class="card-header">
       <div id="control-acl" class="card-header-title">
@@ -14,7 +14,7 @@
       </a>
 
       <div *ngIf="isServiceAvailable" class="cog-icon">
-        <app-dispatcher-service-config></app-dispatcher-service-config>
+        <app-dispatcher-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-dispatcher-service-config>
       </div>
 
       <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
@@ -85,3 +85,4 @@
     </div>
   </div>
 </div>
+<app-list-manage-services [hidden]="!showConfigureModal" [serviceType]="'dispatcher'"></app-list-manage-services>

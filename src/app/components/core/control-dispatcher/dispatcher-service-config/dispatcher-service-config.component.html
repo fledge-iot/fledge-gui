@@ -1,5 +1,4 @@
-<a *ngIf="rolesService.hasControlAccess()" class="button"
-    routerLink="/settings/manage-services" id="config-icon">
+<a *ngIf="rolesService.hasControlAccess()" class="button" (click)="openConfigureModal()" id="config-icon">
     <span class="icon">
         <i class="fa fa-sm fa-cog" aria-hidden="true" title="Dispatcher Service Configuration"></i>
     </span>

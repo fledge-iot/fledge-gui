@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { RolesService } from '../../../../services';
 
 @Component({
@@ -7,10 +7,18 @@ import { RolesService } from '../../../../services';
   styleUrls: ['./dispatcher-service-config.component.css']
 })
 export class DispatcherServiceConfigComponent implements OnInit {
-  constructor(
-    public rolesService: RolesService) {}
+    @Output() serviceConfigureModal = new EventEmitter<boolean>();
 
-  ngOnInit(): void {
-  }
+    constructor(
+        public rolesService: RolesService) {}
+
+    ngOnInit(): void {
+    }
+
+    /**
+     * Open Configure Service modal
+     */
+    openConfigureModal() {
+        this.serviceConfigureModal.emit(true);
+    }
 }
-

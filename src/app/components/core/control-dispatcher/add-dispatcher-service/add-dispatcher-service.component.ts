@@ -1,8 +1,9 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
+import { ListManageServicesComponent } from '../../developer/manage-services/list-manage-services.component';
 
 @Component({
   selector: 'app-add-dispatcher-service',
@@ -15,8 +16,11 @@ export class AddDispatcherServiceComponent implements OnInit {
   dispatcherServiceInstalled;
   dispatcherServiceAdded;
   dispatcherServiceEnabled;
+  showConfigureModal: boolean = false;
 
+  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
   @Output() serviceStatusEvent = new EventEmitter<boolean>();
+  @Output() serviceConfigureModal = new EventEmitter<boolean>();
 
   constructor(
     public controlService: ControlDispatcherService,
@@ -89,6 +93,13 @@ export class AddDispatcherServiceComponent implements OnInit {
    */
   refresh(tab: string) {
     this.controlService.triggerRefreshEvent.next(tab);
+  }
+
+  /**
+   * Open Configure Service modal
+   */
+  openConfigureModal() {
+    this.serviceConfigureModal.emit(true);
   }
 
   public ngOnDestroy(): void {

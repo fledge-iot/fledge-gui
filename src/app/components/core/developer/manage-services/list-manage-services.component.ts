@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, Input, Output, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -70,6 +70,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
   @ViewChildren(ManageServicesContextMenuComponent) contextMenus: QueryList<ManageServicesContextMenuComponent>;
+  
   @Input() serviceType: string;
 
   constructor(

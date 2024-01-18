@@ -94,10 +94,6 @@
     vertical-align: inherit !important;
   }
 
-  [hidden] {
-    display: none !important;
-  }
-
   .filter-row {
     margin-bottom: 0;
   }

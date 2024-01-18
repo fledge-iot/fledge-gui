@@ -37,7 +37,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private modalSub: Subscription;
   private viewPortSubscription: Subscription;
   public showSpinner = false;
-  public notificationServiceData = {};
   public showConfigureModal = false;
 
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
@@ -263,11 +262,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
    * Open Configure Service modal
    */
    openServiceConfigureModal() {
-    this.notificationServiceData = {
-      notificationServiceAvailable: this.isNotificationServiceAvailable,
-      notificationServiceEnabled: this.isNotificationServiceEnabled,
-      notificationServiceName: this.notificationServiceName
-    };
     this.showConfigureModal = true;
     this.listManageServicesComponent.showServices('notification');
   }

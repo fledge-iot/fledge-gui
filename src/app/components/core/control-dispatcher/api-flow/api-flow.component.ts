@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter, ViewChild } from '@angular/core';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
@@ -10,6 +10,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
+import { ListManageServicesComponent } from '../../developer/manage-services/list-manage-services.component';
 
 @Component({
     selector: 'app-api-flow',
@@ -18,6 +19,8 @@ import { APIFlow, User } from '../../../../../../src/app/models';
 })
 
 export class APIFlowComponent implements OnInit {
+  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+
     apiFlows = [];
 
     // To show Entry point name and description on modal, we need these variables
@@ -37,6 +40,8 @@ export class APIFlowComponent implements OnInit {
     destroy$: Subject<boolean> = new Subject<boolean>();
 
     public reenableButton = new EventEmitter<boolean>(false);
+
+    showConfigureModal: boolean = false;
 
     constructor(
         private alertService: AlertService,
@@ -242,6 +247,14 @@ export class APIFlowComponent implements OnInit {
       this.description = af.description;
       this.reenableButton.emit(false);
       this.dialogService.open(id);
+    }
+
+    /**
+     * Open Configure Service modal
+     */
+    openServiceConfigureModal() {
+      this.showConfigureModal = true;
+      this.listManageServicesComponent.showServices('dispatcher');
     }
 
     closeModal(id: string) {

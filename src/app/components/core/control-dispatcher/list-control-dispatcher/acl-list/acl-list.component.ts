@@ -6,6 +6,7 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
+import { ListManageServicesComponent } from '../../../developer/manage-services/list-manage-services.component';
 
 @Component({
   selector: 'app-acl-list',
@@ -13,13 +14,17 @@ import { DocService } from '../../../../../services/doc.service';
   styleUrls: ['./acl-list.component.css']
 })
 export class AclListComponent implements OnInit {
-  controlAcls: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
+  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+
+  controlAcls: any = [];
+  
   acl;
   isServiceAvailable = false;
   private subscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal: boolean = false;
 
   constructor(
     private aclService: AclService,
@@ -124,6 +129,14 @@ export class AclListComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  /**
+   * Open Configure Service modal
+   */
+  openServiceConfigureModal() {
+    this.showConfigureModal = true;
+    this.listManageServicesComponent.showServices('dispatcher');
   }
 
   goToLink(urlSlug: string) {

@@ -6,6 +6,7 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { DocService } from '../../../../../services/doc.service';
+import { ListManageServicesComponent } from '../../../developer/manage-services/list-manage-services.component';
 
 @Component({
   selector: 'app-control-scripts-list',
@@ -15,10 +16,13 @@ import { DocService } from '../../../../../services/doc.service';
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
+  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+
   script;
   private subscription: Subscription;
   isServiceAvailable = false;
   public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal: boolean = false;
 
   constructor(
     private controlService: ControlDispatcherService,
@@ -95,6 +99,14 @@ export class ControlScriptsListComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  /**
+   * Open Configure Service modal
+   */
+  openServiceConfigureModal() {
+    this.showConfigureModal = true;
+    this.listManageServicesComponent.showServices('dispatcher');
   }
 
   public ngOnDestroy(): void {
