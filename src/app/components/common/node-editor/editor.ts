@@ -1,6 +1,6 @@
 import { Injector } from "@angular/core";
 import { NodeEditor, GetSchemes, ClassicPreset } from "rete";
-import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
+import { AreaPlugin, AreaExtensions, Area2D } from "rete-area-plugin";
 import { AngularPlugin, Presets, AngularArea2D } from "rete-angular-plugin/16";
 import { ConnectionPlugin, Presets as ConnectionPresets, ClassicFlow, BidirectFlow } from "rete-connection-plugin";
 import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "rete-auto-arrange-plugin";
@@ -20,12 +20,14 @@ import { Filter } from "./filter";
 import { Applications } from "./applications";
 import { AddService } from "./add-service";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
+import { curveStep, curveMonotoneX, curveLinear, CurveFactory } from "d3-shape";
+import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 
 type Node = South | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
+class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {curve?: CurveFactory; }
 
 let editor = new NodeEditor<Schemes>();
 export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations) {
@@ -45,6 +47,14 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     const minimap = new MinimapPlugin<Schemes>({
         boundViewport: true
     });
+    const pathPlugin = new ConnectionPathPlugin<Schemes, Area2D<Schemes>>({
+        curve: (c) => c.curve || curveStep,
+        // transformer: () => Transformers.classic({ vertical: false }),
+        arrow: () => true
+    });
+
+    // @ts-ignore
+    // render.use(pathPlugin);
 
     insertableNodes(area, {
         async createConnections(node, connection) {

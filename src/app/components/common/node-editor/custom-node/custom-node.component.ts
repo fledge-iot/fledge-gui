@@ -2,10 +2,13 @@ import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { ConfigurationService, SchedulesService, ServicesApiService } from "./../../../../services";
+import { ConfigurationService, PingService, SchedulesService, ServicesApiService } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
-import { Subscription } from "rxjs";
+import { Subject, Subscription, interval } from "rxjs";
+import { POLLING_INTERVAL } from "./../../../../utils";
+import { takeUntil, takeWhile } from "rxjs/operators";
+import { Service } from "./../../../core/south/south-service";
 
 @Component({
   selector: 'app-custom-node',
@@ -31,6 +34,9 @@ export class CustomNodeComponent implements OnChanges {
   subscription: Subscription;
   pluginName = '';
   isFilterNode: boolean = false;
+  destroy$: Subject<boolean> = new Subject<boolean>();
+  fetchedService;
+  isAlive: boolean;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -44,8 +50,8 @@ export class CustomNodeComponent implements OnChanges {
     private servicesApiService: ServicesApiService,
     public flowEditorService: FlowEditorService,
     private configService: ConfigurationService,
-    private elRef: ElementRef) {
-    this.cdr.detach();
+    private elRef: ElementRef,
+    private ping: PingService) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
@@ -60,12 +66,25 @@ export class CustomNodeComponent implements OnChanges {
         this.router.navigated = false;
       }
     });
+    this.isAlive = true;
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+      });
   }
 
   ngOnChanges(): void {
     if (this.data.label === 'South') {
       this.elRef.nativeElement.style.borderColor = "#B6D7A8";
       if (this.source !== '') {
+        interval(POLLING_INTERVAL)
+          .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+          .subscribe(() => {
+            this.getSouthboundServices();
+        });
         this.isServiceNode = true;
         
         this.service.name = Object.keys(this.data.controls)[0];
@@ -75,11 +94,6 @@ export class CustomNodeComponent implements OnChanges {
         this.service.status = Object.keys(this.data.controls)[4];
         if(this.service.status === ''){
           this.service.status = 'shutdown';
-        }
-        if(this.service.status !== 'shutdown'){
-          this.service.protocol = Object.keys(this.data.controls)[5];
-          this.service.address = Object.keys(this.data.controls)[6];
-          this.service.management_port = Object.keys(this.data.controls)[7].slice(3);
         }
         
         this.data.label = this.service.name;
@@ -241,7 +255,10 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnDestroy() {
+    this.isAlive = false;
     this.subscription.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   openServiceDetails() {
@@ -266,6 +283,28 @@ export class CustomNodeComponent implements OnChanges {
           }
         },
         (error) => {
+          console.log('service down ', error);
+        });
+  }
+
+  getSouthboundServices() {
+    this.servicesApiService.getSouthServices(true)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          const services = data.services as Service[];
+          this.fetchedService = services.find(service => (service.name == this.service.name));
+          if(this.fetchedService){
+            this.service.status = this.fetchedService.status;
+            let assetCount = this.fetchedService.assets.length;
+            let readingCount = this.fetchedService.assets.reduce((total, asset) => {
+                return total + asset.count;
+            }, 0)
+            this.service.assetCount = assetCount;
+            this.service.readingCount = readingCount;
+          }
+        },
+        error => {
           console.log('service down ', error);
         });
   }
