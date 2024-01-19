@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { DocService } from '../../../../services/doc.service';
 import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
 import { ListManageServicesComponent } from '../../developer/manage-services/list-manage-services.component';
+import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -16,6 +17,7 @@ import { ListManageServicesComponent } from '../../developer/manage-services/lis
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   pipelines = [];
   public showSpinner = false;
@@ -175,6 +177,14 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   openServiceConfigureModal() {
     this.showConfigureModal = true;
     this.listManageServicesComponent.showServices('dispatcher');
+  }
+
+  onNotify(event) {
+    if (event?.isCancelEvent) {
+      return;
+    } else {
+      this.addDispatcherServiceComponent.getInstalledServicesList();
+    }
   }
 
   public ngOnDestroy(): void {

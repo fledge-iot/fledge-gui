@@ -47,7 +47,6 @@ export class ListSchedulesComponent implements OnInit {
            */
           data.schedules.forEach(sch => {
             // NOTE: Management service has two (2) schedules
-            // TODO: Move 2nd schedule i.e. Polling Schedule to Management Service settings 
             if (!['south_c', 'north_c', 'north_C', 'south', 'north', 'notification_c', 'automation_script', 'dispatcher_c', 'bucket_storage_c', 'management', 'manage'].includes(sch.processName)) {
               this.scheduleData.push(sch);
             }

@@ -60,7 +60,7 @@
                 <i class="far fa-question-circle"></i>
               </span>
             </p>
-            <p *ngIf="serviceType === 'Management'" class="control">
+            <p *ngIf="serviceType === 'Management' && pollingScheduleID" class="control">
               <a class="button is-ghost title-name is-pulled-right" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'manage-services' }">
                 Polling Schedule
               </a>

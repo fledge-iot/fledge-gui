@@ -1,10 +1,10 @@
 <div class="container is-fluid">
   <div>
-    <ng-container *ngIf="isNotificationServiceAvailable == false && isNotificationServiceEnabled == false">
+    <ng-container *ngIf="isNotificationServiceAvailable == false || isNotificationServiceEnabled == false">
       <article class="message is-warning">
         <div class="message-body">
           Notification service is not added
-          and enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
+          or enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
             (click)="openServiceConfigureModal()"><strong>Configure</strong></a>
                     
           <button (click)="checkNotificationServiceStatus(true)" class="button is-small"title="Recheck"  id="refresh-check">
@@ -106,4 +106,4 @@
 </div>
 <app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>
 <app-view-logs></app-view-logs>
-<app-list-manage-services [hidden]="!showConfigureModal" [serviceType]="'notification'"></app-list-manage-services>
+<app-list-manage-services [hidden]="!showConfigureModal" [navigateFromParent]="'notification'" (notify)="checkNotificationServiceStatus(true)"></app-list-manage-services>

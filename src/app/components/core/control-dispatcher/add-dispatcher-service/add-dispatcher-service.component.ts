@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
@@ -21,7 +21,7 @@ export class AddDispatcherServiceComponent implements OnInit {
   @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
   @Output() serviceStatusEvent = new EventEmitter<boolean>();
   @Output() serviceConfigureModal = new EventEmitter<boolean>();
-
+  
   constructor(
     public controlService: ControlDispatcherService,
     public sharedService: SharedService,

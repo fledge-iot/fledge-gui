@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
 import { ListManageServicesComponent } from '../../developer/manage-services/list-manage-services.component';
+import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
     selector: 'app-api-flow',
@@ -20,6 +21,7 @@ import { ListManageServicesComponent } from '../../developer/manage-services/lis
 
 export class APIFlowComponent implements OnInit {
   @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
     apiFlows = [];
 
@@ -247,6 +249,14 @@ export class APIFlowComponent implements OnInit {
       this.description = af.description;
       this.reenableButton.emit(false);
       this.dialogService.open(id);
+    }
+
+    onNotify(event) {
+      if (event?.isCancelEvent) {
+        return;
+      } else {
+        this.addDispatcherServiceComponent.getInstalledServicesList();
+      }
     }
 
     /**

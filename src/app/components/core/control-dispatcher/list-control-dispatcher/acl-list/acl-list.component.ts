@@ -7,6 +7,7 @@ import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
 import { ListManageServicesComponent } from '../../../developer/manage-services/list-manage-services.component';
+import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
   selector: 'app-acl-list',
@@ -16,6 +17,7 @@ import { ListManageServicesComponent } from '../../../developer/manage-services/
 export class AclListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
   @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   controlAcls: any = [];
   
@@ -141,6 +143,14 @@ export class AclListComponent implements OnInit {
 
   goToLink(urlSlug: string) {
     this.docService.goToSetPointControlDocLink(urlSlug);
+  }
+
+  onNotify(event) {
+    if (event?.isCancelEvent) {
+      return;
+    } else {
+      this.addDispatcherServiceComponent.getInstalledServicesList();
+    }
   }
 
   public ngOnDestroy(): void {

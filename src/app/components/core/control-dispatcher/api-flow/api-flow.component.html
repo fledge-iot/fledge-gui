@@ -151,4 +151,4 @@
         <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow('confirmation-delete-dialog')" [appDisableUntilResponse]="reenableButton">Delete</button>
     </footer>
 </app-confirmation-dialog>
-<app-list-manage-services [hidden]="!showConfigureModal" [serviceType]="'dispatcher'"></app-list-manage-services>
+<app-list-manage-services [hidden]="!showConfigureModal" [navigateFromParent]="'dispatcher'" (notify)="onNotify($event)"></app-list-manage-services>

@@ -259,7 +259,7 @@ export class UpdateScheduleComponent implements OnInit {
 
   navToSchedulesPage() {
     if (this.navigateFrom === 'manage-services') {
-      this.router.navigate(['/settings/manage-services']);
+      this.router.navigate(['/developer/manage-services']);
       return;
     }
     this.router.navigate(['schedules']);

@@ -71,7 +71,8 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
   @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
   @ViewChildren(ManageServicesContextMenuComponent) contextMenus: QueryList<ManageServicesContextMenuComponent>;
   
-  @Input() serviceType: string;
+  @Input() navigateFromParent: string;
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     public sharedService: SharedService,
@@ -90,7 +91,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     });
     
     this.showLoadingText();
-    if (!this.serviceType) {
+    if (!this.navigateFromParent) {
       this.showServices();
     }
   }
@@ -232,7 +233,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     }, 3000);
   }
 
-  deleteService(serviceName) {
+  deleteService(serviceName, event = null) {
     this.ngProgress.start();
     this.servicesApiService.deleteService(serviceName).subscribe(
       (data: any) => {
@@ -241,11 +242,15 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         this.alertService.success(data["result"], true);
         this.closeModal("delete-confirmation-dialog");
         this.closeServiceModal();
-        this.getData();
+        if (!this.navigateFromParent) {
+          this.getData();
+        }
+        this.notify.emit(event);
       },
       (error) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
+        this.notify.emit(event);
         if (error.status === 0) {
           console.log("service down ", error);
         } else {
@@ -255,7 +260,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     );
   }
 
-  enableService(serviceName) {
+  enableService(serviceName, event = null) {
     this.ngProgress.start();
     this.schedulesService.enableScheduleByName(serviceName).subscribe(
       (data) => {
@@ -264,11 +269,15 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         this.alertService.success(data["message"], true);
         this.closeModal('confirmation-dialog');
         this.closeServiceModal();
-        this.getData();
+        if (!this.navigateFromParent) {
+          this.getData();
+        }
+        this.notify.emit(event);   
       },
       (error) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
+        this.notify.emit(event);
         if (error.status === 0) {
           console.log("service down ", error);
         } else {
@@ -278,7 +287,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     );
   }
 
-  disableService(serviceName) {
+  disableService(serviceName, event = null) {
     this.ngProgress.start();
     this.schedulesService.disableScheduleByName(serviceName).subscribe(
       (data) => {
@@ -287,11 +296,15 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
         this.alertService.success(data["message"], true);
         this.closeModal('confirmation-dialog');
         this.closeServiceModal();
-        this.getData();
+        if (!this.navigateFromParent) {
+          this.getData();
+        }
+        this.notify.emit(event);
       },
       (error) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
+        this.notify.emit(event);
         if (error.status === 0) {
           console.log("service down ", error);
         } else {
@@ -328,21 +341,22 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
 
   onNotifyEvent(event) {
     if (event?.isCancelEvent) {
+      this.notify.emit(event);
       return;
     }
-    if (!event?.state) {
+    if (!event?.state && !this.navigateFromParent) {
       this.getData();
       return;
     }
-    switch (event.state) {
+    switch (event?.state) {
       case 'delete':
-        this.deleteService(event.service);
+        this.deleteService(event.service, event);
         break;
       case 'disable':
-        this.disableService(event.service);
+        this.disableService(event.service, event);
         break;
       case 'enable':
-        this.enableService(event.service);
+        this.enableService(event.service, event);
         break;
       default:
         break;
