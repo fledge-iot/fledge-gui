@@ -25,7 +25,15 @@ export class DocService {
   }
 
   goToServiceDocLink(slug: string, repoName: string = null) {
-    window.open(`${packageInfo.doc_url}${this.version}/services/${repoName}/index.html#${slug}`, '_blank');
+    if (repoName) {
+      window.open(`${packageInfo.doc_url}${this.version}/services/${repoName}/index.html#${slug}`, '_blank');
+    } else {
+      window.open(`${packageInfo.doc_url}${this.version}/services/index.html#${slug}`, '_blank');
+    }
+  }
+
+  goToPythonPackages(slug: string) {
+    window.open(`${packageInfo.doc_url}${this.version}/building_pipelines.html#${slug}`, '_blank');
   }
 
   goToSetPointControlDocLink(slug: string) {

@@ -4,11 +4,23 @@
       <div class="content">
         <div class="columns">
           <div class="column">
-            <a routerLink="/developer/python/package/list">Manage Python packages</a>
-            <span class="help">View/install Python packages</span>
+            <span>
+              <a routerLink="/developer/python/package/list">Manage Python Packages</a>
+              <span class="icon pl-4 is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-hovered" data-tooltip="Help"
+                (click)="goToLink('importing-python-packages')">
+                <i class="far fa-question-circle"></i>
+              </span>
+            </span>
+            <span class="help">View/install Python Packages</span>
           </div>
           <div class="column">
-            <a routerLink="/developer/manage-services">Configure Additional Services</a>
+            <span>
+              <a routerLink="/developer/manage-services">Additional Services</a>
+              <span class="icon pl-4 is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-hovered" data-tooltip="Help"
+                (click)="goToLink('additional-services')">
+                <i class="far fa-question-circle"></i>
+              </span>
+            </span>
             <span class="help">
               Add, remove, disable or enable services that can extend the functionality of Fledge.
             </span>
