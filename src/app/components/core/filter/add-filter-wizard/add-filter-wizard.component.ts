@@ -199,10 +199,6 @@ export class AddFilterWizardComponent implements OnInit {
 
     switch (+id) {
       case 1:
-
-        nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Previous';
-
         // To verify if category (or filter itself) with this name already exists
         // hence filter can not be created with that name
         const isFilterExist = this.categories.some(item => {
@@ -210,8 +206,11 @@ export class AddFilterWizardComponent implements OnInit {
         });
         if (isFilterExist) {
           this.alertService.error('A filter (or category) with this name already exists.');
+          this.reenableButton.emit(false);
           return;
         }
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
         let pluginValue = '';
         if (formValues['name']?.trim() !== '' && (formValues['plugin']?.length > 0 || formValues['pluginToInstall']?.length > 0)) {
           if (formValues['pluginToInstall']) {
