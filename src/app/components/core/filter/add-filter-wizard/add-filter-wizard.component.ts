@@ -431,7 +431,7 @@ export class AddFilterWizardComponent implements OnInit {
           } else {
             if(this.source === 'flowEditorFilter'){
               this.replaceFilterNameInPipeline(data.filter);
-              this.updateFilterPipeline(this.updatedFilterPipeline);
+              this.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline, files }, data.filter);
               console.log(this.updatedFilterPipeline)
               // this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
             }
@@ -566,9 +566,13 @@ export class AddFilterWizardComponent implements OnInit {
     }
   }
 
-  public updateFilterPipeline(filterPipeline) {
-    this.filterService.updateFilterPipeline({ 'pipeline': filterPipeline }, this.serviceName)
+  public updateFilterPipeline(payload, filterName) {
+    this.filterService.updateFilterPipeline(payload, this.serviceName)
       .subscribe(() => {
+        if (payload?.files.length > 0) {
+          const name = this.serviceName + '_' + filterName
+          this.uploadScript(name, payload?.files);
+        }
         console.log("pipeline updated");
         this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
       },
