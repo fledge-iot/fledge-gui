@@ -134,17 +134,19 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
     switch (+id) {
       case 1:
-        nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Previous';
-        previousButton.disabled = false;
         // To verify if task with given name already exist
         const isTaskNameExist = this.schedulesName.some(item => {
           return formValues['name'].trim() === item.name;
         });
         if (isTaskNameExist) {
           this.alertService.error('A service/task already exists with this name.');
+          this.reenableButton.emit(false);
           return false;
         }
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
+        previousButton.disabled = false;
+        
         // check if configuration form is valid or invalid
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
