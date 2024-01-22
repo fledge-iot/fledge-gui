@@ -158,17 +158,18 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 1:
-        nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Previous';
-
         // To verify if service with given name already exist
         const isServiceNameExist = this.schedulesName.some(item => {
           return formValues['name'].trim() === item.name;
         });
         if (isServiceNameExist) {
           this.alertService.error('A service/task already exists with this name.');
+          this.reenableButton.emit(false);
           return false;
         }
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
+
         // check if configuration form is valid or invalid
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
