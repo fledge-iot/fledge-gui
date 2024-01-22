@@ -266,6 +266,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.listManageServicesComponent.showServices('notification');
   }
 
+  onNotifyConfigureModal() {
+    // enabling/disabling service is taking time to get updated state, so need to add some wait
+    setTimeout(() => {
+      this.checkNotificationServiceStatus(true);
+    }, 3000);
+  }
+
   goToLink(urlSlug: string) {
     this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }

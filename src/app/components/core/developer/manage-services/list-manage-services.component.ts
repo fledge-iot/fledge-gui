@@ -131,9 +131,11 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
           // Remove service name from available list if it is already installed
           this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
           this.hideLoadingText();
-
           if (from !== null) {
-            const service = this.installedServicePkgs.find((s) => s.process === from);
+            let service = this.installedServicePkgs.find((s) => s.process === from);
+            if (!service) {
+              service = this.availableServicePkgs.find((s) => s.process === from);
+            }
             this.openServiceModal(service);
           }
           return result;

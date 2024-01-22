@@ -16,7 +16,7 @@ import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
   {
-    path: 'list',
+    path: 'options',
     canActivate: [DeveloperGuard],
     component: DeveloperComponent
   },
