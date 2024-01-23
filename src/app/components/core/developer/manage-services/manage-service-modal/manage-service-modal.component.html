@@ -3,9 +3,13 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <span *ngIf="isServiceAvailable" class="modal-card-title is-size-6">{{serviceName}}
-        <p class="help has-text-grey modal-subtitle">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</p>
+        <button class="button is-small" id="refresh-check" title="Reload" (click)="getCategory()">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+        <p class="help has-text-grey modal-subtitle mt-0">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</p> 
       </span>
-      <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</span>
+      <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service
+      </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false, {isCancelEvent: true})"></button>
     </header>
     <section class="modal-card-body">
@@ -53,34 +57,7 @@
       </form>
       <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditPermissions()">
       <div class="columns margin-bottom">
-        <div class="column">
-          <div class="field is-pulled-left">
-            <p *ngIf="!isServiceAvailable || !showDeleteBtn" class="control">
-              <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
-                <i class="far fa-question-circle"></i>
-              </span>
-            </p>
-            <p *ngIf="serviceType === 'Management' && pollingScheduleID" class="control">
-              <a class="button is-ghost title-name is-pulled-right" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'manage-services' }">
-                Polling Schedule
-              </a>
-            </p>
-          </div>
-          <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
-            <p class="control">
-              <button [disabled]="serviceInstallationState" class="button is-small" id="cancel"
-                (click)="toggleModal(false, {isCancelEvent: true})">Cancel</button>
-            </p>
-            <p class="control">
-              <button [disabled]="serviceInstallationState || fg.controls['serviceName']?.invalid || !validForm"
-                class="button is-small is-link" (click)="save()" [appDisableUntilResponse]="reenableButton">{{btnText}}</button>
-            </p>
-          </div>
-        </div>
-      </div>
-      <hr *ngIf="isServiceAvailable && showDeleteBtn" class="hr-text" data-content="">
-      <div *ngIf="isServiceAvailable && showDeleteBtn" class="columns">
-        <div class="column">
+        <div *ngIf="isServiceAvailable" class="column is-pulled-left">
           <div class="field is-horizontal" *ngIf="service">
             <div class="field-label has-text-left service-info-text">
               <label class="label">Service Info</label>
@@ -93,7 +70,36 @@
               </div>
             </div>
           </div>
-          <div class="field is-grouped is-pulled-left">
+        </div>
+        <div class="column" *ngIf="rolesService.hasEditPermissions()">
+          <div class="is-pulled-right field is-grouped">
+            <p class="control">
+              <button [disabled]="serviceInstallationState" class="button is-small" id="cancel"
+                (click)="toggleModal(false, {isCancelEvent: true})">Cancel</button>
+            </p>
+            <p class="control">
+              <button [disabled]="serviceInstallationState || fg.controls['serviceName']?.invalid || !validForm"
+                class="button is-small is-link" (click)="save()" [appDisableUntilResponse]="reenableButton">{{btnText}}</button>
+            </p>
+          </div>
+        </div>
+      </div>     
+      <hr *ngIf="serviceType === 'Management' && pollingScheduleID && isServiceEnabled" class="hr-text" data-content="">
+      <div class="columns margin-bottom" *ngIf="serviceType === 'Management' && pollingScheduleID && isServiceEnabled">
+        <div class="column">
+          <div class="field is-pulled-left">
+            <p class="control">
+              <a class="button is-ghost title-name is-pulled-right" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'manage-services' }">
+                Polling Schedule
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <hr *ngIf="isServiceAvailable && showDeleteBtn" class="hr-text" data-content="">
+      <div class="columns margin-bottom" *ngIf="isServiceAvailable && showDeleteBtn">
+        <div class="column">
+          <div class="field is-grouped is-pulled-left service-info-text">
             <p class="control">
               <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
                 <i class="far fa-question-circle"></i>
