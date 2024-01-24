@@ -7,6 +7,7 @@ import { Service } from '../../core/south/south-service';
 import { Subject, Subscription, forkJoin, of } from 'rxjs';
 import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
+import { FilterListComponent } from '../../core/filter/filter-list/filter-list.component';
 
 @Component({
   selector: 'app-node-editor',
@@ -42,6 +43,7 @@ export class NodeEditorComponent implements OnInit {
   public reenableButton = new EventEmitter<boolean>(false);
   apiCallsStack = [];
   validConfigurationForm = true;
+  @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -79,7 +81,11 @@ export class NodeEditorComponent implements OnInit {
       this.showLogs = data.showLogs;
       this.serviceName = data.serviceName;
       if(this.showPluginConfiguration){
+        this.unsavedChangesInFilterForm = false;
         this.getCategory();
+      }
+      if(this.showLogs){
+        this.unsavedChangesInFilterForm = false;
       }
     })
     this.filterSubscription = this.flowEditorService.filterInfo.subscribe(data => {
@@ -175,6 +181,8 @@ export class NodeEditorComponent implements OnInit {
     this.configService.getCategory(this.serviceName).
       subscribe(
         (data) => {
+          this.changedConfig = [];
+          this.advancedConfiguration = [];
           this.category = { name: this.serviceName, config: data };
           this.pluginConfiguration = cloneDeep({ name: this.service.name, config: data });
         },
@@ -316,11 +324,6 @@ export class NodeEditorComponent implements OnInit {
       });
     }
 
-    // if (this.unsavedChangesInFilterForm) {
-    //   this.filtersListComponent.update();
-    //   this.unsavedChangesInFilterForm = false;
-    // }
-
     if (this.apiCallsStack.length > 0) {
       forkJoin(this.apiCallsStack).subscribe((result) => {
         result.forEach((r: any) => {
@@ -336,22 +339,30 @@ export class NodeEditorComponent implements OnInit {
           }
         });
         this.apiCallsStack = [];
-        this.changedConfig = [];
-        this.advancedConfiguration = [];
         this.getCategory();
       });
     }
   }
 
+  saveFilterConfiguration() {
+    if (this.unsavedChangesInFilterForm) {
+      this.filtersListComponent.update();
+      this.unsavedChangesInFilterForm = false;
+    }
+  }
+
   checkFormState() {
-    const noChange = isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration) && !this.unsavedChangesInFilterForm;
+    const noChange = isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration);
+    return noChange;
+  }
+  
+  checkFilterFormState() {
+    const noChange = !this.unsavedChangesInFilterForm;
     return noChange;
   }
 
   getChangedConfig(changedConfiguration: any) {
     this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
-    console.log("reached1")
-    console.log(this.changedConfig)
   }
 
   getChangedAdvanceConfiguration(advanceConfig: any) {
@@ -387,5 +398,9 @@ export class NodeEditorComponent implements OnInit {
 
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+  }
+
+  filterFormStatus(status: boolean) {
+    this.unsavedChangesInFilterForm = status;
   }
 }

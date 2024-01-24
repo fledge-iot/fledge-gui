@@ -32,7 +32,17 @@
             </div>
         </ng-container>
         <ng-container *ngIf="showFilterConfiguration">
-            <app-filter-list [service]="serviceName" [sourceName]="serviceName" [filterPipeline]="filterPipeline"></app-filter-list>
+            <app-filter-list #filtersListComponent [service]="serviceName" [sourceName]="serviceName" [filterPipeline]="filterPipeline" (formStatus)="filterFormStatus($event)"></app-filter-list>
+            <div class="columns">
+                <div class="column">
+                    <div class="field is-grouped is-pulled-right">
+                        <p class="control">
+                            <button [disabled]="checkFilterFormState()" [appDisableUntilResponse]="reenableButton"
+                                class="button is-small is-link" (click)="saveFilterConfiguration()">Save</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </ng-container>
         <ng-container *ngIf="showLogs">
             <app-system-log [sourceName]="serviceName"></app-system-log>

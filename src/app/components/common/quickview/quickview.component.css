@@ -21,3 +21,7 @@
 .delete {
     float: right;
 }
+
+.quickview-body {
+    border-left: 1px dashed silver;
+}
