@@ -57,12 +57,12 @@
       </form>
       <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditPermissions()">
       <div class="columns margin-bottom">
-        <div *ngIf="isServiceAvailable" class="column is-pulled-left">
+        <div *ngIf="isServiceAvailable" class="column is-pulled-left is-8">
           <div class="field is-horizontal" *ngIf="service">
             <div class="field-label has-text-left service-info-text">
-              <label class="label">Service Info</label>
+              <label class="label service-info">Service Info</label>
             </div>
-            <div class="field-body">
+            <div class="field-body service-info-padding">
               <div class="field">
                 <ng-container>
                   <small>{{service?.protocol}}://{{service?.address}}:{{service?.management_port}}</small>
@@ -83,18 +83,6 @@
             </p>
           </div>
         </div>
-      </div>     
-      <hr *ngIf="serviceType === 'Management' && pollingScheduleID && isServiceEnabled" class="hr-text" data-content="">
-      <div class="columns margin-bottom" *ngIf="serviceType === 'Management' && pollingScheduleID && isServiceEnabled">
-        <div class="column">
-          <div class="field is-pulled-left">
-            <p class="control">
-              <a class="button is-ghost title-name is-pulled-right" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'manage-services' }">
-                Polling Schedule
-              </a>
-            </p>
-          </div>
-        </div>
       </div>
       <hr *ngIf="isServiceAvailable && showDeleteBtn" class="hr-text" data-content="">
       <div class="columns margin-bottom" *ngIf="isServiceAvailable && showDeleteBtn">
@@ -110,6 +98,11 @@
                 data-tooltip="Show logs" (click)="navToSyslogs(serviceName)">
                 <i class="far fa-file-alt"></i>
               </span>
+            </p>
+            <p class="control" *ngIf="serviceType === 'Management' && pollingScheduleID && isServiceEnabled">
+              <a class="button is-ghost title-name pl-0 pb-4" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'manage-services' }">
+                Polling Schedule
+              </a>
             </p>
           </div>
           <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">

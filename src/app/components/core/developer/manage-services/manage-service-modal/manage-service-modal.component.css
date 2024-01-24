@@ -63,3 +63,11 @@ hr {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 }
+
+.service-info {
+  white-space: nowrap;
+}
+
+.service-info-padding {
+  padding-left: 6rem !important;
+}

@@ -63,6 +63,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
 
   showLoading = false;
   viewPortSubscription: Subscription;
+  servicesInfoSubscription: Subscription;
   viewPort: any = '';
   pollingScheduleID: string;
 
@@ -89,7 +90,32 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
     this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
       this.viewPort = viewport;
     });
-    
+    // Update state of services according to the response of '/service' endpoint response 
+    this.servicesInfoSubscription = this.sharedService.allServicesInfo.subscribe(servicesInfo => {
+      if (servicesInfo) {
+        this.installedServicePkgs.forEach(function(p) {
+          servicesInfo.forEach(function(s) {
+            if (p.name === s.name) {
+              p.state = s.status;
+            } else if (p.type === s.type) {
+              p.name = s.name;
+              p.state = s.status;
+              p.added = true;
+            }
+          });
+        });
+        this.availableServicePkgs.forEach(function(p) {
+          servicesInfo.forEach(function(s) {
+            if (p.type === s.type) {
+              p.name = s.name;
+              p.state = s.status;
+              p.added = true;
+            }
+          });
+        });        
+      }
+      
+    });
     this.showLoadingText();
     if (!this.navigateFromParent) {
       this.showServices();
@@ -395,5 +421,6 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.viewPortSubscription.unsubscribe();
+    this.servicesInfoSubscription.unsubscribe();
   }
 }
