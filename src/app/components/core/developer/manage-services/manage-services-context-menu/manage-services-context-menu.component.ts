@@ -1,8 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ServicesApiService } from '../../../../../services';
-import { SharedService } from '../../../../../services/shared.service';
+import { ServicesApiService, RolesService } from '../../../../../services';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
 @Component({
@@ -19,7 +18,7 @@ export class ManageServicesContextMenuComponent implements OnInit {
     public reenableButton = new EventEmitter<boolean>(false);
 
     constructor(
-        public sharedService: SharedService,
+        public rolesService: RolesService,
         private dialogService: DialogService,
         public servicesApiService: ServicesApiService,
         private router: Router

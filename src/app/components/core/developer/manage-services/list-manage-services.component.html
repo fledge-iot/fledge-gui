@@ -33,15 +33,15 @@
                     <span class="tag is-light" [ngClass]="applyClass(s?.state)">{{s?.state}}</span>
                   </div>
                 </td>
-                <td class="py-1">
-                  <a *ngIf="s?.name" class="button cog-icon" (click)="openServiceModal(s)">
+                <td *ngIf="s?.name && rolesService?.hasEditPermissions()" class="py-1">
+                  <a class="button cog-icon" (click)="openServiceModal(s)">
                     <span class="icon mt-2">
                       <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
                     </span>
                   </a>
                 </td>          
-                <td *ngIf="sharedService.checkAuth()" class="py-1">
-                  <a *ngIf="!s.added" (click)="openServiceModal(s)" class="button is-text text-btn">
+                <td class="py-1">
+                  <a *ngIf="!s.added && rolesService?.hasEditPermissions()" (click)="openServiceModal(s)" class="button is-text text-btn">
                     Add
                   </a>
                   <app-manage-services-context-menu *ngIf="s?.name" [service]="s" [index]="i" (notify)="onNotifyEvent($event)" (click)="setService(s)"></app-manage-services-context-menu>

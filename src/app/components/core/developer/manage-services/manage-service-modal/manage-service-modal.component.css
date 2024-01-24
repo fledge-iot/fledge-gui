@@ -66,8 +66,9 @@ hr {
 
 .service-info {
   white-space: nowrap;
+  padding-bottom: 8px !important;
 }
 
 .service-info-padding {
-  padding-left: 6rem !important;
+  padding-left: 6.1rem !important;
 }

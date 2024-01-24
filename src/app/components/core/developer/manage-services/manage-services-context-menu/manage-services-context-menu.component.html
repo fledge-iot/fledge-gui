@@ -11,11 +11,11 @@
       <a *ngIf="service?.added" class="dropdown-item" (click)="viewLogs(service?.name)">
         <span>View Logs</span>
       </a>
-      <a *ngIf="sharedService.checkAuth() && service?.added" class="dropdown-item"
+      <a *ngIf="rolesService?.hasEditPermissions() && service?.added" class="dropdown-item"
         (click)="openModal('confirmation-dialog')">
         <span>{{ ["shutdown", "disabled"].includes(service.state) ? "Enable" : "Disable" }}</span>
       </a>
-      <a *ngIf="sharedService.checkAuth()" class="dropdown-item"
+      <a *ngIf="rolesService?.hasEditPermissions()" class="dropdown-item"
         (click)="openModal('delete-confirmation-dialog')">
         <span>Delete</span>
       </a>
