@@ -1,11 +1,12 @@
-import { Component, ElementRef, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfigurationService, FilterService, ServicesApiService } from './../../../services';
-import { takeUntil } from 'rxjs/operators';
+import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, ResponseHandler, ServicesApiService, ToastService } from './../../../services';
+import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, forkJoin, of } from 'rxjs';
 import { FlowEditorService } from './flow-editor.service';
+import { cloneDeep, isEmpty } from 'lodash';
 
 @Component({
   selector: 'app-node-editor',
@@ -34,6 +35,13 @@ export class NodeEditorComponent implements OnInit {
   filterName = '';
   isfilterPipelineFetched = false;
   selectedConnectionId = "";
+  changedConfig: any;
+  pluginConfiguration;
+  advancedConfiguration = [];
+  public unsavedChangesInFilterForm = false;
+  public reenableButton = new EventEmitter<boolean>(false);
+  apiCallsStack = [];
+  validConfigurationForm = true;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -41,6 +49,10 @@ export class NodeEditorComponent implements OnInit {
     private servicesApiService: ServicesApiService,
     private configService: ConfigurationService,
     public flowEditorService: FlowEditorService,
+    private configurationControlService: ConfigurationControlService,
+    private fileUploaderService: FileUploaderService,
+    private toastService: ToastService,
+    private response: ResponseHandler,
     private router: Router) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
@@ -164,6 +176,7 @@ export class NodeEditorComponent implements OnInit {
       subscribe(
         (data) => {
           this.category = { name: this.serviceName, config: data };
+          this.pluginConfiguration = cloneDeep({ name: this.service.name, config: data });
         },
         error => {
           console.log('service down ', error);
@@ -290,5 +303,89 @@ export class NodeEditorComponent implements OnInit {
       }
     }
     return true;
+  }
+
+  saveConfiguration() {
+    if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
+      this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
+    }
+
+    if (!isEmpty(this.advancedConfiguration)) {
+      this.advancedConfiguration.forEach(element => {
+        this.updateConfiguration(element.key, element.config, 'plugin-config');
+      });
+    }
+
+    // if (this.unsavedChangesInFilterForm) {
+    //   this.filtersListComponent.update();
+    //   this.unsavedChangesInFilterForm = false;
+    // }
+
+    if (this.apiCallsStack.length > 0) {
+      forkJoin(this.apiCallsStack).subscribe((result) => {
+        result.forEach((r: any) => {
+          this.reenableButton.emit(false);
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.toastService.error(r.error.statusText);
+            }
+          } else {
+            this.response.handleResponseMessage(r.type);
+          }
+        });
+        this.apiCallsStack = [];
+        this.changedConfig = [];
+        this.advancedConfiguration = [];
+        this.getCategory();
+      });
+    }
+  }
+
+  checkFormState() {
+    const noChange = isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration) && !this.unsavedChangesInFilterForm;
+    return noChange;
+  }
+
+  getChangedConfig(changedConfiguration: any) {
+    this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
+    console.log("reached1")
+    console.log(this.changedConfig)
+  }
+
+  getChangedAdvanceConfiguration(advanceConfig: any) {
+    const configItem = this.advancedConfiguration.find(c => c.key == advanceConfig.key);
+    if (configItem) {
+      configItem.config = advanceConfig.config;
+      if (isEmpty(configItem.config)) {
+        this.advancedConfiguration = this.advancedConfiguration.filter(conf => (conf.key !== configItem.key));
+      }
+    } else {
+      this.advancedConfiguration.push(advanceConfig)
+    }
+  }
+
+  updateConfiguration(categoryName: string, configuration: any, type: string) {
+    const files = this.getScriptFilesToUpload(configuration);
+    if (files.length > 0) {
+      this.uploadScript(categoryName, files);
+    }
+
+    if (isEmpty(configuration)) {
+      return;
+    }
+    this.apiCallsStack.push(this.configService.
+      updateBulkConfiguration(categoryName, configuration)
+      .pipe(map(() => ({ type, success: true })))
+      .pipe(catchError(e => of({ error: e, failed: true }))));
+  }
+
+  getScriptFilesToUpload(configuration: any) {
+    return this.fileUploaderService.getConfigurationPropertyFiles(configuration);
+  }
+
+  public uploadScript(categoryName: string, files: any[]) {
+    this.fileUploaderService.uploadConfigurationScript(categoryName, files);
   }
 }
