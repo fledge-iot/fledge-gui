@@ -2,8 +2,8 @@ import { ClassicPreset } from "rete";
 
 
 export class Storage extends ClassicPreset.Node {
-    height = 150;
-    width = 105;
+    height = 100;
+    width = 100;
     parent?: string;
 
     constructor(socket: ClassicPreset.Socket) {

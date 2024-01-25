@@ -184,7 +184,7 @@ export class NodeEditorComponent implements OnInit {
           this.changedConfig = [];
           this.advancedConfiguration = [];
           this.category = { name: this.serviceName, config: data };
-          this.pluginConfiguration = cloneDeep({ name: this.service.name, config: data });
+          this.pluginConfiguration = cloneDeep({ name: this.serviceName, config: data });
         },
         error => {
           console.log('service down ', error);
