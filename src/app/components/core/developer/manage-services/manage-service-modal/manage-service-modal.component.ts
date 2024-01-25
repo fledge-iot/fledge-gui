@@ -43,7 +43,7 @@ export class ManageServiceModalComponent {
   maxRetry = 15;
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
-  service: Service;
+  service = <Service> {};
 
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
@@ -122,6 +122,7 @@ export class ManageServiceModalComponent {
       this.notify.emit(emitData);
       serviceModal.classList.remove('is-active');
       this.category = '';
+      this.service = <Service>{};
     }
   }
 
