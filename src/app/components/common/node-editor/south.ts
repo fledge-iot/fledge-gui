@@ -11,7 +11,7 @@ export class South extends ClassicPreset.Node {
 
         if (service) {
             this.addControl(service.name, new ClassicPreset.InputControl("text"));
-            this.addControl(service.plugin.name, new ClassicPreset.InputControl("text"));
+            this.addControl("plname" + service.plugin.name, new ClassicPreset.InputControl("text"));
             let assetCount = service.assets.length;
             let readingCount = service.assets.reduce((total, asset) => {
                 return total + asset.count;

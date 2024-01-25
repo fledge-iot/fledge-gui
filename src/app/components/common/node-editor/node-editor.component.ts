@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, Vi
 import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, ResponseHandler, ServicesApiService, ToastService } from './../../../services';
-import { catchError, map, takeUntil } from 'rxjs/operators';
+import { catchError, map, skip, takeUntil } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
 import { Subject, Subscription, forkJoin, of } from 'rxjs';
 import { FlowEditorService } from './flow-editor.service';
@@ -75,7 +75,7 @@ export class NodeEditorComponent implements OnInit {
     this.flowEditorService.canvasClick.next({canvasClicked: true,  connectionId: this.selectedConnectionId});
   }
   ngOnInit(): void {
-    this.subscription = this.flowEditorService.showItemsInQuickview.subscribe(data => {
+    this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
       this.showPluginConfiguration = data.showPluginConfiguration;
       this.showFilterConfiguration = data.showFilterConfiguration;
       this.showLogs = data.showLogs;
@@ -196,6 +196,8 @@ export class NodeEditorComponent implements OnInit {
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   getFilterConfiguration(filterName: string) {

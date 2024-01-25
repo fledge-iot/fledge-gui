@@ -88,7 +88,7 @@ export class CustomNodeComponent implements OnChanges {
         this.isServiceNode = true;
         
         this.service.name = Object.keys(this.data.controls)[0];
-        this.service.pluginName = Object.keys(this.data.controls)[1];
+        this.service.pluginName = Object.keys(this.data.controls)[1].slice(6);
         this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
         this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
         this.service.status = Object.keys(this.data.controls)[4];
@@ -107,7 +107,7 @@ export class CustomNodeComponent implements OnChanges {
     if (this.data.label === 'Filter') {
       this.isFilterNode = true;
       this.filter.name = Object.keys(this.data.controls)[0];
-      this.filter.pluginName = Object.keys(this.data.controls)[1];
+      this.filter.pluginName = Object.keys(this.data.controls)[1].slice(6);
       this.filter.enabled = Object.keys(this.data.controls)[2];
       this.filter.color = Object.keys(this.data.controls)[3];
       this.elRef.nativeElement.style.borderColor = this.filter.color;
