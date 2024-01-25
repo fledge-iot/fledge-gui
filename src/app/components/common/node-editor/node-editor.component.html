@@ -1,8 +1,8 @@
 <div>
-    <div class="navbar-item" *ngIf="source!=='nodelist'">
+    <div class="navbar-item pl-0" *ngIf="source!=='nodelist'">
         <nav class="breadcrumb" aria-label="breadcrumbs">
             <ul>
-                <li><a [routerLink]="['/south/flow']" [queryParams]="{ source: 'nodelist' }">Flow Editor</a></li>
+                <li><a [routerLink]="['/south/flow']" [queryParams]="{ source: 'nodelist' }">South</a></li>
                 <li class="is-active">
                     <a href="#" aria-current="page">
                         {{source ? source : 'Add'}}
@@ -10,7 +10,9 @@
                 </li>
             </ul>
         </nav>
-        <button class="button is-small is-link" (click)="save()">Save</button>
+        <ng-container *ngIf="source">
+            <button class="button is-small is-link" (click)="save()">Save</button>
+        </ng-container>
     </div>
     <div class="rete" #rete></div>
     <app-quickview>

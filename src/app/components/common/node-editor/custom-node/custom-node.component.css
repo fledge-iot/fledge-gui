@@ -160,3 +160,7 @@
   padding: 0px !important;
   height: auto;
 }
+
+.service-name:hover{
+  color: #485fc7 !important;
+}
