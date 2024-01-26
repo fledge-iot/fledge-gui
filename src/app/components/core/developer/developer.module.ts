@@ -12,6 +12,9 @@ import { DirectivesModule } from '../../../directives/directives.module';
 import { ListManageServicesComponent } from './manage-services/list-manage-services.component';
 import { ManageServiceModalComponent } from './manage-services/manage-service-modal/manage-service-modal.component';
 import { ManageServicesContextMenuComponent } from './manage-services/manage-services-context-menu/manage-services-context-menu.component';
+
+import { PerfMonComponent } from './perfmon/list/table.component'
+
 import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
@@ -34,7 +37,12 @@ const routes: Routes = [
     path: 'manage-services',
     canActivate: [DeveloperGuard],
     component: ListManageServicesComponent
-  }
+  },
+  {
+    path: 'perfmon',
+    canActivate: [DeveloperGuard],
+    component: PerfMonComponent
+  },
 ];
 
 @NgModule({
@@ -44,7 +52,8 @@ const routes: Routes = [
     InstallPythonPackageComponent,
     ListManageServicesComponent,
     ManageServiceModalComponent,
-    ManageServicesContextMenuComponent
+    ManageServicesContextMenuComponent,
+    PerfMonComponent
   ],
   imports: [
     CommonModule,
