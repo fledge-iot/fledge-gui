@@ -2,35 +2,44 @@
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
       <li>
+        
         <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
+          <span><i class="bi bi-speedometer2"></i> </span>
           Dashboard
         </a>
       </li>
       <li>
         <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
+          <span><i class="bi bi-graph-up"></i></span>
           Assets &amp; Readings
         </a>
       </li>
       <article requiredViewEditorRole>
         <li>
           <a id=" south" routerLinkActive="is-active" routerLink='/south'>
+            <span><i class="bi bi-robot"></i></span>
             South
           </a>
         </li>
         <li>
           <a id="north" routerLinkActive="is-active" routerLink='/north'>
+            <span><i class="bi bi-cloud-upload"></i></span>
             North
           </a>
         </li>
         <li>
           <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
+            <span><i class="bi bi-lightning-charge"></i></span>
             Notifications
           </a>
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
             (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
-            <span>Control</span>
+            <span>
+              <i class="bi bi-controller"></i>
+              Control
+            </span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isControlListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
@@ -63,16 +72,19 @@
 
         <li>
           <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
+            <span><i class="bi bi-sliders2"></i></span>
             Configuration
           </a>
         </li>
         <li>
           <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
+            <span><i class="bi bi-calendar3"></i></span>
             Schedules
           </a>
         </li>
         <li>
           <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
+            <span><i class="bi bi-filetype-key"></i></span>
             Certificate Store
           </a>
         </li>
@@ -85,12 +97,15 @@
         <li>
           <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
             routerLink='/backup-restore'>
+            <span><i class="bi bi-database-gear"></i></span>
             Backup &amp; Restore
           </a>
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
             (click)="isLogsListOpen = !isLogsListOpen; $event.stopPropagation()">
+            <span><i class="bi bi-file-earmark-text"></i></span>
+            &nbsp;
             <span>Logs</span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
@@ -120,18 +135,21 @@
         </li>
         <li>
           <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
+            <span><i class="bi bi-database-gear"></i></span>
             User Management
           </a>
         </li>
 
         <li>
           <a id="support" routerLinkActive="is-active" routerLink='/support'>
+            <span><i class="bi bi-file-medical"></i></span>
             Support
           </a>
         </li>
         <li>
           <a id="developer" routerLinkActive="is-active" routerLink='/developer/options'
             *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
+            <span><i class="bi bi-code-slash"></i></span>
             Developer
           </a>
         </li>
@@ -140,11 +158,13 @@
     <li>
       <a id="setting" routerLinkActive="is-active" routerLink='/setting'
         (click)="toggleSideMenu(); $event.preventDefault()">
+        <span><i class="bi bi-gear"></i></span>
         Settings
       </a>
     </li>
     <li>
       <a id="help" (click)="goToLink()" (click)="toggleSideMenu(); $event.preventDefault()">
+        <span><i class="bi bi-question-circle"></i></span>
         Help
       </a>
     </li>
