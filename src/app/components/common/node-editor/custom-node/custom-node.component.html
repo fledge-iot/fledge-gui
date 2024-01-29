@@ -25,14 +25,14 @@
                     <ng-container *ngIf="data.label==='South'">
                         <button class="btn small-btn add-btn is-pulled-right" (click)="addSouthService()">
                             <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
-                                <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
+                                <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
                             </span>
                         </button>
                     </ng-container>
-                    <ng-container *ngIf="data.label==='Filter'">
+                    <ng-container *ngIf="data.label==='Filter' && showPlusIcon">
                         <button class="btn small-btn add-btn is-pulled-right" (click)="addFilter()">
                             <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
-                                <i class="bi bi-funnel bi-md" aria-hidden="true"></i>
+                                <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
                             </span>
                         </button>
                     </ng-container>
@@ -45,6 +45,13 @@
                 <div class="reading-details">
                     <small class="reading has-tooltip-right has-tooltip-arrow" data-tooltip="Reading count">{{service.readingCount}}</small>
                     <small class="asset has-tooltip-right has-tooltip-arrow" data-tooltip="Asset count">{{service.assetCount}}</small>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="data.label==='Filter'">
+                <div class="is-flex is-justify-content-center">
+                    <span class="has-text-grey-light">
+                        <i class="fa fa-2xl fa-filter"></i>
+                    </span>
                 </div>
             </ng-container>
             <ng-container *ngIf="source!=='nodelist'">
@@ -115,7 +122,7 @@
         <div class="add-service">
             <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Add Service"
             (click)="navToAddServicePage()">
-                <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
+                <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
             </span>
         </div>
     </ng-template>

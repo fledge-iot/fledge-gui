@@ -32,11 +32,14 @@ export class CustomNodeComponent implements OnChanges {
   filter = { pluginName: '', enabled: 'false', name: '', color: ''}
   isServiceNode: boolean = false;
   subscription: Subscription;
+  addFilterSubscription: Subscription;
   pluginName = '';
   isFilterNode: boolean = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
   fetchedService;
   isAlive: boolean;
+  showPlusIcon = false;
+  nodeId = '';
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -77,6 +80,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
+    this.nodeId = this.data.id;
     if (this.data.label === 'South') {
       this.elRef.nativeElement.style.borderColor = "#B6D7A8";
       if (this.source !== '') {
@@ -118,6 +122,15 @@ export class CustomNodeComponent implements OnChanges {
         if(this.filter.enabled === 'true'){
           this.isEnabled = true;
         }
+      }
+      else{
+        this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data)=>{
+          if(data) {
+            if(data.addedFiltersIdColl.includes(this.nodeId)){
+              this.showPlusIcon = true;
+            }
+          }
+        })
       }
     }
     if (this.data.label === 'Applications') {
@@ -257,6 +270,7 @@ export class CustomNodeComponent implements OnChanges {
   ngOnDestroy() {
     this.isAlive = false;
     this.subscription.unsubscribe();
+    this.addFilterSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

@@ -139,7 +139,7 @@ export class NodeEditorComponent implements OnInit {
 
     if (el) {
       setTimeout(() => {
-        createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations);
+        createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService);
       }, 3000);
     }
   }

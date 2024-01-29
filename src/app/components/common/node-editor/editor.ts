@@ -30,7 +30,7 @@ type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {curve?: CurveFactory; }
 
 let editor = new NodeEditor<Schemes>();
-export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations) {
+export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations, flowEditorService) {
     const socket = new ClassicPreset.Socket("socket");
     editor = new NodeEditor<Schemes>();
     const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -143,7 +143,19 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
 
     if (source !== '' && source !== "nodelist") {
         area.use(contextMenu);
-        dock.add(() => new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C"}));
+        dock.add(() => {
+            setTimeout(() => {
+                let dropStrategy: any = dock.dropStrategy;
+                let dsEditorNodes = dropStrategy.editor.nodes;
+                let addedFiltersIdColl = [];
+                for(let i=0; i<dsEditorNodes.length; i++){
+                    if(dsEditorNodes[i].label === 'Filter'){
+                        addedFiltersIdColl.push(dsEditorNodes[i].id)
+                    }
+                }
+                flowEditorService.showAddFilterIcon.next({addedFiltersIdColl: addedFiltersIdColl});
+            }, 10);
+            return new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C"})});
     }
 
     createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations);

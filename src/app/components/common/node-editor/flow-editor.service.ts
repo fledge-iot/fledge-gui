@@ -11,6 +11,7 @@ export class FlowEditorService {
   public pipelineInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public connectionInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public canvasClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public showAddFilterIcon: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   constructor() { }
 
   public flowEditorControl(visible: boolean) {
