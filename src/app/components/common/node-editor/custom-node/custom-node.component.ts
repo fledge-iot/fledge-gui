@@ -270,7 +270,7 @@ export class CustomNodeComponent implements OnChanges {
   ngOnDestroy() {
     this.isAlive = false;
     this.subscription.unsubscribe();
-    this.addFilterSubscription.unsubscribe();
+    this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

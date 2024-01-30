@@ -18,9 +18,14 @@ export class QuickviewComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    setTimeout(()=>{
+    var count = 0;
+    let intervalId = setInterval(() => {
       bulmaQuickview.attach();
-    }, 3100)
+      count++;
+      if (count == 100) {
+        clearInterval(intervalId)
+      }
+    }, 100)
   }
 
 }

@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, ResponseHandler, ServicesApiService, ToastService } from './../../../services';
+import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, ProgressBarService, ResponseHandler, ServicesApiService, ToastService } from './../../../services';
 import { catchError, map, skip, takeUntil } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
 import { Subject, Subscription, forkJoin, of } from 'rxjs';
@@ -42,6 +42,8 @@ export class NodeEditorComponent implements OnInit {
   public unsavedChangesInFilterForm = false;
   public reenableButton = new EventEmitter<boolean>(false);
   apiCallsStack = [];
+  initialApiCallsStack = [];
+  filterConfigApiCallsStack = [];
   validConfigurationForm = true;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
 
@@ -55,6 +57,7 @@ export class NodeEditorComponent implements OnInit {
     private fileUploaderService: FileUploaderService,
     private toastService: ToastService,
     private response: ResponseHandler,
+    public ngProgress: ProgressBarService,
     private router: Router) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
@@ -110,7 +113,6 @@ export class NodeEditorComponent implements OnInit {
             }
           }
         }
-        console.log(this.filterPipeline);
       }
       else {
         if(this.isfilterPipelineFetched){
@@ -138,42 +140,64 @@ export class NodeEditorComponent implements OnInit {
     const el = this.container.nativeElement;
 
     if (el) {
-      setTimeout(() => {
+      if (this.initialApiCallsStack.length > 0) {
+        this.ngProgress.start();
+        forkJoin(this.initialApiCallsStack).subscribe((result) => {
+          result.forEach((r: any) => {
+            this.ngProgress.done();
+            if (r.status) {
+              if (r.status === 404) {
+                this.filterPipeline = [];
+                this.isfilterPipelineFetched = true;
+              } else {
+                this.toastService.error(r.statusText);
+              }
+            } else {
+              if (r.services) {
+                const services = r.services as Service[];
+                this.services = services;
+                this.service = services.find(service => (service.name == this.source));
+              }
+              if (r.result) {
+                this.filterPipeline = r.result.pipeline as string[];
+                this.isfilterPipelineFetched = true;
+                this.createFilterConfigurationsArray();
+              }
+            }
+          });
+          this.initialApiCallsStack = [];
+          setTimeout(() => {
+            if (this.filterConfigApiCallsStack.length > 0) {
+              forkJoin(this.filterConfigApiCallsStack).subscribe((result) => {
+                result.forEach((r: any) => {
+                  let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
+                  this.filterConfigurations.push(filterConfig);
+                })
+                createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService);
+              })
+            }
+            else {
+              createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService);
+            }
+          }, 1);
+        });
+      }
+      else {
         createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService);
-      }, 3000);
+      }
     }
   }
 
   getFilterPipeline() {
-    this.filterService.getFilterPipeline(this.source)
-      .subscribe((data: any) => {
-        this.filterPipeline = data.result.pipeline as string[];
-        // this.filterPipeline = ["rename2", ["meta2", "change2", "delta2"], "fft2", ["exp2"], ["asset2", "log2"]];
-        this.isfilterPipelineFetched = true;
-        this.createFilterConfigurationsArray();
-      },
-        error => {
-          if (error.status === 404) {
-            this.filterPipeline = [];
-            this.isfilterPipelineFetched = true;
-          } else {
-            console.log('Error ', error);
-          }
-        });
+    this.initialApiCallsStack.push(this.filterService.getFilterPipeline(this.source)
+      .pipe(map(response => response))
+      .pipe(catchError(error => of(error))))
   }
 
   getSouthboundServices() {
-    this.servicesApiService.getSouthServices(true)
+    this.initialApiCallsStack.push(this.servicesApiService.getSouthServices(true)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (data: any) => {
-          const services = data.services as Service[];
-          this.services = services;
-          this.service = services.find(service => (service.name == this.source));
-        },
-        error => {
-          console.log('service down ', error);
-        });
+    )
   }
 
   public getCategory(): void {
@@ -202,16 +226,11 @@ export class NodeEditorComponent implements OnInit {
 
   getFilterConfiguration(filterName: string) {
     let catName = `${this.source}_${filterName}`
-    this.filterService.getFilterConfiguration(catName)
-      .subscribe((data: any) => {
-        if (data) {
-          let filterConfig = {pluginName: data.plugin.value, enabled: data.enable.value, filterName: filterName, color: "#F9CB9C"};
-          this.filterConfigurations.push(filterConfig);
-        }
-      },
-        error => {
-          console.log('service down ', error);
-        });
+    this.filterConfigApiCallsStack.push(this.filterService.getFilterConfiguration(catName)
+      .pipe(map((response: any) => {
+        response['filterName'] = filterName;
+        return response;
+      })))
   }
 
   createFilterConfigurationsArray(){
