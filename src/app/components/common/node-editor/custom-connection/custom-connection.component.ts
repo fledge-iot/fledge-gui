@@ -4,6 +4,7 @@ import { classicConnectionPath } from 'rete-render-utils'
 import { Position } from '../types';
 import { FlowEditorService } from '../flow-editor.service';
 import { Subscription } from 'rxjs';
+import { RolesService } from '../../../../services/roles.service';
 
 @Component({
   selector: 'app-custom-connection',
@@ -21,7 +22,8 @@ export class CustomConnectionComponent implements OnInit {
   private canvasClickSubscription: Subscription;
   selectedConnectionId = "";
 
-  constructor(public flowEditorService: FlowEditorService) { }
+  constructor(public flowEditorService: FlowEditorService,
+    public rolesService: RolesService,) { }
 
   ngOnInit(): void {
     this.canvasClickSubscription =  this.flowEditorService.canvasClick.subscribe(data => {
@@ -37,16 +39,18 @@ export class CustomConnectionComponent implements OnInit {
   }
 
   selectConnection(): void {
-    setTimeout(() => {
-      if(!this.selected && this.selectedConnectionId !== this.data.id){
-        this.svgpath.nativeElement.style.stroke = "rgb(255, 217, 44)";
-        this.selected = true;
-        this.flowEditorService.connectionInfo.next({id: this.data.id, selected: this.selected});
-      }
-    }, 1);
+    if(this.rolesService.hasEditPermissions()){
+      setTimeout(() => {
+        if(!this.selected && this.selectedConnectionId !== this.data.id){
+          this.svgpath.nativeElement.style.stroke = "rgb(255, 217, 44)";
+          this.selected = true;
+          this.flowEditorService.connectionInfo.next({id: this.data.id, selected: this.selected});
+        }
+      }, 1);
+    }
   }
 
   ngOnDestroy() {
-    this.canvasClickSubscription.unsubscribe();
+    this.canvasClickSubscription?.unsubscribe();
   }
 }

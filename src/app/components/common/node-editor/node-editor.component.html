@@ -10,7 +10,7 @@
                 </li>
             </ul>
         </nav>
-        <ng-container *ngIf="source">
+        <ng-container *ngIf="source && rolesService.hasEditPermissions()">
             <button class="button is-small is-link" (click)="save()">Save</button>
         </ng-container>
     </div>
@@ -22,7 +22,7 @@
                 (changedConfigEvent)="getChangedConfig($event)"
                 (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
                 (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
-            <div class="columns">
+            <div class="columns" *ngIf="rolesService.hasEditPermissions()">
                 <div class="column">
                     <div class="field is-grouped is-pulled-right">
                         <p class="control">
@@ -35,7 +35,7 @@
         </ng-container>
         <ng-container *ngIf="showFilterConfiguration">
             <app-filter-list #filtersListComponent [service]="serviceName" [sourceName]="serviceName" [filterPipeline]="filterPipeline" (formStatus)="filterFormStatus($event)"></app-filter-list>
-            <div class="columns">
+            <div class="columns" *ngIf="rolesService.hasEditPermissions()">
                 <div class="column">
                     <div class="field is-grouped is-pulled-right">
                         <p class="control">

@@ -12,7 +12,7 @@
                 <ng-container *ngIf="data.label!=='South' && data.label!=='Filter'; else southServiceTemplate">
                     <span class="is-pulled-right">
                         <input class="checkbox" type="checkbox" [checked]='isEnabled'
-                            (click)="toggleEnabled($event.target.checked)">
+                            (click)="toggleEnabled($event.target.checked)" [disabled]="!rolesService.hasEditPermissions()">
                         <button class="btn small-btn config-gear" data-show="quickview" data-target="quickviewDefault" data-toggle="quickview" (click)="showConfigurationInQuickview()">
                             <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
                                 data-tooltip="Configuration">
@@ -23,7 +23,8 @@
                 </ng-container>
                 <ng-template #southServiceTemplate>
                     <ng-container *ngIf="data.label==='South'">
-                        <button class="btn small-btn add-btn is-pulled-right" (click)="addSouthService()">
+                        <button *ngIf="rolesService.hasEditPermissions()"
+                            class="btn small-btn add-btn is-pulled-right" (click)="addSouthService()">
                             <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
                                 <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
                             </span>
@@ -93,7 +94,7 @@
                     </span>
                 </div>
                 <div class="is-pulled-right mr-1">
-                    <div class="dropdown is-hoverable">
+                    <div class="dropdown is-hoverable" *ngIf="source=='nodelist' || rolesService.hasEditPermissions()">
                         <div class="dropdown-trigger">
                             <button class="button is-white is-small" aria-haspopup="true" aria-controls="dropdown-menu3">
                                 <span class="icon is-small">
@@ -108,7 +109,8 @@
                                         <span>Details</span>
                                     </a>
                                 </ng-container>
-                                <a class="dropdown-item" (click)="deleteFilterOrService()">
+                                <a *ngIf="rolesService.hasEditPermissions()"
+                                    class="dropdown-item" (click)="deleteFilterOrService()">
                                     <span>Delete</span>
                                 </a>
                             </div>

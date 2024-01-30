@@ -2,7 +2,7 @@ import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { ConfigurationService, PingService, SchedulesService, ServicesApiService } from "./../../../../services";
+import { ConfigurationService, PingService, RolesService, SchedulesService, ServicesApiService } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription, interval } from "rxjs";
@@ -53,6 +53,7 @@ export class CustomNodeComponent implements OnChanges {
     private servicesApiService: ServicesApiService,
     public flowEditorService: FlowEditorService,
     private configService: ConfigurationService,
+    public rolesService: RolesService,
     private elRef: ElementRef,
     private ping: PingService) {
     this.route.queryParams.subscribe(params => {

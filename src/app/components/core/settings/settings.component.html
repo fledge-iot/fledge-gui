@@ -238,7 +238,7 @@
           </div>
         </div>
         <div class="column is-1"></div>
-        <div class="column is-3">
+        <div class="column is-3" *ngIf="!rolesService.hasDataViewRole()">
           <label class="label">Flow Editor</label>
           <div class="control">
             <input type="checkbox" (click)="setFlowEditorStatus($event.target.checked)"

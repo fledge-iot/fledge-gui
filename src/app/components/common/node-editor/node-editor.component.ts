@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, ProgressBarService, ResponseHandler, ServicesApiService, ToastService } from './../../../services';
+import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, ProgressBarService, ResponseHandler, RolesService, ServicesApiService, ToastService } from './../../../services';
 import { catchError, map, skip, takeUntil } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
 import { Subject, Subscription, forkJoin, of } from 'rxjs';
@@ -56,6 +56,7 @@ export class NodeEditorComponent implements OnInit {
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
     private toastService: ToastService,
+    public rolesService: RolesService,
     private response: ResponseHandler,
     public ngProgress: ProgressBarService,
     private router: Router) {
@@ -75,7 +76,9 @@ export class NodeEditorComponent implements OnInit {
   }
   @HostListener('click')
   onClick() {
-    this.flowEditorService.canvasClick.next({canvasClicked: true,  connectionId: this.selectedConnectionId});
+    if(this.rolesService.hasEditPermissions()){
+      this.flowEditorService.canvasClick.next({canvasClicked: true,  connectionId: this.selectedConnectionId});
+    }
   }
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
@@ -173,17 +176,17 @@ export class NodeEditorComponent implements OnInit {
                   let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
                   this.filterConfigurations.push(filterConfig);
                 })
-                createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService);
+                createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
               })
             }
             else {
-              createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService);
+              createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
             }
           }, 1);
         });
       }
       else {
-        createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService);
+        createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
       }
     }
   }

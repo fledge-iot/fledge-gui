@@ -28,7 +28,6 @@ const routes: Routes = [
   {
     path: 'flow',
     component: NodeEditorComponent,
-    canActivate: [RolesGuard]
   },
   {
     path: ':name/details',

@@ -30,7 +30,7 @@ type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {curve?: CurveFactory; }
 
 let editor = new NodeEditor<Schemes>();
-export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations, flowEditorService) {
+export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations, flowEditorService, rolesService) {
     const socket = new ClassicPreset.Socket("socket");
     editor = new NodeEditor<Schemes>();
     const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -141,7 +141,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(history);
     area.use(minimap);
 
-    if (source !== '' && source !== "nodelist") {
+    if (source !== '' && source !== "nodelist" && rolesService.hasEditPermissions()) {
         area.use(contextMenu);
         dock.add(() => {
             setTimeout(() => {
@@ -158,10 +158,10 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
             return new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C"})});
     }
 
-    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations);
+    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations, rolesService);
 }
 
-async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations) {
+async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations, rolesService) {
 
     if(source !== "nodelist"){
         const southPlugin = new South(socket, service);
@@ -244,9 +244,11 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                 }
             }
         }
-        const addService = new AddService();
-        await editor.addNode(addService);
-        await area.translate(addService.id, { x: 250*j, y: 250*k });
+        if(rolesService.hasEditPermissions()){
+            const addService = new AddService();
+            await editor.addNode(addService);
+            await area.translate(addService.id, { x: 250*j, y: 250*k });
+        }
     }
 
 
