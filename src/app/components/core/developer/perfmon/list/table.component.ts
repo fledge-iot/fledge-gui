@@ -42,6 +42,7 @@ export class PerfMonComponent implements OnInit {
           /** request completed */
           this.ngProgress.done();
           console.log(data.monitors);
+          // for table show (sorted by ts) latest record for each service per counter
           this.perfMonitors = data.monitors;
           
           var x = data.monitors.map( m => m.monitor);

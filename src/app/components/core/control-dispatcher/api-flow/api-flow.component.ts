@@ -10,7 +10,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
-import { ListManageServicesComponent } from '../../developer/manage-services/list-manage-services.component';
+import { ListAdditionalServicesComponent } from '../../developer/additional-services/list-additional-services.component';
 import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -20,7 +20,7 @@ import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-d
 })
 
 export class APIFlowComponent implements OnInit {
-  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
     apiFlows = [];
@@ -263,7 +263,7 @@ export class APIFlowComponent implements OnInit {
      */
     openServiceConfigureModal() {
       this.showConfigureModal = true;
-      this.listManageServicesComponent.showServices('dispatcher');
+      this.listAdditionalServicesComponent.showServices('dispatcher');
     }
 
     closeModal(id: string) {

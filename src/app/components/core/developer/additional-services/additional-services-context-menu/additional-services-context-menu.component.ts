@@ -5,12 +5,12 @@ import { ServicesApiService, RolesService } from '../../../../../services';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
 @Component({
-  selector: "app-manage-services-context-menu",
-  templateUrl: "./manage-services-context-menu.component.html",
-  styleUrls: ["./manage-services-context-menu.component.css"],
+  selector: "app-additional-services-context-menu",
+  templateUrl: "./additional-services-context-menu.component.html",
+  styleUrls: ["./additional-services-context-menu.component.css"],
 })
 
-export class ManageServicesContextMenuComponent implements OnInit {
+export class AdditionalServicesContextMenuComponent implements OnInit {
     @Input() service;
     @Input() index;
     @Output() notify: EventEmitter<any> = new EventEmitter<any>();

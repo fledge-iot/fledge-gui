@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
-import { ListManageServicesComponent } from '../../developer/manage-services/list-manage-services.component';
+import { ListAdditionalServicesComponent } from '../../developer/additional-services/list-additional-services.component';
 
 @Component({
   selector: 'app-add-dispatcher-service',
@@ -18,7 +18,7 @@ export class AddDispatcherServiceComponent implements OnInit {
   dispatcherServiceEnabled;
   showConfigureModal: boolean = false;
 
-  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
   @Output() serviceStatusEvent = new EventEmitter<boolean>();
   @Output() serviceConfigureModal = new EventEmitter<boolean>();
   

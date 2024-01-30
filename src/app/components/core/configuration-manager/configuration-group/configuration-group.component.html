@@ -19,7 +19,7 @@
                 </a>
               </h6>
             </li>
-            <ng-container *ngIf="!['notification', 'manage-services'].includes(from)">
+            <ng-container *ngIf="!['notification', 'additional-services'].includes(from)">
               <li [ngClass]="{'is-active': selectedGroup == 'Developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
                 <h6 class="is-6 is-small-font">
@@ -84,12 +84,12 @@
           </ng-container>
         </ng-template>
       </ng-container>
-      <ng-container *ngIf="!['notification', 'manage-services'].includes(from)">
+      <ng-container *ngIf="!['notification', 'additional-services'].includes(from)">
         <app-plugin-persist-data *ngIf="selectedGroup == 'Developer' && pages.includes(from)"
           [serviceStaus]="serviceStatus" [serviceName]="category?.name" [pluginName]="plugin">
         </app-plugin-persist-data>
       </ng-container>
-      <app-tab-navigation #tabNaigation *ngIf="groupTabs && !['notification', 'config-manager', 'manage-services'].includes(from)"
+      <app-tab-navigation #tabNaigation *ngIf="groupTabs && !['notification', 'config-manager', 'additional-services'].includes(from)"
         [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
     </div>
   </ng-template>

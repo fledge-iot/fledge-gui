@@ -1,4 +1,4 @@
-<div id="manage-service-modal" class="modal">
+<div id="additional-service-modal" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
@@ -13,7 +13,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false, {isCancelEvent: true})"></button>
     </header>
     <section class="modal-card-body">
-      <form name="manage-service-form" id="serviceForm" #fg="ngForm">
+      <form name="additional-service-form" id="serviceForm" #fg="ngForm">
         <div *ngIf="!isServiceAvailable" class="columns is-mobile">
           <div class="column">
             <div class="field is-horizontal">
@@ -34,7 +34,7 @@
           </div>
         </div>
         <div>
-          <app-configuration-group #configComponent *ngIf="category" [category]="category" [from]="'manage-services'"
+          <app-configuration-group #configComponent *ngIf="category" [category]="category" [from]="'additional-services'"
             (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validForm = $event"
             (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)">
           </app-configuration-group>
@@ -100,7 +100,7 @@
               </span>
             </p>
             <p class="control" *ngIf="serviceType === 'Management' && pollingScheduleID && isServiceEnabled">
-              <a class="button is-ghost title-name pl-0 pb-2" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'manage-services' }">
+              <a class="button is-ghost title-name pl-0 pb-2" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'additional-services' }">
                 Polling Schedule
               </a>
             </p>

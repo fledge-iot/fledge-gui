@@ -6,16 +6,16 @@ import { Subscription } from 'rxjs';
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../../services';
 import { SharedService } from '../../../../services/shared.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
-import { ManageServiceModalComponent } from './manage-service-modal/manage-service-modal.component';
-import { ManageServicesContextMenuComponent } from './manage-services-context-menu/manage-services-context-menu.component';
+import { AdditionalServiceModalComponent } from './additional-service-modal/additional-service-modal.component';
+import { AdditionalServicesContextMenuComponent } from './additional-services-context-menu/additional-services-context-menu.component';
 import { AvailableServices, Schedule, Service } from '../../../../models';
 
 @Component({
-  selector: "app-list-manage-services",
-  templateUrl: "./list-manage-services.component.html",
-  styleUrls: ["./list-manage-services.component.css"],
+  selector: "app-list-additional-services",
+  templateUrl: "./list-additional-services.component.html",
+  styleUrls: ["./list-additional-services.component.css"],
 })
-export class ListManageServicesComponent implements OnInit, OnDestroy {
+export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   expectedServices = [
     {
       "package": "fledge-service-notification",
@@ -69,8 +69,8 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
 
   service;
   public reenableButton = new EventEmitter<boolean>(false);
-  @ViewChild(ManageServiceModalComponent, { static: true }) serviceModal: ManageServiceModalComponent;
-  @ViewChildren(ManageServicesContextMenuComponent) contextMenus: QueryList<ManageServicesContextMenuComponent>;
+  @ViewChild(AdditionalServiceModalComponent, { static: true }) serviceModal: AdditionalServiceModalComponent;
+  @ViewChildren(AdditionalServicesContextMenuComponent) contextMenus: QueryList<AdditionalServicesContextMenuComponent>;
   
   @Input() navigateFromParent: string;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -343,7 +343,7 @@ export class ListManageServicesComponent implements OnInit, OnDestroy {
   }
 
   closeServiceModal() {
-    const serviceModal = <HTMLDivElement>document.getElementById('manage-service-modal');
+    const serviceModal = <HTMLDivElement>document.getElementById('additional-service-modal');
     if (serviceModal) {
       this.serviceModal.toggleModal(false);
     }

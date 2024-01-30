@@ -10,14 +10,14 @@
       </li>
       <li>
         <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
-          <span><i class="bi bi-graph-up"></i></span>
+          <span><i class="bi bi-graph-up" style="font-size:0.85rem;"></i></span>
           Assets &amp; Readings
         </a>
       </li>
       <article requiredViewEditorRole>
         <li>
           <a id=" south" routerLinkActive="is-active" routerLink='/south'>
-            <span><i class="bi bi-robot"></i></span>
+            <span><i class="bi bi-pc-display-horizontal" style="font-size:0.95rem;"></i></span>
             South
           </a>
         </li>
@@ -72,13 +72,13 @@
 
         <li>
           <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
-            <span><i class="bi bi-sliders2"></i></span>
+            <span><i class="bi bi-gear-wide-connected"></i></span>
             Configuration
           </a>
         </li>
         <li>
           <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
-            <span><i class="bi bi-calendar3"></i></span>
+            <span><i class="bi bi-calendar3" style="font-size:0.9rem;"></i></span>
             Schedules
           </a>
         </li>
@@ -104,8 +104,7 @@
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
             (click)="isLogsListOpen = !isLogsListOpen; $event.stopPropagation()">
-            <span><i class="bi bi-file-earmark-text"></i></span>
-            &nbsp;
+            <span><i class="bi bi-file-earmark-text mr-1"></i></span>
             <span>Logs</span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isLogsListOpen ? 'Collapse' : 'Expand'">

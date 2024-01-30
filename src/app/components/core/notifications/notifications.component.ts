@@ -11,7 +11,7 @@ import {
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-import { ListManageServicesComponent } from '../developer/manage-services/list-manage-services.component';
+import { ListAdditionalServicesComponent } from '../developer/additional-services/list-additional-services.component';
 
 import { DocService } from '../../../services/doc.service';
 
@@ -32,7 +32,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   viewPort: any = '';
 
   public notificationServiceRecord: any;
-  public availableServices = [];
+  public notificationServiceInstalled = false;
   private subscription: Subscription;
   private modalSub: Subscription;
   private viewPortSubscription: Subscription;
@@ -42,7 +42,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
   
   constructor(
     public servicesApiService: ServicesApiService,
@@ -72,14 +72,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   public async checkNotificationServiceStatus(refresh: boolean = false) {
-    await this.getInstalledServicesList();
-    if (this.availableServices.includes('notification')) {
+    await this.getInstalledServicesList();  
+    if (this.notificationServiceInstalled) {
       if (refresh) {
         this.checkServiceStatus();
         return;
       }
       this.checkInstalledServices();
     } else {
+      this.notificationServiceInstalled = false;
       this.isNotificationServiceAvailable = false;
       this.isNotificationServiceEnabled = false;
     }
@@ -92,7 +93,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       then(data => {
         /** request done */
         this.ngProgress.done();
-        this.availableServices = data['services'];
+        this.notificationServiceInstalled = data['services'].includes('notification');
       })
       .catch(error => {
         /** request done */
@@ -263,7 +264,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
    */
    openServiceConfigureModal() {
     this.showConfigureModal = true;
-    this.listManageServicesComponent.showServices('notification');
+    this.listAdditionalServicesComponent.showServices('notification');
   }
 
   onNotifyConfigureModal() {

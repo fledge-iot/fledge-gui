@@ -1,15 +1,18 @@
 <div class="container is-fluid">
   <div>
-    <ng-container *ngIf="isNotificationServiceAvailable == false || isNotificationServiceEnabled == false">
+    <ng-container *ngIf="isNotificationServiceEnabled === false">
       <article class="message is-warning">
         <div class="message-body">
-          Notification service is not added
-          or enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
-            (click)="openServiceConfigureModal()"><strong>Configure</strong></a>
-                    
-          <button (click)="checkNotificationServiceStatus(true)" class="button is-small"title="Recheck"  id="refresh-check">
+          <span *ngIf="notificationServiceInstalled === false">Notification service is not installed.</span>
+          <span *ngIf="notificationServiceInstalled && isNotificationServiceAvailable === false">Notification service is not
+            added.</span>
+          <span *ngIf="isNotificationServiceAvailable && isNotificationServiceEnabled === false">Notification service is not
+            enabled.</span>
+          &nbsp;<a *ngIf="rolesService.hasEditPermissions() && (notificationServiceInstalled === false || isNotificationServiceAvailable === false || isNotificationServiceEnabled === false)"
+          (click)="openServiceConfigureModal()"><strong>Configure</strong></a>
+          <button (click)="checkNotificationServiceStatus()" class="button is-small" id="refresh-check">
             <span class="icon">
-              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+              <i class="fa fa-sm fa-sync" aria-hidden="true" title="Recheck"></i>
             </span>
           </button>
           <span class="icon is-small tooltip is-pulled-right is-hovered custom-pad" data-tooltip="Help"
@@ -106,4 +109,4 @@
 </div>
 <app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>
 <app-view-logs></app-view-logs>
-<app-list-manage-services [hidden]="!showConfigureModal" [navigateFromParent]="'notification'" (notify)="onNotifyConfigureModal()"></app-list-manage-services>
+<app-list-additional-services [hidden]="!showConfigureModal" [navigateFromParent]="'notification'" (notify)="onNotifyConfigureModal()"></app-list-additional-services>
