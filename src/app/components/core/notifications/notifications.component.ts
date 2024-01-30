@@ -32,7 +32,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   viewPort: any = '';
 
   public notificationServiceRecord: any;
-  public availableServices = [];
+  public notificationServiceInstalled = false;
   private subscription: Subscription;
   private modalSub: Subscription;
   private viewPortSubscription: Subscription;
@@ -72,14 +72,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   public async checkNotificationServiceStatus(refresh: boolean = false) {
-    await this.getInstalledServicesList();
-    if (this.availableServices.includes('notification')) {
+    await this.getInstalledServicesList();  
+    if (this.notificationServiceInstalled) {
       if (refresh) {
         this.checkServiceStatus();
         return;
       }
       this.checkInstalledServices();
     } else {
+      this.notificationServiceInstalled = false;
       this.isNotificationServiceAvailable = false;
       this.isNotificationServiceEnabled = false;
     }
@@ -92,7 +93,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       then(data => {
         /** request done */
         this.ngProgress.done();
-        this.availableServices = data['services'];
+        this.notificationServiceInstalled = data['services'].includes('notification');
       })
       .catch(error => {
         /** request done */
