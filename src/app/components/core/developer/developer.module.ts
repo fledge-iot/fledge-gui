@@ -9,9 +9,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DeveloperGuard } from '../../../guards/developer.guard';
 import { DirectivesModule } from '../../../directives/directives.module';
 
-import { ListManageServicesComponent } from './manage-services/list-manage-services.component';
-import { ManageServiceModalComponent } from './manage-services/manage-service-modal/manage-service-modal.component';
-import { ManageServicesContextMenuComponent } from './manage-services/manage-services-context-menu/manage-services-context-menu.component';
+import { ListAdditionalServicesComponent } from './additional-services/list-additional-services.component';
+import { AdditionalServiceModalComponent } from './additional-services/additional-service-modal/additional-service-modal.component';
+import { AdditionalServicesContextMenuComponent } from './additional-services/additional-services-context-menu/additional-services-context-menu.component';
 import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
@@ -31,9 +31,9 @@ const routes: Routes = [
     component: InstallPythonPackageComponent
   },
   {
-    path: 'manage-services',
+    path: 'additional-services',
     canActivate: [DeveloperGuard],
-    component: ListManageServicesComponent
+    component: ListAdditionalServicesComponent
   }
 ];
 
@@ -42,9 +42,9 @@ const routes: Routes = [
     DeveloperComponent,
     ListPythonPackagesComponent,
     InstallPythonPackageComponent,
-    ListManageServicesComponent,
-    ManageServiceModalComponent,
-    ManageServicesContextMenuComponent
+    ListAdditionalServicesComponent,
+    AdditionalServiceModalComponent,
+    AdditionalServicesContextMenuComponent
   ],
   imports: [
     CommonModule,
@@ -55,6 +55,6 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ],
   providers: [DeveloperGuard],
-  exports: [ListManageServicesComponent, ManageServiceModalComponent]
+  exports: [ListAdditionalServicesComponent, AdditionalServiceModalComponent]
 })
 export class DeveloperModule { }

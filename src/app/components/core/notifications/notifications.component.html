@@ -106,4 +106,4 @@
 </div>
 <app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>
 <app-view-logs></app-view-logs>
-<app-list-manage-services [hidden]="!showConfigureModal" [navigateFromParent]="'notification'" (notify)="onNotifyConfigureModal()"></app-list-manage-services>
+<app-list-additional-services [hidden]="!showConfigureModal" [navigateFromParent]="'notification'" (notify)="onNotifyConfigureModal()"></app-list-additional-services>

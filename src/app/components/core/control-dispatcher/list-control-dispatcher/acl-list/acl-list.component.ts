@@ -6,7 +6,7 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
-import { ListManageServicesComponent } from '../../../developer/manage-services/list-manage-services.component';
+import { ListAdditionalServicesComponent } from '../../../developer/additional-services/list-additional-services.component';
 import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/ad
 })
 export class AclListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   controlAcls: any = [];
@@ -138,7 +138,7 @@ export class AclListComponent implements OnInit {
    */
   openServiceConfigureModal() {
     this.showConfigureModal = true;
-    this.listManageServicesComponent.showServices('dispatcher');
+    this.listAdditionalServicesComponent.showServices('dispatcher');
   }
 
   goToLink(urlSlug: string) {

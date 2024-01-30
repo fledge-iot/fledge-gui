@@ -44,7 +44,7 @@
                   <a *ngIf="!s.added && rolesService?.hasEditPermissions()" (click)="openServiceModal(s)" class="button is-text text-btn">
                     Add
                   </a>
-                  <app-manage-services-context-menu *ngIf="s?.name" [service]="s" [index]="i" (notify)="onNotifyEvent($event)" (click)="setService(s)"></app-manage-services-context-menu>
+                  <app-additional-services-context-menu *ngIf="s?.name" [service]="s" [index]="i" (notify)="onNotifyEvent($event)" (click)="setService(s)"></app-additional-services-context-menu>
                 </td>             
               </tr>
               </ng-container>
@@ -68,7 +68,7 @@
       </div>
     </div>
 </div>
-<app-manage-service-modal (notify)="onNotifyEvent($event)"></app-manage-service-modal>
+<app-additional-service-modal (notify)="onNotifyEvent($event)"></app-additional-service-modal>
 
 <app-confirmation-dialog id="delete-confirmation-dialog">
   <header class="modal-card-head">

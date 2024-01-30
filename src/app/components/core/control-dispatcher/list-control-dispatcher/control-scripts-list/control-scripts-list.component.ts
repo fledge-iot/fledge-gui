@@ -6,7 +6,7 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { DocService } from '../../../../../services/doc.service';
-import { ListManageServicesComponent } from '../../../developer/manage-services/list-manage-services.component';
+import { ListAdditionalServicesComponent } from '../../../developer/additional-services/list-additional-services.component';
 import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -17,7 +17,7 @@ import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/ad
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   script;
@@ -108,7 +108,7 @@ export class ControlScriptsListComponent implements OnInit {
    */
   openServiceConfigureModal() {
     this.showConfigureModal = true;
-    this.listManageServicesComponent.showServices('dispatcher');
+    this.listAdditionalServicesComponent.showServices('dispatcher');
   }
 
   onNotify(event) {

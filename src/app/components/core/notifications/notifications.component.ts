@@ -11,7 +11,7 @@ import {
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-import { ListManageServicesComponent } from '../developer/manage-services/list-manage-services.component';
+import { ListAdditionalServicesComponent } from '../developer/additional-services/list-additional-services.component';
 
 import { DocService } from '../../../services/doc.service';
 
@@ -42,7 +42,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
   
   constructor(
     public servicesApiService: ServicesApiService,
@@ -263,7 +263,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
    */
    openServiceConfigureModal() {
     this.showConfigureModal = true;
-    this.listManageServicesComponent.showServices('notification');
+    this.listAdditionalServicesComponent.showServices('notification');
   }
 
   onNotifyConfigureModal() {

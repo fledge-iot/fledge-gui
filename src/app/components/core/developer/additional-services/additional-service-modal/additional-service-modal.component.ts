@@ -20,11 +20,11 @@ import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
 import { Service } from '../../../../../models';
 
 @Component({
-  selector: 'app-manage-service-modal',
-  templateUrl: './manage-service-modal.component.html',
-  styleUrls: ['./manage-service-modal.component.css']
+  selector: 'app-additional-service-modal',
+  templateUrl: './additional-service-modal.component.html',
+  styleUrls: ['./additional-service-modal.component.css']
 })
-export class ManageServiceModalComponent {
+export class AdditionalServiceModalComponent {
   enabled: Boolean;
   category: any;
   isServiceAvailable = false;
@@ -106,7 +106,7 @@ export class ManageServiceModalComponent {
   public toggleModal(isOpen: Boolean, emitData = null) {
     this.serviceInstallationState = false;
     this.reenableButton.emit(false);
-    const serviceModal = <HTMLDivElement>document.getElementById('manage-service-modal');
+    const serviceModal = <HTMLDivElement>document.getElementById('additional-service-modal');
     if (serviceModal) {
       if (isOpen) {
         this.changedConfig = null;

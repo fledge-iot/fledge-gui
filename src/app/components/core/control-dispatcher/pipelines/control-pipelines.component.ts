@@ -6,7 +6,7 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { Router } from '@angular/router';
 import { DocService } from '../../../../services/doc.service';
 import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
-import { ListManageServicesComponent } from '../../developer/manage-services/list-manage-services.component';
+import { ListAdditionalServicesComponent } from '../../developer/additional-services/list-additional-services.component';
 import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-d
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild(ListManageServicesComponent, { static: true }) listManageServicesComponent: ListManageServicesComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   pipelines = [];
@@ -176,7 +176,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
  */
   openServiceConfigureModal() {
     this.showConfigureModal = true;
-    this.listManageServicesComponent.showServices('dispatcher');
+    this.listAdditionalServicesComponent.showServices('dispatcher');
   }
 
   onNotify(event) {
