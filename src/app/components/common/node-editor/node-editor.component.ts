@@ -64,7 +64,7 @@ export class NodeEditorComponent implements OnInit {
       if (params['source']) {
         this.source = params['source'];
         this.getSouthboundServices();
-        if(this.source !== "nodelist"){
+        if (this.source !== "nodelist") {
           this.getFilterPipeline();
         }
       }
@@ -76,8 +76,8 @@ export class NodeEditorComponent implements OnInit {
   }
   @HostListener('click')
   onClick() {
-    if(this.rolesService.hasEditPermissions()){
-      this.flowEditorService.canvasClick.next({canvasClicked: true,  connectionId: this.selectedConnectionId});
+    if (this.rolesService.hasEditPermissions()) {
+      this.flowEditorService.canvasClick.next({ canvasClicked: true, connectionId: this.selectedConnectionId });
     }
   }
   ngOnInit(): void {
@@ -86,11 +86,11 @@ export class NodeEditorComponent implements OnInit {
       this.showFilterConfiguration = data.showFilterConfiguration;
       this.showLogs = data.showLogs;
       this.serviceName = data.serviceName;
-      if(this.showPluginConfiguration){
+      if (this.showPluginConfiguration) {
         this.unsavedChangesInFilterForm = false;
         this.getCategory();
       }
-      if(this.showLogs){
+      if (this.showLogs) {
         this.unsavedChangesInFilterForm = false;
       }
     })
@@ -118,7 +118,7 @@ export class NodeEditorComponent implements OnInit {
         }
       }
       else {
-        if(this.isfilterPipelineFetched){
+        if (this.isfilterPipelineFetched) {
           let updatedPipeline = getUpdatedFilterPipeline();
           if (updatedPipeline && updatedPipeline.length > 0) {
             this.updatedFilterPipeline = updatedPipeline;
@@ -130,10 +130,10 @@ export class NodeEditorComponent implements OnInit {
       }
     })
     this.connectionSubscription = this.flowEditorService.connectionInfo.subscribe(data => {
-      if(data.selected){
+      if (data.selected) {
         this.selectedConnectionId = data.id;
       }
-      else{
+      else {
         this.selectedConnectionId = "";
       }
     })
@@ -146,8 +146,8 @@ export class NodeEditorComponent implements OnInit {
       if (this.initialApiCallsStack.length > 0) {
         this.ngProgress.start();
         forkJoin(this.initialApiCallsStack).subscribe((result) => {
+          this.ngProgress.done();
           result.forEach((r: any) => {
-            this.ngProgress.done();
             if (r.status) {
               if (r.status === 404) {
                 this.filterPipeline = [];
@@ -169,20 +169,18 @@ export class NodeEditorComponent implements OnInit {
             }
           });
           this.initialApiCallsStack = [];
-          setTimeout(() => {
-            if (this.filterConfigApiCallsStack.length > 0) {
-              forkJoin(this.filterConfigApiCallsStack).subscribe((result) => {
-                result.forEach((r: any) => {
-                  let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
-                  this.filterConfigurations.push(filterConfig);
-                })
-                createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
+          if (this.filterConfigApiCallsStack.length > 0) {
+            forkJoin(this.filterConfigApiCallsStack).subscribe((result) => {
+              result.forEach((r: any) => {
+                let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
+                this.filterConfigurations.push(filterConfig);
               })
-            }
-            else {
               createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
-            }
-          }, 1);
+            })
+          }
+          else {
+            createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
+          }
         });
       }
       else {
@@ -236,9 +234,9 @@ export class NodeEditorComponent implements OnInit {
       })))
   }
 
-  createFilterConfigurationsArray(){
+  createFilterConfigurationsArray() {
     let flattenedFilterPipeline = [].concat(...this.filterPipeline)
-    flattenedFilterPipeline.forEach((filterName)=>{
+    flattenedFilterPipeline.forEach((filterName) => {
       this.getFilterConfiguration(filterName)
     })
   }
@@ -263,9 +261,9 @@ export class NodeEditorComponent implements OnInit {
 
   save() {
     let updatedPipeline = getUpdatedFilterPipeline();
-    if(updatedPipeline && updatedPipeline.length > 0){
+    if (updatedPipeline && updatedPipeline.length > 0) {
       this.updatedFilterPipeline = updatedPipeline;
-      if(this.isPipelineUpdated() && this.isEachFilterConfigured()){
+      if (this.isPipelineUpdated() && this.isEachFilterConfigured()) {
         // console.log("pipeline updated")
         this.updateFilterPipeline();
         console.log(this.updatedFilterPipeline);
@@ -286,25 +284,25 @@ export class NodeEditorComponent implements OnInit {
         });
   }
 
-  isPipelineUpdated(){
-    if(this.filterPipeline.length !== this.updatedFilterPipeline.length){
+  isPipelineUpdated() {
+    if (this.filterPipeline.length !== this.updatedFilterPipeline.length) {
       return true;
     }
-    for(let i=0; i<this.filterPipeline.length; i++){
-      if(typeof(this.filterPipeline[i]) !== typeof(this.updatedFilterPipeline[i])){
+    for (let i = 0; i < this.filterPipeline.length; i++) {
+      if (typeof (this.filterPipeline[i]) !== typeof (this.updatedFilterPipeline[i])) {
         return true;
       }
-      if(typeof(this.filterPipeline[i]) === "string"){
-        if(this.filterPipeline[i] !== this.updatedFilterPipeline[i]){
+      if (typeof (this.filterPipeline[i]) === "string") {
+        if (this.filterPipeline[i] !== this.updatedFilterPipeline[i]) {
           return true;
         }
       }
-      else{
-        if(this.filterPipeline[i].length !== this.updatedFilterPipeline[i].length){
+      else {
+        if (this.filterPipeline[i].length !== this.updatedFilterPipeline[i].length) {
           return true;
         }
-        for(let j=0; j<this.filterPipeline[i].length; j++){
-          if(this.filterPipeline[i][j] !== this.updatedFilterPipeline[i][j]){
+        for (let j = 0; j < this.filterPipeline[i].length; j++) {
+          if (this.filterPipeline[i][j] !== this.updatedFilterPipeline[i][j]) {
             return true;
           }
         }
@@ -313,22 +311,22 @@ export class NodeEditorComponent implements OnInit {
     return false;
   }
 
-  deleteSelectedConnection(){
-    if(this.selectedConnectionId){
+  deleteSelectedConnection() {
+    if (this.selectedConnectionId) {
       deleteConnection(this.selectedConnectionId);
     }
   }
 
   isEachFilterConfigured() {
-    for(let i=0; i<this.updatedFilterPipeline.length; i++){
-      if(typeof(this.updatedFilterPipeline[i]) === "string"){
-        if(this.updatedFilterPipeline[i] === "Filter"){
+    for (let i = 0; i < this.updatedFilterPipeline.length; i++) {
+      if (typeof (this.updatedFilterPipeline[i]) === "string") {
+        if (this.updatedFilterPipeline[i] === "Filter") {
           console.log("filter configuration not added");
           return false;
         }
       }
       else {
-        if(this.updatedFilterPipeline[i].indexOf("Filter") !== -1){
+        if (this.updatedFilterPipeline[i].indexOf("Filter") !== -1) {
           console.log("filter configuration not added");
           return false;
         }
@@ -379,7 +377,7 @@ export class NodeEditorComponent implements OnInit {
     const noChange = isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration);
     return noChange;
   }
-  
+
   checkFilterFormState() {
     const noChange = !this.unsavedChangesInFilterForm;
     return noChange;

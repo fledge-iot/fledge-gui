@@ -139,23 +139,25 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(dock);
     // area.use(scopes);
     area.use(history);
-    area.use(minimap);
-
-    if (source !== '' && source !== "nodelist" && rolesService.hasEditPermissions()) {
-        area.use(contextMenu);
-        dock.add(() => {
-            setTimeout(() => {
-                let dropStrategy: any = dock.dropStrategy;
-                let dsEditorNodes = dropStrategy.editor.nodes;
-                let addedFiltersIdColl = [];
-                for(let i=0; i<dsEditorNodes.length; i++){
-                    if(dsEditorNodes[i].label === 'Filter'){
-                        addedFiltersIdColl.push(dsEditorNodes[i].id)
+    
+    if (source !== '' && source !== "nodelist") {
+        area.use(minimap);
+        if(rolesService.hasEditPermissions()){
+            // area.use(contextMenu);
+            dock.add(() => {
+                setTimeout(() => {
+                    let dropStrategy: any = dock.dropStrategy;
+                    let dsEditorNodes = dropStrategy.editor.nodes;
+                    let addedFiltersIdColl = [];
+                    for(let i=0; i<dsEditorNodes.length; i++){
+                        if(dsEditorNodes[i].label === 'Filter'){
+                            addedFiltersIdColl.push(dsEditorNodes[i].id)
+                        }
                     }
-                }
-                flowEditorService.showAddFilterIcon.next({addedFiltersIdColl: addedFiltersIdColl});
-            }, 10);
-            return new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C"})});
+                    flowEditorService.showAddFilterIcon.next({addedFiltersIdColl: addedFiltersIdColl});
+                }, 10);
+                return new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C"})});
+        }
     }
 
     createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations, rolesService);
