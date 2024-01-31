@@ -178,7 +178,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           if (bucketStorageService.length) {
             this.servicesRecord.push(bucketStorageService[0]);
           }
-
+          this.sharedService.allServicesInfo.next(this.servicesRecord);
           this.hideLoadingSpinner();
         },
         (error) => {

@@ -27,7 +27,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   // To hold the changed configuration values of a plugin
   configFormValues = {};
 
-  pages = ['south', 'north', 'notification'];
+  pages = ['south', 'north', 'notification', 'additional-services'];
   @Input() from;
   @Input() sourceName;
   categoryKey = '';

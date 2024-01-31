@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ProgressBarService, SchedulesService, ServicesApiService, SharedService } from '../../../../services';
+import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
+import { ListAdditionalServicesComponent } from '../../developer/additional-services/list-additional-services.component';
 
 @Component({
   selector: 'app-add-dispatcher-service',
@@ -15,13 +16,20 @@ export class AddDispatcherServiceComponent implements OnInit {
   dispatcherServiceInstalled;
   dispatcherServiceAdded;
   dispatcherServiceEnabled;
+  showConfigureModal: boolean = false;
+
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @Output() serviceStatusEvent = new EventEmitter<boolean>();
+  @Output() serviceConfigureModal = new EventEmitter<boolean>();
+  
   constructor(
     public controlService: ControlDispatcherService,
     public sharedService: SharedService,
     public schedulesService: SchedulesService,
     public servicesApiService: ServicesApiService,
     public ngProgress: ProgressBarService,
-    public docService: DocService
+    public docService: DocService,
+    public rolesService: RolesService
   ) { }
 
   ngOnInit(): void {
@@ -43,6 +51,7 @@ export class AddDispatcherServiceComponent implements OnInit {
           this.dispatcherServiceInstalled = false;
           this.dispatcherServiceAdded = false;
           this.dispatcherServiceEnabled = false;
+          this.serviceStatusEvent.emit(this.dispatcherServiceInstalled && this.dispatcherServiceAdded);
         }
       })
       .catch(error => {
@@ -69,6 +78,7 @@ export class AddDispatcherServiceComponent implements OnInit {
           if (schedule?.enabled) {
             this.dispatcherServiceEnabled = true;
           }
+          this.serviceStatusEvent.emit(this.dispatcherServiceInstalled && this.dispatcherServiceAdded);
         },
         error => {
           /** request done */
@@ -85,7 +95,12 @@ export class AddDispatcherServiceComponent implements OnInit {
     this.controlService.triggerRefreshEvent.next(tab);
   }
 
-
+  /**
+   * Open Configure Service modal
+   */
+  openConfigureModal() {
+    this.serviceConfigureModal.emit(true);
+  }
 
   public ngOnDestroy(): void {
     if (this.viewPortSubscription) {
