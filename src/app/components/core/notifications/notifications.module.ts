@@ -13,7 +13,7 @@ import { NotificationsComponent } from './notifications.component';
 import { ServicesApiService, NotificationsService } from '../../../services';
 import { AddNotificationWizardComponent } from './add-notification-wizard/add-notification-wizard.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
-import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
+import { DeveloperModule } from '../developer/developer.module';
 import { ServiceResolver } from '../../../resolver/service.resolver';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
@@ -35,8 +35,7 @@ const routes: Routes = [
   declarations: [
     NotificationsComponent,
     AddNotificationWizardComponent,
-    NotificationModalComponent,
-    NotificationServiceModalComponent
+    NotificationModalComponent
   ],
   imports: [
     FormsModule,
@@ -49,7 +48,8 @@ const routes: Routes = [
     FilterModule,
     SharedModule,
     NumberInputDebounceModule,
-    PaginationModule
+    PaginationModule,
+    DeveloperModule
   ],
   providers: [RolesGuard, ServicesApiService, NotificationsService],
 })

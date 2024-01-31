@@ -64,6 +64,10 @@ hr {
   border-top-right-radius: 3px;
 }
 
-.modal-subtitle {
-  margin-top: 0.35rem !important;
+.service-info {
+  white-space: nowrap;
+}
+
+.service-info-padding {
+  padding-left: 6.1rem !important;
 }

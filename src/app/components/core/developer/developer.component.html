@@ -1,14 +1,29 @@
 <div class="container is-fluid">
   <div class="card">
     <div class="card-content">
-      <p class="subtitle">
-        <b>Python</b>
-      </p>
       <div class="content">
         <div class="columns">
           <div class="column">
-            <a routerLink="/developer/python/package/list">Manage packages</a>
-            <span class="help">View/install Python packages</span>
+            <span>
+              <a routerLink="/developer/python/package/list">Manage Python Packages</a>
+              <span class="icon pl-4 is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-hovered" data-tooltip="Help"
+                (click)="goToLink('importing-python-packages')">
+                <i class="far fa-question-circle fa-sm"></i>
+              </span>
+            </span>
+            <span class="help">View/install Python Packages</span>
+          </div>
+          <div class="column">
+            <span>
+              <a routerLink="/developer/additional-services">Additional Services</a>
+              <span class="icon pl-4 is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-hovered" data-tooltip="Help"
+                (click)="goToLink('additional-services')">
+                <i class="far fa-question-circle fa-sm"></i>
+              </span>
+            </span>
+            <span class="help">
+              Add, remove, disable or enable services that can <br/> extend the functionality of Fledge.
+            </span>
           </div>
         </div>
       </div>

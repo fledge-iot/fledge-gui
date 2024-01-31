@@ -11,7 +11,8 @@ import {
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
+import { ListAdditionalServicesComponent } from '../developer/additional-services/list-additional-services.component';
+
 import { DocService } from '../../../services/doc.service';
 
 @Component({
@@ -31,18 +32,18 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   viewPort: any = '';
 
   public notificationServiceRecord: any;
-  public availableServices = [];
+  public notificationServiceInstalled = false;
   private subscription: Subscription;
   private modalSub: Subscription;
   private viewPortSubscription: Subscription;
   public showSpinner = false;
-  public notificationServiceData = {};
+  public showConfigureModal = false;
 
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  @ViewChild(NotificationServiceModalComponent, { static: true }) notificationServiceModal: NotificationServiceModalComponent;
-
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  
   constructor(
     public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
@@ -71,14 +72,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   public async checkNotificationServiceStatus(refresh: boolean = false) {
-    await this.getInstalledServicesList();
-    if (this.availableServices.includes('notification')) {
+    await this.getInstalledServicesList();  
+    if (this.notificationServiceInstalled) {
       if (refresh) {
         this.checkServiceStatus();
         return;
       }
       this.checkInstalledServices();
     } else {
+      this.notificationServiceInstalled = false;
       this.isNotificationServiceAvailable = false;
       this.isNotificationServiceEnabled = false;
     }
@@ -91,7 +93,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       then(data => {
         /** request done */
         this.ngProgress.done();
-        this.availableServices = data['services'];
+        this.notificationServiceInstalled = data['services'].includes('notification');
       })
       .catch(error => {
         /** request done */
@@ -231,10 +233,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public enableNotificationService() {
-    this.notificationServiceModal.enableNotificationService(this.notificationServiceName);
-  }
-
   public getSchedules(): void {
     this.schedulesService.getSchedules().
       subscribe(
@@ -260,21 +258,24 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           }
         });
   }
-
+  
   /**
-   * Open Notification Settings modal
+   * Open Configure Service modal
    */
-  openNotificationServiceModal() {
-    this.notificationServiceData = {
-      notificationServiceAvailable: this.isNotificationServiceAvailable,
-      notificationServiceEnabled: this.isNotificationServiceEnabled,
-      notificationServiceName: this.notificationServiceName
-    };
-    this.notificationServiceModal.toggleModal(true);
+   openServiceConfigureModal() {
+    this.showConfigureModal = true;
+    this.listAdditionalServicesComponent.showServices('notification');
+  }
+
+  onNotifyConfigureModal() {
+    // enabling/disabling service is taking time to get updated state, so need to add some wait
+    setTimeout(() => {
+      this.checkNotificationServiceStatus(true);
+    }, 3000);
   }
 
   goToLink(urlSlug: string) {
-    this.docService.goToNotificationDocLink(urlSlug);
+    this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 
   ngOnDestroy() {

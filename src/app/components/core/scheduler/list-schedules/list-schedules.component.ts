@@ -39,17 +39,15 @@ export class ListSchedulesComponent implements OnInit {
            *
            * backup - backup hourly and, backup on demand service
            * certificate checker - Certificate checker service
-           * dispatcher_c - The Dispatcher service
-           * notification_c - The Notification service
            * purge - Purge service
            * purge_system : Purge System service
            * restore - Restore on demand service
            * stats collection - Stats collection service
-           * management : Management service
            *
            */
           data.schedules.forEach(sch => {
-            if (!['south_c', 'north_c', 'north_C', 'south', 'north', 'notification_c', 'automation_script'].includes(sch.processName)) {
+            // NOTE: Management service has two (2) schedules
+            if (!['south_c', 'north_c', 'north_C', 'south', 'north', 'notification_c', 'automation_script', 'dispatcher_c', 'bucket_storage_c', 'management', 'manage'].includes(sch.processName)) {
               this.scheduleData.push(sch);
             }
           });
