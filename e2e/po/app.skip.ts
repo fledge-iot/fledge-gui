@@ -34,7 +34,6 @@ export class SkipLogin {
   }
 
   getAppStatus() {
-    cy.wait(2000); // slight delay before checking app status
     cy.get('app-navbar .navbar-menu .icon').should('be.visible')
   }
 
