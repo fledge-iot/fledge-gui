@@ -12,9 +12,7 @@ import { DirectivesModule } from '../../../directives/directives.module';
 import { ListAdditionalServicesComponent } from './additional-services/list-additional-services.component';
 import { AdditionalServiceModalComponent } from './additional-services/additional-service-modal/additional-service-modal.component';
 import { AdditionalServicesContextMenuComponent } from './additional-services/additional-services-context-menu/additional-services-context-menu.component';
-
 import { PerfMonComponent } from './perfmon/list/table.component'
-
 import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
