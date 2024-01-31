@@ -48,7 +48,7 @@ export class AdditionalServiceModalComponent {
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
-  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
+  @Output() notifyService: EventEmitter<any> = new EventEmitter<any>();
 
   changedConfig: any;
   categoryCopy: { name: string; config: Object; };
@@ -119,7 +119,7 @@ export class AdditionalServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      this.notify.emit(emitData);
+      this.notifyService.emit(emitData);
       serviceModal.classList.remove('is-active');
       this.category = '';
       this.service = <Service>{};

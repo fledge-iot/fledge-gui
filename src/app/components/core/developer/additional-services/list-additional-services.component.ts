@@ -372,9 +372,13 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       this.notify.emit(event);
       return;
     }
-    if (!event?.state && !this.navigateFromParent) {
-      this.getData();
-      return;
+    if (!event?.state) {
+      if (this.navigateFromParent) {
+        this.notify.emit(event);
+      } else {
+        this.getData();
+      }
+      return;    
     }
     switch (event?.state) {
       case 'delete':
