@@ -1,3 +1,8 @@
 .add-button {
   margin: 5px;
 }
+
+.python-package-breadcrumb {
+  display: flex;
+  flex-grow: 1;
+}

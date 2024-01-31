@@ -8,7 +8,7 @@
         <div #serviceDropDown id="service-dropdown-{{controlIndex}}" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(serviceDropDown.id)" class="button is-small" aria-haspopup="true"
-              aria-controls="dropdown-menu">
+              aria-controls="dropdown-menu" [ngClass]="{'required-field': !config.service}">
               <span>{{config?.service? config?.service : 'Select south service'}}</span>
               <span class="icon is-small">
                 <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
