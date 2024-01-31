@@ -122,7 +122,7 @@
             <div class="dropdown is-left" id="fledge-info" (click)="toggleInfoDropdown()">
               <div class="dropdown-trigger">
                 <a id="hover-link" (click)="getServiceStatus()">
-                  <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                  <span id="service-status" class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                     <i class="fa fa-sm fa-circle parent-icon"> </i>
                   </span>
                   <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0,
@@ -217,7 +217,7 @@
                   <a id="hover-link" (mouseover)="getServiceStatus()"
                     [ngClass]="{'default-cursor': this.servicesRecord.length === 0}">
                     <div>
-                      <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                      <span id="service-status" class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                         <i class="fa fa-sm fa-circle parent-icon"> </i>
                       </span>
                       <b *ngIf="pingData['hostName']  && pingData['serviceName']">

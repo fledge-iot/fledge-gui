@@ -34,7 +34,7 @@ export class SkipLogin {
   }
 
   getAppStatus() {
-    cy.get('app-navbar .navbar-menu .icon').should('be.visible')
+    cy.get('#service-status').should('be.visible')
   }
 
   getReceived() {
