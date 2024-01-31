@@ -38,15 +38,15 @@ export class SkipLogin {
   }
 
   getReceived() {
-    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(2)').invoke('text')
+    return cy.get('#received-reading').invoke('text')
   }
 
   getSent() {
-    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(3)').invoke('text')
+    return cy.get('#sent-reading').invoke('text')
   }
 
   getUptime() {
-    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(4)').invoke('text')
+    return cy.get('#uptime').invoke('text')
   }
 
   isDashboardTimeDropdownPresent() {

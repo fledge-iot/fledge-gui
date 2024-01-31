@@ -50,19 +50,19 @@
               <div class="dropdown-content">
                 <div class="dropdown-item">
                   <table>
-                    <tr>
+                    <tr id="received-reading">
                       <td class="has-text-left">Received:&nbsp;</td>
                       <td>
                         <b>{{pingData['dataRead'] | number}}</b>
                       </td>
                     </tr>
-                    <tr>
+                    <tr id="sent-reading">
                       <td class="has-text-left">Sent: </td>
                       <td>
                         <b>{{pingData['dataSent'] | number}}</b>
                       </td>
                     </tr>
-                    <tr>
+                    <tr id="uptime">
                       <td class="has-text-left">Uptime: </td>
                       <td>
                         <b>{{uptime}}</b>
@@ -138,19 +138,19 @@
                     <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
                     <hr class="dropdown-divider">
                     <table>
-                      <tr>
+                      <tr id="received-reading">
                         <td class="has-text-left">Received:&nbsp;</td>
                         <td>
                           <b>{{pingData['dataRead'] | number}}</b>
                         </td>
                       </tr>
-                      <tr>
+                      <tr id="sent-reading">
                         <td class="has-text-left">Sent: </td>
                         <td>
                           <b>{{pingData['dataSent'] | number}}</b>
                         </td>
                       </tr>
-                      <tr>
+                      <tr id="uptime">
                         <td class="has-text-left">Uptime: </td>
                         <td>
                           <b>{{uptime}}</b>
@@ -277,16 +277,16 @@
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span *ngIf="pingInfo.isSafeMode" class="tag is-dark is-rounded">SAFE MODE</span>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <div *ngIf='pingInfo.isAlive' class="control">
+            <div id="received-reading" *ngIf='pingInfo.isAlive' class="control">
               Received:
               <b>{{pingData['dataRead'] | number}}</b>
             </div>
-            <div *ngIf='pingInfo.isAlive' class="control">
+            <div id="sent-reading" *ngIf='pingInfo.isAlive' class="control">
               Sent:
               <b>{{pingData['dataSent'] | number}}</b>
             </div>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <div *ngIf='pingInfo.isAlive' class="control">
+            <div id="uptime" *ngIf='pingInfo.isAlive' class="control">
               Uptime:
               <b>{{uptime}}</b>
             </div>
