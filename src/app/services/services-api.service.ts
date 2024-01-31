@@ -77,6 +77,15 @@ export class ServicesApiService {
   }
 
   /**
+   *  GET  | /fledge/service/available
+   */
+  async getAvailableServices() {
+    return await this.http.get(`${this.GET_SERVICES_URL}/available`).pipe(
+      map(response => response),
+      catchError(error => throwError(error))).toPromise();
+  }
+
+  /**
    *  GET  | /fledge/plugins/available
    */
   getAvailablePlugins(pluginType: string) {

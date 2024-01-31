@@ -291,7 +291,8 @@ a.dropdown-item:hover {
 }
 
 #refresh-check,
-#refresh-tree {
+#refresh-tree,
+#config-icon {
   vertical-align: middle;
   background: none;
   border: none;
@@ -432,8 +433,15 @@ span.tooltip {
   font-weight: 500;
 }
 
+.cog-icon {
+  margin: auto;
+}
+
+[hidden] {
+  display: none !important;
+}
+
 .required-field {
   border-color: red;
 }
-
 /*****************/

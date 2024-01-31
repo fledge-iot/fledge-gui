@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-    <app-add-dispatcher-service></app-add-dispatcher-service>
+    <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="openServiceConfigureModal()"></app-add-dispatcher-service>
     <div class="card">
         <header class="card-header">
             <div id="control-api-flow" class="card-header-title">
@@ -12,6 +12,9 @@
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
+            <div *ngIf="isServiceAvailable" class="cog-icon">
+                <app-dispatcher-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-dispatcher-service-config>
+            </div>
             <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
                 data-tooltip="Help" (click)="goToLink('api-control-invocation')">
                 <i class="far fa-question-circle"></i>
@@ -148,3 +151,4 @@
         <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow('confirmation-delete-dialog')" [appDisableUntilResponse]="reenableButton">Delete</button>
     </footer>
 </app-confirmation-dialog>
+<app-list-additional-services [hidden]="!showConfigureModal" [navigateFromParent]="'dispatcher'" (notify)="onNotify($event)"></app-list-additional-services>

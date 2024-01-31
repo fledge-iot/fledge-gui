@@ -6,6 +6,8 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
+import { ListAdditionalServicesComponent } from '../../../developer/additional-services/list-additional-services.component';
+import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
   selector: 'app-acl-list',
@@ -13,12 +15,18 @@ import { DocService } from '../../../../../services/doc.service';
   styleUrls: ['./acl-list.component.css']
 })
 export class AclListComponent implements OnInit {
-  controlAcls: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
+  controlAcls: any = [];
+  
   acl;
+  isServiceAvailable = false;
   private subscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal: boolean = false;
 
   constructor(
     private aclService: AclService,
@@ -125,8 +133,23 @@ export class AclListComponent implements OnInit {
       });
   }
 
+  /**
+   * Open Configure Service modal
+   */
+  openServiceConfigureModal() {
+    this.showConfigureModal = true;
+    this.listAdditionalServicesComponent.showServices('dispatcher');
+  }
+
   goToLink(urlSlug: string) {
     this.docService.goToSetPointControlDocLink(urlSlug);
+  }
+
+  onNotify(event) {
+    if (event?.isCancelEvent) {
+      return;
+    }
+    this.addDispatcherServiceComponent.getInstalledServicesList();
   }
 
   public ngOnDestroy(): void {

@@ -229,7 +229,7 @@
               [checked]="developerFeaturesService.getDeveloperFeatureControl()">
           </div>
         </div>
-        <div class="column is-2"></div>
+        <div *ngIf="rolesService.hasEditPermissions()" class="column is-2"></div>
         <div class="column is-3">
           <label class="label">Readings Graph Alpha Control</label>
           <div class="control">
