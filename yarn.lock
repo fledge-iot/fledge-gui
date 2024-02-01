@@ -4565,14 +4565,13 @@ cypress-multi-reporters@^1.6.3:
     debug "^4.3.4"
     lodash "^4.17.21"
 
-cypress@~13.1.0:
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.1.0.tgz#18f268e66662cd91b1766db18bd1f63a66592205"
-  integrity sha512-LUKxCYlB973QBFls1Up4FAE9QIYobT+2I8NvvAwMfQS2YwsWbr6yx7y9hmsk97iqbHkKwZW3MRjoK1RToBFVdQ==
+cypress@~13.6.3:
+  version "13.6.3"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.6.3.tgz#54f03ca07ee56b2bc18211e7bd32abd2533982ba"
+  integrity sha512-d/pZvgwjAyZsoyJ3FOsJT5lDsqnxQ/clMqnNc++rkHjbkkiF2h9s0JsZSyyH4QXhVFW3zPFg82jD25roFLOdZA==
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
-    "@types/node" "^16.18.39"
     "@types/sinonjs__fake-timers" "8.1.1"
     "@types/sizzle" "^2.3.2"
     arch "^2.2.0"

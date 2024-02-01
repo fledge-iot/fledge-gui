@@ -39,7 +39,7 @@ yarn-error.log
 /e2e/*.js
 /e2e/*.map
 /e2e/reports/*
-/cypress/screenshots/*
+/cypress/*
 
 # System Files
 .DS_Store

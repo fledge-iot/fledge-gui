@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+echo "Install Node v18 that is required to run e2e test on cypress"
+set -e
+
+isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
+requiredNodeVer="v18"
+# Check if Node.js is not installed or the installed version is lesser than the ${requiredNodeVer}
+if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
+   curl -L https://deb.nodesource.com/setup_18.x | sudo -E bash -
+   sudo apt install -y nodejs
+fi
