@@ -125,6 +125,7 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
       else{
+        this.elRef.nativeElement.style.borderWidth = "6px";
         this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data)=>{
           if(data) {
             if(data.addedFiltersIdColl.includes(this.nodeId)){

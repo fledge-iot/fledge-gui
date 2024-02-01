@@ -144,19 +144,24 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
         area.use(minimap);
         if(rolesService.hasEditPermissions()){
             // area.use(contextMenu);
-            dock.add(() => {
+            let newDockFilter = () => {
                 setTimeout(() => {
                     let dropStrategy: any = dock.dropStrategy;
                     let dsEditorNodes = dropStrategy.editor.nodes;
                     let addedFiltersIdColl = [];
-                    for(let i=0; i<dsEditorNodes.length; i++){
-                        if(dsEditorNodes[i].label === 'Filter'){
+                    for (let i = 0; i < dsEditorNodes.length; i++) {
+                        if (dsEditorNodes[i].label === 'Filter') {
                             addedFiltersIdColl.push(dsEditorNodes[i].id)
                         }
                     }
-                    flowEditorService.showAddFilterIcon.next({addedFiltersIdColl: addedFiltersIdColl});
+                    if (addedFiltersIdColl.length > 0) {
+                        dock.remove(newDockFilter);
+                        flowEditorService.showAddFilterIcon.next({ addedFiltersIdColl: addedFiltersIdColl });
+                    }
                 }, 10);
-                return new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C"})});
+                return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#EA9999" })
+            }
+            dock.add(newDockFilter);
         }
     }
 
@@ -262,7 +267,7 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
     AreaExtensions.restrictor(area, {
         scaling: () => ({ min: 0.5, max: 2 }),
     });
-}
+    }
 
 export function getUpdatedFilterPipeline() {
     let nodes = editor.getNodes();
@@ -283,9 +288,9 @@ export function getUpdatedFilterPipeline() {
         }
         else{
             if(!connections.find(c => c.source === nodes[i].id) || !connections.find(c => c.target === nodes[i].id)){
-                console.log("Dangling connection");
-                return false;
-            }
+                                    console.log("Dangling connection");
+                    return false;
+                            }
         }
     }
 
