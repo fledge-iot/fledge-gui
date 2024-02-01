@@ -10,5 +10,3 @@ if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$cur
    curl -L https://deb.nodesource.com/setup_18.x | sudo -E bash -
    sudo apt install -y nodejs
 fi
-
-echo "Node.js version: `node -v`"
