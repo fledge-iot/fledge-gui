@@ -12,6 +12,8 @@ import { FilterModule } from '../filter/filter.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
+import { NodeEditorComponent } from '../../common/node-editor/node-editor.component';
+import { FlowEditorModule } from '../../common/node-editor/flow-editor.module';
 
 const routes: Routes = [
   {
@@ -22,6 +24,10 @@ const routes: Routes = [
     path: 'add',
     component: AddServiceWizardComponent,
     canActivate: [RolesGuard]
+  },
+  {
+    path: 'flow',
+    component: NodeEditorComponent,
   },
   {
     path: ':name/details',
@@ -44,7 +50,8 @@ const routes: Routes = [
     SharedModule,
     DirectivesModule,
     FilterModule,
-    PipesModule
+    PipesModule,
+    FlowEditorModule
   ],
   providers: [RolesGuard, ServicesApiService, PluginService, AssetsService, SchedulesService, FilterService],
 })

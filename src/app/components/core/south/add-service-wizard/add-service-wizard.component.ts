@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
 
@@ -31,6 +31,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   public schedulesName = [];
   public showSpinner = false;
   private subscription: Subscription;
+  public source = '';
 
   // to hold child form state
   validConfigurationForm = true;
@@ -53,6 +54,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private pluginService: PluginService,
     private alertService: AlertService,
     private router: Router,
+    private route: ActivatedRoute,
     private schedulesService: SchedulesService,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
@@ -60,7 +62,13 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
     private cdRef: ChangeDetectorRef
-  ) { }
+  ) {
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
+  }
 
   ngOnInit() {
     this.getSchedules();
@@ -248,7 +256,16 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
             const name = payload.name
             this.uploadScript(name, files);
           }
-          this.router.navigate(['/south']);
+          if(this.source === 'flowEditor'){
+            this.ngProgress.start();
+            setTimeout(() => {
+              this.router.navigate(['/south/flow'], { queryParams: { source: response['name'] } });
+              this.ngProgress.done();
+            }, 3000);
+          }
+          else{
+            this.router.navigate(['/south']);
+          }
         },
         (error) => {
           /** request done */

@@ -29,6 +29,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   pages = ['south', 'north', 'notification', 'additional-services'];
   @Input() from;
+  @Input() sourceName;
   categoryKey = '';
 
   advanceConfiguration: any

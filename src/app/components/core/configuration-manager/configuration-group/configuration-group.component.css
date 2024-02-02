@@ -15,6 +15,16 @@
   overflow: visible;
 }
 
+.custom-quickview-configuration {
+  border: none !important;
+}
+
+.breadcrumb {
+  margin-left: 1.5rem;
+  padding-top: 0.85rem;
+  margin-top: 10px;
+}
+
 .tabs {
   margin-right: auto !important;
   margin-left: auto !important;
