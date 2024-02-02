@@ -120,7 +120,7 @@ export class NodeEditorComponent implements OnInit {
       else {
         if (this.isfilterPipelineFetched) {
           let updatedPipeline = getUpdatedFilterPipeline();
-          if (updatedPipeline && updatedPipeline.length > 0 && !this.isFilterPipelineComplex(updatedPipeline)) {
+          if (updatedPipeline && updatedPipeline.length > 0 && !this.isFilterPipelineComplex(updatedPipeline) && !this.isFilterDuplicatedInPipeline(updatedPipeline)) {
             this.updatedFilterPipeline = updatedPipeline;
             console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
@@ -261,7 +261,7 @@ export class NodeEditorComponent implements OnInit {
 
   save() {
     let updatedPipeline = getUpdatedFilterPipeline();
-    if (updatedPipeline && updatedPipeline.length > 0 && !this.isFilterPipelineComplex(updatedPipeline)) {
+    if (updatedPipeline && updatedPipeline.length > 0 && !this.isFilterPipelineComplex(updatedPipeline) && !this.isFilterDuplicatedInPipeline(updatedPipeline)) {
       this.updatedFilterPipeline = updatedPipeline;
       if (this.isPipelineUpdated() && this.isEachFilterConfigured()) {
         // console.log("pipeline updated")
@@ -428,5 +428,10 @@ export class NodeEditorComponent implements OnInit {
 
   isFilterPipelineComplex(updatedPipeline) {
     return updatedPipeline.find(p => typeof (p) !== "string");
+  }
+
+  isFilterDuplicatedInPipeline(updatedPipeline) {
+    let pipeline = [...new Set(updatedPipeline)]
+    return (pipeline.length !== updatedPipeline.length)
   }
 }
