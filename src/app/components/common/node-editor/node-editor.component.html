@@ -1,8 +1,8 @@
 <div>
-    <div class="navbar-item" *ngIf="source!=='nodelist'">
+    <div class="navbar-item pl-0" *ngIf="source!=='nodelist'">
         <nav class="breadcrumb" aria-label="breadcrumbs">
             <ul>
-                <li><a [routerLink]="['/south/flow']" [queryParams]="{ source: 'nodelist' }">Flow Editor</a></li>
+                <li><a [routerLink]="['/south/flow']" [queryParams]="{ source: 'nodelist' }">South</a></li>
                 <li class="is-active">
                     <a href="#" aria-current="page">
                         {{source ? source : 'Add'}}
@@ -10,12 +10,41 @@
                 </li>
             </ul>
         </nav>
+        <ng-container *ngIf="source && rolesService.hasEditPermissions()">
+            <button class="button is-small is-link" (click)="save()">Save</button>
+        </ng-container>
     </div>
     <div class="rete" #rete></div>
     <app-quickview>
-        <ng-container *ngIf="showConfiguration">
-            <app-configuration-group *ngIf="category" [category]="category"
-                [from]="'south'" [sourceName]="serviceName"></app-configuration-group>
+        <ng-container *ngIf="showPluginConfiguration">
+            <app-configuration-group *ngIf="category" [category]="category" [from]="'south'"
+                [sourceName]="serviceName" 
+                (changedConfigEvent)="getChangedConfig($event)"
+                (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
+                (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
+            <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+                <div class="column">
+                    <div class="field is-grouped is-pulled-right">
+                        <p class="control">
+                            <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton"
+                                class="button is-small is-link" (click)="saveConfiguration()">Save</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="showFilterConfiguration">
+            <app-filter-list #filtersListComponent [service]="serviceName" [sourceName]="serviceName" [filterPipeline]="filterPipeline" (formStatus)="filterFormStatus($event)"></app-filter-list>
+            <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+                <div class="column">
+                    <div class="field is-grouped is-pulled-right">
+                        <p class="control">
+                            <button [disabled]="checkFilterFormState()" [appDisableUntilResponse]="reenableButton"
+                                class="button is-small is-link" (click)="saveFilterConfiguration()">Save</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </ng-container>
         <ng-container *ngIf="showLogs">
             <app-system-log [sourceName]="serviceName"></app-system-log>

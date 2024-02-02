@@ -2,9 +2,9 @@
     margin-bottom: 0px !important;
 }
 
-.quickview-body {
-    display: flex;
-    justify-content: space-between;
+.quickview-block {
+    display: inline-block;
+    width: 95%;
 }
 
 .quickview.is-active {
@@ -16,4 +16,12 @@
         width: 66%;
         right: -66%;
     }
+}
+
+.delete {
+    float: right;
+}
+
+.quickview-body {
+    border-left: 1px dashed silver;
 }

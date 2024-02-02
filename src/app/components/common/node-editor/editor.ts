@@ -1,8 +1,8 @@
 import { Injector } from "@angular/core";
 import { NodeEditor, GetSchemes, ClassicPreset } from "rete";
-import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
+import { AreaPlugin, AreaExtensions, Area2D } from "rete-area-plugin";
 import { AngularPlugin, Presets, AngularArea2D } from "rete-angular-plugin/16";
-import { ConnectionPlugin, Presets as ConnectionPresets } from "rete-connection-plugin";
+import { ConnectionPlugin, Presets as ConnectionPresets, ClassicFlow, BidirectFlow } from "rete-connection-plugin";
 import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "rete-auto-arrange-plugin";
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
@@ -19,16 +19,20 @@ import { Storage } from "./storage";
 import { Filter } from "./filter";
 import { Applications } from "./applications";
 import { AddService } from "./add-service";
+import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
+import { curveStep, curveMonotoneX, curveLinear, CurveFactory } from "d3-shape";
+import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 
 type Node = South | Filter | Applications;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
-type AreaExtra = AngularArea2D<Schemes> | ContextMenuExtra;
+type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { }
+class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {curve?: CurveFactory; }
 
-export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services) {
+let editor = new NodeEditor<Schemes>();
+export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations, flowEditorService, rolesService) {
     const socket = new ClassicPreset.Socket("socket");
-    const editor = new NodeEditor<Schemes>();
+    editor = new NodeEditor<Schemes>();
     const area = new AreaPlugin<Schemes, AreaExtra>(container);
     const connection = new ConnectionPlugin<Schemes, AreaExtra>();
     const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
@@ -40,6 +44,17 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
             timingFunction: easeInOut
         }
     );
+    const minimap = new MinimapPlugin<Schemes>({
+        boundViewport: true
+    });
+    const pathPlugin = new ConnectionPathPlugin<Schemes, Area2D<Schemes>>({
+        curve: (c) => c.curve || curveStep,
+        // transformer: () => Transformers.classic({ vertical: false }),
+        arrow: () => true
+    });
+
+    // @ts-ignore
+    // render.use(pathPlugin);
 
     insertableNodes(area, {
         async createConnections(node, connection) {
@@ -79,7 +94,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
                     list: [
                         {
                             label: 'Filter', key: '1', handler: () => {
-                                let filter = new Filter(socket, 'Filter');
+                                let filter = new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter'});
                                 editor.addNode(filter);
                             }
                         }
@@ -107,13 +122,15 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
             }
         }
     ));
-    connection.addPreset(ConnectionPresets.classic.setup());
+    // connection.addPreset(ConnectionPresets.classic.setup());
+    connection.addPreset(() => new BidirectFlow())
     arrange.addPreset(ArrangePresets.classic.setup());
     render.addPreset(Presets.contextMenu.setup());
     dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
     // scopes.addPreset(ScopesPresets.classic.setup());
     HistoryExtensions.keyboard(history);
     history.addPreset(HistoryPresets.classic.setup());
+    render.addPreset(Presets.minimap.setup({ size: 150 }));
 
     editor.use(area);
     area.use(connection);
@@ -122,16 +139,36 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(dock);
     // area.use(scopes);
     area.use(history);
-
+    
     if (source !== '' && source !== "nodelist") {
-        area.use(contextMenu);
-        dock.add(() => new Filter(socket, 'Filter'));
+        area.use(minimap);
+        if(rolesService.hasEditPermissions()){
+            // area.use(contextMenu);
+            let newDockFilter = () => {
+                setTimeout(() => {
+                    let dropStrategy: any = dock.dropStrategy;
+                    let dsEditorNodes = dropStrategy.editor.nodes;
+                    let addedFiltersIdColl = [];
+                    for (let i = 0; i < dsEditorNodes.length; i++) {
+                        if (dsEditorNodes[i].label === 'Filter') {
+                            addedFiltersIdColl.push(dsEditorNodes[i].id)
+                        }
+                    }
+                    if (addedFiltersIdColl.length > 0) {
+                        dock.remove(newDockFilter);
+                        flowEditorService.showAddFilterIcon.next({ addedFiltersIdColl: addedFiltersIdColl });
+                    }
+                }, 10);
+                return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#EA9999" })
+            }
+            dock.add(newDockFilter);
+        }
     }
 
-    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services);
+    createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations, rolesService);
 }
 
-async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services) {
+async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations, rolesService) {
 
     if(source !== "nodelist"){
         const southPlugin = new South(socket, service);
@@ -140,50 +177,60 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
     
         await editor.addNode(southPlugin);
         await editor.addNode(db);
-    
-        // await area.translate(southPlugin.id, { x: -350, y: 0 });
-        // await area.translate(filterBranch.id, { x: 0, y: 0 });
-        // await area.translate(db.id, { x: 950, y: 0 });
-    
+
         let fpLen = filterPipeline.length;
         if (fpLen == 0) {
-            // await editor.addNode(filterBranch);
             await editor.addConnection(
                 new ClassicPreset.Connection(southPlugin, "port", db, "port")
             );
-            // await editor.addConnection(
-            //     new ClassicPreset.Connection(filterBranch, "port", db, "port")
-            // );
+        }
+        else if (fpLen == 1) {
+            let nextNodeConfig = filterConfigurations.find((f: any) => f.filterName === filterPipeline[0])
+            let nextNode = new Filter(socket, nextNodeConfig);
+            await editor.addNode(nextNode);
+            await editor.addConnection(
+                new ClassicPreset.Connection(southPlugin, "port", nextNode, "port")
+            );
+            await editor.addConnection(
+                new ClassicPreset.Connection(nextNode, "port", db, "port")
+            );
         }
         else {
-            let firstFilter = new Filter(socket, filterPipeline[0]);
-            await editor.addNode(firstFilter);
-            await editor.addConnection(
-                new ClassicPreset.Connection(southPlugin, "port", firstFilter, "port")
-            );
-    
-            if (fpLen == 1) {
-                await editor.addConnection(
-                    new ClassicPreset.Connection(firstFilter, "port", db, "port")
-                );
-            }
-            else {
-                let lastFilter = new Filter(socket, filterPipeline[fpLen - 1]);
-                await editor.addNode(lastFilter);
-                await editor.addConnection(
-                    new ClassicPreset.Connection(lastFilter, "port", db, "port")
-                );
-    
-                for (let i = 1; i < fpLen - 1; i++) {
-                    let midFilter = new Filter(socket, filterPipeline[i]);
-                    await editor.addNode(midFilter);
+            let previousNode = southPlugin;
+            let colorCount=0;
+            for (let i = 0; i < fpLen; i++) {
+                let pipelineItem = filterPipeline[i];
+                if (typeof (pipelineItem) === "string") {
+                    let nextNodeConfig = filterConfigurations.find((f: any) => f.filterName === pipelineItem)
+                    let nextNode = new Filter(socket, nextNodeConfig);
+                    await editor.addNode(nextNode);
                     await editor.addConnection(
-                        new ClassicPreset.Connection(firstFilter, "port", midFilter, "port")
+                        new ClassicPreset.Connection(previousNode, "port", nextNode, "port")
                     );
-                    firstFilter = midFilter;
+                    previousNode = nextNode;
                 }
+                else {
+                    let piLen = pipelineItem.length;
+                    let tempNode = previousNode;
+                    for (let j = 0; j < piLen; j++) {
+                        let nextNodeConfig = filterConfigurations.find((f: any) => f.filterName === pipelineItem[j])
+                        nextNodeConfig.color = rgbToHex(235-(10*colorCount), 235, 235);
+                        let nextNode = new Filter(socket, nextNodeConfig);
+                        await editor.addNode(nextNode);
+                        await editor.addConnection(
+                            new ClassicPreset.Connection(tempNode, "port", nextNode, "port")
+                        );
+                        tempNode = nextNode;
+                    }
+                    await editor.addConnection(
+                        new ClassicPreset.Connection(tempNode, "port", db, "port")
+                    );
+                    colorCount++;
+                }
+            }
+            if (previousNode != southPlugin) {
                 await editor.addConnection(
-                    new ClassicPreset.Connection(firstFilter, "port", lastFilter, "port")
+                    new ClassicPreset.Connection(previousNode, "port", db, "port")
                 );
             }
         }
@@ -204,9 +251,11 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                 }
             }
         }
-        const addService = new AddService();
-        await editor.addNode(addService);
-        await area.translate(addService.id, { x: 250*j, y: 250*k });
+        if(rolesService.hasEditPermissions()){
+            const addService = new AddService();
+            await editor.addNode(addService);
+            await area.translate(addService.id, { x: 250*j, y: 250*k });
+        }
     }
 
 
@@ -215,4 +264,95 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
     AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
         accumulating: AreaExtensions.accumulateOnCtrl()
     });
+    AreaExtensions.restrictor(area, {
+        scaling: () => ({ min: 0.5, max: 2 }),
+    });
+    }
+
+export function getUpdatedFilterPipeline() {
+    let nodes = editor.getNodes();
+    let connections = editor.getConnections();
+
+    for(let i=0; i<nodes.length; i++){
+        if(i==0){
+            if(!connections.find(c => c.source === nodes[i].id)){
+                console.log("Dangling connection");
+                return false;
+            }
+        }
+        else if(i==1){
+            if(!connections.find(c => c.target === nodes[i].id)){
+                console.log("Dangling connection");
+                return false;
+            }
+        }
+        else{
+            if(!connections.find(c => c.source === nodes[i].id) || !connections.find(c => c.target === nodes[i].id)){
+                                    console.log("Dangling connection");
+                    return false;
+                            }
+        }
+    }
+
+    let updatedFilterPipeline = [];
+    let sourceNode = nodes[0];
+    while(connections.find(c => c.source === sourceNode.id)){
+        let previousSourceNode = sourceNode;
+        let connlist = connections.filter(c => c.source === sourceNode.id);
+        if(connlist.length === 1){
+            let filterNode = editor.getNode(connlist[0].target);
+            if(filterNode.label !== "Storage"){
+                updatedFilterPipeline.push(filterNode.label);
+            }
+            sourceNode = filterNode;
+        }
+        else{
+            for(let i=0; i<connlist.length; i++){
+                let node = editor.getNode(connlist[i].target);
+                let branch = getBranchNodes(connections, node);
+                if(branch){
+                    updatedFilterPipeline.push(branch);
+                }
+                else{
+                    if(node.label !== "Storage"){
+                        updatedFilterPipeline.push(node.label);
+                    }
+                    sourceNode = node;
+                }
+            }
+        }
+        if(previousSourceNode === sourceNode){
+            break;
+        }
+    }
+    return updatedFilterPipeline;
+}
+
+function getBranchNodes(connections, node) {
+    if (node.label === "Storage") {
+        return;
+    }
+    let branchNodes = [];
+    branchNodes.push(node.label);
+    while (connections.find(c => c.source === node.id)) {
+        let connlist = connections.filter(c => c.source === node.id);
+        if (connlist.length === 1) {
+            let filterNode = editor.getNode(connlist[0].target);
+            branchNodes.push(filterNode.label);
+            node = filterNode;
+        }
+        else {
+            return;
+        }
+    }
+    branchNodes.pop();
+    return branchNodes;
+}
+
+export function deleteConnection(connectionId){
+    editor.removeConnection(connectionId);
+}
+
+function rgbToHex(r, g, b){
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
