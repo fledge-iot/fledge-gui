@@ -159,7 +159,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
                         flowEditorService.showAddFilterIcon.next({ addedFiltersIdColl: addedFiltersIdColl });
                     }
                 }, 10);
-                return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#EA9999" })
+                return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" })
             }
             dock.add(newDockFilter);
         }

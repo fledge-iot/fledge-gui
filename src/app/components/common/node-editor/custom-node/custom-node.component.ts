@@ -83,8 +83,8 @@ export class CustomNodeComponent implements OnChanges {
   ngOnChanges(): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South') {
-      this.elRef.nativeElement.style.borderColor = "#B6D7A8";
       if (this.source !== '') {
+        this.elRef.nativeElement.style.borderColor = "#B6D7A8";
         interval(POLLING_INTERVAL)
           .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
           .subscribe(() => {
@@ -109,6 +109,10 @@ export class CustomNodeComponent implements OnChanges {
         this.helpText = this.service.pluginName;
         this.pluginName = this.service.pluginName;
       }
+      else{
+        this.elRef.nativeElement.style.borderColor = "#EA9999";
+        this.elRef.nativeElement.style.borderWidth = "6px";
+      }
     }
     if (this.data.label === 'Filter') {
       this.isFilterNode = true;
@@ -126,10 +130,11 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
       else{
-        this.elRef.nativeElement.style.borderWidth = "6px";
         this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data)=>{
           if(data) {
             if(data.addedFiltersIdColl.includes(this.nodeId)){
+              this.elRef.nativeElement.style.borderColor = "#EA9999";
+              this.elRef.nativeElement.style.borderWidth = "6px";
               this.showPlusIcon = true;
             }
           }
