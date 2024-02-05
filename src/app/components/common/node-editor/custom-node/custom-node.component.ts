@@ -28,7 +28,7 @@ export class CustomNodeComponent implements OnChanges {
   source = '';
   helpText = '';
   isEnabled: boolean = false;
-  service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "" }
+  service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "", schedule_enabled: 'false' }
   filter = { pluginName: '', enabled: 'false', name: '', color: ''}
   isServiceNode: boolean = false;
   subscription: Subscription;
@@ -97,12 +97,13 @@ export class CustomNodeComponent implements OnChanges {
         this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
         this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
         this.service.status = Object.keys(this.data.controls)[4];
+        this.service.schedule_enabled = Object.keys(this.data.controls)[5];
         if(this.service.status === ''){
           this.service.status = 'shutdown';
         }
         
         this.data.label = this.service.name;
-        if (this.service.status === 'running') {
+        if (this.service.schedule_enabled === 'true') {
           this.isEnabled = true;
         }
         this.helpText = this.service.pluginName;
@@ -318,6 +319,13 @@ export class CustomNodeComponent implements OnChanges {
             }, 0)
             this.service.assetCount = assetCount;
             this.service.readingCount = readingCount;
+            this.service.schedule_enabled = String(this.fetchedService.schedule_enabled);
+            if(this.service.schedule_enabled === 'true'){
+              this.isEnabled = true;
+            }
+            else{
+              this.isEnabled = false;
+            }
           }
         },
         error => {
