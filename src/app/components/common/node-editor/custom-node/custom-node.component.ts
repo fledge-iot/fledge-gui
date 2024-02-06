@@ -261,14 +261,7 @@ export class CustomNodeComponent implements OnChanges {
 
   deleteFilterOrService() {
     if (this.isServiceNode) {
-      this.servicesApiService.deleteService(this.service.name)
-        .subscribe(
-          () => {
-            this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
-          },
-          (error) => {
-            console.log('service down ', error);
-          });
+      this.flowEditorService.serviceInfo.next({name: this.service.name})
     }
     if(this.isFilterNode){
       this.flowEditorService.filterInfo.next({name: this.filter.name})

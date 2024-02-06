@@ -51,3 +51,31 @@
         </ng-container>
     </app-quickview>
 </div>
+
+<app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
+    <header class="modal-card-head">
+      <span class="modal-card-title is-size-6">Delete Service</span>
+      <button class="delete" aria-label="close" (click)="closeModal('delete-service-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Deleting this service can not be undone. Continue?
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="closeModal('delete-service-dialog')">Cancel</button>
+      <button class="button is-small is-danger" (click)="deleteService()" [appDisableUntilResponse]="reenableButton">Delete</button>
+    </footer>
+  </app-confirmation-dialog>
+
+<app-confirmation-dialog id="delete-filter-dialog" *ngIf="rolesService.hasEditPermissions()">
+    <header class="modal-card-head">
+      <span class="modal-card-title is-size-6">Delete Filter</span>
+      <button class="delete" aria-label="close" (click)="closeModal('delete-filter-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Deleting this filter can not be undone. Continue?
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="closeModal('delete-filter-dialog')">Cancel</button>
+      <button class="button is-small is-danger" (click)="deleteFilterFromPipeline()" [appDisableUntilResponse]="reenableButton">Delete</button>
+    </footer>
+  </app-confirmation-dialog>

@@ -8,6 +8,7 @@ import { Subject, Subscription, forkJoin, of } from 'rxjs';
 import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
 import { FilterListComponent } from '../../core/filter/filter-list/filter-list.component';
+import { DialogService } from '../confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -25,6 +26,7 @@ export class NodeEditorComponent implements OnInit {
   private subscription: Subscription;
   private filterSubscription: Subscription;
   private connectionSubscription: Subscription;
+  private serviceSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -34,6 +36,7 @@ export class NodeEditorComponent implements OnInit {
   destroy$: Subject<boolean> = new Subject<boolean>();
   serviceName = '';
   filterName = '';
+  deleteServiceName = '';
   isfilterPipelineFetched = false;
   selectedConnectionId = "";
   changedConfig: any;
@@ -59,6 +62,7 @@ export class NodeEditorComponent implements OnInit {
     public rolesService: RolesService,
     private response: ResponseHandler,
     public ngProgress: ProgressBarService,
+    private dialogService: DialogService,
     private router: Router) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
@@ -94,28 +98,10 @@ export class NodeEditorComponent implements OnInit {
         this.unsavedChangesInFilterForm = false;
       }
     })
-    this.filterSubscription = this.flowEditorService.filterInfo.subscribe(data => {
+    this.filterSubscription = this.flowEditorService.filterInfo.pipe(skip(1)).subscribe(data => {
       if (data.name !== "newPipelineFilter") {
+        this.openModal('delete-filter-dialog');
         this.filterName = data.name;
-        for (let i = 0; i < this.filterPipeline.length; i++) {
-          if (typeof (this.filterPipeline[i]) === "string") {
-            if (this.filterPipeline[i] === this.filterName) {
-              this.filterPipeline = this.filterPipeline.filter(f => f !== this.filterName);
-              this.deleteFilter();
-              break;
-            }
-          }
-          else {
-            if (this.filterPipeline[i].indexOf(this.filterName) !== -1) {
-              this.filterPipeline[i] = this.filterPipeline[i].filter(f => f !== this.filterName);
-              if (this.filterPipeline[i].length === 0) {
-                this.filterPipeline.splice(i, 1);
-              }
-              this.deleteFilter();
-              break;
-            }
-          }
-        }
       }
       else {
         if (this.isfilterPipelineFetched) {
@@ -136,6 +122,10 @@ export class NodeEditorComponent implements OnInit {
       else {
         this.selectedConnectionId = "";
       }
+    })
+    this.serviceSubscription = this.flowEditorService.serviceInfo.pipe(skip(1)).subscribe(data => {
+      this.openModal('delete-service-dialog');
+      this.deleteServiceName = data.name;
     })
   }
 
@@ -221,6 +211,7 @@ export class NodeEditorComponent implements OnInit {
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();
+    this.serviceSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
@@ -433,5 +424,46 @@ export class NodeEditorComponent implements OnInit {
   isFilterDuplicatedInPipeline(updatedPipeline) {
     let pipeline = [...new Set(updatedPipeline)]
     return (pipeline.length !== updatedPipeline.length)
+  }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.dialogService.close(id);
+  }
+
+  deleteFilterFromPipeline() {
+    for (let i = 0; i < this.filterPipeline.length; i++) {
+      if (typeof (this.filterPipeline[i]) === "string") {
+        if (this.filterPipeline[i] === this.filterName) {
+          this.filterPipeline = this.filterPipeline.filter(f => f !== this.filterName);
+          this.deleteFilter();
+          break;
+        }
+      }
+      else {
+        if (this.filterPipeline[i].indexOf(this.filterName) !== -1) {
+          this.filterPipeline[i] = this.filterPipeline[i].filter(f => f !== this.filterName);
+          if (this.filterPipeline[i].length === 0) {
+            this.filterPipeline.splice(i, 1);
+          }
+          this.deleteFilter();
+          break;
+        }
+      }
+    }
+  }
+
+  deleteService(){
+    this.servicesApiService.deleteService(this.deleteServiceName)
+        .subscribe(
+          () => {
+            this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
+          },
+          (error) => {
+            console.log('service down ', error);
+          });
   }
 }
