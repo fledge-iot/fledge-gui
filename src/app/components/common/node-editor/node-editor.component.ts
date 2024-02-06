@@ -202,18 +202,13 @@ export class NodeEditorComponent implements OnInit {
           this.pluginConfiguration = cloneDeep({ name: this.serviceName, config: data });
         },
         error => {
-          console.log('service down ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
         }
       );
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.filterSubscription.unsubscribe();
-    this.connectionSubscription.unsubscribe();
-    this.serviceSubscription.unsubscribe();
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
   }
 
   getFilterConfiguration(filterName: string) {
@@ -235,18 +230,26 @@ export class NodeEditorComponent implements OnInit {
   deleteFilter() {
     this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.source)
       .subscribe(() => {
-        this.filterService.deleteFilter(this.filterName).subscribe(() => {
-          console.log(this.filterName + " filter deleted");
+        this.filterService.deleteFilter(this.filterName).subscribe((data: any) => {
+          this.toastService.success(data.result);
           setTimeout(() => {
             this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
           }, 1000);
         },
           (error) => {
-            console.log('service down ', error);
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.toastService.error(error.statusText);
+            }
           });
       },
         (error) => {
-          console.log('service down ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
         });
   }
 
@@ -264,14 +267,18 @@ export class NodeEditorComponent implements OnInit {
 
   updateFilterPipeline() {
     this.filterService.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline }, this.source)
-      .subscribe(() => {
-        console.log("pipeline updated");
+      .subscribe((data: any) => {
+        this.toastService.success(data.result);
         setTimeout(() => {
           this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
         }, 1000);
       },
         (error) => {
-          console.log('service down ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
         });
   }
 
@@ -456,14 +463,27 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-  deleteService(){
+  deleteService() {
     this.servicesApiService.deleteService(this.deleteServiceName)
-        .subscribe(
-          () => {
-            this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
-          },
-          (error) => {
+      .subscribe((data: any) => {
+        this.toastService.success(data['result']);
+        this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
+      },
+        (error) => {
+          if (error.status === 0) {
             console.log('service down ', error);
-          });
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.filterSubscription.unsubscribe();
+    this.connectionSubscription.unsubscribe();
+    this.serviceSubscription.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

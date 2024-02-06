@@ -26,25 +26,25 @@ export class CustomConnectionComponent implements OnInit {
     public rolesService: RolesService,) { }
 
   ngOnInit(): void {
-    this.canvasClickSubscription =  this.flowEditorService.canvasClick.subscribe(data => {
+    this.canvasClickSubscription = this.flowEditorService.canvasClick.subscribe(data => {
       this.selectedConnectionId = data.connectionId;
-      if(data.canvasClicked === true){
-        if(this.selected){
+      if (data.canvasClicked === true) {
+        if (this.selected) {
           this.svgpath.nativeElement.style.stroke = "steelblue";
           this.selected = false;
-          this.flowEditorService.connectionInfo.next({id: this.data.id, selected: this.selected});
+          this.flowEditorService.connectionInfo.next({ id: this.data.id, selected: this.selected });
         }
       }
     })
   }
 
   selectConnection(): void {
-    if(this.rolesService.hasEditPermissions()){
+    if (this.rolesService.hasEditPermissions()) {
       setTimeout(() => {
-        if(!this.selected && this.selectedConnectionId !== this.data.id){
+        if (!this.selected && this.selectedConnectionId !== this.data.id) {
           this.svgpath.nativeElement.style.stroke = "rgb(255, 217, 44)";
           this.selected = true;
-          this.flowEditorService.connectionInfo.next({id: this.data.id, selected: this.selected});
+          this.flowEditorService.connectionInfo.next({ id: this.data.id, selected: this.selected });
         }
       }, 1);
     }
