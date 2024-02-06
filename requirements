@@ -2,12 +2,17 @@
 
 set -e
 
-PKG_MANAGER=$( command -v yum || command -v apt-get ) || { echo "Platform not supported, check README and Prerequisite docs."; exit 1; }
+PKG_MANAGER=$( command -v yum || command -v apt-get || command -v brew ) ||{ echo "Platform not supported, check README and Prerequisite docs."; exit 1; }
 cd $(dirname $0)
 echo "Setting up the prerequisites..."
 echo
 
-OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
+if [[ -f /etc/os-release ]]; then
+   OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
+elif [[ -f /System/Library/CoreServices/SystemVersion.plist ]]; then
+   # MacOSX
+   OS_NAME=`uname`
+fi
 
 PKG_TYPE="deb"
 # Check if OS is RHEL/CentOS
@@ -17,7 +22,7 @@ echo
 
 install_nodejs () {
   isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
-  requiredNodeVer="v16.14.0"
+   requiredNodeVer="v16.14.0"
   # Check if Node.js is not installed or the installed version is lesser than the ${requiredNodeVer}
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
       curl -L https://${PKG_TYPE}.nodesource.com/setup_16.x | sudo -E bash -
